@@ -90,11 +90,11 @@ export function mapDictionaryResponse(data: unknown): DictLookup {
       if (!isRecord(m)) continue
       const defs = Array.isArray(m.definitions) ? m.definitions : []
       const firstDef = defs.find(
-        (d): d is Record<string, unknown> =>
+        (d): d is Record<string, unknown> & { definition: string } =>
           isRecord(d) && typeof d.definition === 'string' && d.definition.trim() !== '',
       )
       if (!firstDef) continue // 该 meaning 没有可用的英文释义,不计入前 3 条配额
-      const en = String(firstDef.definition).trim()
+      const en = firstDef.definition.trim()
       const pos = typeof m.partOfSpeech === 'string' ? abbreviatePos(m.partOfSpeech) : ''
       meanings.push({ pos, en })
     }

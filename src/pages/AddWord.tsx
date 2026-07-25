@@ -16,12 +16,33 @@ import type { Meaning, RelatedForm, Word } from '../types'
 import { lookupWord } from './dictionaryApi'
 import './AddWord.css'
 
-/** 表单里的一行释义:zh 永远由用户填,查词典只带回 pos/en */
-type MeaningRow = Meaning
-type RelatedRow = RelatedForm
+/**
+ * 表单里可重复的行:比 Word 对应类型多一个稳定 key,专供 React 列表用,
+ * 提交前 validate() 会重新拼一份干净对象,不会带着 key 存进 Word。
+ * 用数组下标当 React key 在删除中间行时会导致 DOM 节点复用错位
+ * （光标位置、组合输入法状态跟着挪到别的行上),所以每行在创建时领一个
+ * 单调递增的号,删除、增加都不影响其余行的号。
+ */
+interface MeaningRow extends Meaning {
+  key: number
+}
+interface RelatedRow extends RelatedForm {
+  key: number
+}
+interface ExampleRow {
+  key: number
+  value: string
+}
 
-const emptyMeaning = (): MeaningRow => ({ pos: '', en: '', zh: '' })
-const emptyRelated = (): RelatedRow => ({ form: '', pos: '', zh: '' })
+let rowKeySeq = 0
+const nextRowKey = (): number => {
+  rowKeySeq += 1
+  return rowKeySeq
+}
+
+const emptyMeaning = (): MeaningRow => ({ key: nextRowKey(), pos: '', en: '', zh: '' })
+const emptyRelated = (): RelatedRow => ({ key: nextRowKey(), form: '', pos: '', zh: '' })
+const emptyExample = (): ExampleRow => ({ key: nextRowKey(), value: '' })
 
 type LookupState =
   | { status: 'idle' }
@@ -30,11 +51,11 @@ type LookupState =
   | { status: 'not-found'; message: string }
   | { status: 'error'; message: string }
 
-/** 逗号/顿号/换行分隔的自由文本 → 去空白、去空项、去重、剔除词条本身 */
+/** 逗号(半角/全角)/顿号/换行分隔的自由文本 → 去空白、去空项、去重、剔除词条本身 */
 function splitTagList(raw: string, headword: string): string[] {
   const seen = new Set<string>()
   const out: string[] = []
-  for (const piece of raw.split(/[,,、\n]/)) {
+  for (const piece of raw.split(/[,，、\n]/)) {
     const v = piece.trim()
     if (!v || v.toLowerCase() === headword.toLowerCase()) continue
     const key = v.toLowerCase()
@@ -67,7 +88,7 @@ export function AddWord() {
   const [headwordInput, setHeadwordInput] = useState('')
   const [phonetic, setPhonetic] = useState('')
   const [meanings, setMeanings] = useState<MeaningRow[]>([emptyMeaning()])
-  const [examples, setExamples] = useState<string[]>(['', ''])
+  const [examples, setExamples] = useState<ExampleRow[]>([emptyExample(), emptyExample()])
   const [synonymsText, setSynonymsText] = useState('')
   const [antonymsText, setAntonymsText] = useState('')
   const [collocationsText, setCollocationsText] = useState('')
@@ -79,7 +100,10 @@ export function AddWord() {
   const [savedWord, setSavedWord] = useState<{ id: string; headword: string } | null>(null)
 
   const headword = headwordInput.trim()
-  const id = headword.toLowerCase()
+  // 词库约定(见计划 Task 10 步骤 2.5):含空格的短语词条 id 用连字符,如
+  // "ad hoc" → "ad-hoc",与 data/words.json 里 due-diligence 等一致。
+  // headword 本身照常保留空格显示,只有 id 折叠。
+  const id = headword.toLowerCase().replace(/\s+/g, '-')
   const existing = useMemo(() => words.find((w) => w.id === id), [words, id])
   const duplicate = id !== '' && existing !== undefined
 
@@ -87,7 +111,7 @@ export function AddWord() {
     setHeadwordInput('')
     setPhonetic('')
     setMeanings([emptyMeaning()])
-    setExamples(['', ''])
+    setExamples([emptyExample(), emptyExample()])
     setSynonymsText('')
     setAntonymsText('')
     setCollocationsText('')
@@ -103,14 +127,20 @@ export function AddWord() {
     const result = await lookupWord(headword)
     if (result.status === 'ok') {
       setPhonetic(result.phonetic)
-      setMeanings(result.meanings.length > 0 ? result.meanings.map((m) => ({ ...m, zh: '' })) : [emptyMeaning()])
-      setLookup({
-        status: 'done',
-        note:
-          result.meanings.length === 0 && !result.phonetic
-            ? '词典没有可用的音标或释义,请手动填写。'
-            : undefined,
-      })
+      setMeanings(
+        result.meanings.length > 0
+          ? result.meanings.map((m) => ({ key: nextRowKey(), ...m, zh: '' }))
+          : [emptyMeaning()],
+      )
+      // 音标和释义是词典分别提供的,不是同进同出(如 abrogate:有释义、无音标)——
+      // 分别判断,措辞照实说,别让通用的「都填好了」文案在只填了一半时说谎。
+      const hasPhonetic = result.phonetic !== ''
+      const hasMeanings = result.meanings.length > 0
+      let note: string | undefined
+      if (!hasPhonetic && !hasMeanings) note = '词典没有可用的音标或释义,请手动填写。'
+      else if (!hasPhonetic) note = '释义已填入,词典未提供音标,请手动填写。'
+      else if (!hasMeanings) note = '音标已填入,词典未提供释义,请手动填写。'
+      setLookup({ status: 'done', note })
     } else if (result.status === 'not-found') {
       setLookup({ status: 'not-found', message: `词典未收录「${headword}」,请手动填写下方表单。` })
     } else {
@@ -124,8 +154,8 @@ export function AddWord() {
   const removeMeaning = (i: number) => setMeanings((rows) => (rows.length <= 1 ? rows : rows.filter((_, idx) => idx !== i)))
 
   const updateExample = (i: number, value: string) =>
-    setExamples((rows) => rows.map((r, idx) => (idx === i ? value : r)))
-  const addExample = () => setExamples((rows) => [...rows, ''])
+    setExamples((rows) => rows.map((r, idx) => (idx === i ? { ...r, value } : r)))
+  const addExample = () => setExamples((rows) => [...rows, emptyExample()])
   const removeExample = (i: number) => setExamples((rows) => (rows.length <= 2 ? rows : rows.filter((_, idx) => idx !== i)))
 
   const updateRelated = (i: number, patch: Partial<RelatedRow>) =>
@@ -155,7 +185,7 @@ export function AddWord() {
     else if (meaningRows.some((m) => !(m.pos && m.en && m.zh)))
       errors.meanings = '每条释义的词性、英文释义、中文释义都要填写完整'
 
-    const exampleRows = examples.map((e) => e.trim()).filter(Boolean)
+    const exampleRows = examples.map((e) => e.value.trim()).filter(Boolean)
     if (exampleRows.length < 2) errors.examples = `至少需要 2 句例句(当前 ${exampleRows.length} 句)`
 
     const relatedRows = relatedForms
@@ -299,7 +329,7 @@ export function AddWord() {
           )}
           <div className="addword-rows">
             {meanings.map((m, i) => (
-              <div className="addword-row" key={i}>
+              <div className="addword-row" key={m.key}>
                 <div className="addword-row__grid addword-row__grid--meaning">
                   <Field label="词性" htmlFor={`aw-mean-pos-${i}`}>
                     <TextInput
@@ -358,12 +388,12 @@ export function AddWord() {
           )}
           <div className="addword-rows">
             {examples.map((ex, i) => (
-              <div className="addword-row" key={i}>
+              <div className="addword-row" key={ex.key}>
                 <Field label={`例句 ${i + 1}`} htmlFor={`aw-ex-${i}`}>
                   <Textarea
                     id={`aw-ex-${i}`}
                     rows={2}
-                    value={ex}
+                    value={ex.value}
                     onChange={(e) => updateExample(i, e.target.value)}
                     lang="en"
                   />
@@ -426,7 +456,7 @@ export function AddWord() {
           {relatedForms.length > 0 && (
             <div className="addword-rows">
               {relatedForms.map((r, i) => (
-                <div className="addword-row" key={i}>
+                <div className="addword-row" key={r.key}>
                   <div className="addword-row__grid addword-row__grid--related">
                     <Field label="写法" htmlFor={`aw-rel-form-${i}`}>
                       <TextInput
@@ -477,7 +507,15 @@ export function AddWord() {
           </p>
         )}
 
-        <Button type="submit" variant="primary" size="lg" block loading={saving} disabled={saving || duplicate}>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          block
+          loading={saving}
+          disabled={saving || duplicate}
+          aria-describedby={duplicate ? 'aw-headword-error' : undefined}
+        >
           保存
         </Button>
       </form>
