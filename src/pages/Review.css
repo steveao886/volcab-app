@@ -1,0 +1,192 @@
+/* ==========================================================================
+   复习页(Task 17)。页面专属样式,页面级类一律 .review- 前缀。
+   ========================================================================== */
+
+/* --- 顶部进度 x/y --------------------------------------------------------- */
+
+.review-progress {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.review-progress__count {
+  text-align: end;
+}
+
+/* --- 卡片 ------------------------------------------------------------------
+   正面只有词头 + 发音,居中撑出一块呼吸空间,像真正的卡片而不是一行字;
+   翻面后内容可能很长(3 条释义 + 长例句),不设上限高度,交给整页滚动,
+   绝不用 overflow:hidden 裁切 —— 复习卡的内容永远比"看起来整齐"更重要。 */
+
+.review-card {
+  position: relative;
+  cursor: pointer;
+}
+
+.review-card__badge {
+  position: absolute;
+  top: var(--sp-4);
+  left: var(--sp-4);
+}
+
+.review-card--front {
+  min-height: 200px;
+  display: grid;
+  place-items: center;
+  padding-block: var(--sp-8);
+}
+
+.review-card--front .review-card__head {
+  flex-direction: column;
+  text-align: center;
+  gap: var(--sp-3);
+}
+
+.review-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.review-card__speak {
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  flex: none;
+  border-radius: var(--r-full);
+  color: var(--text-muted);
+  transition:
+    background-color var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease);
+}
+
+.review-card__speak:hover {
+  background: var(--surface-sunken);
+  color: var(--text);
+}
+
+/* --- 翻面内容 --------------------------------------------------------------
+   与正面隔一道发丝线,而不是又一层卡片,呼应"辞书内页"的排版语言。 */
+
+.review-back {
+  display: grid;
+  gap: var(--sp-5);
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--rule);
+}
+
+.review-meanings {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.review-meaning {
+  display: grid;
+  gap: var(--sp-1);
+}
+
+.review-meaning + .review-meaning {
+  padding-top: var(--sp-3);
+  border-top: 1px dashed var(--rule);
+}
+
+.review-meaning__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+}
+
+.review-meaning__idx {
+  min-width: 1em;
+}
+
+.review-examples {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.review-examples li {
+  padding-inline-start: var(--sp-3);
+  border-inline-start: 2px solid var(--rule);
+  color: var(--text-muted);
+  line-height: var(--lh-snug);
+}
+
+.review-tags {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.review-tags__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+/* 同根词 chip 里 pos 缩写(v. / adj. …)夹在词形和中文释义之间,弱化一档 */
+.review-tags__pos {
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+}
+
+/* --- 翻面提示 / 打分按钮 ---------------------------------------------------- */
+
+.review-actions {
+  min-height: var(--tap);
+  display: grid;
+  align-items: center;
+}
+
+.review-hint {
+  text-align: center;
+}
+
+.review-grades {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-2);
+}
+
+.review-grades .btn {
+  padding-inline: var(--sp-2);
+}
+
+.review-grade__key {
+  margin-inline-start: var(--sp-1);
+  color: var(--text-faint);
+  font-family: var(--font-num);
+  font-size: var(--fs-xs);
+}
+
+.btn--grade-again:hover .review-grade__key,
+.btn--grade-hard:hover .review-grade__key,
+.btn--grade-good:hover .review-grade__key,
+.btn--grade-easy:hover .review-grade__key {
+  color: inherit;
+  opacity: 0.75;
+}
+
+/* 桌面宽一点,打分按钮不必挤在一起 */
+@media (min-width: 900px) {
+  .review-grades {
+    max-width: 480px;
+    margin-inline: auto;
+  }
+}
+
+/* --- 完成页 ------------------------------------------------------------ */
+
+.review-done {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-3);
+  padding-block: var(--sp-12) var(--sp-8);
+  text-align: center;
+}
+
+.review-done__count {
+  font-size: var(--fs-md);
+}
