@@ -9,7 +9,7 @@ import './Login.css'
 
 /** Task 15 实现:PAT 输入 + 折叠的 6 步取 token 指引。 */
 export function Login() {
-  const { loginError, login, enterDemoMode } = useApp()
+  const { loginError, syncError, login, enterDemoMode } = useApp()
   const [token, setToken] = useState('')
   const [pending, setPending] = useState(false)
 
@@ -37,6 +37,16 @@ export function Login() {
           </h1>
         </div>
         <p className="auth__tagline">个人词汇记忆本</p>
+
+        {/* 页面级通知,与下面字段级的红色报错分属两条通道:这里说的是「上一次
+            退出时丢弃了未同步的数据」这类既成事实,token 输入框本身没有问题,
+            所以不染红、也不该把输入框标成 aria-invalid。role="status" 是礼貌
+            播报 —— 用户不需要为它中断当前操作。 */}
+        {syncError !== null && (
+          <p className="login-notice" role="status">
+            {syncError}
+          </p>
+        )}
 
         <form className="login-form" onSubmit={handleSubmit} noValidate>
           <Field

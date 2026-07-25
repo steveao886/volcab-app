@@ -33,11 +33,16 @@ export interface AppState {
   words: Word[]
   progress: Progress
   syncStatus: 'synced' | 'pending' | 'offline' | 'error'
-  /** 登录页要展示的一句话:登录失败的原因,或退出时丢弃了未同步数据的告知 */
+  /**
+   * 登录失败的原因,且**只有**登录失败。登录页把它接在 token 输入框的
+   * Field error 上,会同时把输入框标成 aria-invalid —— 输入框本身没问题的
+   * 通知(如退出时丢弃了未同步数据)不能走这里,走 syncError。
+   */
   loginError: string | null
   /**
-   * 同步降级的具体原因(冲突放弃、远端文件损坏要导出备份、限流、跨账号丢弃……)。
-   * syncStatus 只有四个枚举值,装不下要给用户看的那句话。成功一次即清空。
+   * 同步降级/数据丢弃的具体原因(冲突放弃、远端文件损坏要导出备份、限流、
+   * 跨账号丢弃、退出时丢弃未同步数据……)。syncStatus 只有四个枚举值,装不下
+   * 要给用户看的那句话。成功一次即清空;退到登录页时由登录页的通知区展示。
    */
   syncError: string | null
 }
@@ -119,7 +124,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     clientRef.current = null
     // 只清 token,owner 留着:重新登录时据此认出是同一个人,把没推上去的改动并回来
     if (clearToken) storage.remove('token')
-    update({ phase: 'login', loginError, owner: null })
+    // syncError 一并清掉:上一条同步失败的说明在登录页已经无从处置,留着只会
+    // 和这里真正的原因(loginError)在两个区域各说一句,读起来像出了两件事。
+    update({ phase: 'login', loginError, owner: null, syncError: null })
   }, [clearTimer, update])
 
   /**
@@ -283,6 +290,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       clientRef.current = client
       demoRef.current = false
+      // 登录成功一定重写 syncError:要么换成「换账号丢弃了谁的改动」,要么清空。
+      // 上一次退出留下的丢弃告知到此为止,两条不会叠在一起,也不会互相盖掉 ——
+      // 后者只在这一刻产生,前者只活到下一次登录成功。
       update({
         phase: 'ready', owner, words, progress, loginError: null,
         syncError: carry.discardedOwner ? ownerSwitched(carry.discardedOwner) : null,
@@ -307,9 +317,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     pushingRef.current = false      // 万一有请求卡住不返回,别让互斥锁把下次登录后的推送也堵死
     wordsPushingRef.current = false
     storage.clearAll()
+    // 「丢了什么」是一条数据告知,不是登录失败:走 syncError,由登录页的中性通知区
+    // 展示。放 loginError 会让 token 输入框被标成 aria-invalid —— 那个框此刻没有
+    // 任何问题,用户甚至还没开始填。没丢东西就写 null,顺带清掉退出前那次同步失败。
     update({
-      phase: 'login', owner: null, words: [], progress: emptyProgress(), syncError: null,
-      loginError: droppedOps > 0 || droppedProgress ? logoutDiscarded(droppedOps, droppedProgress) : null,
+      phase: 'login', owner: null, words: [], progress: emptyProgress(), loginError: null,
+      syncError: droppedOps > 0 || droppedProgress ? logoutDiscarded(droppedOps, droppedProgress) : null,
       syncStatus: navigator.onLine ? 'synced' : 'offline',
     })
   }, [clearTimer, update])

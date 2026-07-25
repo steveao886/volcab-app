@@ -9,6 +9,21 @@
   gap: var(--sp-4);
 }
 
+/* --- 页面级通知 ------------------------------------------------------------
+   「退出时丢弃了未同步的数据」这类告知。中性:一块下沉的纸面 + 发丝线,
+   不用 --danger,也不用朱砂 —— 它不是错误,更不是需要批注的重点,
+   而字段级的红色报错(.field__error)必须留给「这个框填错了」。 */
+
+.login-notice {
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  background: var(--surface-sunken);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+}
+
 /* --- 折叠指引 --------------------------------------------------------------
    外壳(边框、summary、开合三角)是共享的 .disclosure(components.css)。
    .login-guide 只剩下一个作用域钩子:让下面几条选择器只作用在这份指引里,
