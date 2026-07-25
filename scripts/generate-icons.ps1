@@ -9,6 +9,11 @@
   文件可以同时满足 manifest 里的 "any" 与 "maskable" 用途:系统按各自
   的形状去裁切时,字形都留在安全区(居中 80%)以内,不会被裁到。
 
+  安全区实测(读 icon-512.png 像素,不是按 CSS 比例估算):字形包围盒约
+  245x254px / 512px,即画布的 48% x 50%;其外接圆直径约为画布的 69%,
+  仍在 maskable 的 80% 安全区内,留有余量。
+  改动 $fontSize 后必须重新实测这个数,不要沿用上面的数字。
+
   用法(仓库根目录下执行):
     pwsh -File scripts/generate-icons.ps1
     # 或不带扩展名的 Windows PowerShell:
@@ -44,7 +49,14 @@ foreach ($size in $sizes) {
   # 居中「词」字,与 .brand__seal 同字重(600/Bold)、同字体(Microsoft YaHei,
   # 对应 --font-ui 在 Windows 上的解析结果)
   $fontSize = [float]($size * 0.52)
-  $font = New-Object System.Drawing.Font('Microsoft YaHei', $fontSize, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
+  # GDI+ 在字体缺失时会静默替换成默认字体,脚本照样「成功」但图标是错的 ——
+  # 所以先确认字体真的装了,宁可报错也不要产出一张看起来不对的图。
+  $fontFamily = 'Microsoft YaHei'
+  $installed = (New-Object System.Drawing.Text.InstalledFontCollection).Families.Name
+  if ($installed -notcontains $fontFamily) {
+    throw "缺少字体 '$fontFamily'。GDI+ 会静默回退到默认字体并生成错误的图标,已中止。请安装该字体,或改用本机已有的等价中文黑体并重新实测安全区。"
+  }
+  $font = New-Object System.Drawing.Font($fontFamily, $fontSize, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
   $fgBrush = New-Object System.Drawing.SolidBrush($fg)
 
   $format = New-Object System.Drawing.StringFormat
