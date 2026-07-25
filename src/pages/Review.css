@@ -29,6 +29,22 @@
   left: var(--sp-4);
 }
 
+/* 徽标是绝对定位的角标,不占文档流空间,也不参与下面任何布局的居中/起排计算。
+   背面(新词默认展示的定义面,见 Review.tsx)里词头是队首第一个流内元素,
+   紧贴卡片左上角起排,与角标的左上角完全叠在一起;正面居中布局在窄屏 + 长词
+   换行时,词头块也会被居中算法顶到同一条高度带上 —— 两种朝向都会撞见角标。
+   挂着徽标的卡片单独预留一段顶部留白,两种朝向都从留白下方起排,不需要跟
+   徽标自身高度(.badge 的 22px)精确对账,留够余量即可。
+   两条规则都比它们要盖过的规则(.card 单类 / 下面 .review-card.review-card--front
+   两类)多垫一级特异度,同样是不想依赖 Vite 打包顺序(见下面那条注释)。 */
+.review-card.review-card--badge {
+  padding-top: var(--sp-12);
+}
+
+.review-card.review-card--badge.review-card--front {
+  padding-top: var(--sp-12);
+}
+
 /* 复合选择器(而不是单独 .review-card--front)是故意的:.review-card 同时挂了
    设计系统的 .card--interactive(见 Review.tsx),它也声明了 display —— 两条规则
    特异度打平时谁赢取决于样式表里谁写在后面,不想依赖 Vite 打包顺序,所以在这里

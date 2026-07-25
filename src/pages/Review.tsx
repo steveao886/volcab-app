@@ -221,7 +221,7 @@ export function Review() {
       </div>
 
       <Card
-        className={`review-card card--interactive ${flipped ? 'review-card--back' : 'review-card--front'}`}
+        className={`review-card card--interactive ${flipped ? 'review-card--back' : 'review-card--front'} ${isNewCard ? 'review-card--badge' : ''}`}
         onClick={toggleFlip}
         role="button"
         tabIndex={0}
