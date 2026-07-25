@@ -17,6 +17,9 @@ import type { Meaning, Word } from '../types'
  * synonyms/antonyms/collocations 是扁平字符串数组,用「每行一个」的单个
  * Textarea 编辑,而不是逐条 add/remove 的控件组 —— meanings 才值得那份
  * 复杂度(它是结构化的 pos/en/zh 三元组),三个平铺列表没必要照搬。
+ *
+ * 两个 <legend> 用 .worddetail-section-title(与本页只读态的「例句」「近义词」
+ * 等小节标题同一个类),不是 .pos —— .pos 是词性标签,结构性分区不该用朱砂。
  */
 
 let keySeed = 0
@@ -106,7 +109,7 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
   return (
     <form className="worddetail-edit" onSubmit={handleSubmit} noValidate>
       <fieldset className="worddetail-edit__group" disabled={saving}>
-        <legend className="pos">释义</legend>
+        <legend className="worddetail-section-title">释义</legend>
         {meanings.map((m, i) => (
           <div className="worddetail-edit__meaning" key={m.key}>
             <p className="worddetail-edit__index">释义 {i + 1}</p>
@@ -150,7 +153,7 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
       </fieldset>
 
       <fieldset className="worddetail-edit__group" disabled={saving}>
-        <legend className="pos">例句</legend>
+        <legend className="worddetail-section-title">例句</legend>
         {examples.map((ex, i) => (
           <div className="worddetail-edit__example" key={ex.key}>
             <Textarea

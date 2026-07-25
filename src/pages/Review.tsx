@@ -176,7 +176,7 @@ export function Review() {
     return (
       <Page eyebrow="Review" title="复习" back="/">
         <div className="review-done">
-          <p className="pos">{queue.total === 0 ? '暂无待复习' : '复习完成'}</p>
+          <p className="review-done__label">{queue.total === 0 ? '暂无待复习' : '复习完成'}</p>
           <p className="review-done__count">
             今天已复习 <span className="num">{reviewedToday}</span> 个词
           </p>

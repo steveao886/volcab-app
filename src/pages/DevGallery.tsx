@@ -1,12 +1,15 @@
+import { useRef, useState } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import { Badge } from '../components/Badge'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Chip } from '../components/Chip'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Field } from '../components/Field'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { StateDot } from '../components/StateDot'
+import { SyncStatus } from '../components/SyncStatus'
 import { TextInput } from '../components/TextInput'
 import { Textarea } from '../components/Textarea'
 
@@ -33,6 +36,26 @@ const STACK: CSSProperties = {
   marginTop: 'var(--sp-3)',
 }
 
+/* 分组标题原本借用 .pos,但 .pos 是词性标签(朱砂 = 批注),不是小节标题;
+   而且本页正好也展示 .pos 本身,两者长得一样只会看不清哪个是样本。
+   与 Settings 的 .settings-section-title 同一个处置,只是这里走内联样式。 */
+const LABEL: CSSProperties = {
+  fontSize: 'var(--fs-sm)',
+  fontWeight: 600,
+  lineHeight: 'var(--lh-tight)',
+  letterSpacing: '0.02em',
+  color: 'var(--text-muted)',
+}
+
+/* 统计格的容器归页面管(分几栏是版面决策),这里就地给一个 */
+const statsGrid = (columns: number): CSSProperties => ({
+  display: 'grid',
+  gridTemplateColumns: `repeat(${columns}, 1fr)`,
+  gap: 'var(--sp-3)',
+  textAlign: 'center',
+  marginTop: 'var(--sp-3)',
+})
+
 function Group({
   title,
   layout = ROW,
@@ -44,7 +67,7 @@ function Group({
 }) {
   return (
     <Card>
-      <p className="pos">{title}</p>
+      <p style={LABEL}>{title}</p>
       <div style={layout}>{children}</div>
     </Card>
   )
@@ -61,7 +84,14 @@ const LONGEST = [
   'circumlocution',
 ]
 
+/** ConfirmDialog 的三种样子:纯说明 / 带清单 / 确认进行中 */
+type ConfirmDemo = null | 'plain' | 'list' | 'busy'
+
 export function DevGallery() {
+  const [confirmDemo, setConfirmDemo] = useState<ConfirmDemo>(null)
+  const focusTargetRef = useRef<HTMLButtonElement>(null)
+  const noop = () => {}
+
   return (
     <Page eyebrow="Components" title="组件总览">
       <Group title="button / variant">
@@ -115,6 +145,18 @@ export function DevGallery() {
         </Button>
         <Button variant="secondary" block wrap>
           to formally revoke or repeal a law, agreement, or practice
+        </Button>
+      </Group>
+
+      {/* Button 声明了 ref prop(React 19 的 ref-as-prop),测验页判完题把焦点
+          交给「下一题」、设置页展开退出确认把焦点交给「取消」都靠它。
+          点左边那颗,焦点应当立刻落在右边那颗上(能看到焦点环)。 */}
+      <Group title="button / ref">
+        <Button variant="secondary" onClick={() => focusTargetRef.current?.focus()}>
+          把焦点交给右边
+        </Button>
+        <Button ref={focusTargetRef} variant="primary">
+          接住焦点的按钮
         </Button>
       </Group>
 
@@ -184,6 +226,116 @@ export function DevGallery() {
         </a>
       </Group>
 
+      {/* --- 以下是整合阶段从各页面提上来的共享原语 --- */}
+
+      <Group title="stat · 三栏(今日页)" layout={statsGrid(3)}>
+        <div className="stat">
+          <p className="num stat__value">12</p>
+          <p className="stat__label">今日到期</p>
+        </div>
+        <div className="stat">
+          <p className="num stat__value">5</p>
+          <p className="stat__label">新词</p>
+        </div>
+        <div className="stat">
+          <p className="num stat__value stat__value--accent">8</p>
+          <p className="stat__label">连续天数</p>
+        </div>
+      </Group>
+
+      <Group title="stat · 四格 + --row(词条页)" layout={statsGrid(2)}>
+        <div className="stat">
+          <p className="stat__value stat__value--row">
+            <StateDot state="learning" />
+            学习中
+          </p>
+          <p className="stat__label">学习状态</p>
+        </div>
+        <div className="stat">
+          <p className="num stat__value">2026-07-30</p>
+          <p className="stat__label">到期日</p>
+        </div>
+        <div className="stat">
+          <p className="num stat__value">7</p>
+          <p className="stat__label">复习次数</p>
+        </div>
+        <div className="stat">
+          <p className="num stat__value">2</p>
+          <p className="stat__label">失误次数</p>
+        </div>
+      </Group>
+
+      {/* 与 .stat 是两种故意分开的原语:那个是居中的大数字瓦片,
+          这个是标签左 / 值右的一行只读元信息。别合并。 */}
+      <Group title="settings-row(≠ stat)" layout={STACK}>
+        <div className="settings-row">
+          <p className="settings-row__label">GitHub 用户</p>
+          <p className="settings-row__value">octocat</p>
+        </div>
+        <div className="settings-row">
+          <p className="settings-row__label">Token</p>
+          <p className="settings-row__value num">•••• 4f2a</p>
+        </div>
+      </Group>
+
+      <Group title="sync · badge(页头 actions 槽)">
+        <SyncStatus status="synced" onRetry={noop} />
+        <SyncStatus status="pending" onRetry={noop} />
+        <SyncStatus status="offline" onRetry={noop} />
+        <SyncStatus status="error" onRetry={noop} />
+      </Group>
+
+      <Group title="sync · note(正文内联)" layout={STACK}>
+        <SyncStatus variant="note" status="synced" onRetry={noop} />
+        <SyncStatus variant="note" status="pending" onRetry={noop} />
+        <SyncStatus variant="note" status="offline" onRetry={noop} />
+        <SyncStatus
+          variant="note"
+          status="error"
+          message="GitHub 接口调用过于频繁,已被限流。改动都在本地,过一会儿会自动重试。"
+          onRetry={noop}
+        />
+      </Group>
+
+      <Group title="disclosure" layout={STACK}>
+        <details className="disclosure">
+          <summary className="disclosure__summary">收起时的样子(点开看三角旋转)</summary>
+          <div style={{ padding: 'var(--sp-4)', color: 'var(--text-muted)' }}>
+            展开后 summary 下缘补一条发丝线。
+          </div>
+        </details>
+        <details className="disclosure" open>
+          <summary className="disclosure__summary">默认展开的样子</summary>
+          <div style={{ padding: 'var(--sp-4)', color: 'var(--text-muted)' }}>
+            三角旋转 90°;减弱动效时直接到位。
+          </div>
+        </details>
+      </Group>
+
+      <Group title="empty-state" layout={STACK}>
+        <div className="empty-state">
+          <p className="empty-state__title">词库还是空的</p>
+          <p className="empty-state__hint">去添加第一个词条吧。</p>
+          <Button variant="primary">添加新词</Button>
+        </div>
+        <div className="empty-state">
+          <p className="empty-state__title">没有匹配"abrog"的词条</p>
+          <p className="empty-state__hint">换个关键词,或清除筛选条件再试试。</p>
+        </div>
+      </Group>
+
+      <Group title="confirm-dialog">
+        <Button variant="danger" onClick={() => setConfirmDemo('plain')}>
+          单个词条
+        </Button>
+        <Button variant="danger" onClick={() => setConfirmDemo('list')}>
+          带词头清单
+        </Button>
+        <Button variant="danger" onClick={() => setConfirmDemo('busy')}>
+          删除进行中
+        </Button>
+      </Group>
+
       <Group title="typography" layout={STACK}>
         <p className="word" lang="en">
           abrogate
@@ -209,6 +361,19 @@ export function DevGallery() {
           </p>
         ))}
       </Group>
+
+      {/* 三种确认弹窗共用一个组件实例位:同一时刻只会打开一个 */}
+      <ConfirmDialog
+        open={confirmDemo !== null}
+        titleId="dev-confirm-title"
+        title={confirmDemo === 'plain' ? '删除「abrogate」?' : '删除选中的 3 个词条?'}
+        body="它们的学习进度(状态、复习次数、失误次数等)会一并清除,且无法恢复。"
+        detail={confirmDemo === 'list' ? 'abrogate、canonicalization、due diligence' : undefined}
+        confirmLabel="确认删除"
+        busy={confirmDemo === 'busy'}
+        onConfirm={() => setConfirmDemo(null)}
+        onCancel={() => setConfirmDemo(null)}
+      />
     </Page>
   )
 }

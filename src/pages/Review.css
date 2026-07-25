@@ -209,6 +209,18 @@
   text-align: center;
 }
 
+/* 完成页顶上那行朱砂小字。它原本借用 .pos —— 但 .pos 是词性标签(v. / adj.),
+   这里是一枚眉标,只是碰巧同一套排版。眉标本来就是朱砂被允许的用法之一
+   (见 tokens.css 顶部),所以外观照旧,只是不再蹭词性标签的类名。
+   与 Quiz 页的 .quiz-q__label 同一个做法。 */
+.review-done__label {
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--accent);
+}
+
 .review-done__count {
   font-size: var(--fs-md);
 }
