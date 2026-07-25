@@ -14,11 +14,25 @@ export default defineConfig({
         description: '个人记单词 App',
         display: 'standalone',
         start_url: '/volcab-app/',
-        theme_color: '#0f172a',
-        background_color: '#0f172a',
+        // 「墨与纸」调色板(见 src/styles/tokens.css):manifest 只能取一组静态
+        // 色值,取浅色(纸)主题作为默认 —— 与 index.html 里无 media query 时
+        // 的默认外观、以及 :root 未命中 dark 媒体查询时的取值一致。
+        theme_color: '#f4f1ea',
+        background_color: '#f4f1ea',
         icons: [
-          { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
+          {
+            src: 'icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            // 满版色块 + 居中字形,居中 80% 安全区内,同一张图可兼任两种用途
+            purpose: 'any maskable',
+          },
+          {
+            src: 'icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
         ],
       },
     }),
