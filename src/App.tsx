@@ -1,6 +1,6 @@
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppLayout } from './components/AppLayout'
-import { RequireAuth } from './components/RequireAuth'
+import { GuestOnly, RequireAuth } from './components/RequireAuth'
 import { AddWord } from './pages/AddWord'
 import { DevGallery } from './pages/DevGallery'
 import { Library } from './pages/Library'
@@ -13,14 +13,22 @@ import { WordDetail } from './pages/WordDetail'
 
 /**
  * 路由表。GitHub Pages 无服务端重写,固定用 HashRouter。
- * /login 之外的所有页面都在 RequireAuth 之内(守卫由 Task 14 接上 store)。
+ * /login 之外的所有页面都在 RequireAuth 之内;/login 反过来被 GuestOnly 守着,
+ * 已登录时弹回首页。
  * /dev 组件总览只在开发模式注册,且刻意留在守卫之外 —— 未登录也要能看。
  */
 function App() {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={
+            <GuestOnly>
+              <Login />
+            </GuestOnly>
+          }
+        />
         <Route
           element={
             <RequireAuth>
