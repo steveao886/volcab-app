@@ -118,3 +118,15 @@
   display: grid;
   gap: var(--sp-3);
 }
+
+/* 挖空处:比正文重,一眼能定位到要填的地方 */
+.quiz-blank {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text);
+}
+
+/* 近义/反义提示的种类标签 */
+.quiz-hint-kind {
+  margin-bottom: var(--sp-2);
+}

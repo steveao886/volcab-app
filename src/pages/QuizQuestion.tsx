@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Button } from '../components/Button'
 import { Field } from '../components/Field'
@@ -10,6 +10,29 @@ const TYPE_LABEL: Record<QuizType, string> = {
   word2meaning: '选出正确的释义',
   meaning2word: '选出对应的单词',
   spelling: '根据释义拼写单词',
+  clozeExample: '根据例句选出正确的单词',
+  clozeCollocation: '根据搭配选出正确的单词',
+  synonymHint: '选出对应的单词',
+}
+
+/** synonymHint 题的种类标签:界面必须标明提示词是近义还是反义,
+ *  否则用户无从判断该选意思相同的还是相反的。 */
+const HINT_KIND_LABEL: Record<'synonym' | 'antonym', string> = {
+  synonym: '与它意思相近的词是?',
+  antonym: '与它意思相反的词是?',
+}
+
+const BLANK = '___'
+
+/** 挖空题把 prompt 里的 "___" 单独包一层 span,让空格比正文更醒目。 */
+function renderBlanked(text: string): ReactNode {
+  const parts = text.split(BLANK)
+  return parts.map((part, i) => (
+    <Fragment key={i}>
+      {part}
+      {i < parts.length - 1 ? <span className="quiz-blank">{BLANK}</span> : null}
+    </Fragment>
+  ))
 }
 
 interface QuizQuestionViewProps {
@@ -74,8 +97,13 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
   // 防止同一渲染帧内的连续点击(如误触双击)在状态还没落地前判两次分
   const answeredRef = useRef(false)
   const locked = chosen !== null
-  // meaning2word 的选项是英文词头,word2meaning 的选项是中文释义
-  const optionLang = question.type === 'meaning2word' ? 'en' : undefined
+  // 选项是英文词头的题型:meaning2word / clozeExample / clozeCollocation / synonymHint。
+  // 只有 word2meaning 的选项是中文释义。
+  const optionLang = question.type === 'word2meaning' ? undefined : 'en'
+  const isCloze = question.type === 'clozeExample' || question.type === 'clozeCollocation'
+  // 例句/搭配挖空与近义反义提示的 prompt 都是英文,但不是单个词头——沿用下面
+  // word2meaning 专属的辞书衬线体会误导,那套视觉语言留给「整屏唯一词头」。
+  const promptLang = question.type === 'word2meaning' || isCloze || question.type === 'synonymHint' ? 'en' : undefined
 
   const handleChoose = (opt: string) => {
     if (answeredRef.current) return
@@ -87,6 +115,9 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
   return (
     <div className="quiz-q">
       <p className="quiz-q__label">{TYPE_LABEL[question.type]}</p>
+      {question.type === 'synonymHint' && question.hintKind ? (
+        <p className="quiz-hint-kind section-title">{HINT_KIND_LABEL[question.hintKind]}</p>
+      ) : null}
       {/* word2meaning 的 prompt 是本题唯一的英文词头(整屏独一份的「主角」),用辞书
           衬线体当作大字招牌;meaning2word 的选项也是词头,但那是四个并列的可点控件,
           刻意保留按钮的界面字体——衬线大字会把按钮撑得高矮不一,还会让「唯一主角」
@@ -94,9 +125,9 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
           就顺手统一成 .word。 */}
       <p
         className={question.type === 'word2meaning' ? 'word quiz-q__prompt' : 'quiz-q__prompt'}
-        lang={question.type === 'word2meaning' ? 'en' : undefined}
+        lang={promptLang}
       >
-        {question.prompt}
+        {isCloze ? renderBlanked(question.prompt) : question.prompt}
       </p>
 
       <div className="quiz-options" role="group" aria-label="选项">
