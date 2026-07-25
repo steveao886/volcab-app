@@ -1,0 +1,148 @@
+/* ==========================================================================
+   AddWord 页面专属样式(Task 20)。
+   全部类名以 .addword- 打头,与全局 .field/.input/.btn/.card 组合使用,
+   不重新定义那些组件本身的样式。移动优先:所有多列布局在 375px 下
+   先退化成单列,断点以上再横排,避免任何横向溢出。
+   ========================================================================== */
+
+.addword-form {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+/* Card 内部纵向堆叠多个 Field 时补一条统一间距 */
+.addword-stack {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+/* --- 查词典:输入框 + 查询按钮同一行,按输入框底边对齐 -------------------- */
+
+.addword-lookup-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-3);
+}
+
+.addword-lookup-row .field {
+  flex: 1;
+  min-width: 0;
+}
+
+.addword-lookup-row .btn {
+  flex: none;
+}
+
+.addword-ipa-input {
+  font-family: var(--font-ipa);
+}
+
+.addword-lookup-status {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  color: var(--text-muted);
+}
+
+.addword-lookup-status--not-found {
+  color: var(--warning);
+}
+
+.addword-lookup-status--error {
+  color: var(--danger);
+}
+
+.addword-lookup-status--done {
+  color: var(--success);
+}
+
+/* --- 可重复的分组:释义 / 例句 / 同根变形 -------------------------------- */
+
+.addword-section-head {
+  display: grid;
+  gap: var(--sp-1);
+  margin-bottom: var(--sp-3);
+}
+
+.addword-section-title {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.addword-section-hint {
+  font-size: var(--fs-xs);
+}
+
+.addword-rows {
+  display: grid;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-3);
+}
+
+.addword-row {
+  display: grid;
+  gap: var(--sp-2);
+  padding-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--rule);
+}
+
+.addword-row:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.addword-row > .btn {
+  justify-self: end;
+}
+
+.addword-row__grid {
+  display: grid;
+  gap: var(--sp-3);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 560px) {
+  .addword-row__grid--meaning {
+    grid-template-columns: 88px 1.6fr 1fr;
+  }
+
+  .addword-row__grid--related {
+    grid-template-columns: 1fr 88px 1fr;
+  }
+}
+
+/* --- 保存成功后的回执卡片 ------------------------------------------------- */
+
+.addword-saved {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.addword-saved__headline {
+  font-size: var(--fs-base);
+  color: var(--text-muted);
+}
+
+.addword-saved__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  font-size: var(--fs-sm);
+}
+
+.addword-saved__status--error {
+  color: var(--danger);
+}
+
+.addword-saved__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
+}
+
+.addword-saved__actions .btn {
+  flex: 1;
+  min-width: 140px;
+}
