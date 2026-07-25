@@ -72,17 +72,17 @@ export function Today() {
       actions={<SyncBadge status={syncStatus} onRetry={() => void syncNow()} />}
     >
       <Card className="today-stats">
-        <div className="today-stat">
-          <p className="num today-stat__value">{due.length}</p>
-          <p className="today-stat__label">今日到期</p>
+        <div className="stat">
+          <p className="num stat__value">{due.length}</p>
+          <p className="stat__label">今日到期</p>
         </div>
-        <div className="today-stat">
-          <p className="num today-stat__value">{fresh.length}</p>
-          <p className="today-stat__label">新词</p>
+        <div className="stat">
+          <p className="num stat__value">{fresh.length}</p>
+          <p className="stat__label">新词</p>
         </div>
-        <div className="today-stat">
-          <p className="num today-stat__value today-stat__value--accent">{streak}</p>
-          <p className="today-stat__label">连续天数</p>
+        <div className="stat">
+          <p className="num stat__value stat__value--accent">{streak}</p>
+          <p className="stat__label">连续天数</p>
         </div>
       </Card>
 

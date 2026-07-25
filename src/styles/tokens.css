@@ -20,7 +20,12 @@
      ipa  国际音标 —— 优先列出已知覆盖 IPA Extensions 的系统字体
           (Windows: Cambria;macOS/iOS: Lucida Grande / -apple-system;
            Linux/Android: Charis SIL / Noto),避免逐字回退导致的混排
-     num  数字 —— 等宽,统计数值不跳动
+     mono 等宽 —— 需要「原样呈现」的字符串:代码片段、token 名、路径
+     num  数字 —— 等宽,统计数值不跳动(tabular-nums 配合 .num 使用)
+
+     mono 与 num 目前是同一套栈,但用途不同,别互相借用:mono 是「这是代码」,
+     num 是「这是不该跳动的数字」。哪天数字要换成带真正 tabular figures 的
+     专门字体,只动 --font-num 即可,代码块不受影响。
   --------------------------------------------------------------------- */
   --font-ui:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
@@ -32,9 +37,10 @@
   --font-ipa:
     Cambria, 'Charis SIL', 'Doulos SIL', 'Gentium Plus', 'Lucida Grande',
     'Lucida Sans Unicode', 'Palatino Linotype', -apple-system, serif;
-  --font-num:
+  --font-mono:
     ui-monospace, 'SF Mono', 'Cascadia Mono', 'Segoe UI Mono', Menlo,
     Consolas, monospace;
+  --font-num: var(--font-mono);
 
   /* --- 字号 ------------------------------------------------------------ */
   --fs-eyebrow: 0.6875rem; /* 11 眉标 */
@@ -139,6 +145,12 @@
   --grade-hard-soft: var(--warning-soft);
   --grade-good-soft: var(--success-soft);
   --grade-easy-soft: var(--info-soft);
+
+  /* 模态遮罩。刻意**不**在深色分支里改写:遮罩的职责是「把背景压暗」,
+     深色模式下同样要压暗,跟着 --bg 反相会让 <dialog> 底下的页面反而变亮。
+     它也不属于品牌色范畴(不是纸、不是墨、更不是朱砂),所以既不能借
+     --surface-sunken 也不能借 --text,只能是中性黑 + 透明度自己一个令牌。 */
+  --scrim: rgb(0 0 0 / 45%);
 
   --shadow-1: 0 1px 1px rgba(26, 24, 20, 0.04), 0 1px 3px rgba(26, 24, 20, 0.05);
   --shadow-2: 0 2px 4px rgba(26, 24, 20, 0.06), 0 8px 20px rgba(26, 24, 20, 0.08);

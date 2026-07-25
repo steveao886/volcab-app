@@ -96,37 +96,14 @@
 }
 
 /* --- 学习状态统计 ----------------------------------------------------------
-   结构照抄 Today.css 的 .today-stat / __value / __label(见该文件注释),
-   只是改名为 worddetail- 前缀,方便后续合并进共享的 .stat 原语。
-   与 today-stat 的唯一差异:「学习状态」这一格要塞进一个 StateDot + 文字,
-   value 上多加了 flex 布局。 */
+   每一格是共享的 .stat 原语(components.css),这里只决定分几栏。
+   「学习状态」那一格要塞进 StateDot + 文字,值上另加 .stat__value--row。 */
 
 .worddetail-stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--sp-4) var(--sp-3);
   text-align: center;
-}
-
-.worddetail-stat {
-  display: grid;
-  gap: var(--sp-1);
-}
-
-.worddetail-stat__value {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--sp-2);
-  font-size: var(--fs-xl);
-  font-weight: 600;
-  line-height: var(--lh-tight);
-  color: var(--text);
-}
-
-.worddetail-stat__label {
-  font-size: var(--fs-xs);
-  color: var(--text-faint);
 }
 
 /* --- 来源笔记 / 添加日期 ---------------------------------------------------- */
@@ -228,31 +205,7 @@
   margin-top: var(--sp-5);
 }
 
-/* --- 词条不存在 ------------------------------------------------------------ */
-
-.worddetail-notfound {
-  display: grid;
-  justify-items: center;
-  gap: var(--sp-2);
-  padding: var(--sp-8) var(--sp-4);
-  border: 1px dashed var(--rule-strong);
-  border-radius: var(--r-md);
-  text-align: center;
-}
-
-.worddetail-notfound__title {
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.worddetail-notfound__hint {
-  font-size: var(--fs-sm);
-  color: var(--text-faint);
-}
-
-.worddetail-notfound > .btn {
-  margin-top: var(--sp-2);
-}
+/* 词条不存在的兜底态用共享的 .empty-state(components.css),本页不再自带。 */
 
 /* 同上:词条页的重试入口(合并阶段会和 Library 的一起提升为共用样式)。 */
 .worddetail-retry {

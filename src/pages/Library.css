@@ -116,31 +116,8 @@
   flex: none;
 }
 
-/* --- 空状态 ---------------------------------------------------------------- */
-
-.library-empty {
-  display: grid;
-  justify-items: center;
-  gap: var(--sp-2);
-  padding: var(--sp-8) var(--sp-4);
-  border: 1px dashed var(--rule-strong);
-  border-radius: var(--r-md);
-  text-align: center;
-}
-
-.library-empty__title {
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.library-empty__hint {
-  font-size: var(--fs-sm);
-  color: var(--text-faint);
-}
-
-.library-empty > .btn {
-  margin-top: var(--sp-2);
-}
+/* 三种空状态(词库为空 / 搜不到 / 筛选没命中)共用 .empty-state 这层外壳
+   （components.css),文案各说各的,见 Library.tsx 的 emptyStateCopy()。 */
 
 /* --- 底部批量操作条(管理模式)--------------------------------------------
    createPortal 到 #overlay-root:层级在页签之上,且不随路由切换动画被冻结。 */

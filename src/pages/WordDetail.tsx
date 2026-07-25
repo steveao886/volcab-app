@@ -65,9 +65,9 @@ export function WordDetail() {
   if (word === undefined) {
     return (
       <Page eyebrow="Entry" title="未找到词条" back="/library">
-        <div className="worddetail-notfound">
-          <p className="worddetail-notfound__title">这个词条不存在</p>
-          <p className="worddetail-notfound__hint">可能已经在别的设备上被删除,或者链接已经失效。</p>
+        <div className="empty-state">
+          <p className="empty-state__title">这个词条不存在</p>
+          <p className="empty-state__hint">可能已经在别的设备上被删除,或者链接已经失效。</p>
           <Link className="btn btn--primary" to="/library">
             返回词库
           </Link>
@@ -200,24 +200,24 @@ export function WordDetail() {
           )}
 
           <Card className="worddetail-stats">
-            <div className="worddetail-stat">
-              <p className="worddetail-stat__value">
+            <div className="stat">
+              <p className="stat__value stat__value--row">
                 <StateDot state={state} />
                 {STATE_LABEL[state]}
               </p>
-              <p className="worddetail-stat__label">学习状态</p>
+              <p className="stat__label">学习状态</p>
             </div>
-            <div className="worddetail-stat">
-              <p className="num worddetail-stat__value">{entry?.due ?? '—'}</p>
-              <p className="worddetail-stat__label">到期日</p>
+            <div className="stat">
+              <p className="num stat__value">{entry?.due ?? '—'}</p>
+              <p className="stat__label">到期日</p>
             </div>
-            <div className="worddetail-stat">
-              <p className="num worddetail-stat__value">{entry?.reps ?? 0}</p>
-              <p className="worddetail-stat__label">复习次数</p>
+            <div className="stat">
+              <p className="num stat__value">{entry?.reps ?? 0}</p>
+              <p className="stat__label">复习次数</p>
             </div>
-            <div className="worddetail-stat">
-              <p className="num worddetail-stat__value">{entry?.lapses ?? 0}</p>
-              <p className="worddetail-stat__label">失误次数</p>
+            <div className="stat">
+              <p className="num stat__value">{entry?.lapses ?? 0}</p>
+              <p className="stat__label">失误次数</p>
             </div>
           </Card>
 

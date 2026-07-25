@@ -16,35 +16,15 @@
   inset-inline: 0;
 }
 
-/* --- 概览统计:到期 / 新词 / 连续天数,三栏等分 -------------------------- */
+/* --- 概览统计:到期 / 新词 / 连续天数,三栏等分 --------------------------
+   每一格是共享的 .stat 原语(components.css),这里只决定分几栏。
+   连续天数用 .stat__value--accent —— 本页唯一的「批注」用色。 */
 
 .today-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--sp-3);
   text-align: center;
-}
-
-.today-stat {
-  display: grid;
-  gap: var(--sp-1);
-}
-
-.today-stat__value {
-  font-size: var(--fs-xl);
-  font-weight: 600;
-  line-height: var(--lh-tight);
-  color: var(--text);
-}
-
-/* 连续天数是本页唯一的「批注」用色 —— 呼应朱砂只做点睛的设计语言 */
-.today-stat__value--accent {
-  color: var(--accent);
-}
-
-.today-stat__label {
-  font-size: var(--fs-xs);
-  color: var(--text-faint);
 }
 
 /* --- 总进度 --------------------------------------------------------------- */

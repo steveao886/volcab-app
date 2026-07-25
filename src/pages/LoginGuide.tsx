@@ -8,8 +8,8 @@ const TOKEN_SETTINGS_URL = 'https://github.com/settings/personal-access-tokens'
  */
 export function LoginGuide() {
   return (
-    <details className="login-guide">
-      <summary className="login-guide__summary">如何获取 GitHub Token?</summary>
+    <details className="disclosure login-guide">
+      <summary className="disclosure__summary">如何获取 GitHub Token?</summary>
       <ol className="login-guide__steps">
         <li>
           打开{' '}

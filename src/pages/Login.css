@@ -10,50 +10,9 @@
 }
 
 /* --- 折叠指引 --------------------------------------------------------------
-   默认收起。原生 <details> 的展开三角在 Chromium/Firefox 都靠 list-style
-   控制,这里换成一枚随开合旋转的实心三角,和发丝线描边一套语言。 */
-
-.login-guide {
-  border: 1px solid var(--rule);
-  border-radius: var(--r-md);
-  background: var(--surface);
-}
-
-.login-guide__summary {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  min-height: var(--tap);
-  padding-inline: var(--sp-4);
-  list-style: none;
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-}
-
-.login-guide__summary::-webkit-details-marker {
-  display: none;
-}
-
-.login-guide__summary::before {
-  content: '';
-  width: 0;
-  height: 0;
-  flex: none;
-  border-style: solid;
-  border-width: 5px 0 5px 7px;
-  border-color: transparent transparent transparent var(--text-faint);
-  transition: transform var(--dur-2) var(--ease);
-}
-
-.login-guide[open] .login-guide__summary::before {
-  transform: rotate(90deg);
-}
-
-.login-guide[open] .login-guide__summary {
-  border-bottom: 1px solid var(--rule);
-}
+   外壳(边框、summary、开合三角)是共享的 .disclosure(components.css)。
+   .login-guide 只剩下一个作用域钩子:让下面几条选择器只作用在这份指引里,
+   不影响别处的折叠块。 */
 
 .login-guide__steps {
   display: grid;
@@ -74,11 +33,13 @@
   color: var(--accent);
 }
 
+/* 指引里的 <code> 是「原样照抄的界面文字」,走 --font-mono;
+   --font-num 那条栈按注释只管统计数字,别在这里借用。 */
 .login-guide code {
   padding-inline: 5px;
   border-radius: var(--r-xs);
   background: var(--surface-sunken);
-  font-family: var(--font-num);
+  font-family: var(--font-mono);
   font-size: 0.9em;
   color: var(--text);
 }

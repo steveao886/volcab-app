@@ -258,9 +258,9 @@ export function Library() {
           ))}
         </Card>
       ) : (
-        <div className="library-empty">
-          <p className="library-empty__title">{empty.title}</p>
-          <p className="library-empty__hint">{empty.hint}</p>
+        <div className="empty-state">
+          <p className="empty-state__title">{empty.title}</p>
+          <p className="empty-state__hint">{empty.hint}</p>
           {words.length === 0 ? (
             <Link className="btn btn--primary" to="/add">
               添加新词

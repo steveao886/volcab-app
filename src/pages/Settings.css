@@ -10,32 +10,14 @@
   color: var(--text-muted);
 }
 
-/* --- 账号信息:标签左 / 值右的一组只读行 --------------------------------- */
+/* --- 账号信息:标签左 / 值右的一组只读行 ---------------------------------
+   行本身(.settings-row / __label / __value)已经提升到 components.css,
+   那里也写明了它与 .stat 是两种故意分开的原语。这里只留容器的排布。 */
 
 .settings-rows {
   display: grid;
   gap: var(--sp-2);
   margin-block: var(--sp-3) var(--sp-4);
-}
-
-.settings-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--sp-3);
-}
-
-.settings-row__label {
-  font-size: var(--fs-sm);
-  color: var(--text-muted);
-}
-
-.settings-row__value {
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--text);
-  overflow-wrap: anywhere;
-  text-align: right;
 }
 
 /* --- 退出登录:点击后原地展开成说明 + 二次确认,不用弹窗 ------------------- */

@@ -585,6 +585,245 @@
   transition: width var(--dur-3) var(--ease);
 }
 
+/* --- 统计格:居中的大数字 + 说明标签 --------------------------------------
+   今日页的三栏概览(到期/新词/连续天数)与词条页的四格学习统计共用。
+   .stat 只管一格内部的排版;分几栏、栏间距、text-align:center 由页面自己的
+   容器给(.today-stats / .worddetail-stats),因为那是版面决策不是组件决策。
+
+   ⚠ .stat 与下面的 .settings-row 是两种**故意分开**的原语,不要合并:
+   .stat 是「一个大数字 + 它的名字」,居中、纵向、数值是主角;
+   .settings-row 是「标签左 / 值右」的一行只读元信息,横向、基线对齐、
+   两侧都是小字。它们碰巧都由 label + value 组成,但版式与用途都不同,
+   合并只会得到一个哪边都不称职、靠一堆修饰类互相打架的四不像。 */
+
+.stat {
+  display: grid;
+  gap: var(--sp-1);
+}
+
+.stat__value {
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+  color: var(--text);
+}
+
+/* 值不是纯数字,而是「状态点 + 文字」这类并排内容时才加(词条页的「学习状态」
+   格)。把这一格从块级文字改成一行居中的 flex,点和字才会对齐而不是错半行。 */
+.stat__value--row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+}
+
+/* 朱砂只做批注:整屏最多一处「点睛」数值(如连续天数)才染色 */
+.stat__value--accent {
+  color: var(--accent);
+}
+
+.stat__label {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+}
+
+/* --- 元信息行:标签左 / 值右 ----------------------------------------------
+   设置页的账号信息用。见上方 .stat 的注释:这两个是不同的原语。
+   行与行之间的间距、外边距由页面容器给。 */
+
+.settings-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.settings-row__label {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.settings-row__value {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text);
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
+/* --- 折叠块(原生 <details> / <summary>)---------------------------------
+   展开三角在各浏览器里的来路不同,两处都要压掉才能换成自己的:
+   Firefox / 规范走 list-style,WebKit 走 ::-webkit-details-marker。
+   三角本身是一枚 CSS 实心三角,[open] 时旋转 90°;这里用 transition 而非
+   animation —— base.css 的 prefers-reduced-motion 规则会把它压到 1ms,
+   减弱动效的用户直接看到终态,不必在这里再写一份 @media 覆盖。 */
+
+.disclosure {
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.disclosure__summary {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: var(--tap);
+  padding-inline: var(--sp-4);
+  list-style: none;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.disclosure__summary::-webkit-details-marker {
+  display: none;
+}
+
+.disclosure__summary::before {
+  content: '';
+  width: 0;
+  height: 0;
+  flex: none;
+  border-style: solid;
+  border-width: 5px 0 5px 7px;
+  border-color: transparent transparent transparent var(--text-faint);
+  transition: transform var(--dur-2) var(--ease);
+}
+
+.disclosure[open] .disclosure__summary::before {
+  transform: rotate(90deg);
+}
+
+.disclosure[open] .disclosure__summary {
+  border-bottom: 1px solid var(--rule);
+}
+
+/* --- 确认对话框 ------------------------------------------------------------
+   原生 <dialog> + showModal():浏览器免费提供顶层堆叠与焦点陷阱,这里只需
+   重置 UA 默认边框并套上设计令牌。React 侧的 ref/effect 开合、双击守卫、
+   危险操作按钮,全在 components/ConfirmDialog.tsx。 */
+
+.confirm-dialog {
+  width: min(400px, calc(100vw - var(--sp-8)));
+  margin: auto;
+  padding: var(--sp-5);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-2);
+}
+
+.confirm-dialog::backdrop {
+  background: var(--scrim);
+}
+
+.confirm-dialog__title {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+}
+
+.confirm-dialog__body {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+}
+
+/* 正文之后可选的一段清单(如即将删除的词头)*/
+.confirm-dialog__list {
+  margin-top: var(--sp-3);
+  padding: var(--sp-3);
+  border-radius: var(--r-sm);
+  background: var(--surface-sunken);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  color: var(--text-muted);
+}
+
+.confirm-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+}
+
+/* --- 空状态:虚线框 + 标题 + 提示,可选一个 CTA -----------------------------
+   「这里本来该有内容,但现在没有」。文案由调用方给 —— 同一页的不同空因
+   （词库为空 / 搜不到 / 筛选没命中)必须各说各的,共享的只有这层外壳。 */
+
+.empty-state {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-8) var(--sp-4);
+  border: 1px dashed var(--rule-strong);
+  border-radius: var(--r-md);
+  text-align: center;
+}
+
+.empty-state__title {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.empty-state__hint {
+  font-size: var(--fs-sm);
+  color: var(--text-faint);
+}
+
+.empty-state > .btn {
+  margin-top: var(--sp-2);
+}
+
+/* --- 同步状态 --------------------------------------------------------------
+   两种形态,同一套行为(见 components/SyncStatus.tsx):
+   badge 角标塞进页头的 actions 槽;note 整句话内联在页面正文里。
+   synced 之外的三态(pending / offline / error)都可点重试。 */
+
+/* 角标外面那层 <button>:视觉上只有一枚 22px 的 Badge,不到 --tap 的一半。
+   跟 .btn--sm::after / .chip::after 一个套路:不改视觉大小,只用伪元素把
+   命中区纵向补到 44px((44-22)/2 = 11px)。 */
+.sync-badge {
+  position: relative;
+  display: inline-flex;
+  border-radius: var(--r-xs);
+}
+
+.sync-badge::after {
+  content: '';
+  position: absolute;
+  inset-block: -11px;
+  inset-inline: 0;
+}
+
+.sync-note {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  color: var(--text-muted);
+}
+
+.sync-note--error {
+  color: var(--danger);
+}
+
+/* 句中的重试入口:行内文字按钮,沿用所在句子自身的颜色,不额外引入色值;
+   热区靠上下 padding 撑到可点,负的起始外边距把下划线拉回句子的左边线上。 */
+.sync-note__retry {
+  border: 0;
+  background: none;
+  padding: var(--sp-1) var(--sp-2);
+  margin-inline-start: calc(var(--sp-2) * -1);
+  font: inherit;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
 /* --- 占位块(Task 15–21 尚未实现的页面主体)------------------------------ */
 
 .placeholder {
