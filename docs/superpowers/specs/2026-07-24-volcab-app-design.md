@@ -43,6 +43,9 @@
       "synonyms": ["repeal", "revoke", "annul"],
       "antonyms": ["ratify", "uphold"],
       "collocations": ["abrogate a treaty", "abrogate an agreement"],
+      "relatedForms": [
+        { "form": "abrogation", "pos": "n.", "zh": "废除;废止" }
+      ],
       "sourceNote": "12-15",
       "addedAt": "2026-07-24"
     }

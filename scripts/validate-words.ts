@@ -22,6 +22,11 @@ for (const w of data.words) {
   if (!Array.isArray(w.examples) || w.examples.length < 2) errors.push(`${ctx}: examples 至少 2 句`)
   for (const k of ['synonyms', 'antonyms', 'collocations'] as const) {
     if (!Array.isArray(w[k])) errors.push(`${ctx}: ${k} 必须是数组`)
+    else if (w[k].includes(w.headword)) errors.push(`${ctx}: ${k} 不应包含词条本身`)
+  }
+  if (!Array.isArray(w.relatedForms)) errors.push(`${ctx}: relatedForms 必须是数组`)
+  for (const r of w.relatedForms ?? []) {
+    if (!r.form || !r.pos || !r.zh) errors.push(`${ctx}: relatedForm 缺 form/pos/zh`)
   }
   if (!w.sourceNote) errors.push(`${ctx}: 缺 sourceNote`)
   if (!/^\d{4}-\d{2}-\d{2}$/.test(w.addedAt ?? '')) errors.push(`${ctx}: addedAt 需为 YYYY-MM-DD`)

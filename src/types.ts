@@ -1,5 +1,8 @@
 export interface Meaning { pos: string; en: string; zh: string }
 
+/** 同根变形:未单独收词,但在词条页展示,便于成族记忆 */
+export interface RelatedForm { form: string; pos: string; zh: string }
+
 export interface Word {
   id: string          // 词元小写,唯一
   headword: string
@@ -9,6 +12,7 @@ export interface Word {
   synonyms: string[]
   antonyms: string[]
   collocations: string[]
+  relatedForms: RelatedForm[]  // 同根变形,无则空数组
   sourceNote: string  // 来源笔记标题,手动添加为 "manual"
   addedAt: string     // YYYY-MM-DD
 }

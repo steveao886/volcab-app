@@ -5,7 +5,7 @@ import type { Progress, Word } from '../types'
 
 const word = (id: string, zh: string): Word => ({
   id, headword: id, phonetic: `/${id}/`, meanings: [{ pos: 'v.', en: `def of ${id}`, zh }],
-  examples: ['a', 'b'], synonyms: [], antonyms: [], collocations: [], sourceNote: 't', addedAt: '2026-07-01',
+  examples: ['a', 'b'], synonyms: [], antonyms: [], collocations: [], relatedForms: [], sourceNote: 't', addedAt: '2026-07-01',
 })
 const words = [word('alpha', '甲'), word('bravo', '乙'), word('carol', '丙'), word('delta', '丁'), word('echo', '戊'), word('fox', '己')]
 
@@ -20,7 +20,7 @@ const seq = () => { let i = 0; return () => ((i = (i + 7) % 13), i / 13) }
 
 const wordP = (id: string, pos: string, zh: string): Word => ({
   id, headword: id, phonetic: `/${id}/`, meanings: [{ pos, en: `def of ${id}`, zh }],
-  examples: ['a', 'b'], synonyms: [], antonyms: [], collocations: [], sourceNote: 't', addedAt: '2026-07-01',
+  examples: ['a', 'b'], synonyms: [], antonyms: [], collocations: [], relatedForms: [], sourceNote: 't', addedAt: '2026-07-01',
 })
 
 describe('generateQuiz', () => {

@@ -5,7 +5,7 @@ import type { Progress, Word } from '../types'
 
 const word = (id: string): Word => ({
   id, headword: id, phonetic: '/x/', meanings: [{ pos: 'n.', en: 'x', zh: 'x' }],
-  examples: ['a', 'b'], synonyms: [], antonyms: [], collocations: [], sourceNote: 't', addedAt: '2026-07-01',
+  examples: ['a', 'b'], synonyms: [], antonyms: [], collocations: [], relatedForms: [], sourceNote: 't', addedAt: '2026-07-01',
 })
 const words = ['alpha', 'bravo', 'carol', 'delta', 'echo'].map(word)
 
