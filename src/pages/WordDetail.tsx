@@ -136,7 +136,7 @@ export function WordDetail() {
 
           {word.examples.length > 0 && (
             <Card>
-              <p className="worddetail-section-title">例句</p>
+              <p className="section-title worddetail-section-title">例句</p>
               <ul className="worddetail-examples">
                 {word.examples.map((ex, i) => (
                   <li key={i} lang="en">
@@ -151,7 +151,7 @@ export function WordDetail() {
             <Card className="worddetail-tags">
               {word.synonyms.length > 0 && (
                 <div className="worddetail-tag-group">
-                  <p className="worddetail-section-title">近义词</p>
+                  <p className="section-title worddetail-section-title">近义词</p>
                   <div className="worddetail-chiprow">
                     {word.synonyms.map(s => (
                       <Chip key={s} label={s} interactive={false} />
@@ -161,7 +161,7 @@ export function WordDetail() {
               )}
               {word.antonyms.length > 0 && (
                 <div className="worddetail-tag-group">
-                  <p className="worddetail-section-title">反义词</p>
+                  <p className="section-title worddetail-section-title">反义词</p>
                   <div className="worddetail-chiprow">
                     {word.antonyms.map(s => (
                       <Chip key={s} label={s} interactive={false} />
@@ -171,7 +171,7 @@ export function WordDetail() {
               )}
               {word.collocations.length > 0 && (
                 <div className="worddetail-tag-group">
-                  <p className="worddetail-section-title">常见搭配</p>
+                  <p className="section-title worddetail-section-title">常见搭配</p>
                   <div className="worddetail-chiprow">
                     {word.collocations.map(s => (
                       <Chip key={s} label={s} interactive={false} />
@@ -184,7 +184,7 @@ export function WordDetail() {
 
           {word.relatedForms.length > 0 && (
             <Card>
-              <p className="worddetail-section-title">同根变形</p>
+              <p className="section-title worddetail-section-title">同根变形</p>
               <ul className="worddetail-related">
                 {word.relatedForms.map(rf => (
                   <li key={rf.form}>

@@ -824,3 +824,17 @@
   cursor: pointer;
 }
 
+
+/* --- 章节小标题 -----------------------------------------------------------
+   卡片/区块内部的中性标题(账号、备份、释义、例句、同根词……)。
+   刻意不用 .pos:那是词性标签,朱砂色,按 tokens.css 顶部的约定朱砂只做批注,
+   结构性标题不属于批注。曾有三个页面各自借用 .pos 当小标题,已统一到这里。
+   外边距留给调用方,因为各页的疏密不一样。 */
+
+.section-title {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+}

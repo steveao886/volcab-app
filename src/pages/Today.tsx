@@ -12,7 +12,7 @@ import './Today.css'
 
 /** Task 16 实现:到期/新词数、连续天数、总进度、开始复习 / 快速测试、同步角标。 */
 export function Today() {
-  const { words, progress, syncStatus, syncNow } = useApp()
+  const { words, progress, syncStatus, syncError, syncNow } = useApp()
 
   const today = todayStr(new Date())
   // useApp() 的 context value 在任何 provider 重渲染时都会是新对象(比如 syncStatus
@@ -39,6 +39,13 @@ export function Today() {
       title="今日"
       actions={<SyncStatus status={syncStatus} onRetry={() => void syncNow()} />}
     >
+      {/* 角标只有「同步失败」四个字,装不下要给用户看的那句话 —— 而 §8 里最要紧的
+          一条(远端文件损坏,请先导出备份再操作)正是靠这句话传达。首页是用户最
+          常打开的一屏,失败原因必须在这里说全,不能只留在词库/词条页。 */}
+      {syncStatus === 'error' && syncError !== null && (
+        <SyncStatus variant="note" status={syncStatus} message={syncError} onRetry={() => void syncNow()} />
+      )}
+
       <Card className="today-stats">
         <div className="stat">
           <p className="num stat__value">{due.length}</p>

@@ -186,7 +186,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const flushWords = useCallback(async (op?: WordsOp): Promise<void> => {
     if (op) appendPendingOp(op)
     const client = clientRef.current
-    if (demoRef.current || !client) { setPendingOps([]); return }
+    // 演示模式没有远端可推,队列清掉是对的 —— 它本来就不欠任何东西。
+    if (demoRef.current) { setPendingOps([]); return }
+    // 但「没有 client」完全是另一回事:token 失效被踢回登录页时会故意留下
+    // owner / wordOps / dirty,等重新登录后由 carryOverFor 重放。这时候清队列
+    // 就是把用户没同步成功的词条改动直接抹掉。原地返回,什么都不动。
+    if (!client) return
     if (!navigator.onLine) { update({ syncStatus: 'offline' }); return }
     if (wordsPushingRef.current) { wordsRerunRef.current = true; return }
 

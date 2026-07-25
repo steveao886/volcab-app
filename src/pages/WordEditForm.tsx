@@ -34,11 +34,16 @@ interface ExampleRow {
   value: string
 }
 
-function linesToArray(text: string): string[] {
+/**
+ * 一行一条,顺带剔除与词头相同的项 —— scripts/validate-words.ts 明确要求
+ * synonyms/antonyms/collocations 不得包含词条本身。
+ */
+function linesToArray(text: string, headword: string): string[] {
+  const self = headword.trim().toLowerCase()
   return text
     .split('\n')
     .map(s => s.trim())
-    .filter(s => s !== '')
+    .filter(s => s !== '' && s.toLowerCase() !== self)
 }
 
 interface WordEditFormProps {
@@ -94,14 +99,29 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
       return
     }
 
+    // 校验必须和 scripts/validate-words.ts 对齐,否则这里存下的词条会让
+    // data/words.json 悄悄脱离 schema —— app 自己的 isWord 更宽松,不会报错,
+    // 等到跑校验脚本时才发现。添加新词页(AddWord)已经这么做了,编辑页
+    // 是另一个 agent 写的,当时漏了这两条。
+    const cleanedExamples = examples.map(e => e.value.trim()).filter(v => v !== '')
+    if (cleanedExamples.length < 2) {
+      setError(`至少需要 2 句例句(当前 ${cleanedExamples.length} 句)。`)
+      return
+    }
+
+    // 同义/反义/搭配都不应该包含词条本身
+    const synonyms = linesToArray(synonymsText, word.headword)
+    const antonyms = linesToArray(antonymsText, word.headword)
+    const collocations = linesToArray(collocationsText, word.headword)
+
     setError(null)
     const updated: Word = {
       ...word,
       meanings: cleanedMeanings,
-      examples: examples.map(e => e.value.trim()).filter(v => v !== ''),
-      synonyms: linesToArray(synonymsText),
-      antonyms: linesToArray(antonymsText),
-      collocations: linesToArray(collocationsText),
+      examples: cleanedExamples,
+      synonyms,
+      antonyms,
+      collocations,
     }
     void onSave(updated)
   }
@@ -109,7 +129,7 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
   return (
     <form className="worddetail-edit" onSubmit={handleSubmit} noValidate>
       <fieldset className="worddetail-edit__group" disabled={saving}>
-        <legend className="worddetail-section-title">释义</legend>
+        <legend className="section-title worddetail-section-title">释义</legend>
         {meanings.map((m, i) => (
           <div className="worddetail-edit__meaning" key={m.key}>
             <p className="worddetail-edit__index">释义 {i + 1}</p>
@@ -153,7 +173,7 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
       </fieldset>
 
       <fieldset className="worddetail-edit__group" disabled={saving}>
-        <legend className="worddetail-section-title">例句</legend>
+        <legend className="section-title worddetail-section-title">例句</legend>
         {examples.map((ex, i) => (
           <div className="worddetail-edit__example" key={ex.key}>
             <Textarea

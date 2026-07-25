@@ -152,3 +152,10 @@
 
 /* 删除确认走共享的 ConfirmDialog / .confirm-dialog,同步失败提示走
    SyncStatus / .sync-note(都在 components.css)。 */
+
+/* 页头右上的两个动作:添加 + 管理 */
+.library-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+}

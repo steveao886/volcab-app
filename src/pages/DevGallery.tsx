@@ -38,7 +38,7 @@ const STACK: CSSProperties = {
 
 /* 分组标题原本借用 .pos,但 .pos 是词性标签(朱砂 = 批注),不是小节标题;
    而且本页正好也展示 .pos 本身,两者长得一样只会看不清哪个是样本。
-   与 Settings 的 .settings-section-title 同一个处置,只是这里走内联样式。 */
+   与 components.css 的 .section-title 同一个处置,只是这里走内联样式。 */
 const LABEL: CSSProperties = {
   fontSize: 'var(--fs-sm)',
   fontWeight: 600,

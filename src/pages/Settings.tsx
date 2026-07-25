@@ -133,7 +133,7 @@ export function Settings() {
       </Card>
 
       <Card>
-        <p className="settings-section-title">账号</p>
+        <p className="section-title">账号</p>
         <div className="settings-rows">
           <div className="settings-row">
             <p className="settings-row__label">GitHub 用户</p>
@@ -174,7 +174,7 @@ export function Settings() {
       </Card>
 
       <Card>
-        <p className="settings-section-title">备份</p>
+        <p className="section-title">备份</p>
         <p className="settings-hint">导出词库与学习进度为一份 JSON 文件,保存到本机。</p>
         <Button variant="secondary" block onClick={handleExport}>
           导出备份

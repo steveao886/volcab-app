@@ -1,15 +1,5 @@
 /* Settings(设置)页面专属样式:账号信息行、退出确认、版本落款。 */
 
-/* --- 卡片内小节标题:结构性分区,不是批注,朱砂/大写都不该用在这里 --------- */
-
-.settings-section-title {
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  line-height: var(--lh-tight);
-  letter-spacing: 0.02em;
-  color: var(--text-muted);
-}
-
 /* --- 账号信息:标签左 / 值右的一组只读行 ---------------------------------
    行本身(.settings-row / __label / __value)已经提升到 components.css,
    那里也写明了它与 .stat 是两种故意分开的原语。这里只留容器的排布。 */

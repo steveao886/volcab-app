@@ -10,7 +10,7 @@ import type { Word } from '../types'
 function TagRow({ label, items }: { label: string; items: string[] }) {
   return (
     <div className="review-tags">
-      <p className="review-tags__label pos">{label}</p>
+      <p className="review-tags__label section-title">{label}</p>
       <div className="review-tags__row">
         {items.map((item) => (
           <Chip key={item} interactive={false} label={<span lang="en">{item}</span>} />
@@ -50,7 +50,7 @@ export function ReviewCardBack({ word }: { word: Word }) {
 
       {word.examples.length > 0 && (
         <div className="review-tags">
-          <p className="review-tags__label pos">例句</p>
+          <p className="review-tags__label section-title">例句</p>
           <ul className="review-examples">
             {word.examples.map((ex) => (
               <li key={ex} lang="en">
@@ -67,7 +67,7 @@ export function ReviewCardBack({ word }: { word: Word }) {
 
       {word.relatedForms.length > 0 && (
         <div className="review-tags">
-          <p className="review-tags__label pos">同根词</p>
+          <p className="review-tags__label section-title">同根词</p>
           <div className="review-tags__row">
             {word.relatedForms.map((rf) => (
               <Chip

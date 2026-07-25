@@ -174,9 +174,19 @@ export function Library() {
       eyebrow="Lexicon"
       title="词库"
       actions={
-        <Button variant="ghost" size="sm" onClick={toggleManage} disabled={words.length === 0}>
-          {manageMode ? '完成' : '管理'}
-        </Button>
+        // 「添加」必须常驻在这里:底部导航只有四格(今日/词库/测试/设置),
+        // 而词库非空时下面那个空状态里的 /add 链接就不再渲染 —— 少了这个入口,
+        // 添加新词页在装机后就是一个走不到的页面(独立窗口下连地址栏都没有)。
+        <div className="library-actions">
+          {manageMode ? null : (
+            <Link className="btn btn--ghost btn--sm" to="/add">
+              添加
+            </Link>
+          )}
+          <Button variant="ghost" size="sm" onClick={toggleManage} disabled={words.length === 0}>
+            {manageMode ? '完成' : '管理'}
+          </Button>
+        </div>
       }
     >
       {/* 删改就发生在这一页,重试入口必须在这里,不能只留在今日页的角标上。

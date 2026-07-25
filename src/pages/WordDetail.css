@@ -32,11 +32,9 @@
   color: var(--text-muted);
 }
 
+/* 只留间距;字号/字重/颜色由 components.css 的 .section-title 提供 */
 .worddetail-section-title {
   margin-bottom: var(--sp-3);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--text-muted);
 }
 
 /* --- 例句 ---------------------------------------------------------------- */
