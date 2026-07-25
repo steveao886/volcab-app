@@ -7,9 +7,9 @@ import { Icon } from './Icon'
  * 下缘发丝线左端一段朱砂刻度,与底部页签的刻度是同一个母题。
  */
 interface PageProps {
-  /** 中文页标题 */
-  title: string
-  /** 英文眉标,全大写 */
+  /** 页标题。词条详情页可以传 <span className="word" lang="en">…</span> */
+  title: ReactNode
+  /** 英文眉标(CSS 转大写),已带 lang="en" */
   eyebrow: string
   /** 传入路径则页头左侧出现返回按钮 */
   back?: string
@@ -28,7 +28,9 @@ export function Page({ title, eyebrow, back, actions, children }: PageProps) {
           </Link>
         )}
         <div className="page__heading">
-          <p className="page__eyebrow">{eyebrow}</p>
+          <p className="page__eyebrow" lang="en">
+            {eyebrow}
+          </p>
           <h1 className="page__title">{title}</h1>
         </div>
         {actions === undefined ? null : (

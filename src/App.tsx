@@ -2,6 +2,7 @@ import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppLayout } from './components/AppLayout'
 import { RequireAuth } from './components/RequireAuth'
 import { AddWord } from './pages/AddWord'
+import { DevGallery } from './pages/DevGallery'
 import { Library } from './pages/Library'
 import { Login } from './pages/Login'
 import { Quiz } from './pages/Quiz'
@@ -13,6 +14,7 @@ import { WordDetail } from './pages/WordDetail'
 /**
  * 路由表。GitHub Pages 无服务端重写,固定用 HashRouter。
  * /login 之外的所有页面都在 RequireAuth 之内(守卫由 Task 14 接上 store)。
+ * /dev 组件总览只在开发模式注册,且刻意留在守卫之外 —— 未登录也要能看。
  */
 function App() {
   return (
@@ -34,6 +36,11 @@ function App() {
           <Route path="/add" element={<AddWord />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
+        {import.meta.env.DEV && (
+          <Route element={<AppLayout />}>
+            <Route path="/dev" element={<DevGallery />} />
+          </Route>
+        )}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </HashRouter>

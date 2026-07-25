@@ -2,7 +2,7 @@
    Volcab 设计令牌 — 「墨与纸 / Ink & Paper」
    --------------------------------------------------------------------------
    视觉方向:辞书排版。暖色纸面、近黑的墨、朱砂作批注色;
-   发丝细线取代阴影分隔,圆角克制(3–10px)接近印刷品而非塑料卡片。
+   发丝细线取代阴影分隔,圆角克制(2–6px)接近印刷品而非塑料卡片。
    朱砂(--accent)只做「批注」:眉标、活动页签的刻度、进度条、印章;
    实心朱砂块面**仅**用于危险操作。主操作按钮是一块墨色实心板(深色模式反相)。
 
@@ -11,9 +11,10 @@
 
 :root {
   color-scheme: light dark;
+  accent-color: var(--accent); /* 原生 checkbox / radio / range 跟随品牌色 */
 
   /* --- 字体族 -----------------------------------------------------------
-     离线 PWA,不引外部字体,全部走系统栈。三条栈各有分工:
+     离线 PWA,不引外部字体,全部走系统栈。四条栈各有分工:
      ui   中英混排界面文字(中文字重齐全)
      word 英文词头 —— 衬线体,辞书气质,与界面无衬线体拉开层次
      ipa  国际音标 —— 优先列出已知覆盖 IPA Extensions 的系统字体
@@ -41,15 +42,17 @@
   --fs-sm: 0.875rem;       /* 14 */
   --fs-base: 1rem;         /* 16 正文 */
   --fs-md: 1.125rem;       /* 18 */
-  --fs-lg: 1.25rem;        /* 20 */
   --fs-xl: 1.5rem;         /* 24 页标题 */
-  --fs-2xl: 1.875rem;      /* 30 */
+  --fs-2xl: 1.875rem;      /* 30 桌面页标题 */
   --fs-word: 2.125rem;     /* 34 词头 */
-  --fs-word-xl: 2.75rem;   /* 44 复习卡正面词头 */
+  --fs-word-xl: 2.75rem;   /* 44 复习卡词头上限,长词自动收缩见 .word--xl */
 
-  --lh-tight: 1.15;
-  --lh-snug: 1.4;
+  /* --- 行高 ------------------------------------------------------------ */
+  --lh-word: 1.05;         /* 词头大字 */
+  --lh-tight: 1.2;         /* 标题、按钮 */
+  --lh-snug: 1.4;          /* 音标、提示、紧凑文本 */
   --lh-body: 1.7;          /* 中文正文需要更松的行距 */
+
   --tracking-eyebrow: 0.18em;
   --tracking-tight: -0.015em;
 
@@ -69,7 +72,6 @@
   --r-xs: 2px;
   --r-sm: 3px;
   --r-md: 6px;
-  --r-lg: 10px;
   --r-full: 999px;
 
   /* --- 动效 ------------------------------------------------------------ */
@@ -77,6 +79,16 @@
   --dur-1: 120ms;
   --dur-2: 200ms;
   --dur-3: 320ms;
+
+  /* --- 层级 ------------------------------------------------------------
+     一处定义,组件里不要再写字面量。 */
+  --z-grain: 0;
+  --z-content: 1;
+  --z-sticky: 10;   /* 页头 */
+  --z-nav: 20;      /* 页签 / 侧栏 */
+  --z-bar: 30;      /* 页面级底部操作条(如「删除所选 (N)」)*/
+  --z-overlay: 40;  /* 遮罩、对话框 */
+  --z-toast: 50;
 
   /* --- 布局 ------------------------------------------------------------ */
   --page-max: 720px;
@@ -92,12 +104,13 @@
   --text: #1a1814;
   --text-muted: #56504a;
   --text-faint: #6e655c;
-  --rule: rgba(26, 24, 20, 0.13);
-  --rule-strong: rgba(26, 24, 20, 0.26);
+  --rule: rgba(26, 24, 20, 0.13);        /* 发丝分隔线,纯装饰 */
+  --rule-strong: rgba(26, 24, 20, 0.26); /* 强调分隔、虚线框 */
+  --rule-control: #8a8175;               /* 交互控件描边,≥3:1(WCAG 1.4.11)*/
 
   --accent: #be3c24;              /* 朱砂 */
   --accent-soft: rgba(190, 60, 36, 0.1);
-  --accent-contrast: #fdfbf7;     /* 朱砂块面上的文字 */
+  --on-tone: #fdfbf7;             /* 任意语义色实心块面上的文字 */
 
   --slab: #1a1814;                /* 主按钮:墨板 */
   --slab-text: #f4f1ea;
@@ -118,10 +131,14 @@
   --state-review: var(--success);
 
   /* SRS 打分:热 → 冷的一条温度带,四个按钮读作同一套系统 */
-  --grade-again: var(--accent);
+  --grade-again: var(--danger);
   --grade-hard: var(--warning);
   --grade-good: var(--success);
   --grade-easy: var(--info);
+  --grade-again-soft: var(--danger-soft);
+  --grade-hard-soft: var(--warning-soft);
+  --grade-good-soft: var(--success-soft);
+  --grade-easy-soft: var(--info-soft);
 
   --shadow-1: 0 1px 1px rgba(26, 24, 20, 0.04), 0 1px 3px rgba(26, 24, 20, 0.05);
   --shadow-2: 0 2px 4px rgba(26, 24, 20, 0.06), 0 8px 20px rgba(26, 24, 20, 0.08);
@@ -139,10 +156,11 @@
     --text-faint: #968c7f;
     --rule: rgba(240, 235, 226, 0.14);
     --rule-strong: rgba(240, 235, 226, 0.3);
+    --rule-control: #736b5e;
 
     --accent: #e97457;
     --accent-soft: rgba(233, 116, 87, 0.13);
-    --accent-contrast: #1a1108;
+    --on-tone: #1a1108;
 
     /* 深色下墨板反相为纸板,主按钮依旧是「一整块」的语言 */
     --slab: #f0ebe2;

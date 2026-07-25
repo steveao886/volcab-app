@@ -13,8 +13,12 @@ export function TabBar() {
   return (
     <nav className="tabbar" aria-label="主导航">
       <div className="brand tabbar__brand">
-        <span className="brand__seal">词</span>
-        <span className="brand__wordmark">Volcab</span>
+        <span className="brand__seal" aria-hidden="true">
+          词
+        </span>
+        <span className="brand__wordmark" lang="en">
+          Volcab
+        </span>
       </div>
       {TABS.map((tab) => (
         <NavLink

@@ -7,10 +7,19 @@ const LABELS: Record<WordState, string> = {
 }
 
 /** 词条学习状态的色点。未学是空心圈(尚未落墨),其余实心。 */
-export function StateDot({ state }: { state: WordState }) {
+export function StateDot({
+  state,
+  className,
+}: {
+  state: WordState
+  className?: string
+}) {
+  const classes = ['dot', `dot--${state}`]
+  if (className) classes.push(className)
+
   return (
     <span
-      className={`dot dot--${state}`}
+      className={classes.join(' ')}
       role="img"
       aria-label={LABELS[state]}
       title={LABELS[state]}

@@ -21,7 +21,7 @@
   position: fixed;
   inset-inline: 0;
   bottom: 0;
-  z-index: 20;
+  z-index: var(--z-nav);
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
@@ -40,7 +40,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: var(--sp-1);
   height: var(--tabbar-h);
   color: var(--text-faint);
   font-size: var(--fs-xs);
@@ -80,7 +80,7 @@
 .page__head {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: var(--z-sticky);
   display: flex;
   align-items: center;
   gap: var(--sp-3);
@@ -99,12 +99,14 @@
   background: var(--accent);
 }
 
+/* 命中区完整 44px;负外边距把 20px 图标的光学左缘拉回 16px 的版心线上 */
 .page__back {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
-  margin-inline-start: -6px;
+  width: var(--tap);
+  height: var(--tap);
+  margin-inline-start: -12px;
+  margin-inline-end: calc(var(--sp-3) * -1);
   flex: none;
   border-radius: var(--r-sm);
   color: var(--text-muted);
@@ -124,7 +126,7 @@
 .page__eyebrow {
   font-size: var(--fs-eyebrow);
   font-weight: 700;
-  line-height: 1.2;
+  line-height: var(--lh-tight);
   text-transform: uppercase;
   letter-spacing: var(--tracking-eyebrow);
   color: var(--accent);
@@ -133,7 +135,7 @@
 .page__title {
   font-size: var(--fs-xl);
   font-weight: 600;
-  line-height: 1.2;
+  line-height: var(--lh-tight);
   letter-spacing: var(--tracking-tight);
   color: var(--text);
 }
@@ -150,6 +152,11 @@
   gap: var(--sp-4);
   align-content: start;
   padding: var(--sp-5) var(--sp-4) var(--sp-10);
+}
+
+/* grid 子项默认 min-width:auto,超长英文词会把版心撑破 —— 显式解开 */
+.page__body > * {
+  min-width: 0;
 }
 
 /* --- 登录页(在 App 外壳之外,无页签)----------------------------------- */
@@ -175,22 +182,39 @@
   color: var(--text-faint);
 }
 
-/* --- 路由切换 ------------------------------------------------------------ */
+/* --- 路由切换 ------------------------------------------------------------
+   这里刻意**不做**整页进场动画,两条都是踩过的坑:
+   - transform 位移会让包裹层变成 position:fixed 后代的包含块,页面内的
+     底部操作条与遮罩会被钉死在版心盒子上;
+   - 淡入(哪怕只动 opacity)在标签页不可见时动画时钟不推进,整个 App
+     会停在起始帧的 opacity:0。任何「进场」动画被冻在 t=0 都会藏住内容。
 
-@keyframes page-in {
+   改为只让页头那道朱砂刻度画出来:它是纯装饰,被冻住最多是少一个
+   28×2px 的标记,内容永远可读。换路由时页头节点本身会重建,动画自然重放。 */
+@keyframes tick-draw {
   from {
-    opacity: 0;
-    transform: translateY(6px);
+    width: 0;
   }
 
   to {
-    opacity: 1;
-    transform: none;
+    width: var(--tick-w);
   }
 }
 
-.page-transition {
-  animation: page-in var(--dur-3) var(--ease) both;
+.page__head::after {
+  animation: tick-draw var(--dur-3) var(--ease);
+}
+
+/* 弹层挂载点:createPortal 到 #overlay-root,
+   这样对话框/底部条既不受路由动画影响,层级也确定在页签之上。
+   自身 fixed + 零尺寸,不参与外壳的 flex/grid 排版。 */
+.overlay-root {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  width: 0;
+  height: 0;
+  z-index: var(--z-overlay);
 }
 
 /* --- 桌面:底部页签变左侧栏 --------------------------------------------- */

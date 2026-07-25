@@ -4,8 +4,12 @@ export function Login() {
     <div className="auth">
       <div className="auth__inner">
         <div className="brand brand--lg">
-          <span className="brand__seal">词</span>
-          <span className="brand__wordmark">Volcab</span>
+          <span className="brand__seal" aria-hidden="true">
+            词
+          </span>
+          <h1 className="brand__wordmark" lang="en">
+            Volcab
+          </h1>
         </div>
         <p className="auth__tagline">个人词汇记忆本</p>
         <p className="placeholder">
