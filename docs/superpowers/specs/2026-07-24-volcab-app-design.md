@@ -20,6 +20,7 @@
 - 纯前端应用,无服务器。所有数据读写走 GitHub Contents API。
 - **技术栈**:Vite + React + TypeScript + vite-plugin-pwa。移动端优先的响应式界面,底部标签导航;支持"添加到主屏幕",离线可复习,联网后自动同步。
 - 界面语言:中文。
+- **视觉风格**:使用 frontend-design skill 进行界面设计,追求有辨识度的、生产级的视觉品质,避免通用模板感。
 
 ## 3. 数据模型
 
