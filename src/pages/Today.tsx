@@ -7,8 +7,13 @@ import { SyncStatus } from '../components/SyncStatus'
 import { buildQueue } from '../lib/queue'
 import { todayStr } from '../lib/srs'
 import { useApp } from '../state/store'
+import { accuracySeries, dailySeries } from './statsDerive'
 import { computeStreak, reviewProgress } from './todayStats'
 import './Today.css'
+
+const RECENT_DAYS = 7
+/** 全 0 周时柱子仍给一档「最矮但看得见」的高度,不然一排 0 高度的柱子会像页面渲染坏了。 */
+const MIN_BAR_PCT = 6
 
 /** Task 16 实现:到期/新词数、连续天数、总进度、开始复习 / 快速测试、同步角标。 */
 export function Today() {
@@ -32,6 +37,25 @@ export function Today() {
       queueEmpty: queue.due.length === 0 && queue.fresh.length === 0,
     }
   }, [words, progress, today])
+
+  // 「最近」块单独一个 memo,依赖只到 [progress, today] —— 不随词库大小重算,
+  // 且遵循上面那条先例:provider 任何一次重渲染 progress 对象都是新的。
+  const { recentDays, weekMax, weekAccuracy, hasHistory } = useMemo(() => {
+    const recentDays = dailySeries(progress, today, RECENT_DAYS)
+    const weekMax = Math.max(0, ...recentDays.map(d => d.reviewed))
+    const accDays = accuracySeries(progress, today, RECENT_DAYS)
+      .map(d => d.accuracy)
+      .filter((a): a is number => a !== null)
+    const weekAccuracy = accDays.length === 0 ? null : accDays.reduce((s, a) => s + a, 0) / accDays.length
+    return {
+      recentDays,
+      weekMax,
+      weekAccuracy,
+      // 完全没有 dailyStats 才是「从没学过」的新用户;七天窗口恰好全 0(比如活动
+      // 都发生在七天前)不算 —— 那是柱状图取「最矮档」的场景,不是空状态的场景。
+      hasHistory: Object.keys(progress.dailyStats).length > 0,
+    }
+  }, [progress, today])
 
   return (
     <Page
@@ -98,6 +122,36 @@ export function Today() {
           快速测试
         </Link>
       </div>
+
+      {/* 「最近」——统计页的入口,不进底部导航(四格已满,见 v1.1 §5.2)。
+          近 7 天复习量柱状图纯手写 CSS,不引图表库。 */}
+      <Link to="/stats" className="card card--interactive today-recent">
+        <div className="today-recent__head">
+          <p className="today-recent__title">最近</p>
+          <span className="today-recent__more muted">查看全部 →</span>
+        </div>
+        {hasHistory ? (
+          <>
+            <div className="today-recent__bars" role="img" aria-label={`近 ${RECENT_DAYS} 天每日复习量`}>
+              {recentDays.map(d => (
+                <div key={d.date} className="today-recent__bar-col">
+                  <div
+                    className="today-recent__bar"
+                    style={{
+                      height: `${weekMax > 0 ? Math.max(MIN_BAR_PCT, (d.reviewed / weekMax) * 100) : MIN_BAR_PCT}%`,
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+            <p className="today-recent__accuracy num muted">
+              近 {RECENT_DAYS} 天正确率 {weekAccuracy === null ? '暂无' : `${Math.round(weekAccuracy * 100)}%`}
+            </p>
+          </>
+        ) : (
+          <p className="today-recent__empty muted">复习几个词之后,这里会显示最近的学习曲线。</p>
+        )}
+      </Link>
     </Page>
   )
 }
