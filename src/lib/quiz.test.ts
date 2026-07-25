@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { clozeExample, generateQuiz } from './quiz'
+import { clozeCollocation, clozeExample, generateQuiz, sharedSynonyms } from './quiz'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
 
@@ -114,5 +114,41 @@ describe('clozeExample', () => {
   })
   it('定位不到就返回 null,由调用方跳过该例句', () => {
     expect(clozeExample('Nothing relevant here.', 'concoct')).toBeNull()
+  })
+})
+
+describe('clozeCollocation', () => {
+  it('挖掉搭配里的词头', () => {
+    expect(clozeCollocation('abrogate a treaty', 'abrogate')).toBe('___ a treaty')
+  })
+  it('词头在中间也能挖', () => {
+    expect(clozeCollocation('formally abrogate an accord', 'abrogate'))
+      .toBe('formally ___ an accord')
+  })
+  it('变形同样处理', () => {
+    expect(clozeCollocation('abrogated the agreement', 'abrogate'))
+      .toBe('___ the agreement')
+  })
+  it('定位不到返回 null', () => {
+    expect(clozeCollocation('a binding accord', 'abrogate')).toBeNull()
+  })
+})
+
+describe('sharedSynonyms', () => {
+  it('找出被多个词条共享的同义/反义词(小写归一)', () => {
+    const ws = [
+      word('alpha', '甲'), word('bravo', '乙'),
+    ]
+    ws[0].synonyms = ['Common', 'onlyA']
+    ws[1].synonyms = ['common', 'onlyB']
+    const shared = sharedSynonyms(ws)
+    expect(shared.has('common')).toBe(true)
+    expect(shared.has('onlya')).toBe(false)
+  })
+  it('反义词与同义词一起统计', () => {
+    const ws = [word('alpha', '甲'), word('bravo', '乙')]
+    ws[0].synonyms = ['x']
+    ws[1].antonyms = ['X']
+    expect(sharedSynonyms(ws).has('x')).toBe(true)
   })
 })

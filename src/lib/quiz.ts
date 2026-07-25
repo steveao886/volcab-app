@@ -46,6 +46,28 @@ export function clozeExample(sentence: string, headword: string): string | null 
   return null
 }
 
+/** 搭配挖空。规则与 clozeExample 相同,单列一个函数是因为搭配是短语、语义不同。 */
+export function clozeCollocation(collocation: string, headword: string): string | null {
+  return clozeExample(collocation, headword)
+}
+
+/**
+ * 被一个以上词条共享的近义/反义词(全部小写)。
+ *
+ * 实测 1597 个同义词里有 228 个出现在多个词条(overbearing、decree、flexibility……)。
+ * 拿它们当提示会出现「两个选项都对」,用户会判定测验有缺陷 —— 所以出题时必须排除。
+ */
+export function sharedSynonyms(words: Word[]): Set<string> {
+  const count = new Map<string, number>()
+  for (const w of words) {
+    for (const s of [...w.synonyms, ...w.antonyms]) {
+      const k = s.trim().toLowerCase()
+      count.set(k, (count.get(k) ?? 0) + 1)
+    }
+  }
+  return new Set([...count.entries()].filter(([, c]) => c > 1).map(([k]) => k))
+}
+
 export function shuffle<T>(arr: T[], rng: () => number): T[] {
   const a = [...arr]
   for (let i = a.length - 1; i > 0; i--) {
