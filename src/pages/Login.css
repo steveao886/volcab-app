@@ -1,0 +1,105 @@
+/* ==========================================================================
+   Login 页面专属样式(Task 15)。
+   页面本身复用全局 .auth / .brand(见 src/styles/layout.css、components.css),
+   这里只补取 token 指引这块设计系统里还没有的样式。
+   ========================================================================== */
+
+.login-form {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+/* --- 折叠指引 --------------------------------------------------------------
+   默认收起。原生 <details> 的展开三角在 Chromium/Firefox 都靠 list-style
+   控制,这里换成一枚随开合旋转的实心三角,和发丝线描边一套语言。 */
+
+.login-guide {
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.login-guide__summary {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: var(--tap);
+  padding-inline: var(--sp-4);
+  list-style: none;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.login-guide__summary::-webkit-details-marker {
+  display: none;
+}
+
+.login-guide__summary::before {
+  content: '';
+  width: 0;
+  height: 0;
+  flex: none;
+  border-style: solid;
+  border-width: 5px 0 5px 7px;
+  border-color: transparent transparent transparent var(--text-faint);
+  transition: transform var(--dur-2) var(--ease);
+}
+
+.login-guide[open] .login-guide__summary::before {
+  transform: rotate(90deg);
+}
+
+.login-guide[open] .login-guide__summary {
+  border-bottom: 1px solid var(--rule);
+}
+
+.login-guide__steps {
+  display: grid;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-4) var(--sp-4) calc(var(--sp-4) + var(--sp-5));
+  list-style: decimal;
+}
+
+.login-guide__steps li {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+}
+
+.login-guide__steps li::marker {
+  font-family: var(--font-num);
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.login-guide code {
+  padding-inline: 5px;
+  border-radius: var(--r-xs);
+  background: var(--surface-sunken);
+  font-family: var(--font-num);
+  font-size: 0.9em;
+  color: var(--text);
+}
+
+/* 仅供屏幕阅读器:外链在视觉上已有下划线可辨,新开标签页这件事非视觉用户
+   看不出来,补一句不占版面的说明。标准 clip 隐藏手法,不落成组件级工具类。 */
+.login-guide__visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- 开发演示入口 ------------------------------------------------------
+   视觉上要明显弱于「登录」主操作,不是产品功能,靠 ghost + 顶部留白撑开距离。 */
+
+.login-demo {
+  margin-top: var(--sp-2);
+}
