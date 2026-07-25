@@ -83,8 +83,18 @@
   color: var(--text);
 }
 
-.login-guide a {
-  color: var(--accent);
+/* 仅供屏幕阅读器:外链在视觉上已有下划线可辨,新开标签页这件事非视觉用户
+   看不出来,补一句不占版面的说明。标准 clip 隐藏手法,不落成组件级工具类。 */
+.login-guide__visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* --- 开发演示入口 ------------------------------------------------------
