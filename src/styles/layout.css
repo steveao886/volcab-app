@@ -1,0 +1,263 @@
+/* ==========================================================================
+   布局层:应用外壳、底部页签(桌面转侧栏)、页面骨架与切换动效。
+   移动优先(375px 起),≥900px 切换为侧栏 + 居中内容栏。
+   ========================================================================== */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.app__main {
+  flex: 1;
+  padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+}
+
+/* --- 页签导航 ------------------------------------------------------------ */
+
+.tabbar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 20;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  background: var(--surface);
+  border-top: 1px solid var(--rule);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.tabbar__brand {
+  display: none;
+}
+
+.tabbar__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: var(--tabbar-h);
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  transition: color var(--dur-1) var(--ease);
+}
+
+.tabbar__item:hover {
+  color: var(--text-muted);
+}
+
+.tabbar__item[aria-current='page'] {
+  color: var(--text);
+}
+
+/* 朱砂刻度:书口标签一样的母题,与页头下缘的刻度呼应 */
+.tabbar__item[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: var(--tick-w);
+  height: 2px;
+  background: var(--accent);
+  transform: translateX(-50%);
+}
+
+/* --- 页面骨架 ------------------------------------------------------------ */
+
+.page {
+  max-width: var(--page-max);
+  margin-inline: auto;
+}
+
+.page__head {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-4) var(--sp-3);
+  background: var(--bg);
+  border-bottom: 1px solid var(--rule);
+}
+
+.page__head::after {
+  content: '';
+  position: absolute;
+  left: var(--sp-4);
+  bottom: -1px;
+  width: var(--tick-w);
+  height: 2px;
+  background: var(--accent);
+}
+
+.page__back {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-inline-start: -6px;
+  flex: none;
+  border-radius: var(--r-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.page__back:hover {
+  background: var(--surface-sunken);
+  color: var(--text);
+}
+
+.page__heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.page__eyebrow {
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--accent);
+}
+
+.page__title {
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-tight);
+  color: var(--text);
+}
+
+.page__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+}
+
+.page__body {
+  display: grid;
+  gap: var(--sp-4);
+  align-content: start;
+  padding: var(--sp-5) var(--sp-4) var(--sp-10);
+}
+
+/* --- 登录页(在 App 外壳之外,无页签)----------------------------------- */
+
+.auth {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: var(--sp-8) var(--sp-4) var(--sp-12);
+}
+
+.auth__inner {
+  display: grid;
+  gap: var(--sp-5);
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth__tagline {
+  margin-top: calc(var(--sp-2) * -1);
+  font-size: var(--fs-sm);
+  color: var(--text-faint);
+}
+
+/* --- 路由切换 ------------------------------------------------------------ */
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.page-transition {
+  animation: page-in var(--dur-3) var(--ease) both;
+}
+
+/* --- 桌面:底部页签变左侧栏 --------------------------------------------- */
+
+@media (min-width: 900px) {
+  .app {
+    display: grid;
+    grid-template-columns: var(--rail-w) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .app__main {
+    padding-bottom: 0;
+  }
+
+  .tabbar {
+    position: sticky;
+    top: 0;
+    bottom: auto;
+    height: 100dvh;
+    align-content: start;
+    gap: 2px;
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    grid-auto-rows: max-content;
+    padding: var(--sp-6) var(--sp-3);
+    background: transparent;
+    border-top: none;
+    border-inline-end: 1px solid var(--rule);
+  }
+
+  .tabbar__brand {
+    display: flex;
+    padding: 0 var(--sp-3) var(--sp-6);
+  }
+
+  .tabbar__item {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--sp-3);
+    height: 42px;
+    padding-inline: var(--sp-3);
+    border-radius: var(--r-sm);
+    font-size: var(--fs-base);
+  }
+
+  .tabbar__item[aria-current='page'] {
+    background: var(--surface-sunken);
+  }
+
+  .tabbar__item[aria-current='page']::before {
+    top: 50%;
+    left: 0;
+    width: 2px;
+    height: 20px;
+    transform: translateY(-50%);
+  }
+
+  .page__head {
+    padding-block: var(--sp-6) var(--sp-4);
+  }
+
+  .page__title {
+    font-size: var(--fs-2xl);
+  }
+
+  .page__body {
+    padding-block: var(--sp-6) var(--sp-16);
+  }
+}

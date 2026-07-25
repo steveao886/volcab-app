@@ -1,0 +1,454 @@
+/* ==========================================================================
+   组件层。全部为纯 CSS 类,React 组件只是薄封装 —— 需要时
+   （例如给 <Link> 套按钮样式）可以直接写 class="btn btn--primary"。
+   ========================================================================== */
+
+/* --- 排版原语:辞书四件套 ------------------------------------------------ */
+
+/* 英文词头:衬线体,与界面无衬线体形成层次 */
+.word {
+  font-family: var(--font-word);
+  font-size: var(--fs-word);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: var(--tracking-tight);
+  color: var(--text);
+}
+
+.word--xl {
+  font-size: var(--fs-word-xl);
+}
+
+/* 国际音标 */
+.ipa {
+  font-family: var(--font-ipa);
+  font-size: var(--fs-md);
+  font-style: normal;
+  line-height: 1.3;
+  color: var(--text-muted);
+}
+
+/* 词性标签:小号大写 + 大字距 + 朱砂,一眼就是辞书 */
+.pos {
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--accent);
+}
+
+/* 数字:等宽、表格数字,统计值不跳动 */
+.num {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.faint {
+  color: var(--text-faint);
+}
+
+/* 发丝分隔线 */
+.rule {
+  height: 1px;
+  border: none;
+  background: var(--rule);
+}
+
+/* --- 品牌印记 ------------------------------------------------------------ */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.brand__seal {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: var(--r-xs);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.brand__wordmark {
+  font-family: var(--font-word);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--text);
+}
+
+.brand--lg .brand__seal {
+  width: 44px;
+  height: 44px;
+  font-size: 24px;
+  border-radius: var(--r-sm);
+}
+
+.brand--lg .brand__wordmark {
+  font-size: var(--fs-2xl);
+}
+
+/* --- 按钮 ---------------------------------------------------------------- */
+
+.btn {
+  --btn-h: var(--tap);
+  --btn-px: var(--sp-5);
+  --btn-fs: var(--fs-base);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: var(--btn-h);
+  padding-inline: var(--btn-px);
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  font-family: var(--font-ui);
+  font-size: var(--btn-fs);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-1) var(--ease),
+    border-color var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease),
+    transform var(--dur-1) var(--ease);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:disabled,
+.btn[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 主操作:一整块墨板(深色模式反相为纸板)。全站唯一的实心中性块面。 */
+.btn--primary {
+  background: var(--slab);
+  color: var(--slab-text);
+  box-shadow: var(--shadow-1);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--slab-hover);
+}
+
+.btn--secondary {
+  background: var(--surface);
+  border-color: var(--rule-strong);
+  color: var(--text);
+}
+
+.btn--secondary:hover:not(:disabled) {
+  background: var(--surface-sunken);
+}
+
+.btn--ghost {
+  color: var(--text-muted);
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background: var(--surface-sunken);
+  color: var(--text);
+}
+
+/* 实心朱砂 = 破坏性操作,别的地方不要用 */
+.btn--danger {
+  background: var(--danger);
+  color: var(--accent-contrast);
+}
+
+.btn--danger:hover:not(:disabled) {
+  filter: saturate(1.15) brightness(0.94);
+}
+
+.btn--sm {
+  --btn-h: 34px;
+  --btn-px: var(--sp-3);
+  --btn-fs: var(--fs-sm);
+}
+
+.btn--lg {
+  --btn-h: 52px;
+  --btn-px: var(--sp-6);
+  --btn-fs: var(--fs-md);
+}
+
+.btn--block {
+  display: flex;
+  width: 100%;
+}
+
+/* --- 卡片 ---------------------------------------------------------------- */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-1);
+  padding: var(--sp-5);
+}
+
+.card--sm {
+  padding: var(--sp-4);
+}
+
+.card--flush {
+  padding: 0;
+}
+
+.card--raised {
+  box-shadow: var(--shadow-2);
+}
+
+.card--interactive {
+  display: block;
+  width: 100%;
+  text-align: start;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color var(--dur-1) var(--ease),
+    transform var(--dur-1) var(--ease);
+}
+
+.card--interactive:hover {
+  border-color: var(--rule-strong);
+}
+
+.card--interactive:active {
+  transform: translateY(1px);
+}
+
+/* --- 筛选 chip ----------------------------------------------------------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 32px;
+  padding-inline: var(--sp-3);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-1) var(--ease),
+    border-color var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease);
+}
+
+.chip:hover {
+  color: var(--text);
+  border-color: var(--text-faint);
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--slab);
+  border-color: var(--slab);
+  color: var(--slab-text);
+}
+
+.chip__count {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-xs);
+  opacity: 0.65;
+}
+
+/* --- 表单 ---------------------------------------------------------------- */
+
+.field {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.field__label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+}
+
+.field__hint {
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  color: var(--text-faint);
+}
+
+.field__error {
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  color: var(--danger);
+}
+
+.input {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 10px var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-base);
+  line-height: 1.4;
+  color: var(--text);
+  transition:
+    border-color var(--dur-1) var(--ease),
+    box-shadow var(--dur-1) var(--ease);
+}
+
+.input::placeholder {
+  color: var(--text-faint);
+}
+
+.input:focus-visible {
+  outline: none;
+  border-color: var(--text);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.input--area {
+  min-height: 92px;
+  padding: var(--sp-3);
+  resize: vertical;
+  line-height: var(--lh-snug);
+}
+
+/* --- 徽标 ---------------------------------------------------------------- */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 22px;
+  padding-inline: var(--sp-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-xs);
+  background: var(--surface-sunken);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.badge--accent {
+  background: var(--accent-soft);
+  border-color: transparent;
+  color: var(--accent);
+}
+
+.badge--success {
+  background: var(--success-soft);
+  border-color: transparent;
+  color: var(--success);
+}
+
+.badge--warning {
+  background: var(--warning-soft);
+  border-color: transparent;
+  color: var(--warning);
+}
+
+.badge--danger {
+  background: var(--danger-soft);
+  border-color: transparent;
+  color: var(--danger);
+}
+
+.badge--info {
+  background: var(--info-soft);
+  border-color: transparent;
+  color: var(--info);
+}
+
+/* --- 状态点:未学是空心(尚未落墨),学习中/已掌握实心 -------------------- */
+
+.dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  flex: none;
+  border-radius: 50%;
+}
+
+.dot--new {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--state-new);
+}
+
+.dot--learning {
+  background: var(--state-learning);
+}
+
+.dot--review {
+  background: var(--state-review);
+}
+
+/* --- 进度条:3px 发丝,朱砂填充 ------------------------------------------ */
+
+.progress {
+  height: 3px;
+  border-radius: var(--r-full);
+  background: var(--rule);
+  overflow: hidden;
+}
+
+.progress__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width var(--dur-3) var(--ease);
+}
+
+/* --- 占位块(Task 15–21 尚未实现的页面主体)------------------------------ */
+
+.placeholder {
+  display: grid;
+  place-items: center;
+  gap: var(--sp-2);
+  min-height: 132px;
+  padding: var(--sp-6);
+  border: 1px dashed var(--rule-strong);
+  border-radius: var(--r-md);
+  color: var(--text-faint);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  text-align: center;
+}
+
+.placeholder strong {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--text-muted);
+}
