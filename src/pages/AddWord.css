@@ -123,17 +123,7 @@
   color: var(--text-muted);
 }
 
-.addword-saved__status {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--sp-3);
-  font-size: var(--fs-sm);
-}
-
-.addword-saved__status--error {
-  color: var(--danger);
-}
+/* 回执里的同步状态是共享的 SyncStatus / .sync-note(components.css)。 */
 
 .addword-saved__actions {
   display: flex;

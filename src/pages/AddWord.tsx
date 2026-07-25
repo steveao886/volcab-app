@@ -7,11 +7,11 @@ import { Card } from '../components/Card'
 import { Field } from '../components/Field'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
+import { SyncStatus } from '../components/SyncStatus'
 import { TextInput } from '../components/TextInput'
 import { Textarea } from '../components/Textarea'
 import { todayStr } from '../lib/srs'
 import { useApp } from '../state/store'
-import type { AppState } from '../state/store'
 import type { Meaning, RelatedForm, Word } from '../types'
 import { lookupWord } from './dictionaryApi'
 import './AddWord.css'
@@ -64,21 +64,6 @@ function splitTagList(raw: string, headword: string): string[] {
     out.push(v)
   }
   return out
-}
-
-/** 复用 Today 页的同步角标写法:synced 是静态文字,其余三态可点重试 */
-function SyncNote({ status, message, onRetry }: { status: AppState['syncStatus']; message: string | null; onRetry: () => void }) {
-  if (status === 'synced') return <p className="addword-saved__status muted">已同步到云端。</p>
-  if (status === 'pending') return <p className="addword-saved__status muted">正在同步…</p>
-  if (status === 'offline') return <p className="addword-saved__status muted">当前离线,联网后会自动同步。</p>
-  return (
-    <p className="addword-saved__status addword-saved__status--error">
-      同步失败:{message ?? '未知错误'}
-      <button type="button" className="btn btn--secondary btn--sm" onClick={onRetry}>
-        重试同步
-      </button>
-    </p>
-  )
 }
 
 /** Task 20 实现:输入单词 → 查询词典 API 预填 → 可编辑表单 → 保存。 */
@@ -242,7 +227,7 @@ export function AddWord() {
             </span>{' '}
             已存入本机词库。
           </p>
-          <SyncNote status={syncStatus} message={syncError} onRetry={() => void syncNow()} />
+          <SyncStatus variant="note" status={syncStatus} message={syncError} onRetry={() => void syncNow()} />
           <div className="addword-saved__actions">
             <Link className="btn btn--secondary" to={`/word/${savedWord.id}`}>
               查看词条

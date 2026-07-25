@@ -1,46 +1,14 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Badge } from '../components/Badge'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Page } from '../components/Page'
+import { SyncStatus } from '../components/SyncStatus'
 import { buildQueue } from '../lib/queue'
 import { todayStr } from '../lib/srs'
 import { useApp } from '../state/store'
-import type { AppState } from '../state/store'
 import { computeStreak, reviewProgress } from './todayStats'
 import './Today.css'
-
-/**
- * 同步状态角标。
- * synced 只是一段静态文字(非焦点元素);pending/offline/error 三态包一层原生
- * <button>,点击调用 syncNow() 重试推送 —— offline 用 info 色调,不当成错误处理。
- */
-function SyncBadge({
-  status,
-  onRetry,
-}: {
-  status: AppState['syncStatus']
-  onRetry: () => void
-}) {
-  if (status === 'synced') return <Badge>已同步</Badge>
-  const copy = {
-    pending: { tone: 'warning', label: '待同步' },
-    offline: { tone: 'info', label: '离线' },
-    error: { tone: 'danger', label: '同步失败' },
-  } as const
-  const { tone, label } = copy[status]
-  return (
-    <button
-      type="button"
-      className="today-sync"
-      onClick={onRetry}
-      aria-label={`${label},点击重试同步`}
-    >
-      <Badge tone={tone}>{label}</Badge>
-    </button>
-  )
-}
 
 /** Task 16 实现:到期/新词数、连续天数、总进度、开始复习 / 快速测试、同步角标。 */
 export function Today() {
@@ -69,7 +37,7 @@ export function Today() {
     <Page
       eyebrow="Today"
       title="今日"
-      actions={<SyncBadge status={syncStatus} onRetry={() => void syncNow()} />}
+      actions={<SyncStatus status={syncStatus} onRetry={() => void syncNow()} />}
     >
       <Card className="today-stats">
         <div className="stat">

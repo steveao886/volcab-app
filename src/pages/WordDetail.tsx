@@ -7,6 +7,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { StateDot } from '../components/StateDot'
+import { SyncStatus } from '../components/SyncStatus'
 import { speak } from '../lib/tts'
 import { useApp } from '../state/store'
 import type { Word, WordState } from '../types'
@@ -100,13 +101,9 @@ export function WordDetail() {
         </Button>
       </div>
 
+      {/* 编辑/删除就发生在这一页,和词库页一样:只在失败时提示,但重试入口要在手边 */}
       {syncStatus === 'error' && syncError !== null && (
-        <p className="field__error" role="alert">
-          {syncError}{' '}
-          <button type="button" className="worddetail-retry" onClick={() => void syncNow()}>
-            重试同步
-          </button>
-        </p>
+        <SyncStatus variant="note" status={syncStatus} message={syncError} onRetry={() => void syncNow()} />
       )}
 
       {editing ? (

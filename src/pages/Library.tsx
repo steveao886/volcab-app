@@ -8,6 +8,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { StateDot } from '../components/StateDot'
+import { SyncStatus } from '../components/SyncStatus'
 import { TextInput } from '../components/TextInput'
 import { useApp } from '../state/store'
 import type { Word, WordState } from '../types'
@@ -178,14 +179,10 @@ export function Library() {
         </Button>
       }
     >
+      {/* 删改就发生在这一页,重试入口必须在这里,不能只留在今日页的角标上。
+          只在失败时出现:这一页的正文是 476 条词,不该被常驻的状态条占一行。 */}
       {syncStatus === 'error' && syncError !== null && (
-        <p className="field__error" role="alert">
-          {syncError}{' '}
-          {/* 删改就发生在这一页,重试入口必须在这里,不能只留在今日页的角标上 */}
-          <button type="button" className="library-retry" onClick={() => void syncNow()}>
-            重试同步
-          </button>
-        </p>
+        <SyncStatus variant="note" status={syncStatus} message={syncError} onRetry={() => void syncNow()} />
       )}
 
       <div className="library-search">
