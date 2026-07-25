@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { clozeCollocation, clozeExample, generateQuiz, sharedSynonyms } from './quiz'
+import { QUIZ_TYPES, clozeCollocation, clozeExample, generateQuiz, sharedSynonyms } from './quiz'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
 
@@ -28,7 +28,10 @@ describe('generateQuiz', () => {
     const qs = generateQuiz(words, studied(), 6, seq())
     expect(qs).toHaveLength(6)
     expect(new Set(qs.map(q => q.wordId)).size).toBe(6)
-    expect(new Set(qs.map(q => q.type)).size).toBe(3)
+    // 题型确定性轮换,一轮内均衡分布。这里不再硬编码题型总数 ——
+    // 断言的是「轮换」这个契约本身,新增题型时不必再改这一行。
+    const types = qs.map(q => q.type)
+    expect(new Set(types).size).toBe(Math.min(qs.length, QUIZ_TYPES.length))
   })
   it('选择题 4 个选项且含正确答案,选项不重复', () => {
     const qs = generateQuiz(words, studied(), 6, seq())
@@ -150,5 +153,31 @@ describe('sharedSynonyms', () => {
     ws[0].synonyms = ['x']
     ws[1].antonyms = ['X']
     expect(sharedSynonyms(ws).has('x')).toBe(true)
+  })
+})
+
+describe('新题型', () => {
+  it('例句挖空:提示含空格且不含答案词,四个词头选一', () => {
+    const qs = generateQuiz(words, studied(), 12, seq())
+    const q = qs.find(x => x.type === 'clozeExample')
+    if (q === undefined) return // 该轮未轮到,不算失败
+    expect(q.prompt).toContain('___')
+    expect(q.prompt.toLowerCase()).not.toContain(q.answer.toLowerCase())
+    expect(q.options).toHaveLength(4)
+    expect(q.options).toContain(q.answer)
+  })
+  it('搭配填空:同样不泄题', () => {
+    const qs = generateQuiz(words, studied(), 12, seq())
+    const q = qs.find(x => x.type === 'clozeCollocation')
+    if (q === undefined) return
+    expect(q.prompt).toContain('___')
+    expect(q.prompt.toLowerCase()).not.toContain(q.answer.toLowerCase())
+  })
+  it('近义/反义提示:标明种类,且提示词不是共享词', () => {
+    const qs = generateQuiz(words, studied(), 12, seq())
+    const q = qs.find(x => x.type === 'synonymHint')
+    if (q === undefined) return
+    expect(q.hintKind === 'synonym' || q.hintKind === 'antonym').toBe(true)
+    expect(sharedSynonyms(words).has(q.prompt.toLowerCase())).toBe(false)
   })
 })

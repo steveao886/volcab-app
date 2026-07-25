@@ -1,6 +1,13 @@
 import type { Progress, Word } from '../types'
 
-export type QuizType = 'word2meaning' | 'meaning2word' | 'spelling'
+export type QuizType =
+  | 'word2meaning' | 'meaning2word' | 'spelling'
+  | 'clozeExample' | 'clozeCollocation' | 'synonymHint'
+
+export const QUIZ_TYPES: readonly QuizType[] = [
+  'word2meaning', 'meaning2word', 'spelling',
+  'clozeExample', 'clozeCollocation', 'synonymHint',
+]
 
 export interface QuizQuestion {
   type: QuizType
@@ -12,6 +19,9 @@ export interface QuizQuestion {
    *  ——调用方（渲染层)不该靠正则从 prompt 里"抠"音标出来,那是在为一个
    *  拼接细节维护一份没人签字的隐性契约。 */
   phonetic?: string
+  /** 仅 synonymHint 题携带:提示词是近义还是反义,界面必须标明,
+   *  否则用户无从判断该选意思相同的还是相反的。 */
+  hintKind?: 'synonym' | 'antonym'
 }
 
 const meaningLabel = (w: Word) => {
@@ -117,7 +127,10 @@ export function generateQuiz(
   const pool = learned.length >= 4 ? learned : words
   if (pool.length < 4) return []
 
-  const types: QuizType[] = ['word2meaning', 'meaning2word', 'spelling']
+  // 共享词集合对全词库只算一次 —— 放进循环会变成 O(n²)
+  const sharedSynonymsCache = sharedSynonyms(words)
+
+  const types = QUIZ_TYPES
   const candidates = shuffle(pool, rng)
   const questions: QuizQuestion[] = []
 
@@ -131,6 +144,43 @@ export function generateQuiz(
         prompt: meaningLabel(w),
         options: [], answer: w.headword,
         phonetic: w.phonetic,
+      })
+      continue
+    }
+
+    const headwordLabel = (x: Word) => x.headword
+
+    if (type === 'clozeExample' || type === 'clozeCollocation') {
+      const sources = type === 'clozeExample' ? w.examples : w.collocations
+      let prompt: string | null = null
+      for (const s of sources) {
+        prompt = clozeExample(s, w.headword)
+        if (prompt !== null) break
+      }
+      if (prompt === null) continue // 这条词的例句/搭配都定位不到词头,换下一个候选词
+      const distractors = pickDistractorLabels(w, w.headword, headwordLabel, pool, words, rng)
+      if (!distractors) continue
+      questions.push({
+        type, wordId: w.id, prompt,
+        options: shuffle([w.headword, ...distractors], rng),
+        answer: w.headword,
+      })
+      continue
+    }
+
+    if (type === 'synonymHint') {
+      const shared = sharedSynonymsCache
+      const syn = w.synonyms.find(s => !shared.has(s.trim().toLowerCase()))
+      const ant = w.antonyms.find(s => !shared.has(s.trim().toLowerCase()))
+      const hint = syn ?? ant
+      if (hint === undefined) continue // 该词的近反义词全被共享,换下一个候选词
+      const distractors = pickDistractorLabels(w, w.headword, headwordLabel, pool, words, rng)
+      if (!distractors) continue
+      questions.push({
+        type, wordId: w.id, prompt: hint,
+        options: shuffle([w.headword, ...distractors], rng),
+        answer: w.headword,
+        hintKind: syn !== undefined ? 'synonym' : 'antonym',
       })
       continue
     }
