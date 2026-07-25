@@ -4,13 +4,14 @@ import { Link } from 'react-router-dom'
 import { Badge } from '../components/Badge'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { buildQueue } from '../lib/queue'
 import { todayStr } from '../lib/srs'
 import { speak } from '../lib/tts'
 import { ReviewCardBack } from './ReviewCard'
-import { advance, buildSessionQueue, currentId, dropCurrent, isDone } from './reviewQueue'
+import { advance, buildSessionQueue, currentId, dropCurrent, isDone, remaining } from './reviewQueue'
 import type { SessionQueue } from './reviewQueue'
 import { useApp } from '../state/store'
 import type { Grade } from '../types'
@@ -43,13 +44,15 @@ const PENDING_STUCK_TIMEOUT_MS = 2000
  * 一旦队首换了词,id 对不上,自然回退到"是否新词"的默认值,不需要另外重置。
  */
 export function Review() {
-  const { words, progress, grade } = useApp()
+  const { words, progress, grade, deleteWords } = useApp()
   const [today] = useState(() => todayStr(new Date()))
   const [queue, setQueue] = useState<SessionQueue>(() => {
     const q = buildQueue(words, progress, today)
     return buildSessionQueue(q.due, q.fresh)
   })
   const [manualFlip, setManualFlip] = useState<{ id: string; value: boolean } | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   // 打分之后需要"读回落库结果"才能决定要不要塞回队尾(见 reviewQueue.advance 的注释),
   // 这个 ref 只是在等待这一读之间记一下是哪张卡、防止同一张卡被连点两次打分。
   const pendingRef = useRef<string | undefined>(undefined)
@@ -131,6 +134,16 @@ export function Review() {
     }
   }, [curId, curWord])
 
+  function handleDelete() {
+    if (curWord === undefined || deleting) return
+    setDeleting(true)
+    // 与 WordDetail 同一套取舍:本地删除已是权威结果,不等网络推送完成。
+    // 这里额外要把它从会话队列里摘掉,否则队首还指着一个已不存在的词。
+    void deleteWords([curWord.id]).finally(() => setDeleting(false))
+    setQueue((q) => dropCurrent(q))
+    setConfirmDelete(false)
+  }
+
   const handleCardKeyDown = useCallback(
     (e: ReactKeyboardEvent<HTMLDivElement>) => {
       // 只处理卡片本身拿到焦点的情况;子元素(发音按钮)的按键交给它自己原生处理,
@@ -211,13 +224,11 @@ export function Review() {
           aria-valuemin={0}
           aria-valuemax={queue.total}
           aria-valuenow={queue.seen}
-          aria-valuetext={`${queue.seen} / ${queue.total}`}
+          aria-valuetext={`还剩 ${remaining(queue)} 张`}
         >
           <div className="progress__fill" style={{ width: `${(queue.seen / queue.total) * 100}%` }} />
         </div>
-        <p className="num muted review-progress__count">
-          {queue.seen} / {queue.total}
-        </p>
+        <p className="num muted review-progress__count">还剩 {remaining(queue)} 张</p>
       </div>
 
       <Card
@@ -273,6 +284,25 @@ export function Review() {
           <p className="muted review-hint">点击卡片或按空格键翻面</p>
         )}
       </div>
+
+      {flipped && (
+        <div className="review-cull">
+          <Button variant="ghost" size="sm" onClick={() => setConfirmDelete(true)}>
+            删除这个词
+          </Button>
+        </div>
+      )}
+
+      <ConfirmDialog
+        open={confirmDelete}
+        titleId="review-delete-title"
+        title={`删除「${curWord?.headword ?? ''}」?`}
+        body="这个词条以及它的学习进度(状态、复习次数、失误次数等)会一并删除,且无法恢复。"
+        confirmLabel="确认删除"
+        busy={deleting}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmDelete(false)}
+      />
     </Page>
   )
 }

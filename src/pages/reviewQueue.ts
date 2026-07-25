@@ -69,3 +69,14 @@ export function advance(
 export function dropCurrent(q: SessionQueue): SessionQueue {
   return { ids: q.ids.slice(1), seen: q.seen, total: q.total - 1 }
 }
+
+/**
+ * 还剩几张要看。
+ *
+ * 为什么不再直接显示 seen/total:total 会随学习步长重现而增长,用户设了
+ * 「每日新词 50」却看到分母 60,第一反应是算错了。剩余张数只减不增,
+ * 永远不与设置矛盾;重现只是让它下降变慢。
+ */
+export function remaining(q: SessionQueue): number {
+  return q.ids.length
+}
