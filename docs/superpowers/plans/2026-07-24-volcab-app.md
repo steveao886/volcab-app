@@ -1076,7 +1076,7 @@ git add scripts/parse-enex.ts scripts/parse-enex.test.ts && git commit -m "feat:
 { "version": 1, "entries": [ { "id": "abrogate", "headword": "abrogate", "sourceNote": "12-15" } ] }
 ```
 
-预期规模 500–800 条;若明显低于 400,回头检查是否漏了无标记笔记的难词。
+**难度筛选(合并后统一执行)**:候选表合并去重后,再过一遍严格难度关——只保留真正需要背诵的 C1+/C2 词,剔除 B2 及偏易的叙事填充词(outskirts、brisk、trivial、surplus、foster、memories 一类)。最终目标规模 **350–450 条**,宁缺毋滥(App 内可随时添加/删除)。
 
 - [ ] **Step 4: 抽查**:随机抽 3 篇笔记,人工比对笔记原文,确认粗体词无遗漏、词元还原正确。
 
@@ -1203,6 +1203,7 @@ interface AppActions {
   grade(wordId: string, g: Grade): void
   recordQuiz(correct: number, total: number, wrongIds: string[]): void
   saveWord(word: Word): Promise<void>       // 新增或编辑词条
+  deleteWords(ids: string[]): Promise<void> // 删除词条(同时清除其进度记录)
   updateSettings(s: Progress['settings']): void
   syncNow(): Promise<void>
   exportAll(): string                        // 导出 {words, progress} JSON 字符串
@@ -1217,6 +1218,7 @@ interface AppActions {
 4. **recordQuiz**:当日 `quizTaken+1`;wrongIds 中已有进度的词 `due` 提前为今天(不改 ease/interval,`lastReviewedAt` 更新为现在);置 dirty 推送。
 5. **推送**:`putFile('progress.json', json, 'sync progress', sha)`;返回 `'conflict'` → `getFile` → `mergeProgress(本地, 远端)` → 再 `putFile`(仅重试一次,再失败置 `syncStatus: 'error'`)。成功后更新 sha、清 dirty、`syncStatus: 'synced'`。
 6. **saveWord**:更新 `words` 数组(按 id upsert)→ 立即 `putFile('words.json', ...)`(words 变更不防抖);conflict 处理同上但 words 以"重新拉取后重放本次 upsert"解决。
+6b. **deleteWords(ids)**:从 `words` 数组移除这些 id,同时 `delete progress.words[id]`(避免残留孤儿进度)→ 立即推送 words.json,progress 走正常防抖推送;conflict 同 saveWord,重新拉取后重放本次删除。
 7. 监听 `online/offline` 事件与 `visibilitychange`(hidden 时若 dirty 立即推送);离线时 `syncStatus: 'offline'`,恢复后自动推送。
 
 - [ ] **Step 2: 验证**:dev 模式下用真实 token 手动走通 login → 改一次进度 → 刷新页面进度还在 → GitHub 网页上能看到 `volcab-data` 的 commit。(此步依赖 Task 24 数据仓库已建;若先做本任务,用临时测试仓库。)
@@ -1230,7 +1232,7 @@ interface AppActions {
 - [ ] **Task 16 Today** (`src/pages/Today.tsx`):用 `buildQueue` 显示今日到期数/新词数;streak(由 dailyStats 从今天往前数连续 reviewed>0 的天数,今天没复习不断签,从昨天起算);总进度(review 状态词数 / 总词数);主按钮"开始复习"(due+fresh 为空时显示"今日完成 🎉")、副按钮"快速测试";syncStatus 角标(pending/offline/error 时可点击触发 `syncNow`)。
 - [ ] **Task 17 Review** (`src/pages/Review.tsx`):会话队列 = `buildQueue().due` + `.fresh`(fresh 词首次展示带"新词"徽标并直接亮出释义面);卡片正面 headword + 发音按钮(`speak`);点击/空格翻面显示音标、全部 meanings、examples、synonyms/antonyms、collocations;四个打分按钮(重来/困难/良好/简单)调 `grade()`;打分后 learning 状态且 due 仍为今天的词插回队列尾部(实现 1min/10min 步长的会话内重现);顶部进度 x/y;队列清空显示完成页(今日 reviewed 数)+ 返回。
 - [ ] **Task 18 Quiz** (`src/pages/Quiz.tsx`):`generateQuiz(words, progress, 10)`;选择题点选后即时判对错(正确绿/错误红并标出正确项),拼写题输入框 + 提交(不区分大小写,trim);下一题;结束页显示得分、错词列表(可点进详情),调 `recordQuiz`;词库不足 4 词时提示不可测。
-- [ ] **Task 19 Library + WordDetail** (`src/pages/Library.tsx`, `src/pages/WordDetail.tsx`):搜索框(词头前缀/子串、en/zh 释义子串,大小写不敏感,即输即搜);筛选 chips(全部/未学/学习中/已掌握 + 按 sourceNote);列表行:headword、首义项 zh、状态点;点击进 `/word/:id`。详情页:完整词条 + 发音 + 学习状态(state/due/reps/lapses)+ "编辑"(表单改 meanings/examples/synonyms/antonyms/collocations,保存调 `saveWord`)。
+- [ ] **Task 19 Library + WordDetail** (`src/pages/Library.tsx`, `src/pages/WordDetail.tsx`):搜索框(词头前缀/子串、en/zh 释义子串,大小写不敏感,即输即搜);筛选 chips(全部/未学/学习中/已掌握 + 按 sourceNote);列表行:headword、首义项 zh、状态点;点击进 `/word/:id`。**批量管理**:列表右上"管理"切换多选模式,行首出现复选框 + 全选,底部出现"删除所选 (N)"按钮,点击弹确认框(列出将删除的词数,警告进度一并清除),确认后调 `deleteWords(ids)`。详情页:完整词条 + 发音 + 学习状态(state/due/reps/lapses)+ "编辑"(表单改 meanings/examples/synonyms/antonyms/collocations,保存调 `saveWord`)+ "删除此词"(二次确认后调 `deleteWords([id])`,成功后返回词库页)。
 - [ ] **Task 20 AddWord** (`src/pages/AddWord.tsx`):输入单词 → "查询"调 `https://api.dictionaryapi.dev/api/v2/entries/en/<word>`(取 phonetic 与前 3 个 meanings 的 partOfSpeech/definition 预填,zh 留空待填)→ 可编辑全部字段(zh 必填才能保存)→ `saveWord`(id 取小写,sourceNote: "manual",addedAt 今天;id 已存在则提示改为编辑)。API 404/失败 → 提示并进入全手动表单。
 - [ ] **Task 21 Settings** (`src/pages/Settings.tsx`):每日新词数(数字输入,1–50,调 `updateSettings`);账号信息(owner + token 后 4 位)、"退出登录"(确认后 `logout`);"导出备份"(`exportAll` 下载 volcab-backup-YYYY-MM-DD.json);App 版本号。
 
