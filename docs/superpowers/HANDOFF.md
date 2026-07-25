@@ -1,53 +1,121 @@
 # Volcab 项目交接备忘
 
-**更新时间**:Phase 2 完成时
-**下一步**:Phase 3(UI 与 PWA,计划中的 Task 13-22)
+**更新时间**:Phase 3 完成时
+**下一步**:Phase 4(部署与数据仓库,计划中的 Task 23–25)——**等你发话再开始**
 
 ---
 
 ## 一句话状态
 
-记单词 PWA。核心逻辑与词库已完成并通过测试;**UI 一行没写**(`src/App.tsx` 还是 Vite 模板页)。下一步从 Task 13(设计系统)开始。
+记单词 PWA。核心逻辑、词库、**全部界面**都已完成,`master` 上 174 测试全过、类型检查/构建/lint 全绿、词库 476 条通过 schema 校验。**但整个 app 从未用真实 token 跑过一次**——认证路径只被开发模式的演示入口替代验证过。
 
 ## 已完成
 
 | 阶段 | 内容 | 产出 |
 |---|---|---|
-| Phase 1 | 脚手架 + 核心纯函数模块 | `src/lib/{srs,queue,merge,quiz,github,storage,tts}.ts`,37 测试全过 |
-| Phase 2 | 词库构建 | `data/words.json`(**476 词条**),`data/wordlist.json`(词表),`scripts/{parse-enex,validate-words}.ts` |
+| Phase 1 | 脚手架 + 核心纯函数 | `src/lib/{srs,queue,merge,quiz,github,storage,tts}.ts` |
+| Phase 2 | 词库构建 | `data/words.json`(476 词条)、`data/wordlist.json`、`scripts/{parse-enex,validate-words}.ts` |
+| Phase 3 | 设计系统 + 状态/同步引擎 + 八个页面 + PWA | `src/{styles,components,state,pages}/`、`public/icon-*.png` |
 
 **验证命令**(应全绿):
 
 ```bash
-npm test && npx tsc -b --noEmit && npm run validate-words
+npm test && npx tsc -b --noEmit && npm run build && npx oxlint && npm run validate-words
 ```
 
-## 待办:Phase 3 与 Phase 4
+**看设计系统**:`npm run dev` → `#/dev`(仅开发模式)。每个组件的每种状态都在那一页。
 
-按 `docs/superpowers/plans/2026-07-24-volcab-app.md` 执行:
+**没有真实数据时怎么看界面**:登录页底部有「演示模式(仅开发)」按钮,直接载入本地 476 词词库,不连网络。生产构建里不存在(已验证 `dist` 里 0 次命中)。
 
-- **Task 13** 设计系统与 App 骨架 —— **必须用 frontend-design skill**(用户明确要求),移动端优先、深浅色、有辨识度
-- **Task 14** `src/state/store.tsx` 全局状态与同步引擎(计划里有完整编排规则)
-- **Task 15-21** 八个页面:Login / Today / Review / Quiz / Library+WordDetail / AddWord / Settings
-- **Task 22** PWA 图标与离线
-- **Task 23-25** GitHub Pages 部署、创建 `volcab-data` 私有仓库、端到端验收
+---
 
-执行方式:subagent-driven-development(每任务一个 subagent + spec 审查 + 质量审查)。
+## Phase 4 待办(Task 23–25)
 
-## 关键决定(会话中产生,计划文档已同步)
+按 `docs/superpowers/plans/2026-07-24-volcab-app.md` 执行。
 
-1. **词库难度收紧**:候选 814 → 去重 771 → 严格 C1+/C2 筛选 → 431 通用词;用户后来要求把专业术语加回,追加 45 个(信息安全/医学/化学/修辞/哲学/经济),**最终 476**。
-2. **例句全部重新创作**:现代生活与工作场景(职场、通勤、租房、社交媒体、AI 工具等),**不用 Evernote 笔记原文**。笔记只用来定词表。
-3. **新增 `relatedForms` 字段**:同根变形不单独收词(避免复习重复),而是在词条详情页作为"同根词"一栏展示 `{form, pos, zh}`。342 个词有内容。`src/types.ts` 与校验脚本已支持。
-4. **词条管理**:App 需支持删除——词库页多选批量删 + 详情页单条删,删除时一并清除该词的学习进度(`store.deleteWords(ids)`)。
-5. **认证**:GitHub fine-grained PAT 即密码,数据存私有仓库 `volcab-data`。
+- **Task 23** GitHub Pages 部署:写 `.github/workflows/deploy.yml`、建公开仓库 `volcab-app`、开 Pages
+- **Task 24** 建私有仓库 `volcab-data`,推入 `words.json` 与空 `progress.json`;你自己生成 fine-grained PAT
+- **Task 25** 端到端验收(桌面 + 手机 + 离线 + 双设备冲突合并)
+
+**开工前你必须先定的事:**
+
+1. **用哪个 GitHub 账号。** `gh` 当前登录 `steveao886`,你提过可能换新账号。建公开仓库并推送是不可逆的对外动作。
+2. **PAT 只能你自己生成。** 我不会代你创建或填写凭据——这也是这个 app 的安全模型本身要求的(token 只存在你的浏览器里)。
+3. **手机端验收只能你做**:加到主屏、飞行模式复习、两台设备各复习不同的词再看合并结果。
+
+---
+
+## 必须由你亲自验证的清单
+
+这些是自动化和 agent 都够不到的地方,按重要性排:
+
+1. **真实 PAT 打通认证路径。** 全程无人跑过。特别确认 `GitHubClient.whoAmI`(`GET /user`)对一个只勾了单仓库 Contents 权限的 token 能正常返回 `login`——按 GitHub 文档它不需要额外权限,但没人实测过。
+2. **401 恢复流程。** 离线改一个词 → 在 github.com 上吊销 token → 让推送失败 → 确认被踢回登录页 → 点指引里的外链(新标签页)→ 回来用新 token 登录 → **确认那次编辑还在**。这条路径刚修过(见下),值得亲自走一遍。
+3. **双设备冲突合并。** 30 秒内手机复习 A 词、电脑复习 B 词,确认两端最终都有两条记录,且 `progress.json` 有合并提交。
+4. **装到手机主屏**,检查 maskable 图标的安全区、底部导航与复习页固定打分栏的安全区内边距、飞行模式复习后联网是否自动产生提交。
+5. **界面的肉眼审美。** 这一轮**没有一张截图**——本环境的浏览器面板不合成画面,截图工具全程超时。所有视觉结论都是 DOM 结构 + 计算样式层面的,深浅色两套都核过数值,但"好不好看"没人真正看过。
+
+---
+
+## Phase 3 里被发现并修掉的、值得知道的问题
+
+按"如果没修会怎样"排序:
+
+1. **词库编辑推送失败后可能被远端悄悄覆盖。** 词库的待推送队列原本只在内存里,推送失败 + 关标签页 = 编辑丢失。已改为持久化到 localStorage,启动时先把待推送操作重放到刚拉回的远端副本上再信任它。
+2. **待推送队列在 token 失效后会被清空。** `flushWords` 把「演示模式」和「没有 client」用同一个分支处理,都清队列。而 token 失效被踢回登录页时是**故意**保留队列等重新登录后重放的——切个后台就会触发清空。已拆成两个分支。
+3. **添加新词页没有任何入口。** 唯一的 `/add` 链接在"词库为空"的空状态里,词库一有词就消失;底部导航只有四格;PWA 独立窗口没有地址栏。等于 509 行的页面装机后走不到。已在词库页头加常驻入口。
+4. **PAT 指引缺少有效期那一步。** GitHub 默认 30 天,而设计文档承诺"每台设备粘贴一次"。照着指引走完的用户一个月后会被锁在外面,只看到一句"登录信息已失效"。已补,并写明选短了的后果。
+5. **删除词条时会闪出「这个词条不存在」。** `navigate()` 走 `startTransition`,优先级低于本地摘除,React 先提交"词没了、路由没切"。在一个专门用来删数据的页面上弹这句话,最容易让人以为删错了。已用删除前快照顶住空窗。
+6. **中文释义搜索对大小写敏感。** 查询词转了小写,`m.zh` 没转。当前 476 条里嵌拉丁字母的有 15 条且恰好全小写,所以是哑火状态——词库一变就静默失效。已修并补了会红的测试。
+7. **全角逗号切不开标签。** 同义词输入框的分隔符字符类里两个逗号都是 ASCII,中文输入法默认的全角逗号不在其中,结果整串存成一条乱码,不报错、能保存、校验器也拦不住。已修。
+8. **编辑表单能存出通不过 `validate-words` 的词条**(例句少于 2 句、同义词含词条本身)。添加页严格、编辑页不严格,两个 agent 两套标准。已对齐。
+
+---
+
+## 已知问题(**没修**,留给你决定)
+
+**中等,建议在 Phase 4 之前或期间处理:**
+
+1. **`words.json` 已用掉 GitHub Contents API 单文件 1 MB 上限的 53%。** 实测 559,938 字节,base64 后 746,584 字节。**再加约 400 个词就会越界**,越界后 `GET /contents` 返回空 content,老设备靠缓存还能用,但**新设备永远登录不上**。要么在推送前加体积检查,要么读取改走 Git Blob API。
+2. **词库/词条页返回是「push」不是「pop」。** 搜索词、筛选、滚动位置全部丢失,476 行列表每次都回到顶部;而且历史栈只增不减,独立窗口下系统返回手势会把你送回刚看完的那个词。
+3. **测验结果页点错词 = 结果没了。** 点进词条详情后 `QuizSession` 卸载,回来是全新一轮,做完会再记一次 `quizTaken`。
+4. **新添加的词几个月内不会进入复习队列。** 新词按词库顺序取,新词排在数组末尾。这是符合规格的行为(spec 明确写"按词库顺序"),但你第一次加词后会觉得奇怪。
+5. **设置页版本号是「开发预览版」。** `package.json` 是 `0.0.0`。Task 25 结尾要打 `v1.0.0`,那时应当用 `define: { __APP_VERSION__: ... }` 注入真实版本。
+
+**小,可以一直不管:**
+
+- 复习页的「同根词」等章节标题与详情页曾用两种样式,已统一为 `.section-title`;但"眉标"这一类(11px 大写 + 大字距)仍散在四处(`.pos` / `.page__eyebrow` / `.quiz-q__label` / `.review-done__label`),只差颜色。要不要再抽一个 `.eyebrow` 是设计判断,没动。
+- `saveWord` 不会同步把 `syncStatus` 置为 `pending`,角标要等推送落地才变。
+- `dist/favicon.svg` 不在 SW 预缓存清单里(图标和 manifest 在)。
+- 快速测试"词条不足 4 个"的文案挂在 `questions.length === 0` 上,理论上词够但干扰项全被去重时也会命中。现有词库下不可达。
+
+---
+
+## 待你拍板的设计问题
+
+1. **`srs.ts` 的学习步长要不要真的按分钟计时?** 设计文档写「1 分钟 → 10 分钟」,但 `srs.ts` 没有时间维度——`learning` 的词 `due` 永远是今天,所谓重现是复习页把卡片插回队尾实现的。**我倾向不改**,只把文档措辞修正成"同一会话内队尾重现";真要按分钟计时,`ProgressEntry` 得加时间戳,`srs.ts` 与它的 37 个测试都要返工。
+2. **同步状态要不要做按字段的渲染隔离?** 现在任何同步心跳都会让所有订阅者重渲染。476 词量级无感(词库页的过滤已单独 memo 化),更大规模才会显形。要做得拆 context 或上 selector。
+3. **快速测试的 `correct`/`total` 目前没有落地。** `recordQuiz` 只记 `quizTaken`,因为 `DailyStat` 没有放测验成绩的字段。要不要加。
+
+---
+
+## 关键决定(Phase 3 期间产生)
+
+1. **UI 一律不写组件测试**,这是计划的有意决定;但**有真实逻辑的部分强制 TDD 并单独成文件**:`state/sync.ts`(同步编排)、`pages/reviewQueue.ts`(会话队列)、`pages/libraryFilter.ts`(搜索筛选)、`pages/todayStats.ts`(连续天数)、`pages/dictionaryApi.ts`(外部 JSON 映射)。174 个测试里绝大部分来自这五个文件。
+2. **同步状态四态统一为 `SyncStatus` 一个组件**,pending/offline/error 三态都可点重试;但"什么时候显示"由各页自己决定(今日页与添加页常驻,词库/词条页只在失败时出现)。
+3. **`AppState` 加了计划里没有的 `syncError`**。计划钉死的接口只有 `loginError`,导致 §8 要求的"提示导出备份"这句话生成了却没有出口。
+4. **`Button` 支持 ref**。两个 agent 分别撞上"Button 不接受 ref"并各绕了一次(一个用固定 id,一个在容器上 querySelector),已补在组件上并撤掉两处绕法。
+
+---
 
 ## 环境与注意事项
 
-- `gh` CLI 当前登录账号:**steveao886**。用户提过可能换新 GitHub 账号——**部署前(Task 23/24)先确认用哪个账号**,必要时让用户 `gh auth login`。
-- `Volcab.enex` 是个人笔记,已在 `.gitignore`,**永远不要 git add**(app 仓库将来是公开的)。
-- `scripts/out/` 是中间产物(候选词表、13 个生成批次),已 gitignore,可安全删除。
+- `Volcab.enex` 是个人笔记,已 gitignore,**永远不要 git add**(app 仓库将来是公开的)。已确认从未被跟踪。
 - Windows 环境,PowerShell 与 Git Bash 均可用。
+- **本环境的浏览器面板不合成画面**:截图必超时,坐标点击不生效,`getComputedStyle` 在 CSS 过渡期间返回旧值,`requestAnimationFrame` 不触发。用 JS 派发事件 + DOM 读取才可靠。
+- **HMR 会骗人**。改了代码后页面行为不变时,先强制刷新再下结论——我就差点因此误判一个修复无效。
+- **面板没有焦点时 `el.blur()` 不产生 React 能收到的 `focusout`**。测试表单提交要派发冒泡的 `focusout`,否则会误以为 `onBlur` 没接上。
+- `preview_start` 不带显式 URL 时可能读到主仓库的配置而不是当前目录的。
 
 ## 用户偏好
 
