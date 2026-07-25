@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Badge } from '../components/Badge'
 import { Button } from '../components/Button'
@@ -46,10 +47,23 @@ export function Today() {
   const { words, progress, syncStatus, syncNow } = useApp()
 
   const today = todayStr(new Date())
-  const { due, fresh } = buildQueue(words, progress, today)
-  const streak = computeStreak(progress.dailyStats, today)
-  const { count, total, ratio } = reviewProgress(words, progress)
-  const queueEmpty = due.length === 0 && fresh.length === 0
+  // useApp() 的 context value 在任何 provider 重渲染时都会是新对象(比如 syncStatus
+  // 翻转),这三项推导都要过一遍 476 个词,值没变就不用重算 —— Library 的搜索接下来
+  // 会照着这个先例在每次按键时跑同一份数组,这里先立好规矩。
+  const { due, fresh, streak, count, total, ratio, queueEmpty } = useMemo(() => {
+    const queue = buildQueue(words, progress, today)
+    const streak = computeStreak(progress.dailyStats, today)
+    const rp = reviewProgress(words, progress)
+    return {
+      due: queue.due,
+      fresh: queue.fresh,
+      streak,
+      count: rp.count,
+      total: rp.total,
+      ratio: rp.ratio,
+      queueEmpty: queue.due.length === 0 && queue.fresh.length === 0,
+    }
+  }, [words, progress, today])
 
   return (
     <Page
@@ -74,12 +88,21 @@ export function Today() {
 
       <Card className="today-progress">
         <div className="today-progress__head">
-          <p className="today-progress__label">总进度</p>
+          <p className="today-progress__label" id="today-progress-label">
+            总进度
+          </p>
           <p className="num muted">
             {count} / {total}
           </p>
         </div>
-        <div className="progress">
+        <div
+          className="progress"
+          role="progressbar"
+          aria-labelledby="today-progress-label"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(ratio * 100)}
+        >
           <div className="progress__fill" style={{ width: `${Math.round(ratio * 100)}%` }} />
         </div>
       </Card>

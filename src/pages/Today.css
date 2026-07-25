@@ -2,8 +2,18 @@
 
 /* --- 同步角标:视觉上就是一枚 Badge,外面套一个原生 <button> 拿到可点语义 --- */
 .today-sync {
+  position: relative;
   display: inline-flex;
   border-radius: var(--r-xs);
+}
+
+/* Badge 视觉高度只有 22px,不到 --tap 一半。跟 .btn--sm::after / .chip::after
+   一个套路:不改视觉大小,只用伪元素把命中区纵向补到 44px((44-22)/2 = 11px)。 */
+.today-sync::after {
+  content: '';
+  position: absolute;
+  inset-block: -11px;
+  inset-inline: 0;
 }
 
 /* --- 概览统计:到期 / 新词 / 连续天数,三栏等分 -------------------------- */

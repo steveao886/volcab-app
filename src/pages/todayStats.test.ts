@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { computeStreak } from './todayStats'
-import { emptyStat } from '../types'
-import type { DailyStat } from '../types'
+import { computeStreak, reviewProgress } from './todayStats'
+import { emptyProgress, emptyStat } from '../types'
+import type { DailyStat, Progress, Word } from '../types'
 
 const stat = (reviewed: number): DailyStat => ({ ...emptyStat(), reviewed })
+
+const word = (id: string): Word => ({
+  id, headword: id, phonetic: '/x/', meanings: [{ pos: 'n.', en: 'x', zh: 'x' }],
+  examples: ['a', 'b'], synonyms: [], antonyms: [], collocations: [], relatedForms: [], sourceNote: 't', addedAt: '2026-07-01',
+})
 
 describe('computeStreak', () => {
   it('空 dailyStats → 0', () => {
@@ -53,5 +58,27 @@ describe('computeStreak', () => {
       // 2026-07-29 缺失 —— 缺口
     }
     expect(computeStreak(stats, '2026-08-02')).toBe(4)
+  })
+})
+
+describe('reviewProgress', () => {
+  it('正常占比:review 状态词数 / 总词数', () => {
+    const words = ['alpha', 'bravo', 'carol', 'delta', 'echo'].map(word)
+    const progress: Progress = emptyProgress()
+    progress.words['alpha'] = { state: 'review', ease: 2.5, intervalDays: 10, due: '2026-08-01', stepIndex: 0, reps: 3, lapses: 0, lastReviewedAt: '2026-07-01T00:00:00Z' }
+    progress.words['bravo'] = { state: 'review', ease: 2.5, intervalDays: 5, due: '2026-07-30', stepIndex: 0, reps: 2, lapses: 0, lastReviewedAt: '2026-07-01T00:00:00Z' }
+    progress.words['carol'] = { state: 'learning', ease: 2.5, intervalDays: 0, due: '2026-07-25', stepIndex: 1, reps: 1, lapses: 0, lastReviewedAt: '2026-07-25T00:00:00Z' }
+    expect(reviewProgress(words, progress)).toEqual({ count: 2, total: 5, ratio: 0.4 })
+  })
+
+  it('全部是 new(progress.words 为空)→ count 0,ratio 0', () => {
+    const words = ['alpha', 'bravo'].map(word)
+    expect(reviewProgress(words, emptyProgress())).toEqual({ count: 0, total: 2, ratio: 0 })
+  })
+
+  it('词库为空 → {count:0, total:0, ratio:0},不产生 NaN', () => {
+    const result = reviewProgress([], emptyProgress())
+    expect(result).toEqual({ count: 0, total: 0, ratio: 0 })
+    expect(Number.isNaN(result.ratio)).toBe(false)
   })
 })
