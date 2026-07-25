@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
@@ -29,7 +29,17 @@ export function WordDetail() {
   const [deleting, setDeleting] = useState(false)
 
   // Hooks 必须无条件调用,「词不存在」的分支放在所有 hook 之后再 return。
-  const word = useMemo(() => words.find(w => w.id === id), [words, id])
+  const liveWord = useMemo(() => words.find(w => w.id === id), [words, id])
+
+  // 删除时会有一小段「词已经没了、但路由还没切走」的空窗:deleteWords 的本地
+  // 摘除是普通更新,而 navigate() 在 react-router 里走 startTransition,优先级
+  // 更低,所以 React 会先提交前者。实测这中间能停留 ~70ms,足够闪出一屏
+  // 「这个词条不存在」—— 在一个专门用来删数据的页面上,这是最不该出现的误报。
+  // 用删除前的快照顶住这段空窗;它只在 deleting 期间生效,真·找不到词的场景
+  // (陈旧链接、别的设备删掉了)不受影响,仍然走下面的未找到分支。
+  const lastWordRef = useRef<Word | undefined>(undefined)
+  if (liveWord !== undefined) lastWordRef.current = liveWord
+  const word = liveWord ?? (deleting ? lastWordRef.current : undefined)
 
   async function handleSave(updated: Word) {
     setSaving(true)
