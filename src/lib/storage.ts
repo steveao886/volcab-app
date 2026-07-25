@@ -6,6 +6,7 @@ const KEYS = {
   progress: 'volcab.progress',
   progressSha: 'volcab.progressSha',
   dirty: 'volcab.dirty',
+  wordOps: 'volcab.wordOps',   // 尚未确认推上远端的词库增删,进程重启后还要重放
 } as const
 
 export type StorageKey = keyof typeof KEYS

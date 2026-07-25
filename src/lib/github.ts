@@ -2,6 +2,15 @@ const API = 'https://api.github.com'
 
 export interface RemoteFile { content: string; sha: string }
 
+/**
+ * 403 既可能是「token 权限不够」也可能是「被限流」,两者的处置完全不同
+ * (前者要重新授权,后者只需等一会儿),所以把配额用尽这一位带进报错文案里。
+ */
+function statusTag(res: Response): string {
+  const limited = res.status === 403 && res.headers.get('x-ratelimit-remaining') === '0'
+  return `HTTP ${res.status}${limited ? ', rate-limited' : ''}`
+}
+
 export class GitHubClient {
   private token: string
   private owner: string
@@ -26,7 +35,7 @@ export class GitHubClient {
     const res = await fetch(`${API}/user`, {
       headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
     })
-    if (!res.ok) throw new Error(`Token 无效或已过期 (HTTP ${res.status})`)
+    if (!res.ok) throw new Error(`Token 无效或已过期 (${statusTag(res)})`)
     return (await res.json()).login as string
   }
 
@@ -34,7 +43,7 @@ export class GitHubClient {
   async validate(): Promise<void> {
     const res = await fetch(`${API}/repos/${this.owner}/${this.repo}`, { headers: this.headers() })
     if (res.status === 404) throw new Error(`找不到 ${this.owner}/${this.repo}——请确认 token 已勾选该仓库的访问权限`)
-    if (!res.ok) throw new Error(`无法访问数据仓库 (HTTP ${res.status})`)
+    if (!res.ok) throw new Error(`无法访问数据仓库 (${statusTag(res)})`)
   }
 
   async getFile(path: string): Promise<RemoteFile | null> {
@@ -43,7 +52,7 @@ export class GitHubClient {
       cache: 'no-store',
     })
     if (res.status === 404) return null
-    if (!res.ok) throw new Error(`读取 ${path} 失败 (HTTP ${res.status})`)
+    if (!res.ok) throw new Error(`读取 ${path} 失败 (${statusTag(res)})`)
     const data = await res.json()
     return { content: fromBase64(data.content), sha: data.sha }
   }
@@ -56,7 +65,7 @@ export class GitHubClient {
       body: JSON.stringify({ message, content: toBase64(content), ...(sha ? { sha } : {}) }),
     })
     if (res.status === 409 || res.status === 422) return 'conflict'
-    if (!res.ok) throw new Error(`写入 ${path} 失败 (HTTP ${res.status})`)
+    if (!res.ok) throw new Error(`写入 ${path} 失败 (${statusTag(res)})`)
     return { sha: (await res.json()).content.sha as string }
   }
 }

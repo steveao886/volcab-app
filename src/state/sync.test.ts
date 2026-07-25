@@ -1,9 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { applyWordOps, parseProgress, parseWords, pushProgress, pushWords } from './sync'
+import {
+  applyWordOps, parseProgress, parseWords, pushProgress, pushWords,
+  reconcileProgress, reconcileWords,
+} from './sync'
 import type { SyncClient, WordsOp } from './sync'
 import { emptyProgress } from '../types'
 import type { Progress, ProgressEntry, Word } from '../types'
 import { storage } from '../lib/storage'
+import realLibrary from '../../data/words.json'
 
 // --- 测试替身 -------------------------------------------------------------
 // 纯对象假 client:不发 HTTP、不 mock 模块,按脚本依次返回 putFile 的结果。
@@ -260,6 +264,77 @@ describe('pushWords', () => {
   })
 })
 
+describe('会话已结束时的回写', () => {
+  it('登出后才返回的推送不再回写任何簿记', async () => {
+    storage.set('progressSha', 'sha-old')
+    const { client } = fakeClient({ puts: [{ sha: 'sha-new' }] })
+    const out = await pushProgress(client, emptyProgress(), { alive: () => false })
+
+    expect(out.ok).toBe(true)          // 请求本身是成功的
+    expect(storage.get('progressSha')).toBe('sha-old')   // 但本机已经换人了,不留痕
+  })
+
+  it('登出后失败的推送也不把 dirty 写回来', async () => {
+    const { client } = fakeClient({ puts: [new TypeError('Failed to fetch')] })
+    await pushProgress(client, emptyProgress(), { alive: () => false })
+    expect(storage.get('dirty')).toBeNull()
+  })
+})
+
+// --- 推送返回后与「此刻」本地状态的对账 -----------------------------------
+// 这是「飞行途中又打了一次分」不被吞掉的唯一机制,单独抽出来保证它不会被
+// 当成 sync 内部合并的冗余而删掉。
+
+describe('reconcileProgress', () => {
+  it('推送期间本地没动过:原样返回,不产生新对象', () => {
+    const current = emptyProgress()
+    expect(reconcileProgress(current, current)).toBe(current)
+  })
+
+  it('推送期间又打了一次分:那一笔必须活下来,同时保住远端合并进来的词', () => {
+    // 推送开始时的快照 + 远端他端记录,合并后由 pushProgress 回传
+    const pushed = emptyProgress()
+    pushed.words['a'] = entry('2026-07-25T01:00:00Z', 1)
+    pushed.words['remote-only'] = entry('2026-07-25T00:30:00Z', 7)
+    pushed.dailyStats['2026-07-25'] = { reviewed: 1, newLearned: 1, correct: 1, quizTaken: 0 }
+
+    // 请求还在飞的时候,用户又复习了 a 和 b
+    const current = emptyProgress()
+    current.words['a'] = entry('2026-07-25T02:00:00Z', 2)
+    current.words['b'] = entry('2026-07-25T02:00:01Z', 1)
+    current.dailyStats['2026-07-25'] = { reviewed: 3, newLearned: 2, correct: 3, quizTaken: 0 }
+
+    const out = reconcileProgress(current, pushed)
+    expect(out.words['a'].reps).toBe(2)              // 飞行途中的那一笔没被旧快照盖回去
+    expect(out.words['b']).toBeDefined()
+    expect(out.words['remote-only'].reps).toBe(7)    // 远端合并进来的也还在
+    expect(out.dailyStats['2026-07-25'].reviewed).toBe(3)
+  })
+})
+
+describe('reconcileWords', () => {
+  it('推送期间本地没动过:原样返回', () => {
+    const current = [word('a')]
+    expect(reconcileWords(current, current, [])).toBe(current)
+  })
+
+  it('推送期间新加的词要补回到「远端+重放」的结果上', () => {
+    // 冲突重放后的结果:远端并发加的 gamma + 本次推送的 zeta
+    const pushed = [word('alpha'), word('gamma'), word('zeta')]
+    // 推送还在飞的时候用户又加了 later,它不在本次推送里
+    const remaining: WordsOp[] = [{ kind: 'upsert', word: word('later') }]
+
+    const out = reconcileWords([word('alpha'), word('zeta'), word('later')], pushed, remaining)
+    expect(out.map(w => w.id).sort()).toEqual(['alpha', 'gamma', 'later', 'zeta'])
+  })
+
+  it('推送期间的删除同样要补上', () => {
+    const pushed = [word('alpha'), word('gamma')]
+    const out = reconcileWords([word('alpha')], pushed, [{ kind: 'delete', ids: ['gamma'] }])
+    expect(out.map(w => w.id)).toEqual(['alpha'])
+  })
+})
+
 // --- 纯函数 ---------------------------------------------------------------
 
 describe('applyWordOps', () => {
@@ -294,6 +369,15 @@ describe('parse 守卫', () => {
     expect(() => parseProgress(text)).toThrow()
   })
 
+  it.each([
+    ['进度条目缺字段', '{"version":1,"settings":{"newPerDay":10},"words":{"a":{"state":"review"}},"dailyStats":{}}'],
+    ['进度条目 state 不合法', `{"version":1,"settings":{"newPerDay":10},"words":{"a":${JSON.stringify({ ...entry('t', 1), state: 'bogus' })}},"dailyStats":{}}`],
+    ['日统计缺字段', '{"version":1,"settings":{"newPerDay":10},"words":{},"dailyStats":{"2026-07-25":{"reviewed":1}}}'],
+    ['日统计字段不是数字', '{"version":1,"settings":{"newPerDay":10},"words":{},"dailyStats":{"2026-07-25":{"reviewed":"1","newLearned":0,"correct":0,"quizTaken":0}}}'],
+  ])('parseProgress 拒绝%s —— 半坏的文件会在页面上炸,不能放行', (_label, text) => {
+    expect(() => parseProgress(text)).toThrow()
+  })
+
   it('parseWords 接受合法文件', () => {
     expect(parseWords(wordsFile(['a', 'b'])).map(w => w.id)).toEqual(['a', 'b'])
   })
@@ -302,7 +386,19 @@ describe('parse 守卫', () => {
     ['顶层是数组', '[]'],
     ['words 不是数组', '{"version":1,"words":{}}'],
     ['词条缺 id', '{"version":1,"words":[{"headword":"x"}]}'],
+    ['词条缺 meanings', `{"version":1,"words":[${JSON.stringify({ ...word('a'), meanings: undefined })}]}`],
+    ['meanings 是空数组', `{"version":1,"words":[${JSON.stringify({ ...word('a'), meanings: [] })}]}`],
+    ['meanings 条目缺 zh', '{"version":1,"words":[{"id":"a","headword":"a","phonetic":"/a/","meanings":[{"pos":"n.","en":"a"}],"examples":[],"synonyms":[],"antonyms":[],"collocations":[],"relatedForms":[],"sourceNote":"m","addedAt":"2026-07-25"}]}'],
+    ['examples 不是数组', `{"version":1,"words":[${JSON.stringify({ ...word('a'), examples: 'nope' })}]}`],
+    ['relatedForms 缺失', `{"version":1,"words":[${JSON.stringify({ ...word('a'), relatedForms: undefined })}]}`],
   ])('parseWords 拒绝%s', (_label, text) => {
     expect(() => parseWords(text)).toThrow()
+  })
+
+  // Task 24 会把这份文件原样推进 volcab-data,它必须能过我们自己的校验
+  it('仓库里的 476 词词库能通过 parseWords', () => {
+    const parsed = parseWords(JSON.stringify(realLibrary))
+    expect(parsed).toHaveLength(476)
+    expect(parsed.some(w => w.id === 'interchangeability')).toBe(true)
   })
 })
