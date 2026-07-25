@@ -10,7 +10,7 @@ import { buildQueue } from '../lib/queue'
 import { todayStr } from '../lib/srs'
 import { speak } from '../lib/tts'
 import { ReviewCardBack } from './ReviewCard'
-import { advance, buildSessionQueue, currentId, dropCurrent, isDone } from './reviewQueue'
+import { advance, buildSessionQueue, currentId, dropCurrent, isDone, remaining } from './reviewQueue'
 import type { SessionQueue } from './reviewQueue'
 import { useApp } from '../state/store'
 import type { Grade } from '../types'
@@ -211,13 +211,11 @@ export function Review() {
           aria-valuemin={0}
           aria-valuemax={queue.total}
           aria-valuenow={queue.seen}
-          aria-valuetext={`${queue.seen} / ${queue.total}`}
+          aria-valuetext={`还剩 ${remaining(queue)} 张`}
         >
           <div className="progress__fill" style={{ width: `${(queue.seen / queue.total) * 100}%` }} />
         </div>
-        <p className="num muted review-progress__count">
-          {queue.seen} / {queue.total}
-        </p>
+        <p className="num muted review-progress__count">还剩 {remaining(queue)} 张</p>
       </div>
 
       <Card

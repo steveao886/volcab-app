@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { advance, buildSessionQueue, currentId, dropCurrent, isDone } from './reviewQueue'
+import { advance, buildSessionQueue, currentId, dropCurrent, isDone, remaining } from './reviewQueue'
 import { gradeWord } from '../lib/srs'
 import type { ProgressEntry } from '../types'
 
@@ -157,5 +157,35 @@ describe('与真实 gradeWord 集成:重来的卡会在会话内重新出现,且
     q = advance(q, 'carol', carolEntry, TODAY)
     expect(isDone(q)).toBe(true)
     expect(carolEntry.state).toBe('review')
+  })
+})
+
+describe('remaining', () => {
+  it('等于队列里还没打分的卡数', () => {
+    const q = buildSessionQueue(['a', 'b'], ['c'])
+    expect(remaining(q)).toBe(3)
+  })
+  it('打一张分就少一张', () => {
+    const q = advance(buildSessionQueue(['a'], ['b']), 'a', undefined, '2026-07-25')
+    expect(remaining(q)).toBe(1)
+  })
+  it('学习步长重现:总数不变,剩余不减 —— 只是下降变慢而不是变多', () => {
+    const q0 = buildSessionQueue([], ['a', 'b'])
+    const learning: ProgressEntry = {
+      state: 'learning', ease: 2.5, intervalDays: 0, due: '2026-07-25',
+      stepIndex: 1, reps: 1, lapses: 0, lastReviewedAt: '2026-07-25T00:00:00Z',
+    }
+    const q1 = advance(q0, 'a', learning, '2026-07-25')
+    expect(remaining(q0)).toBe(2)
+    expect(remaining(q1)).toBe(2) // a 被塞回队尾:还是两张要看
+  })
+  it('清空后为 0', () => {
+    const q = advance(buildSessionQueue([], ['a']), 'a', undefined, '2026-07-25')
+    expect(remaining(q)).toBe(0)
+    expect(isDone(q)).toBe(true)
+  })
+  it('dropCurrent 让剩余减一', () => {
+    const q = dropCurrent(buildSessionQueue(['a', 'b'], []))
+    expect(remaining(q)).toBe(1)
   })
 })
