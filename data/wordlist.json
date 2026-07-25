@@ -1,0 +1,2160 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "id": "concoct",
+      "headword": "concoct",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "convalescent",
+      "headword": "convalescent",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "extraneous",
+      "headword": "extraneous",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "fiat",
+      "headword": "fiat",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "harangue",
+      "headword": "harangue",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "imperious",
+      "headword": "imperious",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "leeway",
+      "headword": "leeway",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "mire",
+      "headword": "mire",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "mystique",
+      "headword": "mystique",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "neophyte",
+      "headword": "neophyte",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "precipitously",
+      "headword": "precipitously",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "promulgate",
+      "headword": "promulgate",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "ravishing",
+      "headword": "ravishing",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "rudimentary",
+      "headword": "rudimentary",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "sanguine",
+      "headword": "sanguine",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "tantalizing",
+      "headword": "tantalizing",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "taxidermy",
+      "headword": "taxidermy",
+      "sourceNote": "8-11"
+    },
+    {
+      "id": "abhorrent",
+      "headword": "abhorrent",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "abrogate",
+      "headword": "abrogate",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "apprehensive",
+      "headword": "apprehensive",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "arduous",
+      "headword": "arduous",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "austere",
+      "headword": "austere",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "dovetail",
+      "headword": "dovetail",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "embroil",
+      "headword": "embroil",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "entreat",
+      "headword": "entreat",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "expedient",
+      "headword": "expedient",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "grouse",
+      "headword": "grouse",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "grumble",
+      "headword": "grumble",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "hapless",
+      "headword": "hapless",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "incipient",
+      "headword": "incipient",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "ineptitude",
+      "headword": "ineptitude",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "insouciant",
+      "headword": "insouciant",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "leniency",
+      "headword": "leniency",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "metastasize",
+      "headword": "metastasize",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "onerous",
+      "headword": "onerous",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "ostentatious",
+      "headword": "ostentatious",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "percolate",
+      "headword": "percolate",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "petulant",
+      "headword": "petulant",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "preside",
+      "headword": "preside",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "rapturous",
+      "headword": "rapturous",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "reminiscent",
+      "headword": "reminiscent",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "surreptitious",
+      "headword": "surreptitious",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "temerity",
+      "headword": "temerity",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "unobtrusive",
+      "headword": "unobtrusive",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "veer",
+      "headword": "veer",
+      "sourceNote": "12-15"
+    },
+    {
+      "id": "abashed",
+      "headword": "abashed",
+      "sourceNote": "16-19"
+    },
+    {
+      "id": "alleviate",
+      "headword": "alleviate",
+      "sourceNote": "16-19"
+    },
+    {
+      "id": "assuage",
+      "headword": "assuage",
+      "sourceNote": "16-19"
+    },
+    {
+      "id": "callous",
+      "headword": "callous",
+      "sourceNote": "16-19"
+    },
+    {
+      "id": "capitulate",
+      "headword": "capitulate",
+      "sourceNote": "16-19"
+    },
+    {
+      "id": "cherubic",
+      "headword": "cherubic",
+      "sourceNote": "16-19"
+    },
+    {
+      "id": "conciliate",
+      "headword": "conciliate",
+      "sourceNote": "16-19"
+    },
+    {
+      "id": "contentious",
+      "headword": "contentious",
+      "sourceNote": "16-19"
+    },
+    {
+      "id": "egregious",
+      "headword": "egregious",
+      "sourceNote": "16-19"
+    },
+    {
+      "id": "perceptible",
+      "headword": "perceptible",
+      "sourceNote": "16-19"
+    },
+    {
+      "id": "pervade",
+      "headword": "pervade",
+      "sourceNote": "16-19"
+    },
+    {
+      "id": "presage",
+      "headword": "presage",
+      "sourceNote": "16-19"
+    },
+    {
+      "id": "prowess",
+      "headword": "prowess",
+      "sourceNote": "16-19"
+    },
+    {
+      "id": "untenable",
+      "headword": "untenable",
+      "sourceNote": "16-19"
+    },
+    {
+      "id": "veneer",
+      "headword": "veneer",
+      "sourceNote": "16-19"
+    },
+    {
+      "id": "vindicate",
+      "headword": "vindicate",
+      "sourceNote": "16-19"
+    },
+    {
+      "id": "ad-hoc",
+      "headword": "ad hoc",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "contrived",
+      "headword": "contrived",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "due-diligence",
+      "headword": "due diligence",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "equitable",
+      "headword": "equitable",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "exigent",
+      "headword": "exigent",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "hindrance",
+      "headword": "hindrance",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "impediment",
+      "headword": "impediment",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "incumbent",
+      "headword": "incumbent",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "ingratiating",
+      "headword": "ingratiating",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "interlude",
+      "headword": "interlude",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "malleable",
+      "headword": "malleable",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "perverse",
+      "headword": "perverse",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "populace",
+      "headword": "populace",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "prudence",
+      "headword": "prudence",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "pursuant",
+      "headword": "pursuant",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "quintessential",
+      "headword": "quintessential",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "rabble",
+      "headword": "rabble",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "repudiate",
+      "headword": "repudiate",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "wrangle",
+      "headword": "wrangle",
+      "sourceNote": "20-23"
+    },
+    {
+      "id": "corroborate",
+      "headword": "corroborate",
+      "sourceNote": "24-29"
+    },
+    {
+      "id": "deposition",
+      "headword": "deposition",
+      "sourceNote": "24-29"
+    },
+    {
+      "id": "extrapolate",
+      "headword": "extrapolate",
+      "sourceNote": "24-29"
+    },
+    {
+      "id": "garrulous",
+      "headword": "garrulous",
+      "sourceNote": "24-29"
+    },
+    {
+      "id": "implicate",
+      "headword": "implicate",
+      "sourceNote": "24-29"
+    },
+    {
+      "id": "obscene",
+      "headword": "obscene",
+      "sourceNote": "24-29"
+    },
+    {
+      "id": "oversight",
+      "headword": "oversight",
+      "sourceNote": "24-29"
+    },
+    {
+      "id": "precursor",
+      "headword": "precursor",
+      "sourceNote": "24-29"
+    },
+    {
+      "id": "refute",
+      "headword": "refute",
+      "sourceNote": "24-29"
+    },
+    {
+      "id": "slanderous",
+      "headword": "slanderous",
+      "sourceNote": "24-29"
+    },
+    {
+      "id": "astute",
+      "headword": "astute",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "capricious",
+      "headword": "capricious",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "concur",
+      "headword": "concur",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "contemptible",
+      "headword": "contemptible",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "depraved",
+      "headword": "depraved",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "disparate",
+      "headword": "disparate",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "erudite",
+      "headword": "erudite",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "gratify",
+      "headword": "gratify",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "impetuous",
+      "headword": "impetuous",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "indignant",
+      "headword": "indignant",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "prodigal",
+      "headword": "prodigal",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "provident",
+      "headword": "provident",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "remorse",
+      "headword": "remorse",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "sagacious",
+      "headword": "sagacious",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "sapient",
+      "headword": "sapient",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "solicitude",
+      "headword": "solicitude",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "testy",
+      "headword": "testy",
+      "sourceNote": "30-33"
+    },
+    {
+      "id": "appall",
+      "headword": "appall",
+      "sourceNote": "34-41"
+    },
+    {
+      "id": "assiduous",
+      "headword": "assiduous",
+      "sourceNote": "34-41"
+    },
+    {
+      "id": "conscientious",
+      "headword": "conscientious",
+      "sourceNote": "34-41"
+    },
+    {
+      "id": "devious",
+      "headword": "devious",
+      "sourceNote": "34-41"
+    },
+    {
+      "id": "dubious",
+      "headword": "dubious",
+      "sourceNote": "34-41"
+    },
+    {
+      "id": "efficacy",
+      "headword": "efficacy",
+      "sourceNote": "34-41"
+    },
+    {
+      "id": "hypocrisy",
+      "headword": "hypocrisy",
+      "sourceNote": "34-41"
+    },
+    {
+      "id": "morbid",
+      "headword": "morbid",
+      "sourceNote": "34-41"
+    },
+    {
+      "id": "myopia",
+      "headword": "myopia",
+      "sourceNote": "34-41"
+    },
+    {
+      "id": "painstaking",
+      "headword": "painstaking",
+      "sourceNote": "34-41"
+    },
+    {
+      "id": "ratify",
+      "headword": "ratify",
+      "sourceNote": "34-41"
+    },
+    {
+      "id": "remunerate",
+      "headword": "remunerate",
+      "sourceNote": "34-41"
+    },
+    {
+      "id": "sedulous",
+      "headword": "sedulous",
+      "sourceNote": "34-41"
+    },
+    {
+      "id": "thwart",
+      "headword": "thwart",
+      "sourceNote": "34-41"
+    },
+    {
+      "id": "ulterior",
+      "headword": "ulterior",
+      "sourceNote": "34-41"
+    },
+    {
+      "id": "unwary",
+      "headword": "unwary",
+      "sourceNote": "34-41"
+    },
+    {
+      "id": "ascetic",
+      "headword": "ascetic",
+      "sourceNote": "42-49"
+    },
+    {
+      "id": "cohere",
+      "headword": "cohere",
+      "sourceNote": "42-49"
+    },
+    {
+      "id": "collude",
+      "headword": "collude",
+      "sourceNote": "42-49"
+    },
+    {
+      "id": "connotation",
+      "headword": "connotation",
+      "sourceNote": "42-49"
+    },
+    {
+      "id": "deify",
+      "headword": "deify",
+      "sourceNote": "42-49"
+    },
+    {
+      "id": "deterrence",
+      "headword": "deterrence",
+      "sourceNote": "42-49"
+    },
+    {
+      "id": "dissent",
+      "headword": "dissent",
+      "sourceNote": "42-49"
+    },
+    {
+      "id": "perpetuate",
+      "headword": "perpetuate",
+      "sourceNote": "42-49"
+    },
+    {
+      "id": "pious",
+      "headword": "pious",
+      "sourceNote": "42-49"
+    },
+    {
+      "id": "premeditated",
+      "headword": "premeditated",
+      "sourceNote": "42-49"
+    },
+    {
+      "id": "reciprocate",
+      "headword": "reciprocate",
+      "sourceNote": "42-49"
+    },
+    {
+      "id": "requite",
+      "headword": "requite",
+      "sourceNote": "42-49"
+    },
+    {
+      "id": "revere",
+      "headword": "revere",
+      "sourceNote": "42-49"
+    },
+    {
+      "id": "status-quo",
+      "headword": "status quo",
+      "sourceNote": "42-49"
+    },
+    {
+      "id": "swindle",
+      "headword": "swindle",
+      "sourceNote": "42-49"
+    },
+    {
+      "id": "abate",
+      "headword": "abate",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "acrid",
+      "headword": "acrid",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "acrimonious",
+      "headword": "acrimonious",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "agnostic",
+      "headword": "agnostic",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "agog",
+      "headword": "agog",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "ambivalence",
+      "headword": "ambivalence",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "amenity",
+      "headword": "amenity",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "amorphous",
+      "headword": "amorphous",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "animosity",
+      "headword": "animosity",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "antagonize",
+      "headword": "antagonize",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "antipathy",
+      "headword": "antipathy",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "apathetic",
+      "headword": "apathetic",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "artful",
+      "headword": "artful",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "artifice",
+      "headword": "artifice",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "artless",
+      "headword": "artless",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "autocracy",
+      "headword": "autocracy",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "belligerent",
+      "headword": "belligerent",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "benevolent",
+      "headword": "benevolent",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "debase",
+      "headword": "debase",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "exacerbate",
+      "headword": "exacerbate",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "exacting",
+      "headword": "exacting",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "magnanimous",
+      "headword": "magnanimous",
+      "sourceNote": "50-53"
+    },
+    {
+      "id": "abridge",
+      "headword": "abridge",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "bifurcation",
+      "headword": "bifurcation",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "brevity",
+      "headword": "brevity",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "candor",
+      "headword": "candor",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "cataclysmic",
+      "headword": "cataclysmic",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "circuitous",
+      "headword": "circuitous",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "circumlocution",
+      "headword": "circumlocution",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "circumspect",
+      "headword": "circumspect",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "contravene",
+      "headword": "contravene",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "countermand",
+      "headword": "countermand",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "declamation",
+      "headword": "declamation",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "incapacitate",
+      "headword": "incapacitate",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "incisive",
+      "headword": "incisive",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "incite",
+      "headword": "incite",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "occlude",
+      "headword": "occlude",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "recalcitrant",
+      "headword": "recalcitrant",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "reclusive",
+      "headword": "reclusive",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "resuscitate",
+      "headword": "resuscitate",
+      "sourceNote": "54-58"
+    },
+    {
+      "id": "ardent",
+      "headword": "ardent",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "auspicious",
+      "headword": "auspicious",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "condign",
+      "headword": "condign",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "credence",
+      "headword": "credence",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "credulity",
+      "headword": "credulity",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "culpable",
+      "headword": "culpable",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "cursory",
+      "headword": "cursory",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "decorum",
+      "headword": "decorum",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "discursive",
+      "headword": "discursive",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "domineering",
+      "headword": "domineering",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "endemic",
+      "headword": "endemic",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "epicure",
+      "headword": "epicure",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "felicitous",
+      "headword": "felicitous",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "fervent",
+      "headword": "fervent",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "fervor",
+      "headword": "fervor",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "incriminate",
+      "headword": "incriminate",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "inculpate",
+      "headword": "inculpate",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "indict",
+      "headword": "indict",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "machination",
+      "headword": "machination",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "opportune",
+      "headword": "opportune",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "paramount",
+      "headword": "paramount",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "perfunctory",
+      "headword": "perfunctory",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "procurement",
+      "headword": "procurement",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "vindictive",
+      "headword": "vindictive",
+      "sourceNote": "59-61"
+    },
+    {
+      "id": "affectation",
+      "headword": "affectation",
+      "sourceNote": "62-64"
+    },
+    {
+      "id": "barefaced",
+      "headword": "barefaced",
+      "sourceNote": "62-64"
+    },
+    {
+      "id": "conducive",
+      "headword": "conducive",
+      "sourceNote": "62-64"
+    },
+    {
+      "id": "disaffect",
+      "headword": "disaffect",
+      "sourceNote": "62-64"
+    },
+    {
+      "id": "ennoble",
+      "headword": "ennoble",
+      "sourceNote": "62-64"
+    },
+    {
+      "id": "eulogize",
+      "headword": "eulogize",
+      "sourceNote": "62-64"
+    },
+    {
+      "id": "extrication",
+      "headword": "extrication",
+      "sourceNote": "62-64"
+    },
+    {
+      "id": "facetious",
+      "headword": "facetious",
+      "sourceNote": "62-64"
+    },
+    {
+      "id": "feckless",
+      "headword": "feckless",
+      "sourceNote": "62-64"
+    },
+    {
+      "id": "indelible",
+      "headword": "indelible",
+      "sourceNote": "62-64"
+    },
+    {
+      "id": "indurate",
+      "headword": "indurate",
+      "sourceNote": "62-64"
+    },
+    {
+      "id": "inundate",
+      "headword": "inundate",
+      "sourceNote": "62-64"
+    },
+    {
+      "id": "obdurate",
+      "headword": "obdurate",
+      "sourceNote": "62-64"
+    },
+    {
+      "id": "sentient",
+      "headword": "sentient",
+      "sourceNote": "62-64"
+    },
+    {
+      "id": "affinity",
+      "headword": "affinity",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "affront",
+      "headword": "affront",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "beguile",
+      "headword": "beguile",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "diffident",
+      "headword": "diffident",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "effrontery",
+      "headword": "effrontery",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "fallacy",
+      "headword": "fallacy",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "fallible",
+      "headword": "fallible",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "fidelity",
+      "headword": "fidelity",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "forestall",
+      "headword": "forestall",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "fractious",
+      "headword": "fractious",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "infallible",
+      "headword": "infallible",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "infinitesimal",
+      "headword": "infinitesimal",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "mellifluous",
+      "headword": "mellifluous",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "officiousness",
+      "headword": "officiousness",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "ominous",
+      "headword": "ominous",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "perfidious",
+      "headword": "perfidious",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "refractory",
+      "headword": "refractory",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "superfluous",
+      "headword": "superfluous",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "sweltering",
+      "headword": "sweltering",
+      "sourceNote": "65-68"
+    },
+    {
+      "id": "congenial",
+      "headword": "congenial",
+      "sourceNote": "69-71"
+    },
+    {
+      "id": "congregate",
+      "headword": "congregate",
+      "sourceNote": "69-71"
+    },
+    {
+      "id": "engender",
+      "headword": "engender",
+      "sourceNote": "69-71"
+    },
+    {
+      "id": "genial",
+      "headword": "genial",
+      "sourceNote": "69-71"
+    },
+    {
+      "id": "grandiloquence",
+      "headword": "grandiloquence",
+      "sourceNote": "69-71"
+    },
+    {
+      "id": "grandiose",
+      "headword": "grandiose",
+      "sourceNote": "69-71"
+    },
+    {
+      "id": "gratuitous",
+      "headword": "gratuitous",
+      "sourceNote": "69-71"
+    },
+    {
+      "id": "gregarious",
+      "headword": "gregarious",
+      "sourceNote": "69-71"
+    },
+    {
+      "id": "haphazard",
+      "headword": "haphazard",
+      "sourceNote": "69-71"
+    },
+    {
+      "id": "headstrong",
+      "headword": "headstrong",
+      "sourceNote": "69-71"
+    },
+    {
+      "id": "profuse",
+      "headword": "profuse",
+      "sourceNote": "69-71"
+    },
+    {
+      "id": "retrograde",
+      "headword": "retrograde",
+      "sourceNote": "69-71"
+    },
+    {
+      "id": "steadfast",
+      "headword": "steadfast",
+      "sourceNote": "69-71"
+    },
+    {
+      "id": "suffuse",
+      "headword": "suffuse",
+      "sourceNote": "69-71"
+    },
+    {
+      "id": "abjuration",
+      "headword": "abjuration",
+      "sourceNote": "72-75"
+    },
+    {
+      "id": "belabor",
+      "headword": "belabor",
+      "sourceNote": "72-75"
+    },
+    {
+      "id": "delineate",
+      "headword": "delineate",
+      "sourceNote": "72-75"
+    },
+    {
+      "id": "dishearten",
+      "headword": "dishearten",
+      "sourceNote": "72-75"
+    },
+    {
+      "id": "eclectic",
+      "headword": "eclectic",
+      "sourceNote": "72-75"
+    },
+    {
+      "id": "insularity",
+      "headword": "insularity",
+      "sourceNote": "72-75"
+    },
+    {
+      "id": "intercede",
+      "headword": "intercede",
+      "sourceNote": "72-75"
+    },
+    {
+      "id": "interpolate",
+      "headword": "interpolate",
+      "sourceNote": "72-75"
+    },
+    {
+      "id": "intersperse",
+      "headword": "intersperse",
+      "sourceNote": "72-75"
+    },
+    {
+      "id": "judicious",
+      "headword": "judicious",
+      "sourceNote": "72-75"
+    },
+    {
+      "id": "perjury",
+      "headword": "perjury",
+      "sourceNote": "72-75"
+    },
+    {
+      "id": "adroit",
+      "headword": "adroit",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "allude",
+      "headword": "allude",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "analogous",
+      "headword": "analogous",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "cogitate",
+      "headword": "cogitate",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "efface",
+      "headword": "efface",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "elucidate",
+      "headword": "elucidate",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "elude",
+      "headword": "elude",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "immemorial",
+      "headword": "immemorial",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "loquacious",
+      "headword": "loquacious",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "lucid",
+      "headword": "lucid",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "malaise",
+      "headword": "malaise",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "malevolent",
+      "headword": "malevolent",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "malign",
+      "headword": "malign",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "manumit",
+      "headword": "manumit",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "mercenary",
+      "headword": "mercenary",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "obliteration",
+      "headword": "obliteration",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "rebuke",
+      "headword": "rebuke",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "reprimand",
+      "headword": "reprimand",
+      "sourceNote": "76-78"
+    },
+    {
+      "id": "commensurate",
+      "headword": "commensurate",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "complacency",
+      "headword": "complacency",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "denounce",
+      "headword": "denounce",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "eminence",
+      "headword": "eminence",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "engross",
+      "headword": "engross",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "enormity",
+      "headword": "enormity",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "ignominious",
+      "headword": "ignominious",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "imminent",
+      "headword": "imminent",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "impending",
+      "headword": "impending",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "impregnable",
+      "headword": "impregnable",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "inimical",
+      "headword": "inimical",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "inimitable",
+      "headword": "inimitable",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "monolithic",
+      "headword": "monolithic",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "outmoded",
+      "headword": "outmoded",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "preeminent",
+      "headword": "preeminent",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "sinecure",
+      "headword": "sinecure",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "unpretentious",
+      "headword": "unpretentious",
+      "sourceNote": "79-82"
+    },
+    {
+      "id": "belittle",
+      "headword": "belittle",
+      "sourceNote": "83-85"
+    },
+    {
+      "id": "destitution",
+      "headword": "destitution",
+      "sourceNote": "83-85"
+    },
+    {
+      "id": "disparage",
+      "headword": "disparage",
+      "sourceNote": "83-85"
+    },
+    {
+      "id": "disparity",
+      "headword": "disparity",
+      "sourceNote": "83-85"
+    },
+    {
+      "id": "dispassionate",
+      "headword": "dispassionate",
+      "sourceNote": "83-85"
+    },
+    {
+      "id": "impasse",
+      "headword": "impasse",
+      "sourceNote": "83-85"
+    },
+    {
+      "id": "impassive",
+      "headword": "impassive",
+      "sourceNote": "83-85"
+    },
+    {
+      "id": "impoverish",
+      "headword": "impoverish",
+      "sourceNote": "83-85"
+    },
+    {
+      "id": "outlandish",
+      "headword": "outlandish",
+      "sourceNote": "83-85"
+    },
+    {
+      "id": "overbearing",
+      "headword": "overbearing",
+      "sourceNote": "83-85"
+    },
+    {
+      "id": "paucity",
+      "headword": "paucity",
+      "sourceNote": "83-85"
+    },
+    {
+      "id": "puerile",
+      "headword": "puerile",
+      "sourceNote": "83-85"
+    },
+    {
+      "id": "repartee",
+      "headword": "repartee",
+      "sourceNote": "83-85"
+    },
+    {
+      "id": "riven",
+      "headword": "riven",
+      "sourceNote": "83-85"
+    },
+    {
+      "id": "spendthrift",
+      "headword": "spendthrift",
+      "sourceNote": "83-85"
+    },
+    {
+      "id": "depose",
+      "headword": "depose",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "diaphanous",
+      "headword": "diaphanous",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "implacable",
+      "headword": "implacable",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "importune",
+      "headword": "importune",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "irrepressible",
+      "headword": "irrepressible",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "juxtapose",
+      "headword": "juxtapose",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "philanthropic",
+      "headword": "philanthropic",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "placate",
+      "headword": "placate",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "placid",
+      "headword": "placid",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "pompous",
+      "headword": "pompous",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "precarious",
+      "headword": "precarious",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "predisposition",
+      "headword": "predisposition",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "presumptuous",
+      "headword": "presumptuous",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "probity",
+      "headword": "probity",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "sumptuous",
+      "headword": "sumptuous",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "superimpose",
+      "headword": "superimpose",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "susceptible",
+      "headword": "susceptible",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "sycophant",
+      "headword": "sycophant",
+      "sourceNote": "86-88"
+    },
+    {
+      "id": "acquiesce",
+      "headword": "acquiesce",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "acquisitive",
+      "headword": "acquisitive",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "approbation",
+      "headword": "approbation",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "aspirant",
+      "headword": "aspirant",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "covetous",
+      "headword": "covetous",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "disputatious",
+      "headword": "disputatious",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "disreputable",
+      "headword": "disreputable",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "extemporaneous",
+      "headword": "extemporaneous",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "ostensible",
+      "headword": "ostensible",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "persecute",
+      "headword": "persecute",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "platitude",
+      "headword": "platitude",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "pretense",
+      "headword": "pretense",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "propriety",
+      "headword": "propriety",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "querulous",
+      "headword": "querulous",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "quietude",
+      "headword": "quietude",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "reprove",
+      "headword": "reprove",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "succumb",
+      "headword": "succumb",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "vitiate",
+      "headword": "vitiate",
+      "sourceNote": "89-91"
+    },
+    {
+      "id": "adversity",
+      "headword": "adversity",
+      "sourceNote": "92-93"
+    },
+    {
+      "id": "extenuate",
+      "headword": "extenuate",
+      "sourceNote": "92-93"
+    },
+    {
+      "id": "impromptu",
+      "headword": "impromptu",
+      "sourceNote": "92-93"
+    },
+    {
+      "id": "innocuous",
+      "headword": "innocuous",
+      "sourceNote": "92-93"
+    },
+    {
+      "id": "irreparable",
+      "headword": "irreparable",
+      "sourceNote": "92-93"
+    },
+    {
+      "id": "manifold",
+      "headword": "manifold",
+      "sourceNote": "92-93"
+    },
+    {
+      "id": "raze",
+      "headword": "raze",
+      "sourceNote": "92-93"
+    },
+    {
+      "id": "systemic",
+      "headword": "systemic",
+      "sourceNote": "92-93"
+    },
+    {
+      "id": "turmoil",
+      "headword": "turmoil",
+      "sourceNote": "92-93"
+    },
+    {
+      "id": "upheaval",
+      "headword": "upheaval",
+      "sourceNote": "92-93"
+    },
+    {
+      "id": "voracious",
+      "headword": "voracious",
+      "sourceNote": "92-93"
+    },
+    {
+      "id": "deft",
+      "headword": "deft",
+      "sourceNote": "94-96"
+    },
+    {
+      "id": "forbidding",
+      "headword": "forbidding",
+      "sourceNote": "94-96"
+    },
+    {
+      "id": "formidable",
+      "headword": "formidable",
+      "sourceNote": "94-96"
+    },
+    {
+      "id": "fruition",
+      "headword": "fruition",
+      "sourceNote": "94-96"
+    },
+    {
+      "id": "heterogeneous",
+      "headword": "heterogeneous",
+      "sourceNote": "94-96"
+    },
+    {
+      "id": "intractable",
+      "headword": "intractable",
+      "sourceNote": "94-96"
+    },
+    {
+      "id": "precipitous",
+      "headword": "precipitous",
+      "sourceNote": "94-96"
+    },
+    {
+      "id": "rickety",
+      "headword": "rickety",
+      "sourceNote": "94-96"
+    },
+    {
+      "id": "topple",
+      "headword": "topple",
+      "sourceNote": "94-96"
+    },
+    {
+      "id": "voluptuous",
+      "headword": "voluptuous",
+      "sourceNote": "94-96"
+    },
+    {
+      "id": "clamor",
+      "headword": "clamor",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "collate",
+      "headword": "collate",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "detrimental",
+      "headword": "detrimental",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "grievance",
+      "headword": "grievance",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "humility",
+      "headword": "humility",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "meticulous",
+      "headword": "meticulous",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "multifarious",
+      "headword": "multifarious",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "oscillate",
+      "headword": "oscillate",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "panacea",
+      "headword": "panacea",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "penchant",
+      "headword": "penchant",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "permeate",
+      "headword": "permeate",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "protract",
+      "headword": "protract",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "reverent",
+      "headword": "reverent",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "ruinous",
+      "headword": "ruinous",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "surmount",
+      "headword": "surmount",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "unilateral",
+      "headword": "unilateral",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "unwitting",
+      "headword": "unwitting",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "yearn",
+      "headword": "yearn",
+      "sourceNote": "97-98"
+    },
+    {
+      "id": "impertinent",
+      "headword": "impertinent",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "inexorable",
+      "headword": "inexorable",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "ingenuity",
+      "headword": "ingenuity",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "ingenuousness",
+      "headword": "ingenuousness",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "insolent",
+      "headword": "insolent",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "intransigent",
+      "headword": "intransigent",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "languid",
+      "headword": "languid",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "malignant",
+      "headword": "malignant",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "oblique",
+      "headword": "oblique",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "oblivious",
+      "headword": "oblivious",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "obstinate",
+      "headword": "obstinate",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "perturb",
+      "headword": "perturb",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "relapse",
+      "headword": "relapse",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "resolute",
+      "headword": "resolute",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "spasmodic",
+      "headword": "spasmodic",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "tenacious",
+      "headword": "tenacious",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "urbane",
+      "headword": "urbane",
+      "sourceNote": "99-100"
+    },
+    {
+      "id": "chaste",
+      "headword": "chaste",
+      "sourceNote": "101-103"
+    },
+    {
+      "id": "delve",
+      "headword": "delve",
+      "sourceNote": "101-103"
+    },
+    {
+      "id": "depredation",
+      "headword": "depredation",
+      "sourceNote": "101-103"
+    },
+    {
+      "id": "erratic",
+      "headword": "erratic",
+      "sourceNote": "101-103"
+    },
+    {
+      "id": "foible",
+      "headword": "foible",
+      "sourceNote": "101-103"
+    },
+    {
+      "id": "humdrum",
+      "headword": "humdrum",
+      "sourceNote": "101-103"
+    },
+    {
+      "id": "intricacy",
+      "headword": "intricacy",
+      "sourceNote": "101-103"
+    },
+    {
+      "id": "introspection",
+      "headword": "introspection",
+      "sourceNote": "101-103"
+    },
+    {
+      "id": "odyssey",
+      "headword": "odyssey",
+      "sourceNote": "101-103"
+    },
+    {
+      "id": "reticent",
+      "headword": "reticent",
+      "sourceNote": "101-103"
+    },
+    {
+      "id": "rhetoric",
+      "headword": "rhetoric",
+      "sourceNote": "101-103"
+    },
+    {
+      "id": "subliminal",
+      "headword": "subliminal",
+      "sourceNote": "101-103"
+    },
+    {
+      "id": "substantiate",
+      "headword": "substantiate",
+      "sourceNote": "101-103"
+    },
+    {
+      "id": "zenith",
+      "headword": "zenith",
+      "sourceNote": "101-103"
+    },
+    {
+      "id": "begrudge",
+      "headword": "begrudge",
+      "sourceNote": "104-106"
+    },
+    {
+      "id": "consign",
+      "headword": "consign",
+      "sourceNote": "104-106"
+    },
+    {
+      "id": "contingency",
+      "headword": "contingency",
+      "sourceNote": "104-106"
+    },
+    {
+      "id": "dilapidated",
+      "headword": "dilapidated",
+      "sourceNote": "104-106"
+    },
+    {
+      "id": "epitomize",
+      "headword": "epitomize",
+      "sourceNote": "104-106"
+    },
+    {
+      "id": "exhort",
+      "headword": "exhort",
+      "sourceNote": "104-106"
+    },
+    {
+      "id": "extol",
+      "headword": "extol",
+      "sourceNote": "104-106"
+    },
+    {
+      "id": "impinge",
+      "headword": "impinge",
+      "sourceNote": "104-106"
+    },
+    {
+      "id": "intrinsic",
+      "headword": "intrinsic",
+      "sourceNote": "104-106"
+    },
+    {
+      "id": "irrevocable",
+      "headword": "irrevocable",
+      "sourceNote": "104-106"
+    },
+    {
+      "id": "laudable",
+      "headword": "laudable",
+      "sourceNote": "104-106"
+    },
+    {
+      "id": "plaintive",
+      "headword": "plaintive",
+      "sourceNote": "104-106"
+    },
+    {
+      "id": "solace",
+      "headword": "solace",
+      "sourceNote": "104-106"
+    },
+    {
+      "id": "subdue",
+      "headword": "subdue",
+      "sourceNote": "104-106"
+    },
+    {
+      "id": "vehement",
+      "headword": "vehement",
+      "sourceNote": "104-106"
+    }
+  ]
+}
