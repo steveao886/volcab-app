@@ -30,7 +30,12 @@ function SyncBadge({
   } as const
   const { tone, label } = copy[status]
   return (
-    <button type="button" className="today-sync" onClick={onRetry}>
+    <button
+      type="button"
+      className="today-sync"
+      onClick={onRetry}
+      aria-label={`${label},点击重试同步`}
+    >
       <Badge tone={tone}>{label}</Badge>
     </button>
   )
