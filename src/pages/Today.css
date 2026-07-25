@@ -1,0 +1,65 @@
+/* Today(首页)页面专属样式。三块卡片(概览统计 / 总进度 / 操作)+ 角标按钮。 */
+
+/* --- 同步角标:视觉上就是一枚 Badge,外面套一个原生 <button> 拿到可点语义 --- */
+.today-sync {
+  display: inline-flex;
+  border-radius: var(--r-xs);
+}
+
+/* --- 概览统计:到期 / 新词 / 连续天数,三栏等分 -------------------------- */
+
+.today-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+  text-align: center;
+}
+
+.today-stat {
+  display: grid;
+  gap: var(--sp-1);
+}
+
+.today-stat__value {
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+  color: var(--text);
+}
+
+/* 连续天数是本页唯一的「批注」用色 —— 呼应朱砂只做点睛的设计语言 */
+.today-stat__value--accent {
+  color: var(--accent);
+}
+
+.today-stat__label {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+}
+
+/* --- 总进度 --------------------------------------------------------------- */
+
+.today-progress {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.today-progress__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.today-progress__label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* --- 主操作区 -------------------------------------------------------------- */
+
+.today-actions {
+  display: grid;
+  gap: var(--sp-3);
+}
