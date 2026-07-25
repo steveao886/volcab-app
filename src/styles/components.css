@@ -824,24 +824,3 @@
   cursor: pointer;
 }
 
-/* --- 占位块(Task 15–21 尚未实现的页面主体)------------------------------ */
-
-.placeholder {
-  display: grid;
-  place-items: center;
-  gap: var(--sp-2);
-  min-height: 132px;
-  padding: var(--sp-6);
-  border: 1px dashed var(--rule-strong);
-  border-radius: var(--r-md);
-  color: var(--text-faint);
-  font-size: var(--fs-sm);
-  line-height: var(--lh-snug);
-  text-align: center;
-}
-
-.placeholder strong {
-  font-size: var(--fs-base);
-  font-weight: 600;
-  color: var(--text-muted);
-}
