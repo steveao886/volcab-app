@@ -1,0 +1,50 @@
+# 部署到 GitHub Pages。
+#
+# 触发:推送到 master 分支 → 安装依赖、跑测试、构建、发布 dist/ 到 Pages。
+#
+# 最需要注意的一点:仓库的 Settings → Pages → Build and deployment → Source
+# 必须手动设为 "GitHub Actions"(默认是 "Deploy from a branch")。没设的话
+# deploy 任务会失败,报错信息和"没设 Source"这个真实原因对不上,不好排查。
+#
+# 另外 vite.config.ts 里 base 写死为 '/volcab-app/',承载本仓库的名字必须是
+# volcab-app,发布出来的地址才会是 https://<user>.github.io/volcab-app/ ——
+# 仓库名不对的话,页面能部署成功但所有静态资源(JS/CSS/图标)都会 404。
+name: deploy
+
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  # 不取消进行中的部署,避免生产发布跑到一半被打断而留下半发布状态。
+  # 和 GitHub 官方 actions/starter-workflows(pages/*.yml,2026-07 现状)一致。
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: dist }
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
