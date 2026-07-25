@@ -1,0 +1,255 @@
+/* WordDetail(词条详情)页面专属样式。发音行、释义/例句/标签/同根词卡片、
+   学习状态统计、编辑表单、删除确认对话框、词条不存在的兜底态。 */
+
+/* --- 发音行 ------------------------------------------------------------ */
+
+.worddetail-pronounce {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+/* --- 释义 ---------------------------------------------------------------- */
+
+.worddetail-meaning-list {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+.worddetail-meaning:not(:last-child) {
+  padding-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--rule);
+}
+
+.worddetail-meaning__en {
+  margin-top: var(--sp-1);
+  line-height: var(--lh-body);
+  color: var(--text);
+}
+
+.worddetail-meaning__zh {
+  margin-top: 2px;
+  color: var(--text-muted);
+}
+
+.worddetail-section-title {
+  margin-bottom: var(--sp-3);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* --- 例句 ---------------------------------------------------------------- */
+
+.worddetail-examples {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.worddetail-examples li {
+  padding-inline-start: var(--sp-4);
+  border-inline-start: 2px solid var(--rule-strong);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+}
+
+/* --- 近义词 / 反义词 / 常见搭配 -------------------------------------------- */
+
+.worddetail-tags {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+.worddetail-tag-group:not(:last-child) {
+  padding-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--rule);
+}
+
+.worddetail-chiprow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+/* --- 同根变形 -------------------------------------------------------------- */
+
+.worddetail-related {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.worddetail-related li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2);
+}
+
+.worddetail-related__form {
+  font-family: var(--font-word);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.worddetail-related__zh {
+  color: var(--text-muted);
+}
+
+/* --- 学习状态统计 ----------------------------------------------------------
+   结构照抄 Today.css 的 .today-stat / __value / __label(见该文件注释),
+   只是改名为 worddetail- 前缀,方便后续合并进共享的 .stat 原语。
+   与 today-stat 的唯一差异:「学习状态」这一格要塞进一个 StateDot + 文字,
+   value 上多加了 flex 布局。 */
+
+.worddetail-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-4) var(--sp-3);
+  text-align: center;
+}
+
+.worddetail-stat {
+  display: grid;
+  gap: var(--sp-1);
+}
+
+.worddetail-stat__value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+  color: var(--text);
+}
+
+.worddetail-stat__label {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+}
+
+/* --- 来源笔记 / 添加日期 ---------------------------------------------------- */
+
+.worddetail-meta {
+  font-size: var(--fs-xs);
+}
+
+/* --- 编辑表单 -------------------------------------------------------------- */
+
+.worddetail-edit {
+  display: grid;
+  gap: var(--sp-5);
+}
+
+/* fieldset 的 UA 默认边框/内边距,以及会撑破 flex/grid 容器的 min-width:min-content
+   都要显式解开 */
+.worddetail-edit__group {
+  display: grid;
+  min-width: 0;
+  gap: var(--sp-4);
+  padding: 0;
+  border: none;
+}
+
+.worddetail-edit__group > legend {
+  padding: 0;
+  margin-bottom: var(--sp-1);
+}
+
+.worddetail-edit__meaning {
+  display: grid;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.worddetail-edit__index {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+}
+
+.worddetail-edit__example {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+}
+
+.worddetail-edit__example > .input--area {
+  flex: 1;
+  min-width: 0;
+}
+
+.worddetail-edit__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-3);
+}
+
+/* --- 删除确认对话框 --------------------------------------------------------
+   与 Library.css 的 .library-confirm 结构重复(原生 <dialog> + showModal(),
+   同一套重置 + 令牌)。两页各自持有一份是任务边界要求的,但这块 CSS 是
+   完全通用的确认弹窗外壳,值得在整合阶段提成共享的 .confirm-dialog。 */
+
+.worddetail-confirm {
+  width: min(400px, calc(100vw - var(--sp-8)));
+  margin: auto;
+  padding: var(--sp-5);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-2);
+}
+
+.worddetail-confirm::backdrop {
+  background: rgb(0 0 0 / 45%);
+}
+
+.worddetail-confirm__title {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+}
+
+.worddetail-confirm__body {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+}
+
+.worddetail-confirm__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+}
+
+/* --- 词条不存在 ------------------------------------------------------------ */
+
+.worddetail-notfound {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-8) var(--sp-4);
+  border: 1px dashed var(--rule-strong);
+  border-radius: var(--r-md);
+  text-align: center;
+}
+
+.worddetail-notfound__title {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.worddetail-notfound__hint {
+  font-size: var(--fs-sm);
+  color: var(--text-faint);
+}
+
+.worddetail-notfound > .btn {
+  margin-top: var(--sp-2);
+}
