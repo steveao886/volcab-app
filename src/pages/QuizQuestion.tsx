@@ -1,4 +1,5 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import { Button } from '../components/Button'
 import { Field } from '../components/Field'
 import { TextInput } from '../components/TextInput'
@@ -11,24 +12,10 @@ const TYPE_LABEL: Record<QuizType, string> = {
   spelling: '根据释义拼写单词',
 }
 
-// 拼写题的 prompt 里附带音标(形如 " /ˈæbrəɡeɪt/ "),单独抽出来用 IPA 字体渲染。
-// 不假设 quiz.ts 内部拼接释义的具体格式(那是私有实现细节),只识别这一个
-// 稳定的视觉模式——其余题型的 prompt 本就不含斜杠,对它们没有影响。
-const PHONETIC_RE = /\/[^\s/]+\//
-
-function PromptText({ text }: { text: string }) {
-  const m = PHONETIC_RE.exec(text)
-  if (!m) return <>{text}</>
-  const before = text.slice(0, m.index).trimEnd()
-  const after = text.slice(m.index + m[0].length).trim()
-  return (
-    <>
-      {before}{' '}
-      <span className="ipa" lang="en">{m[0]}</span>
-      {after ? ` ${after}` : null}
-    </>
-  )
-}
+// 「下一题」按钮的固定 id,配合下面的挂载效应把焦点交给它。用 id + getElementById
+// 而不是 React ref——Button 组件(冻结,不可改)没有声明 ref prop,React 19 下
+// 普通函数组件不会自动获得它。同一时刻只有一道题在渲染,id 不会冲突。
+const NEXT_BUTTON_ID = 'quiz-next-button'
 
 interface QuizQuestionViewProps {
   question: QuizQuestion
@@ -51,6 +38,40 @@ export function QuizQuestionView({ question, onAnswered, onNext, nextLabel }: Qu
   return <ChoiceQuestion question={question} onAnswered={onAnswered} onNext={onNext} nextLabel={nextLabel} />
 }
 
+interface AnswerFeedbackProps {
+  correct: boolean
+  onNext: () => void
+  nextLabel: string
+  children?: ReactNode
+}
+
+/**
+ * 判题后的反馈块:选择题与拼写题共用——状态文字 + 「下一题」按钮,选择题
+ * 之外还能塞进拼写题的「正确拼写」那一行(children)。
+ *
+ * 只在判完分那一刻挂载(父组件用 locked/submitted 条件渲染它),所以用一个
+ * 只跑一次的挂载效应把焦点交给「下一题」按钮:上一步被禁用/整个移除的控件
+ * (选项按钮、拼写输入框)会让焦点弹回 <body>,键盘用户不该每答一题就要
+ * 从页头重新 Tab 一遍。
+ */
+function AnswerFeedback({ correct, onNext, nextLabel, children }: AnswerFeedbackProps) {
+  useEffect(() => {
+    document.getElementById(NEXT_BUTTON_ID)?.focus()
+  }, [])
+
+  return (
+    <>
+      <p className="quiz-feedback" role="status">
+        {correct ? '回答正确' : '回答错误'}
+      </p>
+      {children}
+      <Button id={NEXT_BUTTON_ID} className="quiz-q__next" variant="primary" block onClick={onNext}>
+        {nextLabel}
+      </Button>
+    </>
+  )
+}
+
 function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestionViewProps) {
   const [chosen, setChosen] = useState<string | null>(null)
   // 防止同一渲染帧内的连续点击(如误触双击)在状态还没落地前判两次分
@@ -69,11 +90,16 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
   return (
     <div className="quiz-q">
       <p className="quiz-q__label">{TYPE_LABEL[question.type]}</p>
+      {/* word2meaning 的 prompt 是本题唯一的英文词头(整屏独一份的「主角」),用辞书
+          衬线体当作大字招牌;meaning2word 的选项也是词头,但那是四个并列的可点控件,
+          刻意保留按钮的界面字体——衬线大字会把按钮撑得高矮不一,还会让「唯一主角」
+          这个视觉信号在一组选项里被稀释成噪音,这里的取舍以后不要因为「都是英文词」
+          就顺手统一成 .word。 */}
       <p
         className={question.type === 'word2meaning' ? 'word quiz-q__prompt' : 'quiz-q__prompt'}
         lang={question.type === 'word2meaning' ? 'en' : undefined}
       >
-        <PromptText text={question.prompt} />
+        {question.prompt}
       </p>
 
       <div className="quiz-options" role="group" aria-label="选项">
@@ -105,15 +131,7 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
       </div>
 
       {locked ? (
-        <p className="quiz-feedback" role="status">
-          {chosen === question.answer ? '回答正确' : '回答错误'}
-        </p>
-      ) : null}
-
-      {locked ? (
-        <Button className="quiz-q__next" variant="primary" block onClick={onNext}>
-          {nextLabel}
-        </Button>
+        <AnswerFeedback correct={chosen === question.answer} onNext={onNext} nextLabel={nextLabel} />
       ) : null}
     </div>
   )
@@ -139,7 +157,15 @@ function SpellingQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuest
     <div className="quiz-q">
       <p className="quiz-q__label">{TYPE_LABEL.spelling}</p>
       <p className="quiz-q__prompt">
-        <PromptText text={question.prompt} />
+        {question.prompt}
+        {question.phonetic ? (
+          <>
+            {' '}
+            <span className="ipa" lang="en">
+              {question.phonetic}
+            </span>
+          </>
+        ) : null}
       </p>
 
       <form
@@ -170,17 +196,11 @@ function SpellingQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuest
       </form>
 
       {submitted ? (
-        <>
-          <p className="quiz-feedback" role="status">
-            {correct ? '回答正确' : '回答错误'}
-          </p>
+        <AnswerFeedback correct={correct} onNext={onNext} nextLabel={nextLabel}>
           <p className="quiz-spelling-answer">
             正确拼写:<span className="word" lang="en">{question.answer}</span>
           </p>
-          <Button className="quiz-q__next" variant="primary" block onClick={onNext}>
-            {nextLabel}
-          </Button>
-        </>
+        </AnswerFeedback>
       ) : null}
     </div>
   )

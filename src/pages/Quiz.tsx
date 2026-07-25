@@ -36,6 +36,10 @@ function QuizSession({
   // recordQuiz 只应该在到达结果页那一刻调用一次;后续任何重渲染
   // (比如 recordQuiz 触发的全局状态更新)都不能再触发第二次。
   const recordedRef = useRef(false)
+  // 「下一题」的双击/连击守卫,与 QuizQuestion.tsx 里 answeredRef 是同一个模式:
+  // 同步置位挡掉第二次点击,而不是等 disabled 属性在下一次渲染后才生效。
+  // index 变化时(见下面的 effect)重新解锁,否则下一题就再也点不动了。
+  const nextGuardRef = useRef(false)
 
   const total = questions.length
   const done = index >= total && total > 0
@@ -45,7 +49,15 @@ function QuizSession({
     else setWrongIds(ids => [...ids, wordId])
   }, [])
 
-  const handleNext = useCallback(() => setIndex(i => i + 1), [])
+  const handleNext = useCallback(() => {
+    if (nextGuardRef.current) return
+    nextGuardRef.current = true
+    setIndex(i => i + 1)
+  }, [])
+
+  useEffect(() => {
+    nextGuardRef.current = false
+  }, [index])
 
   useEffect(() => {
     if (done && !recordedRef.current) {
@@ -120,7 +132,15 @@ function QuizSession({
   return (
     <>
       <div className="quiz-progress">
-        <div className="progress">
+        <div
+          className="progress"
+          role="progressbar"
+          aria-label="测试进度"
+          aria-valuemin={0}
+          aria-valuemax={total}
+          aria-valuenow={index}
+          aria-valuetext={`第 ${index + 1} / ${total} 题`}
+        >
           <div className="progress__fill" style={{ width: `${(index / total) * 100}%` }} />
         </div>
         <p className="muted num quiz-progress__count">
