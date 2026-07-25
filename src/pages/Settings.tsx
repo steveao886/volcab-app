@@ -6,6 +6,7 @@ import { Page } from '../components/Page'
 import { TextInput } from '../components/TextInput'
 import { todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
+import { pendingOps } from '../state/session'
 import { useApp } from '../state/store'
 import './Settings.css'
 
@@ -26,11 +27,14 @@ function clampNewPerDay(raw: string, fallback: number): number {
   return Math.min(NEW_PER_DAY_MAX, Math.max(NEW_PER_DAY_MIN, n))
 }
 
-/** 本机是否欠着没推上远端的东西 —— 直接读缓存标记,不依赖 syncStatus(它在离线时会把这件事盖住)。 */
+/**
+ * 本机是否欠着没推上远端的东西 —— 直接读缓存标记,不依赖 syncStatus(它在离线时
+ * 会把这件事盖住)。词库那半用 pendingOps() 而不是自己读 'wordOps':它会过滤掉不合
+ * 形状的脏数据(session.ts:39-43),跟 store.tsx 的 logout() 数「丢了多少」用的是
+ * 同一个函数 —— 这里的「提醒」和退出后的「告知」必须算出同一个数字,否则就是在撒谎。
+ */
 function hasUnsyncedChanges(): boolean {
-  if (storage.get<boolean>('dirty') === true) return true
-  const ops = storage.get<unknown>('wordOps')
-  return Array.isArray(ops) && ops.length > 0
+  return storage.get<boolean>('dirty') === true || pendingOps().length > 0
 }
 
 /** Task 21 实现:每日新词数、账号信息与退出登录、导出备份、App 版本号。 */
@@ -39,8 +43,13 @@ export function Settings() {
 
   const [newPerDayInput, setNewPerDayInput] = useState(String(progress.settings.newPerDay))
   const [confirmingLogout, setConfirmingLogout] = useState(false)
-  // 同步的重放/冲突合并可能在别处改动 settings.newPerDay;没在编辑时跟它对齐。
+  const newPerDayRef = useRef<HTMLInputElement>(null)
+  // 目前 newPerDay 只可能因为本组件自己的 commitNewPerDay 而变 —— mergeProgress
+  // (lib/merge.ts:23)原样保留 local.settings,冲突合并不会带来外部新值。但那是一份
+  // 冻结文件里的不变量,不归这页管;真正兜底的是这条焦点判断:输入框拿着焦点时
+  // 跳过同步,以后即便那条不变量变了,也不会在用户打字时把内容冲掉。
   useEffect(() => {
+    if (document.activeElement === newPerDayRef.current) return
     setNewPerDayInput(String(progress.settings.newPerDay))
   }, [progress.settings.newPerDay])
 
@@ -55,6 +64,13 @@ export function Settings() {
   // 导出是同步的一整段(无 await 断点),真正的风险是双击/双击触发两次保存对话框,
   // 用一个 ref 锁而不是 state 防抖 —— 不依赖重渲染的时机。
   const exportLockRef = useRef(false)
+  const exportTimeoutRef = useRef<ReturnType<typeof window.setTimeout> | null>(null)
+  useEffect(
+    () => () => {
+      if (exportTimeoutRef.current !== null) window.clearTimeout(exportTimeoutRef.current)
+    },
+    [],
+  )
   const handleExport = useCallback(() => {
     if (exportLockRef.current) return
     exportLockRef.current = true
@@ -70,8 +86,9 @@ export function Settings() {
       a.remove()
       URL.revokeObjectURL(url)
     } finally {
-      window.setTimeout(() => {
+      exportTimeoutRef.current = window.setTimeout(() => {
         exportLockRef.current = false
+        exportTimeoutRef.current = null
       }, 500)
     }
   }, [exportAll])
@@ -79,6 +96,14 @@ export function Settings() {
   // token 是凭证:只取末 4 位展示,不落日志、不进 URL、不进文件名。
   const tokenTail = storage.get<string>('token')?.slice(-4) ?? null
   const unsynced = confirmingLogout && hasUnsyncedChanges()
+
+  // 退出登录会直接从 DOM 里换掉那颗按钮:警示面板出现时,焦点得跟过去
+  // (落在「取消」这个安全默认项上),role="alert" 负责让屏幕阅读器把这段话念出来
+  // —— 面板一挂载就当整块内容播报,不用等用户自己去找。
+  const confirmPanelRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (confirmingLogout) confirmPanelRef.current?.querySelector('button')?.focus()
+  }, [confirmingLogout])
 
   return (
     <Page eyebrow="Settings" title="设置">
@@ -90,6 +115,7 @@ export function Settings() {
         >
           <TextInput
             id="settings-new-per-day"
+            ref={newPerDayRef}
             className="num"
             type="number"
             inputMode="numeric"
@@ -107,7 +133,7 @@ export function Settings() {
       </Card>
 
       <Card>
-        <p className="pos">账号</p>
+        <p className="settings-section-title">账号</p>
         <div className="settings-rows">
           <div className="settings-row">
             <p className="settings-row__label">GitHub 用户</p>
@@ -116,13 +142,15 @@ export function Settings() {
           {tokenTail && (
             <div className="settings-row">
               <p className="settings-row__label">Token</p>
-              <p className="settings-row__value num">•••• {tokenTail}</p>
+              <p className="settings-row__value num" aria-label={`Token 末四位 ${tokenTail}`}>
+                •••• {tokenTail}
+              </p>
             </div>
           )}
         </div>
 
         {confirmingLogout ? (
-          <div className="settings-confirm">
+          <div className="settings-confirm" role="alert" ref={confirmPanelRef}>
             <p className={unsynced ? 'settings-confirm__text settings-confirm__text--warn' : 'settings-confirm__text'}>
               退出会清除本机保存的 token、词库缓存与学习进度缓存。
               {unsynced
@@ -146,7 +174,7 @@ export function Settings() {
       </Card>
 
       <Card>
-        <p className="pos">备份</p>
+        <p className="settings-section-title">备份</p>
         <p className="settings-hint">导出词库与学习进度为一份 JSON 文件,保存到本机。</p>
         <Button variant="secondary" block onClick={handleExport}>
           导出备份
