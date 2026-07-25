@@ -18,6 +18,11 @@ const studied = (): Progress => {
 }
 const seq = () => { let i = 0; return () => ((i = (i + 7) % 13), i / 13) }
 
+const wordP = (id: string, pos: string, zh: string): Word => ({
+  id, headword: id, phonetic: `/${id}/`, meanings: [{ pos, en: `def of ${id}`, zh }],
+  examples: ['a', 'b'], synonyms: [], antonyms: [], collocations: [], sourceNote: 't', addedAt: '2026-07-01',
+})
+
 describe('generateQuiz', () => {
   it('生成指定数量,题型轮换,不重复选词', () => {
     const qs = generateQuiz(words, studied(), 6, seq())
@@ -45,5 +50,30 @@ describe('generateQuiz', () => {
   })
   it('词库不足 4 个时返回空', () => {
     expect(generateQuiz(words.slice(0, 3), emptyProgress(), 5, seq())).toEqual([])
+  })
+  it('干扰项按显示文本去重,近义词共享释义时不出现重复选项或重复正确答案', () => {
+    // abolish/rescind 共享同一 meaningLabel("v. 废除")。只学习前 4 个词(含这对近义词 +
+    // 2 个不同释义的词),使已学词池里非碰撞候选不足 3 个,必须从全词库(含未学的
+    // delta/echo)补足干扰项,才能凑出 4 个互不相同的选项。
+    const collisionWords = [
+      wordP('abolish', 'v.', '废除'),
+      wordP('rescind', 'v.', '废除'), // 与 abolish 共享同一 meaningLabel
+      wordP('bravo', 'n.', '乙'),
+      wordP('carol', 'n.', '丙'),
+      wordP('delta', 'n.', '丁'),
+      wordP('echo', 'n.', '戊'),
+    ]
+    const p = emptyProgress()
+    for (const w of collisionWords.slice(0, 4)) {
+      p.words[w.id] = { state: 'review', ease: 2.5, intervalDays: 3, due: '2026-08-01', stepIndex: 0, reps: 1, lapses: 0, lastReviewedAt: '2026-07-20T00:00:00Z' }
+    }
+    const zeroRng = () => 0
+    for (const count of [1, 2, 3, 4]) {
+      const qs = generateQuiz(collisionWords, p, count, zeroRng)
+      for (const q of qs.filter(q => q.type !== 'spelling')) {
+        expect(new Set(q.options).size).toBe(4)
+        expect(q.options.filter(o => o === q.answer).length).toBe(1)
+      }
+    }
   })
 })
