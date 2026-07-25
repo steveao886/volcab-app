@@ -165,47 +165,8 @@
   gap: var(--sp-3);
 }
 
-/* --- 删除确认对话框 --------------------------------------------------------
-   与 Library.css 的 .library-confirm 结构重复(原生 <dialog> + showModal(),
-   同一套重置 + 令牌)。两页各自持有一份是任务边界要求的,但这块 CSS 是
-   完全通用的确认弹窗外壳,值得在整合阶段提成共享的 .confirm-dialog。 */
-
-.worddetail-confirm {
-  width: min(400px, calc(100vw - var(--sp-8)));
-  margin: auto;
-  padding: var(--sp-5);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-md);
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: var(--shadow-2);
-}
-
-.worddetail-confirm::backdrop {
-  background: rgb(0 0 0 / 45%);
-}
-
-.worddetail-confirm__title {
-  font-size: var(--fs-md);
-  font-weight: 600;
-  line-height: var(--lh-tight);
-}
-
-.worddetail-confirm__body {
-  margin-top: var(--sp-2);
-  font-size: var(--fs-sm);
-  line-height: var(--lh-body);
-  color: var(--text-muted);
-}
-
-.worddetail-confirm__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--sp-3);
-  margin-top: var(--sp-5);
-}
-
-/* 词条不存在的兜底态用共享的 .empty-state(components.css),本页不再自带。 */
+/* 删除确认走共享的 ConfirmDialog / .confirm-dialog(components.css);
+   词条不存在的兜底态走共享的 .empty-state。本页都不再自带。 */
 
 /* 同上:词条页的重试入口(合并阶段会和 Library 的一起提升为共用样式)。 */
 .worddetail-retry {

@@ -150,57 +150,7 @@
   }
 }
 
-/* --- 删除确认对话框 --------------------------------------------------------
-   原生 <dialog> + showModal():浏览器免费提供顶层堆叠与焦点陷阱,
-   这里只需要重置 UA 默认边框并套上设计令牌。本仓库里这是第一处用
-   <dialog> 的地方(WordDetail 的删除确认是第二处,两边结构一致)。 */
-
-.library-confirm {
-  width: min(400px, calc(100vw - var(--sp-8)));
-  margin: auto;
-  padding: var(--sp-5);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-md);
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: var(--shadow-2);
-}
-
-/* 遮罩色:没有对应的设计令牌(--scrim 之类),暂用中性黑 + 透明度 ——
-   modal 遮罩本身就是「盖住背景」的合成层,不属于品牌色范畴。 */
-.library-confirm::backdrop {
-  background: rgb(0 0 0 / 45%);
-}
-
-.library-confirm__title {
-  font-size: var(--fs-md);
-  font-weight: 600;
-  line-height: var(--lh-tight);
-}
-
-.library-confirm__body {
-  margin-top: var(--sp-2);
-  font-size: var(--fs-sm);
-  line-height: var(--lh-body);
-  color: var(--text-muted);
-}
-
-.library-confirm__list {
-  margin-top: var(--sp-3);
-  padding: var(--sp-3);
-  border-radius: var(--r-sm);
-  background: var(--surface-sunken);
-  font-size: var(--fs-sm);
-  line-height: var(--lh-snug);
-  color: var(--text-muted);
-}
-
-.library-confirm__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--sp-3);
-  margin-top: var(--sp-5);
-}
+/* 删除确认走共享的 ConfirmDialog / .confirm-dialog(components.css)。 */
 
 /* 同步失败提示里的重试入口:行内文字按钮,沿用报错文字自身的颜色,
    不额外引入色值;热区靠上下 padding 撑到可点,不撑高行高。 */

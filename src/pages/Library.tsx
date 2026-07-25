@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Chip } from '../components/Chip'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { StateDot } from '../components/StateDot'
@@ -94,7 +95,6 @@ export function Library() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
-  const dialogRef = useRef<HTMLDialogElement>(null)
   const selectAllRef = useRef<HTMLInputElement>(null)
   const [overlayRoot, setOverlayRoot] = useState<HTMLElement | null>(null)
 
@@ -134,13 +134,6 @@ export function Library() {
     }
   }, [selected, allFilteredSelected])
 
-  useEffect(() => {
-    const dialog = dialogRef.current
-    if (!dialog) return
-    if (confirmOpen && !dialog.open) dialog.showModal()
-    if (!confirmOpen && dialog.open) dialog.close()
-  }, [confirmOpen])
-
   function toggleManage() {
     setManageMode(v => !v)
     setSelected(new Set())
@@ -159,8 +152,8 @@ export function Library() {
     setSelected(allFilteredSelected ? new Set() : new Set(filtered.map(w => w.id)))
   }
 
+  // 双击/重复触发保护在 ConfirmDialog 里(它同步挡掉第二次点击)
   async function handleConfirmDelete() {
-    if (deleting) return // 双击/重复触发保护:一次删除跑完之前不再接受第二次
     setDeleting(true)
     try {
       await deleteWords([...selected])
@@ -294,30 +287,22 @@ export function Library() {
           overlayRoot,
         )}
 
-      <dialog
-        ref={dialogRef}
-        className="library-confirm"
-        aria-labelledby="library-confirm-title"
-        onClose={() => setConfirmOpen(false)}
-      >
-        <p className="library-confirm__title" id="library-confirm-title">
-          删除选中的 {selected.size} 个词条?
-        </p>
-        <p className="library-confirm__body">
-          它们的学习进度(状态、复习次数、失误次数等)会一并清除,且无法恢复。
-        </p>
-        {selectedWords.length > 0 && selectedWords.length <= 8 && (
-          <p className="library-confirm__list">{selectedWords.map(w => w.headword).join('、')}</p>
-        )}
-        <div className="library-confirm__actions">
-          <Button variant="secondary" disabled={deleting} onClick={() => setConfirmOpen(false)}>
-            取消
-          </Button>
-          <Button variant="danger" loading={deleting} onClick={() => void handleConfirmDelete()}>
-            确认删除
-          </Button>
-        </div>
-      </dialog>
+      <ConfirmDialog
+        open={confirmOpen}
+        titleId="library-confirm-title"
+        title={`删除选中的 ${selected.size} 个词条?`}
+        body="它们的学习进度(状态、复习次数、失误次数等)会一并清除,且无法恢复。"
+        // 8 条以内把词头列出来让用户核对;再多就成了一堵墙,反而看不清删的是什么
+        detail={
+          selectedWords.length > 0 && selectedWords.length <= 8
+            ? selectedWords.map(w => w.headword).join('、')
+            : undefined
+        }
+        confirmLabel="确认删除"
+        busy={deleting}
+        onConfirm={() => void handleConfirmDelete()}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </Page>
   )
 }

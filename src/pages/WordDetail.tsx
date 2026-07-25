@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Chip } from '../components/Chip'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { StateDot } from '../components/StateDot'
@@ -25,17 +26,9 @@ export function WordDetail() {
   const [saving, setSaving] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
-  const dialogRef = useRef<HTMLDialogElement>(null)
 
   // Hooks 必须无条件调用,「词不存在」的分支放在所有 hook 之后再 return。
   const word = useMemo(() => words.find(w => w.id === id), [words, id])
-
-  useEffect(() => {
-    const dialog = dialogRef.current
-    if (!dialog) return
-    if (confirmOpen && !dialog.open) dialog.showModal()
-    if (!confirmOpen && dialog.open) dialog.close()
-  }, [confirmOpen])
 
   async function handleSave(updated: Word) {
     setSaving(true)
@@ -51,7 +44,7 @@ export function WordDetail() {
   }
 
   function handleDelete() {
-    if (!word || deleting) return // 双击/重复触发保护
+    if (!word) return // 双击/重复触发保护在 ConfirmDialog 里
     setDeleting(true)
     // 不能 await 完再跳转:deleteWords 会在它自己那个 await 之前同步地把词
     // 从 words 里摘掉,React 19 把这次 setState 和 setDeleting 批到同一次
@@ -231,27 +224,16 @@ export function WordDetail() {
         </>
       )}
 
-      <dialog
-        ref={dialogRef}
-        className="worddetail-confirm"
-        aria-labelledby="worddetail-confirm-title"
-        onClose={() => setConfirmOpen(false)}
-      >
-        <p className="worddetail-confirm__title" id="worddetail-confirm-title">
-          删除「{word.headword}」?
-        </p>
-        <p className="worddetail-confirm__body">
-          这个词条以及它的学习进度(状态、复习次数、失误次数等)会一并删除,且无法恢复。
-        </p>
-        <div className="worddetail-confirm__actions">
-          <Button variant="secondary" disabled={deleting} onClick={() => setConfirmOpen(false)}>
-            取消
-          </Button>
-          <Button variant="danger" loading={deleting} onClick={() => void handleDelete()}>
-            确认删除
-          </Button>
-        </div>
-      </dialog>
+      <ConfirmDialog
+        open={confirmOpen}
+        titleId="worddetail-confirm-title"
+        title={`删除「${word.headword}」?`}
+        body="这个词条以及它的学习进度(状态、复习次数、失误次数等)会一并删除,且无法恢复。"
+        confirmLabel="确认删除"
+        busy={deleting}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </Page>
   )
 }
