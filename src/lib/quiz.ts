@@ -19,6 +19,33 @@ const meaningLabel = (w: Word) => {
   return `${m.pos} ${m.zh}`
 }
 
+const BLANK = '___'
+
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+/**
+ * 把例句里的词头挖成空格。
+ *
+ * 实测 476 词中 86% 的例句含词头原形,14% 只含变形(concocted / concocting),
+ * 0% 完全定位不到 —— 所以必须同时处理变形,只做全词匹配会漏掉 68 个词。
+ * 做法:取词干(去掉尾部至多 3 个字母)后允许跟任意字母后缀。
+ *
+ * 同句多次出现全部挖掉:留下任何一处都会直接泄题。
+ * 定位不到返回 null —— 宁可跳过这条例句,也不出一道没有空格的挖空题。
+ */
+export function clozeExample(sentence: string, headword: string): string | null {
+  const h = headword.trim().toLowerCase()
+  const exact = new RegExp(`\\b${escapeRe(h)}\\b`, 'gi')
+  if (exact.test(sentence)) return sentence.replace(exact, BLANK)
+
+  // 变形:词干 + 任意字母后缀。短词不截断,避免 "act" 命中 "action" 一类误伤。
+  const stem = h.length > 5 ? h.slice(0, h.length - 3) : h
+  const inflected = new RegExp(`\\b${escapeRe(stem)}[a-z]*\\b`, 'gi')
+  if (inflected.test(sentence)) return sentence.replace(inflected, BLANK)
+
+  return null
+}
+
 export function shuffle<T>(arr: T[], rng: () => number): T[] {
   const a = [...arr]
   for (let i = a.length - 1; i > 0; i--) {

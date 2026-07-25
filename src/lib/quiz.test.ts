@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { generateQuiz } from './quiz'
+import { clozeExample, generateQuiz } from './quiz'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
 
@@ -88,5 +88,31 @@ describe('generateQuiz', () => {
         expect(q.options.filter(o => o === q.answer).length).toBe(1)
       }
     }
+  })
+})
+
+describe('clozeExample', () => {
+  it('挖掉原形出现的词头', () => {
+    expect(clozeExample('She concoct a story quickly.', 'concoct'))
+      .toBe('She ___ a story quickly.')
+  })
+  it('挖掉变形出现的词头', () => {
+    expect(clozeExample('She concocted an elaborate excuse.', 'concoct'))
+      .toBe('She ___ an elaborate excuse.')
+  })
+  it('大小写不敏感', () => {
+    expect(clozeExample('Concocting excuses is his talent.', 'concoct'))
+      .toBe('___ excuses is his talent.')
+  })
+  it('同句多次出现时全部挖掉,不留下泄题的那一处', () => {
+    expect(clozeExample('He concocted it, then concocted more.', 'concoct'))
+      .toBe('He ___ it, then ___ more.')
+  })
+  it('多词词头按整体挖', () => {
+    expect(clozeExample('They agreed on an ad hoc basis.', 'ad hoc'))
+      .toBe('They agreed on an ___ basis.')
+  })
+  it('定位不到就返回 null,由调用方跳过该例句', () => {
+    expect(clozeExample('Nothing relevant here.', 'concoct')).toBeNull()
   })
 })
