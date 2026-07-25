@@ -8,6 +8,10 @@ export interface QuizQuestion {
   prompt: string
   options: string[]   // spelling 题为 []
   answer: string
+  /** 仅 spelling 题携带:释义与音标是两个独立字段,不再拼进 prompt 字符串里
+   *  ——调用方（渲染层)不该靠正则从 prompt 里"抠"音标出来,那是在为一个
+   *  拼接细节维护一份没人签字的隐性契约。 */
+  phonetic?: string
 }
 
 const meaningLabel = (w: Word) => {
@@ -75,8 +79,9 @@ export function generateQuiz(
     if (type === 'spelling') {
       questions.push({
         type, wordId: w.id,
-        prompt: `${meaningLabel(w)}  ${w.phonetic}`,
+        prompt: meaningLabel(w),
         options: [], answer: w.headword,
+        phonetic: w.phonetic,
       })
       continue
     }

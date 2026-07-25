@@ -1,0 +1,120 @@
+/* ==========================================================================
+   Quiz 页专属样式(Task 18)。类名一律 quiz- 前缀,不动全局样式表。
+   ========================================================================== */
+
+.quiz-progress {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.quiz-progress__count {
+  font-size: var(--fs-sm);
+}
+
+.quiz-q__label {
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--text-faint);
+}
+
+.quiz-q__prompt {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-md);
+  line-height: var(--lh-snug);
+}
+
+/* word2meaning 的 prompt 复用 .word(英文词头衬线体),这里只补一点顶部间距 */
+.quiz-q__prompt.word {
+  margin-top: var(--sp-3);
+}
+
+.quiz-options {
+  display: grid;
+  gap: var(--sp-2);
+  margin-top: var(--sp-5);
+}
+
+/* 判题后贴在选项文字下方的小字说明:「正确答案」/「你的选择」——
+   对错不能只靠颜色传达,这行文字是给色觉障碍与截图场景的兜底。 */
+.quiz-option__tag {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.quiz-feedback {
+  margin-top: var(--sp-4);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.quiz-q__next {
+  margin-top: var(--sp-5);
+}
+
+.quiz-spelling {
+  display: grid;
+  gap: var(--sp-4);
+  margin-top: var(--sp-4);
+}
+
+.quiz-spelling-answer {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.quiz-empty {
+  display: grid;
+  gap: var(--sp-4);
+  justify-items: start;
+}
+
+.quiz-result__score {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-1);
+}
+
+.quiz-result__score-num {
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+}
+
+.quiz-result__summary {
+  margin-top: var(--sp-2);
+}
+
+.quiz-wrong-title {
+  padding: var(--sp-4) var(--sp-4) 0;
+}
+
+.quiz-wrong-list {
+  display: grid;
+}
+
+.quiz-wrong-list li + li {
+  border-top: 1px solid var(--rule);
+}
+
+.quiz-wrong-list__item {
+  display: grid;
+  gap: 2px;
+  padding: var(--sp-3) var(--sp-4);
+  text-decoration: none;
+  color: inherit;
+}
+
+.quiz-wrong-list__item:hover {
+  background: var(--surface-sunken);
+}
+
+.quiz-result__actions {
+  display: grid;
+  gap: var(--sp-3);
+}

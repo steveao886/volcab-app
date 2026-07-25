@@ -51,6 +51,19 @@ describe('generateQuiz', () => {
   it('词库不足 4 个时返回空', () => {
     expect(generateQuiz(words.slice(0, 3), emptyProgress(), 5, seq())).toEqual([])
   })
+  it('拼写题携带独立的 phonetic 字段,prompt 不再拼接音标', () => {
+    const qs = generateQuiz(words, studied(), 6, seq())
+    const sp = qs.find(q => q.type === 'spelling')!
+    const w = words.find(x => x.id === sp.wordId)!
+    expect(sp.phonetic).toBe(w.phonetic)
+    expect(sp.prompt).not.toContain(w.phonetic)
+  })
+  it('选择题不携带 phonetic 字段', () => {
+    const qs = generateQuiz(words, studied(), 6, seq())
+    for (const q of qs.filter(q => q.type !== 'spelling')) {
+      expect(q.phonetic).toBeUndefined()
+    }
+  })
   it('干扰项按显示文本去重,近义词共享释义时不出现重复选项或重复正确答案', () => {
     // abolish/rescind 共享同一 meaningLabel("v. 废除")。只学习前 4 个词(含这对近义词 +
     // 2 个不同释义的词),使已学词池里非碰撞候选不足 3 个,必须从全词库(含未学的
