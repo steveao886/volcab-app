@@ -215,6 +215,15 @@
   }
 }
 
+/* 剔除入口:与四档打分保持距离,视觉上明确不属于同一组操作 */
+.review-cull {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--rule);
+}
+
 /* --- 完成页 ------------------------------------------------------------ */
 
 .review-done {
