@@ -12,11 +12,6 @@ const TYPE_LABEL: Record<QuizType, string> = {
   spelling: '根据释义拼写单词',
 }
 
-// 「下一题」按钮的固定 id,配合下面的挂载效应把焦点交给它。用 id + getElementById
-// 而不是 React ref——Button 组件(冻结,不可改)没有声明 ref prop,React 19 下
-// 普通函数组件不会自动获得它。同一时刻只有一道题在渲染,id 不会冲突。
-const NEXT_BUTTON_ID = 'quiz-next-button'
-
 interface QuizQuestionViewProps {
   question: QuizQuestion
   /** 用户第一次锁定答案时触发一次(判分用),不负责翻页 */
@@ -52,11 +47,13 @@ interface AnswerFeedbackProps {
  * 只在判完分那一刻挂载(父组件用 locked/submitted 条件渲染它),所以用一个
  * 只跑一次的挂载效应把焦点交给「下一题」按钮:上一步被禁用/整个移除的控件
  * (选项按钮、拼写输入框)会让焦点弹回 <body>,键盘用户不该每答一题就要
- * 从页头重新 Tab 一遍。
+ * 从页头重新 Tab 一遍。焦点直接走 ref —— Button 现在声明了 ref prop,
+ * 不必再靠一个固定 id + getElementById 绕路。
  */
 function AnswerFeedback({ correct, onNext, nextLabel, children }: AnswerFeedbackProps) {
+  const nextRef = useRef<HTMLButtonElement>(null)
   useEffect(() => {
-    document.getElementById(NEXT_BUTTON_ID)?.focus()
+    nextRef.current?.focus()
   }, [])
 
   return (
@@ -65,7 +62,7 @@ function AnswerFeedback({ correct, onNext, nextLabel, children }: AnswerFeedback
         {correct ? '回答正确' : '回答错误'}
       </p>
       {children}
-      <Button id={NEXT_BUTTON_ID} className="quiz-q__next" variant="primary" block onClick={onNext}>
+      <Button ref={nextRef} className="quiz-q__next" variant="primary" block onClick={onNext}>
         {nextLabel}
       </Button>
     </>

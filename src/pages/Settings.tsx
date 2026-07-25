@@ -100,9 +100,9 @@ export function Settings() {
   // 退出登录会直接从 DOM 里换掉那颗按钮:警示面板出现时,焦点得跟过去
   // (落在「取消」这个安全默认项上),role="alert" 负责让屏幕阅读器把这段话念出来
   // —— 面板一挂载就当整块内容播报,不用等用户自己去找。
-  const confirmPanelRef = useRef<HTMLDivElement>(null)
+  const cancelLogoutRef = useRef<HTMLButtonElement>(null)
   useEffect(() => {
-    if (confirmingLogout) confirmPanelRef.current?.querySelector('button')?.focus()
+    if (confirmingLogout) cancelLogoutRef.current?.focus()
   }, [confirmingLogout])
 
   return (
@@ -150,7 +150,7 @@ export function Settings() {
         </div>
 
         {confirmingLogout ? (
-          <div className="settings-confirm" role="alert" ref={confirmPanelRef}>
+          <div className="settings-confirm" role="alert">
             <p className={unsynced ? 'settings-confirm__text settings-confirm__text--warn' : 'settings-confirm__text'}>
               退出会清除本机保存的 token、词库缓存与学习进度缓存。
               {unsynced
@@ -158,7 +158,7 @@ export function Settings() {
                 : '当前没有未同步的改动,重新登录后可以取回全部内容。'}
             </p>
             <div className="settings-confirm__actions">
-              <Button variant="secondary" block onClick={() => setConfirmingLogout(false)}>
+              <Button ref={cancelLogoutRef} variant="secondary" block onClick={() => setConfirmingLogout(false)}>
                 取消
               </Button>
               <Button variant="danger" block onClick={logout}>

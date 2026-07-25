@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes } from 'react'
+import type { ComponentPropsWithRef } from 'react'
 
 /**
  * 按钮。
@@ -14,8 +14,13 @@ import type { ButtonHTMLAttributes } from 'react'
  *
  * 样式全在 CSS(.btn / .btn--*),需要一个「长得像按钮的链接」时,
  * 直接给 <Link> 写 className="btn btn--secondary" 即可,不必包装组件。
+ *
+ * props 用 ComponentPropsWithRef 而不是 ButtonHTMLAttributes:React 19 里
+ * ref 就是一个普通 prop,但只有声明了它才拿得到 —— 它跟着 ...rest 落到
+ * <button> 上。判完题把焦点交给「下一题」、确认面板展开把焦点交给「取消」,
+ * 都要真正的 ref;缺了它,调用方只能退回 getElementById / querySelector。
  */
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends ComponentPropsWithRef<'button'> {
   variant?:
     | 'primary'
     | 'secondary'
