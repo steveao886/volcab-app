@@ -18,7 +18,7 @@ const STATE_LABEL: Record<WordState, string> = { new: '未学', learning: '学�
 /** Task 19 实现:完整词条 + 发音 + 学习统计 + 编辑表单 + 删除。 */
 export function WordDetail() {
   const { id } = useParams()
-  const { words, progress, saveWord, deleteWords, syncStatus, syncError } = useApp()
+  const { words, progress, saveWord, deleteWords, syncStatus, syncError, syncNow } = useApp()
   const navigate = useNavigate()
 
   const [editing, setEditing] = useState(false)
@@ -50,14 +50,15 @@ export function WordDetail() {
     setEditing(false)
   }
 
-  async function handleDelete() {
+  function handleDelete() {
     if (!word || deleting) return // 双击/重复触发保护
     setDeleting(true)
-    try {
-      await deleteWords([word.id])
-    } finally {
-      setDeleting(false)
-    }
+    // 不能 await 完再跳转:deleteWords 会在它自己那个 await 之前同步地把词
+    // 从 words 里摘掉,React 19 把这次 setState 和 setDeleting 批到同一次
+    // 渲染,于是 word 立刻变成 undefined,页面在网络请求还没回来时就先闪出
+    // 「这个词条不存在」。本地删除已经是权威结果(与 handleSave 同一套逻辑),
+    // 所以立刻跳走;推送成败由词库页常驻的 syncStatus 提示负责说明。
+    void deleteWords([word.id]).finally(() => setDeleting(false))
     navigate('/library')
   }
 
@@ -108,7 +109,10 @@ export function WordDetail() {
 
       {syncStatus === 'error' && syncError !== null && (
         <p className="field__error" role="alert">
-          {syncError}
+          {syncError}{' '}
+          <button type="button" className="worddetail-retry" onClick={() => void syncNow()}>
+            重试同步
+          </button>
         </p>
       )}
 

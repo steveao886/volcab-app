@@ -50,7 +50,7 @@ function LibraryRow({
 
   if (manageMode) {
     return (
-      <label className="library-row">
+      <label className="library-row" role="listitem">
         <span className="check">
           <input
             type="checkbox"
@@ -66,7 +66,7 @@ function LibraryRow({
   }
 
   return (
-    <Link className="library-row" to={`/word/${word.id}`}>
+    <Link className="library-row" role="listitem" to={`/word/${word.id}`}>
       {body}
     </Link>
   )
@@ -83,7 +83,7 @@ function emptyStateCopy(
 
 /** Task 19 实现:搜索、筛选 chips、词条列表、多选批量删除。 */
 export function Library() {
-  const { words, progress, deleteWords, syncStatus, syncError } = useApp()
+  const { words, progress, deleteWords, syncStatus, syncError, syncNow } = useApp()
 
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<StatusFilter>('all')
@@ -187,7 +187,11 @@ export function Library() {
     >
       {syncStatus === 'error' && syncError !== null && (
         <p className="field__error" role="alert">
-          {syncError}
+          {syncError}{' '}
+          {/* 删改就发生在这一页,重试入口必须在这里,不能只留在今日页的角标上 */}
+          <button type="button" className="library-retry" onClick={() => void syncNow()}>
+            重试同步
+          </button>
         </p>
       )}
 
@@ -240,7 +244,8 @@ export function Library() {
       )}
 
       {empty === null ? (
-        <Card pad="none" className="library-list">
+        // 476 条的长列表:显式列表语义,读屏才能报出条目数、才能用列表模式导航
+        <Card pad="none" className="library-list" role="list">
           {filtered.map(w => (
             <LibraryRow
               key={w.id}

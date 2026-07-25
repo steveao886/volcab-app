@@ -38,7 +38,9 @@ function searchRank(word: Word, needle: string): 0 | 1 | 2 | null {
   if (headword.startsWith(needle)) return 0
   if (headword.includes(needle)) return 1
   for (const m of word.meanings) {
-    if (m.en.toLowerCase().includes(needle) || m.zh.includes(needle)) return 2
+    // zh 也要转小写:中文释义里混着拉丁字母的情况不少(AI、CEO、DNA……),
+    // needle 已经是小写,这边不转就等于对这些词做了大小写敏感匹配。
+    if (m.en.toLowerCase().includes(needle) || m.zh.toLowerCase().includes(needle)) return 2
   }
   return null
 }

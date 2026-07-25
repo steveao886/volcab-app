@@ -41,6 +41,41 @@ describe('filterWords - 搜索:大小写与命中字段', () => {
     ])
   })
 
+  it('zh 释义里的拉丁字母同样大小写不敏感', () => {
+    // 中文释义里夹英文缩写很常见(AI、CEO、DNA……)。查询词会被转成小写,
+    // 若 zh 侧不一起转,这些词就变成了大小写敏感匹配 —— 这条挡的就是那个回归。
+    const words = [
+      mkWord({
+        id: 'algorithm',
+        headword: 'algorithm',
+        meanings: [{ pos: 'n.', en: 'a set of rules', zh: 'AI 系统里的算法' }],
+      }),
+    ]
+    expect(ids(filterWords(words, emptyProgress(), { query: 'ai', status: 'all', sourceNote: null }))).toEqual([
+      'algorithm',
+    ])
+  })
+
+  it('命中落在第二个及以后的义项上也算命中', () => {
+    // 搜索要遍历全部 meanings,不能只看首义项。
+    const words = [
+      mkWord({
+        id: 'concoct',
+        headword: 'concoct',
+        meanings: [
+          { pos: 'v.', en: 'to make up a story', zh: '编造' },
+          { pos: 'v.', en: 'to prepare a drink', zh: '调制饮料' },
+        ],
+      }),
+    ]
+    expect(ids(filterWords(words, emptyProgress(), { query: 'drink', status: 'all', sourceNote: null }))).toEqual([
+      'concoct',
+    ])
+    expect(ids(filterWords(words, emptyProgress(), { query: '调制', status: 'all', sourceNote: null }))).toEqual([
+      'concoct',
+    ])
+  })
+
   it('en 释义子串命中,即使词头完全不含查询词', () => {
     const words = [
       mkWord({ id: 'abrogate', headword: 'abrogate', meanings: [{ pos: 'v.', en: 'to formally cancel a law', zh: '正式废除' }] }),
