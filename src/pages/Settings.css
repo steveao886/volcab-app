@@ -1,0 +1,73 @@
+/* Settings(设置)页面专属样式:账号信息行、退出确认、版本落款。 */
+
+/* --- 账号信息:标签左 / 值右的一组只读行 --------------------------------- */
+
+.settings-rows {
+  display: grid;
+  gap: var(--sp-2);
+  margin-block: var(--sp-3) var(--sp-4);
+}
+
+.settings-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.settings-row__label {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.settings-row__value {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text);
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
+/* --- 退出登录:点击后原地展开成说明 + 二次确认,不用弹窗 ------------------- */
+
+.settings-confirm {
+  display: grid;
+  gap: var(--sp-3);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--rule);
+}
+
+.settings-confirm__text {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+}
+
+/* 有未同步改动时才升级到警示色,呼应「朱砂只做批注」——这里批注的是真实风险 */
+.settings-confirm__text--warn {
+  color: var(--danger);
+}
+
+.settings-confirm__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+}
+
+/* --- 备份 ------------------------------------------------------------------ */
+
+.settings-hint {
+  margin-block: var(--sp-2) var(--sp-4);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+}
+
+/* --- 版本落款 ---------------------------------------------------------------- */
+
+.settings-version {
+  padding-block: var(--sp-2) var(--sp-4);
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+  text-align: center;
+}
