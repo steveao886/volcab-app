@@ -58,3 +58,14 @@ export function advance(
     total: recycle ? q.total + 1 : q.total,
   }
 }
+
+/**
+ * 队首这张词条在词库里已经找不到了(另一台设备删掉了它,同步跑在会话中途)——
+ * 不是打分,只是把它从队列里摘掉:不计入 seen,也把 total 一起减掉,
+ * 否则进度条分母会永远比实际卡数多一个,看起来卡在不到 100%。
+ *
+ * 前提与 advance() 相同:调用方只应该对 currentId(q) 调用。
+ */
+export function dropCurrent(q: SessionQueue): SessionQueue {
+  return { ids: q.ids.slice(1), seen: q.seen, total: q.total - 1 }
+}

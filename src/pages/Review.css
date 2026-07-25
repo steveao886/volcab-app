@@ -29,7 +29,11 @@
   left: var(--sp-4);
 }
 
-.review-card--front {
+/* 复合选择器(而不是单独 .review-card--front)是故意的:.review-card 同时挂了
+   设计系统的 .card--interactive(见 Review.tsx),它也声明了 display —— 两条规则
+   特异度打平时谁赢取决于样式表里谁写在后面,不想依赖 Vite 打包顺序,所以在这里
+   把特异度垫高一档,让正面居中布局不会被 .card--interactive 的 display:block 吃掉。 */
+.review-card.review-card--front {
   min-height: 200px;
   display: grid;
   place-items: center;
@@ -132,12 +136,25 @@
   font-size: var(--fs-xs);
 }
 
-/* --- 翻面提示 / 打分按钮 ---------------------------------------------------- */
+/* --- 翻面提示 / 打分按钮 ----------------------------------------------------
+   钉在移动端底部页签之上:这是全站点击最频繁的操作,翻面后长词条(3 条释义 +
+   例句 + 全部标签行)很容易把它挤到折叠线以下,滚动一次才能打分不可接受。
+   做法和 .page__head 贴顶、.tabbar 贴底是同一套语言(见 layout.css),
+   只是这次贴的是"页面内容区的底"而不是"视口的底"—— position:sticky 不会
+   覆盖住它前面的内容(卡片没滚到这个位置之前,它就停在正常文档流里,
+   不会成为浮层压住任何东西),所以不需要额外的"卡片够不够高"判断。 */
 
 .review-actions {
+  position: sticky;
+  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+  z-index: var(--z-bar);
   min-height: var(--tap);
   display: grid;
   align-items: center;
+  margin-top: var(--sp-2);
+  padding-block: var(--sp-3);
+  background: var(--bg);
+  border-top: 1px solid var(--rule);
 }
 
 .review-hint {
@@ -169,11 +186,16 @@
   opacity: 0.75;
 }
 
-/* 桌面宽一点,打分按钮不必挤在一起 */
+/* 桌面宽一点,打分按钮不必挤在一起;桌面页签变成侧栏(见 layout.css),
+   底部不再有固定页签占位,贴底偏移量归零即可。 */
 @media (min-width: 900px) {
   .review-grades {
     max-width: 480px;
     margin-inline: auto;
+  }
+
+  .review-actions {
+    bottom: 0;
   }
 }
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { advance, buildSessionQueue, currentId, isDone } from './reviewQueue'
+import { advance, buildSessionQueue, currentId, dropCurrent, isDone } from './reviewQueue'
 import { gradeWord } from '../lib/srs'
 import type { ProgressEntry } from '../types'
 
@@ -74,6 +74,32 @@ describe('advance —— 出队与重新入队', () => {
     const next = advance(q, 'a', entry({ due: TODAY }), TODAY)
     expect(currentId(next)).toBe('a')
     expect(isDone(next)).toBe(false)
+  })
+})
+
+describe('dropCurrent —— 词条在词库里消失(另一台设备删除)', () => {
+  it('摘掉队首,不计入 seen,total 一起减一', () => {
+    const q = buildSessionQueue(['a', 'b', 'c'], [])
+    const next = dropCurrent(q)
+    expect(next.ids).toEqual(['b', 'c'])
+    expect(next.seen).toBe(0)
+    expect(next.total).toBe(2)
+  })
+  it('摘掉最后一张 → 队列清空,视为完成', () => {
+    const q = buildSessionQueue(['a'], [])
+    const next = dropCurrent(q)
+    expect(next.ids).toEqual([])
+    expect(isDone(next)).toBe(true)
+    expect(next.total).toBe(0)
+  })
+  it('摘掉之后不影响其余词正常出队/重排', () => {
+    let q = buildSessionQueue(['a', 'b'], [])
+    q = dropCurrent(q) // a 在另一台设备被删了
+    expect(currentId(q)).toBe('b')
+    const next = advance(q, 'b', entry({ state: 'review', due: '2026-07-26' }), TODAY)
+    expect(isDone(next)).toBe(true)
+    expect(next.seen).toBe(1)
+    expect(next.total).toBe(1) // 原本 2 张,摘掉 1 张后只剩 1 张,分母对得上
   })
 })
 

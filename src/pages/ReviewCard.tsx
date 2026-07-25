@@ -36,6 +36,12 @@ export function ReviewCardBack({ word }: { word: Word }) {
               {showIndex && <span className="review-meaning__idx num faint">{i + 1}</span>}
               <span className="pos">{m.pos}</span>
             </p>
+            {/* 故意选择:英文释义走全权重正文色,中文释义走 .muted 降一档。
+                词库定位在 C1/C2(circumlocution / grandiloquence 这个难度),
+                复习翻面后应该先靠英文释义完成"用英语理解英语"的复述与确认——
+                这也是页面视觉方向"辞书排版"的应有取舍:辞书正文是被释义的语言,
+                译文是边注。中文译文仍然在场、随时可读,只是不作为主目标。
+                这不是"中文不重要",是刻意把认知目标锚在英文释义上。 */}
             <p lang="en">{m.en}</p>
             <p className="muted">{m.zh}</p>
           </li>
@@ -43,13 +49,16 @@ export function ReviewCardBack({ word }: { word: Word }) {
       </ol>
 
       {word.examples.length > 0 && (
-        <ul className="review-examples">
-          {word.examples.map((ex) => (
-            <li key={ex} lang="en">
-              {ex}
-            </li>
-          ))}
-        </ul>
+        <div className="review-tags">
+          <p className="review-tags__label pos">例句</p>
+          <ul className="review-examples">
+            {word.examples.map((ex) => (
+              <li key={ex} lang="en">
+                {ex}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {word.synonyms.length > 0 && <TagRow label="近义词" items={word.synonyms} />}
