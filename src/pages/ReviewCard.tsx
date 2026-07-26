@@ -1,4 +1,5 @@
 import { Chip } from '../components/Chip'
+import { ExampleSentence } from '../components/ExampleSentence'
 import type { Word } from '../types'
 
 /**
@@ -71,7 +72,7 @@ export function ReviewCardBack({ word }: { word: Word }) {
           <ul className="review-examples">
             {word.examples.map((ex) => (
               <li key={ex} lang="en">
-                {ex}
+                <ExampleSentence sentence={ex} headword={word.headword} />
               </li>
             ))}
           </ul>

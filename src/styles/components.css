@@ -491,6 +491,16 @@
   justify-self: start;
 }
 
+/* 例句里的词头。<mark> 默认是荧光黄底,那和「墨与纸」完全不搭 —— 去掉底色,
+   改成「正文权重 + 一道朱砂下划线」:例句本身是 --text-muted,词头提到 --text
+   就已经跳出来了,朱砂只承担批注这一层,与设计语言里「朱砂只做批注」一致。 */
+.example-hit {
+  background: none;
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: inset 0 -1px 0 var(--accent);
+}
+
 /* 勾选框:原生控件染成品牌色,外面套一个 --tap 大小的命中区 */
 .check {
   display: grid;

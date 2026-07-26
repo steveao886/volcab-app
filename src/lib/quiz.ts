@@ -1,3 +1,4 @@
+import { headwordPattern } from './headword'
 import type { Meaning, Progress, Word } from '../types'
 
 export type QuizType =
@@ -52,29 +53,19 @@ const meaningLabel = (m: Meaning) => `${m.pos} ${m.zh}`
 
 const BLANK = '___'
 
-const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-
 /**
- * 把例句里的词头挖成空格。
+ * 把例句里的词头挖成空格。定位规则见 lib/headword.ts —— 挖空与复习卡上的高亮
+ * 找的是同一个东西,共用一份实现。
  *
- * 实测 476 词中 86% 的例句含词头原形,14% 只含变形(concocted / concocting),
- * 0% 完全定位不到 —— 所以必须同时处理变形,只做全词匹配会漏掉 68 个词。
- * 做法:取词干(去掉尾部至多 3 个字母)后允许跟任意字母后缀。
+ * **同句里原形与变形必须一起挖掉**:留下任何一处都会直接泄题。这条以前没做到,
+ * placate 的例句「to placate passengers…, which placated almost no one」只挖掉了
+ * 原形,答案就明晃晃留在句子里。
  *
- * 同句多次出现全部挖掉:留下任何一处都会直接泄题。
  * 定位不到返回 null —— 宁可跳过这条例句,也不出一道没有空格的挖空题。
  */
 export function clozeExample(sentence: string, headword: string): string | null {
-  const h = headword.trim().toLowerCase()
-  const exact = new RegExp(`\\b${escapeRe(h)}\\b`, 'gi')
-  if (exact.test(sentence)) return sentence.replace(exact, BLANK)
-
-  // 变形:词干 + 任意字母后缀。短词不截断,避免 "act" 命中 "action" 一类误伤。
-  const stem = h.length > 5 ? h.slice(0, h.length - 3) : h
-  const inflected = new RegExp(`\\b${escapeRe(stem)}[a-z]*\\b`, 'gi')
-  if (inflected.test(sentence)) return sentence.replace(inflected, BLANK)
-
-  return null
+  const re = headwordPattern(sentence, headword)
+  return re === null ? null : sentence.replace(re, BLANK)
 }
 
 /** 搭配挖空。规则与 clozeExample 相同,单列一个函数是因为搭配是短语、语义不同。 */

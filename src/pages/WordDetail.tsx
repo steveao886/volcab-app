@@ -4,6 +4,7 @@ import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Chip } from '../components/Chip'
 import { ConfirmDialog } from '../components/ConfirmDialog'
+import { ExampleSentence } from '../components/ExampleSentence'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { StateDot } from '../components/StateDot'
@@ -146,7 +147,7 @@ export function WordDetail() {
               <ul className="worddetail-examples">
                 {word.examples.map((ex, i) => (
                   <li key={i} lang="en">
-                    {ex}
+                    <ExampleSentence sentence={ex} headword={word.headword} />
                   </li>
                 ))}
               </ul>
