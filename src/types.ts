@@ -1,4 +1,21 @@
-export interface Meaning { pos: string; en: string; zh: string }
+export interface Meaning {
+  pos: string
+  en: string
+  zh: string
+  /**
+   * 该义项在当代语境里的大致占比,整十(10–90)。同一个词的所有义项要么都有、
+   * 要么都没有,总和恒为 100;单义词不写(写 100 是噪音,还会让「有 share
+   * 即多义词」这条判断失效)。
+   *
+   * 只到整十是刻意的:这是会话中 AI 依据当代用法常识估的量级,背后**没有**
+   * 语料统计。写成 87%/13% 会暗示有 COCA 之类的来源,那是假精度。
+   *
+   * 可选而不是必填 —— 写入端严格(表单 + validate-words.ts),读取端宽容:
+   * 另一台设备的旧版 App 推上来一个缺这个字段的词,正确结果是「不显示占比」,
+   * 而不是整份 words.json 被判成坏数据拒绝合并。见 sync.ts 的 isMeaning。
+   */
+  share?: number
+}
 
 /** 同根变形:未单独收词,但在词条页展示,便于成族记忆 */
 export interface RelatedForm { form: string; pos: string; zh: string }

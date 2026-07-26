@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs'
+import { isShareOrdered, validateShares } from '../src/lib/senseShare.ts'
 
 const file = process.argv[2] ?? 'data/words.json'
 const data = JSON.parse(readFileSync(file, 'utf8'))
@@ -19,6 +20,13 @@ for (const w of data.words) {
   for (const m of w.meanings ?? []) {
     if (!m.pos || !m.en || !m.zh) errors.push(`${ctx}: meaning 缺 pos/en/zh`)
   }
+  // 义项占比:规则与两个表单共用同一份实现(src/lib/senseShare.ts),
+  // 免得脚本和 App 各写一份、日后悄悄漂移。
+  if (Array.isArray(w.meanings)) {
+    const shareErr = validateShares(w.meanings)
+    if (shareErr) errors.push(`${ctx}: ${shareErr}`)
+    else if (!isShareOrdered(w.meanings)) errors.push(`${ctx}: 义项须按占比从高到低排列`)
+  }
   if (!Array.isArray(w.examples) || w.examples.length < 2) errors.push(`${ctx}: examples 至少 2 句`)
   for (const k of ['synonyms', 'antonyms', 'collocations'] as const) {
     if (!Array.isArray(w[k])) errors.push(`${ctx}: ${k} 必须是数组`)
@@ -30,9 +38,13 @@ for (const w of data.words) {
   }
   if (!w.sourceNote) errors.push(`${ctx}: 缺 sourceNote`)
   if (!/^\d{4}-\d{2}-\d{2}$/.test(w.addedAt ?? '')) errors.push(`${ctx}: addedAt 需为 YYYY-MM-DD`)
-  // usageScore 可选(App 内手动添加的词不会有分),但存在就必须合法 ——
-  // 缺省表示「尚未评分」,详情页据此不渲染该格;0 或 11 这类值会渲染出一个假分数。
-  if (w.usageScore !== undefined && (!Number.isInteger(w.usageScore) || w.usageScore < 1 || w.usageScore > 10)) {
+  // usageScore 现在是**必填**:两个录入表单都要求填,词条补全流程也一并产出
+  // (见 docs/word-entry-spec.md)。当初设为可选是因为 App 内手动添加的词拿不到
+  // 分数;那条路已经堵上了,再放行等于允许新词悄悄缺分数、复习时那一行不显示。
+  // 注意 src/types.ts 与 sync.ts 仍按可选处理 —— 写入端严格、读取端宽容。
+  if (w.usageScore === undefined) {
+    errors.push(`${ctx}: 缺 usageScore(1–10 的整数)`)
+  } else if (!Number.isInteger(w.usageScore) || w.usageScore < 1 || w.usageScore > 10) {
     errors.push(`${ctx}: usageScore 需为 1–10 的整数,实为 ${JSON.stringify(w.usageScore)}`)
   }
 }
