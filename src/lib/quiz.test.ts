@@ -3,9 +3,16 @@ import { QUIZ_TYPES, clozeCollocation, clozeExample, generateQuiz, sharedSynonym
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
 
+// 字段覆盖六种题型所需的全部原料:examples/collocations 含词头原形(挖空题要能
+// 定位到它),synonyms/antonyms 以 id 为前缀天然互不相同、也不与其他 fixture 词共享
+// (否则会被 sharedSynonyms 排除,synonymHint 就出不来)。
 const word = (id: string, zh: string): Word => ({
   id, headword: id, phonetic: `/${id}/`, meanings: [{ pos: 'v.', en: `def of ${id}`, zh }],
-  examples: ['a', 'b'], synonyms: [], antonyms: [], collocations: [], relatedForms: [], sourceNote: 't', addedAt: '2026-07-01',
+  examples: [`We ${id} things daily.`, `They ${id} it again.`],
+  synonyms: [`${id}-syn1`, `${id}-syn2`, `${id}-syn3`],
+  antonyms: [`${id}-ant1`, `${id}-ant2`],
+  collocations: [`${id} a plan`, `${id} the rules`],
+  relatedForms: [], sourceNote: 't', addedAt: '2026-07-01',
 })
 const words = [word('alpha', '甲'), word('bravo', '乙'), word('carol', '丙'), word('delta', '丁'), word('echo', '戊'), word('fox', '己')]
 
