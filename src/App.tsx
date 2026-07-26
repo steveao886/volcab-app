@@ -8,6 +8,7 @@ import { Login } from './pages/Login'
 import { Quiz } from './pages/Quiz'
 import { Review } from './pages/Review'
 import { Settings } from './pages/Settings'
+import { Stats } from './pages/Stats'
 import { Today } from './pages/Today'
 import { WordDetail } from './pages/WordDetail'
 
@@ -41,6 +42,7 @@ function App() {
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/library" element={<Library />} />
           <Route path="/word/:id" element={<WordDetail />} />
+          <Route path="/stats" element={<Stats />} />
           <Route path="/add" element={<AddWord />} />
           <Route path="/settings" element={<Settings />} />
         </Route>

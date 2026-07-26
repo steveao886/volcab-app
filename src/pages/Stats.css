@@ -1,0 +1,136 @@
+/* Stats(/stats,学习数据)页面专属样式。五块卡片:近 30 天复习量、正确率
+   趋势、连续天数与断签日历、词库掌握分布、累计数据。空状态用共享的
+   .empty-state(components.css)。 */
+
+/* 只留间距;字号/字重/颜色由 components.css 的 .section-title 提供,
+   与 WordDetail 页的 .worddetail-section-title 同一约定。 */
+.stats-section-title {
+  margin-bottom: var(--sp-3);
+}
+
+/* --- 近 30 天复习量:手写 SVG 柱状图(见 Stats.tsx 的 ReviewBars)---------- */
+
+.stats-bars {
+  display: block;
+  width: 100%;
+  height: 64px;
+}
+
+.stats-bars__bar {
+  fill: var(--accent);
+}
+
+/* --- 正确率趋势:手写 SVG 折线,null 的日子断开(见 AccuracyTrend)-------- */
+
+.stats-accuracy {
+  display: block;
+  width: 100%;
+  height: 64px;
+}
+
+.stats-accuracy__line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.stats-accuracy__dot {
+  fill: var(--accent);
+}
+
+.stats-accuracy-empty {
+  padding-block: var(--sp-4);
+  font-size: var(--fs-sm);
+  text-align: center;
+}
+
+/* --- 连续天数 + 断签日历 ---------------------------------------------------
+   数字复用 .num 的等宽数字令牌,但版式(居中、大号、朱砂点睛)是本页专属,
+   不是 .stat 原语——.stat 是「一格」,这里是卡片顶部单独一段。 */
+
+.stats-streak {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-1);
+  margin-bottom: var(--sp-4);
+  text-align: center;
+}
+
+.stats-streak__value {
+  font-size: var(--fs-2xl);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+  color: var(--accent);
+}
+
+.stats-streak__label {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+}
+
+/* 10 列 × 3 行 = 30 天,固定列数而不是像素柱宽,375px 下天然不溢出。 */
+.stats-calendar {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: var(--sp-1);
+}
+
+.stats-calendar__cell {
+  aspect-ratio: 1;
+  border-radius: var(--r-xs);
+  background: var(--surface-sunken);
+  border: 1px solid var(--rule);
+}
+
+.stats-calendar__cell--filled {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* --- 词库掌握分布:堆叠条 + 三个 Chip 计数 ---------------------------------
+   分段色复用 tokens.css 的 --state-*(与 StateDot 同一套语义色),
+   不新造颜色。总数为 0(词库为空)时三段都是 0 宽,条只剩底色轨道,
+   不会除零也不会看起来是坏的。 */
+
+.stats-mastery-bar {
+  display: flex;
+  height: 10px;
+  margin-bottom: var(--sp-3);
+  overflow: hidden;
+  border-radius: var(--r-full);
+  background: var(--rule);
+}
+
+.stats-mastery-bar__seg {
+  height: 100%;
+  transition: width var(--dur-3) var(--ease);
+}
+
+.stats-mastery-bar__seg--review {
+  background: var(--state-review);
+}
+
+.stats-mastery-bar__seg--learning {
+  background: var(--state-learning);
+}
+
+.stats-mastery-bar__seg--new {
+  background: var(--state-new);
+}
+
+.stats-mastery-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+/* --- 累计:总复习次数 / 已掌握词数 / 日均新词,三栏共用 .stat 原语 --------- */
+
+.stats-totals {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+  text-align: center;
+}
