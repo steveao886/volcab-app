@@ -1,4 +1,34 @@
-/* Settings(设置)页面专属样式:账号信息行、退出确认、版本落款。 */
+/* Settings(设置)页面专属样式:音效开关、账号信息行、退出确认、版本落款。 */
+
+/* --- 音效开关:整行可点的 label,左文右控 --------------------------------
+   与 .settings-row(标签左/值右的只读行)故意不同——这行是可交互的,
+   且左边是两行文字(名称 + 说明)而不是一个值,所以单独一套类名,
+   不去借 .settings-row 或 .field 凑合。 */
+
+.settings-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  cursor: pointer;
+}
+
+.settings-toggle__text {
+  display: grid;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+
+.settings-toggle__label {
+  font-size: var(--fs-base);
+  font-weight: 500;
+  color: var(--text);
+}
+
+.settings-toggle__hint {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+}
 
 /* --- 账号信息:标签左 / 值右的一组只读行 ---------------------------------
    行本身(.settings-row / __label / __value)已经提升到 components.css,

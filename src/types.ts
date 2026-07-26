@@ -37,7 +37,13 @@ export interface DailyStat { reviewed: number; newLearned: number; correct: numb
 
 export interface Progress {
   version: 1
-  settings: { newPerDay: number }
+  /**
+   * soundEnabled 可选,undefined 视为 true(默认开启,见 src/lib/sound.ts
+   * 的 isSoundEnabled)。这不是随手偷懒——用户真实的 progress.json 在同步
+   * 中,加一个必填字段要么校验不过,要么逼一次迁移;可选字段两台设备
+   * 各自缺省为「开」,天然兼容,不需要动 sync.ts 的 isWord/校验逻辑。
+   */
+  settings: { newPerDay: number; soundEnabled?: boolean }
   words: Record<string, ProgressEntry>
   dailyStats: Record<string, DailyStat>
 }
