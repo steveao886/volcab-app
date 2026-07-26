@@ -838,3 +838,54 @@
   letter-spacing: 0.02em;
   color: var(--text-muted);
 }
+
+/* --- 更新提示 ---------------------------------------------------------------
+   新 SW 已在后台装好但当前页面还没吃到(见 components/UpdatePrompt.tsx 顶部
+   注释——registerType: 'autoUpdate' 下不会走标准的 needRefresh/prompt 流程,
+   默认行为是静默 reload,这里改成用户确认后才刷新)。
+   不挂进 #overlay-root:那个挂载点由 AppLayout 渲染,只在登录后的路由树里
+   才存在,而陈旧 JS 与登录态无关——/login 页也可能停在旧版本上,提示必须
+   能独立于登录态出现,自带 position: fixed 与 --z-toast(全局最高一档,
+   不依赖任何父级的层叠上下文)。 */
+
+.update-prompt {
+  position: fixed;
+  inset-inline: var(--sp-4);
+  /* 贴在页签之上、留出安全区,375px 下不会盖住复习卡的四个打分键 */
+  bottom: calc(var(--tabbar-h) + var(--sp-3) + env(safe-area-inset-bottom, 0px));
+  z-index: var(--z-toast);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  max-width: 360px;
+  margin-inline: 0 auto;
+  padding: var(--sp-3) var(--sp-3) var(--sp-3) var(--sp-4);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-2);
+}
+
+.update-prompt__text {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text);
+}
+
+.update-prompt__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+}
+
+/* 桌面端页签变成左侧栏(见 layout.css),不再占底部空间——提示条改为紧贴
+   视口底部,并给侧栏让位,不能压在它上面。 */
+@media (min-width: 900px) {
+  .update-prompt {
+    inset-inline-start: calc(var(--rail-w) + var(--sp-4));
+    inset-inline-end: var(--sp-4);
+    bottom: var(--sp-4);
+  }
+}

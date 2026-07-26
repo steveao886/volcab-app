@@ -4,6 +4,7 @@ import { Card } from '../components/Card'
 import { Field } from '../components/Field'
 import { Page } from '../components/Page'
 import { TextInput } from '../components/TextInput'
+import { isSoundEnabled } from '../lib/sound'
 import { todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
 import { pendingOps } from '../state/session'
@@ -130,6 +131,26 @@ export function Settings() {
             }}
           />
         </Field>
+      </Card>
+
+      <Card>
+        {/* 整行都是 <label>,点哪里都能切换——与 Library.tsx 的 LibraryRow 同一个模式。
+            默认开启(spec §3.3):progress.settings.soundEnabled 缺省视为 true,
+            isSoundEnabled 是 src/lib/sound.ts 里同一份判定,这里不重复写一遍 ?? true。 */}
+        <label className="settings-toggle">
+          <span className="settings-toggle__text">
+            <span className="settings-toggle__label">音效</span>
+            <span className="settings-toggle__hint">打分、判题、复习完成时的提示音</span>
+          </span>
+          <span className="check">
+            <input
+              type="checkbox"
+              className="check__box"
+              checked={isSoundEnabled(progress.settings)}
+              onChange={(e) => updateSettings({ ...progress.settings, soundEnabled: e.target.checked })}
+            />
+          </span>
+        </label>
       </Card>
 
       <Card>

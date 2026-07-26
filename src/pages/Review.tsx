@@ -8,6 +8,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { buildQueue } from '../lib/queue'
+import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { todayStr } from '../lib/srs'
 import { speak } from '../lib/tts'
 import { ReviewCardBack } from './ReviewCard'
@@ -57,6 +58,11 @@ export function Review() {
   // 这个 ref 只是在等待这一读之间记一下是哪张卡、防止同一张卡被连点两次打分。
   const pendingRef = useRef<string | undefined>(undefined)
   const pendingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  // 会话完成音只能响一次:finished 保持 true 期间本组件会因为其他状态
+  // (如同步 tick)重渲染很多次,不能靠"finished 为 true 就播"这种条件本身去重。
+  const sessionDonePlayedRef = useRef(false)
+
+  const soundEnabled = isSoundEnabled(progress.settings)
 
   const curId = currentId(queue)
   const curWord = curId === undefined ? undefined : words.find((w) => w.id === curId)
@@ -74,6 +80,9 @@ export function Review() {
     (g: Grade) => {
       if (pendingRef.current !== undefined) return // 上一次打分还没落定,忽略连点
       if (curId === undefined || !flipped) return // 没翻面就打分没有意义
+      // 在点击的调用栈内同步播放:iOS 要求 AudioContext 的创建/resume 发生在
+      // 用户手势内,这里是打分音唯一、也是最早的发声点(见 lib/sound.ts)。
+      playGrade(g, soundEnabled)
       pendingRef.current = curId
       // 兜底:下面的 effect 依赖"grade() 落库后 progress 一定会变成新引用"这条跨模块
       // 约定(见 effect 里的说明)。万一它被打破,pendingRef 会永远卡住、打分从此
@@ -90,8 +99,18 @@ export function Review() {
       }, PENDING_STUCK_TIMEOUT_MS)
       grade(curId, g)
     },
-    [curId, flipped, grade],
+    [curId, flipped, grade, soundEnabled],
   )
+
+  // 复习会话完成音:只在 finished 由 false 变 true 那一刻响一次。
+  // queue.total === 0(本来就没有待复习的词,见下方"暂无待复习"分支)不算
+  // 完成了一次会话,不放这个音——没有任何一张卡被看过,谈不上"完成"。
+  useEffect(() => {
+    if (finished && queue.total > 0 && !sessionDonePlayedRef.current) {
+      sessionDonePlayedRef.current = true
+      playSessionDone(soundEnabled)
+    }
+  }, [finished, queue.total, soundEnabled])
 
   // grade() 是同步落盘但异步渲染:此刻拿到的 progress 还是旧的,必须等
   // 下一次带着新 progress 的渲染,再从里面读回真实落库结果去推进队列。
