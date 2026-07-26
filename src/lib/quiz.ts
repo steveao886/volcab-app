@@ -1,4 +1,4 @@
-import type { Progress, Word } from '../types'
+import type { Meaning, Progress, Word } from '../types'
 
 export type QuizType =
   | 'word2meaning' | 'meaning2word' | 'spelling'
@@ -24,10 +24,31 @@ export interface QuizQuestion {
   hintKind?: 'synonym' | 'antonym'
 }
 
-const meaningLabel = (w: Word) => {
-  const m = w.meanings[0]
-  return `${m.pos} ${m.zh}`
+/**
+ * 按义项占比抽一条释义。
+ *
+ * 原本这里写死 `w.meanings[0]`,后果是**次要义项永远不会被考到** —— `rhetoric`
+ * 的「修辞学」、`mire` 的「泥沼」再也遇不到。按 share 加权之后,70% 的义项七成
+ * 概率出场,30% 的三成,与真实语境里遇到它们的比例一致。
+ *
+ * 没有占比(单义词,或外部设备推来的未标注多义词)一律退回第一条:数据不全时
+ * 不凭空随机,保持原有行为。半份占比(只有部分义项有 share)同样按不全处理 ——
+ * 拿一份残缺的权重去抽,比不抽更糟。
+ */
+export function pickMeaning(w: Word, rng: () => number): Meaning {
+  const ms = w.meanings
+  if (ms.length === 1 || ms.some(m => m.share === undefined)) return ms[0]
+
+  const total = ms.reduce((s, m) => s + (m.share ?? 0), 0)
+  let r = rng() * total
+  for (const m of ms) {
+    r -= m.share ?? 0
+    if (r < 0) return m
+  }
+  return ms[ms.length - 1] // 浮点误差兜底:rng 返回极接近 1 时可能一格都不触发
 }
+
+const meaningLabel = (m: Meaning) => `${m.pos} ${m.zh}`
 
 const BLANK = '___'
 
@@ -141,7 +162,7 @@ export function generateQuiz(
     if (type === 'spelling') {
       questions.push({
         type, wordId: w.id,
-        prompt: meaningLabel(w),
+        prompt: meaningLabel(pickMeaning(w, rng)),
         options: [], answer: w.headword,
         phonetic: w.phonetic,
       })
@@ -185,14 +206,22 @@ export function generateQuiz(
       continue
     }
 
-    const labelFn = type === 'word2meaning' ? meaningLabel : (x: Word) => x.headword
-    const answer = labelFn(w)
+    // 这个词本次出场用哪条释义:按占比抽,不再写死 meanings[0]。
+    const ownMeaning = meaningLabel(pickMeaning(w, rng))
+    // 干扰项的释义同样按占比抽 —— 别让四个选项里三个都是别人的主流义、唯独正确
+    // 答案是个冷僻义,那本身就成了一条题外线索。
+    // pickDistractorLabels 已经把 w 自己排除在外(见其 collect 里的 filter),
+    // **这一点不能改**:word2meaning 的题面只有词头,把 mire 的两个义项都放进选项
+    // 就是两个都对,与 sharedSynonyms 要防的是同一类缺陷。
+    const meaningOf = (x: Word) => meaningLabel(pickMeaning(x, rng))
+    const labelFn = type === 'word2meaning' ? meaningOf : (x: Word) => x.headword
+    const answer = type === 'word2meaning' ? ownMeaning : w.headword
     const distractors = pickDistractorLabels(w, answer, labelFn, pool, words, rng)
     if (!distractors) continue // 干扰项不足 3 个去重后仍不够,跳过该词,换下一个候选词补位
 
     questions.push({
       type, wordId: w.id,
-      prompt: type === 'word2meaning' ? w.headword : meaningLabel(w),
+      prompt: type === 'word2meaning' ? w.headword : ownMeaning,
       options: shuffle([answer, ...distractors], rng),
       answer,
     })
