@@ -30,6 +30,11 @@ for (const w of data.words) {
   }
   if (!w.sourceNote) errors.push(`${ctx}: 缺 sourceNote`)
   if (!/^\d{4}-\d{2}-\d{2}$/.test(w.addedAt ?? '')) errors.push(`${ctx}: addedAt 需为 YYYY-MM-DD`)
+  // usageScore 可选(App 内手动添加的词不会有分),但存在就必须合法 ——
+  // 缺省表示「尚未评分」,详情页据此不渲染该格;0 或 11 这类值会渲染出一个假分数。
+  if (w.usageScore !== undefined && (!Number.isInteger(w.usageScore) || w.usageScore < 1 || w.usageScore > 10)) {
+    errors.push(`${ctx}: usageScore 需为 1–10 的整数,实为 ${JSON.stringify(w.usageScore)}`)
+  }
 }
 
 if (errors.length) { console.error(errors.join('\n')); process.exit(1) }

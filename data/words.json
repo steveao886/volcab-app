@@ -35,15 +35,16 @@
         "concoct a story",
         "concoct a plan"
       ],
-      "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "concoction",
           "pos": "n.",
           "zh": "调制品;捏造的故事"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "8-11",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "convalescent",
@@ -78,15 +79,16 @@
         "convalescent care",
         "convalescent home"
       ],
-      "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "convalescence",
           "pos": "n.",
           "zh": "康复;痊愈期"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "8-11",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "extraneous",
@@ -120,9 +122,10 @@
         "extraneous information",
         "extraneous variable"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "fiat",
@@ -152,9 +155,10 @@
         "government fiat",
         "fiat currency"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "harangue",
@@ -189,9 +193,10 @@
         "harangue someone about",
         "deliver a harangue"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "imperious",
@@ -224,8 +229,6 @@
         "imperious manner",
         "imperious gesture"
       ],
-      "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "imperiously",
@@ -237,7 +240,10 @@
           "pos": "n.",
           "zh": "傲慢专横"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "8-11",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "leeway",
@@ -270,9 +276,10 @@
         "some leeway",
         "little leeway"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "mire",
@@ -307,9 +314,10 @@
         "mired in controversy",
         "mired in scandal"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "mystique",
@@ -339,9 +347,10 @@
         "lose its mystique",
         "an air of mystique"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "neophyte",
@@ -373,9 +382,10 @@
         "a neophyte in",
         "a complete neophyte"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "precipitously",
@@ -407,15 +417,16 @@
         "decline precipitously",
         "fall precipitously"
       ],
-      "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "precipitate",
           "pos": "v.",
           "zh": "促成;使突然发生"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "8-11",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "promulgate",
@@ -450,15 +461,16 @@
         "promulgate a regulation",
         "promulgate a doctrine"
       ],
-      "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "promulgation",
           "pos": "n.",
           "zh": "颁布;公布"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "8-11",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "ravishing",
@@ -490,9 +502,10 @@
         "look ravishing",
         "ravishing beauty"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "rudimentary",
@@ -525,15 +538,16 @@
         "rudimentary understanding",
         "rudimentary skills"
       ],
-      "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "rudiment",
           "pos": "n.",
           "zh": "基础;雏形"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "8-11",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "sanguine",
@@ -566,9 +580,10 @@
         "sanguine about",
         "sanguine outlook"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "tantalizing",
@@ -601,15 +616,16 @@
         "tantalizing hint",
         "tantalizing smell"
       ],
-      "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "tantalize",
           "pos": "v.",
           "zh": "逗弄;使干着急"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "8-11",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "taxidermy",
@@ -638,15 +654,16 @@
         "taxidermy class",
         "vintage taxidermy"
       ],
-      "sourceNote": "8-11",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "taxidermist",
           "pos": "n.",
           "zh": "动物标本剥制师"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "8-11",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "abhorrent",
@@ -679,8 +696,6 @@
         "find something abhorrent",
         "morally abhorrent"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "abhor",
@@ -692,7 +707,10 @@
           "pos": "n.",
           "zh": "憎恶;厌恶感"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "abrogate",
@@ -725,15 +743,16 @@
         "abrogate an agreement",
         "abrogate a law"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "abrogation",
           "pos": "n.",
           "zh": "废除;废止"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "apprehensive",
@@ -765,8 +784,6 @@
         "apprehensive about",
         "feel apprehensive"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "apprehension",
@@ -778,7 +795,10 @@
           "pos": "v.",
           "zh": "理解;逮捕"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "arduous",
@@ -811,9 +831,10 @@
         "arduous journey",
         "arduous process"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "austere",
@@ -852,15 +873,16 @@
         "austere expression",
         "austere measures"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "austerity",
           "pos": "n.",
           "zh": "简朴;紧缩(政策)"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "dovetail",
@@ -898,9 +920,10 @@
         "dovetail nicely",
         "cut a dovetail"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "embroil",
@@ -933,15 +956,16 @@
         "become embroiled in",
         "embroiled in controversy"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "embroilment",
           "pos": "n.",
           "zh": "卷入;纠葛"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "entreat",
@@ -970,15 +994,16 @@
         "entreat someone to",
         "entreat for mercy"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "entreaty",
           "pos": "n.",
           "zh": "恳求;请求"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "expedient",
@@ -1016,8 +1041,6 @@
         "expedient solution",
         "an expedient measure"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "expediency",
@@ -1029,7 +1052,10 @@
           "pos": "v.",
           "zh": "加快;促进"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "grouse",
@@ -1066,9 +1092,10 @@
         "grouse about",
         "have a grouse"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "grumble",
@@ -1105,15 +1132,16 @@
         "grumble under one's breath",
         "stomach grumbles"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "grumbler",
           "pos": "n.",
           "zh": "爱抱怨的人"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "hapless",
@@ -1146,9 +1174,10 @@
         "hapless intern",
         "hapless fool"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "incipient",
@@ -1181,9 +1210,10 @@
         "incipient signs of",
         "incipient crisis"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "ineptitude",
@@ -1216,15 +1246,16 @@
         "sheer ineptitude",
         "managerial ineptitude"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "inept",
           "pos": "adj.",
           "zh": "无能的;不称职的"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "insouciant",
@@ -1257,15 +1288,16 @@
         "insouciant shrug",
         "insouciant attitude"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "insouciance",
           "pos": "n.",
           "zh": "满不在乎;漠然"
         }
-      ]
+      ],
+      "usageScore": 2,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "leniency",
@@ -1298,15 +1330,16 @@
         "plead for leniency",
         "treat with leniency"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "lenient",
           "pos": "adj.",
           "zh": "宽容的;宽大的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "metastasize",
@@ -1343,8 +1376,6 @@
         "cancer metastasizes",
         "metastasize into"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "metastasis",
@@ -1356,7 +1387,10 @@
           "pos": "adj.",
           "zh": "转移性的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "onerous",
@@ -1390,9 +1424,10 @@
         "onerous burden",
         "onerous requirements"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "ostentatious",
@@ -1426,15 +1461,16 @@
         "ostentatious wealth",
         "ostentatiously wealthy"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "ostentation",
           "pos": "n.",
           "zh": "炫耀;卖弄"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "percolate",
@@ -1469,15 +1505,16 @@
         "percolate slowly",
         "rumors percolate"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "percolation",
           "pos": "n.",
           "zh": "渗透;渗滤"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "petulant",
@@ -1509,15 +1546,16 @@
         "petulant child",
         "petulant sigh"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "petulance",
           "pos": "n.",
           "zh": "任性;易怒"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "preside",
@@ -1547,15 +1585,16 @@
         "preside over a ceremony",
         "preside over a court"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "presidency",
           "pos": "n.",
           "zh": "总统任期;主持职位"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "rapturous",
@@ -1588,15 +1627,16 @@
         "rapturous reception",
         "rapturous review"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "rapture",
           "pos": "n.",
           "zh": "狂喜"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "reminiscent",
@@ -1624,8 +1664,6 @@
         "reminiscent of",
         "strongly reminiscent"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "reminisce",
@@ -1637,7 +1675,10 @@
           "pos": "n.",
           "zh": "回忆;怀旧"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "surreptitious",
@@ -1670,15 +1711,16 @@
         "surreptitious edit",
         "surreptitiously check"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "surreptitiously",
           "pos": "adv.",
           "zh": "偷偷摸摸地"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "temerity",
@@ -1710,9 +1752,10 @@
         "have the temerity to",
         "sheer temerity"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "unobtrusive",
@@ -1744,15 +1787,16 @@
         "unobtrusive design",
         "remain unobtrusive"
       ],
-      "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "obtrusive",
           "pos": "adj.",
           "zh": "突出的;惹人注目的"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "12-15",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "veer",
@@ -1786,9 +1830,10 @@
         "veer sharply",
         "veer off-topic"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "12-15",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "abashed",
@@ -1820,15 +1865,16 @@
         "abashed laugh",
         "abashed silence"
       ],
-      "sourceNote": "16-19",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "abash",
           "pos": "v.",
           "zh": "使窘迫;使羞愧"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "16-19",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "alleviate",
@@ -1861,15 +1907,16 @@
         "alleviate stress",
         "alleviate concerns"
       ],
-      "sourceNote": "16-19",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "alleviation",
           "pos": "n.",
           "zh": "减轻;缓和"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "16-19",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "assuage",
@@ -1907,9 +1954,10 @@
         "assuage guilt",
         "assuage doubts"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "16-19",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "callous",
@@ -1947,8 +1995,6 @@
         "callous remark",
         "calloused hands"
       ],
-      "sourceNote": "16-19",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "callus",
@@ -1960,7 +2006,10 @@
           "pos": "n.",
           "zh": "冷酷无情"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "16-19",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "capitulate",
@@ -1991,15 +2040,16 @@
         "finally capitulate",
         "refuse to capitulate"
       ],
-      "sourceNote": "16-19",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "capitulation",
           "pos": "n.",
           "zh": "投降;屈服"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "16-19",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "cherubic",
@@ -2027,15 +2077,16 @@
         "cherubic grin",
         "cherubic cheeks"
       ],
-      "sourceNote": "16-19",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "cherub",
           "pos": "n.",
           "zh": "小天使;胖嘟嘟的孩子"
         }
-      ]
+      ],
+      "usageScore": 2,
+      "sourceNote": "16-19",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "conciliate",
@@ -2067,8 +2118,6 @@
         "conciliate critics",
         "attempt to conciliate"
       ],
-      "sourceNote": "16-19",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "conciliation",
@@ -2080,7 +2129,10 @@
           "pos": "adj.",
           "zh": "安抚性的;调解的"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "16-19",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "contentious",
@@ -2117,8 +2169,6 @@
         "contentious debate",
         "contentious topic"
       ],
-      "sourceNote": "16-19",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "contend",
@@ -2130,7 +2180,10 @@
           "pos": "n.",
           "zh": "争论;论点"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "16-19",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "egregious",
@@ -2163,15 +2216,16 @@
         "egregious violation",
         "egregious mistake"
       ],
-      "sourceNote": "16-19",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "egregiously",
           "pos": "adv.",
           "zh": "极其恶劣地"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "16-19",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "perceptible",
@@ -2203,8 +2257,6 @@
         "perceptible shift",
         "barely perceptible"
       ],
-      "sourceNote": "16-19",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "perceive",
@@ -2216,7 +2268,10 @@
           "pos": "n.",
           "zh": "感知;看法"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "16-19",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "pervade",
@@ -2245,15 +2300,16 @@
         "pervade the atmosphere",
         "smell pervades"
       ],
-      "sourceNote": "16-19",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "pervasive",
           "pos": "adj.",
           "zh": "弥漫的;普遍存在的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "16-19",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "presage",
@@ -2287,9 +2343,10 @@
         "presage trouble",
         "presage a decline"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "16-19",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "prowess",
@@ -2325,9 +2382,10 @@
         "athletic prowess",
         "prowess in"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "16-19",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "untenable",
@@ -2358,9 +2416,10 @@
         "become untenable",
         "untenable situation"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "16-19",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "veneer",
@@ -2394,9 +2453,10 @@
         "veneer of respectability",
         "wood veneer"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "16-19",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "vindicate",
@@ -2433,15 +2493,16 @@
         "feel vindicated",
         "vindicate a claim"
       ],
-      "sourceNote": "16-19",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "vindication",
           "pos": "n.",
           "zh": "证明清白;证实"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "16-19",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "ad-hoc",
@@ -2473,9 +2534,10 @@
         "ad hoc basis",
         "ad hoc solution"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "contrived",
@@ -2509,15 +2571,16 @@
         "contrived situation",
         "feel contrived"
       ],
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "contrive",
           "pos": "v.",
           "zh": "图谋;人为造成"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "20-23",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "criticality",
@@ -2559,6 +2622,7 @@
           "zh": "临界的;关键的;危急的"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "20-23",
       "addedAt": "2026-07-24"
     },
@@ -2589,9 +2653,10 @@
         "due diligence process",
         "perform due diligence"
       ],
+      "relatedForms": [],
+      "usageScore": 8,
       "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "equitable",
@@ -2624,15 +2689,16 @@
         "equitable treatment",
         "equitable solution"
       ],
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "equity",
           "pos": "n.",
           "zh": "公平;公正"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "20-23",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "exigent",
@@ -2669,15 +2735,16 @@
         "exigent demands",
         "exigent need"
       ],
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "exigency",
           "pos": "n.",
           "zh": "紧急情况;迫切需要"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "20-23",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "hindrance",
@@ -2708,15 +2775,16 @@
         "a hindrance to",
         "more of a hindrance than a help"
       ],
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "hinder",
           "pos": "v.",
           "zh": "阻碍;妨碍"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "20-23",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "impediment",
@@ -2753,15 +2821,16 @@
         "speech impediment",
         "major impediment"
       ],
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "impede",
           "pos": "v.",
           "zh": "阻碍;妨碍"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "20-23",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "incumbent",
@@ -2794,15 +2863,16 @@
         "incumbent on",
         "the incumbent mayor"
       ],
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "incumbency",
           "pos": "n.",
           "zh": "任期;在职身份"
         }
-      ]
+      ],
+      "usageScore": 8,
+      "sourceNote": "20-23",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "ingratiating",
@@ -2834,15 +2904,16 @@
         "ingratiating manner",
         "ingratiating tone"
       ],
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "ingratiate",
           "pos": "v.",
           "zh": "讨好;迎合(某人)"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "20-23",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "interlude",
@@ -2871,9 +2942,10 @@
         "peaceful interlude",
         "an interlude of"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "malleable",
@@ -2910,15 +2982,16 @@
         "malleable mind",
         "highly malleable"
       ],
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "malleability",
           "pos": "n.",
           "zh": "可塑性;延展性"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "20-23",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "nonrepudiation",
@@ -2961,6 +3034,7 @@
           "zh": "否认;拒绝承认"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "20-23",
       "addedAt": "2026-07-24"
     },
@@ -2995,15 +3069,16 @@
         "perverse logic",
         "perverse incentive"
       ],
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "perversity",
           "pos": "n.",
           "zh": "悖理;乖张任性"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "20-23",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "populace",
@@ -3036,9 +3111,10 @@
         "local populace",
         "populace at large"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "prudence",
@@ -3071,8 +3147,6 @@
         "exercise prudence",
         "fiscal prudence"
       ],
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "prudent",
@@ -3084,7 +3158,10 @@
           "pos": "adj.",
           "zh": "轻率的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "20-23",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "pursuant",
@@ -3113,9 +3190,10 @@
         "pursuant to section 4",
         "pursuant to company policy"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "quintessential",
@@ -3148,15 +3226,16 @@
         "quintessentially American",
         "the quintessential [noun]"
       ],
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "quintessence",
           "pos": "n.",
           "zh": "精髓;典范"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "20-23",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "rabble",
@@ -3189,9 +3268,10 @@
         "rabble-rouser",
         "the rabble outside"
       ],
+      "relatedForms": [],
+      "usageScore": 3,
       "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "repudiate",
@@ -3225,15 +3305,16 @@
         "repudiate a debt",
         "repudiate an agreement"
       ],
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "repudiation",
           "pos": "n.",
           "zh": "拒绝承认;摒弃"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "20-23",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "torsion",
@@ -3273,6 +3354,7 @@
           "zh": "扭转的;扭力的"
         }
       ],
+      "usageScore": 4,
       "sourceNote": "20-23",
       "addedAt": "2026-07-24"
     },
@@ -3312,15 +3394,16 @@
         "legal wrangle",
         "wrangle with"
       ],
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "wrangler",
           "pos": "n.",
           "zh": "驯马师;处理者"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "20-23",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "angular",
@@ -3365,6 +3448,7 @@
           "zh": "棱角性;成角状态"
         }
       ],
+      "usageScore": 6,
       "sourceNote": "24-29",
       "addedAt": "2026-07-24"
     },
@@ -3407,6 +3491,7 @@
           "zh": "规范的;标准的"
         }
       ],
+      "usageScore": 4,
       "sourceNote": "24-29",
       "addedAt": "2026-07-24"
     },
@@ -3441,15 +3526,16 @@
         "corroborate testimony",
         "corroborating evidence"
       ],
-      "sourceNote": "24-29",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "corroboration",
           "pos": "n.",
           "zh": "证实;确证"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "24-29",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "delegable",
@@ -3492,6 +3578,7 @@
           "zh": "委托;授权;代表团"
         }
       ],
+      "usageScore": 4,
       "sourceNote": "24-29",
       "addedAt": "2026-07-24"
     },
@@ -3535,9 +3622,10 @@
         "sediment deposition",
         "deposition of a ruler"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "24-29",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "extrapolate",
@@ -3567,15 +3655,16 @@
         "extrapolate a trend",
         "extrapolate results"
       ],
-      "sourceNote": "24-29",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "extrapolation",
           "pos": "n.",
           "zh": "推断;外推"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "24-29",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "garrulous",
@@ -3609,15 +3698,16 @@
         "garrulous host",
         "grow garrulous"
       ],
-      "sourceNote": "24-29",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "garrulity",
           "pos": "n.",
           "zh": "饶舌;多话"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "24-29",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "implicate",
@@ -3654,15 +3744,16 @@
         "evidence implicates",
         "implicated in a scandal"
       ],
-      "sourceNote": "24-29",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "implication",
           "pos": "n.",
           "zh": "牵连;暗示"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "24-29",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "obscene",
@@ -3700,15 +3791,16 @@
         "obscene amount",
         "obscene gesture"
       ],
-      "sourceNote": "24-29",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "obscenity",
           "pos": "n.",
           "zh": "淫秽;猥亵言行"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "24-29",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "oversight",
@@ -3745,15 +3837,16 @@
         "due to an oversight",
         "oversight committee"
       ],
-      "sourceNote": "24-29",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "oversee",
           "pos": "v.",
           "zh": "监督;监管"
         }
-      ]
+      ],
+      "usageScore": 8,
+      "sourceNote": "24-29",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "precursor",
@@ -3786,9 +3879,10 @@
         "early precursor",
         "chemical precursor"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "24-29",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "refute",
@@ -3822,15 +3916,16 @@
         "refute an argument",
         "refute allegations"
       ],
-      "sourceNote": "24-29",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "refutation",
           "pos": "n.",
           "zh": "反驳;驳斥"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "24-29",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "slanderous",
@@ -3863,15 +3958,16 @@
         "slanderous accusation",
         "sue for slander"
       ],
-      "sourceNote": "24-29",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "slander",
           "pos": "n.",
           "zh": "诽谤;中伤"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "24-29",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "astute",
@@ -3904,15 +4000,16 @@
         "astute investor",
         "astute judgment"
       ],
-      "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "astuteness",
           "pos": "n.",
           "zh": "精明;机敏"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "30-33",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "capricious",
@@ -3946,15 +4043,16 @@
         "capricious mood",
         "capricious behavior"
       ],
-      "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "caprice",
           "pos": "n.",
           "zh": "反复无常;任性"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "30-33",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "concur",
@@ -3992,8 +4090,6 @@
         "I concur",
         "opinions concur"
       ],
-      "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "concurrence",
@@ -4005,7 +4101,10 @@
           "pos": "adj.",
           "zh": "同时发生的;并发的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "30-33",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "contemptible",
@@ -4039,8 +4138,6 @@
         "contemptible act",
         "utterly contemptible"
       ],
-      "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "contempt",
@@ -4052,7 +4149,10 @@
           "pos": "adj.",
           "zh": "轻蔑的;鄙夷的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "30-33",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "depraved",
@@ -4086,15 +4186,16 @@
         "morally depraved",
         "depraved act"
       ],
-      "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "depravity",
           "pos": "n.",
           "zh": "堕落;腐化"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "30-33",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "disparate",
@@ -4128,9 +4229,10 @@
         "disparate groups",
         "disparate elements"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "erudite",
@@ -4163,15 +4265,16 @@
         "erudite discussion",
         "erudite commentary"
       ],
-      "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "erudition",
           "pos": "n.",
           "zh": "博学;学识渊博"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "30-33",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "gratify",
@@ -4209,15 +4312,16 @@
         "instantly gratified",
         "gratify someone's ego"
       ],
-      "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "gratification",
           "pos": "n.",
           "zh": "满足;满意感"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "30-33",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "impetuous",
@@ -4251,15 +4355,16 @@
         "impetuous youth",
         "act impetuously"
       ],
-      "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "impetuosity",
           "pos": "n.",
           "zh": "冲动;鲁莽"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "30-33",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "indignant",
@@ -4293,15 +4398,16 @@
         "grow indignant",
         "righteously indignant"
       ],
-      "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "indignation",
           "pos": "n.",
           "zh": "愤慨;义愤"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "30-33",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "prodigal",
@@ -4340,15 +4446,16 @@
         "prodigal son",
         "prodigal with money"
       ],
-      "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "prodigality",
           "pos": "n.",
           "zh": "挥霍;浪费"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "30-33",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "provident",
@@ -4382,9 +4489,10 @@
         "provident habits",
         "provident and thrifty"
       ],
+      "relatedForms": [],
+      "usageScore": 3,
       "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "remorse",
@@ -4417,15 +4525,16 @@
         "express remorse",
         "without remorse"
       ],
-      "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "remorseful",
           "pos": "adj.",
           "zh": "懊悔的;悔恨的"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "30-33",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "sagacious",
@@ -4458,15 +4567,16 @@
         "sagacious leader",
         "sagacious observation"
       ],
-      "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "sagacity",
           "pos": "n.",
           "zh": "睿智;聪颖"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "30-33",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "sapient",
@@ -4499,15 +4609,16 @@
         "sapient species",
         "truly sapient"
       ],
-      "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "sapience",
           "pos": "n.",
           "zh": "智慧;才智"
         }
-      ]
+      ],
+      "usageScore": 2,
+      "sourceNote": "30-33",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "solicitude",
@@ -4540,15 +4651,16 @@
         "show solicitude",
         "solicitude for someone's welfare"
       ],
-      "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "solicitous",
           "pos": "adj.",
           "zh": "关切的;挂念的"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "30-33",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "testy",
@@ -4582,15 +4694,16 @@
         "grow testy",
         "testy response"
       ],
-      "sourceNote": "30-33",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "testiness",
           "pos": "n.",
           "zh": "易怒;暴躁"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "30-33",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "appall",
@@ -4623,9 +4736,10 @@
         "appalling conditions",
         "utterly appalled"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "34-41",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "assiduous",
@@ -4659,15 +4773,16 @@
         "assiduously avoid",
         "an assiduous student"
       ],
-      "sourceNote": "34-41",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "assiduity",
           "pos": "n.",
           "zh": "勤勉;刻苦"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "34-41",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "conscientious",
@@ -4701,15 +4816,16 @@
         "conscientious effort",
         "conscientious objector"
       ],
-      "sourceNote": "34-41",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "conscience",
           "pos": "n.",
           "zh": "良心;良知"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "34-41",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "devious",
@@ -4743,15 +4859,16 @@
         "devious plan",
         "devious tactics"
       ],
-      "sourceNote": "34-41",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "deviousness",
           "pos": "n.",
           "zh": "狡猾;不正当"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "34-41",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "dubious",
@@ -4790,9 +4907,10 @@
         "dubious about",
         "dubious distinction"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "34-41",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "efficacy",
@@ -4823,15 +4941,16 @@
         "prove the efficacy",
         "question the efficacy of"
       ],
-      "sourceNote": "34-41",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "efficacious",
           "pos": "adj.",
           "zh": "有效的;奏效的"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "34-41",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "hypocrisy",
@@ -4864,8 +4983,6 @@
         "blatant hypocrisy",
         "smack of hypocrisy"
       ],
-      "sourceNote": "34-41",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "hypocrite",
@@ -4877,7 +4994,10 @@
           "pos": "adj.",
           "zh": "虚伪的"
         }
-      ]
+      ],
+      "usageScore": 8,
+      "sourceNote": "34-41",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "morbid",
@@ -4910,15 +5030,16 @@
         "morbid fascination",
         "morbid thoughts"
       ],
-      "sourceNote": "34-41",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "morbidity",
           "pos": "n.",
           "zh": "病态;发病率"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "34-41",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "myopia",
@@ -4955,15 +5076,16 @@
         "suffer from myopia",
         "myopia in decision-making"
       ],
-      "sourceNote": "34-41",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "myopic",
           "pos": "adj.",
           "zh": "近视的;目光短浅的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "34-41",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "painstaking",
@@ -4997,9 +5119,10 @@
         "painstaking process",
         "painstaking effort"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "34-41",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "ratify",
@@ -5034,15 +5157,16 @@
         "ratify an agreement",
         "ratify a contract"
       ],
-      "sourceNote": "34-41",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "ratification",
           "pos": "n.",
           "zh": "批准;认可"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "34-41",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "remunerate",
@@ -5072,15 +5196,16 @@
         "adequately remunerated",
         "remunerate employees"
       ],
-      "sourceNote": "34-41",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "remuneration",
           "pos": "n.",
           "zh": "报酬;薪酬"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "34-41",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "sedulous",
@@ -5113,9 +5238,10 @@
         "sedulous effort",
         "sedulously avoid"
       ],
+      "relatedForms": [],
+      "usageScore": 2,
       "sourceNote": "34-41",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "thwart",
@@ -5150,9 +5276,10 @@
         "thwart plans",
         "thwart efforts"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "34-41",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "ulterior",
@@ -5185,9 +5312,10 @@
         "hidden ulterior motive",
         "no ulterior motive"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "34-41",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "unwary",
@@ -5221,9 +5349,10 @@
         "unwary victim",
         "prey on the unwary"
       ],
+      "relatedForms": [],
+      "usageScore": 3,
       "sourceNote": "34-41",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "ascetic",
@@ -5261,15 +5390,16 @@
         "ascetic monk",
         "live an ascetic life"
       ],
-      "sourceNote": "42-49",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "asceticism",
           "pos": "n.",
           "zh": "禁欲主义;苦行"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "42-49",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "cartelize",
@@ -5311,6 +5441,7 @@
           "zh": "卡特尔化"
         }
       ],
+      "usageScore": 4,
       "sourceNote": "42-49",
       "addedAt": "2026-07-24"
     },
@@ -5345,8 +5476,6 @@
         "cohere with",
         "cohere into a whole"
       ],
-      "sourceNote": "42-49",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "coherence",
@@ -5358,7 +5487,10 @@
           "pos": "adj.",
           "zh": "连贯的;条理清晰的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "42-49",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "collude",
@@ -5391,15 +5523,16 @@
         "collude to fix prices",
         "accused of colluding"
       ],
-      "sourceNote": "42-49",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "collusion",
           "pos": "n.",
           "zh": "勾结;共谋"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "42-49",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "connotation",
@@ -5431,15 +5564,16 @@
         "positive connotation",
         "carry a connotation"
       ],
-      "sourceNote": "42-49",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "connote",
           "pos": "v.",
           "zh": "隐含;暗示着"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "42-49",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "deify",
@@ -5472,15 +5606,16 @@
         "deified as a hero",
         "tendency to deify"
       ],
-      "sourceNote": "42-49",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "deification",
           "pos": "n.",
           "zh": "神化;奉为神明"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "42-49",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "deterrence",
@@ -5512,8 +5647,6 @@
         "deterrence against",
         "nuclear deterrence"
       ],
-      "sourceNote": "42-49",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "deter",
@@ -5525,7 +5658,10 @@
           "pos": "n.",
           "zh": "威慑物;制止因素"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "42-49",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "dissent",
@@ -5562,15 +5698,16 @@
         "dissent from",
         "a note of dissent"
       ],
-      "sourceNote": "42-49",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "dissident",
           "pos": "n.",
           "zh": "持不同政见者"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "42-49",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "perpetuate",
@@ -5604,8 +5741,6 @@
         "perpetuate a stereotype",
         "perpetuate a cycle"
       ],
-      "sourceNote": "42-49",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "perpetual",
@@ -5617,7 +5752,10 @@
           "pos": "n.",
           "zh": "永久;永恒"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "42-49",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "pious",
@@ -5655,15 +5793,16 @@
         "pious platitude",
         "deeply pious"
       ],
-      "sourceNote": "42-49",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "piety",
           "pos": "n.",
           "zh": "虔诚"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "42-49",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "premeditated",
@@ -5697,15 +5836,16 @@
         "premeditated attack",
         "clearly premeditated"
       ],
-      "sourceNote": "42-49",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "premeditation",
           "pos": "n.",
           "zh": "预谋;预谋行为"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "42-49",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "reciprocate",
@@ -5738,8 +5878,6 @@
         "reciprocate a gesture",
         "fail to reciprocate"
       ],
-      "sourceNote": "42-49",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "reciprocity",
@@ -5751,7 +5889,10 @@
           "pos": "adj.",
           "zh": "相互的;互惠的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "42-49",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "requite",
@@ -5781,15 +5922,16 @@
         "unrequited love",
         "requite a favor"
       ],
-      "sourceNote": "42-49",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "requital",
           "pos": "n.",
           "zh": "报答;回报"
         }
-      ]
+      ],
+      "usageScore": 2,
+      "sourceNote": "42-49",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "revere",
@@ -5822,15 +5964,16 @@
         "revere someone as",
         "revered figure"
       ],
-      "sourceNote": "42-49",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "reverence",
           "pos": "n.",
           "zh": "崇敬;敬仰"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "42-49",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "status-quo",
@@ -5862,9 +6005,10 @@
         "challenge the status quo",
         "preserve the status quo"
       ],
+      "relatedForms": [],
+      "usageScore": 9,
       "sourceNote": "42-49",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "swindle",
@@ -5900,15 +6044,16 @@
         "run a swindle",
         "elaborate swindle"
       ],
-      "sourceNote": "42-49",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "swindler",
           "pos": "n.",
           "zh": "骗子"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "42-49",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "abate",
@@ -5943,15 +6088,16 @@
         "storm abates",
         "tensions abate"
       ],
-      "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "abatement",
           "pos": "n.",
           "zh": "减轻;缓和"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "50-53",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "acrid",
@@ -5989,15 +6135,16 @@
         "acrid smoke",
         "acrid remark"
       ],
-      "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "acridity",
           "pos": "n.",
           "zh": "辛辣;刺鼻"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "50-53",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "acrimonious",
@@ -6030,15 +6177,16 @@
         "acrimonious dispute",
         "acrimonious debate"
       ],
-      "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "acrimony",
           "pos": "n.",
           "zh": "尖刻;怨恨"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "50-53",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "aerate",
@@ -6079,6 +6227,7 @@
           "zh": "曝气器;通气装置"
         }
       ],
+      "usageScore": 4,
       "sourceNote": "50-53",
       "addedAt": "2026-07-24"
     },
@@ -6117,15 +6266,16 @@
         "platform-agnostic",
         "become agnostic"
       ],
-      "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "agnosticism",
           "pos": "n.",
           "zh": "不可知论"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "50-53",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "agog",
@@ -6158,9 +6308,10 @@
         "all agog",
         "leave someone agog"
       ],
+      "relatedForms": [],
+      "usageScore": 2,
       "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "ambivalence",
@@ -6193,15 +6344,16 @@
         "mixed ambivalence",
         "ambivalence toward"
       ],
-      "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "ambivalent",
           "pos": "adj.",
           "zh": "矛盾的;摇摆不定的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "50-53",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "amenity",
@@ -6237,9 +6389,10 @@
         "amenity fee",
         "lack basic amenities"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "amorphous",
@@ -6272,9 +6425,10 @@
         "amorphous mass",
         "amorphous organization"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "animosity",
@@ -6308,9 +6462,10 @@
         "animosity toward someone",
         "deep-seated animosity"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "antagonize",
@@ -6344,8 +6499,6 @@
         "antagonize the opposition",
         "deliberately antagonize"
       ],
-      "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "antagonism",
@@ -6357,7 +6510,10 @@
           "pos": "adj.",
           "zh": "对抗性的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "50-53",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "antipathy",
@@ -6390,15 +6546,16 @@
         "mutual antipathy",
         "deep antipathy"
       ],
-      "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "antipathetic",
           "pos": "adj.",
           "zh": "强烈反感的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "50-53",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "apathetic",
@@ -6432,15 +6589,16 @@
         "apathetic response",
         "grow apathetic"
       ],
-      "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "apathy",
           "pos": "n.",
           "zh": "冷漠;漠不关心"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "50-53",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "apophasis",
@@ -6475,6 +6633,7 @@
           "zh": "间接暗示的;(神学)否定式的"
         }
       ],
+      "usageScore": 2,
       "sourceNote": "50-53",
       "addedAt": "2026-07-24"
     },
@@ -6516,15 +6675,16 @@
         "artful use of",
         "artful negotiator"
       ],
-      "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "artfully",
           "pos": "adv.",
           "zh": "巧妙地;狡猾地"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "50-53",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "artifice",
@@ -6563,9 +6723,10 @@
         "artifice and deception",
         "an elaborate artifice"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "artless",
@@ -6605,15 +6766,16 @@
         "artless simplicity",
         "artless honesty"
       ],
-      "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "artlessly",
           "pos": "adv.",
           "zh": "天真率直地"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "50-53",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "autocracy",
@@ -6646,8 +6808,6 @@
         "autocracy vs. democracy",
         "military autocracy"
       ],
-      "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "autocrat",
@@ -6659,7 +6819,10 @@
           "pos": "adj.",
           "zh": "独裁的"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "50-53",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "belligerent",
@@ -6698,15 +6861,16 @@
         "become belligerent",
         "belligerent nation"
       ],
-      "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "belligerence",
           "pos": "n.",
           "zh": "好斗;交战状态"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "50-53",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "benevolent",
@@ -6740,15 +6904,16 @@
         "benevolent smile",
         "benevolent gesture"
       ],
-      "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "benevolence",
           "pos": "n.",
           "zh": "仁慈;善行"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "50-53",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "debase",
@@ -6782,15 +6947,16 @@
         "debase oneself",
         "debase a reputation"
       ],
-      "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "debasement",
           "pos": "n.",
           "zh": "贬低;质量下降"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "50-53",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "exacerbate",
@@ -6824,15 +6990,16 @@
         "exacerbate tensions",
         "exacerbate symptoms"
       ],
-      "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "exacerbation",
           "pos": "n.",
           "zh": "恶化;加剧"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "50-53",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "exacting",
@@ -6871,9 +7038,10 @@
         "exacting boss",
         "exacting requirements"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "magnanimous",
@@ -6907,15 +7075,16 @@
         "magnanimous gesture",
         "magnanimous toward"
       ],
-      "sourceNote": "50-53",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "magnanimity",
           "pos": "n.",
           "zh": "宽宏大量"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "50-53",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "abridge",
@@ -6953,15 +7122,16 @@
         "abridge rights",
         "abridged edition"
       ],
-      "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "abridgment",
           "pos": "n.",
           "zh": "删节本;节略"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "54-58",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "bifurcation",
@@ -6994,15 +7164,16 @@
         "reach a bifurcation",
         "trial bifurcation"
       ],
-      "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "bifurcate",
           "pos": "v.",
           "zh": "分叉;分成两支"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "54-58",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "brevity",
@@ -7035,9 +7206,10 @@
         "for the sake of brevity",
         "brevity and clarity"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "candor",
@@ -7070,15 +7242,16 @@
         "refreshing candor",
         "radical candor"
       ],
-      "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "candid",
           "pos": "adj.",
           "zh": "坦率的,直言的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "54-58",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "cataclysmic",
@@ -7111,15 +7284,16 @@
         "cataclysmic collapse",
         "cataclysmic effect"
       ],
-      "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "cataclysm",
           "pos": "n.",
           "zh": "大灾变;剧变"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "54-58",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "circuitous",
@@ -7152,9 +7326,10 @@
         "circuitous path",
         "circuitous explanation"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "circumlocution",
@@ -7187,9 +7362,10 @@
         "corporate circumlocution",
         "avoid circumlocution"
       ],
+      "relatedForms": [],
+      "usageScore": 2,
       "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "circumspect",
@@ -7223,15 +7399,16 @@
         "remain circumspect",
         "circumspect approach"
       ],
-      "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "circumspection",
           "pos": "n.",
           "zh": "谨慎;慎重"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "54-58",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "contravene",
@@ -7265,15 +7442,16 @@
         "contravene regulations",
         "contravene an agreement"
       ],
-      "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "contravention",
           "pos": "n.",
           "zh": "违反;违背行为"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "54-58",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "countermand",
@@ -7306,9 +7484,10 @@
         "countermand an order",
         "countermand instructions"
       ],
+      "relatedForms": [],
+      "usageScore": 3,
       "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "declamation",
@@ -7341,8 +7520,6 @@
         "impassioned declamation",
         "declamation against"
       ],
-      "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "declaim",
@@ -7354,7 +7531,10 @@
           "pos": "adj.",
           "zh": "演说式的;夸张的"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "54-58",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "incapacitate",
@@ -7388,15 +7568,16 @@
         "temporarily incapacitated",
         "incapacitate a system"
       ],
-      "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "incapacity",
           "pos": "n.",
           "zh": "无能力;丧失行为能力"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "54-58",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "incisive",
@@ -7435,15 +7616,16 @@
         "incisive comment",
         "incisive mind"
       ],
-      "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "incisively",
           "pos": "adv.",
           "zh": "敏锐地;一针见血地"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "54-58",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "incite",
@@ -7477,15 +7659,16 @@
         "incite a riot",
         "incite panic"
       ],
-      "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "incitement",
           "pos": "n.",
           "zh": "煽动;教唆"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "54-58",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "occlude",
@@ -7524,15 +7707,16 @@
         "occlude a passage",
         "occluded front (weather)"
       ],
-      "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "occlusion",
           "pos": "n.",
           "zh": "阻塞;闭塞"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "54-58",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "recalcitrant",
@@ -7566,15 +7750,16 @@
         "recalcitrant child",
         "remain recalcitrant"
       ],
-      "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "recalcitrance",
           "pos": "n.",
           "zh": "顽固;不服管教"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "54-58",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "reclusive",
@@ -7608,15 +7793,16 @@
         "notoriously reclusive",
         "go reclusive"
       ],
-      "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "recluse",
           "pos": "n.",
           "zh": "隐士;隐居者"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "54-58",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "resuscitate",
@@ -7654,15 +7840,16 @@
         "resuscitate the economy",
         "attempt to resuscitate"
       ],
-      "sourceNote": "54-58",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "resuscitation",
           "pos": "n.",
           "zh": "复苏;救活"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "54-58",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "ardent",
@@ -7695,8 +7882,6 @@
         "ardent admirer",
         "ardent fan"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "ardently",
@@ -7708,7 +7893,10 @@
           "pos": "n.",
           "zh": "热情;热忱"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "auspicious",
@@ -7742,9 +7930,10 @@
         "auspicious occasion",
         "auspicious sign"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "condign",
@@ -7778,9 +7967,10 @@
         "condign penalty",
         "condign retribution"
       ],
+      "relatedForms": [],
+      "usageScore": 1,
       "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "credence",
@@ -7813,9 +8003,10 @@
         "lend credence to",
         "gain credence"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "credulity",
@@ -7847,15 +8038,16 @@
         "exploit someone's credulity",
         "sheer credulity"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "credulous",
           "pos": "adj.",
           "zh": "轻信的;易受骗的"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "culpable",
@@ -7888,15 +8080,16 @@
         "hold someone culpable",
         "find someone culpable"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "culpability",
           "pos": "n.",
           "zh": "应受谴责;有罪"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "cursory",
@@ -7932,15 +8125,16 @@
         "cursory examination",
         "cursory review"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "cursorily",
           "pos": "adv.",
           "zh": "草率地;粗略地"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "decorum",
@@ -7973,15 +8167,16 @@
         "breach of decorum",
         "a sense of decorum"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "decorous",
           "pos": "adj.",
           "zh": "得体的;合礼仪的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "discursive",
@@ -8015,9 +8210,10 @@
         "discursive conversation",
         "discursive essay"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "domineering",
@@ -8052,15 +8248,16 @@
         "domineering manner",
         "domineering personality"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "domineer",
           "pos": "v.",
           "zh": "专横跋扈地对待"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "endemic",
@@ -8101,9 +8298,10 @@
         "endemic problem",
         "become endemic"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "epicure",
@@ -8132,15 +8330,16 @@
         "a self-proclaimed epicure",
         "an epicure's delight"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "epicurean",
           "pos": "adj.",
           "zh": "讲究美食的"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "felicitous",
@@ -8175,15 +8374,16 @@
         "felicitous choice",
         "a felicitous turn of phrase"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "felicity",
           "pos": "n.",
           "zh": "幸福;(措辞)得体"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "fervent",
@@ -8219,15 +8419,16 @@
         "fervent hope",
         "fervent admirer"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "fervently",
           "pos": "adv.",
           "zh": "热切地;热烈地"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "fervor",
@@ -8261,15 +8462,16 @@
         "with fervor",
         "revolutionary fervor"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "fervently",
           "pos": "adv.",
           "zh": "热切地;热烈地"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "incriminate",
@@ -8303,15 +8505,16 @@
         "incriminating evidence",
         "incriminating text message"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "incrimination",
           "pos": "n.",
           "zh": "归罪;控告"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "inculpate",
@@ -8343,15 +8546,16 @@
         "inculpate someone in",
         "a self-inculpating statement"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "inculpatory",
           "pos": "adj.",
           "zh": "归罪的;证明有罪的"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "indecency",
@@ -8389,6 +8593,7 @@
           "zh": "猥亵的;不雅的"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "59-61",
       "addedAt": "2026-07-24"
     },
@@ -8430,6 +8635,7 @@
           "zh": "缩进;凹痕"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "59-61",
       "addedAt": "2026-07-24"
     },
@@ -8465,15 +8671,16 @@
         "a grand jury indicts",
         "indict for fraud"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "indictment",
           "pos": "n.",
           "zh": "起诉;控告书"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "machination",
@@ -8504,15 +8711,16 @@
         "corporate machinations",
         "behind-the-scenes machinations"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "machinate",
           "pos": "v.",
           "zh": "密谋;策划"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "opportune",
@@ -8547,8 +8755,6 @@
         "opportune time",
         "at an opportune moment"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "opportunism",
@@ -8560,7 +8766,10 @@
           "pos": "adj.",
           "zh": "投机取巧的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "paramount",
@@ -8595,9 +8804,10 @@
         "paramount concern",
         "paramount consideration"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "perfunctory",
@@ -8632,15 +8842,16 @@
         "perfunctory apology",
         "perfunctory review"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "perfunctorily",
           "pos": "adv.",
           "zh": "敷衍地;草草地"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "procurement",
@@ -8671,15 +8882,16 @@
         "public procurement",
         "procurement strategy"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "procure",
           "pos": "v.",
           "zh": "采购;获得"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "vindictive",
@@ -8713,15 +8925,16 @@
         "vindictive behavior",
         "vindictive streak"
       ],
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "vindictiveness",
           "pos": "n.",
           "zh": "报复心;怀恨"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "59-61",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "affectation",
@@ -8755,15 +8968,16 @@
         "an affectation of",
         "without affectation"
       ],
-      "sourceNote": "62-64",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "affected",
           "pos": "adj.",
           "zh": "做作的;不自然的"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "62-64",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "anesthesia",
@@ -8808,6 +9022,7 @@
           "zh": "麻醉医师"
         }
       ],
+      "usageScore": 6,
       "sourceNote": "62-64",
       "addedAt": "2026-07-24"
     },
@@ -8843,9 +9058,10 @@
         "barefaced cheek",
         "barefaced audacity"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "62-64",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "conducive",
@@ -8879,9 +9095,10 @@
         "conducive environment",
         "conducive atmosphere"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "62-64",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "disaffect",
@@ -8912,15 +9129,16 @@
         "disaffected employees",
         "disaffect the workforce"
       ],
-      "sourceNote": "62-64",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "disaffection",
           "pos": "n.",
           "zh": "不满;离心"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "62-64",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "ennoble",
@@ -8953,9 +9171,10 @@
         "ennoble the spirit",
         "an ennobling experience"
       ],
+      "relatedForms": [],
+      "usageScore": 3,
       "sourceNote": "62-64",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "eulogize",
@@ -8989,15 +9208,16 @@
         "eulogize someone's memory",
         "eulogize a legacy"
       ],
-      "sourceNote": "62-64",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "eulogy",
           "pos": "n.",
           "zh": "悼词;颂词"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "62-64",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "extrication",
@@ -9029,15 +9249,16 @@
         "extrication from",
         "a careful extrication"
       ],
-      "sourceNote": "62-64",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "extricate",
           "pos": "v.",
           "zh": "使解脱;使摆脱"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "62-64",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "facetious",
@@ -9071,15 +9292,16 @@
         "facetious comment",
         "not being facetious"
       ],
-      "sourceNote": "62-64",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "facetiously",
           "pos": "adv.",
           "zh": "轻浮地;开玩笑地"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "62-64",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "feckless",
@@ -9114,9 +9336,10 @@
         "feckless management",
         "utterly feckless"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "62-64",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "indelible",
@@ -9150,15 +9373,16 @@
         "indelible impression",
         "indelible memory"
       ],
-      "sourceNote": "62-64",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "indelibly",
           "pos": "adv.",
           "zh": "不可磨灭地"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "62-64",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "indurate",
@@ -9195,15 +9419,16 @@
         "indurate someone to",
         "an indurate heart"
       ],
-      "sourceNote": "62-64",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "induration",
           "pos": "n.",
           "zh": "硬化;变硬"
         }
-      ]
+      ],
+      "usageScore": 2,
+      "sourceNote": "62-64",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "inundate",
@@ -9234,15 +9459,16 @@
         "inundate someone with emails",
         "inundated by floodwater"
       ],
-      "sourceNote": "62-64",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "inundation",
           "pos": "n.",
           "zh": "淹没;泛滥"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "62-64",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "irreducible",
@@ -9286,6 +9512,7 @@
           "zh": "简化;还原"
         }
       ],
+      "usageScore": 4,
       "sourceNote": "62-64",
       "addedAt": "2026-07-24"
     },
@@ -9321,15 +9548,16 @@
         "obdurate refusal",
         "obdurate insistence"
       ],
-      "sourceNote": "62-64",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "obduracy",
           "pos": "n.",
           "zh": "顽固;执拗"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "62-64",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "sentient",
@@ -9363,15 +9591,16 @@
         "sentient life",
         "truly sentient"
       ],
-      "sourceNote": "62-64",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "sentience",
           "pos": "n.",
           "zh": "感知能力;知觉"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "62-64",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "affinity",
@@ -9410,9 +9639,10 @@
         "affinity with",
         "natural affinity"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "affront",
@@ -9450,9 +9680,10 @@
         "take something as an affront",
         "personal affront"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "beguile",
@@ -9491,9 +9722,10 @@
         "beguiled by",
         "beguile the time"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "diffident",
@@ -9526,15 +9758,16 @@
         "diffident manner",
         "painfully diffident"
       ],
-      "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "diffidence",
           "pos": "n.",
           "zh": "缺乏自信;羞怯"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "65-68",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "dystrophy",
@@ -9568,6 +9801,7 @@
           "zh": "营养不良的;萎缩性的"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "65-68",
       "addedAt": "2026-07-24"
     },
@@ -9601,9 +9835,10 @@
         "have the effrontery to",
         "sheer effrontery"
       ],
+      "relatedForms": [],
+      "usageScore": 3,
       "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "fallacy",
@@ -9635,15 +9870,16 @@
         "logical fallacy",
         "fall for a fallacy"
       ],
-      "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "fallacious",
           "pos": "adj.",
           "zh": "谬误的;似是而非的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "65-68",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "fallible",
@@ -9675,15 +9911,16 @@
         "fallible memory",
         "fallible system"
       ],
-      "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "fallibility",
           "pos": "n.",
           "zh": "易错性"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "65-68",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "fidelity",
@@ -9721,9 +9958,10 @@
         "fidelity to",
         "marital fidelity"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "forestall",
@@ -9756,9 +9994,10 @@
         "forestall a crisis",
         "forestall rumors"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "fractious",
@@ -9796,9 +10035,10 @@
         "fractious debate",
         "fractious coalition"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "infallible",
@@ -9830,15 +10070,16 @@
         "infallible judgment",
         "far from infallible"
       ],
-      "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "infallibility",
           "pos": "n.",
           "zh": "绝对可靠;万无一失"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "65-68",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "infinitesimal",
@@ -9870,9 +10111,10 @@
         "infinitesimal chance",
         "infinitesimally small"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "mellifluous",
@@ -9904,9 +10146,10 @@
         "mellifluous tone",
         "mellifluous accent"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "officiate",
@@ -9948,6 +10191,7 @@
           "zh": "(婚礼等)主持人"
         }
       ],
+      "usageScore": 6,
       "sourceNote": "65-68",
       "addedAt": "2026-07-24"
     },
@@ -9977,15 +10221,16 @@
         "sheer officiousness",
         "bureaucratic officiousness"
       ],
-      "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "officious",
           "pos": "adj.",
           "zh": "好管闲事的"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "65-68",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "ominous",
@@ -10017,15 +10262,16 @@
         "ominous silence",
         "ominous clouds"
       ],
-      "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "ominously",
           "pos": "adv.",
           "zh": "不祥地;令人不安地"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "65-68",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "perfidious",
@@ -10057,15 +10303,16 @@
         "perfidious ally",
         "perfidious betrayal"
       ],
-      "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "perfidy",
           "pos": "n.",
           "zh": "背信弃义"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "65-68",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "refractory",
@@ -10102,9 +10349,10 @@
         "refractory disease",
         "refractory material"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "superfluous",
@@ -10136,15 +10384,16 @@
         "deem superfluous",
         "superfluous to requirements"
       ],
-      "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "superfluity",
           "pos": "n.",
           "zh": "过剩;多余之物"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "65-68",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "sweltering",
@@ -10176,15 +10425,16 @@
         "sweltering afternoon",
         "sweltering summer"
       ],
-      "sourceNote": "65-68",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "swelter",
           "pos": "v.",
           "zh": "因高温而难受"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "65-68",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "congenial",
@@ -10222,15 +10472,16 @@
         "congenial company",
         "congenial environment"
       ],
-      "sourceNote": "69-71",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "congeniality",
           "pos": "n.",
           "zh": "亲切;意气相投"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "69-71",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "congregate",
@@ -10262,15 +10513,16 @@
         "congregate outside",
         "tend to congregate"
       ],
-      "sourceNote": "69-71",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "congregation",
           "pos": "n.",
           "zh": "集会;会众"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "69-71",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "disaggregate",
@@ -10313,6 +10565,7 @@
           "zh": "合计;聚集"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "69-71",
       "addedAt": "2026-07-24"
     },
@@ -10347,9 +10600,10 @@
         "engender resentment",
         "engender a sense of"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "69-71",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "genial",
@@ -10382,15 +10636,16 @@
         "genial smile",
         "genial manner"
       ],
-      "sourceNote": "69-71",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "geniality",
           "pos": "n.",
           "zh": "和蔼;亲切"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "69-71",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "grandiloquence",
@@ -10421,15 +10676,16 @@
         "sheer grandiloquence",
         "empty grandiloquence"
       ],
-      "sourceNote": "69-71",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "grandiloquent",
           "pos": "adj.",
           "zh": "夸张浮华的"
         }
-      ]
+      ],
+      "usageScore": 1,
+      "sourceNote": "69-71",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "grandiose",
@@ -10461,15 +10717,16 @@
         "grandiose scheme",
         "grandiose vision"
       ],
-      "sourceNote": "69-71",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "grandiosity",
           "pos": "n.",
           "zh": "浮夸;夸大"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "69-71",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "gratuitous",
@@ -10501,9 +10758,10 @@
         "gratuitous comment",
         "gratuitous insult"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "69-71",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "gregarious",
@@ -10535,15 +10793,16 @@
         "naturally gregarious",
         "gregarious personality"
       ],
-      "sourceNote": "69-71",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "gregariousness",
           "pos": "n.",
           "zh": "群居性;社交性"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "69-71",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "haphazard",
@@ -10576,9 +10835,10 @@
         "haphazard manner",
         "haphazard fashion"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "69-71",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "headstrong",
@@ -10610,9 +10870,10 @@
         "headstrong nature",
         "notoriously headstrong"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "69-71",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "profuse",
@@ -10644,15 +10905,16 @@
         "profuse thanks",
         "sweat profusely"
       ],
-      "sourceNote": "69-71",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "profusion",
           "pos": "n.",
           "zh": "大量;丰富"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "69-71",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "retrograde",
@@ -10688,15 +10950,16 @@
         "retrograde motion",
         "Mercury retrograde"
       ],
-      "sourceNote": "69-71",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "retrogress",
           "pos": "v.",
           "zh": "倒退;退化"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "69-71",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "steadfast",
@@ -10729,15 +10992,16 @@
         "steadfast loyalty",
         "remain steadfast"
       ],
-      "sourceNote": "69-71",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "steadfastness",
           "pos": "n.",
           "zh": "坚定不移"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "69-71",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "suffuse",
@@ -10766,15 +11030,16 @@
         "light suffuses",
         "suffused with pride"
       ],
-      "sourceNote": "69-71",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "suffusion",
           "pos": "n.",
           "zh": "弥漫;充满"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "69-71",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "abjuration",
@@ -10806,15 +11071,16 @@
         "formal abjuration",
         "abjuration of"
       ],
-      "sourceNote": "72-75",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "abjure",
           "pos": "v.",
           "zh": "发誓放弃"
         }
-      ]
+      ],
+      "usageScore": 2,
+      "sourceNote": "72-75",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "belabor",
@@ -10843,9 +11109,10 @@
         "belabor the obvious",
         "without belaboring"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "72-75",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "delineate",
@@ -10883,15 +11150,16 @@
         "delineate the boundaries",
         "delineate responsibilities"
       ],
-      "sourceNote": "72-75",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "delineation",
           "pos": "n.",
           "zh": "描绘;勾勒"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "72-75",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "dishearten",
@@ -10923,9 +11191,10 @@
         "deeply disheartened",
         "disheartening news"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "72-75",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "dyslexia",
@@ -10959,6 +11228,7 @@
           "zh": "诵读困难的;患诵读困难症的"
         }
       ],
+      "usageScore": 7,
       "sourceNote": "72-75",
       "addedAt": "2026-07-24"
     },
@@ -10992,15 +11262,16 @@
         "eclectic mix",
         "eclectic style"
       ],
-      "sourceNote": "72-75",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "eclecticism",
           "pos": "n.",
           "zh": "折衷主义"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "72-75",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "elective",
@@ -11049,6 +11320,7 @@
           "zh": "选举"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "72-75",
       "addedAt": "2026-07-24"
     },
@@ -11095,6 +11367,7 @@
           "zh": "批评"
         }
       ],
+      "usageScore": 4,
       "sourceNote": "72-75",
       "addedAt": "2026-07-24"
     },
@@ -11135,6 +11408,7 @@
           "zh": "失眠症"
         }
       ],
+      "usageScore": 6,
       "sourceNote": "72-75",
       "addedAt": "2026-07-24"
     },
@@ -11168,15 +11442,16 @@
         "growing insularity",
         "break out of insularity"
       ],
-      "sourceNote": "72-75",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "insular",
           "pos": "adj.",
           "zh": "狭隘的;孤立的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "72-75",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "intercede",
@@ -11205,15 +11480,16 @@
         "intercede for",
         "intercede between"
       ],
-      "sourceNote": "72-75",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "intercession",
           "pos": "n.",
           "zh": "说情;斡旋"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "72-75",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "interjection",
@@ -11253,6 +11529,7 @@
           "zh": "插话;突然说出"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "72-75",
       "addedAt": "2026-07-24"
     },
@@ -11288,15 +11565,16 @@
         "interpolate a phrase",
         "interpolate values"
       ],
-      "sourceNote": "72-75",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "interpolation",
           "pos": "n.",
           "zh": "插入;窜改"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "72-75",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "intersperse",
@@ -11325,9 +11603,10 @@
         "interspersed throughout",
         "intersperse jokes"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "72-75",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "judicious",
@@ -11359,9 +11638,10 @@
         "judicious decision",
         "judicious choice"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "72-75",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "laxative",
@@ -11400,6 +11680,7 @@
           "zh": "通便;泻下"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "72-75",
       "addedAt": "2026-07-24"
     },
@@ -11435,6 +11716,7 @@
           "zh": "形而上学的;玄学的"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "72-75",
       "addedAt": "2026-07-24"
     },
@@ -11464,15 +11746,16 @@
         "charged with perjury",
         "perjury trial"
       ],
-      "sourceNote": "72-75",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "perjure",
           "pos": "v.",
           "zh": "作伪证"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "72-75",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "adroit",
@@ -11504,15 +11787,16 @@
         "adroitly navigate",
         "adroit at"
       ],
-      "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "adroitness",
           "pos": "n.",
           "zh": "灵巧;机敏"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "76-78",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "allude",
@@ -11541,15 +11825,16 @@
         "subtly allude",
         "allude to a fact"
       ],
-      "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "allusion",
           "pos": "n.",
           "zh": "暗指;典故"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "76-78",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "analogous",
@@ -11581,15 +11866,16 @@
         "roughly analogous",
         "analogous situation"
       ],
-      "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "analogy",
           "pos": "n.",
           "zh": "类比;类推"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "76-78",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "cogitate",
@@ -11618,15 +11904,16 @@
         "cogitate over",
         "sit and cogitate"
       ],
-      "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "cogitation",
           "pos": "n.",
           "zh": "沉思;深思"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "76-78",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "efface",
@@ -11658,15 +11945,16 @@
         "self-effacing",
         "efface all trace of"
       ],
-      "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "self-effacing",
           "pos": "adj.",
           "zh": "谦逊的;不出风头的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "76-78",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "elucidate",
@@ -11698,15 +11986,16 @@
         "elucidate the process",
         "further elucidate"
       ],
-      "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "elucidation",
           "pos": "n.",
           "zh": "阐明;说明"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "76-78",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "elude",
@@ -11740,15 +12029,16 @@
         "elude someone's memory",
         "elude detection"
       ],
-      "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "elusive",
           "pos": "adj.",
           "zh": "难以捉摸的"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "76-78",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "immemorial",
@@ -11780,9 +12070,10 @@
         "immemorial custom",
         "since time immemorial"
       ],
+      "relatedForms": [],
+      "usageScore": 3,
       "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "loquacious",
@@ -11814,15 +12105,16 @@
         "loquacious about",
         "notoriously loquacious"
       ],
-      "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "loquacity",
           "pos": "n.",
           "zh": "多话;健谈"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "76-78",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "lucid",
@@ -11860,15 +12152,16 @@
         "lucid moment",
         "lucid dream"
       ],
-      "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "lucidity",
           "pos": "n.",
           "zh": "清晰;明晰"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "76-78",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "malaise",
@@ -11900,9 +12193,10 @@
         "general malaise",
         "a sense of malaise"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "malevolent",
@@ -11934,15 +12228,16 @@
         "malevolent force",
         "malevolent glare"
       ],
-      "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "malevolence",
           "pos": "n.",
           "zh": "恶意;恶毒"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "76-78",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "malign",
@@ -11979,15 +12274,16 @@
         "maligned by critics",
         "malign someone's reputation"
       ],
-      "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "malignity",
           "pos": "n.",
           "zh": "恶意;恶毒"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "76-78",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "manumit",
@@ -12019,15 +12315,16 @@
         "manumitted by will",
         "formally manumit"
       ],
-      "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "manumission",
           "pos": "n.",
           "zh": "(奴隶的)解放"
         }
-      ]
+      ],
+      "usageScore": 2,
+      "sourceNote": "76-78",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "mercenary",
@@ -12064,9 +12361,10 @@
         "mercenary motives",
         "purely mercenary"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "obliteration",
@@ -12098,15 +12396,16 @@
         "total obliteration",
         "obliteration of evidence"
       ],
-      "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "obliterate",
           "pos": "v.",
           "zh": "彻底摧毁;清除"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "76-78",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "rebuke",
@@ -12143,9 +12442,10 @@
         "public rebuke",
         "rebuke someone for"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "reprimand",
@@ -12182,9 +12482,10 @@
         "written reprimand",
         "receive a reprimand"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "76-78",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "commensurate",
@@ -12216,9 +12517,10 @@
         "commensurate salary",
         "commensurate experience"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "complacency",
@@ -12250,15 +12552,16 @@
         "dangerous complacency",
         "a sense of complacency"
       ],
-      "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "complacent",
           "pos": "adj.",
           "zh": "自满的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "79-82",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "denominate",
@@ -12293,6 +12596,7 @@
           "zh": "面额;计价单位;教派"
         }
       ],
+      "usageScore": 4,
       "sourceNote": "79-82",
       "addedAt": "2026-07-24"
     },
@@ -12326,15 +12630,16 @@
         "denounce as",
         "denounce someone for"
       ],
-      "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "denunciation",
           "pos": "n.",
           "zh": "谴责;公开指责"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "79-82",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "eminence",
@@ -12366,15 +12671,16 @@
         "eminence in the field",
         "a position of eminence"
       ],
-      "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "eminent",
           "pos": "adj.",
           "zh": "卓越的;显赫的"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "79-82",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "engross",
@@ -12405,9 +12711,10 @@
         "completely engrossed in",
         "engrossed in thought"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "enormity",
@@ -12436,9 +12743,10 @@
         "grasp the enormity",
         "enormity of the crime"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "ignominious",
@@ -12470,15 +12778,16 @@
         "ignominious end",
         "ignominious exit"
       ],
-      "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "ignominy",
           "pos": "n.",
           "zh": "耻辱;不光彩"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "79-82",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "imminent",
@@ -12510,15 +12819,16 @@
         "imminent threat",
         "imminent arrival"
       ],
-      "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "imminence",
           "pos": "n.",
           "zh": "逼近;紧迫"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "79-82",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "impending",
@@ -12550,9 +12860,10 @@
         "impending deadline",
         "impending disaster"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "impregnable",
@@ -12584,15 +12895,16 @@
         "impregnable defense",
         "seemingly impregnable"
       ],
-      "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "impregnability",
           "pos": "n.",
           "zh": "坚不可摧"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "79-82",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "inimical",
@@ -12626,9 +12938,10 @@
         "inimical forces",
         "inimical relationship"
       ],
+      "relatedForms": [],
+      "usageScore": 3,
       "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "inimitable",
@@ -12658,8 +12971,6 @@
         "inimitable charm",
         "inimitable talent"
       ],
-      "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "imitate",
@@ -12671,7 +12982,10 @@
           "pos": "n.",
           "zh": "模仿品"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "79-82",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "mime",
@@ -12705,6 +13019,7 @@
         "silent mime"
       ],
       "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "79-82",
       "addedAt": "2026-07-24"
     },
@@ -12739,15 +13054,16 @@
         "monolithic organization",
         "monolithic system"
       ],
-      "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "monolith",
           "pos": "n.",
           "zh": "庞然大物;巨石"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "79-82",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "outmoded",
@@ -12780,9 +13096,10 @@
         "outmoded technology",
         "outmoded idea"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "pantomime",
@@ -12822,6 +13139,7 @@
           "zh": "哑剧的;哑剧式的"
         }
       ],
+      "usageScore": 4,
       "sourceNote": "79-82",
       "addedAt": "2026-07-24"
     },
@@ -12856,15 +13174,16 @@
         "preeminent authority",
         "preeminent position"
       ],
-      "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "preeminence",
           "pos": "n.",
           "zh": "卓越;杰出"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "79-82",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "sinecure",
@@ -12894,9 +13213,10 @@
         "political sinecure",
         "regard it as a sinecure"
       ],
+      "relatedForms": [],
+      "usageScore": 3,
       "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "unpretentious",
@@ -12929,15 +13249,16 @@
         "unpretentious charm",
         "unpretentious restaurant"
       ],
-      "sourceNote": "79-82",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "pretentious",
           "pos": "adj.",
           "zh": "自命不凡的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "79-82",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "belittle",
@@ -12969,9 +13290,10 @@
         "belittle someone's efforts",
         "belittle an achievement"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "83-85",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "destitution",
@@ -13004,15 +13326,16 @@
         "live in destitution",
         "reduced to destitution"
       ],
-      "sourceNote": "83-85",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "destitute",
           "pos": "adj.",
           "zh": "贫困的;缺乏的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "83-85",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "disparage",
@@ -13045,15 +13368,16 @@
         "disparaging remarks",
         "disparage someone's work"
       ],
-      "sourceNote": "83-85",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "disparagement",
           "pos": "n.",
           "zh": "贬低;蔑视"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "83-85",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "disparity",
@@ -13086,15 +13410,16 @@
         "wide disparity",
         "disparity between"
       ],
-      "sourceNote": "83-85",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "disparate",
           "pos": "adj.",
           "zh": "迥然不同的"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "83-85",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "dispassionate",
@@ -13127,15 +13452,16 @@
         "dispassionate observer",
         "remain dispassionate"
       ],
-      "sourceNote": "83-85",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "passionate",
           "pos": "adj.",
           "zh": "充满激情的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "83-85",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "impasse",
@@ -13168,9 +13494,10 @@
         "break an impasse",
         "political impasse"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "83-85",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "impassive",
@@ -13203,15 +13530,16 @@
         "impassive face",
         "remain impassive"
       ],
-      "sourceNote": "83-85",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "impassivity",
           "pos": "n.",
           "zh": "冷漠;无表情"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "83-85",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "impoverish",
@@ -13243,15 +13571,16 @@
         "impoverished neighborhood",
         "impoverish the soil"
       ],
-      "sourceNote": "83-85",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "impoverishment",
           "pos": "n.",
           "zh": "贫困化"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "83-85",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "outlandish",
@@ -13284,9 +13613,10 @@
         "outlandish claim",
         "outlandish outfit"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "83-85",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "overbearing",
@@ -13319,9 +13649,10 @@
         "overbearing boss",
         "overbearing parent"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "83-85",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "paucity",
@@ -13354,9 +13685,10 @@
         "paucity of resources",
         "paucity of data"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "83-85",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "puerile",
@@ -13389,15 +13721,16 @@
         "puerile jokes",
         "puerile argument"
       ],
-      "sourceNote": "83-85",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "puerility",
           "pos": "n.",
           "zh": "幼稚;孩子气"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "83-85",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "repartee",
@@ -13427,9 +13760,10 @@
         "quick repartee",
         "exchange repartee"
       ],
+      "relatedForms": [],
+      "usageScore": 3,
       "sourceNote": "83-85",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "riven",
@@ -13462,9 +13796,10 @@
         "riven with divisions",
         "riven by war"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "83-85",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "spendthrift",
@@ -13502,9 +13837,10 @@
         "spendthrift habits",
         "spendthrift trust"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "83-85",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "depose",
@@ -13542,15 +13878,16 @@
         "depose a witness",
         "be deposed for hours"
       ],
-      "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "deposition",
           "pos": "n.",
           "zh": "罢免;宣誓证词"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "86-88",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "diaphanous",
@@ -13582,9 +13919,10 @@
         "diaphanous gown",
         "diaphanous veil"
       ],
+      "relatedForms": [],
+      "usageScore": 3,
       "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "implacable",
@@ -13617,15 +13955,16 @@
         "implacable opposition",
         "implacable hostility"
       ],
-      "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "implacability",
           "pos": "n.",
           "zh": "难以平息;不肯和解"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "86-88",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "importune",
@@ -13654,15 +13993,16 @@
         "importune someone for",
         "repeatedly importune"
       ],
-      "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "importunate",
           "pos": "adj.",
           "zh": "强求的;纠缠不休的"
         }
-      ]
+      ],
+      "usageScore": 2,
+      "sourceNote": "86-88",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "irrepressible",
@@ -13695,15 +14035,16 @@
         "irrepressible optimism",
         "irrepressible laughter"
       ],
-      "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "repress",
           "pos": "v.",
           "zh": "压制;抑制"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "86-88",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "juxtapose",
@@ -13732,15 +14073,16 @@
         "juxtapose old and new",
         "juxtapose ideas"
       ],
-      "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "juxtaposition",
           "pos": "n.",
           "zh": "并置;并列"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "86-88",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "philanthropic",
@@ -13773,8 +14115,6 @@
         "philanthropic efforts",
         "philanthropic donor"
       ],
-      "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "philanthropy",
@@ -13786,7 +14126,10 @@
           "pos": "n.",
           "zh": "慈善家"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "86-88",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "placate",
@@ -13819,15 +14162,16 @@
         "placate angry customers",
         "attempt to placate"
       ],
-      "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "placatory",
           "pos": "adj.",
           "zh": "安抚性的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "86-88",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "placid",
@@ -13860,15 +14204,16 @@
         "placid demeanor",
         "placid waters"
       ],
-      "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "placidity",
           "pos": "n.",
           "zh": "平静;安宁"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "86-88",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "pompous",
@@ -13901,15 +14246,16 @@
         "pompous manner",
         "pompous tone"
       ],
-      "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "pomposity",
           "pos": "n.",
           "zh": "自负;浮夸"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "86-88",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "precarious",
@@ -13942,15 +14288,16 @@
         "precarious balance",
         "precarious employment"
       ],
-      "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "precariousness",
           "pos": "n.",
           "zh": "不稳定;危险性"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "86-88",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "predisposition",
@@ -13980,15 +14327,16 @@
         "predisposition to",
         "predisposition toward"
       ],
-      "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "predispose",
           "pos": "v.",
           "zh": "使倾向于"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "86-88",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "presumptuous",
@@ -14021,8 +14369,6 @@
         "presumptuous request",
         "rather presumptuous"
       ],
-      "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "presume",
@@ -14034,7 +14380,10 @@
           "pos": "n.",
           "zh": "放肆;假设"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "86-88",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "probity",
@@ -14067,9 +14416,10 @@
         "unquestioned probity",
         "moral probity"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "sumptuous",
@@ -14102,15 +14452,16 @@
         "sumptuous feast",
         "sumptuous decor"
       ],
-      "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "sumptuousness",
           "pos": "n.",
           "zh": "奢华"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "86-88",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "superimpose",
@@ -14139,15 +14490,16 @@
         "superimpose an image on",
         "superimpose one map onto another"
       ],
-      "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "superimposition",
           "pos": "n.",
           "zh": "叠加"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "86-88",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "susceptible",
@@ -14180,15 +14532,16 @@
         "susceptible to flattery",
         "susceptible to criticism"
       ],
-      "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "susceptibility",
           "pos": "n.",
           "zh": "易感性;敏感性"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "86-88",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "sycophant",
@@ -14217,8 +14570,6 @@
         "surrounded by sycophants",
         "a corporate sycophant"
       ],
-      "sourceNote": "86-88",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "sycophantic",
@@ -14230,7 +14581,10 @@
           "pos": "n.",
           "zh": "谄媚"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "86-88",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "unquenchable",
@@ -14268,6 +14622,7 @@
           "zh": "解(渴);扑灭;抑制"
         }
       ],
+      "usageScore": 4,
       "sourceNote": "86-88",
       "addedAt": "2026-07-24"
     },
@@ -14302,8 +14657,6 @@
         "acquiesce in silence",
         "reluctantly acquiesce"
       ],
-      "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "acquiescence",
@@ -14315,7 +14668,10 @@
           "pos": "adj.",
           "zh": "默许的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "89-91",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "acquisitive",
@@ -14348,8 +14704,6 @@
         "acquisitive nature",
         "acquisitive society"
       ],
-      "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "acquisition",
@@ -14361,7 +14715,10 @@
           "pos": "v.",
           "zh": "获得"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "89-91",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "approbation",
@@ -14394,15 +14751,16 @@
         "nod of approbation",
         "seek approbation"
       ],
-      "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "approve",
           "pos": "v.",
           "zh": "赞成;批准"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "89-91",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "aspirant",
@@ -14432,8 +14790,6 @@
         "presidential aspirant",
         "aspirant to the throne"
       ],
-      "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "aspire",
@@ -14445,7 +14801,10 @@
           "pos": "n.",
           "zh": "志向;抱负"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "89-91",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "covetous",
@@ -14478,15 +14837,16 @@
         "covetous eyes",
         "covetous of someone's success"
       ],
-      "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "covet",
           "pos": "v.",
           "zh": "觊觎;垂涎"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "89-91",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "dispirit",
@@ -14531,6 +14891,7 @@
           "zh": "令人沮丧的"
         }
       ],
+      "usageScore": 4,
       "sourceNote": "89-91",
       "addedAt": "2026-07-24"
     },
@@ -14565,15 +14926,16 @@
         "disputatious colleague",
         "disputatious mood"
       ],
-      "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "dispute",
           "pos": "v.",
           "zh": "争论;辩论"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "89-91",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "disreputable",
@@ -14606,15 +14968,16 @@
         "disreputable source",
         "disreputable dealer"
       ],
-      "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "reputable",
           "pos": "adj.",
           "zh": "声誉好的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "89-91",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "extemporaneous",
@@ -14647,15 +15010,16 @@
         "extemporaneous remarks",
         "extemporaneous answer"
       ],
-      "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "extemporize",
           "pos": "v.",
           "zh": "即兴创作;即兴表演"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "89-91",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "impurity",
@@ -14697,6 +15061,7 @@
           "zh": "提纯;净化"
         }
       ],
+      "usageScore": 6,
       "sourceNote": "89-91",
       "addedAt": "2026-07-24"
     },
@@ -14731,15 +15096,16 @@
         "ostensible purpose",
         "ostensible motive"
       ],
-      "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "ostensibly",
           "pos": "adv.",
           "zh": "表面上地"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "89-91",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "persecute",
@@ -14777,15 +15143,16 @@
         "persecuted for their beliefs",
         "relentlessly persecuted"
       ],
-      "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "persecution",
           "pos": "n.",
           "zh": "迫害"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "89-91",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "platitude",
@@ -14815,15 +15182,16 @@
         "spout platitudes",
         "string of platitudes"
       ],
-      "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "platitudinous",
           "pos": "adj.",
           "zh": "陈腐的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "89-91",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "pretense",
@@ -14861,8 +15229,6 @@
         "drop the pretense",
         "make no pretense of"
       ],
-      "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "pretend",
@@ -14874,7 +15240,10 @@
           "pos": "adj.",
           "zh": "自命不凡的"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "89-91",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "propriety",
@@ -14907,15 +15276,16 @@
         "question the propriety of",
         "breach of propriety"
       ],
-      "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "impropriety",
           "pos": "n.",
           "zh": "不得体;违规行为"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "89-91",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "purebred",
@@ -14953,6 +15323,7 @@
         "certified purebred"
       ],
       "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "89-91",
       "addedAt": "2026-07-24"
     },
@@ -14987,15 +15358,16 @@
         "querulous complaint",
         "querulous email"
       ],
-      "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "querulousness",
           "pos": "n.",
           "zh": "好抱怨的性格"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "89-91",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "quietude",
@@ -15028,9 +15400,10 @@
         "quietude of the morning",
         "disturb the quietude"
       ],
+      "relatedForms": [],
+      "usageScore": 3,
       "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "reprove",
@@ -15063,15 +15436,16 @@
         "gently reprove",
         "reprove a student"
       ],
-      "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "reproof",
           "pos": "n.",
           "zh": "责备;训斥"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "89-91",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "succumb",
@@ -15109,9 +15483,10 @@
         "succumb to pressure",
         "succumb to an illness"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "vitiate",
@@ -15149,15 +15524,16 @@
         "vitiate the effect of",
         "vitiate the flavor"
       ],
-      "sourceNote": "89-91",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "vitiation",
           "pos": "n.",
           "zh": "损害;败坏"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "89-91",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "adversity",
@@ -15190,15 +15566,16 @@
         "overcome adversity",
         "in the face of adversity"
       ],
-      "sourceNote": "92-93",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "adverse",
           "pos": "adj.",
           "zh": "不利的;有害的"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "92-93",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "extenuate",
@@ -15230,15 +15607,16 @@
         "extenuating circumstances",
         "extenuate an offense"
       ],
-      "sourceNote": "92-93",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "extenuation",
           "pos": "n.",
           "zh": "情有可原的理由"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "92-93",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "impromptu",
@@ -15276,9 +15654,10 @@
         "impromptu meeting",
         "impromptu gathering"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "92-93",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "innocuous",
@@ -15311,9 +15690,10 @@
         "innocuous-looking",
         "seemingly innocuous"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "92-93",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "interchangeability",
@@ -15352,6 +15732,7 @@
           "zh": "交换;互换"
         }
       ],
+      "usageScore": 4,
       "sourceNote": "92-93",
       "addedAt": "2026-07-24"
     },
@@ -15386,15 +15767,16 @@
         "irreparable harm",
         "irreparable rift"
       ],
-      "sourceNote": "92-93",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "reparable",
           "pos": "adj.",
           "zh": "可修复的"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "92-93",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "manifold",
@@ -15432,9 +15814,10 @@
         "manifold benefits",
         "exhaust manifold"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "92-93",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "raze",
@@ -15466,9 +15849,10 @@
         "raze to the ground",
         "raze a building"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "92-93",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "systemic",
@@ -15506,9 +15890,10 @@
         "systemic risk",
         "go systemic"
       ],
+      "relatedForms": [],
+      "usageScore": 8,
       "sourceNote": "92-93",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "turmoil",
@@ -15541,9 +15926,10 @@
         "emotional turmoil",
         "market turmoil"
       ],
+      "relatedForms": [],
+      "usageScore": 8,
       "sourceNote": "92-93",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "upheaval",
@@ -15576,9 +15962,10 @@
         "personal upheaval",
         "industry upheaval"
       ],
+      "relatedForms": [],
+      "usageScore": 8,
       "sourceNote": "92-93",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "voracious",
@@ -15610,15 +15997,16 @@
         "voracious reader",
         "voracious appetite"
       ],
-      "sourceNote": "92-93",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "voracity",
           "pos": "n.",
           "zh": "贪婪;狼吞虎咽"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "92-93",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "deft",
@@ -15651,15 +16039,16 @@
         "deft hands",
         "deft handling of"
       ],
-      "sourceNote": "94-96",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "deftness",
           "pos": "n.",
           "zh": "灵巧"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "94-96",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "forbidding",
@@ -15692,9 +16081,10 @@
         "forbidding expression",
         "forbidding landscape"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "94-96",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "formidable",
@@ -15732,15 +16122,16 @@
         "formidable challenge",
         "formidable reputation"
       ],
-      "sourceNote": "94-96",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "formidably",
           "pos": "adv.",
           "zh": "令人畏惧地"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "94-96",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "fruition",
@@ -15772,9 +16163,10 @@
         "bring to fruition",
         "reach fruition"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "94-96",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "heterogeneous",
@@ -15806,15 +16198,16 @@
         "heterogeneous mixture",
         "heterogeneous population"
       ],
-      "sourceNote": "94-96",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "heterogeneity",
           "pos": "n.",
           "zh": "异质性"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "94-96",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "intractable",
@@ -15846,15 +16239,16 @@
         "intractable conflict",
         "intractable pain"
       ],
-      "sourceNote": "94-96",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "tractable",
           "pos": "adj.",
           "zh": "易驾驭的;顺从的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "94-96",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "oxidization",
@@ -15895,6 +16289,7 @@
           "zh": "氧化剂"
         }
       ],
+      "usageScore": 4,
       "sourceNote": "94-96",
       "addedAt": "2026-07-24"
     },
@@ -15930,6 +16325,7 @@
           "zh": "(心脏)悸动;急速跳动"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "94-96",
       "addedAt": "2026-07-24"
     },
@@ -15963,15 +16359,16 @@
         "precipitous drop",
         "precipitous cliff"
       ],
-      "sourceNote": "94-96",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "precipice",
           "pos": "n.",
           "zh": "悬崖"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "94-96",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "rickety",
@@ -16003,9 +16400,10 @@
         "rickety chair",
         "rickety bridge"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "94-96",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "topple",
@@ -16037,9 +16435,10 @@
         "topple over",
         "topple a regime"
       ],
+      "relatedForms": [],
+      "usageScore": 8,
       "sourceNote": "94-96",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "trickle-down",
@@ -16075,6 +16474,7 @@
           "zh": "滴流;逐渐渗透/传开"
         }
       ],
+      "usageScore": 6,
       "sourceNote": "94-96",
       "addedAt": "2026-07-24"
     },
@@ -16108,15 +16508,16 @@
         "voluptuous curves",
         "voluptuous lips"
       ],
-      "sourceNote": "94-96",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "voluptuary",
           "pos": "n.",
           "zh": "讲究享乐的人"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "94-96",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "wastefulness",
@@ -16160,6 +16561,7 @@
           "zh": "浪费;浪费掉"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "94-96",
       "addedAt": "2026-07-24"
     },
@@ -16204,6 +16606,7 @@
           "zh": "能适应的;适应性强的"
         }
       ],
+      "usageScore": 7,
       "sourceNote": "97-98",
       "addedAt": "2026-07-24"
     },
@@ -16242,15 +16645,16 @@
         "public clamor",
         "clamor grew louder"
       ],
-      "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "clamorous",
           "pos": "adj.",
           "zh": "喧闹的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "97-98",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "collate",
@@ -16282,15 +16686,16 @@
         "collate reports",
         "collate information"
       ],
-      "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "collation",
           "pos": "n.",
           "zh": "校对;整理"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "97-98",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "detrimental",
@@ -16322,15 +16727,16 @@
         "detrimental to health",
         "detrimental impact"
       ],
-      "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "detriment",
           "pos": "n.",
           "zh": "损害"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "97-98",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "grievance",
@@ -16362,8 +16768,6 @@
         "air a grievance",
         "longstanding grievance"
       ],
-      "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "grieve",
@@ -16375,7 +16779,10 @@
           "pos": "adj.",
           "zh": "严重的;悲痛的"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "97-98",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "humility",
@@ -16406,15 +16813,16 @@
         "with humility",
         "humility and grace"
       ],
-      "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "humble",
           "pos": "adj.",
           "zh": "谦逊的"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "97-98",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "inferential",
@@ -16457,6 +16865,7 @@
           "zh": "推论;推断"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "97-98",
       "addedAt": "2026-07-24"
     },
@@ -16498,6 +16907,7 @@
           "zh": "体弱;疾病"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "97-98",
       "addedAt": "2026-07-24"
     },
@@ -16531,15 +16941,16 @@
         "meticulous planning",
         "meticulous records"
       ],
-      "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "meticulousness",
           "pos": "n.",
           "zh": "一丝不苟"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "97-98",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "multifarious",
@@ -16571,9 +16982,10 @@
         "multifarious duties",
         "multifarious interests"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "oscillate",
@@ -16605,15 +17017,16 @@
         "oscillate wildly",
         "oscillating fan"
       ],
-      "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "oscillation",
           "pos": "n.",
           "zh": "摆动;振荡"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "97-98",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "panacea",
@@ -16642,9 +17055,10 @@
         "hailed as a panacea",
         "panacea for"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "penchant",
@@ -16675,9 +17089,10 @@
         "penchant for",
         "have a penchant"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "permeate",
@@ -16706,15 +17121,16 @@
         "permeate society",
         "permeate throughout"
       ],
-      "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "permeable",
           "pos": "adj.",
           "zh": "可渗透的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "97-98",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "protract",
@@ -16746,15 +17162,16 @@
         "protracted battle",
         "protract the process"
       ],
-      "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "protraction",
           "pos": "n.",
           "zh": "拖延"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "97-98",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "reverent",
@@ -16786,8 +17203,6 @@
         "reverent tone",
         "reverent awe"
       ],
-      "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "revere",
@@ -16799,7 +17214,10 @@
           "pos": "n.",
           "zh": "尊敬;敬畏"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "97-98",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "ruinous",
@@ -16831,15 +17249,16 @@
         "ruinous consequences",
         "financially ruinous"
       ],
-      "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "ruin",
           "pos": "v.",
           "zh": "毁灭"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "97-98",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "secretion",
@@ -16878,6 +17297,7 @@
           "zh": "分泌的"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "97-98",
       "addedAt": "2026-07-24"
     },
@@ -16925,6 +17345,7 @@
           "zh": "无菌的;不育的"
         }
       ],
+      "usageScore": 6,
       "sourceNote": "97-98",
       "addedAt": "2026-07-24"
     },
@@ -16967,6 +17388,7 @@
           "zh": "监督;管理"
         }
       ],
+      "usageScore": 3,
       "sourceNote": "97-98",
       "addedAt": "2026-07-24"
     },
@@ -17000,15 +17422,16 @@
         "surmount a challenge",
         "surmount difficulties"
       ],
-      "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "insurmountable",
           "pos": "adj.",
           "zh": "难以克服的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "97-98",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "undervaluation",
@@ -17049,6 +17472,7 @@
           "zh": "被低估的"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "97-98",
       "addedAt": "2026-07-24"
     },
@@ -17082,15 +17506,16 @@
         "unilateral action",
         "unilateral ceasefire"
       ],
-      "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "unilaterally",
           "pos": "adv.",
           "zh": "单方面地"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "97-98",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "unwitting",
@@ -17122,9 +17547,10 @@
         "unwitting accomplice",
         "unwitting participant"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "yearn",
@@ -17155,9 +17581,10 @@
         "yearn for",
         "yearn to"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "97-98",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "impertinent",
@@ -17188,15 +17615,16 @@
         "impertinent question",
         "impertinent remark"
       ],
-      "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "impertinence",
           "pos": "n.",
           "zh": "无礼;鲁莽"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "99-100",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "inexorable",
@@ -17228,9 +17656,10 @@
         "inexorable march",
         "inexorable decline"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "ingenuity",
@@ -17262,15 +17691,16 @@
         "sheer ingenuity",
         "technical ingenuity"
       ],
-      "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "ingenious",
           "pos": "adj.",
           "zh": "有独创性的;巧妙的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "99-100",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "ingenuousness",
@@ -17301,15 +17731,16 @@
         "an air of ingenuousness",
         "disarming ingenuousness"
       ],
-      "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "ingenuous",
           "pos": "adj.",
           "zh": "天真坦率的"
         }
-      ]
+      ],
+      "usageScore": 2,
+      "sourceNote": "99-100",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "insolent",
@@ -17341,15 +17772,16 @@
         "insolent behavior",
         "insolent grin"
       ],
-      "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "insolence",
           "pos": "n.",
           "zh": "傲慢无礼"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "99-100",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "intransigent",
@@ -17381,15 +17813,16 @@
         "intransigent on",
         "remain intransigent"
       ],
-      "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "intransigence",
           "pos": "n.",
           "zh": "不妥协;固执"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "99-100",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "languid",
@@ -17421,8 +17854,6 @@
         "languid pace",
         "languid smile"
       ],
-      "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "languish",
@@ -17434,7 +17865,10 @@
           "pos": "n.",
           "zh": "倦怠;无精打采"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "99-100",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "malignant",
@@ -17466,15 +17900,16 @@
         "malignant cells",
         "malignant influence"
       ],
-      "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "malignancy",
           "pos": "n.",
           "zh": "恶性;恶意"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "99-100",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "oblique",
@@ -17506,15 +17941,16 @@
         "oblique angle",
         "oblique comment"
       ],
-      "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "obliquely",
           "pos": "adv.",
           "zh": "间接地;斜地"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "99-100",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "oblivious",
@@ -17545,15 +17981,16 @@
         "oblivious to",
         "blissfully oblivious"
       ],
-      "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "oblivion",
           "pos": "n.",
           "zh": "遗忘;湮没"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "99-100",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "obstinate",
@@ -17585,15 +18022,16 @@
         "obstinate about",
         "remain obstinate"
       ],
-      "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "obstinacy",
           "pos": "n.",
           "zh": "固执;顽固"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "99-100",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "perturb",
@@ -17627,15 +18065,16 @@
         "visibly perturbed",
         "seem perturbed by"
       ],
-      "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "perturbation",
           "pos": "n.",
           "zh": "不安;扰动"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "99-100",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "relapse",
@@ -17673,9 +18112,10 @@
         "risk of relapse",
         "suffer a relapse"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "resolute",
@@ -17710,8 +18150,6 @@
         "resolute determination",
         "resolute in one's decision"
       ],
-      "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "resolve",
@@ -17723,7 +18161,10 @@
           "pos": "adj.",
           "zh": "优柔寡断的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "99-100",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "spasmodic",
@@ -17757,15 +18198,16 @@
         "spasmodic effort",
         "spasmodic movement"
       ],
-      "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "spasm",
           "pos": "n.",
           "zh": "痉挛"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "99-100",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "tenacious",
@@ -17799,15 +18241,16 @@
         "tenacious in pursuit",
         "remain tenacious"
       ],
-      "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "tenacity",
           "pos": "n.",
           "zh": "坚韧;顽强"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "99-100",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "urbane",
@@ -17842,15 +18285,16 @@
         "urbane charm",
         "urbane host"
       ],
-      "sourceNote": "99-100",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "urbanity",
           "pos": "n.",
           "zh": "温文尔雅"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "99-100",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "chaste",
@@ -17889,15 +18333,16 @@
         "chaste relationship",
         "chaste design"
       ],
-      "sourceNote": "101-103",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "chastity",
           "pos": "n.",
           "zh": "贞洁"
         }
-      ]
+      ],
+      "usageScore": 3,
+      "sourceNote": "101-103",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "delve",
@@ -17927,9 +18372,10 @@
         "delve deep",
         "delve into the archives"
       ],
+      "relatedForms": [],
+      "usageScore": 7,
       "sourceNote": "101-103",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "depredation",
@@ -17962,9 +18408,10 @@
         "environmental depredation",
         "suffer depredation"
       ],
+      "relatedForms": [],
+      "usageScore": 2,
       "sourceNote": "101-103",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "erratic",
@@ -17998,9 +18445,10 @@
         "erratic performance",
         "erratic driving"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "101-103",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "foible",
@@ -18030,9 +18478,10 @@
         "human foibles",
         "tolerate someone's foibles"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "101-103",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "humdrum",
@@ -18066,9 +18515,10 @@
         "humdrum existence",
         "humdrum job"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "101-103",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "intricacy",
@@ -18100,15 +18550,16 @@
         "intricacy of design",
         "appreciate the intricacy"
       ],
-      "sourceNote": "101-103",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "intricate",
           "pos": "adj.",
           "zh": "错综复杂的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "101-103",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "introspection",
@@ -18138,15 +18589,16 @@
         "deep introspection",
         "encourage introspection"
       ],
-      "sourceNote": "101-103",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "introspective",
           "pos": "adj.",
           "zh": "内省的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "101-103",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "odyssey",
@@ -18176,9 +18628,10 @@
         "embark on an odyssey",
         "personal odyssey"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "101-103",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "reticent",
@@ -18212,15 +18665,16 @@
         "remain reticent",
         "notably reticent"
       ],
-      "sourceNote": "101-103",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "reticence",
           "pos": "n.",
           "zh": "沉默寡言"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "101-103",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "rhetoric",
@@ -18258,15 +18712,16 @@
         "political rhetoric",
         "rhetoric versus reality"
       ],
-      "sourceNote": "101-103",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "rhetorical",
           "pos": "adj.",
           "zh": "修辞的"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "101-103",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "subliminal",
@@ -18298,9 +18753,10 @@
         "subliminal advertising",
         "subliminal cues"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "101-103",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "substantiate",
@@ -18333,8 +18789,6 @@
         "fail to substantiate",
         "substantiate allegations"
       ],
-      "sourceNote": "101-103",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "substantiation",
@@ -18346,7 +18800,10 @@
           "pos": "adj.",
           "zh": "未经证实的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "101-103",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "zenith",
@@ -18379,9 +18836,10 @@
         "at the zenith of",
         "zenith of one's career"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "101-103",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "begrudge",
@@ -18414,15 +18872,16 @@
         "begrudge the cost",
         "don't begrudge"
       ],
-      "sourceNote": "104-106",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "grudge",
           "pos": "n.",
           "zh": "怨恨"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "104-106",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "consign",
@@ -18455,15 +18914,16 @@
         "consign to a drawer",
         "consign goods"
       ],
-      "sourceNote": "104-106",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "consignment",
           "pos": "n.",
           "zh": "寄售;托运物"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "104-106",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "contingency",
@@ -18495,15 +18955,16 @@
         "prepare for every contingency",
         "contingency fund"
       ],
-      "sourceNote": "104-106",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "contingent",
           "pos": "adj.",
           "zh": "视...而定的;偶然的"
         }
-      ]
+      ],
+      "usageScore": 7,
+      "sourceNote": "104-106",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "dilapidated",
@@ -18536,15 +18997,16 @@
         "dilapidated house",
         "fall into a dilapidated state"
       ],
-      "sourceNote": "104-106",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "dilapidation",
           "pos": "n.",
           "zh": "破旧;失修"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "104-106",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "epitomize",
@@ -18574,15 +19036,16 @@
         "epitomize everything",
         "perfectly epitomize"
       ],
-      "sourceNote": "104-106",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "epitome",
           "pos": "n.",
           "zh": "典型;缩影"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "104-106",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "exhort",
@@ -18615,15 +19078,16 @@
         "exhort the team",
         "exhort followers"
       ],
-      "sourceNote": "104-106",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "exhortation",
           "pos": "n.",
           "zh": "劝告;告诫"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "104-106",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "extol",
@@ -18656,9 +19120,10 @@
         "extol someone's achievements",
         "widely extolled"
       ],
+      "relatedForms": [],
+      "usageScore": 4,
       "sourceNote": "104-106",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "impinge",
@@ -18688,15 +19153,16 @@
         "impinge upon rights",
         "impinge on someone's freedom"
       ],
-      "sourceNote": "104-106",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "impingement",
           "pos": "n.",
           "zh": "侵犯;冲击"
         }
-      ]
+      ],
+      "usageScore": 4,
+      "sourceNote": "104-106",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "intrinsic",
@@ -18730,15 +19196,16 @@
         "intrinsic motivation",
         "intrinsic to"
       ],
-      "sourceNote": "104-106",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "extrinsic",
           "pos": "adj.",
           "zh": "外在的;非本质的"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "104-106",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "invigilator",
@@ -18777,6 +19244,7 @@
           "zh": "监考"
         }
       ],
+      "usageScore": 4,
       "sourceNote": "104-106",
       "addedAt": "2026-07-24"
     },
@@ -18811,15 +19279,16 @@
         "irrevocable damage",
         "irrevocable letter of credit"
       ],
-      "sourceNote": "104-106",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "revoke",
           "pos": "v.",
           "zh": "撤销"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "104-106",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "laudable",
@@ -18852,8 +19321,6 @@
         "laudable goal",
         "laudable attempt"
       ],
-      "sourceNote": "104-106",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "laud",
@@ -18865,7 +19332,10 @@
           "pos": "adj.",
           "zh": "赞扬的"
         }
-      ]
+      ],
+      "usageScore": 5,
+      "sourceNote": "104-106",
+      "addedAt": "2026-07-24"
     },
     {
       "id": "perplexity",
@@ -18918,6 +19388,7 @@
           "zh": "令人困惑的"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "104-106",
       "addedAt": "2026-07-24"
     },
@@ -18952,9 +19423,10 @@
         "plaintive voice",
         "plaintive melody"
       ],
+      "relatedForms": [],
+      "usageScore": 3,
       "sourceNote": "104-106",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "slacken",
@@ -18995,6 +19467,7 @@
           "zh": "松弛的;不紧的"
         }
       ],
+      "usageScore": 5,
       "sourceNote": "104-106",
       "addedAt": "2026-07-24"
     },
@@ -19029,9 +19502,10 @@
         "take solace",
         "offer solace"
       ],
+      "relatedForms": [],
+      "usageScore": 5,
       "sourceNote": "104-106",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "subdue",
@@ -19065,9 +19539,10 @@
         "subdue one's anger",
         "subdued lighting"
       ],
+      "relatedForms": [],
+      "usageScore": 6,
       "sourceNote": "104-106",
-      "addedAt": "2026-07-24",
-      "relatedForms": []
+      "addedAt": "2026-07-24"
     },
     {
       "id": "vehement",
@@ -19101,15 +19576,16 @@
         "vehement denial",
         "vehement supporter"
       ],
-      "sourceNote": "104-106",
-      "addedAt": "2026-07-24",
       "relatedForms": [
         {
           "form": "vehemence",
           "pos": "n.",
           "zh": "强烈;激烈"
         }
-      ]
+      ],
+      "usageScore": 6,
+      "sourceNote": "104-106",
+      "addedAt": "2026-07-24"
     }
   ]
 }
