@@ -124,7 +124,13 @@ export function WordDetail() {
             <ol className="worddetail-meaning-list">
               {word.meanings.map((m, i) => (
                 <li className="worddetail-meaning" key={`${m.pos}-${i}`}>
-                  <p className="pos">{m.pos}</p>
+                  {/* 词性与义项占比同一行,呈现方式与复习卡背面保持一致 */}
+                  <p className="worddetail-meaning__head">
+                    <span className="pos">{m.pos}</span>
+                    {m.share !== undefined && (
+                      <span className="num faint worddetail-meaning__share">{m.share}%</span>
+                    )}
+                  </p>
                   <p className="worddetail-meaning__en" lang="en">
                     {m.en}
                   </p>

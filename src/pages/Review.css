@@ -98,6 +98,27 @@
   border-top: 1px solid var(--rule);
 }
 
+/* 音标与遇见概率同一行、两端对齐:音标是词头的附属信息,分数是关于这个词的
+   另一条事实,两者平级。窄屏放不下时让分数整块换行,不压音标。 */
+.review-back__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.review-usage {
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  flex: none;
+}
+
+.review-usage__value {
+  color: var(--text);
+  font-weight: 600;
+}
+
 .review-meanings {
   display: grid;
   gap: var(--sp-3);
@@ -121,6 +142,12 @@
 
 .review-meaning__idx {
   min-width: 1em;
+}
+
+/* 义项占比推到行尾,和词性拉开距离 —— 它不是词性的一部分,是这条释义的边注。 */
+.review-meaning__share {
+  margin-inline-start: auto;
+  font-size: var(--fs-sm);
 }
 
 .review-examples {

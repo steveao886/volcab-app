@@ -21,6 +21,18 @@
   border-bottom: 1px solid var(--rule);
 }
 
+/* 词性靠左、义项占比靠右,与复习卡背面 .review-meaning__head 同一套排布 */
+.worddetail-meaning__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+}
+
+.worddetail-meaning__share {
+  margin-inline-start: auto;
+  font-size: var(--fs-sm);
+}
+
 .worddetail-meaning__en {
   margin-top: var(--sp-1);
   line-height: var(--lh-body);

@@ -25,9 +25,20 @@ export function ReviewCardBack({ word }: { word: Word }) {
 
   return (
     <div className="review-back">
-      <p className="ipa" lang="en" aria-hidden="true">
-        {word.phonetic}
-      </p>
+      {/* 音标整体 aria-hidden(屏幕阅读器读 IPA 只会念出一串乱码),但遇见概率
+          必须读得出来 —— 所以它是同一行里的另一个元素,不能塞进 .ipa 里。 */}
+      <div className="review-back__head">
+        <p className="ipa" lang="en" aria-hidden="true">
+          {word.phonetic}
+        </p>
+        {word.usageScore !== undefined && (
+          <p className="review-usage">
+            <span className="faint">遇见概率</span>{' '}
+            <span className="num review-usage__value">{word.usageScore}</span>
+            <span className="faint num">/10</span>
+          </p>
+        )}
+      </div>
 
       <ol className="review-meanings">
         {word.meanings.map((m, i) => (
@@ -35,6 +46,12 @@ export function ReviewCardBack({ word }: { word: Word }) {
             <p className="review-meaning__head">
               {showIndex && <span className="review-meaning__idx num faint">{i + 1}</span>}
               <span className="pos">{m.pos}</span>
+              {/* 占比走 .faint,是边注不是主角:翻面后第一眼该落在英文释义上。
+                  数据层已按占比降序排好(见 scripts/validate-words.ts),这里
+                  不排序 —— 前面那个序号因此顺带就是常用度次序。 */}
+              {m.share !== undefined && (
+                <span className="num faint review-meaning__share">{m.share}%</span>
+              )}
             </p>
             {/* 故意选择:英文释义走全权重正文色,中文释义走 .muted 降一档。
                 词库定位在 C1/C2(circumlocution / grandiloquence 这个难度),
