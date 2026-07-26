@@ -9,12 +9,14 @@
         {
           "pos": "v.",
           "en": "to make up a story, excuse, or plan, often deceptively",
-          "zh": "编造,捏造(借口、故事、计划)"
+          "zh": "编造,捏造(借口、故事、计划)",
+          "share": 70
         },
         {
           "pos": "v.",
           "en": "to prepare a dish or drink by combining various ingredients",
-          "zh": "调制,烹制(食物、饮料)"
+          "zh": "调制,烹制(食物、饮料)",
+          "share": 30
         }
       ],
       "examples": [
@@ -54,12 +56,14 @@
         {
           "pos": "adj.",
           "en": "recovering from illness, injury, or medical treatment",
-          "zh": "康复期的,病后疗养的"
+          "zh": "康复期的,病后疗养的",
+          "share": 80
         },
         {
           "pos": "n.",
           "en": "a person who is recovering from illness",
-          "zh": "康复者,病后疗养者"
+          "zh": "康复者,病后疗养者",
+          "share": 20
         }
       ],
       "examples": [
@@ -166,14 +170,16 @@
       "phonetic": "/həˈræŋ/",
       "meanings": [
         {
-          "pos": "n.",
-          "en": "a lengthy, forceful, and often scolding speech",
-          "zh": "长篇的训斥;慷慨激昂的演说"
-        },
-        {
           "pos": "v.",
           "en": "to lecture or scold someone at length, forcefully",
-          "zh": "对...滔滔不绝地训斥/说教"
+          "zh": "对...滔滔不绝地训斥/说教",
+          "share": 60
+        },
+        {
+          "pos": "n.",
+          "en": "a lengthy, forceful, and often scolding speech",
+          "zh": "长篇的训斥;慷慨激昂的演说",
+          "share": 40
         }
       ],
       "examples": [
@@ -287,14 +293,16 @@
       "phonetic": "/maɪr/",
       "meanings": [
         {
-          "pos": "n.",
-          "en": "an area of deep mud or swamp; a difficult, entangling situation",
-          "zh": "泥沼;困境"
-        },
-        {
           "pos": "v.",
           "en": "to stick fast in mud, or become entangled in a difficult situation",
-          "zh": "(使)陷入泥沼/困境"
+          "zh": "(使)陷入泥沼/困境",
+          "share": 70
+        },
+        {
+          "pos": "n.",
+          "en": "an area of deep mud or swamp; a difficult, entangling situation",
+          "zh": "泥沼;困境",
+          "share": 30
         }
       ],
       "examples": [
@@ -436,12 +444,14 @@
         {
           "pos": "v.",
           "en": "to formally put a law, decree, or regulation into effect",
-          "zh": "颁布,实施(法令、法规)"
+          "zh": "颁布,实施(法令、法规)",
+          "share": 80
         },
         {
           "pos": "v.",
           "en": "to make an idea or belief widely known",
-          "zh": "传播,宣扬(理论、信念)"
+          "zh": "传播,宣扬(理论、信念)",
+          "share": 20
         }
       ],
       "examples": [
@@ -843,13 +853,15 @@
       "meanings": [
         {
           "pos": "adj.",
-          "en": "stern or severe in manner or expression",
-          "zh": "严峻的,冷峻的"
+          "en": "plain and simple; without comfort or luxury",
+          "zh": "朴素的,简朴的;不加装饰的",
+          "share": 60
         },
         {
           "pos": "adj.",
-          "en": "plain and simple; without comfort or luxury",
-          "zh": "朴素的,简朴的;不加装饰的"
+          "en": "stern or severe in manner or expression",
+          "zh": "严峻的,冷峻的",
+          "share": 40
         }
       ],
       "examples": [
@@ -892,12 +904,14 @@
         {
           "pos": "v.",
           "en": "to fit together neatly, or bring into close agreement",
-          "zh": "(使)吻合,紧密配合"
+          "zh": "(使)吻合,紧密配合",
+          "share": 90
         },
         {
           "pos": "n.",
           "en": "a joint formed by interlocking wedge-shaped pieces",
-          "zh": "鸠尾榫,燕尾榫"
+          "zh": "鸠尾榫,燕尾榫",
+          "share": 10
         }
       ],
       "examples": [
@@ -1013,12 +1027,14 @@
         {
           "pos": "adj.",
           "en": "convenient and practical, though not always fair or principled",
-          "zh": "权宜的,便利的(未必正当)"
+          "zh": "权宜的,便利的(未必正当)",
+          "share": 60
         },
         {
           "pos": "n.",
           "en": "a means to an end, especially one used in an emergency",
-          "zh": "权宜之计,应急手段"
+          "zh": "权宜之计,应急手段",
+          "share": 40
         }
       ],
       "examples": [
@@ -1065,12 +1081,14 @@
         {
           "pos": "v.",
           "en": "to complain persistently about something, often minor",
-          "zh": "抱怨,发牢骚"
+          "zh": "抱怨,发牢骚",
+          "share": 70
         },
         {
           "pos": "n.",
           "en": "a complaint",
-          "zh": "牢骚,抱怨"
+          "zh": "牢骚,抱怨",
+          "share": 30
         }
       ],
       "examples": [
@@ -1105,12 +1123,14 @@
         {
           "pos": "v.",
           "en": "to complain in a low, discontented, muttering way",
-          "zh": "嘀咕,抱怨"
+          "zh": "嘀咕,抱怨",
+          "share": 80
         },
         {
           "pos": "n.",
           "en": "a muttered complaint, or a low rumbling sound",
-          "zh": "牢骚;隆隆声"
+          "zh": "牢骚;隆隆声",
+          "share": 20
         }
       ],
       "examples": [
@@ -1349,12 +1369,14 @@
         {
           "pos": "v.",
           "en": "(of cancer) to spread from the original site to other parts of the body",
-          "zh": "(癌细胞)转移,扩散"
+          "zh": "(癌细胞)转移,扩散",
+          "share": 70
         },
         {
           "pos": "v.",
           "en": "to spread destructively and uncontrollably, figuratively",
-          "zh": "(问题、弊病等)恶性蔓延"
+          "zh": "(问题、弊病等)恶性蔓延",
+          "share": 30
         }
       ],
       "examples": [
@@ -1480,12 +1502,14 @@
         {
           "pos": "v.",
           "en": "(of a liquid or gas) to pass slowly through a porous material or filter",
-          "zh": "渗透;过滤;渗滤"
+          "zh": "渗透;过滤;渗滤",
+          "share": 50
         },
         {
           "pos": "v.",
           "en": "(of information or feelings) to spread gradually through a place or group of people",
-          "zh": "(消息、情绪等)逐渐扩散,渗透开来"
+          "zh": "(消息、情绪等)逐渐扩散,渗透开来",
+          "share": 50
         }
       ],
       "examples": [
@@ -1806,12 +1830,14 @@
         {
           "pos": "v.",
           "en": "to change direction suddenly",
-          "zh": "突然转向;改变方向"
+          "zh": "突然转向;改变方向",
+          "share": 60
         },
         {
           "pos": "v.",
           "en": "to abruptly change course, topic, or opinion",
-          "zh": "(话题、态度等)突然转变"
+          "zh": "(话题、态度等)突然转变",
+          "share": 40
         }
       ],
       "examples": [
@@ -1926,12 +1952,14 @@
         {
           "pos": "v.",
           "en": "to make an unpleasant feeling less intense",
-          "zh": "缓和,减轻(不快的情绪)"
+          "zh": "缓和,减轻(不快的情绪)",
+          "share": 80
         },
         {
           "pos": "v.",
           "en": "to satisfy a desire or appetite",
-          "zh": "满足(欲望、食欲)"
+          "zh": "满足(欲望、食欲)",
+          "share": 20
         }
       ],
       "examples": [
@@ -1967,12 +1995,14 @@
         {
           "pos": "adj.",
           "en": "showing or feeling no sympathy for others; insensitive",
-          "zh": "冷漠无情的"
+          "zh": "冷漠无情的",
+          "share": 90
         },
         {
           "pos": "adj.",
           "en": "(of skin) hardened and thickened",
-          "zh": "(皮肤)硬结的,长茧的"
+          "zh": "(皮肤)硬结的,长茧的",
+          "share": 10
         }
       ],
       "examples": [
@@ -2142,12 +2172,14 @@
         {
           "pos": "adj.",
           "en": "causing or likely to cause disagreement or controversy",
-          "zh": "引起争议的;有争议的"
+          "zh": "引起争议的;有争议的",
+          "share": 80
         },
         {
           "pos": "adj.",
           "en": "argumentative; given to arguing",
-          "zh": "好争论的;好斗的"
+          "zh": "好争论的;好斗的",
+          "share": 20
         }
       ],
       "examples": [
@@ -2319,12 +2351,14 @@
         {
           "pos": "v.",
           "en": "to be a sign or warning that something, especially something bad, will happen",
-          "zh": "预示;预兆(尤指不好的事)"
+          "zh": "预示;预兆(尤指不好的事)",
+          "share": 70
         },
         {
           "pos": "n.",
           "en": "an omen or portent",
-          "zh": "预兆;征兆"
+          "zh": "预兆;征兆",
+          "share": 30
         }
       ],
       "examples": [
@@ -2356,12 +2390,14 @@
         {
           "pos": "n.",
           "en": "skill or expertise in a particular activity or field",
-          "zh": "高超技能;卓越才能"
+          "zh": "高超技能;卓越才能",
+          "share": 80
         },
         {
           "pos": "n.",
           "en": "bravery, especially in battle",
-          "zh": "英勇;勇猛"
+          "zh": "英勇;勇猛",
+          "share": 20
         }
       ],
       "examples": [
@@ -2428,13 +2464,15 @@
       "meanings": [
         {
           "pos": "n.",
-          "en": "a thin decorative covering of fine material over a coarser one",
-          "zh": "(家具等表面的)饰面薄板"
+          "en": "an attractive but superficial appearance that conceals something less pleasant",
+          "zh": "表面的伪装;虚饰",
+          "share": 70
         },
         {
           "pos": "n.",
-          "en": "an attractive but superficial appearance that conceals something less pleasant",
-          "zh": "表面的伪装;虚饰"
+          "en": "a thin decorative covering of fine material over a coarser one",
+          "zh": "(家具等表面的)饰面薄板",
+          "share": 30
         }
       ],
       "examples": [
@@ -2465,13 +2503,15 @@
       "meanings": [
         {
           "pos": "v.",
-          "en": "to clear someone of blame or suspicion",
-          "zh": "证明(某人)无罪;为…洗清嫌疑"
+          "en": "to show that a belief, claim, or plan was justified, especially after doubt",
+          "zh": "证明…正确;证实",
+          "share": 60
         },
         {
           "pos": "v.",
-          "en": "to show that a belief, claim, or plan was justified, especially after doubt",
-          "zh": "证明…正确;证实"
+          "en": "to clear someone of blame or suspicion",
+          "zh": "证明(某人)无罪;为…洗清嫌疑",
+          "share": 40
         }
       ],
       "examples": [
@@ -2589,13 +2629,15 @@
       "meanings": [
         {
           "pos": "n.",
-          "en": "(nuclear engineering) the state of a reactor sustaining a continuous, self-supporting fission chain reaction",
-          "zh": "(核工程)临界状态;临界性"
+          "en": "the quality or degree of being crucial or of vital importance",
+          "zh": "危急性;重要程度",
+          "share": 80
         },
         {
           "pos": "n.",
-          "en": "the quality or degree of being crucial or of vital importance",
-          "zh": "危急性;重要程度"
+          "en": "(nuclear engineering) the state of a reactor sustaining a continuous, self-supporting fission chain reaction",
+          "zh": "(核工程)临界状态;临界性",
+          "share": 20
         }
       ],
       "examples": [
@@ -2708,12 +2750,14 @@
         {
           "pos": "adj.",
           "en": "pressing; requiring immediate attention or action",
-          "zh": "紧急的;急迫的"
+          "zh": "紧急的;急迫的",
+          "share": 90
         },
         {
           "pos": "adj.",
           "en": "demanding a great deal; exacting",
-          "zh": "苛求的;要求严格的"
+          "zh": "苛求的;要求严格的",
+          "share": 10
         }
       ],
       "examples": [
@@ -2794,12 +2838,14 @@
         {
           "pos": "n.",
           "en": "a hindrance or obstruction to doing something",
-          "zh": "障碍;妨碍"
+          "zh": "障碍;妨碍",
+          "share": 70
         },
         {
           "pos": "n.",
           "en": "a physical defect, especially one affecting speech",
-          "zh": "(尤指言语上的)缺陷,障碍"
+          "zh": "(尤指言语上的)缺陷,障碍",
+          "share": 30
         }
       ],
       "examples": [
@@ -2838,14 +2884,16 @@
       "phonetic": "/ɪnˈkʌmbənt/",
       "meanings": [
         {
-          "pos": "adj.",
-          "en": "(of a duty) necessary for someone as part of their job or role",
-          "zh": "(责任)义不容辞的,应尽的"
-        },
-        {
           "pos": "n.",
           "en": "the current holder of an official position, especially in politics",
-          "zh": "现任者;在职者"
+          "zh": "现任者;在职者",
+          "share": 70
+        },
+        {
+          "pos": "adj.",
+          "en": "(of a duty) necessary for someone as part of their job or role",
+          "zh": "(责任)义不容辞的,应尽的",
+          "share": 30
         }
       ],
       "examples": [
@@ -2954,13 +3002,15 @@
       "meanings": [
         {
           "pos": "adj.",
-          "en": "(of a metal or material) able to be hammered or pressed into shape without breaking",
-          "zh": "(金属等)有延展性的,可塑的"
+          "en": "(of a person) easily influenced or shaped",
+          "zh": "(性格)易受影响的,可塑造的",
+          "share": 60
         },
         {
           "pos": "adj.",
-          "en": "(of a person) easily influenced or shaped",
-          "zh": "(性格)易受影响的,可塑造的"
+          "en": "(of a metal or material) able to be hammered or pressed into shape without breaking",
+          "zh": "(金属等)有延展性的,可塑的",
+          "share": 40
         }
       ],
       "examples": [
@@ -3324,12 +3374,14 @@
         {
           "pos": "n.",
           "en": "(mechanics) the twisting of an object caused by an applied torque",
-          "zh": "(力学)扭转;扭力"
+          "zh": "(力学)扭转;扭力",
+          "share": 80
         },
         {
           "pos": "n.",
           "en": "(medicine) the twisting of a body part, such as an organ, on itself, often cutting off blood supply",
-          "zh": "(医学)扭转(如睾丸扭转)"
+          "zh": "(医学)扭转(如睾丸扭转)",
+          "share": 20
         }
       ],
       "examples": [
@@ -3366,12 +3418,14 @@
         {
           "pos": "v.",
           "en": "to have a long, complicated dispute or argument; also, to herd or manage with effort",
-          "zh": "激烈争论;争吵;(费力地)管理、驾驭"
+          "zh": "激烈争论;争吵;(费力地)管理、驾驭",
+          "share": 60
         },
         {
           "pos": "n.",
           "en": "a long and complicated dispute",
-          "zh": "激烈的争论;纠纷"
+          "zh": "激烈的争论;纠纷",
+          "share": 40
         }
       ],
       "examples": [
@@ -3413,12 +3467,14 @@
         {
           "pos": "adj.",
           "en": "(physics/engineering) relating to or measured by an angle, such as rotational speed or momentum",
-          "zh": "(物理/工程)角的;有关角度的"
+          "zh": "(物理/工程)角的;有关角度的",
+          "share": 50
         },
         {
           "pos": "adj.",
           "en": "(of a person's body or features) lean and bony, with sharp, well-defined lines",
-          "zh": "(人体)瘦削的;棱角分明的"
+          "zh": "(人体)瘦削的;棱角分明的",
+          "share": 50
         }
       ],
       "examples": [
@@ -3590,17 +3646,20 @@
         {
           "pos": "n.",
           "en": "sworn out-of-court testimony given as part of legal proceedings",
-          "zh": "(法律)证词;笔录"
+          "zh": "(法律)证词;笔录",
+          "share": 60
         },
         {
           "pos": "n.",
           "en": "the process of settling or being settled, especially sediment laid down by wind, water, or ice",
-          "zh": "沉积(作用)"
+          "zh": "沉积(作用)",
+          "share": 30
         },
         {
           "pos": "n.",
           "en": "the act of removing someone from power",
-          "zh": "罢黜;废黜"
+          "zh": "罢黜;废黜",
+          "share": 10
         }
       ],
       "examples": [
@@ -3717,12 +3776,14 @@
         {
           "pos": "v.",
           "en": "to show or suggest that someone is involved in a crime or wrongdoing",
-          "zh": "牵连;使卷入(罪行)"
+          "zh": "牵连;使卷入(罪行)",
+          "share": 80
         },
         {
           "pos": "v.",
           "en": "to suggest as a consequence or necessary conclusion; to imply",
-          "zh": "暗示;意味着"
+          "zh": "暗示;意味着",
+          "share": 20
         }
       ],
       "examples": [
@@ -3763,12 +3824,14 @@
         {
           "pos": "adj.",
           "en": "offensive or disgusting by accepted standards of morality and decency, especially sexually",
-          "zh": "淫秽的;猥亵的"
+          "zh": "淫秽的;猥亵的",
+          "share": 60
         },
         {
           "pos": "adj.",
           "en": "extremely or excessively large, especially in a way that is morally offensive",
-          "zh": "(数量、程度)骇人的;令人反感的"
+          "zh": "(数量、程度)骇人的;令人反感的",
+          "share": 40
         }
       ],
       "examples": [
@@ -3810,12 +3873,14 @@
         {
           "pos": "n.",
           "en": "an unintentional failure to notice or do something; a mistake",
-          "zh": "疏忽;失察"
+          "zh": "疏忽;失察",
+          "share": 50
         },
         {
           "pos": "n.",
           "en": "the action of overseeing or supervising something",
-          "zh": "监督;监管"
+          "zh": "监督;监管",
+          "share": 50
         }
       ],
       "examples": [
@@ -4062,12 +4127,14 @@
         {
           "pos": "v.",
           "en": "to agree with an opinion or decision",
-          "zh": "同意;赞同"
+          "zh": "同意;赞同",
+          "share": 90
         },
         {
           "pos": "v.",
           "en": "to happen at the same time; to coincide",
-          "zh": "同时发生;巧合"
+          "zh": "同时发生;巧合",
+          "share": 10
         }
       ],
       "examples": [
@@ -4284,12 +4351,14 @@
         {
           "pos": "v.",
           "en": "to give pleasure or satisfaction to someone; to please",
-          "zh": "使高兴;使满足"
+          "zh": "使高兴;使满足",
+          "share": 60
         },
         {
           "pos": "v.",
           "en": "to satisfy a desire, whim, or need, often indulgently",
-          "zh": "满足(欲望、需求)"
+          "zh": "满足(欲望、需求)",
+          "share": 40
         }
       ],
       "examples": [
@@ -4417,12 +4486,14 @@
         {
           "pos": "adj.",
           "en": "spending money or resources freely and recklessly; wastefully extravagant",
-          "zh": "挥霍的;浪费的"
+          "zh": "挥霍的;浪费的",
+          "share": 70
         },
         {
           "pos": "n.",
           "en": "a person who spends money recklessly, especially one who later returns after leaving",
-          "zh": "挥霍者;(尤指)浪子"
+          "zh": "挥霍者;(尤指)浪子",
+          "share": 30
         }
       ],
       "examples": [
@@ -4877,13 +4948,15 @@
       "meanings": [
         {
           "pos": "adj.",
-          "en": "feeling doubt or uncertainty about something",
-          "zh": "半信半疑的;犹豫不决的"
+          "en": "not clearly good, true, or reliable; of questionable quality",
+          "zh": "靠不住的;可疑的",
+          "share": 60
         },
         {
           "pos": "adj.",
-          "en": "not clearly good, true, or reliable; of questionable quality",
-          "zh": "靠不住的;可疑的"
+          "en": "feeling doubt or uncertainty about something",
+          "zh": "半信半疑的;犹豫不决的",
+          "share": 40
         }
       ],
       "examples": [
@@ -5049,12 +5122,14 @@
         {
           "pos": "n.",
           "en": "nearsightedness; difficulty seeing distant objects clearly",
-          "zh": "近视"
+          "zh": "近视",
+          "share": 60
         },
         {
           "pos": "n.",
           "en": "lack of foresight or imagination in thinking or planning",
-          "zh": "(喻)目光短浅;缺乏远见"
+          "zh": "(喻)目光短浅;缺乏远见",
+          "share": 40
         }
       ],
       "examples": [
@@ -5362,12 +5437,14 @@
         {
           "pos": "adj.",
           "en": "practicing strict self-discipline and abstaining from indulgence",
-          "zh": "苦行的;禁欲的"
+          "zh": "苦行的;禁欲的",
+          "share": 70
         },
         {
           "pos": "n.",
           "en": "a person who practices extreme self-discipline and abstention",
-          "zh": "苦行者;禁欲主义者"
+          "zh": "苦行者;禁欲主义者",
+          "share": 30
         }
       ],
       "examples": [
@@ -5671,12 +5748,14 @@
         {
           "pos": "n.",
           "en": "disagreement with an official or majority opinion",
-          "zh": "异议;不同意见"
+          "zh": "异议;不同意见",
+          "share": 70
         },
         {
           "pos": "v.",
           "en": "to hold or express opinions that differ from the official or majority view",
-          "zh": "持异议;不同意"
+          "zh": "持异议;不同意",
+          "share": 30
         }
       ],
       "examples": [
@@ -5765,12 +5844,14 @@
         {
           "pos": "adj.",
           "en": "devoutly religious",
-          "zh": "虔诚的"
+          "zh": "虔诚的",
+          "share": 80
         },
         {
           "pos": "adj.",
           "en": "making a show of virtue, often hypocritically",
-          "zh": "假装虔诚的;虚伪的"
+          "zh": "假装虔诚的;虚伪的",
+          "share": 20
         }
       ],
       "examples": [
@@ -6018,12 +6099,14 @@
         {
           "pos": "v.",
           "en": "to cheat someone out of money or property through deception",
-          "zh": "诈骗;骗取"
+          "zh": "诈骗;骗取",
+          "share": 60
         },
         {
           "pos": "n.",
           "en": "a fraudulent scheme",
-          "zh": "骗局"
+          "zh": "骗局",
+          "share": 40
         }
       ],
       "examples": [
@@ -6107,12 +6190,14 @@
         {
           "pos": "adj.",
           "en": "having a strong, unpleasant, bitter smell or taste",
-          "zh": "(气味、味道)刺鼻的;辛辣的"
+          "zh": "(气味、味道)刺鼻的;辛辣的",
+          "share": 90
         },
         {
           "pos": "adj.",
           "en": "(of speech or manner) bitter and harsh",
-          "zh": "(言辞)尖刻的"
+          "zh": "(言辞)尖刻的",
+          "share": 10
         }
       ],
       "examples": [
@@ -6239,12 +6324,14 @@
         {
           "pos": "n.",
           "en": "a person who believes it is impossible to know whether God exists",
-          "zh": "不可知论者"
+          "zh": "不可知论者",
+          "share": 60
         },
         {
           "pos": "adj.",
           "en": "(especially in technology) not specific to or dependent on one particular platform or system; neutral",
-          "zh": "(技术上)中立的;不依赖特定平台的"
+          "zh": "(技术上)中立的;不依赖特定平台的",
+          "share": 40
         }
       ],
       "examples": [
@@ -6363,12 +6450,14 @@
         {
           "pos": "n.",
           "en": "a desirable or useful feature of a building or place, especially a pleasant or comfortable one (often plural)",
-          "zh": "设施;便利设施"
+          "zh": "设施;便利设施",
+          "share": 90
         },
         {
           "pos": "n.",
           "en": "pleasantness or agreeableness, especially in a person's manner or a situation",
-          "zh": "宜人之处;礼节,殷勤"
+          "zh": "宜人之处;礼节,殷勤",
+          "share": 10
         }
       ],
       "examples": [
@@ -6645,12 +6734,14 @@
         {
           "pos": "adj.",
           "en": "skillful and clever, especially in a subtle or creative way",
-          "zh": "巧妙的,精巧的,有技巧的"
+          "zh": "巧妙的,精巧的,有技巧的",
+          "share": 60
         },
         {
           "pos": "adj.",
           "en": "cunning or deceitful; skilled at achieving one's aims through indirect means",
-          "zh": "狡猾的,诡诈的"
+          "zh": "狡猾的,诡诈的",
+          "share": 40
         }
       ],
       "examples": [
@@ -6694,12 +6785,14 @@
         {
           "pos": "n.",
           "en": "clever trickery, especially used to deceive",
-          "zh": "诡计,骗术,巧计"
+          "zh": "诡计,骗术,巧计",
+          "share": 70
         },
         {
           "pos": "n.",
           "en": "ingenious skill or clever craftsmanship",
-          "zh": "技巧,机巧,匠心"
+          "zh": "技巧,机巧,匠心",
+          "share": 30
         }
       ],
       "examples": [
@@ -6736,12 +6829,14 @@
         {
           "pos": "adj.",
           "en": "free from deceit or cunning; natural and unaffected",
-          "zh": "天真率直的,不做作的,朴实的"
+          "zh": "天真率直的,不做作的,朴实的",
+          "share": 80
         },
         {
           "pos": "adj.",
           "en": "lacking skill or sophistication; crude",
-          "zh": "笨拙的,不精巧的"
+          "zh": "笨拙的,不精巧的",
+          "share": 20
         }
       ],
       "examples": [
@@ -6832,12 +6927,14 @@
         {
           "pos": "adj.",
           "en": "hostile and aggressive",
-          "zh": "好斗的,挑衅的,寻衅的"
+          "zh": "好斗的,挑衅的,寻衅的",
+          "share": 80
         },
         {
           "pos": "n.",
           "en": "a nation or person engaged in war or conflict",
-          "zh": "交战国;交战方"
+          "zh": "交战国;交战方",
+          "share": 20
         }
       ],
       "examples": [
@@ -7009,12 +7106,14 @@
         {
           "pos": "adj.",
           "en": "making great demands on someone's skill, attention, or effort; rigorous",
-          "zh": "严格要求的,要求严苛的(工作、任务等)"
+          "zh": "严格要求的,要求严苛的(工作、任务等)",
+          "share": 70
         },
         {
           "pos": "adj.",
           "en": "(of a person) very demanding and hard to satisfy",
-          "zh": "苛求的,严厉的(指人)"
+          "zh": "苛求的,严厉的(指人)",
+          "share": 30
         }
       ],
       "examples": [
@@ -7094,12 +7193,14 @@
         {
           "pos": "v.",
           "en": "to shorten a text or work while keeping its main content",
-          "zh": "删节,节略(书籍、文章等)"
+          "zh": "删节,节略(书籍、文章等)",
+          "share": 70
         },
         {
           "pos": "v.",
           "en": "to reduce or restrict (rights, freedoms, or powers)",
-          "zh": "削减,限制(权利、自由等)"
+          "zh": "削减,限制(权利、自由等)",
+          "share": 30
         }
       ],
       "examples": [
@@ -7587,12 +7688,14 @@
         {
           "pos": "adj.",
           "en": "showing clear thought and sharp understanding; direct and effective",
-          "zh": "敏锐的,一针见血的,深刻的"
+          "zh": "敏锐的,一针见血的,深刻的",
+          "share": 90
         },
         {
           "pos": "adj.",
           "en": "sharp or cutting, in a literal sense (of blades, blows, or features)",
-          "zh": "锋利的,尖锐的(字面义,较少用)"
+          "zh": "锋利的,尖锐的(字面义,较少用)",
+          "share": 10
         }
       ],
       "examples": [
@@ -7678,12 +7781,14 @@
         {
           "pos": "v.",
           "en": "to stop up, close, or block (a passage or opening)",
-          "zh": "堵塞,阻塞(通道、开口)"
+          "zh": "堵塞,阻塞(通道、开口)",
+          "share": 80
         },
         {
           "pos": "v.",
           "en": "(of teeth) to meet or come together properly when the jaws close",
-          "zh": "(牙齿)咬合(牙科用语)"
+          "zh": "(牙齿)咬合(牙科用语)",
+          "share": 20
         }
       ],
       "examples": [
@@ -7812,12 +7917,14 @@
         {
           "pos": "v.",
           "en": "to revive someone from unconsciousness or apparent death, especially through CPR",
-          "zh": "使苏醒,使复苏(尤指心肺复苏)"
+          "zh": "使苏醒,使复苏(尤指心肺复苏)",
+          "share": 70
         },
         {
           "pos": "v.",
           "en": "to revive or restore vigor to something that is failing or inactive",
-          "zh": "使复兴,使恢复活力(计划、品牌、经济等)"
+          "zh": "使复兴,使恢复活力(计划、品牌、经济等)",
+          "share": 30
         }
       ],
       "examples": [
@@ -8267,12 +8374,14 @@
         {
           "pos": "adj.",
           "en": "(of a disease or species) regularly found in a particular area or group, often hard to eradicate",
-          "zh": "(疾病、物种等)某地区特有的;地方性的,难以根除的"
+          "zh": "(疾病、物种等)某地区特有的;地方性的,难以根除的",
+          "share": 60
         },
         {
           "pos": "adj.",
           "en": "(of a problem) persistently and widely present within a particular group or system",
-          "zh": "(问题)普遍存在的;根深蒂固的"
+          "zh": "(问题)普遍存在的;根深蒂固的",
+          "share": 40
         }
       ],
       "examples": [
@@ -8605,12 +8714,14 @@
         {
           "pos": "v.",
           "en": "(typesetting) to start a line of text further from the margin than the rest of the paragraph",
-          "zh": "(排版)缩进;使缩排"
+          "zh": "(排版)缩进;使缩排",
+          "share": 90
         },
         {
           "pos": "n.",
           "en": "(chiefly British/business) an official order for goods, especially placed with a foreign supplier",
-          "zh": "(贸易/采购)订货单;订购单"
+          "zh": "(贸易/采购)订货单;订购单",
+          "share": 10
         }
       ],
       "examples": [
@@ -9392,12 +9503,14 @@
         {
           "pos": "v.",
           "en": "to make physically hard, or to make emotionally hardened and unfeeling through repeated exposure",
-          "zh": "使变硬;使冷酷无情"
+          "zh": "使变硬;使冷酷无情",
+          "share": 70
         },
         {
           "pos": "adj.",
           "en": "physically hardened, or emotionally hardened and unfeeling",
-          "zh": "(身体或情感上)变硬的;麻木不仁的"
+          "zh": "(身体或情感上)变硬的;麻木不仁的",
+          "share": 30
         }
       ],
       "examples": [
@@ -9610,12 +9723,14 @@
         {
           "pos": "n.",
           "en": "a natural liking, sympathy, or attraction for someone or something",
-          "zh": "天然的喜爱;亲近感;吸引力"
+          "zh": "天然的喜爱;亲近感;吸引力",
+          "share": 60
         },
         {
           "pos": "n.",
           "en": "a close similarity, structural resemblance, or connection between things",
-          "zh": "(事物间的)相似性;关联;(化学)亲和力"
+          "zh": "(事物间的)相似性;关联;(化学)亲和力",
+          "share": 40
         }
       ],
       "examples": [
@@ -9652,12 +9767,14 @@
         {
           "pos": "n.",
           "en": "an open and deliberate insult or act of disrespect",
-          "zh": "公然的侮辱;冒犯"
+          "zh": "公然的侮辱;冒犯",
+          "share": 80
         },
         {
           "pos": "v.",
           "en": "to insult or offend someone openly and deliberately",
-          "zh": "公然侮辱;冒犯"
+          "zh": "公然侮辱;冒犯",
+          "share": 20
         }
       ],
       "examples": [
@@ -9693,12 +9810,14 @@
         {
           "pos": "v.",
           "en": "to charm or enchant someone, often in a deceptive or misleading way",
-          "zh": "(常以欺骗手段)迷惑;哄骗;吸引"
+          "zh": "(常以欺骗手段)迷惑;哄骗;吸引",
+          "share": 90
         },
         {
           "pos": "v.",
           "en": "to make time pass pleasantly; to help while away time",
-          "zh": "消磨(时间)"
+          "zh": "消磨(时间)",
+          "share": 10
         }
       ],
       "examples": [
@@ -9930,12 +10049,14 @@
         {
           "pos": "n.",
           "en": "faithfulness or loyalty to a person, cause, or commitment",
-          "zh": "忠诚;忠实"
+          "zh": "忠诚;忠实",
+          "share": 50
         },
         {
           "pos": "n.",
           "en": "the degree of exactness with which something, especially sound or data, is reproduced",
-          "zh": "(音频、数据等的)保真度;精确度"
+          "zh": "(音频、数据等的)保真度;精确度",
+          "share": 50
         }
       ],
       "examples": [
@@ -10006,13 +10127,15 @@
       "meanings": [
         {
           "pos": "adj.",
-          "en": "easily irritated and prone to complaining or causing trouble; bad-tempered",
-          "zh": "易怒的;吵闹的"
+          "en": "(of a group) difficult to control and prone to disagreement",
+          "zh": "(团体)难以驾驭的;纷争不断的",
+          "share": 60
         },
         {
           "pos": "adj.",
-          "en": "(of a group) difficult to control and prone to disagreement",
-          "zh": "(团体)难以驾驭的;纷争不断的"
+          "en": "easily irritated and prone to complaining or causing trouble; bad-tempered",
+          "zh": "易怒的;吵闹的",
+          "share": 40
         }
       ],
       "examples": [
@@ -10321,13 +10444,15 @@
       "meanings": [
         {
           "pos": "adj.",
-          "en": "stubbornly resistant to authority or control; obstinate",
-          "zh": "顽固的;不服管教的"
+          "en": "(of a disease or condition) not responding to treatment",
+          "zh": "(疾病)难治的;顽固性的",
+          "share": 70
         },
         {
           "pos": "adj.",
-          "en": "(of a disease or condition) not responding to treatment",
-          "zh": "(疾病)难治的;顽固性的"
+          "en": "stubbornly resistant to authority or control; obstinate",
+          "zh": "顽固的;不服管教的",
+          "share": 30
         }
       ],
       "examples": [
@@ -10444,12 +10569,14 @@
         {
           "pos": "adj.",
           "en": "(of a person) pleasant and easy to get along with because of shared tastes or interests",
-          "zh": "意气相投的;友善随和的(区别于 genial‘泛指和蔼可亲’)"
+          "zh": "意气相投的;友善随和的(区别于 genial‘泛指和蔼可亲’)",
+          "share": 60
         },
         {
           "pos": "adj.",
           "en": "(of an environment) suited or agreeable to one's nature or needs",
-          "zh": "(环境)适宜的;相宜的"
+          "zh": "(环境)适宜的;相宜的",
+          "share": 40
         }
       ],
       "examples": [
@@ -10924,12 +11051,14 @@
         {
           "pos": "adj.",
           "en": "moving backward, or reverting to an earlier and typically worse state",
-          "zh": "倒退的;退步的"
+          "zh": "倒退的;退步的",
+          "share": 50
         },
         {
           "pos": "adj.",
           "en": "(astronomy) appearing to move backward relative to other bodies",
-          "zh": "(天文)逆行的"
+          "zh": "(天文)逆行的",
+          "share": 50
         }
       ],
       "examples": [
@@ -11122,12 +11251,14 @@
         {
           "pos": "v.",
           "en": "to describe, portray, or explain something precisely and clearly",
-          "zh": "精确描述;阐明"
+          "zh": "精确描述;阐明",
+          "share": 70
         },
         {
           "pos": "v.",
           "en": "to indicate the exact position of a border or boundary",
-          "zh": "标出(边界);勾勒轮廓"
+          "zh": "标出(边界);勾勒轮廓",
+          "share": 30
         }
       ],
       "examples": [
@@ -11281,12 +11412,14 @@
         {
           "pos": "adj.",
           "en": "(medicine) chosen by the patient rather than urgently necessary",
-          "zh": "(医学)择期的;非急诊的"
+          "zh": "(医学)择期的;非急诊的",
+          "share": 50
         },
         {
           "pos": "n.",
           "en": "(education) an optional course that a student may choose to take",
-          "zh": "(教育)选修课"
+          "zh": "(教育)选修课",
+          "share": 50
         }
       ],
       "examples": [
@@ -11379,12 +11512,14 @@
         {
           "pos": "n.",
           "en": "a person who regularly finds it difficult to fall or stay asleep",
-          "zh": "失眠症患者"
+          "zh": "失眠症患者",
+          "share": 80
         },
         {
           "pos": "adj.",
           "en": "having chronic difficulty sleeping",
-          "zh": "患失眠症的;失眠的"
+          "zh": "患失眠症的;失眠的",
+          "share": 20
         }
       ],
       "examples": [
@@ -11498,13 +11633,15 @@
       "meanings": [
         {
           "pos": "n.",
-          "en": "(grammar) a word or phrase expressing sudden emotion, used as an exclamation",
-          "zh": "(语法)感叹词"
+          "en": "an abrupt remark inserted into a conversation",
+          "zh": "插话;突然的评论",
+          "share": 60
         },
         {
           "pos": "n.",
-          "en": "an abrupt remark inserted into a conversation",
-          "zh": "插话;突然的评论"
+          "en": "(grammar) a word or phrase expressing sudden emotion, used as an exclamation",
+          "zh": "(语法)感叹词",
+          "share": 40
         }
       ],
       "examples": [
@@ -11540,13 +11677,15 @@
       "meanings": [
         {
           "pos": "v.",
-          "en": "to insert a remark or passage into a text or conversation, sometimes altering its original meaning",
-          "zh": "(在文字中)插入,窜改"
+          "en": "to estimate or insert a value between two known data points",
+          "zh": "(数学/计算机)插值,内插",
+          "share": 80
         },
         {
           "pos": "v.",
-          "en": "to estimate or insert a value between two known data points",
-          "zh": "(数学/计算机)插值,内插"
+          "en": "to insert a remark or passage into a text or conversation, sometimes altering its original meaning",
+          "zh": "(在文字中)插入,窜改",
+          "share": 20
         }
       ],
       "examples": [
@@ -11651,12 +11790,14 @@
         {
           "pos": "n.",
           "en": "(medicine) a substance that promotes bowel movements, used to relieve constipation",
-          "zh": "(医学)泻药"
+          "zh": "(医学)泻药",
+          "share": 90
         },
         {
           "pos": "adj.",
           "en": "having the effect of loosening the bowels",
-          "zh": "(医学)通便的;有泻下作用的"
+          "zh": "(医学)通便的;有泻下作用的",
+          "share": 10
         }
       ],
       "examples": [
@@ -12005,12 +12146,14 @@
         {
           "pos": "v.",
           "en": "to escape from or avoid someone or something, often cleverly",
-          "zh": "躲避;逃避"
+          "zh": "躲避;逃避",
+          "share": 60
         },
         {
           "pos": "v.",
           "en": "(of a fact, name, or idea) to fail to be remembered, understood, or achieved by someone",
-          "zh": "(想不起来;未能理解或达成)"
+          "zh": "(想不起来;未能理解或达成)",
+          "share": 40
         }
       ],
       "examples": [
@@ -12124,12 +12267,14 @@
         {
           "pos": "adj.",
           "en": "expressed clearly, easy to understand",
-          "zh": "明白易懂的;清晰的"
+          "zh": "明白易懂的;清晰的",
+          "share": 50
         },
         {
           "pos": "adj.",
           "en": "able to think clearly, especially during illness or in a lucid dream",
-          "zh": "神志清醒的;(梦境)清醒的"
+          "zh": "神志清醒的;(梦境)清醒的",
+          "share": 50
         }
       ],
       "examples": [
@@ -12247,12 +12392,14 @@
         {
           "pos": "v.",
           "en": "to say harmful, often untrue things about someone; to slander",
-          "zh": "诽谤;中伤"
+          "zh": "诽谤;中伤",
+          "share": 70
         },
         {
           "pos": "adj.",
           "en": "having an evil influence; harmful, especially in a subtle or dangerous way",
-          "zh": "有害的;恶性的"
+          "zh": "有害的;恶性的",
+          "share": 30
         }
       ],
       "examples": [
@@ -12334,12 +12481,14 @@
         {
           "pos": "n.",
           "en": "a professional soldier hired to fight for a foreign army or private group",
-          "zh": "雇佣兵"
+          "zh": "雇佣兵",
+          "share": 70
         },
         {
           "pos": "adj.",
           "en": "motivated solely by a desire for money or personal gain",
-          "zh": "唯利是图的;惟利是图的"
+          "zh": "唯利是图的;惟利是图的",
+          "share": 30
         }
       ],
       "examples": [
@@ -12415,12 +12564,14 @@
         {
           "pos": "v.",
           "en": "to criticize someone sharply, especially from a position of authority",
-          "zh": "严厉斥责;谴责"
+          "zh": "严厉斥责;谴责",
+          "share": 50
         },
         {
           "pos": "n.",
           "en": "a sharp expression of disapproval or criticism",
-          "zh": "斥责;谴责(的话)"
+          "zh": "斥责;谴责(的话)",
+          "share": 50
         }
       ],
       "examples": [
@@ -12455,12 +12606,14 @@
         {
           "pos": "v.",
           "en": "to formally express disapproval of someone's actions, especially officially",
-          "zh": "正式谴责;训斥"
+          "zh": "正式谴责;训斥",
+          "share": 60
         },
         {
           "pos": "n.",
           "en": "a formal expression of disapproval, especially an official one",
-          "zh": "正式的谴责;训斥"
+          "zh": "正式的谴责;训斥",
+          "share": 40
         }
       ],
       "examples": [
@@ -12993,14 +13146,16 @@
       "phonetic": "/maɪm/",
       "meanings": [
         {
-          "pos": "v.",
-          "en": "to act out something using only gestures and facial expressions, without speaking",
-          "zh": "用手势/表情表演;做手势示意"
-        },
-        {
           "pos": "n.",
           "en": "a performer who acts using only gesture and movement, without words",
-          "zh": "哑剧演员;默剧表演者"
+          "zh": "哑剧演员;默剧表演者",
+          "share": 60
+        },
+        {
+          "pos": "v.",
+          "en": "to act out something using only gestures and facial expressions, without speaking",
+          "zh": "用手势/表情表演;做手势示意",
+          "share": 40
         }
       ],
       "examples": [
@@ -13108,13 +13263,15 @@
       "meanings": [
         {
           "pos": "n.",
-          "en": "(chiefly British) a theatrical entertainment performed at Christmas, based on a fairy tale, with music, comedy, and audience participation",
-          "zh": "(英国)圣诞哑剧;童话歌舞剧"
+          "en": "expressive gestures and body movements used instead of words to communicate",
+          "zh": "哑剧式表演;夸张的手势表演",
+          "share": 60
         },
         {
           "pos": "n.",
-          "en": "expressive gestures and body movements used instead of words to communicate",
-          "zh": "哑剧式表演;夸张的手势表演"
+          "en": "(chiefly British) a theatrical entertainment performed at Christmas, based on a fairy tale, with music, comedy, and audience participation",
+          "zh": "(英国)圣诞哑剧;童话歌舞剧",
+          "share": 40
         }
       ],
       "examples": [
@@ -13809,12 +13966,14 @@
         {
           "pos": "n.",
           "en": "a person who spends money in an extravagant, wasteful way",
-          "zh": "挥霍者;败家子"
+          "zh": "挥霍者;败家子",
+          "share": 70
         },
         {
           "pos": "adj.",
           "en": "extravagant or wasteful with money",
-          "zh": "挥霍无度的"
+          "zh": "挥霍无度的",
+          "share": 30
         }
       ],
       "examples": [
@@ -13850,12 +14009,14 @@
         {
           "pos": "v.",
           "en": "to remove someone from a position of power, especially a ruler",
-          "zh": "罢黜;废黜(统治者)"
+          "zh": "罢黜;废黜(统治者)",
+          "share": 60
         },
         {
           "pos": "v.",
           "en": "to testify formally, especially under oath in a legal proceeding",
-          "zh": "(在宣誓后)正式作证"
+          "zh": "(在宣誓后)正式作证",
+          "share": 40
         }
       ],
       "examples": [
@@ -15115,12 +15276,14 @@
         {
           "pos": "v.",
           "en": "to treat someone with hostility or cruelty, especially because of their race, religion, or beliefs",
-          "zh": "迫害;欺压(尤指因种族、宗教或信仰)"
+          "zh": "迫害;欺压(尤指因种族、宗教或信仰)",
+          "share": 90
         },
         {
           "pos": "v.",
           "en": "to harass or annoy someone persistently",
-          "zh": "不断骚扰;纠缠"
+          "zh": "不断骚扰;纠缠",
+          "share": 10
         }
       ],
       "examples": [
@@ -15201,12 +15364,14 @@
         {
           "pos": "n.",
           "en": "an attempt to make a false appearance seem true; a false show",
-          "zh": "假装;伪装"
+          "zh": "假装;伪装",
+          "share": 60
         },
         {
           "pos": "n.",
           "en": "a claim, especially a false or unjustified one, to some quality or accomplishment",
-          "zh": "(尤指虚假的)借口;自称"
+          "zh": "(尤指虚假的)借口;自称",
+          "share": 40
         }
       ],
       "examples": [
@@ -15295,12 +15460,14 @@
         {
           "pos": "adj.",
           "en": "(of an animal) bred from parents of the same breed, with no crossbreeding",
-          "zh": "纯种的"
+          "zh": "纯种的",
+          "share": 80
         },
         {
           "pos": "n.",
           "en": "an animal of purebred lineage",
-          "zh": "纯种动物"
+          "zh": "纯种动物",
+          "share": 20
         }
       ],
       "examples": [
@@ -15455,12 +15622,14 @@
         {
           "pos": "v.",
           "en": "to fail to resist pressure, temptation, or another negative force; to give in",
-          "zh": "屈服于;抵挡不住(压力、诱惑等)"
+          "zh": "屈服于;抵挡不住(压力、诱惑等)",
+          "share": 70
         },
         {
           "pos": "v.",
           "en": "to die as a result of an illness or injury",
-          "zh": "(因病或伤而)死亡"
+          "zh": "(因病或伤而)死亡",
+          "share": 30
         }
       ],
       "examples": [
@@ -15496,12 +15665,14 @@
         {
           "pos": "v.",
           "en": "to spoil, impair, or weaken the effectiveness or quality of something",
-          "zh": "损害;削弱(效力、品质)"
+          "zh": "损害;削弱(效力、品质)",
+          "share": 70
         },
         {
           "pos": "v.",
           "en": "to make a legal document or agreement invalid",
-          "zh": "使(法律文件、协议)无效"
+          "zh": "使(法律文件、协议)无效",
+          "share": 30
         }
       ],
       "examples": [
@@ -15626,12 +15797,14 @@
         {
           "pos": "adj.",
           "en": "done or said without previous thought or preparation",
-          "zh": "即兴的;临时的"
+          "zh": "即兴的;临时的",
+          "share": 90
         },
         {
           "pos": "adv.",
           "en": "without preparation; spontaneously",
-          "zh": "即兴地;临时地"
+          "zh": "即兴地;临时地",
+          "share": 10
         }
       ],
       "examples": [
@@ -15786,12 +15959,14 @@
         {
           "pos": "adj.",
           "en": "many and various; of many different kinds",
-          "zh": "多种多样的;多方面的"
+          "zh": "多种多样的;多方面的",
+          "share": 50
         },
         {
           "pos": "n.",
           "en": "a pipe or chamber with several openings that channels fluid or gas, especially in a vehicle's engine",
-          "zh": "(机械)歧管;集管"
+          "zh": "(机械)歧管;集管",
+          "share": 50
         }
       ],
       "examples": [
@@ -15862,12 +16037,14 @@
         {
           "pos": "adj.",
           "en": "relating to a system as a whole, rather than to particular parts; widespread",
-          "zh": "系统性的;全局性的"
+          "zh": "系统性的;全局性的",
+          "share": 80
         },
         {
           "pos": "adj.",
           "en": "(medicine) affecting the entire body rather than a single organ or part",
-          "zh": "(医学)全身性的"
+          "zh": "(医学)全身性的",
+          "share": 20
         }
       ],
       "examples": [
@@ -16094,12 +16271,14 @@
         {
           "pos": "adj.",
           "en": "inspiring fear, respect, or admiration through being powerful or impressive",
-          "zh": "令人敬畏的;强大的"
+          "zh": "令人敬畏的;强大的",
+          "share": 60
         },
         {
           "pos": "adj.",
           "en": "very difficult to deal with, overcome, or accomplish",
-          "zh": "难以应付的;艰巨的"
+          "zh": "难以应付的;艰巨的",
+          "share": 40
         }
       ],
       "examples": [
@@ -16618,12 +16797,14 @@
         {
           "pos": "n.",
           "en": "a loud, confused noise or a vehement public outcry",
-          "zh": "喧闹声;(公众)强烈抗议,呼声"
+          "zh": "喧闹声;(公众)强烈抗议,呼声",
+          "share": 50
         },
         {
           "pos": "v.",
           "en": "to demand or complain noisily and insistently",
-          "zh": "喧嚷;大声要求"
+          "zh": "喧嚷;大声要求",
+          "share": 50
         }
       ],
       "examples": [
@@ -17309,12 +17490,14 @@
         {
           "pos": "n.",
           "en": "(medicine/microbiology) the process of eliminating all microorganisms from equipment or a surface",
-          "zh": "(医学/微生物学)灭菌;消毒"
+          "zh": "(医学/微生物学)灭菌;消毒",
+          "share": 70
         },
         {
           "pos": "n.",
           "en": "(medicine) a surgical procedure that permanently prevents someone or an animal from reproducing",
-          "zh": "(医学)绝育(手术)"
+          "zh": "(医学)绝育(手术)",
+          "share": 30
         }
       ],
       "examples": [
@@ -18082,14 +18265,16 @@
       "phonetic": "/rɪˈlæps/",
       "meanings": [
         {
-          "pos": "v.",
-          "en": "to fall back into a previous illness or bad habit after improving",
-          "zh": "(病情)复发;故态复萌"
-        },
-        {
           "pos": "n.",
           "en": "an instance of falling back into illness or a bad habit",
-          "zh": "复发;旧病复发"
+          "zh": "复发;旧病复发",
+          "share": 60
+        },
+        {
+          "pos": "v.",
+          "en": "to fall back into a previous illness or bad habit after improving",
+          "zh": "(病情)复发;故态复萌",
+          "share": 40
         }
       ],
       "examples": [
@@ -18304,12 +18489,14 @@
         {
           "pos": "adj.",
           "en": "refraining from sex, or sexually pure and modest",
-          "zh": "贞洁的;禁欲的"
+          "zh": "贞洁的;禁欲的",
+          "share": 80
         },
         {
           "pos": "adj.",
           "en": "(of style) simple and free from excessive ornamentation",
-          "zh": "朴素的;简洁的"
+          "zh": "朴素的;简洁的",
+          "share": 20
         }
       ],
       "examples": [
@@ -18683,13 +18870,15 @@
       "meanings": [
         {
           "pos": "n.",
-          "en": "the art of effective or persuasive speaking or writing",
-          "zh": "修辞;修辞学"
+          "en": "language intended to persuade or impress but lacking sincerity or substance",
+          "zh": "华而不实的言辞;空话",
+          "share": 70
         },
         {
           "pos": "n.",
-          "en": "language intended to persuade or impress but lacking sincerity or substance",
-          "zh": "华而不实的言辞;空话"
+          "en": "the art of effective or persuasive speaking or writing",
+          "zh": "修辞;修辞学",
+          "share": 30
         }
       ],
       "examples": [
@@ -19345,12 +19534,14 @@
         {
           "pos": "n.",
           "en": "a state of confusion or bewilderment caused by something complicated or hard to understand",
-          "zh": "困惑;茫然"
+          "zh": "困惑;茫然",
+          "share": 70
         },
         {
           "pos": "n.",
           "en": "(machine learning/NLP) a metric measuring how well a probability model predicts a sample, with lower values indicating better predictions",
-          "zh": "(机器学习/自然语言处理)困惑度(评估语言模型的指标)"
+          "zh": "(机器学习/自然语言处理)困惑度(评估语言模型的指标)",
+          "share": 30
         }
       ],
       "examples": [
