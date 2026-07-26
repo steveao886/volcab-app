@@ -1,6 +1,13 @@
 import type { Progress, Word } from '../types'
 
-export type QuizType = 'word2meaning' | 'meaning2word' | 'spelling'
+export type QuizType =
+  | 'word2meaning' | 'meaning2word' | 'spelling'
+  | 'clozeExample' | 'clozeCollocation' | 'synonymHint'
+
+export const QUIZ_TYPES: readonly QuizType[] = [
+  'word2meaning', 'meaning2word', 'spelling',
+  'clozeExample', 'clozeCollocation', 'synonymHint',
+]
 
 export interface QuizQuestion {
   type: QuizType
@@ -12,11 +19,63 @@ export interface QuizQuestion {
    *  ——调用方（渲染层)不该靠正则从 prompt 里"抠"音标出来,那是在为一个
    *  拼接细节维护一份没人签字的隐性契约。 */
   phonetic?: string
+  /** 仅 synonymHint 题携带:提示词是近义还是反义,界面必须标明,
+   *  否则用户无从判断该选意思相同的还是相反的。 */
+  hintKind?: 'synonym' | 'antonym'
 }
 
 const meaningLabel = (w: Word) => {
   const m = w.meanings[0]
   return `${m.pos} ${m.zh}`
+}
+
+const BLANK = '___'
+
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+/**
+ * 把例句里的词头挖成空格。
+ *
+ * 实测 476 词中 86% 的例句含词头原形,14% 只含变形(concocted / concocting),
+ * 0% 完全定位不到 —— 所以必须同时处理变形,只做全词匹配会漏掉 68 个词。
+ * 做法:取词干(去掉尾部至多 3 个字母)后允许跟任意字母后缀。
+ *
+ * 同句多次出现全部挖掉:留下任何一处都会直接泄题。
+ * 定位不到返回 null —— 宁可跳过这条例句,也不出一道没有空格的挖空题。
+ */
+export function clozeExample(sentence: string, headword: string): string | null {
+  const h = headword.trim().toLowerCase()
+  const exact = new RegExp(`\\b${escapeRe(h)}\\b`, 'gi')
+  if (exact.test(sentence)) return sentence.replace(exact, BLANK)
+
+  // 变形:词干 + 任意字母后缀。短词不截断,避免 "act" 命中 "action" 一类误伤。
+  const stem = h.length > 5 ? h.slice(0, h.length - 3) : h
+  const inflected = new RegExp(`\\b${escapeRe(stem)}[a-z]*\\b`, 'gi')
+  if (inflected.test(sentence)) return sentence.replace(inflected, BLANK)
+
+  return null
+}
+
+/** 搭配挖空。规则与 clozeExample 相同,单列一个函数是因为搭配是短语、语义不同。 */
+export function clozeCollocation(collocation: string, headword: string): string | null {
+  return clozeExample(collocation, headword)
+}
+
+/**
+ * 被一个以上词条共享的近义/反义词(全部小写)。
+ *
+ * 实测 1597 个同义词里有 228 个出现在多个词条(overbearing、decree、flexibility……)。
+ * 拿它们当提示会出现「两个选项都对」,用户会判定测验有缺陷 —— 所以出题时必须排除。
+ */
+export function sharedSynonyms(words: Word[]): Set<string> {
+  const count = new Map<string, number>()
+  for (const w of words) {
+    for (const s of [...w.synonyms, ...w.antonyms]) {
+      const k = s.trim().toLowerCase()
+      count.set(k, (count.get(k) ?? 0) + 1)
+    }
+  }
+  return new Set([...count.entries()].filter(([, c]) => c > 1).map(([k]) => k))
 }
 
 export function shuffle<T>(arr: T[], rng: () => number): T[] {
@@ -68,7 +127,10 @@ export function generateQuiz(
   const pool = learned.length >= 4 ? learned : words
   if (pool.length < 4) return []
 
-  const types: QuizType[] = ['word2meaning', 'meaning2word', 'spelling']
+  // 共享词集合对全词库只算一次 —— 放进循环会变成 O(n²)
+  const sharedSynonymsCache = sharedSynonyms(words)
+
+  const types = QUIZ_TYPES
   const candidates = shuffle(pool, rng)
   const questions: QuizQuestion[] = []
 
@@ -82,6 +144,43 @@ export function generateQuiz(
         prompt: meaningLabel(w),
         options: [], answer: w.headword,
         phonetic: w.phonetic,
+      })
+      continue
+    }
+
+    const headwordLabel = (x: Word) => x.headword
+
+    if (type === 'clozeExample' || type === 'clozeCollocation') {
+      const sources = type === 'clozeExample' ? w.examples : w.collocations
+      let prompt: string | null = null
+      for (const s of sources) {
+        prompt = clozeExample(s, w.headword)
+        if (prompt !== null) break
+      }
+      if (prompt === null) continue // 这条词的例句/搭配都定位不到词头,换下一个候选词
+      const distractors = pickDistractorLabels(w, w.headword, headwordLabel, pool, words, rng)
+      if (!distractors) continue
+      questions.push({
+        type, wordId: w.id, prompt,
+        options: shuffle([w.headword, ...distractors], rng),
+        answer: w.headword,
+      })
+      continue
+    }
+
+    if (type === 'synonymHint') {
+      const shared = sharedSynonymsCache
+      const syn = w.synonyms.find(s => !shared.has(s.trim().toLowerCase()))
+      const ant = w.antonyms.find(s => !shared.has(s.trim().toLowerCase()))
+      const hint = syn ?? ant
+      if (hint === undefined) continue // 该词的近反义词全被共享,换下一个候选词
+      const distractors = pickDistractorLabels(w, w.headword, headwordLabel, pool, words, rng)
+      if (!distractors) continue
+      questions.push({
+        type, wordId: w.id, prompt: hint,
+        options: shuffle([w.headword, ...distractors], rng),
+        answer: w.headword,
+        hintKind: syn !== undefined ? 'synonym' : 'antonym',
       })
       continue
     }

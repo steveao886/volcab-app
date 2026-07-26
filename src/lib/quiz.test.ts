@@ -1,11 +1,18 @@
 import { describe, expect, it } from 'vitest'
-import { generateQuiz } from './quiz'
+import { QUIZ_TYPES, clozeCollocation, clozeExample, generateQuiz, sharedSynonyms } from './quiz'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
 
+// 字段覆盖六种题型所需的全部原料:examples/collocations 含词头原形(挖空题要能
+// 定位到它),synonyms/antonyms 以 id 为前缀天然互不相同、也不与其他 fixture 词共享
+// (否则会被 sharedSynonyms 排除,synonymHint 就出不来)。
 const word = (id: string, zh: string): Word => ({
   id, headword: id, phonetic: `/${id}/`, meanings: [{ pos: 'v.', en: `def of ${id}`, zh }],
-  examples: ['a', 'b'], synonyms: [], antonyms: [], collocations: [], relatedForms: [], sourceNote: 't', addedAt: '2026-07-01',
+  examples: [`We ${id} things daily.`, `They ${id} it again.`],
+  synonyms: [`${id}-syn1`, `${id}-syn2`, `${id}-syn3`],
+  antonyms: [`${id}-ant1`, `${id}-ant2`],
+  collocations: [`${id} a plan`, `${id} the rules`],
+  relatedForms: [], sourceNote: 't', addedAt: '2026-07-01',
 })
 const words = [word('alpha', '甲'), word('bravo', '乙'), word('carol', '丙'), word('delta', '丁'), word('echo', '戊'), word('fox', '己')]
 
@@ -28,7 +35,10 @@ describe('generateQuiz', () => {
     const qs = generateQuiz(words, studied(), 6, seq())
     expect(qs).toHaveLength(6)
     expect(new Set(qs.map(q => q.wordId)).size).toBe(6)
-    expect(new Set(qs.map(q => q.type)).size).toBe(3)
+    // 题型确定性轮换,一轮内均衡分布。这里不再硬编码题型总数 ——
+    // 断言的是「轮换」这个契约本身,新增题型时不必再改这一行。
+    const types = qs.map(q => q.type)
+    expect(new Set(types).size).toBe(Math.min(qs.length, QUIZ_TYPES.length))
   })
   it('选择题 4 个选项且含正确答案,选项不重复', () => {
     const qs = generateQuiz(words, studied(), 6, seq())
@@ -88,5 +98,93 @@ describe('generateQuiz', () => {
         expect(q.options.filter(o => o === q.answer).length).toBe(1)
       }
     }
+  })
+})
+
+describe('clozeExample', () => {
+  it('挖掉原形出现的词头', () => {
+    expect(clozeExample('She concoct a story quickly.', 'concoct'))
+      .toBe('She ___ a story quickly.')
+  })
+  it('挖掉变形出现的词头', () => {
+    expect(clozeExample('She concocted an elaborate excuse.', 'concoct'))
+      .toBe('She ___ an elaborate excuse.')
+  })
+  it('大小写不敏感', () => {
+    expect(clozeExample('Concocting excuses is his talent.', 'concoct'))
+      .toBe('___ excuses is his talent.')
+  })
+  it('同句多次出现时全部挖掉,不留下泄题的那一处', () => {
+    expect(clozeExample('He concocted it, then concocted more.', 'concoct'))
+      .toBe('He ___ it, then ___ more.')
+  })
+  it('多词词头按整体挖', () => {
+    expect(clozeExample('They agreed on an ad hoc basis.', 'ad hoc'))
+      .toBe('They agreed on an ___ basis.')
+  })
+  it('定位不到就返回 null,由调用方跳过该例句', () => {
+    expect(clozeExample('Nothing relevant here.', 'concoct')).toBeNull()
+  })
+})
+
+describe('clozeCollocation', () => {
+  it('挖掉搭配里的词头', () => {
+    expect(clozeCollocation('abrogate a treaty', 'abrogate')).toBe('___ a treaty')
+  })
+  it('词头在中间也能挖', () => {
+    expect(clozeCollocation('formally abrogate an accord', 'abrogate'))
+      .toBe('formally ___ an accord')
+  })
+  it('变形同样处理', () => {
+    expect(clozeCollocation('abrogated the agreement', 'abrogate'))
+      .toBe('___ the agreement')
+  })
+  it('定位不到返回 null', () => {
+    expect(clozeCollocation('a binding accord', 'abrogate')).toBeNull()
+  })
+})
+
+describe('sharedSynonyms', () => {
+  it('找出被多个词条共享的同义/反义词(小写归一)', () => {
+    const ws = [
+      word('alpha', '甲'), word('bravo', '乙'),
+    ]
+    ws[0].synonyms = ['Common', 'onlyA']
+    ws[1].synonyms = ['common', 'onlyB']
+    const shared = sharedSynonyms(ws)
+    expect(shared.has('common')).toBe(true)
+    expect(shared.has('onlya')).toBe(false)
+  })
+  it('反义词与同义词一起统计', () => {
+    const ws = [word('alpha', '甲'), word('bravo', '乙')]
+    ws[0].synonyms = ['x']
+    ws[1].antonyms = ['X']
+    expect(sharedSynonyms(ws).has('x')).toBe(true)
+  })
+})
+
+describe('新题型', () => {
+  it('例句挖空:提示含空格且不含答案词,四个词头选一', () => {
+    const qs = generateQuiz(words, studied(), 12, seq())
+    const q = qs.find(x => x.type === 'clozeExample')
+    if (q === undefined) return // 该轮未轮到,不算失败
+    expect(q.prompt).toContain('___')
+    expect(q.prompt.toLowerCase()).not.toContain(q.answer.toLowerCase())
+    expect(q.options).toHaveLength(4)
+    expect(q.options).toContain(q.answer)
+  })
+  it('搭配填空:同样不泄题', () => {
+    const qs = generateQuiz(words, studied(), 12, seq())
+    const q = qs.find(x => x.type === 'clozeCollocation')
+    if (q === undefined) return
+    expect(q.prompt).toContain('___')
+    expect(q.prompt.toLowerCase()).not.toContain(q.answer.toLowerCase())
+  })
+  it('近义/反义提示:标明种类,且提示词不是共享词', () => {
+    const qs = generateQuiz(words, studied(), 12, seq())
+    const q = qs.find(x => x.type === 'synonymHint')
+    if (q === undefined) return
+    expect(q.hintKind === 'synonym' || q.hintKind === 'antonym').toBe(true)
+    expect(sharedSynonyms(words).has(q.prompt.toLowerCase())).toBe(false)
   })
 })
