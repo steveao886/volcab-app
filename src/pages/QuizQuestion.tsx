@@ -4,6 +4,8 @@ import { Button } from '../components/Button'
 import { Field } from '../components/Field'
 import { TextInput } from '../components/TextInput'
 import type { QuizQuestion, QuizType } from '../lib/quiz'
+import { isSoundEnabled, playQuizResult } from '../lib/sound'
+import { useApp } from '../state/store'
 
 /** 每种题型的作答说明。 */
 const TYPE_LABEL: Record<QuizType, string> = {
@@ -93,6 +95,8 @@ function AnswerFeedback({ correct, onNext, nextLabel, children }: AnswerFeedback
 }
 
 function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestionViewProps) {
+  const { progress } = useApp()
+  const soundEnabled = isSoundEnabled(progress.settings)
   const [chosen, setChosen] = useState<string | null>(null)
   // 防止同一渲染帧内的连续点击(如误触双击)在状态还没落地前判两次分
   const answeredRef = useRef(false)
@@ -108,8 +112,11 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
   const handleChoose = (opt: string) => {
     if (answeredRef.current) return
     answeredRef.current = true
+    const correct = opt === question.answer
+    // 在点击的调用栈内同步播放,iOS 要求 AudioContext 解锁发生在用户手势内。
+    playQuizResult(correct, soundEnabled)
     setChosen(opt)
-    onAnswered(opt === question.answer)
+    onAnswered(correct)
   }
 
   return (
@@ -166,6 +173,8 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
 }
 
 function SpellingQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestionViewProps) {
+  const { progress } = useApp()
+  const soundEnabled = isSoundEnabled(progress.settings)
   const [value, setValue] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [correct, setCorrect] = useState(false)
@@ -176,6 +185,8 @@ function SpellingQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuest
     if (v === '' || answeredRef.current) return
     answeredRef.current = true
     const isCorrect = v.toLowerCase() === question.answer.trim().toLowerCase()
+    // 在提交的调用栈内同步播放,iOS 要求 AudioContext 解锁发生在用户手势内。
+    playQuizResult(isCorrect, soundEnabled)
     setCorrect(isCorrect)
     setSubmitted(true)
     onAnswered(isCorrect)
