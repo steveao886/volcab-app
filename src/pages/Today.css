@@ -38,3 +38,62 @@
   display: grid;
   gap: var(--sp-3);
 }
+
+/* --- 「最近」块:统计页入口 -------------------------------------------------
+   整块是 .card.card--interactive 包的 <Link to="/stats">(components.css)。
+   柱状图纯手写:固定高度的行,每天一根柱子按 reviewed/max 定高度;
+   朱砂(--accent)是 tokens.css 明确许可的进度类用途。 */
+
+.today-recent {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.today-recent__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.today-recent__title {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.today-recent__more {
+  font-size: var(--fs-xs);
+}
+
+/* 7 栏等分;每栏内部再用 flex 把柱子推到底部对齐,柱高由行内 style 决定。 */
+.today-recent__bars {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-2);
+  height: 56px;
+}
+
+.today-recent__bar-col {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.today-recent__bar {
+  width: 100%;
+  border-radius: var(--r-xs) var(--r-xs) 0 0;
+  background: var(--accent);
+  transition: height var(--dur-3) var(--ease);
+}
+
+.today-recent__accuracy {
+  font-size: var(--fs-sm);
+}
+
+.today-recent__empty {
+  font-size: var(--fs-sm);
+  text-align: center;
+  padding-block: var(--sp-3);
+}
