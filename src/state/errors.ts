@@ -27,10 +27,12 @@ export const NETWORK = '网络请求失败,请检查网络后重试。'
 export const ownerSwitched = (previousOwner: string) =>
   `本机上 ${previousOwner} 还有没同步完的改动,换账号登录后已被丢弃。`
 
-export function logoutDiscarded(words: number, hadProgress: boolean): string {
+export function logoutDiscarded(words: number, hadProgress: boolean, staging = 0): string {
   const parts: string[] = []
   if (hadProgress) parts.push('未同步的学习进度')
   if (words > 0) parts.push(`${words} 条未同步的词库改动`)
+  // 暂存区的收词同样是用户敲进去的东西,退出时一并清掉就必须一并说出来
+  if (staging > 0) parts.push(`${staging} 个待补全的生词`)
   return `退出前还有${parts.join('、')},已随本机数据一并清除。`
 }
 

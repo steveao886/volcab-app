@@ -219,6 +219,15 @@ export function WordDetail() {
               <p className="num stat__value">{entry?.lapses ?? 0}</p>
               <p className="stat__label">失误次数</p>
             </div>
+            {/* 词频评分是**可选**字段:App 内手动添加的词不会有分。缺省时整格不渲染 ——
+                显示 0 或 — 会被读成「这个词你基本碰不到」,那是个假结论。
+                值写成「8 / 10」而不是光一个 8,免得离开标签就没法解读。 */}
+            {word.usageScore !== undefined && (
+              <div className="stat worddetail-stat--wide">
+                <p className="num stat__value">{word.usageScore} / 10</p>
+                <p className="stat__label">当代遇见概率</p>
+              </div>
+            )}
           </Card>
 
           <p className="worddetail-meta faint">

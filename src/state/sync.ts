@@ -1,6 +1,6 @@
 import { mergeProgress } from '../lib/merge'
 import { storage } from '../lib/storage'
-import type { Progress, ProgressEntry, Word, WordsFile } from '../types'
+import type { Progress, ProgressEntry, StagingFile, StagingItem, Word, WordsFile } from '../types'
 import { BACKUP_HINT, errText, GIVE_UP } from './errors'
 
 /**
@@ -15,6 +15,12 @@ import { BACKUP_HINT, errText, GIVE_UP } from './errors'
 
 export const WORDS_PATH = 'words.json'
 export const PROGRESS_PATH = 'progress.json'
+/**
+ * 生词暂存区。**单独一个文件**而不是塞进上面两个:放进 words.json,半成品词条
+ * 通不过 schema 校验还会直接进复习队列;放进 progress.json,它会卷进那套为学习
+ * 进度设计的按词合并逻辑。单独文件 = 独立的冲突域(设计文档 §6.2)。
+ */
+export const STAGING_PATH = 'staging.json'
 
 export interface SyncClient {
   getFile(path: string): Promise<{ content: string; sha: string } | null>
@@ -86,6 +92,19 @@ export function isProgress(v: unknown): v is Progress {
     && isRecord(v.dailyStats) && Object.values(v.dailyStats).every(isDailyStat)
 }
 
+const DATE = /^\d{4}-\d{2}-\d{2}$/
+
+/**
+ * 暂存条目只有两个字段,两个都查死。
+ * `headword` 不能是空白串 —— 一条空条目在页面上是个看不见却占位的幽灵,
+ * 并且归一化后键为空,会和下一条空条目撞在一起。
+ */
+export function isStagingItem(v: unknown): v is StagingItem {
+  return isRecord(v)
+    && typeof v.headword === 'string' && v.headword.trim().length > 0
+    && typeof v.addedAt === 'string' && DATE.test(v.addedAt)
+}
+
 export function isWordsOp(v: unknown): v is WordsOp {
   if (!isRecord(v)) return false
   if (v.kind === 'delete') return isStrings(v.ids)
@@ -100,6 +119,9 @@ export const serializeProgress = (p: Progress): string => `${JSON.stringify(p, n
 
 export const serializeWords = (words: Word[]): string =>
   `${JSON.stringify({ version: 1, words } satisfies WordsFile, null, 2)}\n`
+
+export const serializeStaging = (items: StagingItem[]): string =>
+  `${JSON.stringify({ version: 1, items } satisfies StagingFile, null, 2)}\n`
 
 function parseJson(text: string): unknown {
   try { return JSON.parse(text) } catch { throw new Error(BACKUP_HINT) }
@@ -118,6 +140,62 @@ export function parseWords(text: string): Word[] {
   if (!isRecord(raw) || raw.version !== 1 || !Array.isArray(raw.words)) throw new Error(BACKUP_HINT)
   if (!raw.words.every(isWord)) throw new Error(BACKUP_HINT)
   return raw.words
+}
+
+/** 解析远端 staging.json;形状不对就抛错,由调用方决定是拒绝覆盖还是当作没有 */
+export function parseStaging(text: string): StagingItem[] {
+  const raw = parseJson(text)
+  if (!isRecord(raw) || raw.version !== 1 || !Array.isArray(raw.items)) throw new Error(BACKUP_HINT)
+  if (!raw.items.every(isStagingItem)) throw new Error(BACKUP_HINT)
+  return raw.items
+}
+
+// --- 暂存区合并 -----------------------------------------------------------
+
+/** 去首尾空白,内部连续空白折成一个空格。保留大小写,给人看的就是这一份。 */
+export const cleanHeadword = (s: string): string => s.trim().replace(/\s+/g, ' ')
+
+/** 去重与合并的键:在 cleanHeadword 之上再转小写。「Ad  Hoc」与「ad hoc」是同一个词。 */
+export const normalizeHeadword = (s: string): string => cleanHeadword(s).toLowerCase()
+
+/**
+ * 暂存区合并 = 按归一化词头取并集,同词保留较早的 `addedAt`。
+ *
+ * 比 progress 那套按词比 `lastReviewedAt` 简单得多,因为这里只有「追加」这一种
+ * 动作(移除发生在会话里,由人推一次新文件),所以并集天然幂等 —— 同一条重放
+ * 多少次结果都一样,不需要待推送队列去区分「这次到底改了什么」。
+ *
+ * 「保留较早的」取整条,不只取日期:日期是 YYYY-MM-DD,字典序即时间序。
+ * 内容与合并方向无关(a∪b 和 b∪a 得到同一组条目),只有排列顺序按首次出现。
+ */
+export function mergeStaging(a: StagingItem[], b: StagingItem[]): StagingItem[] {
+  const byKey = new Map<string, StagingItem>()
+  for (const it of [...a, ...b]) {
+    const key = normalizeHeadword(it.headword)
+    if (key === '') continue        // 空条目不入列(远端已被 parseStaging 挡掉,这里防本地构造)
+    const prev = byKey.get(key)
+    if (!prev || it.addedAt < prev.addedAt) byKey.set(key, it)   // Map.set 不改已有键的位置
+  }
+  return [...byKey.values()]
+}
+
+/**
+ * 读远端 staging.json,**任何失败都当作「远端还没有这个文件」**。
+ *
+ * 三个同步文件里它最不重要:词库和进度是用户的真实资产,暂存区只是几个还没
+ * 补全的单词。所以缺失、解析失败、甚至读取报错,都不能让异常冒到登录/启动
+ * 路径上去 —— 那条路径上一个抛错就是「登不进去」或「progress 不同步」。
+ * 推送路径不用这个函数,那里必须区分「没有」和「坏了」(见 pushStaging)。
+ */
+export async function loadStaging(
+  client: SyncClient,
+): Promise<{ items: StagingItem[]; sha: string } | null> {
+  try {
+    const f = await client.getFile(STAGING_PATH)
+    return f ? { items: parseStaging(f.content), sha: f.sha } : null
+  } catch {
+    return null
+  }
 }
 
 // --- 词库改动重放 ---------------------------------------------------------
@@ -149,6 +227,12 @@ export function reconcileProgress(current: Progress, pushed: Progress): Progress
 
 export function reconcileWords(current: Word[], pushed: Word[], stillPending: WordsOp[]): Word[] {
   return pushed === current ? current : applyWordOps(pushed, stillPending)
+}
+
+export function reconcileStaging(
+  current: StagingItem[], pushed: StagingItem[], stillPending: StagingItem[],
+): StagingItem[] {
+  return pushed === current ? current : mergeStaging(pushed, stillPending)
 }
 
 // --- 推送 -----------------------------------------------------------------
@@ -213,6 +297,41 @@ export async function pushWords(
     if (second === 'conflict') return { ok: false, error: GIVE_UP }
     if (alive()) storage.set('wordsSha', second.sha)
     return { ok: true, sha: second.sha, data: replayed }
+  } catch (e) {
+    return { ok: false, error: errText(e) }
+  }
+}
+
+/**
+ * 推 staging.json。时机与冲突策略照抄 words.json(变更即推、不防抖;冲突就重新
+ * 拉远端、把本次收的词合上去、再推一次,仍冲突就放弃留到下次)。
+ *
+ * 与 pushWords 的唯一区别是「重放」换成了并集合并 —— 没有删除动作要重放,
+ * 所以 `pending` 直接就是要并进去的条目。
+ *
+ * 注意这里**不**吞解析错误:远端文件坏掉时必须中止,而不是拿本地那份盖过去。
+ * 启动/登录路径上的宽容由 loadStaging 负责,两条路径要的东西正好相反。
+ */
+export async function pushStaging(
+  client: SyncClient, local: StagingItem[], pending: StagingItem[], opts: PushOptions = {},
+): Promise<PushOutcome<StagingItem[]>> {
+  const alive = opts.alive ?? (() => true)
+  try {
+    const sha = storage.get<string>('stagingSha') ?? undefined
+    const first = await client.putFile(STAGING_PATH, serializeStaging(local), 'update staging', sha)
+    if (first !== 'conflict') {
+      if (alive()) storage.set('stagingSha', first.sha)
+      return { ok: true, sha: first.sha, data: local }
+    }
+
+    const remote = await client.getFile(STAGING_PATH)
+    const merged = remote ? mergeStaging(parseStaging(remote.content), pending) : local
+    const second = await client.putFile(
+      STAGING_PATH, serializeStaging(merged), 'update staging (merged)', remote?.sha,
+    )
+    if (second === 'conflict') return { ok: false, error: GIVE_UP }
+    if (alive()) storage.set('stagingSha', second.sha)
+    return { ok: true, sha: second.sha, data: merged }
   } catch (e) {
     return { ok: false, error: errText(e) }
   }

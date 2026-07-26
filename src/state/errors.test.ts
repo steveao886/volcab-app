@@ -72,4 +72,15 @@ describe('logoutDiscarded', () => {
   ])('(%i, %s) 只提到真的有的那部分', (ops, hadProgress, fragment) => {
     expect(logoutDiscarded(ops, hadProgress)).toContain(fragment)
   })
+
+  // 暂存区的收词也是用户敲进去的,退出时清掉却不吭声就是静默丢数据
+  it('待补全的生词一并计入告知', () => {
+    expect(logoutDiscarded(0, false, 3)).toContain('3 个待补全的生词')
+    expect(logoutDiscarded(2, true, 3)).toContain('未同步的学习进度、2 条未同步的词库改动、3 个待补全的生词')
+  })
+
+  it('没有待补全的词就不提它', () => {
+    expect(logoutDiscarded(2, false)).not.toContain('待补全')
+    expect(logoutDiscarded(2, false, 0)).not.toContain('待补全')
+  })
 })

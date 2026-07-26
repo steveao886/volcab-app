@@ -15,6 +15,8 @@ export interface Word {
   relatedForms: RelatedForm[]  // 同根变形,无则空数组
   sourceNote: string  // 来源笔记标题,手动添加为 "manual"
   addedAt: string     // YYYY-MM-DD
+  /** 当代遇见概率 1–10:在真实语境里碰到这个词的可能性。缺省表示尚未评分。 */
+  usageScore?: number
 }
 
 export interface WordsFile { version: 1; words: Word[] }
@@ -50,3 +52,17 @@ export const emptyProgress = (): Progress => ({
 })
 
 export const emptyStat = (): DailyStat => ({ reviewed: 0, newLearned: 0, correct: 0, quizTaken: 0 })
+
+/**
+ * 生词暂存区(staging)的一条待补全记录。
+ *
+ * **只有两个字段**,这是刻意的:捕获必须保持「一个输入框」的成本,备注、来源、
+ * 词典预查一律不做,其余字段全部由会话中的 AI 事后补全(设计文档 §6.2)。
+ */
+export interface StagingItem {
+  headword: string   // 用户输入的原样写法(去首尾空白、内部空白折成一个空格)
+  addedAt: string    // YYYY-MM-DD
+}
+
+/** volcab-data 里的第三个文件 staging.json */
+export interface StagingFile { version: 1; items: StagingItem[] }

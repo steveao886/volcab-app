@@ -7,6 +7,9 @@ const KEYS = {
   progressSha: 'volcab.progressSha',
   dirty: 'volcab.dirty',
   wordOps: 'volcab.wordOps',   // 尚未确认推上远端的词库增删,进程重启后还要重放
+  staging: 'volcab.staging',       // 生词暂存区(staging.json)的本机副本
+  stagingSha: 'volcab.stagingSha',
+  stagingOps: 'volcab.stagingOps', // 尚未确认推上远端的收词,与 wordOps 同一套机制
 } as const
 
 export type StorageKey = keyof typeof KEYS

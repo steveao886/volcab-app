@@ -6,7 +6,7 @@ import { Page } from '../components/Page'
 import { TextInput } from '../components/TextInput'
 import { todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
-import { pendingOps } from '../state/session'
+import { pendingOps, pendingStaging } from '../state/session'
 import { useApp } from '../state/store'
 import './Settings.css'
 
@@ -34,7 +34,9 @@ function clampNewPerDay(raw: string, fallback: number): number {
  * 同一个函数 —— 这里的「提醒」和退出后的「告知」必须算出同一个数字,否则就是在撒谎。
  */
 function hasUnsyncedChanges(): boolean {
-  return storage.get<boolean>('dirty') === true || pendingOps().length > 0
+  return storage.get<boolean>('dirty') === true
+    || pendingOps().length > 0
+    || pendingStaging().length > 0   // 待补全的生词同理:logout() 也数它,两处必须一致
 }
 
 /** Task 21 实现:每日新词数、账号信息与退出登录、导出备份、App 版本号。 */

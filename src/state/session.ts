@@ -1,7 +1,7 @@
 import { storage } from '../lib/storage'
 import { emptyProgress } from '../types'
-import type { Progress, Word } from '../types'
-import { isProgress, isWord, isWordsOp } from './sync'
+import type { Progress, StagingItem, Word } from '../types'
+import { isProgress, isStagingItem, isWord, isWordsOp, mergeStaging } from './sync'
 import type { WordsOp } from './sync'
 
 /**
@@ -16,6 +16,8 @@ export interface BootSnapshot {
   owner: string | null
   words: Word[]
   progress: Progress
+  /** 生词暂存区。**不参与 phase 判定** —— 见 bootSnapshot 里的说明 */
+  staging: StagingItem[]
 }
 
 /** 缓存形状不对就当没有,免得一份坏缓存把整个 App 带崩 */
@@ -27,6 +29,12 @@ export function cachedProgress(): Progress | null {
 export function cachedWords(): Word[] | null {
   const w = storage.get<unknown>('words')
   return Array.isArray(w) && w.length > 0 && w.every(isWord) ? w : null
+}
+
+/** 同上;暂存区可以是空数组(合法的「没攒任何词」),所以不像 cachedWords 那样要求非空 */
+export function cachedStaging(): StagingItem[] | null {
+  const s = storage.get<unknown>('staging')
+  return Array.isArray(s) && s.every(isStagingItem) ? s : null
 }
 
 /**
@@ -53,9 +61,37 @@ export function appendPendingOp(op: WordsOp): WordsOp[] {
   return next
 }
 
+/**
+ * 尚未推上远端的收词。与 wordOps 同一套机制、同样的理由(推送失败后关掉页面,
+ * 下次启动会拿远端覆盖本地缓存),只是队列元素就是条目本身 —— 暂存区只有
+ * 「追加」一种动作,并集合并即重放,不需要额外的动作描述。
+ */
+export function pendingStaging(): StagingItem[] {
+  const raw = storage.get<unknown>('stagingOps')
+  if (!Array.isArray(raw)) return []
+  return raw.filter(isStagingItem)
+}
+
+export function setPendingStaging(items: StagingItem[]): void {
+  if (items.length === 0) storage.remove('stagingOps')
+  else storage.set('stagingOps', items)
+}
+
+/** 并集追加:同一个词按下两次「加入待补全」只会排队一条 */
+export function appendPendingStaging(it: StagingItem): StagingItem[] {
+  const next = mergeStaging(pendingStaging(), [it])
+  setPendingStaging(next)
+  return next
+}
+
 /** 首帧状态:有完整缓存就直接可用,远端放到后台拉 */
 export function bootSnapshot(isDev: boolean): BootSnapshot {
-  const idle: BootSnapshot = { phase: 'login', owner: null, words: [], progress: emptyProgress() }
+  // 暂存区不参与 phase 判定:缓存缺失或损坏只表示「暂存区是空的」,
+  // 绝不能因此把一个词库和进度都齐全的本机拖回 boot 态去等网络。
+  const staging = cachedStaging() ?? []
+  const idle: BootSnapshot = {
+    phase: 'login', owner: null, words: [], progress: emptyProgress(), staging,
+  }
   const token = storage.get<string>('token')
   const owner = storage.get<string>('owner')
 
@@ -65,7 +101,7 @@ export function bootSnapshot(isDev: boolean): BootSnapshot {
 
   const words = cachedWords()
   const progress = cachedProgress()
-  if (words && progress) return { phase: 'ready', owner, words, progress }
+  if (words && progress) return { phase: 'ready', owner, words, progress, staging }
   return { ...idle, phase: 'boot', owner }
 }
 
@@ -74,6 +110,8 @@ export interface CarryOver {
   progress: Progress | null
   /** 需要在远端副本上重放的词库改动 */
   ops: WordsOp[]
+  /** 需要并进远端暂存区的收词 */
+  staging: StagingItem[]
   /** 有欠账但属于别的账号,已经丢弃 —— 必须告诉用户,不能静默 */
   discardedOwner: string | null
 }
@@ -89,10 +127,11 @@ export function carryOverFor(owner: string): CarryOver {
   const previous = storage.get<string>('owner')
   const dirty = storage.get<boolean>('dirty') === true
   const ops = pendingOps()
+  const staging = pendingStaging()
   const progress = dirty ? cachedProgress() : null
 
-  if (previous === null || previous === owner) return { progress, ops, discardedOwner: null }
+  if (previous === null || previous === owner) return { progress, ops, staging, discardedOwner: null }
 
-  const hadWork = progress !== null || ops.length > 0
-  return { progress: null, ops: [], discardedOwner: hadWork ? previous : null }
+  const hadWork = progress !== null || ops.length > 0 || staging.length > 0
+  return { progress: null, ops: [], staging: [], discardedOwner: hadWork ? previous : null }
 }

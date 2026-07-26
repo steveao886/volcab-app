@@ -16,6 +16,33 @@
   gap: var(--sp-4);
 }
 
+/* --- 快速收词(v1.1 E:生词暂存区)---------------------------------------
+   结构与下面的「查词典」行完全一样(输入框 + 一个按钮),刻意如此:
+   两块在视觉上是同一种操作,区别只在按钮的措辞与主次。 */
+
+.addword-capture {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.addword-capture__status {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.addword-capture__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+/* section-head 自带的下边距是给非 grid 的 Card 用的;这两个容器本身有 gap,
+   留着就成了双倍间距 */
+.addword-capture > .addword-section-head,
+.addword-stack > .addword-section-head {
+  margin-bottom: 0;
+}
+
 /* --- 查词典:输入框 + 查询按钮同一行,按输入框底边对齐 -------------------- */
 
 .addword-lookup-row {
