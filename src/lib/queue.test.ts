@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildQueue } from './queue'
+import { buildLapseQueue, buildQueue } from './queue'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
 
@@ -82,5 +82,55 @@ describe('buildQueue —— 按遇见概率优先', () => {
     x.words['highLate'] = { state: 'review', ease: 2.5, intervalDays: 5, due: '2026-07-22', stepIndex: 0, reps: 2, lapses: 0, lastReviewedAt: '2026-07-17T00:00:00Z' }
     // learning 的 1 分词仍在最前;两个 10 分词之间按到期日先后,早的在前
     expect(buildQueue(ws, x, '2026-07-24').due).toEqual(['lowLearning', 'highReview', 'highLate'])
+  })
+})
+
+describe('buildLapseQueue', () => {
+  const entry = (lapses: number) => ({
+    state: 'review' as const, ease: 2.5, intervalDays: 5, due: '2099-01-01',
+    stepIndex: 0, reps: 9, lapses, lastReviewedAt: '2026-07-15T00:00:00Z',
+  })
+  const withLapses = (spec: Record<string, number>): Progress => {
+    const p = emptyProgress()
+    for (const [id, n] of Object.entries(spec)) p.words[id] = entry(n)
+    return p
+  }
+
+  it('按失误次数从多到少排', () => {
+    const ws = [word('a'), word('b'), word('c')]
+    expect(buildLapseQueue(ws, withLapses({ a: 1, b: 5, c: 3 }))).toEqual(['b', 'c', 'a'])
+  })
+
+  it('失误为 0 的不算顽固词', () => {
+    const ws = [word('a'), word('b')]
+    expect(buildLapseQueue(ws, withLapses({ a: 0, b: 2 }))).toEqual(['b'])
+  })
+
+  it('从未复习过的词不进(progress 里没有记录)', () => {
+    const ws = [word('a'), word('b')]
+    expect(buildLapseQueue(ws, withLapses({ b: 2 }))).toEqual(['b'])
+  })
+
+  it('失误次数相同时看遇见概率,常用的先来', () => {
+    const ws = [word('rare', 2), word('common', 9)]
+    expect(buildLapseQueue(ws, withLapses({ rare: 3, common: 3 }))).toEqual(['common', 'rare'])
+  })
+
+  it('不看到期日 —— 顽固词是主动清算,不是等它到期', () => {
+    // 上面的 entry() 一律给 due: 2099,正常队列一个都不会取
+    const ws = [word('a')]
+    expect(buildQueue(ws, withLapses({ a: 4 }), '2026-07-24').due).toEqual([])
+    expect(buildLapseQueue(ws, withLapses({ a: 4 }))).toEqual(['a'])
+  })
+
+  it('数量封顶', () => {
+    const ws = Array.from({ length: 30 }, (_, i) => word(`w${i}`))
+    const spec = Object.fromEntries(ws.map((w, i) => [w.id, i + 1]))
+    expect(buildLapseQueue(ws, withLapses(spec))).toHaveLength(20)
+    expect(buildLapseQueue(ws, withLapses(spec), 5)).toHaveLength(5)
+  })
+
+  it('一个顽固词都没有时返回空', () => {
+    expect(buildLapseQueue([word('a')], emptyProgress())).toEqual([])
   })
 })

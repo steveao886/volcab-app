@@ -4,7 +4,7 @@ import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Page } from '../components/Page'
 import { SyncStatus } from '../components/SyncStatus'
-import { buildQueue } from '../lib/queue'
+import { buildLapseQueue, buildQueue } from '../lib/queue'
 import { todayStr } from '../lib/srs'
 import { useApp } from '../state/store'
 import { accuracySeries, dailySeries } from './statsDerive'
@@ -23,7 +23,7 @@ export function Today() {
   // useApp() 的 context value 在任何 provider 重渲染时都会是新对象(比如 syncStatus
   // 翻转),这三项推导都要过一遍 476 个词,值没变就不用重算 —— Library 的搜索接下来
   // 会照着这个先例在每次按键时跑同一份数组,这里先立好规矩。
-  const { due, fresh, streak, count, total, ratio, queueEmpty } = useMemo(() => {
+  const { due, fresh, streak, count, total, ratio, queueEmpty, lapseCount } = useMemo(() => {
     const queue = buildQueue(words, progress, today)
     const streak = computeStreak(progress.dailyStats, today)
     const rp = reviewProgress(words, progress)
@@ -35,6 +35,7 @@ export function Today() {
       total: rp.total,
       ratio: rp.ratio,
       queueEmpty: queue.due.length === 0 && queue.fresh.length === 0,
+      lapseCount: buildLapseQueue(words, progress).length,
     }
   }, [words, progress, today])
 
@@ -121,6 +122,14 @@ export function Today() {
         <Link to="/quiz" className="btn btn--secondary btn--lg btn--block">
           快速测试
         </Link>
+        {/* 顽固词入口只在真有顽固词时出现:一个恒亮的「专攻错得最多的 0 个词」
+            按钮毫无意义,而且会把两个主操作挤成三选一。 */}
+        {lapseCount > 0 && (
+          <Link to="/review?mode=lapses" className="btn btn--ghost btn--block today-lapse">
+            专攻顽固词
+            <span className="num today-lapse__count">{lapseCount}</span>
+          </Link>
+        )}
       </div>
 
       {/* 「最近」——统计页的入口,不进底部导航(四格已满,见 v1.1 §5.2)。

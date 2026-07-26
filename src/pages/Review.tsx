@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Badge } from '../components/Badge'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
-import { buildQueue } from '../lib/queue'
+import { buildLapseQueue, buildQueue } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { todayStr } from '../lib/srs'
 import { speak } from '../lib/tts'
@@ -47,7 +47,16 @@ const PENDING_STUCK_TIMEOUT_MS = 2000
 export function Review() {
   const { words, progress, grade, deleteWords } = useApp()
   const [today] = useState(() => todayStr(new Date()))
+  // ?mode=lapses 是「专攻顽固词」:同一套卡片与打分逻辑,只是队列换成按失误
+  // 次数排的那批,且不看到期日。用 query 而不是另开一个路由,是因为除了建队列
+  // 那一行之外,这一页的行为(翻面、打分、学习步长重现、当场删词)完全一样。
+  //
+  // **只在挂载时读一次**:和 buildQueue 同理,会话中途换模式会让队列在用户眼皮
+  // 底下重排。想换模式就退出去重进。
+  const [searchParams] = useSearchParams()
+  const [mode] = useState(() => (searchParams.get('mode') === 'lapses' ? 'lapses' : 'due'))
   const [queue, setQueue] = useState<SessionQueue>(() => {
+    if (mode === 'lapses') return buildSessionQueue(buildLapseQueue(words, progress), [])
     const q = buildQueue(words, progress, today)
     return buildSessionQueue(q.due, q.fresh)
   })
@@ -204,16 +213,31 @@ export function Review() {
 
   const reviewedToday = progress.dailyStats[today]?.reviewed ?? 0
 
+  const lapseMode = mode === 'lapses'
+  const eyebrow = lapseMode ? 'Lapses' : 'Review'
+  const title = lapseMode ? '顽固词' : '复习'
+
   if (finished) {
+    const empty = queue.total === 0
     return (
-      <Page eyebrow="Review" title="复习" back="/">
+      <Page eyebrow={eyebrow} title={title} back="/">
         <div className="review-done">
-          <p className="review-done__label">{queue.total === 0 ? '暂无待复习' : '复习完成'}</p>
+          <p className="review-done__label">
+            {lapseMode
+              ? empty ? '暂无顽固词' : '顽固词已清完'
+              : empty ? '暂无待复习' : '复习完成'}
+          </p>
           <p className="review-done__count">
             今天已复习 <span className="num">{reviewedToday}</span> 个词
           </p>
           <p className="muted">
-            {queue.total === 0 ? '暂时没有到期或新词需要复习。' : '今日复习已全部完成,休息一下吧。'}
+            {lapseMode
+              ? empty
+                ? '还没有反复记错的词 —— 这是好事。'
+                : '这一批错得最多的词都过了一遍。'
+              : empty
+                ? '暂时没有到期或新词需要复习。'
+                : '今日复习已全部完成,休息一下吧。'}
           </p>
           <Link to="/" className="btn btn--primary btn--lg">
             返回今日
@@ -228,14 +252,14 @@ export function Review() {
     // 从队列摘掉并推进到下一张,这里只是那一次(通常一帧内就过去)的过渡态,不能
     // 尝试渲染卡片(会因为 curWord 是 undefined 崩溃),也不能当成"会话已完成"。
     return (
-      <Page eyebrow="Review" title="复习" back="/">
+      <Page eyebrow={eyebrow} title={title} back="/">
         <p className="muted">正在跳过一个已被移除的词条…</p>
       </Page>
     )
   }
 
   return (
-    <Page eyebrow="Review" title="复习" back="/">
+    <Page eyebrow={eyebrow} title={title} back="/">
       <div className="review-progress">
         <div
           className="progress"

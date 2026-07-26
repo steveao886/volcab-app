@@ -39,6 +39,17 @@
   gap: var(--sp-3);
 }
 
+/* 顽固词是第三顺位的操作:ghost 变体,不与「开始复习」「快速测试」抢注意力。
+   数字用朱砂 —— 这是一处批注式的计数,与设计语言里朱砂的用法一致。 */
+.today-lapse {
+  gap: var(--sp-2);
+}
+
+.today-lapse__count {
+  color: var(--accent);
+  font-weight: 700;
+}
+
 /* --- 「最近」块:统计页入口 -------------------------------------------------
    整块是 .card.card--interactive 包的 <Link to="/stats">(components.css)。
    柱状图纯手写:固定高度的行,每天一根柱子按 reviewed/max 定高度;

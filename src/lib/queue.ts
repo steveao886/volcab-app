@@ -44,3 +44,27 @@ export function buildQueue(words: Word[], progress: Progress, today: string): Da
 
   return { due, fresh }
 }
+
+/** 顽固词专项一次最多带几个词。20 个大约是一次能坐下来清完的量。 */
+export const LAPSE_SESSION_SIZE = 20
+
+/**
+ * 顽固词:失误次数最多的那批,**不看到期日**。
+ *
+ * progress 里一直记着 lapses,统计页也画出来了,但没有任何入口能直接冲这批词 ——
+ * SRS 会让常错的词自然多来几次,可用户想主动清算的时候没工具。
+ *
+ * 失误为 0 的不算(那不叫顽固);失误次数相同时看遇见概率,常用的先来。
+ */
+export function buildLapseQueue(words: Word[], progress: Progress, limit = LAPSE_SESSION_SIZE): string[] {
+  return words
+    .filter(w => (progress.words[w.id]?.lapses ?? 0) > 0)
+    .sort((a, b) => {
+      const la = progress.words[a.id].lapses, lb = progress.words[b.id].lapses
+      if (la !== lb) return lb - la
+      const d = score(b) - score(a)
+      return d !== 0 ? d : a.id.localeCompare(b.id)
+    })
+    .slice(0, limit)
+    .map(w => w.id)
+}
