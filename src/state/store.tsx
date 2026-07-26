@@ -5,14 +5,16 @@ import { mergeProgress } from '../lib/merge'
 import { gradeWord, todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
 import { emptyProgress, emptyStat } from '../types'
-import type { Grade, Progress, Word } from '../types'
+import type { Grade, Progress, StagingItem, Word } from '../types'
 import { classifySyncFailure, friendlyError, httpStatus, logoutDiscarded, ownerSwitched } from './errors'
 import {
-  appendPendingOp, bootSnapshot, cachedProgress, carryOverFor, pendingOps, setPendingOps,
+  appendPendingOp, appendPendingStaging, bootSnapshot, cachedProgress, carryOverFor,
+  pendingOps, pendingStaging, setPendingOps, setPendingStaging,
 } from './session'
 import {
-  applyWordOps, parseProgress, parseWords, PROGRESS_PATH, pushProgress, pushWords,
-  reconcileProgress, reconcileWords, serializeProgress, WORDS_PATH,
+  applyWordOps, cleanHeadword, loadStaging, mergeStaging, parseProgress, parseWords,
+  PROGRESS_PATH, pushProgress, pushStaging, pushWords,
+  reconcileProgress, reconcileStaging, reconcileWords, serializeProgress, WORDS_PATH,
 } from './sync'
 import type { SyncClient, WordsOp } from './sync'
 
@@ -32,6 +34,8 @@ export interface AppState {
   owner: string | null
   words: Word[]
   progress: Progress
+  /** 生词暂存区:只记了单词、还没补全的待办。补全在会话里做,不在 App 里。 */
+  staging: StagingItem[]
   syncStatus: 'synced' | 'pending' | 'offline' | 'error'
   /**
    * 登录失败的原因,且**只有**登录失败。登录页把它接在 token 输入框的
@@ -56,9 +60,16 @@ export interface AppActions {
   saveWord(word: Word): Promise<void>
   /** 删除词条,同时清掉它们的进度记录 */
   deleteWords(ids: string[]): Promise<void>
+  /**
+   * 把一个单词丢进待补全暂存区,立即推送 staging.json。
+   *
+   * 只做机械追加:大小写/空白归一后已在列表里就原地返回。「这个词已经在词库里了」
+   * 这类策略判断留给调用页(它同时握着 words 和 staging,能就地给出可点的提示)。
+   */
+  addStaging(headword: string): Promise<void>
   updateSettings(s: Progress['settings']): void
   syncNow(): Promise<void>
-  /** 导出 {words, progress} JSON 字符串 */
+  /** 导出 {words, progress, staging} JSON 字符串 */
   exportAll(): string
   /** 仅开发模式:用仓库自带词库进入演示,全程不触网;生产构建里为 undefined */
   enterDemoMode?: () => Promise<void>
@@ -87,6 +98,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const rerunRef = useRef(false)
   const wordsPushingRef = useRef(false)      // words 推送互斥
   const wordsRerunRef = useRef(false)
+  const stagingPushingRef = useRef(false)    // staging 推送互斥
+  const stagingRerunRef = useRef(false)
   const sessionRef = useRef(0)               // 登录/登出递增:飞行中的响应据此作废
   const bootedRef = useRef(false)
 
@@ -98,7 +111,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const settleStatus = useCallback((): AppState['syncStatus'] => {
     if (demoRef.current) return 'synced'
     if (!navigator.onLine) return 'offline'
-    return storage.get<boolean>('dirty') || pendingOps().length > 0 ? 'pending' : 'synced'
+    // 待推送的收词同样算「还欠着远端」。它也是这里最重要的一条:staging 推送
+    // 失败后 flushProgress 成功会把 syncError 清掉,那时只剩这个 pending 在提示
+    // 「还没同步完」—— 少了它,一次失败的收词推送会被显示成「已同步」。
+    const owing = storage.get<boolean>('dirty') || pendingOps().length > 0 || pendingStaging().length > 0
+    return owing ? 'pending' : 'synced'
   }, [])
 
   /** 一次推送成功后的收尾:状态归位,并清掉上一次失败留下的说明 */
@@ -116,6 +133,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   /** 演示模式的词库每次都从仓库现读,不落盘,免得本地白留一份 500KB 的旧副本 */
   const cacheWords = useCallback((words: Word[]) => {
     if (!demoRef.current) storage.set('words', words)
+  }, [])
+
+  const cacheStaging = useCallback((items: StagingItem[]) => {
+    if (!demoRef.current) storage.set('staging', items)
   }, [])
 
   const toLogin = useCallback((loginError: string, clearToken: boolean) => {
@@ -221,6 +242,51 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [cacheWords, failSync, markSettled, update])
 
+  /**
+   * 收词不防抖,立即推 —— 与词库改动同一套时机。item 省略表示只重试队列里积压的。
+   *
+   * 逐行对着 flushWords 写,包括那两条不能省的分支:演示模式清队列、没有 client
+   * 时**原地返回**(那时 stagingOps 要留着等重新登录后重放,清掉就是把用户
+   * 敲进去的词直接抹掉)。
+   */
+  const flushStaging = useCallback(async (it?: StagingItem): Promise<void> => {
+    if (it) appendPendingStaging(it)
+    const client = clientRef.current
+    if (demoRef.current) { setPendingStaging([]); return }
+    if (!client) return
+    if (!navigator.onLine) { update({ syncStatus: 'offline' }); return }
+    if (stagingPushingRef.current) { stagingRerunRef.current = true; return }
+
+    stagingPushingRef.current = true
+    const session = sessionRef.current
+    const alive = () => session === sessionRef.current
+    try {
+      for (;;) {
+        stagingRerunRef.current = false
+        const sending = pendingStaging()
+        const out = await pushStaging(client, stateRef.current.staging, sending, { alive })
+        if (!alive()) return
+        // 失败时队列原样留着(不 setPendingStaging),下次上线 / 切后台 / 手动同步
+        // 自动重来。与另外两个文件同一套处置:只有 401 退登,其余只提示。
+        // 之后任何一次推送成功都会把这条提示清掉,而 settleStatus 仍会因为队列
+        // 非空报「待同步」—— 失败不会被粉饰成「已同步」,也不会一直挡在那里。
+        if (!out.ok) { failSync(out.error); return }
+
+        const remaining = pendingStaging().slice(sending.length)   // 推送途中新收的词
+        setPendingStaging(remaining)
+        const next = reconcileStaging(stateRef.current.staging, out.data, remaining)
+        if (next !== stateRef.current.staging) {
+          cacheStaging(next)
+          update({ staging: next })
+        }
+        markSettled()
+        if (!stagingRerunRef.current) return
+      }
+    } finally {
+      stagingPushingRef.current = false
+    }
+  }, [cacheStaging, failSync, markSettled, update])
+
   /** 本地落盘 + 置脏 + 刷新状态;推送时机(防抖 / 立即)由调用方决定 */
   const commitProgress = useCallback((progress: Progress) => {
     storage.set('progress', progress)
@@ -241,11 +307,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (session !== sessionRef.current) return   // 期间真登录/登出了,别把演示数据盖上去
       demoRef.current = true
       setPendingOps([])
+      setPendingStaging([])
       const progress = cachedProgress() ?? emptyProgress()
       storage.set('owner', 'demo')       // 词库不进缓存:每次演示都从仓库现读,只留进度
       storage.set('progress', progress)
       update({
-        phase: 'ready', owner: 'demo', words, progress,
+        phase: 'ready', owner: 'demo', words, progress, staging: [],
         loginError: null, syncError: null, syncStatus: 'synced',
       })
     }
@@ -275,6 +342,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const put = await client.putFile(PROGRESS_PATH, serializeProgress(progress), 'init progress')
         progressSha = put === 'conflict' ? null : put.sha
       }
+
+      // 第三个文件放在最后读,并且**永远不抛**(loadStaging 把缺失/损坏/读失败
+      // 一律折成 null)。它是三者里最不重要的一个:为了几个还没补全的单词而让
+      // 用户登不进去、看不到自己的词库和复习进度,是完全不成比例的。
+      // 远端还没有 staging.json 时也不在这里创建 —— 第一次收词推上去时自然会建。
+      const sf = await loadStaging(client)
       if (session !== sessionRef.current) return
 
       // token 被撤销会把本机停在「有未推送改动」的状态,重新登录不能拿远端直接盖掉。
@@ -282,16 +355,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const carry = carryOverFor(owner)
       if (carry.progress) progress = mergeProgress(carry.progress, progress)
       const words = applyWordOps(remoteWords, carry.ops)
+      // 远端读不到就当空,只留本机没推上去的那几个 —— 不拿一份陈旧的本地缓存
+      // 去猜远端有什么,那会在下一次推送时把他端收的词盖掉
+      const staging = mergeStaging(sf?.items ?? [], carry.staging)
 
       storage.set('token', token)
       storage.set('owner', owner)
       storage.set('words', words)
       storage.set('wordsSha', wf.sha)
       storage.set('progress', progress)
+      storage.set('staging', staging)
       if (progressSha) storage.set('progressSha', progressSha)
       else storage.remove('progressSha')
+      if (sf) storage.set('stagingSha', sf.sha)
+      else storage.remove('stagingSha')
       storage.set('dirty', carry.progress !== null)   // 并回来的旧改动还欠远端一次推送
       setPendingOps(carry.ops)
+      setPendingStaging(carry.staging)
 
       clientRef.current = client
       demoRef.current = false
@@ -299,21 +379,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // 上一次退出留下的丢弃告知到此为止,两条不会叠在一起,也不会互相盖掉 ——
       // 后者只在这一刻产生,前者只活到下一次登录成功。
       update({
-        phase: 'ready', owner, words, progress, loginError: null,
+        phase: 'ready', owner, words, progress, staging, loginError: null,
         syncError: carry.discardedOwner ? ownerSwitched(carry.discardedOwner) : null,
         syncStatus: settleStatus(),
       })
       if (carry.ops.length > 0) await flushWords()
-      if (carry.progress) await flushProgress()
+      if (carry.staging.length > 0) await flushStaging()
+      if (carry.progress) await flushProgress()   // progress 最重要,放最后一步收尾
     } catch (e) {
       if (session !== sessionRef.current) return
       update({ phase: 'login', loginError: friendlyError(e) })
     }
-  }, [flushProgress, flushWords, settleStatus, update])
+  }, [flushProgress, flushStaging, flushWords, settleStatus, update])
 
   const logout = useCallback(() => {
     // 退出等于「把本机上这个账号的数据清干净」,没推上去的只能丢 —— 但要说一声
     const droppedOps = pendingOps().length
+    const droppedStaging = pendingStaging().length
     const droppedProgress = storage.get<boolean>('dirty') === true
     clearTimer()
     sessionRef.current += 1
@@ -321,13 +403,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     demoRef.current = false
     pushingRef.current = false      // 万一有请求卡住不返回,别让互斥锁把下次登录后的推送也堵死
     wordsPushingRef.current = false
+    stagingPushingRef.current = false
     storage.clearAll()
     // 「丢了什么」是一条数据告知,不是登录失败:走 syncError,由登录页的中性通知区
     // 展示。放 loginError 会让 token 输入框被标成 aria-invalid —— 那个框此刻没有
     // 任何问题,用户甚至还没开始填。没丢东西就写 null,顺带清掉退出前那次同步失败。
     update({
-      phase: 'login', owner: null, words: [], progress: emptyProgress(), loginError: null,
-      syncError: droppedOps > 0 || droppedProgress ? logoutDiscarded(droppedOps, droppedProgress) : null,
+      phase: 'login', owner: null, words: [], progress: emptyProgress(), staging: [], loginError: null,
+      syncError: droppedOps > 0 || droppedProgress || droppedStaging > 0
+        ? logoutDiscarded(droppedOps, droppedProgress, droppedStaging)
+        : null,
       syncStatus: navigator.onLine ? 'synced' : 'offline',
     })
   }, [clearTimer, update])
@@ -344,7 +429,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     clientRef.current = client
     const session = sessionRef.current
     try {
-      const [wf, pf] = await Promise.all([client.getFile(WORDS_PATH), client.getFile(PROGRESS_PATH)])
+      // loadStaging 自己吞掉一切失败,所以它绝不会让这个 Promise.all 整体 reject
+      // —— staging.json 缺失或损坏不能把 words/progress 的启动路径一起拖进 catch。
+      const [wf, pf, sf] = await Promise.all([
+        client.getFile(WORDS_PATH), client.getFile(PROGRESS_PATH), loadStaging(client),
+      ])
       if (session !== sessionRef.current) return
 
       let words = stateRef.current.words
@@ -363,10 +452,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
         progress = mergeProgress(progress, parseProgress(pf.content))
         storage.set('progressSha', pf.sha)
       }
+
+      // 与词库同样的规矩:远端为准 + 重放没推上去的收词。远端读不到(缺失/损坏/
+      // 读失败)则保留本机这份继续用 —— 只有这样,补全流程从远端移走的条目才会
+      // 真的消失,而不会被本地缓存又并回去。
+      const staging = mergeStaging(sf ? sf.items : stateRef.current.staging, pendingStaging())
+      if (sf) storage.set('stagingSha', sf.sha)
+      cacheStaging(staging)
+
       storage.set('progress', progress)
-      update({ phase: 'ready', owner, words, progress, loginError: null })
+      update({ phase: 'ready', owner, words, progress, staging, loginError: null })
 
       if (pendingOps().length > 0) await flushWords()
+      if (pendingStaging().length > 0) await flushStaging()
       if (storage.get<boolean>('dirty')) await flushProgress()
       else update({ syncStatus: settleStatus() })
     } catch (e) {
@@ -379,7 +477,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       toLogin(friendlyError(e), false)
     }
-  }, [cacheWords, enterDemoMode, flushProgress, flushWords, settleStatus, toLogin, update])
+  }, [
+    cacheStaging, cacheWords, enterDemoMode, flushProgress, flushStaging, flushWords,
+    settleStatus, toLogin, update,
+  ])
 
   useEffect(() => {
     if (bootedRef.current) return
@@ -442,6 +543,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await flushWords({ kind: 'delete', ids })
   }, [cacheWords, commitProgress, flushWords, schedulePush, update])
 
+  const addStaging = useCallback(async (raw: string): Promise<void> => {
+    const it: StagingItem = { headword: cleanHeadword(raw), addedAt: todayStr(new Date()) }
+    if (it.headword === '') return
+    const staging = mergeStaging(stateRef.current.staging, [it])
+    // 并集:已经在列表里(大小写/空白不同也算)就一条都没多,那就什么都不用做
+    if (staging.length === stateRef.current.staging.length) return
+    cacheStaging(staging)
+    update({ staging })
+    await flushStaging(it)
+  }, [cacheStaging, flushStaging, update])
+
   const updateSettings = useCallback((s: Progress['settings']) => {
     commitProgress({ ...stateRef.current.progress, settings: s })
     schedulePush()
@@ -451,11 +563,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (demoRef.current || !clientRef.current) return
     if (!navigator.onLine) { update({ syncStatus: 'offline' }); return }
     if (pendingOps().length > 0) await flushWords()
+    if (pendingStaging().length > 0) await flushStaging()
     await flushProgress()
-  }, [flushProgress, flushWords, update])
+  }, [flushProgress, flushStaging, flushWords, update])
 
+  // 备份要把暂存区也带上:那几个词是用户敲进去的,只是还没补全而已
   const exportAll = useCallback(
-    () => JSON.stringify({ words: stateRef.current.words, progress: stateRef.current.progress }, null, 2),
+    () => JSON.stringify({
+      words: stateRef.current.words,
+      progress: stateRef.current.progress,
+      staging: stateRef.current.staging,
+    }, null, 2),
     [],
   )
 
@@ -469,6 +587,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (document.visibilityState !== 'hidden') return
       if (storage.get<boolean>('dirty')) void flushProgress()
       if (pendingOps().length > 0) void flushWords()
+      if (pendingStaging().length > 0) void flushStaging()
     }
     window.addEventListener('online', onOnline)
     window.addEventListener('offline', onOffline)
@@ -478,16 +597,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
       window.removeEventListener('offline', onOffline)
       document.removeEventListener('visibilitychange', onVisibility)
     }
-  }, [flushProgress, flushWords, settleStatus, syncNow, update])
+  }, [flushProgress, flushStaging, flushWords, settleStatus, syncNow, update])
 
   useEffect(() => clearTimer, [clearTimer])   // 卸载时别把防抖定时器留下
 
   const value = useMemo<AppContextValue>(() => ({
     ...state,
-    login, logout, grade, recordQuiz, saveWord, deleteWords, updateSettings, syncNow, exportAll,
+    login, logout, grade, recordQuiz, saveWord, deleteWords, addStaging,
+    updateSettings, syncNow, exportAll,
     ...(import.meta.env.DEV ? { enterDemoMode } : {}),
   }), [
-    state, login, logout, grade, recordQuiz, saveWord, deleteWords,
+    state, login, logout, grade, recordQuiz, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll, enterDemoMode,
   ])
 

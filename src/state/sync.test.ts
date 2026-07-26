@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
-  applyWordOps, parseProgress, parseWords, pushProgress, pushWords,
-  reconcileProgress, reconcileWords,
+  applyWordOps, loadStaging, mergeStaging, normalizeHeadword, parseProgress, parseStaging,
+  parseWords, pushProgress, pushStaging, pushWords,
+  reconcileProgress, reconcileStaging, reconcileWords, serializeStaging,
 } from './sync'
 import type { SyncClient, WordsOp } from './sync'
 import { emptyProgress } from '../types'
-import type { Progress, ProgressEntry, Word } from '../types'
+import type { Progress, ProgressEntry, StagingItem, Word } from '../types'
 import { storage } from '../lib/storage'
 import realLibrary from '../../data/words.json'
 
@@ -54,6 +55,10 @@ const word = (id: string): Word => ({
 
 const wordsFile = (ids: string[]) => JSON.stringify({ version: 1, words: ids.map(word) })
 const lastPut = (calls: PutCall[]) => calls[calls.length - 1]
+
+const item = (headword: string, addedAt = '2026-07-25'): StagingItem => ({ headword, addedAt })
+const stagingFile = (items: StagingItem[]) => JSON.stringify({ version: 1, items })
+const sentStaging = (calls: PutCall[]) => (JSON.parse(lastPut(calls).content) as { items: StagingItem[] }).items
 
 beforeEach(() => {
   localStorage.clear()
@@ -400,5 +405,235 @@ describe('parse 守卫', () => {
     const parsed = parseWords(JSON.stringify(realLibrary))
     expect(parsed).toHaveLength(476)
     expect(parsed.some(w => w.id === 'interchangeability')).toBe(true)
+  })
+})
+
+// === 生词暂存区 staging.json ===============================================
+// 第三个同步文件。规则比 progress 简单得多:按归一化词头取并集,同词留较早的
+// addedAt。追加为主、天然幂等 —— 但它是新接进来的一环,下面每一条都在盯着
+// 「别把已有的两个文件带下水」。
+
+describe('normalizeHeadword', () => {
+  it('大小写、首尾空白、内部连续空白都归一到同一个键', () => {
+    expect(normalizeHeadword('  Ostensible ')).toBe('ostensible')
+    expect(normalizeHeadword('Ad   Hoc')).toBe('ad hoc')
+    expect(normalizeHeadword('ad hoc')).toBe(normalizeHeadword(' AD  HOC '))
+  })
+})
+
+describe('mergeStaging', () => {
+  it('取并集:两端各自加的词都要留下', () => {
+    const out = mergeStaging([item('ostensible')], [item('perfunctory')])
+    expect(out.map(i => i.headword)).toEqual(['ostensible', 'perfunctory'])
+  })
+
+  it('两台设备加了同一个词:合并成一条,保留较早的 addedAt', () => {
+    const a = [item('ostensible', '2026-07-25')]
+    const b = [item('ostensible', '2026-07-20')]
+    expect(mergeStaging(a, b)).toEqual([item('ostensible', '2026-07-20')])
+    // 反向合并结果相同 —— 谁先谁后不影响内容,否则两台设备会互相推翻对方
+    expect(mergeStaging(b, a)).toEqual([item('ostensible', '2026-07-20')])
+  })
+
+  it('大小写与空白不同视为同一个词,不重复入列', () => {
+    const out = mergeStaging([item('Ad  Hoc', '2026-07-25')], [item(' ad hoc ', '2026-07-26')])
+    expect(out).toHaveLength(1)
+    expect(normalizeHeadword(out[0].headword)).toBe('ad hoc')
+  })
+
+  it('幂等:同一份内容合并多少次都不变', () => {
+    const base = [item('a', '2026-07-01'), item('b', '2026-07-02')]
+    expect(mergeStaging(mergeStaging(base, base), base)).toEqual(base)
+  })
+
+  it('不改写入参,且空词头被丢掉', () => {
+    const a = [item('ostensible')]
+    const out = mergeStaging(a, [item('   ')])
+    expect(out).toEqual([item('ostensible')])
+    expect(a).toEqual([item('ostensible')])
+  })
+})
+
+describe('parseStaging / serializeStaging', () => {
+  it('接受合法文件', () => {
+    expect(parseStaging(stagingFile([item('ostensible')]))).toEqual([item('ostensible')])
+  })
+
+  it('空列表是合法的 —— 补全流程会把条目全部移走', () => {
+    expect(parseStaging('{"version":1,"items":[]}')).toEqual([])
+  })
+
+  it('序列化为 2 空格缩进 + 结尾换行,与另外两个文件一致', () => {
+    const text = serializeStaging([item('ostensible')])
+    expect(text).toBe('{\n  "version": 1,\n  "items": [\n    {\n      "headword": "ostensible",\n      "addedAt": "2026-07-25"\n    }\n  ]\n}\n')
+    expect(parseStaging(text)).toEqual([item('ostensible')])
+  })
+
+  it.each([
+    ['非 JSON', '{oops'],
+    ['顶层是数组', '[]'],
+    ['版本不对', '{"version":2,"items":[]}'],
+    ['items 不是数组', '{"version":1,"items":{}}'],
+    ['条目缺 addedAt', '{"version":1,"items":[{"headword":"ostensible"}]}'],
+    ['addedAt 不是日期', '{"version":1,"items":[{"headword":"ostensible","addedAt":"昨天"}]}'],
+    ['词头是空串', '{"version":1,"items":[{"headword":"  ","addedAt":"2026-07-25"}]}'],
+    ['词头不是字符串', '{"version":1,"items":[{"headword":42,"addedAt":"2026-07-25"}]}'],
+  ])('拒绝%s', (_label, text) => {
+    expect(() => parseStaging(text)).toThrow()
+  })
+})
+
+describe('loadStaging:三个文件里最不重要的那个,读不到一律当没有', () => {
+  it('远端还没有这个文件:返回 null,不抛错', async () => {
+    const { client } = fakeClient({ puts: [] })
+    await expect(loadStaging(client)).resolves.toBeNull()
+  })
+
+  it('远端文件坏了:返回 null 而不是让异常冒到登录/启动路径上', async () => {
+    const { client } = fakeClient({
+      puts: [], files: { 'staging.json': { content: '{"version":1,"items":[{"nope":1}]}', sha: 's' } },
+    })
+    await expect(loadStaging(client)).resolves.toBeNull()
+  })
+
+  it('读取本身失败(网络/权限):同样吞掉 —— 绝不能因为它登不上或推不了 progress', async () => {
+    const { client } = fakeClient({ puts: [], getThrows: new Error('读取 staging.json 失败 (HTTP 500)') })
+    await expect(loadStaging(client)).resolves.toBeNull()
+  })
+
+  // 这条盯的是引入第三个文件时最容易犯的错:把它塞进 boot 的 Promise.all,
+  // 结果它一 reject 就把 words / progress 一起拖进 catch —— 用户会看到「登录失败」
+  // 或者一个不再同步进度的 App,而原因只是几个还没补全的单词。
+  it('放进 boot 那个 Promise.all 里也不会把 words/progress 拖下水', async () => {
+    const client: SyncClient = {
+      async getFile(path) {
+        if (path === 'staging.json') throw new Error('读取 staging.json 失败 (HTTP 500)')
+        return { content: path === 'words.json' ? wordsFile(['alpha']) : JSON.stringify(emptyProgress()), sha: path }
+      },
+      async putFile() { throw new Error('本用例不该推送') },
+    }
+
+    const [wf, pf, sf] = await Promise.all([
+      client.getFile('words.json'), client.getFile('progress.json'), loadStaging(client),
+    ])
+
+    expect(parseWords(wf!.content)).toHaveLength(1)   // 词库照常拿到
+    expect(parseProgress(pf!.content).version).toBe(1) // 进度照常拿到
+    expect(sf).toBeNull()                              // 暂存区当作没有,仅此而已
+  })
+
+  it('正常读到:带回条目与 sha', async () => {
+    const { client } = fakeClient({
+      puts: [], files: { 'staging.json': { content: stagingFile([item('ostensible')]), sha: 'st-1' } },
+    })
+    await expect(loadStaging(client)).resolves.toEqual({ items: [item('ostensible')], sha: 'st-1' })
+  })
+})
+
+describe('pushStaging', () => {
+  it('成功:整份覆盖写 staging.json,回写 stagingSha', async () => {
+    storage.set('stagingSha', 'st-old')
+    const local = [item('ostensible')]
+    const { client, putCalls } = fakeClient({ puts: [{ sha: 'st-new' }] })
+
+    const out = await pushStaging(client, local, local)
+
+    expect(out).toEqual({ ok: true, sha: 'st-new', data: local })
+    expect(putCalls[0].path).toBe('staging.json')
+    expect(putCalls[0].sha).toBe('st-old')
+    expect(JSON.parse(putCalls[0].content).version).toBe(1)
+    expect(storage.get('stagingSha')).toBe('st-new')
+  })
+
+  it('首次推送(远端还没有这个文件):不带 sha,直接创建', async () => {
+    const { client, putCalls } = fakeClient({ puts: [{ sha: 'st-1' }] })
+    await pushStaging(client, [item('ostensible')], [item('ostensible')])
+    expect(putCalls[0].sha).toBeUndefined()
+  })
+
+  it('冲突:在重新拉回的远端副本上合并本次收词,他端收的词全部保留', async () => {
+    const mine = item('zeta', '2026-07-25')
+    const { client, putCalls, getCalls } = fakeClient({
+      puts: ['conflict', { sha: 'st-merged' }],
+      files: {
+        'staging.json': {
+          content: stagingFile([item('alpha', '2026-07-01'), item('gamma', '2026-07-02')]),
+          sha: 'st-remote',
+        },
+      },
+    })
+    const out = await pushStaging(client, [mine], [mine])
+
+    expect(out.ok).toBe(true)
+    expect(getCalls).toEqual(['staging.json'])
+    expect(putCalls[1].sha).toBe('st-remote')
+    expect(sentStaging(putCalls).map(i => i.headword).sort()).toEqual(['alpha', 'gamma', 'zeta'])
+    if (out.ok) expect(out.data.map(i => i.headword).sort()).toEqual(['alpha', 'gamma', 'zeta'])
+  })
+
+  it('冲突:两端同一天各收了同一个词,合并后只剩一条且日期取早的', async () => {
+    const mine = item('Ostensible', '2026-07-25')
+    const { client, putCalls } = fakeClient({
+      puts: ['conflict', { sha: 'st-merged' }],
+      files: { 'staging.json': { content: stagingFile([item('ostensible', '2026-07-20')]), sha: 'st-r' } },
+    })
+    const out = await pushStaging(client, [mine], [mine])
+
+    expect(out.ok).toBe(true)
+    expect(sentStaging(putCalls)).toEqual([item('ostensible', '2026-07-20')])
+  })
+
+  it('远端 staging.json 解析不了:拒绝覆盖,不发第二次 put,sha 不动', async () => {
+    storage.set('stagingSha', 'st-old')
+    const { client, putCalls } = fakeClient({
+      puts: ['conflict', { sha: 'never' }],
+      files: { 'staging.json': { content: '{"version":1,"items":[{"headword":"x"}]}', sha: 'st-r' } },
+    })
+    const out = await pushStaging(client, [item('zeta')], [item('zeta')])
+
+    expect(out.ok).toBe(false)
+    if (!out.ok) expect(out.error).toContain('备份')
+    expect(putCalls).toHaveLength(1)               // 没有把本地那份盖上去
+    expect(storage.get('stagingSha')).toBe('st-old')
+  })
+
+  it('连续两次冲突:一次重试后放弃,本地条目留着下次再推', async () => {
+    const { client, putCalls } = fakeClient({
+      puts: ['conflict', 'conflict'],
+      files: { 'staging.json': { content: stagingFile([item('alpha')]), sha: 'st-r' } },
+    })
+    const out = await pushStaging(client, [item('zeta')], [item('zeta')])
+    expect(out.ok).toBe(false)
+    expect(putCalls).toHaveLength(2)
+  })
+
+  it('网络异常:错误上报,sha 不动', async () => {
+    storage.set('stagingSha', 'st-old')
+    const { client } = fakeClient({ puts: [new TypeError('Failed to fetch')] })
+    const out = await pushStaging(client, [item('zeta')], [item('zeta')])
+    expect(out.ok).toBe(false)
+    expect(storage.get('stagingSha')).toBe('st-old')
+  })
+
+  it('登出后才返回的推送不回写 stagingSha', async () => {
+    storage.set('stagingSha', 'st-old')
+    const { client } = fakeClient({ puts: [{ sha: 'st-new' }] })
+    const out = await pushStaging(client, [item('zeta')], [item('zeta')], { alive: () => false })
+    expect(out.ok).toBe(true)
+    expect(storage.get('stagingSha')).toBe('st-old')
+  })
+})
+
+describe('reconcileStaging', () => {
+  it('推送期间本地没动过:原样返回', () => {
+    const current = [item('a')]
+    expect(reconcileStaging(current, current, [])).toBe(current)
+  })
+
+  it('推送飞行途中又收了一个词:那一条必须活下来,远端合并进来的也还在', () => {
+    const pushed = [item('alpha', '2026-07-01'), item('zeta', '2026-07-25')]
+    const later = item('later', '2026-07-25')
+    const out = reconcileStaging([item('zeta'), later], pushed, [later])
+    expect(out.map(i => i.headword).sort()).toEqual(['alpha', 'later', 'zeta'])
   })
 })

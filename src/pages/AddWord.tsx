@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
-import type { FormEvent } from 'react'
+import type { FormEvent, KeyboardEvent, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Badge } from '../components/Badge'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
+import { Chip } from '../components/Chip'
 import { Field } from '../components/Field'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
@@ -14,6 +15,8 @@ import { todayStr } from '../lib/srs'
 import { useApp } from '../state/store'
 import type { Meaning, RelatedForm, Word } from '../types'
 import { lookupWord } from './dictionaryApi'
+import { checkCapture } from './stagingCapture'
+import type { CaptureCheck } from './stagingCapture'
 import './AddWord.css'
 
 /**
@@ -44,6 +47,19 @@ const emptyMeaning = (): MeaningRow => ({ key: nextRowKey(), pos: '', en: '', zh
 const emptyRelated = (): RelatedRow => ({ key: nextRowKey(), form: '', pos: '', zh: '' })
 const emptyExample = (): ExampleRow => ({ key: nextRowKey(), value: '' })
 
+/** 快速收词的拦截提示。抽出来只是为了不在 JSX 里套三层三元表达式。 */
+function captureNotice(check: CaptureCheck): ReactNode {
+  if (check.kind === 'in-library') {
+    return (
+      <>
+        「{check.headword}」已在词库中,<Link to={`/word/${check.id}`}>前往查看</Link>
+      </>
+    )
+  }
+  if (check.kind === 'in-staging') return `「${check.headword}」已在待补全列表中`
+  return undefined
+}
+
 type LookupState =
   | { status: 'idle' }
   | { status: 'loading' }
@@ -66,9 +82,17 @@ function splitTagList(raw: string, headword: string): string[] {
   return out
 }
 
-/** Task 20 实现:输入单词 → 查询词典 API 预填 → 可编辑表单 → 保存。 */
+/**
+ * Task 20 实现:输入单词 → 查询词典 API 预填 → 可编辑表单 → 保存。
+ * v1.1 E:页面顶部加一块「快速收词」—— 手机上看到生词的那一刻,只记单词就走,
+ * 其余十个字段留给会话中的 AI 批量补全(设计文档 §6.3)。完整表单原样留在下方。
+ */
 export function AddWord() {
-  const { words, saveWord, syncStatus, syncError, syncNow } = useApp()
+  const { words, staging, addStaging, saveWord, syncStatus, syncError, syncNow } = useApp()
+
+  const [captureInput, setCaptureInput] = useState('')
+  const [capturing, setCapturing] = useState(false)
+  const [captured, setCaptured] = useState<string | null>(null)
 
   const [headwordInput, setHeadwordInput] = useState('')
   const [phonetic, setPhonetic] = useState('')
@@ -91,6 +115,31 @@ export function AddWord() {
   const id = headword.toLowerCase().replace(/\s+/g, '-')
   const existing = useMemo(() => words.find((w) => w.id === id), [words, id])
   const duplicate = id !== '' && existing !== undefined
+
+  const capture = useMemo(() => checkCapture(captureInput, words, staging), [captureInput, words, staging])
+
+  async function handleCapture() {
+    if (capture.kind !== 'ok' || capturing) return
+    const added = capture.headword
+    setCapturing(true)
+    try {
+      // addStaging 先本地入列再推送,推送成败由下面常驻的 SyncStatus 说明 ——
+      // 离线时词已经在本机队列里了,联网后自动并上去,不需要用户重来一次。
+      await addStaging(added)
+      setCaptureInput('')
+      setCaptured(added)
+    } finally {
+      setCapturing(false)
+    }
+  }
+
+  function handleCaptureKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    // 这块不在 <form> 里(下方还有一个完整表单,套嵌套 form 是非法的),
+    // 所以回车提交要自己接 —— 手机上「一个输入框 + 回车」才是最快的收词路径。
+    if (e.key !== 'Enter') return
+    e.preventDefault()
+    void handleCapture()
+  }
 
   const resetForm = () => {
     setHeadwordInput('')
@@ -243,8 +292,63 @@ export function AddWord() {
 
   return (
     <Page eyebrow="New Entry" title="添加新词" back="/library">
+      {/* 快速收词在最上面,是打开这一页默认看到的东西:捕获必须保持一个输入框的
+          成本。它**不能**放进下面那个 <form> 里 —— 嵌套 form 是非法的,而且回车
+          会误触整个词条的保存。完整表单原样留在下方,给「我现在就想填完」的场景。 */}
+      <Card className="addword-capture">
+        <div className="addword-section-head">
+          <h2 className="addword-section-title">快速收词</h2>
+          <p className="addword-section-hint muted">只记单词,音标、释义、例句稍后一次补全</p>
+        </div>
+        <div className="addword-lookup-row">
+          <Field label="单词" htmlFor="aw-capture" error={captureNotice(capture)}>
+            <TextInput
+              id="aw-capture"
+              value={captureInput}
+              onChange={(e) => {
+                setCaptureInput(e.target.value)
+                setCaptured(null)
+              }}
+              onKeyDown={handleCaptureKeyDown}
+              placeholder="ostensible"
+              lang="en"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck={false}
+              enterKeyHint="done"
+            />
+          </Field>
+          <Button
+            type="button"
+            variant="primary"
+            onClick={() => void handleCapture()}
+            loading={capturing}
+            disabled={capture.kind !== 'ok' || capturing}
+          >
+            加入待补全
+          </Button>
+        </div>
+
+        <p className="addword-capture__status" role="status">
+          待补全 {staging.length} 个
+          {captured === null ? '' : ` · 已加入「${captured}」`}
+        </p>
+
+        {staging.length > 0 && (
+          <div className="addword-capture__list">
+            {staging.map((s) => (
+              <Chip key={s.headword} label={s.headword} interactive={false} />
+            ))}
+          </div>
+        )}
+      </Card>
+
       <form className="addword-form" onSubmit={(e) => void handleSubmit(e)} noValidate>
         <Card className="addword-stack">
+          <div className="addword-section-head">
+            <h2 className="addword-section-title">完整添加</h2>
+            <p className="addword-section-hint muted">现在就把整个词条填完,保存后直接进入复习</p>
+          </div>
           <div className="addword-lookup-row">
             <Field
               label="单词"
