@@ -6,7 +6,7 @@ import { Page } from '../components/Page'
 import { todayStr } from '../lib/srs'
 import { useApp } from '../state/store'
 import type { AccuracyPoint, DayPoint } from './statsDerive'
-import { accuracySeries, cumulativeTotals, dailySeries, masteryBreakdown } from './statsDerive'
+import { accuracySeries, cumulativeTotals, dailySeries, masteryBreakdown, usageCoverage } from './statsDerive'
 import { computeStreak } from './todayStats'
 import './Stats.css'
 
@@ -28,12 +28,13 @@ export function Stats() {
 
   // useApp() 的 context value 每次 provider 渲染都是新对象(后台同步心跳也算),
   // 派生要过一遍全部词条,值没变就不该重算 —— 与 Today.tsx 同一先例。
-  const { days, acc, streak, mastery, totals, hasHistory } = useMemo(() => {
+  const { days, acc, streak, mastery, totals, coverage, hasHistory } = useMemo(() => {
     return {
       days: dailySeries(progress, today, WINDOW_DAYS),
       acc: accuracySeries(progress, today, WINDOW_DAYS),
       streak: computeStreak(progress.dailyStats, today),
       mastery: masteryBreakdown(words, progress),
+      coverage: usageCoverage(words, progress),
       totals: cumulativeTotals(progress),
       // 完全没有 dailyStats 才是「从没学过」的新用户 —— 走整页空状态,
       // 不渲染一堆空图表。
@@ -108,6 +109,39 @@ export function Stats() {
           <Chip label="学习中" count={mastery.learning} interactive={false} />
           <Chip label="未学" count={mastery.new} interactive={false} />
         </div>
+      </Card>
+
+      {/* 高频词覆盖率。上面那张「词库掌握分布」数的是总量,而总量会说谎 ——
+          学完 300 个 3 分词的成就感是假的。这一张答的是「你在最常用的那批词上
+          走到哪了」,分档口径见 statsDerive.usageCoverage。 */}
+      <Card>
+        <p className="section-title stats-section-title">高频词掌握率</p>
+        <div className="stats-coverage-headline">
+          <p className="num stats-coverage-headline__value">{Math.round(coverage.headline.ratio * 100)}%</p>
+          <p className="muted stats-coverage-headline__note">
+            遇见概率 7 分以上的 <span className="num">{coverage.headline.total}</span> 个词里,
+            已掌握 <span className="num">{coverage.headline.mastered}</span> 个
+          </p>
+        </div>
+        <ul className="stats-coverage">
+          {coverage.bands.map(b => (
+            <li className="stats-coverage__row" key={b.label}>
+              <span className="stats-coverage__label">
+                {b.label}
+                <span className="num faint stats-coverage__range">{b.range}</span>
+              </span>
+              <span className="stats-coverage__track">
+                <span
+                  className="stats-coverage__fill"
+                  style={{ width: `${b.total === 0 ? 0 : (b.mastered / b.total) * 100}%` }}
+                />
+              </span>
+              <span className="num muted stats-coverage__count">
+                {b.mastered} / {b.total}
+              </span>
+            </li>
+          ))}
+        </ul>
       </Card>
 
       <Card className="stats-totals">
