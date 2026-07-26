@@ -45,7 +45,13 @@ export interface Progress {
    * 中,加一个必填字段要么校验不过,要么逼一次迁移;可选字段两台设备
    * 各自缺省为「开」,天然兼容,不需要动 sync.ts 的 isWord/校验逻辑。
    */
-  settings: { newPerDay: number; soundEnabled?: boolean }
+  /**
+   * updatedAt 是设置的「最后修改时刻」(ISO),合并时据此判优 —— 没有它,
+   * settings 在两台设备之间永远同步不了:谁拉下来都以本地为准,互相覆盖。
+   * 可选:旧数据与从未改过设置的设备没有这个字段,视为「最旧」,自动让位给
+   * 改过的那一方。整个 settings 作为一个整体搬运,不逐字段挑。
+   */
+  settings: { newPerDay: number; soundEnabled?: boolean; updatedAt?: string }
   words: Record<string, ProgressEntry>
   dailyStats: Record<string, DailyStat>
 }

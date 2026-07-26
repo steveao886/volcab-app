@@ -561,7 +561,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [cacheStaging, flushStaging, update])
 
   const updateSettings = useCallback((s: Progress['settings']) => {
-    commitProgress({ ...stateRef.current.progress, settings: s })
+    // 盖上修改时刻:mergeProgress 靠它判断两台设备谁的设置更新。不盖的话字段
+    // 永远为空,合并退化回「一律取本地」,设置又同步不了了。
+    const settings = { ...s, updatedAt: new Date().toISOString() }
+    commitProgress({ ...stateRef.current.progress, settings })
     schedulePush()
   }, [commitProgress, schedulePush])
 

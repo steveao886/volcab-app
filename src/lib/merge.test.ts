@@ -27,9 +27,59 @@ describe('mergeProgress', () => {
     expect(m.dailyStats['2026-07-24']).toEqual({ reviewed: 10, newLearned: 5, correct: 8, quizTaken: 1 })
     expect(m.dailyStats['2026-07-23'].reviewed).toBe(20)
   })
-  it('settings 以本地为准', () => {
-    const local = emptyProgress(), remote = emptyProgress()
-    local.settings.newPerDay = 20
-    expect(mergeProgress(local, remote).settings.newPerDay).toBe(20)
+  // 原断言是「settings 以本地为准」。那条规则让设置在两台设备间**永远无法同步**:
+  // A 改成 28 推上去,B 拉下来合并时本地赢,B 保持原值,再推回去又把 28 冲掉。
+  // 用户实际撞上了这个问题(改了每日新词数,另一台没变)。改为按 updatedAt 判优,
+  // 与词条进度用 lastReviewedAt 判优是同一套思路。
+  describe('settings 按更新时间判优', () => {
+    const withSettings = (newPerDay: number, updatedAt?: string) => {
+      const p = emptyProgress()
+      p.settings = { ...p.settings, newPerDay, ...(updatedAt === undefined ? {} : { updatedAt }) }
+      return p
+    }
+
+    it('远端改得更晚,采用远端', () => {
+      const local = withSettings(10, '2026-07-25T09:00:00Z')
+      const remote = withSettings(28, '2026-07-25T10:00:00Z')
+      expect(mergeProgress(local, remote).settings.newPerDay).toBe(28)
+    })
+
+    it('本地改得更晚,采用本地', () => {
+      const local = withSettings(28, '2026-07-25T10:00:00Z')
+      const remote = withSettings(10, '2026-07-25T09:00:00Z')
+      expect(mergeProgress(local, remote).settings.newPerDay).toBe(28)
+    })
+
+    it('本地没有时间戳(从未改过设置),远端有:采用远端', () => {
+      // 这台设备一直用默认值,另一台改过 —— 该跟随改过的那台,而不是把默认值推回去
+      const local = withSettings(10)
+      const remote = withSettings(28, '2026-07-25T10:00:00Z')
+      expect(mergeProgress(local, remote).settings.newPerDay).toBe(28)
+    })
+
+    it('远端没有时间戳(旧数据),本地有:采用本地', () => {
+      const local = withSettings(28, '2026-07-25T10:00:00Z')
+      const remote = withSettings(10)
+      expect(mergeProgress(local, remote).settings.newPerDay).toBe(28)
+    })
+
+    it('两边都没有时间戳:保持本地,不无谓翻动', () => {
+      expect(mergeProgress(withSettings(20), withSettings(10)).settings.newPerDay).toBe(20)
+    })
+
+    it('时间戳相同:保持本地,结果稳定', () => {
+      const t = '2026-07-25T10:00:00Z'
+      expect(mergeProgress(withSettings(20, t), withSettings(10, t)).settings.newPerDay).toBe(20)
+    })
+
+    it('整个 settings 一起搬,不逐字段挑 —— soundEnabled 不能被留在旧那份里', () => {
+      const local = withSettings(10, '2026-07-25T09:00:00Z')
+      local.settings.soundEnabled = true
+      const remote = withSettings(28, '2026-07-25T10:00:00Z')
+      remote.settings.soundEnabled = false
+      const m = mergeProgress(local, remote)
+      expect(m.settings.soundEnabled).toBe(false)   // 跟着 newPerDay 一起来自远端
+      expect(m.settings.newPerDay).toBe(28)
+    })
   })
 })

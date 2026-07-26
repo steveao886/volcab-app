@@ -20,5 +20,13 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
     }
   }
 
-  return { version: 1, settings: local.settings, words, dailyStats }
+  // settings 按 updatedAt 判优,整体搬运。
+  // 曾经是「一律取本地」,那让设置在设备间永远无法同步:A 改了推上去,B 合并时
+  // 本地赢、再推回去就把 A 的改动冲掉。缺时间戳视为最旧 —— 于是「从未改过设置
+  // 的设备」会跟随「改过的设备」,而不是把自己的默认值推回去。
+  const lt = local.settings.updatedAt ?? ''
+  const rt = remote.settings.updatedAt ?? ''
+  const settings = rt > lt ? remote.settings : local.settings
+
+  return { version: 1, settings, words, dailyStats }
 }
