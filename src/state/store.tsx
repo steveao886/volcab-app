@@ -396,7 +396,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // 退出等于「把本机上这个账号的数据清干净」,没推上去的只能丢 —— 但要说一声
     const droppedOps = pendingOps().length
     const droppedStaging = pendingStaging().length
-    const droppedProgress = storage.get<boolean>('dirty') === true
+    // dirty 不足以判断「进度是否欠着远端」:pushProgress 在发请求之前就把它清了
+    // (那是防止飞行途中的打分被吞掉的机制,不能动)。于是一次推送的整个往返里
+    // dirty 都是 false,而进度并没有送达 —— 此时登出会一声不吭地清空本机,这次
+    // 复习既不在本地也不在远端。
+    // 对照 wordOps / stagingOps:它们是确认成功之后才清的,所以数得对。这个不对称
+    // 就是根因,所以这里补上另一半:请求还在飞,就是还欠着。
+    const droppedProgress = storage.get<boolean>('dirty') === true || pushingRef.current
     clearTimer()
     sessionRef.current += 1
     clientRef.current = null

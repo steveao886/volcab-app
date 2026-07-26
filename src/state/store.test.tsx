@@ -342,6 +342,29 @@ describe('会话作废', () => {
     expect(remote.putsTo('progress.json')).toHaveLength(1)  // 也不会补跑
   })
 
+  it('推送在飞时登出:必须告知进度被丢弃 —— dirty 提前清掉不等于已经同步', async () => {
+    // pushProgress 在发请求「之前」就清掉 dirty(那是防止飞行途中的打分被吞掉的
+    // 机制,是对的)。于是这段往返里 storage 的 dirty 是 false —— 但进度并没有
+    // 送达。logout 若只看 dirty,就会认定「没什么可丢的」而一声不吭地清空本机,
+    // 而这次复习既不在本地也不在远端。
+    // wordOps / stagingOps 是「确认成功后」才清,所以它们数得对;dirty 是「发送前」
+    // 清的,所以它数不对 —— 这个不对称就是缺陷本身。
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'good') })
+    remote.hold.add('progress.json')
+    await step(() => { void app().syncNow() })
+    expect(storage.get('dirty')).toBe(false)               // 确实已经被提前清掉
+    expect(remote.putsTo('progress.json')).toHaveLength(1)  // 但请求还在飞
+
+    await step(() => { app().logout() })
+    expect(app().syncError).not.toBeNull()
+    expect(app().syncError).toContain('未同步')
+
+    // 而且这次推送最终失败了 —— 数据是真的没了,不是虚惊一场
+    await release(new Error('HTTP 500'))
+    expect(storage.get('progress')).toBeNull()
+  })
+
   it('登出后才落地的 words 推送:队列与词库都不许被回写', async () => {
     await bootAsAlice()
     remote.hold.add('words.json')
