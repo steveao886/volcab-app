@@ -8,9 +8,17 @@ import { Chip } from '../components/Chip'
 import { Field } from '../components/Field'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
+import { Select } from '../components/Select'
 import { SyncStatus } from '../components/SyncStatus'
 import { TextInput } from '../components/TextInput'
 import { Textarea } from '../components/Textarea'
+import {
+  SHARE_OPTIONS,
+  USAGE_SCORE_OPTIONS,
+  normalizeMeanings,
+  shareSum,
+  validateShares,
+} from '../lib/senseShare'
 import { todayStr } from '../lib/srs'
 import { useApp } from '../state/store'
 import type { Meaning, RelatedForm, Word } from '../types'
@@ -102,6 +110,9 @@ export function AddWord() {
   const [antonymsText, setAntonymsText] = useState('')
   const [collocationsText, setCollocationsText] = useState('')
   const [relatedForms, setRelatedForms] = useState<RelatedRow[]>([])
+  // 空串 = 还没选。**不给默认值**:默认成 5 只会让词库里堆满没人想过的 5 分,
+  // 那比缺分数更糟 —— 缺分数至少是诚实的「未评分」。
+  const [usageScoreInput, setUsageScoreInput] = useState('')
 
   const [lookup, setLookup] = useState<LookupState>({ status: 'idle' })
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
@@ -117,6 +128,9 @@ export function AddWord() {
   const duplicate = id !== '' && existing !== undefined
 
   const capture = useMemo(() => checkCapture(captureInput, words, staging), [captureInput, words, staging])
+
+  // 占比合计只做实时提示;真正拦提交的是 validate() 里的 validateShares。
+  const shareTotal = shareSum(meanings)
 
   async function handleCapture() {
     if (capture.kind !== 'ok' || capturing) return
@@ -150,6 +164,7 @@ export function AddWord() {
     setAntonymsText('')
     setCollocationsText('')
     setRelatedForms([])
+    setUsageScoreInput('')
     setLookup({ status: 'idle' })
     setFieldErrors({})
     setSavedWord(null)
@@ -212,12 +227,27 @@ export function AddWord() {
     const phon = phonetic.trim()
     if (!/^\/.+\/$/.test(phon)) errors.phonetic = '音标需形如 /ˈæbrəɡeɪt/(以斜杠包住)'
 
-    const meaningRows = meanings
-      .map((m) => ({ pos: m.pos.trim(), en: m.en.trim(), zh: m.zh.trim() }))
-      .filter((m) => m.pos || m.en || m.zh)
+    // 先归一再校验:归一会把只剩一条释义时的残留 share 剥掉,否则用户把第二条
+    // 释义清空(整行被下面的 filter 滤掉)之后,剩下那条还挂着 share,会撞上
+    // 「单义词不应标注义项占比」这条与他实际操作对不上的报错。
+    const meaningRows = normalizeMeanings(
+      meanings
+        .map((m) => {
+          const row: Meaning = { pos: m.pos.trim(), en: m.en.trim(), zh: m.zh.trim() }
+          if (m.share !== undefined) row.share = m.share
+          return row
+        })
+        .filter((m) => m.pos || m.en || m.zh),
+    )
     if (meaningRows.length === 0) errors.meanings = '至少需要一条释义'
     else if (meaningRows.some((m) => !(m.pos && m.en && m.zh)))
       errors.meanings = '每条释义的词性、英文释义、中文释义都要填写完整'
+
+    const shareErr = validateShares(meaningRows)
+    if (shareErr) errors.shares = shareErr
+
+    const usageScore = Number(usageScoreInput)
+    if (usageScoreInput === '') errors.usageScore = '请选择当代遇见概率'
 
     const exampleRows = examples.map((e) => e.value.trim()).filter(Boolean)
     if (exampleRows.length < 2) errors.examples = `至少需要 2 句例句(当前 ${exampleRows.length} 句)`
@@ -243,6 +273,7 @@ export function AddWord() {
       relatedForms: relatedRows,
       sourceNote: 'manual',
       addedAt: todayStr(new Date()),
+      usageScore,
     }
   }
 
@@ -404,6 +435,27 @@ export function AddWord() {
               lang="en"
             />
           </Field>
+
+          <Field
+            label="当代遇见概率"
+            htmlFor="aw-usage"
+            hint="1–10:在真实语境里碰到这个词的可能性。复习卡背面会显示它。"
+            error={fieldErrors.usageScore}
+          >
+            <Select
+              id="aw-usage"
+              className="num input--compact"
+              value={usageScoreInput}
+              onChange={(e) => setUsageScoreInput(e.target.value)}
+            >
+              <option value="">请选择</option>
+              {USAGE_SCORE_OPTIONS.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </Select>
+          </Field>
         </Card>
 
         <Card>
@@ -414,6 +466,11 @@ export function AddWord() {
           {fieldErrors.meanings && (
             <p className="field__error" role="alert">
               {fieldErrors.meanings}
+            </p>
+          )}
+          {fieldErrors.shares && (
+            <p className="field__error" role="alert">
+              {fieldErrors.shares}
             </p>
           )}
           <div className="addword-rows">
@@ -446,6 +503,29 @@ export function AddWord() {
                       placeholder="待填写"
                     />
                   </Field>
+                  {/* 占比只在一词多义时才有意义,单义时整格不出现(不是禁用):
+                      单义词标 100% 是噪音,还会让「有 share 即多义词」失效。 */}
+                  {meanings.length > 1 && (
+                    <Field label="占比" htmlFor={`aw-mean-share-${i}`}>
+                      <Select
+                        id={`aw-mean-share-${i}`}
+                        className="num"
+                        value={m.share === undefined ? '' : String(m.share)}
+                        onChange={(e) =>
+                          updateMeaning(i, {
+                            share: e.target.value === '' ? undefined : Number(e.target.value),
+                          })
+                        }
+                      >
+                        <option value="">—</option>
+                        {SHARE_OPTIONS.map((s) => (
+                          <option key={s} value={s}>
+                            {s}%
+                          </option>
+                        ))}
+                      </Select>
+                    </Field>
+                  )}
                 </div>
                 <Button
                   type="button"
@@ -460,6 +540,12 @@ export function AddWord() {
               </div>
             ))}
           </div>
+          {meanings.length > 1 && (
+            <p className={`addword-share-total ${shareTotal === 100 ? 'muted' : 'field__error'}`} role="status">
+              义项占比合计 <span className="num">{shareTotal}%</span>
+              {shareTotal === 100 ? '' : ',需为 100%'}
+            </p>
+          )}
           <Button type="button" variant="secondary" size="sm" onClick={addMeaning}>
             + 添加释义
           </Button>

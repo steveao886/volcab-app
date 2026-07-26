@@ -128,9 +128,20 @@
   grid-template-columns: 1fr;
 }
 
+/* 占比合计的实时提示。挨着「+ 添加释义」上方,不抢按钮的位置。 */
+.addword-share-total {
+  margin-block: var(--sp-3);
+  font-size: var(--fs-sm);
+}
+
 @media (min-width: 560px) {
   .addword-row__grid--meaning {
     grid-template-columns: 88px 1.6fr 1fr;
+  }
+
+  /* 多义时最后多一列占比下拉。窄屏走 .addword-row__grid 的单列堆叠,不用管。 */
+  .addword-row__grid--meaning:has(> .field:nth-child(4)) {
+    grid-template-columns: 88px 1.6fr 1fr 88px;
   }
 
   .addword-row__grid--related {

@@ -2,17 +2,29 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Button } from '../components/Button'
 import { Field } from '../components/Field'
+import { Select } from '../components/Select'
 import { TextInput } from '../components/TextInput'
 import { Textarea } from '../components/Textarea'
+import {
+  SHARE_OPTIONS,
+  USAGE_SCORE_OPTIONS,
+  normalizeMeanings,
+  shareSum,
+  validateShares,
+} from '../lib/senseShare'
 import type { Meaning, Word } from '../types'
 
 /**
  * 词条编辑表单。
  *
- * Word 有 10 个字段,这里只暴露 meanings/examples/synonyms/antonyms/collocations
- * 五个可编辑 —— id/headword/phonetic/relatedForms/sourceNote/addedAt 一律原样
- * 保留,提交时以 `{ ...word, ...编辑过的五个字段 }` 的方式合并,不会被表单
+ * 这里暴露 meanings(含义项占比)/examples/synonyms/antonyms/collocations/
+ * usageScore 可编辑 —— id/headword/phonetic/relatedForms/sourceNote/addedAt
+ * 一律原样保留,提交时以 `{ ...word, ...编辑过的字段 }` 的方式合并,不会被表单
  * 未展示的字段静默吞掉。
+ *
+ * usageScore 与义项占比必须在这里可改,而不是只让 /add 能填:否则填错了无从
+ * 修正,而且 share 会被下面重建 meanings 的那一步静默抹掉 —— 用户只是改个错别字,
+ * 占比就没了。
  *
  * synonyms/antonyms/collocations 是扁平字符串数组,用「每行一个」的单个
  * Textarea 编辑,而不是逐条 add/remove 的控件组 —— meanings 才值得那份
@@ -59,7 +71,15 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
   const [synonymsText, setSynonymsText] = useState(() => word.synonyms.join('\n'))
   const [antonymsText, setAntonymsText] = useState(() => word.antonyms.join('\n'))
   const [collocationsText, setCollocationsText] = useState(() => word.collocations.join('\n'))
+  // 老词条可能没有 usageScore(那时它还是可选字段),此时空串 = 未评分,
+  // 用户必须选一个才能保存 —— 编辑一次就顺手把它补齐。
+  const [usageScoreInput, setUsageScoreInput] = useState(() =>
+    word.usageScore === undefined ? '' : String(word.usageScore),
+  )
   const [error, setError] = useState<string | null>(null)
+
+  // 实时提示用;真正拦提交的是 handleSubmit 里的 validateShares。
+  const shareTotal = shareSum(meanings)
 
   function updateMeaning(key: string, patch: Partial<Meaning>) {
     setMeanings(prev => prev.map(m => (m.key === key ? { ...m, ...patch } : m)))
@@ -85,9 +105,18 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
     e.preventDefault()
     if (saving) return
 
-    const cleanedMeanings: Meaning[] = meanings
-      .map(m => ({ pos: m.pos.trim(), en: m.en.trim(), zh: m.zh.trim() }))
-      .filter(m => m.pos !== '' || m.en !== '' || m.zh !== '')
+    // normalizeMeanings 在这里同时干两件事:把只剩一条释义时的残留 share 剥掉
+    // (用户删到只剩一条,它就不该再有占比),以及按占比降序重排 —— 与
+    // scripts/validate-words.ts 要求的存储不变式对齐,不必麻烦用户自己排。
+    const cleanedMeanings: Meaning[] = normalizeMeanings(
+      meanings
+        .map(m => {
+          const row: Meaning = { pos: m.pos.trim(), en: m.en.trim(), zh: m.zh.trim() }
+          if (m.share !== undefined) row.share = m.share
+          return row
+        })
+        .filter(m => m.pos !== '' || m.en !== '' || m.zh !== ''),
+    )
 
     if (cleanedMeanings.length === 0) {
       setError('至少需要保留一条释义(词性、英文、中文都要填写)。')
@@ -96,6 +125,17 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
     const incomplete = cleanedMeanings.findIndex(m => m.pos === '' || m.en === '' || m.zh === '')
     if (incomplete !== -1) {
       setError(`第 ${incomplete + 1} 条释义需要同时填写词性、英文与中文。`)
+      return
+    }
+
+    const shareErr = validateShares(cleanedMeanings)
+    if (shareErr) {
+      setError(shareErr)
+      return
+    }
+
+    if (usageScoreInput === '') {
+      setError('请选择当代遇见概率(1–10)。')
       return
     }
 
@@ -122,6 +162,7 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
       synonyms,
       antonyms,
       collocations,
+      usageScore: Number(usageScoreInput),
     }
     void onSave(updated)
   }
@@ -156,6 +197,29 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
                 onChange={e => updateMeaning(m.key, { zh: e.target.value })}
               />
             </Field>
+            {/* 占比只在一词多义时出现:单义词标 100% 是噪音,还会让
+                「有 share 即多义词」这条判断失效。 */}
+            {meanings.length > 1 && (
+              <Field label="占比" htmlFor={`meaning-share-${m.key}`}>
+                <Select
+                  id={`meaning-share-${m.key}`}
+                  className="num input--compact"
+                  value={m.share === undefined ? '' : String(m.share)}
+                  onChange={e =>
+                    updateMeaning(m.key, {
+                      share: e.target.value === '' ? undefined : Number(e.target.value),
+                    })
+                  }
+                >
+                  <option value="">—</option>
+                  {SHARE_OPTIONS.map(s => (
+                    <option key={s} value={s}>
+                      {s}%
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+            )}
             <Button
               type="button"
               variant="ghost"
@@ -167,9 +231,38 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
             </Button>
           </div>
         ))}
+        {meanings.length > 1 && (
+          <p className={shareTotal === 100 ? 'muted' : 'field__error'} role="status">
+            义项占比合计 <span className="num">{shareTotal}%</span>
+            {shareTotal === 100 ? '' : ',需为 100%'}
+          </p>
+        )}
         <Button type="button" variant="secondary" size="sm" onClick={addMeaning}>
           + 添加释义
         </Button>
+      </fieldset>
+
+      <fieldset className="worddetail-edit__group" disabled={saving}>
+        <legend className="section-title worddetail-section-title">当代遇见概率</legend>
+        <Field
+          label="1–10"
+          htmlFor="edit-usage"
+          hint="在真实语境里碰到这个词的可能性。复习卡背面会显示它。"
+        >
+          <Select
+            id="edit-usage"
+            className="num input--compact"
+            value={usageScoreInput}
+            onChange={e => setUsageScoreInput(e.target.value)}
+          >
+            <option value="">请选择</option>
+            {USAGE_SCORE_OPTIONS.map(n => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </Select>
+        </Field>
       </fieldset>
 
       <fieldset className="worddetail-edit__group" disabled={saving}>

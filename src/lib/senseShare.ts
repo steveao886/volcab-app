@@ -1,13 +1,17 @@
 import type { Meaning } from '../types'
 
 /**
- * 义项占比(Meaning.share)的规则,一处定义、三处共用:
- * `/add` 表单、词条编辑表单、以及 `scripts/validate-words.ts` 的入库校验。
+ * 词条上两项评分类 metadata 的共用规则:义项占比(`Meaning.share`)与当代遇见
+ * 概率(`Word.usageScore`)的取值范围。一处定义、三处共用:`/add` 表单、词条
+ * 编辑表单、以及 `scripts/validate-words.ts` 的入库校验。
  *
  * 放在 src/lib 而不是 scripts/ 里,是因为 WordEditForm.tsx 里那条注释已经踩过一次坑
  * ——「校验必须和 scripts/validate-words.ts 对齐,否则这里存下的词条会悄悄脱离
  * schema」。两边各写一份迟早会漂移,所以让脚本反过来 import 这个模块。
  */
+
+/** 当代遇见概率的可选值。表单渲染成下拉,于是「1–10 的整数」不可能填错。 */
+export const USAGE_SCORE_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const
 
 /**
  * 占比只到整十,且不含 0 与 100。

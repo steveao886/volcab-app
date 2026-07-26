@@ -479,6 +479,18 @@
   resize: vertical;
 }
 
+/* 选项只有一个短数字的下拉(遇见概率 1–10、义项占比 10–90%)。撑满整行会让
+   一个两位数看起来像填空题。写在 .input 之后、同一个文件里,靠源码顺序盖过
+   .input 的 width:100%,不必去堆特异度也不依赖打包顺序。 */
+.input--compact {
+  width: auto;
+  min-width: 6.5rem;
+  max-width: 100%;
+  /* .field 是 grid,光把 width 改成 auto 不够 —— 网格项默认 stretch,还是会
+     撑满整列。justify-self 才是这里真正管用的那一条。 */
+  justify-self: start;
+}
+
 /* 勾选框:原生控件染成品牌色,外面套一个 --tap 大小的命中区 */
 .check {
   display: grid;
