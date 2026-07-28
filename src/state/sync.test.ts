@@ -400,10 +400,14 @@ describe('parse 守卫', () => {
     expect(() => parseWords(text)).toThrow()
   })
 
-  // Task 24 会把这份文件原样推进 volcab-data,它必须能过我们自己的校验
-  it('仓库里的 476 词词库能通过 parseWords', () => {
+  // 这份文件的内容会进 volcab-data,它必须能过我们自己的校验。
+  //
+  // **断言的是「一个都没被解析器丢掉」,不是某个具体词数。** 原本这里写死 476,
+  // 结果词库一变(线上删掉 5 个词、仓库副本跟着对齐)测试就红,而解析本身毫无问题
+  // —— 那种断言只是在复述词库当前有多少行,不测任何行为。
+  it('仓库里的词库能被 parseWords 完整解析', () => {
     const parsed = parseWords(JSON.stringify(realLibrary))
-    expect(parsed).toHaveLength(476)
+    expect(parsed).toHaveLength(realLibrary.words.length)
     expect(parsed.some(w => w.id === 'interchangeability')).toBe(true)
   })
 })

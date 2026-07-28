@@ -2604,42 +2604,6 @@
       "addedAt": "2026-07-24"
     },
     {
-      "id": "ad-hoc",
-      "headword": "ad hoc",
-      "phonetic": "/ˌæd ˈhɑːk/",
-      "meanings": [
-        {
-          "pos": "phr.",
-          "en": "created or done for a particular purpose as necessary, rather than planned in advance; improvised",
-          "zh": "临时的;特设的;因事而设的"
-        }
-      ],
-      "examples": [
-        "We threw together an ad hoc committee to handle the vendor complaint since no one officially owned it.",
-        "There's no formal onboarding doc — new hires mostly learn the codebase through ad hoc Slack threads."
-      ],
-      "synonyms": [
-        "improvised",
-        "makeshift",
-        "provisional",
-        "impromptu"
-      ],
-      "antonyms": [
-        "planned",
-        "systematic"
-      ],
-      "collocations": [
-        "ad hoc committee",
-        "ad hoc basis",
-        "ad hoc solution"
-      ],
-      "relatedForms": [],
-      "usageScore": 7,
-      "etymology": "拉丁 ad hoc「为这件事」 → 临时特设",
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24"
-    },
-    {
       "id": "contrived",
       "headword": "contrived",
       "phonetic": "/kənˈtraɪvd/",
@@ -2727,39 +2691,6 @@
       ],
       "usageScore": 5,
       "etymology": "希腊 krinein(判别、分辨) → 到了要判别的关口 → 危急性",
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24"
-    },
-    {
-      "id": "due-diligence",
-      "headword": "due diligence",
-      "phonetic": "/ˌduː ˈdɪlɪdʒəns/",
-      "meanings": [
-        {
-          "pos": "phr.",
-          "en": "the reasonable investigation and research a person or company undertakes before entering an agreement, investment, or transaction",
-          "zh": "尽职调查"
-        }
-      ],
-      "examples": [
-        "Skip the due diligence on that 'too good to be true' apartment listing and you'll end up wiring a deposit to a scammer.",
-        "Our due diligence on the acquisition turned up a lawsuit the founders had conveniently forgotten to mention."
-      ],
-      "synonyms": [
-        "investigation",
-        "vetting",
-        "scrutiny",
-        "research"
-      ],
-      "antonyms": [],
-      "collocations": [
-        "conduct due diligence",
-        "due diligence process",
-        "perform due diligence"
-      ],
-      "relatedForms": [],
-      "usageScore": 8,
-      "etymology": "diligere(认真对待) → 应尽的那份认真 → 尽职调查",
       "sourceNote": "20-23",
       "addedAt": "2026-07-24"
     },
@@ -4670,49 +4601,6 @@
       "addedAt": "2026-07-24"
     },
     {
-      "id": "remorse",
-      "headword": "remorse",
-      "phonetic": "/rɪˈmɔːrs/",
-      "meanings": [
-        {
-          "pos": "n.",
-          "en": "deep regret or guilt for a wrong committed",
-          "zh": "懊悔;悔恨"
-        }
-      ],
-      "examples": [
-        "The classic 2 a.m. online-shopping remorse hit the second she saw the confirmation email for a $300 air fryer she didn't need.",
-        "He felt real remorse after snapping at the delivery driver over a late order that wasn't even the driver's fault.",
-        "There was no remorse in his apology email, just a lot of 'sorry you feel that way' dressed up as an explanation."
-      ],
-      "synonyms": [
-        "regret",
-        "guilt",
-        "contrition",
-        "repentance"
-      ],
-      "antonyms": [
-        "indifference",
-        "satisfaction"
-      ],
-      "collocations": [
-        "feel remorse",
-        "express remorse",
-        "without remorse"
-      ],
-      "relatedForms": [
-        {
-          "form": "remorseful",
-          "pos": "adj.",
-          "zh": "懊悔的;悔恨的"
-        }
-      ],
-      "usageScore": 7,
-      "etymology": "re-(反复) + mordere(咬) → 反复啃咬 → 悔恨",
-      "sourceNote": "30-33",
-      "addedAt": "2026-07-24"
-    },
-    {
       "id": "sagacious",
       "headword": "sagacious",
       "phonetic": "/səˈɡeɪʃəs/",
@@ -5137,54 +5025,6 @@
       ],
       "usageScore": 7,
       "etymology": "ex-(出) + facere(做) → 做得出结果 → 功效",
-      "sourceNote": "34-41",
-      "addedAt": "2026-07-24"
-    },
-    {
-      "id": "hypocrisy",
-      "headword": "hypocrisy",
-      "phonetic": "/hɪˈpɑːkrəsi/",
-      "meanings": [
-        {
-          "pos": "n.",
-          "en": "the practice of claiming moral standards or beliefs that one's own behavior does not match",
-          "zh": "虚伪"
-        }
-      ],
-      "examples": [
-        "It's pure hypocrisy for him to preach about work-life balance while emailing the team at 11 p.m. every night.",
-        "Fans called out the celebrity's hypocrisy after she flew private to a climate summit.",
-        "The landlord's hypocrisy was obvious — banning pets in the lease while walking his own dog through the lobby daily."
-      ],
-      "synonyms": [
-        "duplicity",
-        "insincerity",
-        "double standard",
-        "sanctimony"
-      ],
-      "antonyms": [
-        "sincerity",
-        "honesty"
-      ],
-      "collocations": [
-        "accuse someone of hypocrisy",
-        "blatant hypocrisy",
-        "smack of hypocrisy"
-      ],
-      "relatedForms": [
-        {
-          "form": "hypocrite",
-          "pos": "n.",
-          "zh": "伪君子"
-        },
-        {
-          "form": "hypocritical",
-          "pos": "adj.",
-          "zh": "虚伪的"
-        }
-      ],
-      "usageScore": 8,
-      "etymology": "希腊 hypokrisis(登台演戏) → 虚伪",
       "sourceNote": "34-41",
       "addedAt": "2026-07-24"
     },
@@ -6192,42 +6032,6 @@
       ],
       "usageScore": 6,
       "etymology": "re-(强调) + vereri(敬畏) → 尊敬",
-      "sourceNote": "42-49",
-      "addedAt": "2026-07-24"
-    },
-    {
-      "id": "status-quo",
-      "headword": "status quo",
-      "phonetic": "/ˌsteɪtəs ˈkwoʊ/",
-      "meanings": [
-        {
-          "pos": "phr.",
-          "en": "the existing state of affairs",
-          "zh": "现状"
-        }
-      ],
-      "examples": [
-        "Half the team wanted to switch project-management tools, but the manager preferred to keep the status quo.",
-        "Renting felt safer than watching rent prices spike every renewal, but the status quo finally pushed them to buy a condo.",
-        "The new hire's blunt questions in her first meeting quietly challenged a status quo nobody had questioned in years."
-      ],
-      "synonyms": [
-        "current state",
-        "existing situation",
-        "present condition"
-      ],
-      "antonyms": [
-        "change",
-        "upheaval"
-      ],
-      "collocations": [
-        "maintain the status quo",
-        "challenge the status quo",
-        "preserve the status quo"
-      ],
-      "relatedForms": [],
-      "usageScore": 9,
-      "etymology": "拉丁 status quo「所处的状态」 → 现状",
       "sourceNote": "42-49",
       "addedAt": "2026-07-24"
     },
