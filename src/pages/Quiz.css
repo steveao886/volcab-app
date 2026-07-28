@@ -36,6 +36,27 @@
   margin-top: var(--sp-5);
 }
 
+/* 选项前的数字键提示:按 1–4 直接作答。与复习页 .review-grade__key 同一套
+   语言 —— 等宽数字体、比正文小一号、faint 色:它是操作提示,不是选项内容,
+   不该跟释义抢注意力。 */
+/* 序号是**选项文字里的一个内联前缀**,不是并排的第二个 flex 项 —— 后者要么在
+   单行选项上偏高(按钮 44px 高,文字被居中而序号顶在内容框上沿),要么在三行
+   释义旁边飘到正中间。跟着基线走,两种情况都不用管。 */
+.quiz-option__key {
+  margin-inline-end: var(--sp-2);
+  font-family: var(--font-num);
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+}
+
+/* 判完题的对错两项是淡色底 + 同色文字,faint 灰在上面糊成一片 ——
+   跟着文字走,只压一点不透明度维持主次。 */
+.btn--correct .quiz-option__key,
+.btn--incorrect .quiz-option__key {
+  color: inherit;
+  opacity: 0.75;
+}
+
 /* 判题后贴在选项文字下方的小字说明:「正确答案」/「你的选择」——
    对错不能只靠颜色传达,这行文字是给色觉障碍与截图场景的兜底。 */
 .quiz-option__tag {

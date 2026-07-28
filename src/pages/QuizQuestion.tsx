@@ -1,10 +1,11 @@
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Button } from '../components/Button'
 import { Chip } from '../components/Chip'
 import { Field } from '../components/Field'
 import { Icon } from '../components/Icon'
 import { TextInput } from '../components/TextInput'
+import { optionIndexFromKey } from '../lib/keys'
 import type { QuizQuestion, QuizType } from '../lib/quiz'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
 import { speak } from '../lib/tts'
@@ -201,15 +202,33 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
   // word2meaning 专属的辞书衬线体会误导,那套视觉语言留给「整屏唯一词头」。
   const promptLang = question.type === 'word2meaning' || isCloze || question.type === 'synonymHint' ? 'en' : undefined
 
-  const handleChoose = (opt: string) => {
-    if (answeredRef.current) return
-    answeredRef.current = true
-    const correct = opt === question.answer
-    // 在点击的调用栈内同步播放,iOS 要求 AudioContext 解锁发生在用户手势内。
-    playQuizResult(correct, soundEnabled)
-    setChosen(opt)
-    onAnswered(correct)
-  }
+  const handleChoose = useCallback(
+    (opt: string) => {
+      if (answeredRef.current) return
+      answeredRef.current = true
+      const correct = opt === question.answer
+      // 在点击的调用栈内同步播放,iOS 要求 AudioContext 解锁发生在用户手势内。
+      playQuizResult(correct, soundEnabled)
+      setChosen(opt)
+      onAnswered(correct)
+    },
+    [question.answer, soundEnabled, onAnswered],
+  )
+
+  // 数字键 1–4 直接选中对应选项 —— 与复习页 1–4 打分是同一套肌肉记忆。
+  // 判完题就摘掉监听:此时按钮已 disabled,焦点被 AnswerFeedback 交给了
+  // 「下一题」,数字键该彻底沉默,Enter/空格由那颗按钮自己处理。
+  useEffect(() => {
+    if (locked) return
+    function onKeyDown(e: KeyboardEvent) {
+      const i = optionIndexFromKey(e, question.options.length)
+      if (i < 0) return
+      e.preventDefault()
+      handleChoose(question.options[i])
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [locked, question.options, handleChoose])
 
   return (
     <div className="quiz-q">
@@ -234,7 +253,7 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
       )}
 
       <div className="quiz-options" role="group" aria-label="选项">
-        {question.options.map(opt => {
+        {question.options.map((opt, i) => {
           let variant: 'secondary' | 'correct' | 'incorrect' = 'secondary'
           if (locked && opt === question.answer) variant = 'correct'
           else if (locked && opt === chosen) variant = 'incorrect'
@@ -249,7 +268,12 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
               lang={optionLang}
               onClick={() => handleChoose(opt)}
             >
-              <span>{opt}</span>
+              {/* 序号印在选项上,快捷键才有人知道。和复习页把「1」印在打分按钮上
+                  一个道理:不写出来的快捷键等于不存在。 */}
+              <span>
+                <span className="quiz-option__key">{i + 1}</span>
+                {opt}
+              </span>
               {locked && opt === question.answer ? (
                 <span className="quiz-option__tag">正确答案</span>
               ) : null}

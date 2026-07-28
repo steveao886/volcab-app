@@ -7,6 +7,7 @@ import { Card } from '../components/Card'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
+import { isEditableTarget } from '../lib/keys'
 import { buildLapseQueue, buildQueue } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { todayStr } from '../lib/srs'
@@ -18,15 +19,8 @@ import { useApp } from '../state/store'
 import type { Grade } from '../types'
 import './Review.css'
 
-/**
- * 键盘只在"没有落在文本输入控件里"时接管空格/数字键。
- * 本页目前没有任何输入框,但保留这层判断,免得以后加了输入框会被静默吃掉按键。
- */
-function isEditableTarget(el: Element | null): boolean {
-  if (!el) return false
-  const tag = el.tagName
-  return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (el as HTMLElement).isContentEditable
-}
+/* 键盘只在"没有落在文本输入控件里"时接管空格/数字键 —— 这条判断与测验页
+   的选项快捷键共用一份实现,见 lib/keys.ts。 */
 
 const GRADE_KEYS: Record<string, Grade> = { '1': 'again', '2': 'hard', '3': 'good', '4': 'easy' }
 

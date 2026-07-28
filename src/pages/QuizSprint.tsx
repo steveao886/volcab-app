@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
+import { optionIndexFromKey } from '../lib/keys'
 import { generateQuiz } from '../lib/quiz'
 import type { QuizType } from '../lib/quiz'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
@@ -105,6 +106,21 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
     }, FLASH_MS)
   }, [done, q, soundEnabled])
 
+  // 数字键 1–4 作答。**这个模式最需要它** —— 一分钟里手在四个按钮之间来回移动
+  // 的时间是纯损耗,而键盘上四个键在手指底下不用瞄。判分与推进都走 choose,
+  // 与点击完全同一条路(含 answeredRef 的连击守卫)。
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (done || q === undefined) return
+      const i = optionIndexFromKey(e, q.options.length)
+      if (i < 0) return
+      e.preventDefault()
+      choose(q.options[i])
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [done, q, choose])
+
   if (questions.length === 0) {
     return (
       <Card className="quiz-empty">
@@ -179,7 +195,7 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
           </p>
 
           <div className="quiz-options" role="group" aria-label="选项">
-            {q.options.map(opt => {
+            {q.options.map((opt, i) => {
               let variant: 'secondary' | 'correct' | 'incorrect' = 'secondary'
               if (chosen !== null && opt === q.answer) variant = 'correct'
               else if (chosen !== null && opt === chosen) variant = 'incorrect'
@@ -194,7 +210,10 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
                   lang={q.type === 'word2meaning' ? undefined : 'en'}
                   onClick={() => choose(opt)}
                 >
-                  <span>{opt}</span>
+                  <span>
+                    <span className="quiz-option__key">{i + 1}</span>
+                    {opt}
+                  </span>
                 </Button>
               )
             })}
