@@ -4,7 +4,7 @@ import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Chip } from '../components/Chip'
 import { pickPassage, pushRecent } from '../lib/passage'
-import type { Passage, PassageQuestion } from '../lib/passage'
+import type { Passage, PassageQuestion, Token } from '../lib/passage'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
 import { todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
@@ -205,23 +205,77 @@ export function PassageSession({
         ) : null}
       </Card>
 
-      {submitted ? <PassageResult question={question} score={score} onRestart={onRestart} /> : null}
+      {submitted ? (
+        <PassageResult
+          question={question}
+          score={score}
+          wrongSentences={new Set(blanks.filter((b, i) => filled[i] !== b.wordId).map(b => b.si))}
+          onRestart={onRestart}
+        />
+      ) : null}
     </>
   )
 }
 
+/**
+ * The result after submitting: score + sentence-by-sentence Chinese-English comparison.
+ *
+ * **The Chinese translation only appears here.** Showing it while you're
+ * still answering would put the answer in Chinese right next to the blank —
+ * "董事会对并购感到忧虑" (the board is apprehensive about the merger), and
+ * there's nothing left to think about for apprehensive.
+ */
 function PassageResult({
-  question, score, onRestart,
-}: { question: PassageQuestion; score: number; onRestart: () => void }) {
+  question,
+  score,
+  wrongSentences,
+  onRestart,
+}: {
+  question: PassageQuestion
+  score: number
+  /** Indices of the sentences containing a blank that was filled wrong */
+  wrongSentences: Set<number>
+  onRestart: () => void
+}) {
+  const total = question.blanks.length
+
   return (
-    <Card>
-      <p className="quiz-result__score" role="status">
-        <span className="num quiz-result__score-num">{score}</span>
-        <span className="muted"> / {question.blanks.length}</span>
-      </p>
-      <Button variant="primary" size="lg" block onClick={onRestart}>
-        再来一篇
-      </Button>
-    </Card>
+    <>
+      <Card>
+        <p className="quiz-result__score" role="status">
+          <span className="num quiz-result__score-num">{score}</span>
+          <span className="muted"> / {total}</span>
+        </p>
+        <p className="muted quiz-result__summary">
+          {score === total ? '全部填对,漂亮!' : `${total} 个空,填对 ${score} 个。`}
+        </p>
+      </Card>
+
+      <Card>
+        <p className="quiz-q__label">逐句对照</p>
+        <ol className="quiz-passage__pairs">
+          {question.passage.zh.map((zh, si) => (
+            <li key={si} className={wrongSentences.has(si) ? 'quiz-passage__pair--wrong' : undefined}>
+              <p lang="en">{plainSentence(question.sentences[si])}</p>
+              <p className="muted">{zh}</p>
+            </li>
+          ))}
+        </ol>
+      </Card>
+
+      <div className="quiz-result__actions">
+        <Button variant="primary" size="lg" block onClick={onRestart}>
+          再来一篇
+        </Button>
+        <Link className="btn btn--secondary btn--block" to="/">
+          返回今日
+        </Link>
+      </div>
+    </>
   )
+}
+
+/** Reconstructs the plain, unmarked English sentence from tokens — the comparison area shows the complete sentence, not the question text with blanks. */
+function plainSentence(tokens: Token[]): string {
+  return tokens.map(t => (t.kind === 'text' ? t.text : t.surface)).join('')
 }
