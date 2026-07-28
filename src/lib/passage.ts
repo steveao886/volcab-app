@@ -112,12 +112,23 @@ export interface Blank {
  * **只挖学过的词**(`state !== 'new'`),没学过的、以及在词库里查不到的原样印出来。
  * 这条沿用辨析模式那条教训(见 quiz.ts 的 generateContrastQuiz):不拿没见过的词
  * 考你。但与辨析不同的是,没见过的词可以留在上下文里 —— 它不是题,是读物。
+ *
+ * **超过 `MAX_BLANKS` 时组内先打乱再截断。** 原本这里是 `[...due, ...notDue]`
+ * 直接 slice —— 一刀切在固定的位置上,砍掉的永远是同几个词。实测两篇各跑 200 个
+ * 种子,committee-report 只出过 7 个答案词、`ratify` **一次都没被挖过**,
+ * sweltering-commute 同样从没挖过 `abate`:语料里标了、校验也过了的词,永远
+ * 考不到。这与 quiz.ts 的 pickCloze 那条(同一个词的挖空题面永远是同一句,
+ * 实测 63 个词 0 个第二种题面)是同一类缺陷 —— 顺着数组取,取到的永远是同一批。
+ *
+ * 打乱只发生在**组内**:到期的仍然整组排在未到期的前面,复习优先级不受影响。
+ * 截断之后本来就会按正文顺序还原,渲染顺序也不受影响。
  */
 export function selectBlanks(
   sentences: Token[][],
   words: Map<string, Word>,
   progress: Progress,
   today: string,
+  rng: () => number,
 ): Blank[] {
   const seen = new Set<string>()
   const eligible: Blank[] = []
@@ -140,7 +151,10 @@ export function selectBlanks(
 
   // 到期的先占坑,再按正文顺序还原 —— 渲染必须按出现顺序,砍的是「挖谁」不是「怎么排」
   const isDue = (b: Blank) => progress.words[b.wordId].due <= today
-  const picked = new Set([...eligible.filter(isDue), ...eligible.filter(b => !isDue(b))].slice(0, MAX_BLANKS))
+  const picked = new Set([
+    ...shuffle(eligible.filter(isDue), rng),
+    ...shuffle(eligible.filter(b => !isDue(b)), rng),
+  ].slice(0, MAX_BLANKS))
   return eligible.filter(b => picked.has(b))
 }
 
@@ -254,7 +268,7 @@ export function buildPassageQuestion(
   if (sentences === null) return null
 
   const byId = new Map(words.map(w => [w.id, w]))
-  const blanks = selectBlanks(sentences, byId, progress, today)
+  const blanks = selectBlanks(sentences, byId, progress, today, rng)
   if (blanks.length < MIN_BLANKS) return null
 
   const answerIds = new Set(blanks.map(b => b.wordId))

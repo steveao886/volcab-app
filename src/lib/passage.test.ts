@@ -150,26 +150,29 @@ describe('parsePassage', () => {
 })
 
 describe('selectBlanks', () => {
+  /** 每次现造一个,种子固定 —— 不共享状态,断言不依赖用例执行顺序。 */
+  const rng = () => mulberry32(1)
+
   it('只挖学过的词,没学过的原样留在正文里当阅读材料', () => {
     const sentences = parsePassage(passage({
       en: ['{{a}} {{b}} {{c}}'], zh: ['甲'],
     }))!
     const words = [word('a'), word('b'), word('c')]
     const progress = progressWith({ a: TODAY, b: TODAY })  // c 没学过
-    const blanks = selectBlanks(sentences, byId(words), progress, TODAY)
+    const blanks = selectBlanks(sentences, byId(words), progress, TODAY, rng())
     expect(blanks.map(b => b.wordId)).toEqual(['a', 'b'])
   })
 
   it('词库里查不到的词不挖 —— 仓库副本与线上词库会分叉', () => {
     const sentences = parsePassage(passage({ en: ['{{a}} {{ghost}}'], zh: ['甲'] }))!
     const progress = progressWith({ a: TODAY, ghost: TODAY })
-    const blanks = selectBlanks(sentences, byId([word('a')]), progress, TODAY)
+    const blanks = selectBlanks(sentences, byId([word('a')]), progress, TODAY, rng())
     expect(blanks.map(b => b.wordId)).toEqual(['a'])
   })
 
   it('同一个词一篇里最多一个空,否则候选词区会出现两个一模一样的词', () => {
     const sentences = parsePassage(passage({ en: ['{{a}} then {{a|as}}'], zh: ['甲'] }))!
-    const blanks = selectBlanks(sentences, byId([word('a')]), progressWith({ a: TODAY }), TODAY)
+    const blanks = selectBlanks(sentences, byId([word('a')]), progressWith({ a: TODAY }), TODAY, rng())
     expect(blanks).toHaveLength(1)
     expect(blanks[0].surface).toBe('a')
   })
@@ -179,7 +182,7 @@ describe('selectBlanks', () => {
       en: ['x {{refute|refuted}} y', 'z {{a}}'], zh: ['甲', '乙'],
     }))!
     const words = [word('refute'), word('a')]
-    const blanks = selectBlanks(sentences, byId(words), progressWith({ refute: TODAY, a: TODAY }), TODAY)
+    const blanks = selectBlanks(sentences, byId(words), progressWith({ refute: TODAY, a: TODAY }), TODAY, rng())
     expect(blanks[0]).toMatchObject({ si: 0, ti: 1, wordId: 'refute', surface: 'refuted' })
     expect(blanks[1]).toMatchObject({ si: 1, wordId: 'a' })
   })
@@ -194,9 +197,36 @@ describe('selectBlanks', () => {
     const progress = progressWith(Object.fromEntries(
       ids.map((i, n) => [i, n < 2 ? '2099-01-01' : TODAY]),
     ))
-    const blanks = selectBlanks(sentences, byId(words), progress, TODAY)
+    // 组内打乱不影响这条:到期的正好 7 个 = MAX_BLANKS,无论怎么洗都整组入选,
+    // 未到期的两个无论怎么洗都在 7 名开外。断言的是「到期优先」+「正文顺序」两条
+    // 不变量,与组内顺序无关 —— 所以这里不需要为了让测试过而放宽。
+    const blanks = selectBlanks(sentences, byId(words), progress, TODAY, rng())
     expect(blanks).toHaveLength(MAX_BLANKS)
     expect(blanks.map(b => b.wordId)).toEqual(['c', 'd', 'e', 'f', 'g', 'h', 'i'])
+  })
+
+  it('截断砍掉的不总是同几个词 —— 语料里标了的词不该永远考不到', () => {
+    const ids = Array.from({ length: MAX_BLANKS + 3 }, (_, i) => `w${i}`)
+    const sentences = parsePassage(passage({
+      en: [ids.map(i => `{{${i}}}`).join(' ')], zh: ['甲'],
+    }))!
+    const words = ids.map(i => word(i))
+    const progress = progressWith(Object.fromEntries(ids.map(i => [i, TODAY])))
+
+    const sets = new Set<string>()
+    const everChosen = new Set<string>()
+    for (let seed = 1; seed <= 100; seed++) {
+      const blanks = selectBlanks(sentences, byId(words), progress, TODAY, mulberry32(seed))
+      expect(blanks).toHaveLength(MAX_BLANKS)
+      // 正文顺序这条不变量在打乱之后依然成立
+      expect(blanks.map(b => b.si * 100 + b.ti)).toEqual([...blanks.map(b => b.si * 100 + b.ti)].sort((x, y) => x - y))
+      sets.add(blanks.map(b => b.wordId).join(','))
+      for (const b of blanks) everChosen.add(b.wordId)
+    }
+    // 断言的是「有变化」而不是某一种具体结果
+    expect(sets.size).toBeGreaterThan(1)
+    // 每个标记词都得有被挖到的机会,一个都不能永远出局
+    expect([...everChosen].sort()).toEqual([...ids].sort())
   })
 })
 
