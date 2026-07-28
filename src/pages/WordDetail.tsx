@@ -189,6 +189,13 @@ export function WordDetail() {
             </Card>
           )}
 
+          {word.etymology !== undefined && (
+            <Card>
+              <p className="section-title worddetail-section-title">词源</p>
+              <p className="worddetail-etymology">{word.etymology}</p>
+            </Card>
+          )}
+
           {word.relatedForms.length > 0 && (
             <Card>
               <p className="section-title worddetail-section-title">同根变形</p>

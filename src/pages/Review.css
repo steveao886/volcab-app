@@ -173,6 +173,15 @@
   gap: var(--sp-2);
 }
 
+/* 词源是一句话,不是一排 chip。左侧一道发丝竖线把它和上下的标签行区分开 ——
+   没有这道线它会被读成又一段释义。用发丝描边而不是底色块,与全站一致。 */
+.review-etymology {
+  padding-left: var(--sp-3);
+  border-left: 1px solid var(--rule);
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
 /* 同根词 chip 里 pos 缩写(v. / adj. …)夹在词形和中文释义之间,弱化一档 */
 .review-tags__pos {
   color: var(--text-faint);

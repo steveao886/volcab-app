@@ -105,6 +105,15 @@
   color: var(--text-muted);
 }
 
+/* 词源:与复习卡背面同一套处理(见 Review.css 的 .review-etymology)——
+   一句话,靠左侧发丝竖线与周围的小节区分开。 */
+.worddetail-etymology {
+  padding-left: var(--sp-3);
+  border-left: 1px solid var(--rule);
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
 /* --- 学习状态统计 ----------------------------------------------------------
    每一格是共享的 .stat 原语(components.css),这里只决定分几栏。
    「学习状态」那一格要塞进 StateDot + 文字,值上另加 .stat__value--row。 */

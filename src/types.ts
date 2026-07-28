@@ -34,6 +34,15 @@ export interface Word {
   addedAt: string     // YYYY-MM-DD
   /** 当代遇见概率 1–10:在真实语境里碰到这个词的可能性。缺省表示尚未评分。 */
   usageScore?: number
+  /**
+   * 词源拆解,一句话,形如 `ab-(离开) + rogare(提议) → 废除`。
+   *
+   * **永远可选**,与 usageScore 那条「写入端严格、读取端宽容」的路子不同 ——
+   * 这里两端都宽容,是刻意的:不是所有词都有可拆解的词源,日耳曼来源的常用词、
+   * 来源不明的词,**编一个比留空糟得多**。词源写错不是少一条信息,是往脑子里
+   * 钉一个错误的记忆锚点。没有就不显示这一块。
+   */
+  etymology?: string
 }
 
 export interface WordsFile { version: 1; words: Word[] }

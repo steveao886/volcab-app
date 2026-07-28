@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs'
+import { ETYMOLOGY_MAX } from '../src/lib/etymology.ts'
 import { isShareOrdered, validateShares } from '../src/lib/senseShare.ts'
 
 const file = process.argv[2] ?? 'data/words.json'
@@ -46,6 +47,17 @@ for (const w of data.words) {
     errors.push(`${ctx}: 缺 usageScore(1–10 的整数)`)
   } else if (!Number.isInteger(w.usageScore) || w.usageScore < 1 || w.usageScore > 10) {
     errors.push(`${ctx}: usageScore 需为 1–10 的整数,实为 ${JSON.stringify(w.usageScore)}`)
+  }
+  // etymology 与上面那些字段相反:**不校验是否存在,只校验存在时的形状**。
+  // 词源不是每个词都有(见 src/types.ts 的字段注释),缺席是合法状态;
+  // 但一个空串或纯空白的 etymology 是脏数据 —— 它会让展示层判为"有词源"
+  // 然后渲染一个空的小节标题。
+  if (w.etymology !== undefined) {
+    if (typeof w.etymology !== 'string' || w.etymology.trim() === '') {
+      errors.push(`${ctx}: etymology 存在时必须是非空字符串(不需要词源就整个字段不写)`)
+    } else if (w.etymology.length > ETYMOLOGY_MAX) {
+      errors.push(`${ctx}: etymology 超过 ${ETYMOLOGY_MAX} 字(实为 ${w.etymology.length}),它是一句话不是一段考据`)
+    }
   }
 }
 

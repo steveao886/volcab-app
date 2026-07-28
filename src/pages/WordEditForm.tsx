@@ -5,6 +5,7 @@ import { Field } from '../components/Field'
 import { Select } from '../components/Select'
 import { TextInput } from '../components/TextInput'
 import { Textarea } from '../components/Textarea'
+import { normalizeEtymology, validateEtymology } from '../lib/etymology'
 import {
   SHARE_OPTIONS,
   USAGE_SCORE_OPTIONS,
@@ -76,6 +77,8 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
   const [usageScoreInput, setUsageScoreInput] = useState(() =>
     word.usageScore === undefined ? '' : String(word.usageScore),
   )
+  // 词源与 usageScore 相反:空串是合法的终态,不是「待补齐」。清空即删除该字段。
+  const [etymologyInput, setEtymologyInput] = useState(() => word.etymology ?? '')
   const [error, setError] = useState<string | null>(null)
 
   // 实时提示用;真正拦提交的是 handleSubmit 里的 validateShares。
@@ -154,6 +157,12 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
     const antonyms = linesToArray(antonymsText, word.headword)
     const collocations = linesToArray(collocationsText, word.headword)
 
+    const etymologyErr = validateEtymology(etymologyInput)
+    if (etymologyErr) {
+      setError(etymologyErr)
+      return
+    }
+
     setError(null)
     const updated: Word = {
       ...word,
@@ -164,6 +173,13 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
       collocations,
       usageScore: Number(usageScoreInput),
     }
+    // 清空输入框要真的把键删掉,不能留一个 `etymology: undefined`:内存里那个对象
+    // 会带着这个键流进 store、进而进 merge —— JSON 序列化时它确实会消失,但在此
+    // 之前任何 `'etymology' in word` 式的判断都会看到它。删得干净些。
+    const etymology = normalizeEtymology(etymologyInput)
+    if (etymology === undefined) delete updated.etymology
+    else updated.etymology = etymology
+
     void onSave(updated)
   }
 
@@ -284,6 +300,19 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
           + 添加例句
         </Button>
       </fieldset>
+
+      <Field
+        label="词源"
+        htmlFor="edit-etymology"
+        hint="一句话,如「ab-(离开) + rogare(提议) → 废除」。没把握就留空 —— 编一个比不写糟"
+      >
+        <TextInput
+          id="edit-etymology"
+          value={etymologyInput}
+          onChange={e => setEtymologyInput(e.target.value)}
+          disabled={saving}
+        />
+      </Field>
 
       <Field label="近义词" htmlFor="edit-synonyms" hint="每行一个,可留空">
         <Textarea id="edit-synonyms" value={synonymsText} onChange={e => setSynonymsText(e.target.value)} disabled={saving} />

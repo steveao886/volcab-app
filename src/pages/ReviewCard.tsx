@@ -83,6 +83,16 @@ export function ReviewCardBack({ word }: { word: Word }) {
       {word.antonyms.length > 0 && <TagRow label="反义词" items={word.antonyms} />}
       {word.collocations.length > 0 && <TagRow label="搭配" items={word.collocations} />}
 
+      {/* 词源紧挨着同根词:两者讲的是同一件事的两半 —— 词根怎么来的、这个根还
+          长出了哪些词。分开放会让"成族记忆"这条线断掉。
+          没有 etymology 的词整块不渲染(约三到四成),不留空标题。 */}
+      {word.etymology !== undefined && (
+        <div className="review-tags">
+          <p className="review-tags__label section-title">词源</p>
+          <p className="review-etymology">{word.etymology}</p>
+        </div>
+      )}
+
       {word.relatedForms.length > 0 && (
         <div className="review-tags">
           <p className="review-tags__label section-title">同根词</p>

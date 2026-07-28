@@ -12,6 +12,7 @@ import { Select } from '../components/Select'
 import { SyncStatus } from '../components/SyncStatus'
 import { TextInput } from '../components/TextInput'
 import { Textarea } from '../components/Textarea'
+import { normalizeEtymology, validateEtymology } from '../lib/etymology'
 import {
   SHARE_OPTIONS,
   USAGE_SCORE_OPTIONS,
@@ -113,6 +114,8 @@ export function AddWord() {
   // 空串 = 还没选。**不给默认值**:默认成 5 只会让词库里堆满没人想过的 5 分,
   // 那比缺分数更糟 —— 缺分数至少是诚实的「未评分」。
   const [usageScoreInput, setUsageScoreInput] = useState('')
+  // 与 usageScore 相反,空是合法终态:词源是唯一允许缺席的字段。
+  const [etymologyInput, setEtymologyInput] = useState('')
 
   const [lookup, setLookup] = useState<LookupState>({ status: 'idle' })
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
@@ -258,10 +261,13 @@ export function AddWord() {
     if (relatedRows.some((r) => !(r.form && r.pos && r.zh)))
       errors.relatedForms = '同根变形的写法、词性、中文释义要么都填,要么整行留空'
 
+    const etymologyErr = validateEtymology(etymologyInput)
+    if (etymologyErr) errors.etymology = etymologyErr
+
     setFieldErrors(errors)
     if (Object.keys(errors).length > 0) return null
 
-    return {
+    const word: Word = {
       id,
       headword,
       phonetic: phon,
@@ -275,6 +281,11 @@ export function AddWord() {
       addedAt: todayStr(new Date()),
       usageScore,
     }
+    // 留空就整个不写这个键,而不是写一个空串 —— 空串会让展示层判为「有词源」
+    // 然后渲染一个只有标题没有内容的小节。
+    const etymology = normalizeEtymology(etymologyInput)
+    if (etymology !== undefined) word.etymology = etymology
+    return word
   }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -455,6 +466,20 @@ export function AddWord() {
                 </option>
               ))}
             </Select>
+          </Field>
+
+          <Field
+            label="词源"
+            htmlFor="aw-etymology"
+            hint="可留空。一句话,如「ab-(离开) + rogare(提议) → 废除」。没把握就别写 —— 编一个比不写糟"
+            error={fieldErrors.etymology}
+          >
+            <TextInput
+              id="aw-etymology"
+              value={etymologyInput}
+              onChange={(e) => setEtymologyInput(e.target.value)}
+              placeholder="ab-(离开) + rogare(提议) → 废除"
+            />
           </Field>
         </Card>
 
