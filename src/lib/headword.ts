@@ -77,16 +77,19 @@ export function headwordPattern(sentence: string, headword: string): RegExp | nu
  *    extol→extolled/extolling。限制这个条件是为了不给不会双写的词凭空
  *    发明一个 base。
  *
- * 实测(全库 471 词):以前有 18 处例句里的真实变形(去重后 11 个
- * 「词头→变形」组合)被判定不是屈折变形,其中 manumit 的 5 句例句全军
- * 覆没 —— 它的原形从没在自己的例句里出现过,校验脚本会判这个词完全不可用。
- * 三条新 base 落地后这 18 处全部转 true;同时 headwordPattern 松散退路
- * 带来的另外 5 个真误标(preside→president、sapient→sapiens、
- * indict→industry、allude→all、introspection→introspective)照样被挡在
- * 外面 —— 没有跟着放宽,双写规则的 CVC 限制也没让它们的词干拼出这些词。
- * 471×470 词头两两组合全扫了一遍,假阳性还是精确 1 处
- * (precipitously / precipitous),而且那一对本来就是同源的形容词/副词,
- * 判 true 没问题。
+ * 实测(全库 471 词,拿 splitByHeadword 从每个词自己的例句里取出真实出现
+ * 的变形,共 2356 处):补三条 base 之前 18 处被判定不是屈折变形,其中 13 处
+ * 是**真变形被冤枉**(去重后 6 个组合:manumit→manumitted、concur→concurred、
+ * extol→extolled/extolling、profuse→profusely、unobtrusive→unobtrusively)。
+ * manumit 尤其致命 —— 它的原形从没在自己的例句里出现过,5 句全军覆没,
+ * 校验脚本会判这个词完全不可用。
+ *
+ * 补完之后被拒的只剩 5 处,而那 5 处恰恰是 headwordPattern 松散退路造成的
+ * 真误标(preside→president、sapient→sapiens、indict→industry、allude→all、
+ * introspection→introspective)—— 它们**本来就该被拒**,新规则没跟着放宽,
+ * 双写的 CVC 限制也没让它们的词干拼出这些词。
+ * 471×470 词头两两组合全扫过,假阳性精确 1 处(precipitous ← precipitously),
+ * 而那一对本就是同源的形容词/副词,判 true 没问题。
  *
  * SUFFIX 和 tightPattern 都没动:两者是共用的,tightPattern 还要负责整句
  * 扫描时挖空 / 高亮选谁,放宽它会静默改变全站的挖空效果;这里只做单词对

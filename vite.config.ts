@@ -42,5 +42,13 @@ export default defineConfig({
       },
     }),
   ],
-  test: { environment: 'happy-dom' },
+  test: {
+    environment: 'happy-dom',
+    // Claude Code 的后台任务会在 .claude/worktrees/ 下挂 git worktree —— 那是**整个
+    // 仓库的另一份签出**,里面有一模一样的一套测试文件。不排掉的话 vitest 会把两份
+    // 都跑一遍:测试数凭空翻倍(实测 24 个文件 469 条变成 47 个文件 924 条),而且
+    // 另一份的红灯会算到这份头上。默认的 exclude 只挡 node_modules/dist 之类,
+    // 覆写时必须把它们一起写回来。
+    exclude: ['**/node_modules/**', '**/dist/**', '**/.claude/worktrees/**'],
+  },
 })
