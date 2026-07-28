@@ -10,6 +10,7 @@ const KEYS = {
   staging: 'volcab.staging',       // 生词暂存区(staging.json)的本机副本
   stagingSha: 'volcab.stagingSha',
   stagingOps: 'volcab.stagingOps', // 尚未确认推上远端的收词,与 wordOps 同一套机制
+  recentPassages: 'volcab.recentPassages', // 最近做过的短文 id。只防重复,不值得为它往 progress.json 加同步字段
 } as const
 
 export type StorageKey = keyof typeof KEYS
