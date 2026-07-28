@@ -42,6 +42,20 @@ const byId = (ws: Word[]) => new Map(ws.map(w => [w.id, w]))
 
 const TODAY = '2026-07-28'
 
+/**
+ * 可复现的伪随机数。**不要用 `() => 0.5` 代替**:那样 `shuffle` 的
+ * `Math.floor(0.5 * (i+1))` 退化成一条固定的置换,测出来的「随机」其实一步都没走。
+ */
+const mulberry32 = (seed: number): (() => number) => {
+  let a = seed >>> 0
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0
+    let t = Math.imul(a ^ (a >>> 15), 1 | a)
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
 describe('parseSentence', () => {
   it('简写标记:词头即句中形式', () => {
     expect(parseSentence('a {{refute}} b')).toEqual([
@@ -188,6 +202,7 @@ describe('selectBlanks', () => {
 
 describe('pickDistractors', () => {
   const rng = () => 0.5
+  const none = new Set<string>()
 
   it('优先取与某个答案易混的已学词', () => {
     const answer = { ...word('alpha'), synonyms: ['shared'] }
@@ -196,7 +211,7 @@ describe('pickDistractors', () => {
     const words = [answer, confusable, unrelated]
     const progress = progressWith({ alpha: TODAY, bravo: TODAY, charlie: TODAY })
     const out = pickDistractors(
-      new Set(['alpha']), words, progress, buildContrastPairs(words), 1, rng,
+      new Set(['alpha']), none, words, progress, buildContrastPairs(words), 1, rng,
     )
     expect(out.map(w => w.id)).toEqual(['bravo'])
   })
@@ -204,28 +219,35 @@ describe('pickDistractors', () => {
   it('易混词不够时退回词性相同的已学词', () => {
     const words = [word('alpha', 'adj.'), word('bravo', 'adj.'), word('charlie', 'n.')]
     const progress = progressWith({ alpha: TODAY, bravo: TODAY, charlie: TODAY })
-    const out = pickDistractors(new Set(['alpha']), words, progress, [], 1, rng)
+    const out = pickDistractors(new Set(['alpha']), none, words, progress, [], 1, rng)
     expect(out.map(w => w.id)).toEqual(['bravo'])
   })
 
   it('绝不选中答案自己', () => {
     const words = [word('alpha'), word('bravo')]
     const progress = progressWith({ alpha: TODAY, bravo: TODAY })
-    const out = pickDistractors(new Set(['alpha', 'bravo']), words, progress, [], 2, rng)
+    const out = pickDistractors(new Set(['alpha', 'bravo']), none, words, progress, [], 2, rng)
     expect(out).toHaveLength(0)
   })
 
   it('没学过的词不当干扰项', () => {
     const words = [word('alpha'), word('bravo')]
-    const out = pickDistractors(new Set(['alpha']), words, progressWith({ alpha: TODAY }), [], 2, rng)
+    const out = pickDistractors(new Set(['alpha']), none, words, progressWith({ alpha: TODAY }), [], 2, rng)
     expect(out).toHaveLength(0)
   })
 
   it('凑不满就少给 —— 少一个干扰词只是简单些,重复选项是缺陷', () => {
     const words = [word('alpha'), word('bravo')]
     const progress = progressWith({ alpha: TODAY, bravo: TODAY })
-    const out = pickDistractors(new Set(['alpha']), words, progress, [], 5, rng)
+    const out = pickDistractors(new Set(['alpha']), none, words, progress, [], 5, rng)
     expect(out.map(w => w.id)).toEqual(['bravo'])
+  })
+
+  it('excludeIds 里的词不当干扰项', () => {
+    const words = [word('alpha'), word('bravo'), word('charlie')]
+    const progress = progressWith({ alpha: TODAY, bravo: TODAY, charlie: TODAY })
+    const out = pickDistractors(new Set(['alpha']), new Set(['bravo']), words, progress, [], 5, rng)
+    expect(out.map(w => w.id)).toEqual(['charlie'])
   })
 })
 
@@ -259,6 +281,24 @@ describe('buildPassageQuestion', () => {
   it('解析失败返回 null,不抛错', () => {
     const p = passage({ en: ['{{a}} {{b} {{c}}'], zh: ['甲'] })
     expect(buildPassageQuestion(p, words, allLearned, TODAY, [], rng)).toBeNull()
+  })
+
+  it('标记了但没挖成空的词不当干扰词 —— 它就印在正文里,一眼就被划掉', () => {
+    const marked = Array.from({ length: MAX_BLANKS + 1 }, (_, i) => `m${i}`)
+    const spare = ['s0', 's1', 's2']
+    const all = [...marked, ...spare]
+    const ws = all.map(i => word(i))
+    const progress = progressWith(Object.fromEntries(all.map(i => [i, TODAY])))
+    const p = passage({ en: [marked.map(i => `{{${i}}}`).join(' ')], zh: ['甲'] })
+
+    for (let seed = 1; seed <= 50; seed++) {
+      const q = buildPassageQuestion(p, ws, progress, TODAY, [], mulberry32(seed))!
+      const answers = new Set(q.blanks.map(b => b.wordId))
+      // 每一轮都真的有一个标记词落选了,否则这条断言是空跑
+      expect(answers.size).toBe(MAX_BLANKS)
+      const leaked = q.choices.filter(c => !answers.has(c.wordId) && marked.includes(c.wordId))
+      expect(leaked).toEqual([])
+    }
   })
 })
 

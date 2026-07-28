@@ -141,9 +141,17 @@ export const DISTRACTOR_COUNT = 2
  * 1. `buildContrastPairs` 里与某个答案易混的已学词 —— 现成的易混词图
  * 2. 与某个答案主义项词性相同的已学词(词性不同的词在句子里根本不会打架)
  * 3. 任意已学词
+ *
+ * @param excludeIds 除答案外还必须排除的词 id。**这不是可有可无的洁癖**:
+ *   一篇标记了 8 个词、`MAX_BLANKS` 只挖 7 个,那第 8 个词是**原样印在正文里**的
+ *   ——它当干扰词时用户扫一眼正文就划掉了,两个干扰词白白废掉一个,而且看着像 bug。
+ *   实测 committee-report 的 `ratify` 正是这种情况:N=471 已学词时 24.5% 的题里
+ *   它当了干扰词,N=200 时 50.7%,N=100 时 100%。没学过的标记词同理(它不够格
+ *   被挖空,却照样印在正文里)。
  */
 export function pickDistractors(
   answerIds: Set<string>,
+  excludeIds: Set<string>,
   words: Word[],
   progress: Progress,
   pairs: ContrastPair[],
@@ -157,7 +165,7 @@ export function pickDistractors(
   }
 
   const out: Word[] = []
-  const taken = new Set(answerIds)
+  const taken = new Set([...answerIds, ...excludeIds])
 
   const add = (id: string) => {
     if (out.length >= count || taken.has(id) || !learned(id)) return
@@ -223,7 +231,13 @@ export function buildPassageQuestion(
   if (blanks.length < MIN_BLANKS) return null
 
   const answerIds = new Set(blanks.map(b => b.wordId))
-  const distractors = pickDistractors(answerIds, words, progress, pairs, DISTRACTOR_COUNT, rng)
+  // 正文里出现过的标记词全都不能当干扰词 —— 不只是被挖成空的那些。没挖成空的
+  // 标记词(超出 MAX_BLANKS 的、或者还没学过的)是**原样印在正文里**的。
+  const markedIds = new Set<string>()
+  for (const tokens of sentences) {
+    for (const t of tokens) if (t.kind === 'word') markedIds.add(t.wordId)
+  }
+  const distractors = pickDistractors(answerIds, markedIds, words, progress, pairs, DISTRACTOR_COUNT, rng)
 
   const choices = shuffle<Choice>(
     [
