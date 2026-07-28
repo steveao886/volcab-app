@@ -18,7 +18,17 @@
 | 仓库 | 可见性 | 内容 |
 |---|---|---|
 | `steveao886/volcab-app` | 公开 | 源码。push 到 master 自动构建部署到 Pages |
-| `steveao886/volcab-data` | 私有 | `words.json`(476 词)、`progress.json`(学习进度)、`staging.json`(待补全生词) |
+| `steveao886/volcab-data` | 私有 | `words.json`(471 词)、`progress.json`(学习进度)、`staging.json`(待补全生词) |
+
+⚠️ **`data/words.json`(app 仓库)不是线上词库。** 它只喂开发模式的演示数据和两条全库回归测试;App 运行时读的是 `volcab-data` 里那一份。两者**曾经分叉过**:用户在 App 里删掉 5 个词,只写进了 `volcab-data`,仓库副本还停在最初 476 词的导入快照上,分叉了几个月没人发现(演示数据多 5 个词不报错)。
+
+要做词库级的批量改动(补字段、回填数据),**改之前先把 `volcab-data` 的现状拉下来比一遍**:
+
+```bash
+gh api repos/steveao886/volcab-data/contents/words.json -H "Accept: application/vnd.github.raw" > /tmp/live.json
+```
+
+然后**把改动套到线上那份上,而不是把本地那份覆盖上去** —— 后者会把用户删掉的词复活。这正是词条规范里「直接覆盖词库,若用户已在 App 内改动词库则失效」那条失效条件,它真的触发过一次。
 
 认证是 GitHub fine-grained PAT,仅授权 `volcab-data` 的 Contents 读写,存在浏览器 localStorage。无服务器。
 
@@ -49,7 +59,7 @@ npm test && npx tsc -b --noEmit && npm run build && npx oxlint && npm run valida
 
 **一条词条必须长什么样,以 [`docs/word-entry-spec.md`](../word-entry-spec.md) 为准**(唯一权威,别翻各阶段的设计文档)。里面写清了全部必填字段、`usageScore` 的评分锚点、义项占比 `share` 的硬约束、`etymology` 的「宁可不写」规则,以及生词暂存区的补全流程。
 
-**词源覆盖 465/476。** 剩下 11 个是刻意留空的:`harangue` / `grouse` / `rabble` / `obscene` / `agog` / `turmoil` / `vehement` 词源本身有争议,`purebred` / `interchangeability` / `wastefulness` / `undervaluation` 拆开也没信息量。**别为了凑满而补上** —— 词源写错不是少一条信息,是往脑子里钉一个错误的记忆锚点,民间词源比空白有害。
+**词源覆盖 460/471**(仓库副本与线上一致)。剩下 11 个是刻意留空的:`harangue` / `grouse` / `rabble` / `obscene` / `agog` / `turmoil` / `vehement` 词源本身有争议,`purebred` / `interchangeability` / `wastefulness` / `undervaluation` 拆开也没信息量。**别为了凑满而补上** —— 词源写错不是少一条信息,是往脑子里钉一个错误的记忆锚点,民间词源比空白有害。
 
 **生词暂存区怎么用**:`/add` 顶部输入框丢单词进去,只需要单词。攒够了在会话里让 AI 读 `staging.json`,按词条规范批量生成完整词条(**`usageScore` 与多义词的 `share` 在这一步一并产出**,不要先入库再补分)后合并进 `words.json`,并**按 headword 精确移除已提升的条目**(不要清空整个文件——用户可能在此期间又加了词)。
 
