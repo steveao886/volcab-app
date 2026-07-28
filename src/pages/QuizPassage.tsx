@@ -46,9 +46,19 @@ export function PassageSession({
     return q
   })
 
-  /** Blank index → the wordId of the chosen candidate */
-  const [filled, setFilled] = useState<Record<number, string>>({})
-  const [active, setActive] = useState<number | null>(0)
+  /**
+   * `filled` maps a blank index to the wordId chosen for it; `active` is the blank a
+   * candidate tap will land in.
+   *
+   * **Held as one object rather than two useStates on purpose**: every tap needs to
+   * read both and write both, and splitting them means a handler can only ever see
+   * the render-time snapshot. See chooseWord below.
+   */
+  const [answer, setAnswer] = useState<{ filled: Record<number, string>; active: number | null }>({
+    filled: {},
+    active: 0,
+  })
+  const { filled, active } = answer
   const [submitted, setSubmitted] = useState(false)
   const recordedRef = useRef(false)
 
@@ -65,28 +75,38 @@ export function PassageSession({
 
   const chooseBlank = (i: number) => {
     if (submitted) return
-    setActive(i)
+    setAnswer(a => ({ ...a, active: i }))
   }
 
+  /**
+   * Fill the selected blank, or withdraw the word if it already occupies one.
+   *
+   * **Everything is read and written inside a single updater**, against the freshest
+   * state rather than the render-time closure. Two taps landing in the same React
+   * batch would otherwise both see the same stale `active` and write to the same
+   * blank — the second silently overwriting the first instead of moving on. Measured:
+   * firing all seven chip taps in one tick filled exactly one blank. A person taps
+   * slower than that, but this is the same double-tap hazard the `answeredRef` guards
+   * in QuizQuestion and QuizSprint already cover, and it costs nothing to be correct.
+   */
   const chooseWord = (wordId: string) => {
     if (submitted) return
-    // A word that's already occupying a blank: tapping it again withdraws it
-    const at = usedBy.get(wordId)
-    if (at !== undefined) {
-      setFilled(f => {
-        const next = { ...f }
-        delete next[at]
-        return next
-      })
-      setActive(at)
-      return
-    }
-    const i = active ?? blanks.findIndex((_, n) => filled[n] === undefined)
-    if (i < 0) return
-    setFilled(f => ({ ...f, [i]: wordId }))
-    // Auto-advance to the next still-empty blank — having to tap the next blank by hand every time is too tiring
-    const nextEmpty = blanks.findIndex((_, n) => n !== i && filled[n] === undefined)
-    setActive(nextEmpty < 0 ? null : nextEmpty)
+    setAnswer(a => {
+      const at = Object.entries(a.filled).find(([, v]) => v === wordId)?.[0]
+      if (at !== undefined) {
+        const next = { ...a.filled }
+        delete next[Number(at)]
+        return { filled: next, active: Number(at) }
+      }
+      const i = a.active ?? blanks.findIndex((_, n) => a.filled[n] === undefined)
+      if (i < 0) return a
+      const next = { ...a.filled, [i]: wordId }
+      // Auto-advance to the next still-empty blank — having to tap the next blank by
+      // hand every time is too tiring. Computed from `next`, so blank i is already
+      // filled and can't be picked again.
+      const nextEmpty = blanks.findIndex((_, n) => next[n] === undefined)
+      return { filled: next, active: nextEmpty < 0 ? null : nextEmpty }
+    })
   }
 
   const score = blanks.filter((b, i) => filled[i] === b.wordId).length
@@ -96,7 +116,7 @@ export function PassageSession({
     // Play synchronously within the click's call stack — iOS requires AudioContext unlocking to happen inside a user gesture
     playQuizResult(score === blanks.length, soundEnabled)
     setSubmitted(true)
-    setActive(null)
+    setAnswer(a => ({ ...a, active: null }))
   }, [submitted, allFilled, score, blanks.length, soundEnabled])
 
   // Depends on `question` rather than the derived `blanks`: `blanks` falls back to a
