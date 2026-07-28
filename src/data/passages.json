@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "passages": [
+    {
+      "id": "committee-report",
+      "title": "一票通过的那份报告",
+      "en": [
+        "The committee's report was {{contentious}} before anyone had finished reading it.",
+        "Its central claim rested on a single lab result that no independent team could {{corroborate}}, and the paragraph blaming a decade-old {{oversight}} at the treatment plant used figures the plant's engineers had already {{refute|refuted}} in writing.",
+        "Two members called the methodology {{dubious}} and threatened to {{thwart}} the vote entirely.",
+        "The chair spent an hour trying to talk them down, but the {{animosity}} in the room had been building for months.",
+        "In the end the board {{ratify|ratified}} the report by a single vote, and nobody looked pleased about it."
+      ],
+      "zh": [
+        "还没等人读完,委员会那份报告就已经争议缠身。",
+        "它的核心论点建立在一个没有任何独立团队能证实的化验结果上,而指责水处理厂十年前那次失察的那一段,用的数字早被厂里的工程师书面驳斥过。",
+        "两名成员称这套方法靠不住,扬言要直接把表决搅黄。",
+        "主席花了一小时劝他们,但会议室里的敌意已经积攒了好几个月。",
+        "最后董事会以一票之差批准了这份报告,没有一个人看上去高兴。"
+      ]
+    },
+    {
+      "id": "sweltering-commute",
+      "title": "第九天的热浪",
+      "en": [
+        "The heat wave was in its ninth day, and the {{sweltering}} platform at Union Station smelled like hot rubber.",
+        "By noon the transit authority's inbox was {{inundate|inundated}} with complaints, most of them about a cooling system that an {{ominous}} internal memo had flagged as a {{precursor}} to total failure back in March.",
+        "Management had given the maintenance team almost no {{leeway}} on the repair budget, and the {{grandiose}} plan to replace the entire line by 2029 did nothing for anyone standing on that platform.",
+        "The delays only {{exacerbate|exacerbated}} the crowding, and the heat refused to {{abate}} until well after dark."
+      ],
+      "zh": [
+        "热浪进入第九天,联合车站那个酷热难耐的站台闻起来像烧热的橡胶。",
+        "到中午,交通局的邮箱已经被投诉淹没,大多冲着那套冷却系统——三月一份不祥的内部备忘录早就把它标为整体瘫痪的先兆。",
+        "管理层在维修预算上几乎没给检修组任何回旋余地,而那个要在 2029 年前把整条线换掉的浮夸计划,对当天站在站台上的任何人都毫无用处。",
+        "延误只是让拥挤更加恶化,而暑气直到天黑很久之后才开始减弱。"
+      ]
+    }
+  ]
+}
