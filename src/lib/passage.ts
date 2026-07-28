@@ -5,6 +5,7 @@
  */
 
 import type { Progress, Word } from '../types'
+import { buildContrastPairs } from './contrast'
 import type { ContrastPair } from './contrast'
 import { shuffle } from './quiz'
 
@@ -233,4 +234,62 @@ export function buildPassageQuestion(
   )
 
   return { passage, sentences, blanks, choices }
+}
+
+/** 到期词的权重高于已学未到期 —— 这题首先是复习工具,其次才是阅读。 */
+export const DUE_WEIGHT = 3
+export const LEARNED_WEIGHT = 1
+/**
+ * 最近做过的惩罚。**刻意压过「多一个到期词」(+3)**:宁可换一篇覆盖略差的新
+ * 短文,也别连着做同一篇 —— 第二次做时你记住的是上次的答案,不是词。
+ */
+export const RECENT_PENALTY = 5
+/** 「最近做过」记多少篇。存 localStorage,不进 progress.json。 */
+export const RECENT_LIMIT = 10
+
+export function scoreQuestion(
+  q: PassageQuestion,
+  progress: Progress,
+  today: string,
+  recentIds: string[],
+): number {
+  let s = 0
+  for (const b of q.blanks) {
+    s += progress.words[b.wordId].due <= today ? DUE_WEIGHT : LEARNED_WEIGHT
+  }
+  return recentIds.includes(q.passage.id) ? s - RECENT_PENALTY : s
+}
+
+/**
+ * 挑一篇今天最该做的短文。一篇都出不来返回 null(由调用方给空状态文案)。
+ *
+ * `buildContrastPairs` 对全词库只算一次 —— 放进循环就是每篇重算一遍倒排索引。
+ */
+export function pickPassage(
+  passages: Passage[],
+  words: Word[],
+  progress: Progress,
+  today: string,
+  recentIds: string[],
+  rng: () => number = Math.random,
+): PassageQuestion | null {
+  const pairs = buildContrastPairs(words)
+  let best: PassageQuestion | null = null
+  let bestScore = -Infinity
+  // 先打乱:同分时取先遇到的那篇,不打乱就永远是数组里靠前的那几篇
+  for (const p of shuffle(passages, rng)) {
+    const q = buildPassageQuestion(p, words, progress, today, pairs, rng)
+    if (q === null) continue
+    const s = scoreQuestion(q, progress, today, recentIds)
+    if (s > bestScore) {
+      bestScore = s
+      best = q
+    }
+  }
+  return best
+}
+
+/** 把 id 推到「最近做过」的最前面,超过上限砍掉最旧的。 */
+export function pushRecent(recent: string[], id: string, limit = RECENT_LIMIT): string[] {
+  return [id, ...recent.filter(x => x !== id)].slice(0, limit)
 }

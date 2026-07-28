@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildPassageQuestion, MAX_BLANKS, parsePassage, parseSentence, pickDistractors, selectBlanks } from './passage'
+import { buildPassageQuestion, MAX_BLANKS, parsePassage, parseSentence, pickDistractors, pickPassage, pushRecent, RECENT_LIMIT, selectBlanks } from './passage'
 import type { Passage } from './passage'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
@@ -259,5 +259,59 @@ describe('buildPassageQuestion', () => {
   it('解析失败返回 null,不抛错', () => {
     const p = passage({ en: ['{{a}} {{b} {{c}}'], zh: ['甲'] })
     expect(buildPassageQuestion(p, words, allLearned, TODAY, [], rng)).toBeNull()
+  })
+})
+
+describe('pickPassage', () => {
+  const rng = () => 0.5
+  const ids = ['a', 'b', 'c', 'd', 'e', 'f']
+  const words = ids.map(i => word(i))
+
+  const p1 = passage({ id: 'p1', en: ['{{a}} {{b}} {{c}}'], zh: ['甲'] })
+  const p2 = passage({ id: 'p2', en: ['{{d}} {{e}} {{f}}'], zh: ['乙'] })
+
+  it('挑今天到期词最多的那篇', () => {
+    const progress = progressWith({
+      a: TODAY, b: TODAY, c: TODAY,        // p1:三个都到期
+      d: TODAY, e: '2099-01-01', f: '2099-01-01',  // p2:只有一个到期
+    })
+    expect(pickPassage([p1, p2], words, progress, TODAY, [], rng)?.passage.id).toBe('p1')
+  })
+
+  it('最近做过的要让位 —— 第二次做记住的是上次的答案,不是词', () => {
+    const progress = progressWith({
+      a: TODAY, b: TODAY, c: TODAY,
+      d: TODAY, e: TODAY, f: '2099-01-01',  // p2 分数本来比 p1 低
+    })
+    expect(pickPassage([p1, p2], words, progress, TODAY, ['p1'], rng)?.passage.id).toBe('p2')
+  })
+
+  it('一篇都出不来时返回 null', () => {
+    const progress = progressWith({ a: TODAY })  // 每篇最多一个空
+    expect(pickPassage([p1, p2], words, progress, TODAY, [], rng)).toBeNull()
+  })
+
+  it('坏数据的那篇被跳过,不影响别的篇', () => {
+    const broken = passage({ id: 'bad', en: ['{{a} {{b}} {{c}}'], zh: ['甲'] })
+    const progress = progressWith({ a: TODAY, b: TODAY, c: TODAY })
+    expect(pickPassage([broken, p1], words, progress, TODAY, [], rng)?.passage.id).toBe('p1')
+  })
+})
+
+describe('pushRecent', () => {
+  it('新的排在最前', () => {
+    expect(pushRecent(['b', 'c'], 'a')).toEqual(['a', 'b', 'c'])
+  })
+
+  it('已在列表里的挪到最前而不是留两份', () => {
+    expect(pushRecent(['b', 'a', 'c'], 'a')).toEqual(['a', 'b', 'c'])
+  })
+
+  it('超过上限时砍掉最旧的', () => {
+    const long = Array.from({ length: RECENT_LIMIT }, (_, i) => `p${i}`)
+    const out = pushRecent(long, 'new')
+    expect(out).toHaveLength(RECENT_LIMIT)
+    expect(out[0]).toBe('new')
+    expect(out).not.toContain(`p${RECENT_LIMIT - 1}`)
   })
 })
