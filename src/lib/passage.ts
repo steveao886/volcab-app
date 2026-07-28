@@ -189,3 +189,48 @@ export function pickDistractors(
 
   return out
 }
+
+/** 候选词。`wordId` 用来判分,`headword` 用来显示 —— 两者不一定相同。 */
+export interface Choice { wordId: string; headword: string }
+
+export interface PassageQuestion {
+  passage: Passage
+  sentences: Token[][]
+  /** 按正文出现顺序 */
+  blanks: Blank[]
+  /** 已打乱 */
+  choices: Choice[]
+}
+
+/**
+ * 把一篇短文组装成一道题。出不来(解析失败 / 可挖空不足)返回 null,
+ * 由调用方换下一篇。
+ */
+export function buildPassageQuestion(
+  passage: Passage,
+  words: Word[],
+  progress: Progress,
+  today: string,
+  pairs: ContrastPair[],
+  rng: () => number,
+): PassageQuestion | null {
+  const sentences = parsePassage(passage)
+  if (sentences === null) return null
+
+  const byId = new Map(words.map(w => [w.id, w]))
+  const blanks = selectBlanks(sentences, byId, progress, today)
+  if (blanks.length < MIN_BLANKS) return null
+
+  const answerIds = new Set(blanks.map(b => b.wordId))
+  const distractors = pickDistractors(answerIds, words, progress, pairs, DISTRACTOR_COUNT, rng)
+
+  const choices = shuffle<Choice>(
+    [
+      ...blanks.map(b => ({ wordId: b.wordId, headword: byId.get(b.wordId)!.headword })),
+      ...distractors.map(w => ({ wordId: w.id, headword: w.headword })),
+    ],
+    rng,
+  )
+
+  return { passage, sentences, blanks, choices }
+}

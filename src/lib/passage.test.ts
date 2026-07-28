@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MAX_BLANKS, parsePassage, parseSentence, pickDistractors, selectBlanks } from './passage'
+import { buildPassageQuestion, MAX_BLANKS, parsePassage, parseSentence, pickDistractors, selectBlanks } from './passage'
 import type { Passage } from './passage'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
@@ -226,5 +226,38 @@ describe('pickDistractors', () => {
     const progress = progressWith({ alpha: TODAY, bravo: TODAY })
     const out = pickDistractors(new Set(['alpha']), words, progress, [], 5, rng)
     expect(out.map(w => w.id)).toEqual(['bravo'])
+  })
+})
+
+describe('buildPassageQuestion', () => {
+  const rng = () => 0.5
+  const ids = ['a', 'b', 'c', 'd', 'e']
+  const words = ids.map(i => word(i))
+  const allLearned = progressWith(Object.fromEntries(ids.map(i => [i, TODAY])))
+  const threeBlank = passage({ en: ['{{a}} {{b}} {{c}}'], zh: ['甲'] })
+
+  it('候选词 = 全部答案 + 干扰词', () => {
+    const q = buildPassageQuestion(threeBlank, words, allLearned, TODAY, [], rng)!
+    expect(q.blanks).toHaveLength(3)
+    expect(q.choices).toHaveLength(3 + 2)
+    expect(new Set(q.choices.map(c => c.wordId)).size).toBe(5)  // 无重复
+    for (const b of q.blanks) {
+      expect(q.choices.some(c => c.wordId === b.wordId)).toBe(true)
+    }
+  })
+
+  it('候选词带词头原形,给界面显示用', () => {
+    const q = buildPassageQuestion(threeBlank, words, allLearned, TODAY, [], rng)!
+    expect(q.choices.every(c => c.headword !== '')).toBe(true)
+  })
+
+  it('可挖空不足 3 个返回 null', () => {
+    const p = passage({ en: ['{{a}} {{b}}'], zh: ['甲'] })
+    expect(buildPassageQuestion(p, words, allLearned, TODAY, [], rng)).toBeNull()
+  })
+
+  it('解析失败返回 null,不抛错', () => {
+    const p = passage({ en: ['{{a}} {{b} {{c}}'], zh: ['甲'] })
+    expect(buildPassageQuestion(p, words, allLearned, TODAY, [], rng)).toBeNull()
   })
 })
