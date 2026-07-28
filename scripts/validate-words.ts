@@ -12,7 +12,11 @@ if (!Array.isArray(data.words)) { console.error('words 必须是数组'); proces
 const seen = new Set<string>()
 for (const w of data.words) {
   const ctx = w.id ?? '(缺 id)'
-  if (!w.id || w.id !== String(w.id).toLowerCase().trim()) errors.push(`${ctx}: id 必须为小写且无空白`)
+  // 这里曾写成 `w.id !== w.id.toLowerCase().trim()`,但 trim() 只削首尾空白 ——
+  // `refute refuted` 这种中间带空格的 id 照样过闸,而报错文案写的是「无空白」。
+  // src/lib/passage.ts 的 parseSentence 正是按「小写且无空白」拒收畸形标记的,
+  // 闸门比它松一档,等于让注定匹配不到词的 id 从这里溜进 words.json。
+  if (!w.id || w.id !== String(w.id).toLowerCase() || /\s/.test(w.id)) errors.push(`${ctx}: id 必须为小写且无空白`)
   if (seen.has(w.id)) errors.push(`${ctx}: id 重复`)
   seen.add(w.id)
   if (!w.headword) errors.push(`${ctx}: 缺 headword`)
