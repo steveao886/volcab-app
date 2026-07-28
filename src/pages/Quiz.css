@@ -282,3 +282,97 @@
   margin-top: var(--sp-2);
   font-size: var(--fs-sm);
 }
+
+/* ==========================================================================
+   Passage word-choice cloze
+   ========================================================================== */
+
+.quiz-passage__title {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* The passage text is a block of readable prose; the line height needs to be looser than button text — this is meant to be read, not tapped */
+.quiz-passage__text {
+  margin-top: var(--sp-4);
+  font-size: var(--fs-base);
+  line-height: 2;
+}
+
+/* A blank is an inline button. Underline rather than a box: a box would chop
+   a block of prose into a grid of form fields and it would stop reading like
+   an article. Line height 2 exists specifically to leave room for the underline. */
+.quiz-blank-slot {
+  display: inline;
+  padding: 0 var(--sp-1);
+  border: none;
+  border-bottom: 2px solid var(--rule-control);
+  border-radius: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.quiz-blank-slot--active {
+  border-bottom-color: var(--accent);
+  background: var(--surface-sunken);
+}
+
+.quiz-blank-slot--correct {
+  border-bottom-color: var(--success);
+  color: var(--success);
+  cursor: default;
+}
+
+/* Wrong: a danger-colored underline marks the mistake, while the text itself
+   is the correct answer in success green — the struck-through word you
+   actually chose is rendered in front of it by .quiz-blank-slot__wrong. */
+.quiz-blank-slot--wrong {
+  border-bottom-color: var(--danger);
+  color: var(--success);
+  cursor: default;
+}
+
+/* When wrong, the word you filled in stays struck through in front of the
+   correct answer — showing only the correct answer, you wouldn't remember
+   where you went wrong */
+.quiz-blank-slot__wrong {
+  margin-inline-end: var(--sp-1);
+  text-decoration: line-through;
+  color: var(--danger);
+  font-weight: 400;
+}
+
+.quiz-passage__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-5);
+}
+
+/* A used candidate word is greyed out, not removed — keeping its position fixed makes it easy to tap again to withdraw it */
+.quiz-passage__choices .chip[aria-pressed='true'] {
+  opacity: 0.4;
+}
+
+.quiz-passage__pairs {
+  display: grid;
+  gap: var(--sp-4);
+  margin-top: var(--sp-3);
+}
+
+.quiz-passage__pairs li {
+  display: grid;
+  gap: var(--sp-1);
+  line-height: var(--lh-snug);
+}
+
+/* The sentence containing a wrong answer gets marked in the translation: vermilion is reserved for annotations, and this is exactly the annotation "you got this sentence wrong" */
+.quiz-passage__pair--wrong {
+  padding-left: var(--sp-3);
+  border-left: 2px solid var(--accent);
+}

@@ -6,9 +6,11 @@ import { Chip } from '../components/Chip'
 import { Page } from '../components/Page'
 import { generateAudioQuiz, generateContrastQuiz, generateQuiz } from '../lib/quiz'
 import type { QuizQuestion } from '../lib/quiz'
+import type { Passage } from '../lib/passage'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
 import { QuizQuestionView } from './QuizQuestion'
+import { PassageSession } from './QuizPassage'
 import { SprintSession } from './QuizSprint'
 import './Quiz.css'
 
@@ -27,6 +29,7 @@ const MODES = [
   { key: 'contrast', label: '辨析' },
   { key: 'audio', label: '听音' },
   { key: 'sprint', label: '极速' },
+  { key: 'passage', label: '短文' },
 ] as const
 
 type QuizMode = (typeof MODES)[number]['key']
@@ -34,7 +37,7 @@ type QuizMode = (typeof MODES)[number]['key']
 const isMode = (v: string | null): v is QuizMode => MODES.some(m => m.key === v)
 
 /** Explanation for when no questions can be generated: each mode is missing something different, and one generic message would leave people not knowing what to do. */
-const EMPTY_HINT: Record<Exclude<QuizMode, 'sprint'>, string> = {
+const EMPTY_HINT: Record<Exclude<QuizMode, 'sprint' | 'passage'>, string> = {
   mixed: '需要至少 4 个词条才能测试。当前词库还不够,先去添加或多学几个单词吧。',
   contrast: '你学过的词里还凑不出易混的一对。辨析只考已经学过的词 —— 拿两个没见过的词问「该用哪个」没有意义。再学一阵子,这里的题会自己多起来。',
   audio: '需要至少 4 个词条才能开始听音练习。当前词库还不够,先去添加或多学几个单词吧。',
@@ -53,7 +56,7 @@ function QuizSession({
   onRestart,
 }: {
   words: Word[]
-  mode: Exclude<QuizMode, 'sprint'>
+  mode: Exclude<QuizMode, 'sprint' | 'passage'>
   onRestart: () => void
 }) {
   const { progress, recordQuiz } = useApp()
@@ -221,6 +224,20 @@ export function Quiz() {
   const raw = params.get('mode')
   const mode: QuizMode = isMode(raw) ? raw : 'mixed'
 
+  // The content is only fetched once you actually enter passage mode. It's
+  // static content shipped with the app, split into a separate chunk via
+  // import() so the four everyday modes don't have to download an extra
+  // few dozen KB for it.
+  const [passages, setPassages] = useState<Passage[] | null>(null)
+  useEffect(() => {
+    if (mode !== 'passage' || passages !== null) return
+    let alive = true
+    void import('../data/passages.json').then(m => {
+      if (alive) setPassages((m.default as { passages: Passage[] }).passages)
+    })
+    return () => { alive = false }
+  }, [mode, passages])
+
   const restart = useCallback(() => setSession(s => s + 1), [])
 
   const switchMode = (next: QuizMode) => {
@@ -253,6 +270,17 @@ export function Quiz() {
           by one). */}
       {mode === 'sprint' ? (
         <SprintSession key={`sprint-${session}`} words={words} onRestart={restart} />
+      ) : mode === 'passage' ? (
+        passages === null ? (
+          <Card className="quiz-empty"><p className="muted">正在加载短文…</p></Card>
+        ) : (
+          <PassageSession
+            key={`passage-${session}`}
+            words={words}
+            passages={passages}
+            onRestart={restart}
+          />
+        )
       ) : (
         <QuizSession key={`${mode}-${session}`} words={words} mode={mode} onRestart={restart} />
       )}
