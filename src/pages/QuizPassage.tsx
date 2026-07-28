@@ -99,12 +99,18 @@ export function PassageSession({
     setActive(null)
   }, [submitted, allFilled, score, blanks.length, soundEnabled])
 
+  // Depends on `question` rather than the derived `blanks`: `blanks` falls back to a
+  // fresh `[]` literal on every render while `question` is null, which makes it a new
+  // dependency each time. `question` comes from useState and is never updated, so it is
+  // the stable thing to key on. Harmless either way — the body short-circuits until
+  // `submitted`, which can't happen without a question — but a warning nobody can act on
+  // is how the real ones end up ignored.
   useEffect(() => {
-    if (!submitted || recordedRef.current) return
+    if (!submitted || recordedRef.current || question === null) return
     recordedRef.current = true
-    const wrongIds = blanks.filter((b, i) => filled[i] !== b.wordId).map(b => b.wordId)
-    recordQuiz(score, blanks.length, wrongIds)
-  }, [submitted, blanks, filled, score, recordQuiz])
+    const wrongIds = question.blanks.filter((b, i) => filled[i] !== b.wordId).map(b => b.wordId)
+    recordQuiz(score, question.blanks.length, wrongIds)
+  }, [submitted, question, filled, score, recordQuiz])
 
   if (question === null) {
     return (
