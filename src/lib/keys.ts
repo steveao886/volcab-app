@@ -1,16 +1,20 @@
 /**
- * 键盘快捷键的共用判断。
+ * Shared logic for keyboard shortcuts.
  *
- * 复习页用 1–4 打分,测验页用 1–4 选选项 —— 两处各挂着一个 window keydown
- * 监听。「什么时候**不**该接管按键」这条判断必须只有一份:一旦分叉,就会出现
- * 「复习页在输入框里按 3 没事,测验页却把 3 吃掉」这种只在某一页复现的怪毛病。
+ * The review page uses 1–4 to grade, the quiz page uses 1–4 to pick an option — each has
+ * its own window keydown listener. The judgment of "when the key should **not** be
+ * intercepted" must exist in exactly one place. Once it forks, you get bugs that only
+ * reproduce on one page, like "pressing 3 in an input field is fine on the review page but
+ * the quiz page eats the 3 anyway."
  */
 
 /**
- * 焦点是否落在文本输入控件里 —— 是的话按键必须留给输入本身。
+ * Whether focus is currently on a text input control — if so, the keypress must be left to
+ * the input itself.
  *
- * 复习页与测验的选择题当下都没有输入框,但拼写题有,而且以后随便哪一页加个
- * 搜索框,少了这层判断就是「打字打不出数字」。
+ * The review page and the quiz's multiple-choice questions currently have no input fields,
+ * but the spelling question does, and if any future page adds a search box, missing this
+ * check means "you literally can't type a digit."
  */
 export function isEditableTarget(el: Element | null): boolean {
   if (!el) return false
@@ -18,17 +22,19 @@ export function isEditableTarget(el: Element | null): boolean {
   return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (el as HTMLElement).isContentEditable
 }
 
-/** 只认主键盘/小键盘上的 1–9,别的键一律不接管。 */
+/** Only recognizes 1–9 on the main keyboard/numpad; every other key is left alone. */
 const DIGIT = /^[1-9]$/
 
 /**
- * 把一次按键翻译成选项下标(按 1 得 0)。不是可用的数字键时返回 -1。
+ * Translates a keypress into an option index (pressing 1 gives 0). Returns -1 when it's not
+ * a usable digit key.
  *
- * 两条刻意的取舍:
- * - **带 Ctrl / Cmd / Alt 的组合一律放过** —— Cmd+1、Ctrl+1 是浏览器切标签页,
- *   抢过来会让人以为浏览器坏了。
- * - **不看 Shift** —— AZERTY 之类的布局上数字本来就要按 Shift 才打得出,
- *   把 Shift 一并排除等于让这些键盘用不了快捷键。
+ * Two deliberate tradeoffs:
+ * - **Any combination with Ctrl / Cmd / Alt is always passed through** — Cmd+1 and Ctrl+1
+ *   switch browser tabs, and intercepting them would make people think the browser is
+ *   broken.
+ * - **Shift is ignored** — on layouts like AZERTY, digits require Shift to type at all, so
+ *   excluding Shift as well would make these shortcuts unusable on those keyboards.
  */
 export function optionIndexFromKey(e: KeyboardEvent, count: number): number {
   if (e.ctrlKey || e.metaKey || e.altKey) return -1

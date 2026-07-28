@@ -23,7 +23,7 @@ const STATUS_CHIPS: { key: StatusFilter; label: string }[] = [
   { key: 'review', label: '已掌握' },
 ]
 
-/** 列表行:非管理模式下是导航链接,管理模式下整行是复选框的 <label>。 */
+/** List row: a navigation link outside manage mode; in manage mode, the whole row is a checkbox's <label>. */
 function LibraryRow({
   word,
   state,
@@ -83,7 +83,7 @@ function emptyStateCopy(
   return { title: '当前筛选条件下没有词条', hint: '试试清除筛选条件。' }
 }
 
-/** Task 19 实现:搜索、筛选 chips、词条列表、多选批量删除。 */
+/** Task 19 implementation: search, filter chips, entry list, multi-select bulk delete. */
 export function Library() {
   const { words, progress, deleteWords, syncStatus, syncError, syncNow } = useApp()
 
@@ -99,14 +99,16 @@ export function Library() {
   const selectAllRef = useRef<HTMLInputElement>(null)
   const [overlayRoot, setOverlayRoot] = useState<HTMLElement | null>(null)
 
-  // #overlay-root 由 AppLayout 渲染;首次挂载时才保证已经在真实 DOM 里。
+  // #overlay-root is rendered by AppLayout; it's only guaranteed to already be in the real DOM once mounted for the first time.
   useEffect(() => {
     setOverlayRoot(document.getElementById('overlay-root'))
   }, [])
 
-  // useApp() 的 context value 任何字段变化都会产生新对象(后台同步 tick 也算),
-  // 476 条词的过滤/排序不能跟着一起空转 —— 只有 words/progress/查询词/筛选条件
-  // 真正变化时才重新计算,Today.tsx 的 useMemo 先例照搬到这里。
+  // Any field change on useApp()'s context value produces a new object
+  // (background sync ticks count too) — filtering/sorting 476 words can't
+  // afford to spin idly along with that. Only recompute when words/progress/
+  // the search query/filter conditions actually change, following the same
+  // useMemo precedent as Today.tsx.
   const filtered = useMemo<Word[]>(
     () => filterWords(words, progress, { query, status, sourceNote }),
     [words, progress, query, status, sourceNote],
@@ -114,8 +116,9 @@ export function Library() {
   const sourceNotes = useMemo(() => distinctSourceNotes(words), [words])
   const filteredIds = useMemo(() => new Set(filtered.map(w => w.id)), [filtered])
 
-  // 筛选条件变化后,已选中但不再可见的词条要从选择集里剔除,
-  // 否则「全选」和「已选择 N 项」会跟用户看到的列表对不上。
+  // When filter conditions change, entries that are selected but no longer
+  // visible must be dropped from the selection set, otherwise "select all"
+  // and "N items selected" would no longer match the list the user sees.
   useEffect(() => {
     setSelected(prev => {
       let changed = false
@@ -153,7 +156,7 @@ export function Library() {
     setSelected(allFilteredSelected ? new Set() : new Set(filtered.map(w => w.id)))
   }
 
-  // 双击/重复触发保护在 ConfirmDialog 里(它同步挡掉第二次点击)
+  // Double-click / repeat-trigger protection lives inside ConfirmDialog (it synchronously blocks the second click)
   async function handleConfirmDelete() {
     setDeleting(true)
     try {
@@ -174,9 +177,12 @@ export function Library() {
       eyebrow="Lexicon"
       title="词库"
       actions={
-        // 「添加」必须常驻在这里:底部导航只有四格(今日/词库/测试/设置),
-        // 而词库非空时下面那个空状态里的 /add 链接就不再渲染 —— 少了这个入口,
-        // 添加新词页在装机后就是一个走不到的页面(独立窗口下连地址栏都没有)。
+        // "Add" must live here permanently: the bottom nav only has four
+        // slots (Today/Library/Quiz/Settings), and once the library isn't
+        // empty the /add link in that empty-state block below stops
+        // rendering — without this entry point, the add-word page becomes
+        // unreachable once installed (a standalone window doesn't even have
+        // an address bar).
         <div className="library-actions">
           {manageMode ? null : (
             <Link className="btn btn--ghost btn--sm" to="/add">
@@ -189,8 +195,11 @@ export function Library() {
         </div>
       }
     >
-      {/* 删改就发生在这一页,重试入口必须在这里,不能只留在今日页的角标上。
-          只在失败时出现:这一页的正文是 476 条词,不该被常驻的状态条占一行。 */}
+      {/* Edits and deletes happen right on this page, so the retry entry
+          point must live here too, not just tucked into the badge on the
+          Today page. Only shown on failure: this page's body is 476 words
+          long and shouldn't lose a line to a permanently docked status
+          bar. */}
       {syncStatus === 'error' && syncError !== null && (
         <SyncStatus variant="note" status={syncStatus} message={syncError} onRetry={() => void syncNow()} />
       )}
@@ -244,7 +253,7 @@ export function Library() {
       )}
 
       {empty === null ? (
-        // 476 条的长列表:显式列表语义,读屏才能报出条目数、才能用列表模式导航
+        // A long list of 476 entries: explicit list semantics, so screen readers can announce the item count and support list-mode navigation
         <Card pad="none" className="library-list" role="list">
           {filtered.map(w => (
             <LibraryRow
@@ -299,7 +308,7 @@ export function Library() {
         titleId="library-confirm-title"
         title={`删除选中的 ${selected.size} 个词条?`}
         body="它们的学习进度(状态、复习次数、失误次数等)会一并清除,且无法恢复。"
-        // 8 条以内把词头列出来让用户核对;再多就成了一堵墙,反而看不清删的是什么
+        // With 8 or fewer, list the headwords for the user to double-check; more than that becomes a wall of text that obscures what's actually being deleted
         detail={
           selectedWords.length > 0 && selectedWords.length <= 8
             ? selectedWords.map(w => w.headword).join('、')

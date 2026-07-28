@@ -1,7 +1,8 @@
-/* WordDetail(词条详情)页面专属样式。发音行、释义/例句/标签/同根词卡片、
-   学习状态统计、编辑表单、删除确认对话框、词条不存在的兜底态。 */
+/* WordDetail (word entry detail) page-specific styles. Pronunciation row,
+   meaning/example/tag/related-form cards, learning-state stats, edit form,
+   delete confirmation dialog, fallback state for a nonexistent entry. */
 
-/* --- 发音行 ------------------------------------------------------------ */
+/* --- Pronunciation row ------------------------------------------------------------ */
 
 .worddetail-pronounce {
   display: flex;
@@ -9,7 +10,7 @@
   gap: var(--sp-3);
 }
 
-/* --- 释义 ---------------------------------------------------------------- */
+/* --- Meanings ---------------------------------------------------------------- */
 
 .worddetail-meaning-list {
   display: grid;
@@ -21,7 +22,7 @@
   border-bottom: 1px solid var(--rule);
 }
 
-/* 词性靠左、义项占比靠右,与复习卡背面 .review-meaning__head 同一套排布 */
+/* Part of speech on the left, meaning share on the right — the same layout as .review-meaning__head on the back of the review card */
 .worddetail-meaning__head {
   display: flex;
   align-items: baseline;
@@ -44,12 +45,12 @@
   color: var(--text-muted);
 }
 
-/* 只留间距;字号/字重/颜色由 components.css 的 .section-title 提供 */
+/* Only spacing is left here; font size/weight/color come from components.css's .section-title */
 .worddetail-section-title {
   margin-bottom: var(--sp-3);
 }
 
-/* --- 例句 ---------------------------------------------------------------- */
+/* --- Examples ---------------------------------------------------------------- */
 
 .worddetail-examples {
   display: grid;
@@ -63,7 +64,7 @@
   color: var(--text-muted);
 }
 
-/* --- 近义词 / 反义词 / 常见搭配 -------------------------------------------- */
+/* --- Synonyms / antonyms / common collocations -------------------------------------------- */
 
 .worddetail-tags {
   display: grid;
@@ -81,7 +82,7 @@
   gap: var(--sp-2);
 }
 
-/* --- 同根变形 -------------------------------------------------------------- */
+/* --- Related forms -------------------------------------------------------------- */
 
 .worddetail-related {
   display: grid;
@@ -105,8 +106,9 @@
   color: var(--text-muted);
 }
 
-/* 词源:与复习卡背面同一套处理(见 Review.css 的 .review-etymology)——
-   一句话,靠左侧发丝竖线与周围的小节区分开。 */
+/* Etymology: the same treatment as the back of the review card (see
+   .review-etymology in Review.css) — a sentence, set apart from the
+   surrounding sections by a hairline vertical rule on the left. */
 .worddetail-etymology {
   padding-left: var(--sp-3);
   border-left: 1px solid var(--rule);
@@ -114,9 +116,10 @@
   line-height: 1.7;
 }
 
-/* --- 学习状态统计 ----------------------------------------------------------
-   每一格是共享的 .stat 原语(components.css),这里只决定分几栏。
-   「学习状态」那一格要塞进 StateDot + 文字,值上另加 .stat__value--row。 */
+/* --- Learning-state stats ----------------------------------------------------------
+   Each tile is the shared .stat primitive (components.css); this only
+   decides the column count. The "learning state" tile needs to fit a
+   StateDot + text, so its value additionally gets .stat__value--row. */
 
 .worddetail-stats {
   display: grid;
@@ -125,28 +128,31 @@
   text-align: center;
 }
 
-/* 「当代遇见概率」是第五格,只在词条有 usageScore 时出现。两栏网格里落单会
-   把整块压歪,所以让它独占一行 —— 也顺带把「词本身的属性」和上面四格
-   「我的学习进度」在视觉上分开。 */
+/* "Usage score" is the fifth tile, appearing only when the entry has a
+   usageScore. Being the odd one out in a two-column grid would skew the
+   whole block, so it gets a full row to itself — which also has the side
+   effect of visually separating "an attribute of the word itself" from "my
+   learning progress" in the four tiles above. */
 .worddetail-stat--wide {
   grid-column: 1 / -1;
 }
 
-/* --- 来源笔记 / 添加日期 ---------------------------------------------------- */
+/* --- Source note / date added ---------------------------------------------------- */
 
 .worddetail-meta {
   font-size: var(--fs-xs);
 }
 
-/* --- 编辑表单 -------------------------------------------------------------- */
+/* --- Edit form -------------------------------------------------------------- */
 
 .worddetail-edit {
   display: grid;
   gap: var(--sp-5);
 }
 
-/* fieldset 的 UA 默认边框/内边距,以及会撑破 flex/grid 容器的 min-width:min-content
-   都要显式解开 */
+/* Both fieldset's UA-default border/padding and its min-width:min-content
+   (which would blow out a flex/grid container) need to be explicitly
+   undone */
 .worddetail-edit__group {
   display: grid;
   min-width: 0;
@@ -191,5 +197,7 @@
   gap: var(--sp-3);
 }
 
-/* 删除确认走共享的 ConfirmDialog / .confirm-dialog,词条不存在的兜底态走
-   .empty-state,同步失败提示走 SyncStatus / .sync-note。本页都不再自带。 */
+/* Delete confirmation goes through the shared ConfirmDialog /
+   .confirm-dialog, the fallback state for a nonexistent entry goes through
+   .empty-state, and the sync-failure notice goes through SyncStatus /
+   .sync-note. This page defines none of its own for these. */

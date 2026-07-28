@@ -15,10 +15,12 @@ import './Quiz.css'
 const QUESTION_COUNT = 10
 
 /**
- * 加练模式。走 `?mode=` 查询参数,与 `/review?mode=lapses` 的既有先例一致。
+ * Extra practice modes. Driven by the `?mode=` query param, consistent
+ * with the existing precedent set by `/review?mode=lapses`.
  *
- * **默认是「综合」,与加模式之前的行为完全一致** —— 这是每天都会走的一条路,
- * 不该因为多了三个模式就多一次点击或多一层页面。
+ * **Defaults to "mixed", exactly matching pre-modes behavior** — this is
+ * the path taken every single day, and it shouldn't cost an extra click or
+ * an extra page just because three more modes were added.
  */
 const MODES = [
   { key: 'mixed', label: '综合' },
@@ -31,7 +33,7 @@ type QuizMode = (typeof MODES)[number]['key']
 
 const isMode = (v: string | null): v is QuizMode => MODES.some(m => m.key === v)
 
-/** 出不来题时的说明:每种模式缺的东西不一样,一句通用文案会让人不知道该干嘛。 */
+/** Explanation for when no questions can be generated: each mode is missing something different, and one generic message would leave people not knowing what to do. */
 const EMPTY_HINT: Record<Exclude<QuizMode, 'sprint'>, string> = {
   mixed: '需要至少 4 个词条才能测试。当前词库还不够,先去添加或多学几个单词吧。',
   contrast: '你学过的词里还凑不出易混的一对。辨析只考已经学过的词 —— 拿两个没见过的词问「该用哪个」没有意义。再学一阵子,这里的题会自己多起来。',
@@ -39,9 +41,11 @@ const EMPTY_HINT: Record<Exclude<QuizMode, 'sprint'>, string> = {
 }
 
 /**
- * 一轮测试的全部状态。刻意用 `key` 换掉这个组件本身(见 Quiz() 末尾)来实现
- * 「再测一轮」,而不是在内部加一个 reset 分支——题目、比分、已判分状态
- * 全部靠重新挂载归零,不必逐个字段清空,也不会漏清。
+ * All the state for one round of quizzing. "Test again" is implemented by
+ * deliberately swapping out this component itself via `key` (see the end
+ * of Quiz()), rather than adding an internal reset branch — questions,
+ * score, and answered state are all zeroed out by remounting, with no
+ * field to clear by hand and nothing to accidentally miss.
  */
 function QuizSession({
   words,
@@ -54,9 +58,11 @@ function QuizSession({
 }) {
   const { progress, recordQuiz } = useApp()
 
-  // 只在组件挂载时生成一次:三个生成函数默认都走 Math.random,若在渲染期间
-  // 重新调用会在答题过程中把题目集悄悄换掉。惰性初始值 + 不依赖任何 state
-  // 保证这轮测试从头到尾用同一份题目。
+  // Generated only once, on mount: all three generator functions default to
+  // Math.random under the hood, so calling them again during a re-render
+  // would silently swap out the question set mid-quiz. A lazy initial value
+  // with no dependency on any state guarantees this round uses the same
+  // question set start to finish.
   const [questions] = useState<QuizQuestion[]>(() => {
     if (mode === 'contrast') return generateContrastQuiz(words, progress, QUESTION_COUNT)
     if (mode === 'audio') return generateAudioQuiz(words, progress, QUESTION_COUNT)
@@ -65,12 +71,16 @@ function QuizSession({
   const [index, setIndex] = useState(0)
   const [score, setScore] = useState(0)
   const [wrongIds, setWrongIds] = useState<string[]>([])
-  // recordQuiz 只应该在到达结果页那一刻调用一次;后续任何重渲染
-  // (比如 recordQuiz 触发的全局状态更新)都不能再触发第二次。
+  // recordQuiz should only ever fire once, at the moment the results page
+  // is reached; no subsequent re-render (e.g. a global state update
+  // triggered by recordQuiz itself) may fire it a second time.
   const recordedRef = useRef(false)
-  // 「下一题」的双击/连击守卫,与 QuizQuestion.tsx 里 answeredRef 是同一个模式:
-  // 同步置位挡掉第二次点击,而不是等 disabled 属性在下一次渲染后才生效。
-  // index 变化时(见下面的 effect)重新解锁,否则下一题就再也点不动了。
+  // Double-click/repeat-click guard for "Next question", the same pattern
+  // as answeredRef in QuizQuestion.tsx: set synchronously to block the
+  // second click, rather than waiting for the disabled attribute to take
+  // effect on the next render. Re-unlocked when index changes (see the
+  // effect below), otherwise the next question would never be clickable
+  // again.
   const nextGuardRef = useRef(false)
 
   const total = questions.length
@@ -193,12 +203,15 @@ function QuizSession({
 }
 
 /**
- * Task 18 实现:10 题选择/拼写、即时对错反馈、成绩页。
+ * Task 18 implementation: 10 multiple-choice/spelling questions, instant
+ * right/wrong feedback, a results page.
  *
- * 离开页面的处理:未完成的测验不做任何持久化——路由切走会直接卸载
- * QuizSession,再进 /quiz 视为开始一轮新的测试。recordQuiz 只在真正
- * 答完全部题目并看到结果页时才会被调用一次,中途离开不留痕迹,
- * 也不会把「测了一半」算作今天测过。
+ * Handling of leaving the page: an incomplete quiz is never persisted —
+ * navigating away just unmounts QuizSession, and re-entering /quiz counts
+ * as starting a fresh round. recordQuiz only ever fires once, at the
+ * moment all questions are actually answered and the results page is
+ * reached; leaving partway through leaves no trace and never counts a
+ * "half-finished" attempt as today's quiz.
  */
 export function Quiz() {
   const { words } = useApp()
@@ -212,8 +225,10 @@ export function Quiz() {
 
   const switchMode = (next: QuizMode) => {
     if (next === mode) return
-    // replace 而不是 push:模式切换不是"去过的地方",系统返回手势应该退回今日页,
-    // 而不是在四个模式之间倒着走一遍(词库页那条历史栈只增不减的老毛病别再犯)。
+    // replace instead of push: switching modes isn't "a place you visited",
+    // so the system back gesture should return to the Today page, not walk
+    // backward through the four modes one by one (avoiding a repeat of the
+    // Library page's old mistake of a history stack that only ever grows).
     setParams(next === 'mixed' ? {} : { mode: next }, { replace: true })
     setSession(s => s + 1)
   }
@@ -231,8 +246,11 @@ export function Quiz() {
         ))}
       </div>
 
-      {/* key 里带上 mode:切模式必须换一整轮新题,而不是把新题塞进旧会话的题号里。
-          这与「再测一轮」用的是同一个手法(靠重新挂载归零,不逐个字段清空)。 */}
+      {/* mode is folded into the key: switching modes must swap in a whole
+          new round of questions, rather than stuffing new questions into
+          the old session's question numbering. This is the same technique
+          as "test again" (zeroing out via remount, not clearing fields one
+          by one). */}
       {mode === 'sprint' ? (
         <SprintSession key={`sprint-${session}`} words={words} onRestart={restart} />
       ) : (

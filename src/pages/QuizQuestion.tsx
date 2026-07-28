@@ -12,7 +12,7 @@ import { speak } from '../lib/tts'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
 
-/** 每种题型的作答说明。 */
+/** Instructions for each question type. */
 const TYPE_LABEL: Record<QuizType, string> = {
   word2meaning: '选出正确的释义',
   meaning2word: '选出对应的单词',
@@ -25,11 +25,12 @@ const TYPE_LABEL: Record<QuizType, string> = {
   audio2spelling: '听发音,拼写这个单词',
 }
 
-/** 题面是音频而非文字的题型。 */
+/** Question types whose prompt is audio rather than text. */
 const isAudio = (t: QuizType) => t === 'audio2meaning' || t === 'audio2spelling'
 
-/** synonymHint 题的种类标签:界面必须标明提示词是近义还是反义,
- *  否则用户无从判断该选意思相同的还是相反的。 */
+/** Kind label for synonymHint questions: the UI must indicate whether the
+ *  hint word is a synonym or antonym, otherwise the user has no way to
+ *  tell whether to pick a matching or opposite meaning. */
 const HINT_KIND_LABEL: Record<'synonym' | 'antonym', string> = {
   synonym: '与它意思相近的词是?',
   antonym: '与它意思相反的词是?',
@@ -37,7 +38,7 @@ const HINT_KIND_LABEL: Record<'synonym' | 'antonym', string> = {
 
 const BLANK = '___'
 
-/** 挖空题把 prompt 里的 "___" 单独包一层 span,让空格比正文更醒目。 */
+/** Cloze questions wrap the "___" in prompt with its own span, to make the blank more prominent than the body text. */
 function renderBlanked(text: string): ReactNode {
   const parts = text.split(BLANK)
   return parts.map((part, i) => (
@@ -50,17 +51,19 @@ function renderBlanked(text: string): ReactNode {
 
 interface QuizQuestionViewProps {
   question: QuizQuestion
-  /** 用户第一次锁定答案时触发一次(判分用),不负责翻页 */
+  /** Fires once, the first time the user locks in an answer (for grading); not responsible for advancing */
   onAnswered: (correct: boolean) => void
-  /** 点「下一题 / 查看成绩」时触发,由父组件推进题号 */
+  /** Fires when "Next question / View results" is clicked; the parent component advances the question index */
   onNext: () => void
   nextLabel: string
 }
 
 /**
- * 单题渲染:选择题(word2meaning / meaning2word)与拼写题共用一个入口。
- * 调用方通过 `key` 换成新题号来强制重新挂载——组件内部的「已选/已提交」状态
- * 天然随之清空,不需要额外的 reset effect。
+ * Renders a single question: multiple-choice (word2meaning / meaning2word)
+ * and spelling questions share one entry point. The caller forces a
+ * remount by swapping in a new question index via `key` — the component's
+ * internal "chosen/submitted" state is naturally cleared along with it, so
+ * no extra reset effect is needed.
  */
 export function QuizQuestionView({ question, onAnswered, onNext, nextLabel }: QuizQuestionViewProps) {
   if (question.type === 'spelling' || question.type === 'audio2spelling') {
@@ -70,14 +73,18 @@ export function QuizQuestionView({ question, onAnswered, onNext, nextLabel }: Qu
 }
 
 /**
- * 音频题的题面。
+ * Prompt for audio questions.
  *
- * **绝不渲染 question.prompt** —— 那个字段存的是要朗读的词头,印出来就是把答案
- * 直接写在题面上(见 lib/quiz.ts 里 QuizQuestion.prompt 的注释)。
+ * **Never renders question.prompt** — that field stores the headword to be
+ * read aloud, so printing it would put the answer directly on the prompt
+ * (see the comment on QuizQuestion.prompt in lib/quiz.ts).
  *
- * 进题时尝试自动播一次。iOS 上 `speechSynthesis` 可能拦掉没有用户手势的播放,
- * 这里**不做任何成功与否的检测**:检测本身不可靠,而下面那个按钮就是完整的退路。
- * 被拦掉的后果只是"要自己点一下",不影响作答。
+ * Tries to auto-play once on entering the question. On iOS, `speechSynthesis`
+ * may block playback that isn't triggered by a user gesture; this
+ * **deliberately does no success/failure detection** — detection itself is
+ * unreliable, and the button below is already a complete fallback. Being
+ * blocked just means "you have to tap it yourself"; it doesn't block
+ * answering.
  */
 function AudioPrompt({ text }: { text: string }) {
   useEffect(() => {
@@ -90,20 +97,27 @@ function AudioPrompt({ text }: { text: string }) {
         <Icon name="speak" />
         再听一遍
       </Button>
-      {/* iOS 侧边静音拨片会屏蔽声音,这不是缺陷但极易被当成缺陷 —— 与其让人以为
-          功能坏了,不如把最常见的两个原因写在这儿。 */}
+      {/* iOS's physical mute switch silences the audio; that isn't a bug
+          but is very easily mistaken for one — rather than let people
+          think the feature is broken, spell out the two most common
+          causes here. */}
       <p className="faint quiz-audio__hint">听不到?检查系统音量与静音开关</p>
     </div>
   )
 }
 
 /**
- * 辨析题答完后的对比卡:两个易混词并排给释义、例句、搭配。
+ * Comparison card shown after answering a contrast question: two
+ * easily-confused words, meanings/examples/collocations side by side.
  *
- * **这才是辨析模式的真正价值。** 近义词难免有"两个都塞得进去"的句子,与其把这
- * 当缺陷躲开,不如答完就把差别摊开 —— 题目只是把注意力引到这一对上。
+ * **This is where contrast mode actually earns its keep.** Near-synonyms
+ * inevitably produce sentences where "either one fits" — rather than treat
+ * that as a flaw to dodge, lay the difference out plainly right after the
+ * answer. The question itself is just there to draw attention to this
+ * pair.
  *
- * 375px 下左右分栏太挤,所以是上下两块、中间一道分隔线。
+ * Side-by-side columns are too cramped at 375px, so it's two stacked
+ * blocks with a divider in between.
  */
 function ContrastCard({ answerId, otherId }: { answerId: string; otherId: string }) {
   const { words } = useApp()
@@ -158,14 +172,20 @@ interface AnswerFeedbackProps {
 }
 
 /**
- * 判题后的反馈块:选择题与拼写题共用——状态文字 + 「下一题」按钮,选择题
- * 之外还能塞进拼写题的「正确拼写」那一行(children)。
+ * Feedback block shown after grading: shared by multiple-choice and
+ * spelling questions — status text + "Next question" button, with room for
+ * the spelling question's "correct spelling" line (children) beyond just
+ * multiple-choice.
  *
- * 只在判完分那一刻挂载(父组件用 locked/submitted 条件渲染它),所以用一个
- * 只跑一次的挂载效应把焦点交给「下一题」按钮:上一步被禁用/整个移除的控件
- * (选项按钮、拼写输入框)会让焦点弹回 <body>,键盘用户不该每答一题就要
- * 从页头重新 Tab 一遍。焦点直接走 ref —— Button 现在声明了 ref prop,
- * 不必再靠一个固定 id + getElementById 绕路。
+ * Only ever mounted at the moment grading completes (the parent
+ * conditionally renders it based on locked/submitted), so a mount effect
+ * that runs once hands focus to the "Next question" button: the previous
+ * step's disabled/removed controls (option buttons, spelling input) would
+ * otherwise bounce focus back to <body>, and keyboard users shouldn't have
+ * to Tab all the way from the page header after every single question.
+ * Focus goes straight through a ref — Button now declares a ref prop, so
+ * there's no need to route around it with a fixed id + getElementById
+ * anymore.
  */
 function AnswerFeedback({ correct, onNext, nextLabel, children }: AnswerFeedbackProps) {
   const nextRef = useRef<HTMLButtonElement>(null)
@@ -190,16 +210,18 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
   const { progress } = useApp()
   const soundEnabled = isSoundEnabled(progress.settings)
   const [chosen, setChosen] = useState<string | null>(null)
-  // 防止同一渲染帧内的连续点击(如误触双击)在状态还没落地前判两次分
+  // Guards against consecutive clicks within the same render frame (e.g. an accidental double-click) grading twice before state has landed
   const answeredRef = useRef(false)
   const locked = chosen !== null
-  // 选项是中文释义的题型:word2meaning / audio2meaning。其余都是英文词头。
+  // Question types whose options are Chinese meanings: word2meaning / audio2meaning. Everything else uses English headwords.
   const optionLang = question.type === 'word2meaning' || question.type === 'audio2meaning' ? undefined : 'en'
-  // contrast 的题面同样是挖了空的例句,渲染上与 clozeExample 完全一致。
+  // contrast's prompt is likewise a cloze example sentence, rendered identically to clozeExample.
   const isCloze =
     question.type === 'clozeExample' || question.type === 'clozeCollocation' || question.type === 'contrast'
-  // 例句/搭配挖空与近义反义提示的 prompt 都是英文,但不是单个词头——沿用下面
-  // word2meaning 专属的辞书衬线体会误导,那套视觉语言留给「整屏唯一词头」。
+  // The prompts for example/collocation cloze and synonym/antonym hints are
+  // all English, but not a single headword — reusing word2meaning's
+  // dictionary serif below would be misleading, since that visual language
+  // is reserved for "the one headword on the whole screen".
   const promptLang = question.type === 'word2meaning' || isCloze || question.type === 'synonymHint' ? 'en' : undefined
 
   const handleChoose = useCallback(
@@ -207,7 +229,7 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
       if (answeredRef.current) return
       answeredRef.current = true
       const correct = opt === question.answer
-      // 在点击的调用栈内同步播放,iOS 要求 AudioContext 解锁发生在用户手势内。
+      // Played synchronously within the click's call stack — iOS requires the AudioContext unlock to happen inside a user gesture.
       playQuizResult(correct, soundEnabled)
       setChosen(opt)
       onAnswered(correct)
@@ -215,9 +237,12 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
     [question.answer, soundEnabled, onAnswered],
   )
 
-  // 数字键 1–4 直接选中对应选项 —— 与复习页 1–4 打分是同一套肌肉记忆。
-  // 判完题就摘掉监听:此时按钮已 disabled,焦点被 AnswerFeedback 交给了
-  // 「下一题」,数字键该彻底沉默,Enter/空格由那颗按钮自己处理。
+  // Number keys 1–4 select the corresponding option directly — the same
+  // muscle memory as grading 1–4 on the review page. The listener is torn
+  // down as soon as the question is graded: at that point the buttons are
+  // already disabled, AnswerFeedback has handed focus to "Next question",
+  // and the number keys should go completely silent, leaving Enter/Space
+  // to that button itself.
   useEffect(() => {
     if (locked) return
     function onKeyDown(e: KeyboardEvent) {
@@ -236,11 +261,15 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
       {question.type === 'synonymHint' && question.hintKind ? (
         <p className="quiz-hint-kind section-title">{HINT_KIND_LABEL[question.hintKind]}</p>
       ) : null}
-      {/* word2meaning 的 prompt 是本题唯一的英文词头(整屏独一份的「主角」),用辞书
-          衬线体当作大字招牌;meaning2word 的选项也是词头,但那是四个并列的可点控件,
-          刻意保留按钮的界面字体——衬线大字会把按钮撑得高矮不一,还会让「唯一主角」
-          这个视觉信号在一组选项里被稀释成噪音,这里的取舍以后不要因为「都是英文词」
-          就顺手统一成 .word。 */}
+      {/* word2meaning's prompt is the only English headword on the question
+          (the sole "protagonist" on the whole screen), so it uses the
+          dictionary serif as a large-type headline; meaning2word's options
+          are also headwords, but those are four side-by-side clickable
+          controls, and the interface font is deliberately kept for
+          buttons — large serif type would make the buttons uneven in
+          height, and would dilute the "sole protagonist" visual signal
+          into noise across a set of options. Don't casually unify this
+          with .word later just because "they're all English words". */}
       {isAudio(question.type) ? (
         <AudioPrompt text={question.prompt} />
       ) : (
@@ -268,8 +297,10 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
               lang={optionLang}
               onClick={() => handleChoose(opt)}
             >
-              {/* 序号印在选项上,快捷键才有人知道。和复习页把「1」印在打分按钮上
-                  一个道理:不写出来的快捷键等于不存在。 */}
+              {/* Printing the number on the option is what makes the
+                  keyboard shortcut discoverable. Same logic as the review
+                  page printing "1" on the grade buttons: an unwritten
+                  shortcut might as well not exist. */}
               <span>
                 <span className="quiz-option__key">{i + 1}</span>
                 {opt}
@@ -309,7 +340,7 @@ function SpellingQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuest
     if (v === '' || answeredRef.current) return
     answeredRef.current = true
     const isCorrect = v.toLowerCase() === question.answer.trim().toLowerCase()
-    // 在提交的调用栈内同步播放,iOS 要求 AudioContext 解锁发生在用户手势内。
+    // Played synchronously within the submit's call stack — iOS requires the AudioContext unlock to happen inside a user gesture.
     playQuizResult(isCorrect, soundEnabled)
     setCorrect(isCorrect)
     setSubmitted(true)
@@ -319,8 +350,10 @@ function SpellingQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuest
   return (
     <div className="quiz-q">
       <p className="quiz-q__label">{TYPE_LABEL[question.type]}</p>
-      {/* 听音拼写**答题时不显示音标**:刚听过发音,再把 IPA 摆出来就没什么可考的了。
-          音标留到揭晓答案时给(见下面的 quiz-spelling-answer)。 */}
+      {/* Audio-spelling questions **don't show the phonetic while
+          answering**: you just heard the pronunciation, so displaying the
+          IPA too would leave nothing left to test. The phonetic is saved
+          for when the answer is revealed (see quiz-spelling-answer below). */}
       {question.type === 'audio2spelling' ? (
         <AudioPrompt text={question.prompt} />
       ) : (

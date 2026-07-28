@@ -1,4 +1,4 @@
-/* Volcab 设计系统入口。顺序:令牌 → 基础 → 组件 → 布局。 */
+/* Volcab design system entry point. Order: tokens → base → components → layout. */
 @import './tokens.css';
 @import './base.css';
 @import './components.css';

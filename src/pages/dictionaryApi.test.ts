@@ -2,13 +2,14 @@ import { describe, expect, it } from 'vitest'
 import { mapDictionaryResponse } from './dictionaryApi'
 
 /**
- * 夹具取自真实响应(2026-07-25 手动 curl api.dictionaryapi.dev 核对),
- * 裁掉了 audio/license/sourceUrls 等映射函数用不到的字段,保留真实的
- * definition/phonetic 文本与数组顺序。
+ * Fixtures are taken from real responses (manually curled and checked
+ * against api.dictionaryapi.dev on 2026-07-25), with fields the mapping
+ * function doesn't use — audio/license/sourceUrls etc. — trimmed out,
+ * keeping the real definition/phonetic text and array order intact.
  */
 
 // curl https://api.dictionaryapi.dev/api/v2/entries/en/abrogate
-// 关键特征:顶层无 phonetic,phonetics 数组为空 —— 完全没有音标可用
+// Key trait: no top-level phonetic, and the phonetics array is empty — no phonetic is available at all
 const ABROGATE_FIXTURE = [
   {
     word: 'abrogate',
@@ -40,8 +41,9 @@ const ABROGATE_FIXTURE = [
 ]
 
 // curl https://api.dictionaryapi.dev/api/v2/entries/en/run
-// 关键特征:phonetics[0] 只有 audio 没有 text;后面两条已经带斜杠;
-// meanings 有 4 条(verb, noun, verb, adjective),用来验证「只取前 3 条」
+// Key trait: phonetics[0] has only audio, no text; the next two already
+// include slashes; meanings has 4 entries (verb, noun, verb, adjective),
+// used to verify "only the first 3 are taken"
 const RUN_FIXTURE = [
   {
     word: 'run',
@@ -88,7 +90,7 @@ const RUN_FIXTURE = [
 ]
 
 // curl https://api.dictionaryapi.dev/api/v2/entries/en/happy
-// 关键特征:phonetics[0] 同样只有 audio;第一条带 text 的是英式 /ˈhæpiː/
+// Key trait: phonetics[0] likewise has only audio; the first one with text is the British /ˈhæpiː/
 const HAPPY_FIXTURE = [
   {
     word: 'happy',
@@ -141,8 +143,8 @@ const NOT_FOUND_BODY = {
   resolution: 'You can try the search again at later time or head to the web instead.',
 }
 
-describe('mapDictionaryResponse · 真实响应夹具', () => {
-  it('abrogate:无音标(顶层缺失且 phonetics 为空),取前 2 条 meaning(该词只有 2 条)', () => {
+describe('mapDictionaryResponse · real response fixtures', () => {
+  it('abrogate: no phonetic (missing at top level and phonetics is empty), takes the first 2 meanings (this word only has 2)', () => {
     const result = mapDictionaryResponse(ABROGATE_FIXTURE)
     expect(result.phonetic).toBe('')
     expect(result.meanings).toEqual([
@@ -154,7 +156,7 @@ describe('mapDictionaryResponse · 真实响应夹具', () => {
     ])
   })
 
-  it('run:跳过没有 text 的 phonetics[0],取第一条有效音标;4 条 meaning 只取前 3', () => {
+  it('run: skips phonetics[0] which has no text, takes the first valid phonetic; only the first 3 of 4 meanings are taken', () => {
     const result = mapDictionaryResponse(RUN_FIXTURE)
     expect(result.phonetic).toBe('/ɹʊn/')
     expect(result.meanings).toEqual([
@@ -164,53 +166,53 @@ describe('mapDictionaryResponse · 真实响应夹具', () => {
     ])
   })
 
-  it('happy:同样跳过无 text 的第一条,取英式音标;词性缩写符合本应用约定', () => {
+  it('happy: likewise skips the first entry with no text, takes the British phonetic; part-of-speech abbreviations follow this app\'s convention', () => {
     const result = mapDictionaryResponse(HAPPY_FIXTURE)
     expect(result.phonetic).toBe('/ˈhæpiː/')
     expect(result.meanings.map((m) => m.pos)).toEqual(['n.', 'n.', 'v.'])
   })
 
-  it('404 的错误响应体(非数组)→ 空结果,不抛异常', () => {
+  it('404 error response body (not an array) → empty result, no exception thrown', () => {
     expect(mapDictionaryResponse(NOT_FOUND_BODY)).toEqual({ phonetic: '', meanings: [] })
   })
 })
 
-describe('mapDictionaryResponse · 边界与畸形输入', () => {
-  it('空数组 → 空结果', () => {
+describe('mapDictionaryResponse · edge cases and malformed input', () => {
+  it('empty array → empty result', () => {
     expect(mapDictionaryResponse([])).toEqual({ phonetic: '', meanings: [] })
   })
 
-  it('null / undefined → 空结果,不抛异常', () => {
+  it('null / undefined → empty result, no exception thrown', () => {
     expect(mapDictionaryResponse(null)).toEqual({ phonetic: '', meanings: [] })
     expect(mapDictionaryResponse(undefined)).toEqual({ phonetic: '', meanings: [] })
   })
 
-  it('字符串 / 数字等完全无关的类型 → 空结果', () => {
+  it('completely unrelated types like string / number → empty result', () => {
     expect(mapDictionaryResponse('abrogate')).toEqual({ phonetic: '', meanings: [] })
     expect(mapDictionaryResponse(42)).toEqual({ phonetic: '', meanings: [] })
   })
 
-  it('phonetics 里全是空白 text → 视为无音标', () => {
+  it('phonetics with all-whitespace text → treated as no phonetic', () => {
     const data = [{ phonetics: [{ text: '' }, { text: '   ' }] }]
     expect(mapDictionaryResponse(data).phonetic).toBe('')
   })
 
-  it('phonetic 文本不带斜杠 → 补全为 /.../ 形式', () => {
+  it('phonetic text without slashes → completed into /.../ form', () => {
     const data = [{ phonetics: [{ text: 'əˈbreɪʒən' }] }]
     expect(mapDictionaryResponse(data).phonetic).toBe('/əˈbreɪʒən/')
   })
 
-  it('顶层 phonetic 字符串优先于 phonetics 数组,且同样会被归一化', () => {
+  it('top-level phonetic string takes priority over the phonetics array, and is likewise normalized', () => {
     const data = [{ phonetic: 'test', phonetics: [{ text: '/should-not-use/' }] }]
     expect(mapDictionaryResponse(data).phonetic).toBe('/test/')
   })
 
-  it('顶层 phonetic 为空字符串 → 回退到 phonetics 数组', () => {
+  it('top-level phonetic is an empty string → falls back to the phonetics array', () => {
     const data = [{ phonetic: '', phonetics: [{ text: '/fallback/' }] }]
     expect(mapDictionaryResponse(data).phonetic).toBe('/fallback/')
   })
 
-  it('meaning 缺少 definitions(空数组)→ 跳过该条,不计入前 3 条配额', () => {
+  it('meaning missing definitions (empty array) → skipped, doesn\'t count toward the first-3 quota', () => {
     const data = [
       {
         meanings: [
@@ -222,22 +224,22 @@ describe('mapDictionaryResponse · 边界与畸形输入', () => {
     expect(mapDictionaryResponse(data).meanings).toEqual([{ pos: 'n.', en: 'ok' }])
   })
 
-  it('meaning 缺少 partOfSpeech → pos 留空字符串,而不是崩溃或塞入 undefined', () => {
+  it('meaning missing partOfSpeech → pos left as an empty string, rather than crashing or inserting undefined', () => {
     const data = [{ meanings: [{ definitions: [{ definition: 'no pos field' }] }] }]
     expect(mapDictionaryResponse(data).meanings).toEqual([{ pos: '', en: 'no pos field' }])
   })
 
-  it('未知词性(非标准 partOfSpeech)→ 退化为「词.」形式的缩写', () => {
+  it('unknown part of speech (non-standard partOfSpeech) → falls back to a "word." style abbreviation', () => {
     const data = [{ meanings: [{ partOfSpeech: 'phrase', definitions: [{ definition: 'x' }] }] }]
     expect(mapDictionaryResponse(data).meanings).toEqual([{ pos: 'phrase.', en: 'x' }])
   })
 
-  it('meanings 字段类型不对(不是数组)→ 空 meanings,不抛异常', () => {
+  it('meanings field has the wrong type (not an array) → empty meanings, no exception thrown', () => {
     const data = [{ meanings: 'oops' }]
     expect(mapDictionaryResponse(data).meanings).toEqual([])
   })
 
-  it('definitions 元素不是对象 / definition 不是字符串 → 逐个跳过继续找', () => {
+  it('a definitions element isn\'t an object / definition isn\'t a string → skipped one by one while continuing to search', () => {
     const data = [
       {
         meanings: [
@@ -248,7 +250,7 @@ describe('mapDictionaryResponse · 边界与畸形输入', () => {
     expect(mapDictionaryResponse(data).meanings).toEqual([{ pos: 'v.', en: 'valid' }])
   })
 
-  it('超过 3 条 meaning 时只取前 3 条(即使全部有效)', () => {
+  it('when there are more than 3 meanings, only the first 3 are taken (even if all are valid)', () => {
     const data = [
       {
         meanings: Array.from({ length: 5 }, (_, i) => ({
@@ -264,7 +266,7 @@ describe('mapDictionaryResponse · 边界与畸形输入', () => {
     ])
   })
 
-  it('数组第一项不是对象(如 null 打头)→ 跳过,继续找第一个可用词条', () => {
+  it('the first array item isn\'t an object (e.g. starts with null) → skipped, continues to find the first usable entry', () => {
     const data = [null, { meanings: [{ partOfSpeech: 'noun', definitions: [{ definition: 'second entry' }] }] }]
     expect(mapDictionaryResponse(data).meanings).toEqual([{ pos: 'n.', en: 'second entry' }])
   })

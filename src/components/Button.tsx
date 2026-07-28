@@ -1,24 +1,27 @@
 import type { ComponentPropsWithRef } from 'react'
 
 /**
- * 按钮。
- * primary            墨板实心 —— 页面唯一主操作
- * secondary          纸面 + 描边
- * ghost              纯文字
- * danger             实心朱砂 —— 只给破坏性操作
- * grade-*            SRS 四档打分(重来/困难/良好/简单),热→冷一条温度带
- * correct/incorrect  测验判题反馈,置灰后仍保持颜色
+ * Button.
+ * primary            solid ink slab — the page's one and only primary action
+ * secondary          paper surface + outline
+ * ghost              text only
+ * danger             solid vermilion — destructive actions only
+ * grade-*            SRS four-way grading (again/hard/good/easy), a hot→cold temperature band
+ * correct/incorrect  quiz answer feedback, keeps its color even when disabled
  *
- * 外观互斥,所以统一走 variant,而不是「secondary + 另加一个 class」,
- * 免得两条 background 声明靠打包顺序决胜负。
+ * Appearances are mutually exclusive, so this goes through a single `variant`
+ * prop rather than "secondary + one more class" — otherwise two competing
+ * `background` declarations end up settled by bundling order.
  *
- * 样式全在 CSS(.btn / .btn--*),需要一个「长得像按钮的链接」时,
- * 直接给 <Link> 写 className="btn btn--secondary" 即可,不必包装组件。
+ * Styling all lives in CSS (.btn / .btn--*). When you need "a link that looks
+ * like a button," just write className="btn btn--secondary" directly on
+ * <Link> — no need to wrap it in a component.
  *
- * props 用 ComponentPropsWithRef 而不是 ButtonHTMLAttributes:React 19 里
- * ref 就是一个普通 prop,但只有声明了它才拿得到 —— 它跟着 ...rest 落到
- * <button> 上。判完题把焦点交给「下一题」、确认面板展开把焦点交给「取消」,
- * 都要真正的 ref;缺了它,调用方只能退回 getElementById / querySelector。
+ * Props use ComponentPropsWithRef instead of ButtonHTMLAttributes: in React 19
+ * ref is just a plain prop, but you only get it if you declare it — it rides
+ * along with ...rest onto <button>. Moving focus to "next question" after
+ * grading, or to "cancel" when a confirm panel opens, needs a real ref;
+ * without it the caller is stuck falling back to getElementById / querySelector.
  */
 interface ButtonProps extends ComponentPropsWithRef<'button'> {
   variant?:
@@ -33,11 +36,11 @@ interface ButtonProps extends ComponentPropsWithRef<'button'> {
     | 'correct'
     | 'incorrect'
   size?: 'sm' | 'md' | 'lg'
-  /** 撑满一行 */
+  /** Stretch to fill the row */
   block?: boolean
-  /** 允许长文案换行并左对齐(测验选项是整句英文释义) */
+  /** Allow long text to wrap and left-align (quiz options are full English definitions) */
   wrap?: boolean
-  /** 加载中:置 aria-busy、禁用并显示转圈 */
+  /** Loading: sets aria-busy, disables, and shows a spinner */
   loading?: boolean
 }
 

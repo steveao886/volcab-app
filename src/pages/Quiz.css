@@ -1,5 +1,6 @@
 /* ==========================================================================
-   Quiz 页专属样式(Task 18)。类名一律 quiz- 前缀,不动全局样式表。
+   Quiz page-specific styles (Task 18). Class names are always prefixed with
+   quiz-; the global stylesheet is left untouched.
    ========================================================================== */
 
 .quiz-progress {
@@ -25,7 +26,7 @@
   line-height: var(--lh-snug);
 }
 
-/* word2meaning 的 prompt 复用 .word(英文词头衬线体),这里只补一点顶部间距 */
+/* word2meaning's prompt reuses .word (serif type for English headwords); this just adds a bit of top spacing */
 .quiz-q__prompt.word {
   margin-top: var(--sp-3);
 }
@@ -36,12 +37,16 @@
   margin-top: var(--sp-5);
 }
 
-/* 选项前的数字键提示:按 1–4 直接作答。与复习页 .review-grade__key 同一套
-   语言 —— 等宽数字体、比正文小一号、faint 色:它是操作提示,不是选项内容,
-   不该跟释义抢注意力。 */
-/* 序号是**选项文字里的一个内联前缀**,不是并排的第二个 flex 项 —— 后者要么在
-   单行选项上偏高(按钮 44px 高,文字被居中而序号顶在内容框上沿),要么在三行
-   释义旁边飘到正中间。跟着基线走,两种情况都不用管。 */
+/* Number-key hint before each option: press 1–4 to answer directly. Same
+   visual language as .review-grade__key on the review page — tabular
+   numeral font, one size smaller than body text, faint color: it's an
+   operational hint, not option content, and shouldn't compete with the
+   meaning text for attention. */
+/* The number is **an inline prefix within the option text**, not a second
+   flex item sitting side by side — the latter would either sit too high on
+   a single-line option (button is 44px tall, text is centered while the
+   number sticks to the top of the content box), or float dead-center next
+   to a three-line meaning. Following the baseline sidesteps both cases. */
 .quiz-option__key {
   margin-inline-end: var(--sp-2);
   font-family: var(--font-num);
@@ -49,16 +54,20 @@
   color: var(--text-faint);
 }
 
-/* 判完题的对错两项是淡色底 + 同色文字,faint 灰在上面糊成一片 ——
-   跟着文字走,只压一点不透明度维持主次。 */
+/* After grading, the correct/incorrect options use a light background with
+   text of the same hue, so faint gray on top would just blur together —
+   follow the text color instead, only dialing down opacity a bit to
+   preserve visual hierarchy. */
 .btn--correct .quiz-option__key,
 .btn--incorrect .quiz-option__key {
   color: inherit;
   opacity: 0.75;
 }
 
-/* 判题后贴在选项文字下方的小字说明:「正确答案」/「你的选择」——
-   对错不能只靠颜色传达,这行文字是给色觉障碍与截图场景的兜底。 */
+/* Small caption attached below the option text after grading: "correct
+   answer" / "your choice" — right/wrong can't be conveyed by color alone,
+   this line is the fallback for color-blind users and screenshot
+   scenarios. */
 .quiz-option__tag {
   display: block;
   margin-top: 2px;
@@ -140,30 +149,32 @@
   gap: var(--sp-3);
 }
 
-/* 挖空处:比正文重,一眼能定位到要填的地方 */
+/* The blank: heavier than body text, so it's spottable at a glance */
 .quiz-blank {
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--text);
 }
 
-/* 近义/反义提示的种类标签 */
+/* Kind label for the synonym/antonym hint */
 .quiz-hint-kind {
   margin-bottom: var(--sp-2);
 }
 
 /* ==========================================================================
-   加练三模式(辨析 / 听音 / 极速)。
+   The three extra practice modes (contrast / audio / sprint).
    ========================================================================== */
 
-/* 模式切换:一行 chip,横向可滚。四个词标签在 375px 下放得下,但字号设置调大
-   或将来多一个模式就会溢出 —— 允许横滚比让它们换行挤成两排体面。 */
+/* Mode switcher: a single row of chips, horizontally scrollable. The four
+   mode labels fit at 375px, but bumping the font size or adding another
+   mode down the line would overflow — allowing horizontal scroll looks
+   better than letting them wrap into a cramped second row. */
 .quiz-modes {
   display: flex;
   gap: var(--sp-2);
   margin-bottom: var(--sp-4);
   overflow-x: auto;
-  /* 滚动时不让 chip 的焦点圈被容器裁掉 */
+  /* Keeps a chip's focus ring from being clipped by the container while scrolling */
   padding: 2px;
   margin-left: -2px;
   scrollbar-width: none;
@@ -173,7 +184,7 @@
   display: none;
 }
 
-/* --- 听音题 --------------------------------------------------------------- */
+/* --- Audio question --------------------------------------------------------------- */
 
 .quiz-audio {
   display: grid;
@@ -186,9 +197,10 @@
   font-size: var(--fs-xs);
 }
 
-/* --- 辨析题的对比卡 ------------------------------------------------------- */
+/* --- Comparison card for contrast questions ------------------------------------------------------- */
 
-/* 答完才出现。375px 下左右分栏太挤,所以上下两块 + 一道分隔线。 */
+/* Only appears after answering. Side-by-side columns are too cramped at
+   375px, so it's two stacked blocks + a divider instead. */
 .quiz-contrast {
   margin-top: var(--sp-5);
   padding-top: var(--sp-4);
@@ -205,8 +217,9 @@
   border-top: 1px dashed var(--rule);
 }
 
-/* 本题答案那一侧用朱砂做左侧批注条 —— 朱砂只做批注,这里正是「哪个是答案」
-   这条批注,不是给整块内容上色。 */
+/* The answer side of this question uses vermilion as a left annotation bar
+   — vermilion is only ever for annotation, and this is exactly that
+   annotation ("which one is the answer"), not coloring the whole block. */
 .quiz-contrast__side--answer {
   padding-left: var(--sp-3);
   border-left: 2px solid var(--accent);
@@ -233,9 +246,9 @@
   margin-top: var(--sp-2);
 }
 
-/* --- 极速赛 --------------------------------------------------------------- */
+/* --- Sprint mode --------------------------------------------------------------- */
 
-/* 倒计时条钉在题目上方:秒数、进度、当前得分一行摆平。 */
+/* The countdown bar is pinned above the question: seconds, progress, and current score all on one row. */
 .quiz-sprint__bar {
   display: flex;
   align-items: center;
@@ -247,7 +260,7 @@
   font-size: var(--fs-xl);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  /* 秒数从两位掉到一位时不让后面的进度条跟着跳 */
+  /* Keeps the progress bar after it from jumping when the seconds count drops from two digits to one */
   min-width: 3ch;
 }
 

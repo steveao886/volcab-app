@@ -18,7 +18,7 @@ import './WordDetail.css'
 
 const STATE_LABEL: Record<WordState, string> = { new: '未学', learning: '学习中', review: '已掌握' }
 
-/** Task 19 实现:完整词条 + 发音 + 学习统计 + 编辑表单 + 删除。 */
+/** Task 19 implementation: full entry + pronunciation + learning stats + edit form + delete. */
 export function WordDetail() {
   const { id } = useParams()
   const { words, progress, saveWord, deleteWords, syncStatus, syncError, syncNow } = useApp()
@@ -29,15 +29,20 @@ export function WordDetail() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
-  // Hooks 必须无条件调用,「词不存在」的分支放在所有 hook 之后再 return。
+  // Hooks must be called unconditionally; the "word doesn't exist" branch is returned only after all hooks.
   const liveWord = useMemo(() => words.find(w => w.id === id), [words, id])
 
-  // 删除时会有一小段「词已经没了、但路由还没切走」的空窗:deleteWords 的本地
-  // 摘除是普通更新,而 navigate() 在 react-router 里走 startTransition,优先级
-  // 更低,所以 React 会先提交前者。实测这中间能停留 ~70ms,足够闪出一屏
-  // 「这个词条不存在」—— 在一个专门用来删数据的页面上,这是最不该出现的误报。
-  // 用删除前的快照顶住这段空窗;它只在 deleting 期间生效,真·找不到词的场景
-  // (陈旧链接、别的设备删掉了)不受影响,仍然走下面的未找到分支。
+  // There's a brief window during delete where "the word is already gone,
+  // but the route hasn't switched away yet": deleteWords's local removal
+  // is a normal update, while navigate() in react-router runs through
+  // startTransition, which has lower priority, so React commits the
+  // former first. Measured in practice, this gap can last ~70ms — long
+  // enough to flash a "this entry doesn't exist" screen, which is the
+  // worst possible false alarm on a page whose whole purpose is deleting
+  // data. A pre-delete snapshot is used to paper over this gap; it only
+  // takes effect while deleting is true, so genuinely-not-found scenarios
+  // (a stale link, deleted from another device) are unaffected and still
+  // fall through to the not-found branch below.
   const lastWordRef = useRef<Word | undefined>(undefined)
   if (liveWord !== undefined) lastWordRef.current = liveWord
   const word = liveWord ?? (deleting ? lastWordRef.current : undefined)
@@ -49,20 +54,26 @@ export function WordDetail() {
     } finally {
       setSaving(false)
     }
-    // saveWord 内部会先本地落盘再发网络请求,不管这次推送成不成功,
-    // 本地这份编辑都已经生效 —— 退出编辑态是准确的;
-    // 万一同步失败,下面常驻的 syncStatus 提示会说明情况,不会假装什么都没发生。
+    // saveWord commits locally first and only then makes the network
+    // request; regardless of whether that push succeeds, the local edit
+    // has already taken effect — so exiting edit mode is accurate. If sync
+    // does fail, the persistent syncStatus notice below explains it; this
+    // never pretends nothing happened.
     setEditing(false)
   }
 
   function handleDelete() {
-    if (!word) return // 双击/重复触发保护在 ConfirmDialog 里
+    if (!word) return // Double-click/repeat-trigger protection lives inside ConfirmDialog
     setDeleting(true)
-    // 不能 await 完再跳转:deleteWords 会在它自己那个 await 之前同步地把词
-    // 从 words 里摘掉,React 19 把这次 setState 和 setDeleting 批到同一次
-    // 渲染,于是 word 立刻变成 undefined,页面在网络请求还没回来时就先闪出
-    // 「这个词条不存在」。本地删除已经是权威结果(与 handleSave 同一套逻辑),
-    // 所以立刻跳走;推送成败由词库页常驻的 syncStatus 提示负责说明。
+    // Can't wait for the await to finish before navigating: deleteWords
+    // synchronously removes the word from words before its own await, and
+    // React 19 batches that setState together with setDeleting into the
+    // same render, so word immediately becomes undefined — the page would
+    // flash "this entry doesn't exist" before the network request even
+    // comes back. The local delete is already the authoritative result
+    // (same logic as handleSave), so navigation happens immediately; the
+    // push's success or failure is explained by the persistent syncStatus
+    // notice on the library page.
     void deleteWords([word.id]).finally(() => setDeleting(false))
     navigate('/library')
   }
@@ -112,7 +123,7 @@ export function WordDetail() {
         </Button>
       </div>
 
-      {/* 编辑/删除就发生在这一页,和词库页一样:只在失败时提示,但重试入口要在手边 */}
+      {/* Edits/deletes happen right on this page, same as the library page: only shown on failure, but the retry entry point needs to be within reach */}
       {syncStatus === 'error' && syncError !== null && (
         <SyncStatus variant="note" status={syncStatus} message={syncError} onRetry={() => void syncNow()} />
       )}
@@ -125,7 +136,7 @@ export function WordDetail() {
             <ol className="worddetail-meaning-list">
               {word.meanings.map((m, i) => (
                 <li className="worddetail-meaning" key={`${m.pos}-${i}`}>
-                  {/* 词性与义项占比同一行,呈现方式与复习卡背面保持一致 */}
+                  {/* Part of speech and meaning share share a row, presented consistently with the back of the review card */}
                   <p className="worddetail-meaning__head">
                     <span className="pos">{m.pos}</span>
                     {m.share !== undefined && (
@@ -233,9 +244,13 @@ export function WordDetail() {
               <p className="num stat__value">{entry?.lapses ?? 0}</p>
               <p className="stat__label">失误次数</p>
             </div>
-            {/* 词频评分是**可选**字段:App 内手动添加的词不会有分。缺省时整格不渲染 ——
-                显示 0 或 — 会被读成「这个词你基本碰不到」,那是个假结论。
-                值写成「8 / 10」而不是光一个 8,免得离开标签就没法解读。 */}
+            {/* The usage score is an **optional** field: words added
+                manually within the app won't have one. This whole tile
+                doesn't render when it's absent — showing 0 or — would
+                read as "you basically never encounter this word", which
+                is a false conclusion. The value is written as "8 / 10"
+                rather than a bare 8, so it's still interpretable away
+                from its label. */}
             {word.usageScore !== undefined && (
               <div className="stat worddetail-stat--wide">
                 <p className="num stat__value">{word.usageScore} / 10</p>

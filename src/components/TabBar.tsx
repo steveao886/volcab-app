@@ -8,7 +8,7 @@ const TABS = [
   { to: '/settings', label: '设置', icon: 'settings', end: false },
 ] as const
 
-/** 主导航。移动端固定底部,≥900px 变成左侧栏(样式在 layout.css)。 */
+/** Primary nav. Fixed to the bottom on mobile, becomes a left sidebar at ≥900px (styles in layout.css). */
 export function TabBar() {
   return (
     <nav className="tabbar" aria-label="主导航">

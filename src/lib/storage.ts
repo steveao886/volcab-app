@@ -6,11 +6,11 @@ const KEYS = {
   progress: 'volcab.progress',
   progressSha: 'volcab.progressSha',
   dirty: 'volcab.dirty',
-  wordOps: 'volcab.wordOps',   // 尚未确认推上远端的词库增删,进程重启后还要重放
-  staging: 'volcab.staging',       // 生词暂存区(staging.json)的本机副本
+  wordOps: 'volcab.wordOps',   // Word-list additions/deletions not yet confirmed pushed to the remote; must be replayed after a process restart
+  staging: 'volcab.staging',       // Local copy of the staging area for new words (staging.json)
   stagingSha: 'volcab.stagingSha',
-  stagingOps: 'volcab.stagingOps', // 尚未确认推上远端的收词,与 wordOps 同一套机制
-  recentPassages: 'volcab.recentPassages', // 最近做过的短文 id。只防重复,不值得为它往 progress.json 加同步字段
+  stagingOps: 'volcab.stagingOps', // Word collections not yet confirmed pushed to the remote, same mechanism as wordOps
+  recentPassages: 'volcab.recentPassages', // Ids of recently done passages. Only guards against repeats — not worth adding a sync field in progress.json for this
 } as const
 
 export type StorageKey = keyof typeof KEYS

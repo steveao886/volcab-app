@@ -15,36 +15,36 @@ const LIB = [word('abrogate'), word('ad-hoc', 'ad hoc')]
 const STAGE = [item('ostensible')]
 
 describe('checkCapture', () => {
-  it('空输入(含纯空白):按钮该是禁用的', () => {
+  it('empty input (including whitespace-only): the button should be disabled', () => {
     expect(checkCapture('', LIB, STAGE).kind).toBe('empty')
     expect(checkCapture('   \n ', LIB, STAGE).kind).toBe('empty')
   })
 
-  it('新词:放行,并回传归一化后的写法', () => {
+  it('a new word: allowed through, returning the normalized spelling', () => {
     expect(checkCapture('  perfunctory ', LIB, STAGE)).toEqual({ kind: 'ok', headword: 'perfunctory' })
     expect(checkCapture('Sine  Qua  Non', LIB, STAGE)).toEqual({ kind: 'ok', headword: 'Sine Qua Non' })
   })
 
-  it('已在词库里:拦下,并带上词条 id 好让提示可以点过去', () => {
+  it('already in the library: blocked, carrying the entry id so the notice can link to it', () => {
     expect(checkCapture('Abrogate', LIB, STAGE)).toEqual({ kind: 'in-library', id: 'abrogate', headword: 'abrogate' })
   })
 
-  it('已在待补全列表里:拦下', () => {
+  it('already in the staging list: blocked', () => {
     expect(checkCapture(' OSTENSIBLE ', LIB, STAGE)).toMatchObject({ kind: 'in-staging' })
   })
 
-  it('短语词条:空格与连字符两种写法都认得出是同一个词', () => {
-    // 词库里 headword 是 "ad hoc"、id 是 "ad-hoc";两种输入都不该重复入列
+  it('phrase entries: both the space and hyphen spellings are recognized as the same word', () => {
+    // In the library, headword is "ad hoc" and id is "ad-hoc"; neither input should be enqueued as a duplicate
     expect(checkCapture('ad hoc', LIB, STAGE).kind).toBe('in-library')
     expect(checkCapture('Ad-Hoc', LIB, STAGE).kind).toBe('in-library')
     expect(checkCapture('ad   hoc', LIB, STAGE).kind).toBe('in-library')
   })
 
-  it('词库优先于暂存区:同一个词两边都有时,提示指向已收录的那条', () => {
+  it('the library takes priority over staging: when the same word is in both, the notice points to the already-captured entry', () => {
     expect(checkCapture('abrogate', LIB, [item('abrogate')]).kind).toBe('in-library')
   })
 
-  it('空词库、空暂存区不报错', () => {
+  it('an empty library and empty staging area don\'t cause errors', () => {
     expect(checkCapture('ostensible', [], []).kind).toBe('ok')
   })
 })

@@ -1,9 +1,11 @@
-/* Today(首页)页面专属样式。三块卡片(概览统计 / 总进度 / 操作)。
-   页头的同步角标是共享的 SyncStatus / .sync-badge(components.css)。 */
+/* Today (home) page-specific styles. Three cards (overview stats / overall
+   progress / actions). The sync badge in the header is the shared
+   SyncStatus / .sync-badge (components.css). */
 
-/* --- 概览统计:到期 / 新词 / 连续天数,三栏等分 --------------------------
-   每一格是共享的 .stat 原语(components.css),这里只决定分几栏。
-   连续天数用 .stat__value--accent —— 本页唯一的「批注」用色。 */
+/* --- Overview stats: due / new / streak days, split evenly into three columns --------------------------
+   Each tile is the shared .stat primitive (components.css); this only
+   decides the column count. Streak days uses .stat__value--accent — the
+   only "annotation" color on this page. */
 
 .today-stats {
   display: grid;
@@ -12,7 +14,7 @@
   text-align: center;
 }
 
-/* --- 总进度 --------------------------------------------------------------- */
+/* --- Overall progress --------------------------------------------------------------- */
 
 .today-progress {
   display: grid;
@@ -32,15 +34,17 @@
   color: var(--text-muted);
 }
 
-/* --- 主操作区 -------------------------------------------------------------- */
+/* --- Primary action area -------------------------------------------------------------- */
 
 .today-actions {
   display: grid;
   gap: var(--sp-3);
 }
 
-/* 顽固词是第三顺位的操作:ghost 变体,不与「开始复习」「快速测试」抢注意力。
-   数字用朱砂 —— 这是一处批注式的计数,与设计语言里朱砂的用法一致。 */
+/* Lapsed words is the third-priority action: a ghost variant, so it
+   doesn't compete for attention with "Start review" and "Quick quiz". The
+   number uses vermilion — an annotation-style count, consistent with how
+   vermilion is used across the design language. */
 .today-lapse {
   gap: var(--sp-2);
 }
@@ -50,10 +54,11 @@
   font-weight: 700;
 }
 
-/* --- 「最近」块:统计页入口 -------------------------------------------------
-   整块是 .card.card--interactive 包的 <Link to="/stats">(components.css)。
-   柱状图纯手写:固定高度的行,每天一根柱子按 reviewed/max 定高度;
-   朱砂(--accent)是 tokens.css 明确许可的进度类用途。 */
+/* --- "Recent" block: entry point to the stats page -------------------------------------------------
+   The whole block is a <Link to="/stats"> wrapped in .card.card--interactive
+   (components.css). The bar chart is entirely hand-rolled: a fixed-height
+   row, one bar per day sized by reviewed/max; vermilion (--accent) is one
+   of the progress-indicator uses explicitly permitted by tokens.css. */
 
 .today-recent {
   display: grid;
@@ -77,7 +82,7 @@
   font-size: var(--fs-xs);
 }
 
-/* 7 栏等分;每栏内部再用 flex 把柱子推到底部对齐,柱高由行内 style 决定。 */
+/* Split evenly into 7 columns; within each column, flex pushes the bar to bottom-align, and the bar height is set by inline style. */
 .today-recent__bars {
   display: flex;
   align-items: flex-end;

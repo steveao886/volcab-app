@@ -16,23 +16,30 @@ import {
 import type { Meaning, Word } from '../types'
 
 /**
- * 词条编辑表单。
+ * Word entry edit form.
  *
- * 这里暴露 meanings(含义项占比)/examples/synonyms/antonyms/collocations/
- * usageScore 可编辑 —— id/headword/phonetic/relatedForms/sourceNote/addedAt
- * 一律原样保留,提交时以 `{ ...word, ...编辑过的字段 }` 的方式合并,不会被表单
- * 未展示的字段静默吞掉。
+ * What's exposed here as editable: meanings (including meaning share) /
+ * examples / synonyms / antonyms / collocations / usageScore — id /
+ * headword / phonetic / relatedForms / sourceNote / addedAt are always
+ * carried over unchanged, merged on submit as
+ * `{ ...word, ...editedFields }`, so fields not shown in this form are
+ * never silently swallowed.
  *
- * usageScore 与义项占比必须在这里可改,而不是只让 /add 能填:否则填错了无从
- * 修正,而且 share 会被下面重建 meanings 的那一步静默抹掉 —— 用户只是改个错别字,
- * 占比就没了。
+ * usageScore and meaning share must be editable here, not just fillable on
+ * /add: otherwise a mistake here has no way to be corrected, and share
+ * would get silently wiped out by the meanings-rebuild step below anyway —
+ * a user fixing a typo shouldn't lose the share value as a side effect.
  *
- * synonyms/antonyms/collocations 是扁平字符串数组,用「每行一个」的单个
- * Textarea 编辑,而不是逐条 add/remove 的控件组 —— meanings 才值得那份
- * 复杂度(它是结构化的 pos/en/zh 三元组),三个平铺列表没必要照搬。
+ * synonyms/antonyms/collocations are flat string arrays, edited with a
+ * single "one per line" Textarea rather than a group of per-item
+ * add/remove controls — meanings is the one that earns that complexity
+ * (it's a structured pos/en/zh triple); there's no need to copy that
+ * pattern for three flat lists.
  *
- * 两个 <legend> 用 .worddetail-section-title(与本页只读态的「例句」「近义词」
- * 等小节标题同一个类),不是 .pos —— .pos 是词性标签,结构性分区不该用朱砂。
+ * The two <legend>s use .worddetail-section-title (the same class as the
+ * "Examples"/"Synonyms" section headings in this page's read-only state),
+ * not .pos — .pos is a part-of-speech tag, and structural section headers
+ * shouldn't use vermilion.
  */
 
 let keySeed = 0
@@ -48,8 +55,9 @@ interface ExampleRow {
 }
 
 /**
- * 一行一条,顺带剔除与词头相同的项 —— scripts/validate-words.ts 明确要求
- * synonyms/antonyms/collocations 不得包含词条本身。
+ * One item per line, and also drops any entry that matches the headword —
+ * scripts/validate-words.ts explicitly requires that synonyms/antonyms/
+ * collocations must not contain the entry itself.
  */
 function linesToArray(text: string, headword: string): string[] {
   const self = headword.trim().toLowerCase()
@@ -72,16 +80,19 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
   const [synonymsText, setSynonymsText] = useState(() => word.synonyms.join('\n'))
   const [antonymsText, setAntonymsText] = useState(() => word.antonyms.join('\n'))
   const [collocationsText, setCollocationsText] = useState(() => word.collocations.join('\n'))
-  // 老词条可能没有 usageScore(那时它还是可选字段),此时空串 = 未评分,
-  // 用户必须选一个才能保存 —— 编辑一次就顺手把它补齐。
+  // Older entries may not have a usageScore (back when it was still an
+  // optional field); in that case, an empty string means "unscored", and
+  // the user must pick one before saving — a single edit fills it in as a
+  // side effect.
   const [usageScoreInput, setUsageScoreInput] = useState(() =>
     word.usageScore === undefined ? '' : String(word.usageScore),
   )
-  // 词源与 usageScore 相反:空串是合法的终态,不是「待补齐」。清空即删除该字段。
+  // Unlike usageScore, etymology's empty string is a valid final state,
+  // not "still needs filling in". Clearing it removes the field entirely.
   const [etymologyInput, setEtymologyInput] = useState(() => word.etymology ?? '')
   const [error, setError] = useState<string | null>(null)
 
-  // 实时提示用;真正拦提交的是 handleSubmit 里的 validateShares。
+  // For the live hint; the actual submit-blocking check is validateShares inside handleSubmit.
   const shareTotal = shareSum(meanings)
 
   function updateMeaning(key: string, patch: Partial<Meaning>) {
@@ -108,9 +119,12 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
     e.preventDefault()
     if (saving) return
 
-    // normalizeMeanings 在这里同时干两件事:把只剩一条释义时的残留 share 剥掉
-    // (用户删到只剩一条,它就不该再有占比),以及按占比降序重排 —— 与
-    // scripts/validate-words.ts 要求的存储不变式对齐,不必麻烦用户自己排。
+    // normalizeMeanings does two things at once here: strips any leftover
+    // share once only one meaning remains (once the user has deleted down
+    // to one, it shouldn't carry a share anymore), and re-sorts by share
+    // descending — aligning with the storage invariant required by
+    // scripts/validate-words.ts, without bothering the user to sort it
+    // themselves.
     const cleanedMeanings: Meaning[] = normalizeMeanings(
       meanings
         .map(m => {
@@ -142,17 +156,20 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
       return
     }
 
-    // 校验必须和 scripts/validate-words.ts 对齐,否则这里存下的词条会让
-    // data/words.json 悄悄脱离 schema —— app 自己的 isWord 更宽松,不会报错,
-    // 等到跑校验脚本时才发现。添加新词页(AddWord)已经这么做了,编辑页
-    // 是另一个 agent 写的,当时漏了这两条。
+    // Validation here must stay aligned with scripts/validate-words.ts,
+    // otherwise an entry saved from here would silently drift outside the
+    // schema of data/words.json — the app's own isWord check is more
+    // lenient and wouldn't catch it, so it would only surface when the
+    // validation script actually runs. The add-word page (AddWord)
+    // already does this; the edit page was written by a different agent,
+    // which missed these two checks at the time.
     const cleanedExamples = examples.map(e => e.value.trim()).filter(v => v !== '')
     if (cleanedExamples.length < 2) {
       setError(`至少需要 2 句例句(当前 ${cleanedExamples.length} 句)。`)
       return
     }
 
-    // 同义/反义/搭配都不应该包含词条本身
+    // None of synonyms/antonyms/collocations should contain the entry itself
     const synonyms = linesToArray(synonymsText, word.headword)
     const antonyms = linesToArray(antonymsText, word.headword)
     const collocations = linesToArray(collocationsText, word.headword)
@@ -173,9 +190,11 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
       collocations,
       usageScore: Number(usageScoreInput),
     }
-    // 清空输入框要真的把键删掉,不能留一个 `etymology: undefined`:内存里那个对象
-    // 会带着这个键流进 store、进而进 merge —— JSON 序列化时它确实会消失,但在此
-    // 之前任何 `'etymology' in word` 式的判断都会看到它。删得干净些。
+    // Clearing the input must actually delete the key, not leave behind an
+    // `etymology: undefined`: that in-memory object would carry the key
+    // along into the store and then into merge — JSON serialization would
+    // eventually drop it, but any `'etymology' in word`-style check before
+    // that point would still see it. Better to delete it cleanly.
     const etymology = normalizeEtymology(etymologyInput)
     if (etymology === undefined) delete updated.etymology
     else updated.etymology = etymology
@@ -213,8 +232,10 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
                 onChange={e => updateMeaning(m.key, { zh: e.target.value })}
               />
             </Field>
-            {/* 占比只在一词多义时出现:单义词标 100% 是噪音,还会让
-                「有 share 即多义词」这条判断失效。 */}
+            {/* Share only appears when a word has multiple meanings:
+                marking a single-sense word 100% is noise, and it would
+                also break the "having a share implies multiple senses"
+                check. */}
             {meanings.length > 1 && (
               <Field label="占比" htmlFor={`meaning-share-${m.key}`}>
                 <Select

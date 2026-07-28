@@ -1,17 +1,20 @@
 /* ==========================================================================
-   组件层。全部为纯 CSS 类,React 组件只是薄封装 —— 需要时
-   （例如给 <Link> 套按钮样式）可以直接写 class="btn btn--primary"。
+   Component layer. Everything is plain CSS classes; React components are
+   thin wrappers around them — when needed (e.g. giving a <Link> button
+   styling) you can just write class="btn btn--primary" directly.
    ========================================================================== */
 
-/* --- 排版原语:辞书四件套 ------------------------------------------------
-   注意:.word / .ipa 承载英文与音标,渲染时请加 lang="en",
-   否则中文 TTS 会念错;音标串对屏幕阅读器无意义,建议 aria-hidden="true"
-   并另配发音按钮(Icon name="speak")。
+/* --- Typography primitives: the dictionary four-piece set ------------------
+   Note: .word / .ipa carry English text and phonetics; add lang="en" when
+   rendering them, otherwise Chinese TTS will mispronounce it; a phonetic
+   string is meaningless to a screen reader, so aria-hidden="true" is
+   recommended, paired with a separate pronunciation button (Icon name="speak").
 --------------------------------------------------------------------------- */
 
-/* 英文词头:衬线体,与界面无衬线体形成层次。词库里最长的词
-   （interchangeability / canonicalization 等)在 375px 下必须能断行,
-   否则整页横向溢出。 */
+/* English headword: serif, creating hierarchy against the sans-serif UI.
+   The longest words in the library (interchangeability / canonicalization,
+   etc.) must be able to wrap at 375px, otherwise the whole page overflows
+   horizontally. */
 .word {
   font-family: var(--font-word);
   font-size: var(--fs-word);
@@ -24,12 +27,12 @@
   hyphens: auto;
 }
 
-/* 复习卡正面:长词先整体缩小再断字,44px 只是上限 */
+/* Review card front: long words shrink as a whole before breaking, 44px is just the ceiling */
 .word--xl {
   font-size: clamp(2rem, 9vw, var(--fs-word-xl));
 }
 
-/* 国际音标 */
+/* IPA phonetics */
 .ipa {
   font-family: var(--font-ipa);
   font-size: var(--fs-md);
@@ -39,7 +42,7 @@
   overflow-wrap: break-word;
 }
 
-/* 词性标签:小号大写 + 大字距 + 朱砂,一眼就是辞书 */
+/* Part-of-speech tag: small caps + wide tracking + vermilion, reads as dictionary at a glance */
 .pos {
   font-size: var(--fs-eyebrow);
   font-weight: 700;
@@ -48,7 +51,7 @@
   color: var(--accent);
 }
 
-/* 数字:等宽、表格数字,统计值不跳动 */
+/* Digits: monospace, tabular figures, stat values don't jitter */
 .num {
   font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
@@ -63,14 +66,14 @@
   color: var(--text-faint);
 }
 
-/* 发丝分隔线 */
+/* Hairline divider */
 .rule {
   height: 1px;
   border: none;
   background: var(--rule);
 }
 
-/* --- 品牌印记 ------------------------------------------------------------ */
+/* --- Brand mark -------------------------------------------------------------- */
 
 .brand {
   display: flex;
@@ -111,7 +114,7 @@
   font-size: var(--fs-2xl);
 }
 
-/* --- 按钮 ---------------------------------------------------------------- */
+/* --- Buttons ------------------------------------------------------------------ */
 
 .btn {
   --btn-h: var(--tap);
@@ -154,7 +157,7 @@
   transform: none;
 }
 
-/* 主操作:一整块墨板(深色模式反相为纸板)。全站唯一的实心中性块面。 */
+/* Primary action: one solid ink slab (inverted to a paper slab in dark mode). The only solid neutral block site-wide. */
 .btn--primary {
   background: var(--slab);
   color: var(--slab-text);
@@ -184,7 +187,7 @@
   color: var(--text);
 }
 
-/* 实心朱砂 = 破坏性操作,别的地方不要用 */
+/* Solid vermilion = destructive action, don't use it elsewhere */
 .btn--danger {
   background: var(--danger);
   color: var(--on-tone);
@@ -194,8 +197,9 @@
   filter: saturate(1.15) brightness(0.94);
 }
 
-/* SRS 四档打分 + 测验对错反馈:淡色底 + 同色描边与文字。
-   与「实心块面」这套语言区分开,四档连起来是一条热→冷的温度带。 */
+/* SRS four-way grading + quiz correct/incorrect feedback: soft-tinted
+   background + matching-color outline and text.
+   Kept distinct from the "solid block" language — the four grades together read as a hot→cold temperature band. */
 .btn--grade-again,
 .btn--grade-hard,
 .btn--grade-good,
@@ -247,7 +251,7 @@
   --tone-soft: var(--danger-soft);
 }
 
-/* 判题后选项会被 disable,但对错反馈必须保持清晰,不吃统一的置灰 */
+/* Options get disabled after grading, but correct/incorrect feedback must stay clear and not get swallowed by the uniform disabled dimming */
 .btn--correct:disabled,
 .btn--incorrect:disabled {
   opacity: 1;
@@ -259,8 +263,9 @@
   --btn-fs: var(--fs-sm);
 }
 
-/* 小号按钮视觉仍是 34px,靠伪元素把命中区纵向补到 --tap。
-   只纵向扩张,横向相邻按钮不会互抢点击。 */
+/* Small button visually stays 34px; a pseudo-element pads the hit area
+   vertically up to --tap.
+   Only expands vertically, so horizontally adjacent buttons won't steal each other's clicks. */
 .btn--sm::after {
   content: '';
   position: absolute;
@@ -279,7 +284,7 @@
   width: 100%;
 }
 
-/* 长文案按钮(测验选项是整句英文释义):允许换行并左对齐 */
+/* Long-text button (quiz options are full English definitions): allows wrapping and left-aligns */
 .btn--wrap {
   white-space: normal;
   text-align: start;
@@ -303,7 +308,7 @@
   }
 }
 
-/* --- 卡片 ---------------------------------------------------------------- */
+/* --- Cards -------------------------------------------------------------------- */
 
 .card {
   background: var(--surface);
@@ -344,7 +349,7 @@
   transform: translateY(1px);
 }
 
-/* --- chip:筛选(可点)与标签(静态)------------------------------------ */
+/* --- chip: filter (clickable) and label (static) ---------------------------- */
 
 .chip {
   position: relative;
@@ -367,8 +372,8 @@
     color var(--dur-1) var(--ease);
 }
 
-/* 视觉保持 32px 的密度,命中区纵向补到 --tap。筛选条横向排列,
-   纵向扩张不会与相邻 chip 重叠。 */
+/* Keeps a visually dense 32px, hit area padded vertically to --tap. Filter
+   rows lay out horizontally, so vertical expansion won't overlap adjacent chips. */
 .chip:not(.chip--static)::after {
   content: '';
   position: absolute;
@@ -387,7 +392,7 @@
   color: var(--slab-text);
 }
 
-/* 静态标签:近义词/反义词/搭配/同根词。不可聚焦、无 hover、描边更轻。 */
+/* Static label: synonyms/antonyms/collocations/related forms. Not focusable, no hover, lighter outline. */
 .chip--static {
   border-color: var(--rule);
   background: var(--surface-sunken);
@@ -407,7 +412,7 @@
   opacity: 0.8;
 }
 
-/* --- 表单 ---------------------------------------------------------------- */
+/* --- Forms -------------------------------------------------------------------- */
 
 .field {
   display: grid;
@@ -479,21 +484,28 @@
   resize: vertical;
 }
 
-/* 选项只有一个短数字的下拉(遇见概率 1–10、义项占比 10–90%)。撑满整行会让
-   一个两位数看起来像填空题。写在 .input 之后、同一个文件里,靠源码顺序盖过
-   .input 的 width:100%,不必去堆特异度也不依赖打包顺序。 */
+/* A dropdown whose options are just a short number (usage score 1–10,
+   meaning share 10–90%). Stretching it to full width would make a two-digit
+   number look like a fill-in-the-blank question. Placed after .input in the
+   same file, relying on source order to override .input's width:100% —
+   no need to stack up specificity or depend on bundling order. */
 .input--compact {
   width: auto;
   min-width: 6.5rem;
   max-width: 100%;
-  /* .field 是 grid,光把 width 改成 auto 不够 —— 网格项默认 stretch,还是会
-     撑满整列。justify-self 才是这里真正管用的那一条。 */
+  /* .field is a grid, so just changing width to auto isn't enough — grid
+     items default to stretch and would still fill the column. justify-self
+     is the property that actually does the job here. */
   justify-self: start;
 }
 
-/* 例句里的词头。<mark> 默认是荧光黄底,那和「墨与纸」完全不搭 —— 去掉底色,
-   改成「正文权重 + 一道朱砂下划线」:例句本身是 --text-muted,词头提到 --text
-   就已经跳出来了,朱砂只承担批注这一层,与设计语言里「朱砂只做批注」一致。 */
+/* The headword inside an example sentence. <mark>'s default is a bright
+   yellow background, which clashes completely with ink-and-paper — the
+   background is stripped and replaced with "body-text weight + a vermilion
+   underline": the sentence itself is --text-muted, so bumping the headword
+   up to --text already makes it stand out, and vermilion is reserved purely
+   for the annotation layer, consistent with the design language's rule that
+   vermilion is for annotation only. */
 .example-hit {
   background: none;
   color: var(--text);
@@ -501,7 +513,7 @@
   box-shadow: inset 0 -1px 0 var(--accent);
 }
 
-/* 勾选框:原生控件染成品牌色,外面套一个 --tap 大小的命中区 */
+/* Checkbox: native control tinted to the brand color, wrapped in a --tap-sized hit area */
 .check {
   display: grid;
   place-items: center;
@@ -519,7 +531,7 @@
   cursor: pointer;
 }
 
-/* --- 徽标 ---------------------------------------------------------------- */
+/* --- Badges ------------------------------------------------------------------- */
 
 .badge {
   display: inline-flex;
@@ -568,7 +580,7 @@
   color: var(--info);
 }
 
-/* --- 状态点:未学是空心(尚未落墨),学习中/已掌握实心 -------------------- */
+/* --- State dot: new is hollow (ink not yet applied), learning/mastered are solid --- */
 
 .dot {
   display: inline-block;
@@ -591,7 +603,7 @@
   background: var(--state-review);
 }
 
-/* --- 进度条:3px 发丝,朱砂填充 ------------------------------------------ */
+/* --- Progress bar: 3px hairline, vermilion fill ------------------------------ */
 
 .progress {
   height: 3px;
@@ -607,16 +619,24 @@
   transition: width var(--dur-3) var(--ease);
 }
 
-/* --- 统计格:居中的大数字 + 说明标签 --------------------------------------
-   今日页的三栏概览(到期/新词/连续天数)与词条页的四格学习统计共用。
-   .stat 只管一格内部的排版;分几栏、栏间距、text-align:center 由页面自己的
-   容器给(.today-stats / .worddetail-stats),因为那是版面决策不是组件决策。
+/* --- Stat cell: centered big number + description label --------------------
+   Shared by the today page's three-column overview (due/new/streak) and the
+   word detail page's four-cell learning stats.
+   .stat only handles the layout inside a single cell; how many columns,
+   column spacing, and text-align:center are given by the page's own
+   container (.today-stats / .worddetail-stats), because that's a layout
+   decision, not a component decision.
 
-   ⚠ .stat 与下面的 .settings-row 是两种**故意分开**的原语,不要合并:
-   .stat 是「一个大数字 + 它的名字」,居中、纵向、数值是主角;
-   .settings-row 是「标签左 / 值右」的一行只读元信息,横向、基线对齐、
-   两侧都是小字。它们碰巧都由 label + value 组成,但版式与用途都不同,
-   合并只会得到一个哪边都不称职、靠一堆修饰类互相打架的四不像。 */
+   ⚠ .stat and .settings-row below are two primitives that are **deliberately
+   kept separate** — don't merge them:
+   .stat is "one big number + its name," centered, vertical, the value is
+   the star;
+   .settings-row is a single row of read-only metadata, "label left / value
+   right," horizontal, baseline-aligned, small text on both sides. They
+   happen to both be made of a label + a value, but their layout and purpose
+   differ — merging them would only produce a jack-of-all-trades that's
+   mediocre at both, held together by a pile of modifier classes fighting
+   each other. */
 
 .stat {
   display: grid;
@@ -630,8 +650,10 @@
   color: var(--text);
 }
 
-/* 值不是纯数字,而是「状态点 + 文字」这类并排内容时才加(词条页的「学习状态」
-   格)。把这一格从块级文字改成一行居中的 flex,点和字才会对齐而不是错半行。 */
+/* Added only when the value isn't a plain number but side-by-side content
+   like "state dot + text" (the word detail page's "learning state" cell).
+   Turns this cell from block text into a centered flex row, so the dot and
+   the text align instead of sitting half a line apart. */
 .stat__value--row {
   display: flex;
   align-items: center;
@@ -639,7 +661,7 @@
   gap: var(--sp-2);
 }
 
-/* 朱砂只做批注:整屏最多一处「点睛」数值(如连续天数)才染色 */
+/* Vermilion is for annotation only: at most one "eye-catcher" value per screen (e.g. streak days) gets tinted */
 .stat__value--accent {
   color: var(--accent);
 }
@@ -649,9 +671,10 @@
   color: var(--text-faint);
 }
 
-/* --- 元信息行:标签左 / 值右 ----------------------------------------------
-   设置页的账号信息用。见上方 .stat 的注释:这两个是不同的原语。
-   行与行之间的间距、外边距由页面容器给。 */
+/* --- Metadata row: label left / value right ---------------------------------
+   Used for account info on the settings page. See the .stat comment above:
+   these two are different primitives.
+   Spacing/margin between rows is given by the page container. */
 
 .settings-row {
   display: flex;
@@ -673,12 +696,15 @@
   text-align: right;
 }
 
-/* --- 折叠块(原生 <details> / <summary>)---------------------------------
-   展开三角在各浏览器里的来路不同,两处都要压掉才能换成自己的:
-   Firefox / 规范走 list-style,WebKit 走 ::-webkit-details-marker。
-   三角本身是一枚 CSS 实心三角,[open] 时旋转 90°;这里用 transition 而非
-   animation —— base.css 的 prefers-reduced-motion 规则会把它压到 1ms,
-   减弱动效的用户直接看到终态,不必在这里再写一份 @media 覆盖。 */
+/* --- Disclosure block (native <details> / <summary>) -------------------------
+   The expand triangle comes from a different source in each browser, and
+   both need to be suppressed to swap in a custom one: Firefox / the spec
+   goes through list-style, WebKit goes through ::-webkit-details-marker.
+   The triangle itself is a solid CSS triangle, rotated 90° on [open]; this
+   uses transition rather than animation — base.css's
+   prefers-reduced-motion rule collapses it to 1ms, so users with reduced
+   motion see the end state directly, with no need for a separate @media
+   override here. */
 
 .disclosure {
   border: 1px solid var(--rule);
@@ -722,10 +748,12 @@
   border-bottom: 1px solid var(--rule);
 }
 
-/* --- 确认对话框 ------------------------------------------------------------
-   原生 <dialog> + showModal():浏览器免费提供顶层堆叠与焦点陷阱,这里只需
-   重置 UA 默认边框并套上设计令牌。React 侧的 ref/effect 开合、双击守卫、
-   危险操作按钮,全在 components/ConfirmDialog.tsx。 */
+/* --- Confirm dialog ----------------------------------------------------------
+   Native <dialog> + showModal(): the browser provides top-layer stacking
+   and focus trapping for free, so this only needs to reset the UA's default
+   border and apply the design tokens. The React-side ref/effect open/close
+   handling, the double-click guard, and the danger action button all live
+   in components/ConfirmDialog.tsx. */
 
 .confirm-dialog {
   width: min(400px, calc(100vw - var(--sp-8)));
@@ -755,7 +783,7 @@
   color: var(--text-muted);
 }
 
-/* 正文之后可选的一段清单(如即将删除的词头)*/
+/* Optional list block after the body (e.g. headwords about to be deleted) */
 .confirm-dialog__list {
   margin-top: var(--sp-3);
   padding: var(--sp-3);
@@ -773,9 +801,11 @@
   margin-top: var(--sp-5);
 }
 
-/* --- 空状态:虚线框 + 标题 + 提示,可选一个 CTA -----------------------------
-   「这里本来该有内容,但现在没有」。文案由调用方给 —— 同一页的不同空因
-   （词库为空 / 搜不到 / 筛选没命中)必须各说各的,共享的只有这层外壳。 */
+/* --- Empty state: dashed border + title + hint, with an optional CTA -------
+   "There should be content here, but there isn't right now." Copy is
+   supplied by the caller — different reasons for emptiness on the same page
+   (library is empty / no search results / filter matched nothing) must each
+   say their own thing; only this shell is shared. */
 
 .empty-state {
   display: grid;
@@ -801,14 +831,15 @@
   margin-top: var(--sp-2);
 }
 
-/* --- 同步状态 --------------------------------------------------------------
-   两种形态,同一套行为(见 components/SyncStatus.tsx):
-   badge 角标塞进页头的 actions 槽;note 整句话内联在页面正文里。
-   synced 之外的三态(pending / offline / error)都可点重试。 */
+/* --- Sync status ---------------------------------------------------------------
+   Two shapes, one behavior (see components/SyncStatus.tsx):
+   badge slots into the header's actions area; note is a full sentence inline in the page body.
+   The three states other than synced (pending / offline / error) are all clickable to retry. */
 
-/* 角标外面那层 <button>:视觉上只有一枚 22px 的 Badge,不到 --tap 的一半。
-   跟 .btn--sm::after / .chip::after 一个套路:不改视觉大小,只用伪元素把
-   命中区纵向补到 44px((44-22)/2 = 11px)。 */
+/* The <button> wrapping the badge: visually it's just a 22px Badge, less
+   than half of --tap. Same trick as .btn--sm::after / .chip::after: don't
+   change the visual size, just use a pseudo-element to pad the hit area
+   vertically to 44px ((44-22)/2 = 11px). */
 .sync-badge {
   position: relative;
   display: inline-flex;
@@ -832,8 +863,10 @@
   color: var(--danger);
 }
 
-/* 句中的重试入口:行内文字按钮,沿用所在句子自身的颜色,不额外引入色值;
-   热区靠上下 padding 撑到可点,负的起始外边距把下划线拉回句子的左边线上。 */
+/* The inline retry entry point within a sentence: an inline text button
+   that inherits its sentence's own color, no extra color value introduced;
+   the hit area is expanded to be tappable via top/bottom padding, and a
+   negative leading margin pulls the underline back onto the sentence's left edge. */
 .sync-note__retry {
   border: 0;
   background: none;
@@ -847,11 +880,14 @@
 }
 
 
-/* --- 章节小标题 -----------------------------------------------------------
-   卡片/区块内部的中性标题(账号、备份、释义、例句、同根词……)。
-   刻意不用 .pos:那是词性标签,朱砂色,按 tokens.css 顶部的约定朱砂只做批注,
-   结构性标题不属于批注。曾有三个页面各自借用 .pos 当小标题,已统一到这里。
-   外边距留给调用方,因为各页的疏密不一样。 */
+/* --- Section title ------------------------------------------------------------
+   Neutral heading inside a card/block (account, backup, definitions,
+   examples, related forms…).
+   Deliberately doesn't use .pos: that's the part-of-speech tag, colored
+   vermilion, and per the convention at the top of tokens.css vermilion is
+   for annotation only — a structural heading isn't annotation. Three pages
+   used to each borrow .pos as a mini-heading; they've now been unified here.
+   Margins are left to the caller, since density varies from page to page. */
 
 .section-title {
   font-size: var(--fs-sm);
@@ -861,19 +897,23 @@
   color: var(--text-muted);
 }
 
-/* --- 更新提示 ---------------------------------------------------------------
-   新 SW 已在后台装好但当前页面还没吃到(见 components/UpdatePrompt.tsx 顶部
-   注释——registerType: 'autoUpdate' 下不会走标准的 needRefresh/prompt 流程,
-   默认行为是静默 reload,这里改成用户确认后才刷新)。
-   不挂进 #overlay-root:那个挂载点由 AppLayout 渲染,只在登录后的路由树里
-   才存在,而陈旧 JS 与登录态无关——/login 页也可能停在旧版本上,提示必须
-   能独立于登录态出现,自带 position: fixed 与 --z-toast(全局最高一档,
-   不依赖任何父级的层叠上下文)。 */
+/* --- Update prompt -------------------------------------------------------------
+   A new SW has already installed in the background but the current page
+   hasn't picked it up yet (see the top-of-file comment in
+   components/UpdatePrompt.tsx — under registerType: 'autoUpdate' the
+   standard needRefresh/prompt flow doesn't run, the default behavior is a
+   silent reload, and this changes it to refresh only after user confirmation).
+   Not mounted into #overlay-root: that mount point is rendered by
+   AppLayout and only exists in the post-login route tree, while stale JS
+   has nothing to do with login state — the /login page can also be stuck on
+   an old version — so the prompt must be able to appear independent of
+   login state, with its own position: fixed and --z-toast (the highest tier
+   globally, independent of any parent's stacking context). */
 
 .update-prompt {
   position: fixed;
   inset-inline: var(--sp-4);
-  /* 贴在页签之上、留出安全区,375px 下不会盖住复习卡的四个打分键 */
+  /* Sits above the tab bar with room for the safe area; at 375px it won't cover the review card's four grading buttons */
   bottom: calc(var(--tabbar-h) + var(--sp-3) + env(safe-area-inset-bottom, 0px));
   z-index: var(--z-toast);
   display: flex;
@@ -902,8 +942,9 @@
   flex: none;
 }
 
-/* 桌面端页签变成左侧栏(见 layout.css),不再占底部空间——提示条改为紧贴
-   视口底部,并给侧栏让位,不能压在它上面。 */
+/* On desktop the tab bar becomes a left sidebar (see layout.css) and no
+   longer occupies bottom space — the prompt bar switches to hugging the
+   viewport bottom and yielding space to the sidebar, so it doesn't sit on top of it. */
 @media (min-width: 900px) {
   .update-prompt {
     inset-inline-start: calc(var(--rail-w) + var(--sp-4));

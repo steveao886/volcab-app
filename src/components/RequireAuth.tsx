@@ -4,8 +4,10 @@ import { Button } from './Button'
 import { useApp } from '../state/store'
 
 /**
- * 启动态。store 有缓存时会在首帧就直接进 ready,所以这一屏通常只在
- * 「换了新设备、本地还没有词库」时闪一下。复用按钮的 loading 转圈,不另造样式。
+ * Boot state. When the store has a cache it jumps straight to ready on the
+ * first frame, so this screen normally only flashes briefly on "a new
+ * device with no local word list yet." Reuses the button's loading spinner
+ * instead of inventing a separate style.
  */
 function Booting() {
   return (
@@ -15,7 +17,7 @@ function Booting() {
   )
 }
 
-/** 登录守卫:未登录一律弹回 /login。 */
+/** Login guard: bounces back to /login whenever not logged in. */
 export function RequireAuth({ children }: { children: ReactNode }) {
   const { phase } = useApp()
   if (phase === 'boot') return <Booting />
@@ -23,7 +25,7 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
 
-/** 反向守卫:已登录就别再停在登录页。 */
+/** Reverse guard: once logged in, don't stay on the login page. */
 export function GuestOnly({ children }: { children: ReactNode }) {
   const { phase } = useApp()
   if (phase === 'boot') return <Booting />

@@ -1,8 +1,9 @@
 /* ==========================================================================
-   复习页(Task 17)。页面专属样式,页面级类一律 .review- 前缀。
+   Review page (Task 17). Page-specific styles; page-level classes are
+   always prefixed with .review-.
    ========================================================================== */
 
-/* --- 顶部进度 x/y --------------------------------------------------------- */
+/* --- Top progress x/y --------------------------------------------------------- */
 
 .review-progress {
   display: grid;
@@ -13,10 +14,13 @@
   text-align: end;
 }
 
-/* --- 卡片 ------------------------------------------------------------------
-   正面只有词头 + 发音,居中撑出一块呼吸空间,像真正的卡片而不是一行字;
-   翻面后内容可能很长(3 条释义 + 长例句),不设上限高度,交给整页滚动,
-   绝不用 overflow:hidden 裁切 —— 复习卡的内容永远比"看起来整齐"更重要。 */
+/* --- Card ------------------------------------------------------------------
+   The front only has the headword + pronunciation, centered with room to
+   breathe, so it reads as an actual card rather than a single line of
+   text; the back can get long (3 meanings + long examples), so there's no
+   max height — the whole page scrolls instead, and overflow:hidden is
+   never used to clip it — the review card's content always matters more
+   than "looking tidy". */
 
 .review-card {
   position: relative;
@@ -29,14 +33,23 @@
   left: var(--sp-4);
 }
 
-/* 徽标是绝对定位的角标,不占文档流空间,也不参与下面任何布局的居中/起排计算。
-   背面(新词默认展示的定义面,见 Review.tsx)里词头是队首第一个流内元素,
-   紧贴卡片左上角起排,与角标的左上角完全叠在一起;正面居中布局在窄屏 + 长词
-   换行时,词头块也会被居中算法顶到同一条高度带上 —— 两种朝向都会撞见角标。
-   挂着徽标的卡片单独预留一段顶部留白,两种朝向都从留白下方起排,不需要跟
-   徽标自身高度(.badge 的 22px)精确对账,留够余量即可。
-   两条规则都比它们要盖过的规则(.card 单类 / 下面 .review-card.review-card--front
-   两类)多垫一级特异度,同样是不想依赖 Vite 打包顺序(见下面那条注释)。 */
+/* The badge is an absolutely positioned corner marker: it takes up no
+   space in document flow and plays no part in any layout below's
+   centering/start-alignment math. On the back (the definition face shown
+   by default for new words, see Review.tsx) the headword is the first
+   in-flow element at the top of the queue, starting flush against the
+   card's top-left corner — landing right on top of the badge's top-left
+   corner; on the front's centered layout, when a narrow screen wraps a
+   long word, the headword block gets pushed by the centering algorithm
+   onto that same height band too — so both orientations collide with the
+   badge. A card carrying a badge reserves its own block of top padding,
+   and both orientations start below that padding — no need to reconcile
+   precisely against the badge's own height (.badge's 22px), a generous
+   margin is enough.
+   Both rules add one extra level of specificity over the rules they need
+   to override (the single .card class / the two classes on
+   .review-card.review-card--front below), again to avoid depending on
+   Vite's bundling order (see the comment below). */
 .review-card.review-card--badge {
   padding-top: var(--sp-12);
 }
@@ -45,10 +58,14 @@
   padding-top: var(--sp-12);
 }
 
-/* 复合选择器(而不是单独 .review-card--front)是故意的:.review-card 同时挂了
-   设计系统的 .card--interactive(见 Review.tsx),它也声明了 display —— 两条规则
-   特异度打平时谁赢取决于样式表里谁写在后面,不想依赖 Vite 打包顺序,所以在这里
-   把特异度垫高一档,让正面居中布局不会被 .card--interactive 的 display:block 吃掉。 */
+/* The compound selector (rather than just .review-card--front alone) is
+   deliberate: .review-card also carries the design system's
+   .card--interactive (see Review.tsx), which also declares display —
+   when two rules tie on specificity, whichever is written later in the
+   stylesheet wins, and that's not something to depend on Vite's bundling
+   order for, so specificity is bumped up a notch here to keep the front's
+   centered layout from being eaten by .card--interactive's
+   display:block. */
 .review-card.review-card--front {
   min-height: 200px;
   display: grid;
@@ -87,8 +104,8 @@
   color: var(--text);
 }
 
-/* --- 翻面内容 --------------------------------------------------------------
-   与正面隔一道发丝线,而不是又一层卡片,呼应"辞书内页"的排版语言。 */
+/* --- Flipped-side content --------------------------------------------------------------
+   Separated from the front by a hairline rather than another card layer, echoing the "dictionary page" typographic language. */
 
 .review-back {
   display: grid;
@@ -98,8 +115,10 @@
   border-top: 1px solid var(--rule);
 }
 
-/* 音标与遇见概率同一行、两端对齐:音标是词头的附属信息,分数是关于这个词的
-   另一条事实,两者平级。窄屏放不下时让分数整块换行,不压音标。 */
+/* Phonetic and usage score share a row, aligned to both ends: the phonetic
+   is subordinate info about the headword, and the score is another fact
+   about the word — the two sit at the same level. If a narrow screen can't
+   fit both, the score block wraps rather than crowding the phonetic. */
 .review-back__head {
   display: flex;
   align-items: baseline;
@@ -144,7 +163,7 @@
   min-width: 1em;
 }
 
-/* 义项占比推到行尾,和词性拉开距离 —— 它不是词性的一部分,是这条释义的边注。 */
+/* The meaning-share value is pushed to the end of the line, away from the part of speech — it isn't part of the POS, it's a marginal note on this meaning. */
 .review-meaning__share {
   margin-inline-start: auto;
   font-size: var(--fs-sm);
@@ -173,8 +192,10 @@
   gap: var(--sp-2);
 }
 
-/* 词源是一句话,不是一排 chip。左侧一道发丝竖线把它和上下的标签行区分开 ——
-   没有这道线它会被读成又一段释义。用发丝描边而不是底色块,与全站一致。 */
+/* Etymology is a sentence, not a row of chips. A hairline vertical rule on
+   the left sets it apart from the tag rows above and below it — without
+   this line it would read as yet another meaning. A hairline stroke rather
+   than a background fill, consistent with the rest of the site. */
 .review-etymology {
   padding-left: var(--sp-3);
   border-left: 1px solid var(--rule);
@@ -182,19 +203,24 @@
   line-height: 1.7;
 }
 
-/* 同根词 chip 里 pos 缩写(v. / adj. …)夹在词形和中文释义之间,弱化一档 */
+/* The POS abbreviation (v. / adj. …) sandwiched between the word form and the Chinese meaning in a related-form chip, dialed down one notch */
 .review-tags__pos {
   color: var(--text-faint);
   font-size: var(--fs-xs);
 }
 
-/* --- 翻面提示 / 打分按钮 ----------------------------------------------------
-   钉在移动端底部页签之上:这是全站点击最频繁的操作,翻面后长词条(3 条释义 +
-   例句 + 全部标签行)很容易把它挤到折叠线以下,滚动一次才能打分不可接受。
-   做法和 .page__head 贴顶、.tabbar 贴底是同一套语言(见 layout.css),
-   只是这次贴的是"页面内容区的底"而不是"视口的底"—— position:sticky 不会
-   覆盖住它前面的内容(卡片没滚到这个位置之前,它就停在正常文档流里,
-   不会成为浮层压住任何东西),所以不需要额外的"卡片够不够高"判断。 */
+/* --- Flip hint / grade buttons ----------------------------------------------------
+   Pinned above the mobile bottom tab bar: this is the single most-clicked
+   action on the whole site, and after flipping, a long entry (3 meanings +
+   examples + every tag row) could easily push it below the fold — having
+   to scroll just to grade is unacceptable. Same technique as .page__head
+   sticking to the top and .tabbar sticking to the bottom (see layout.css),
+   just sticking to "the bottom of the page content area" instead of "the
+   bottom of the viewport" this time — position:sticky never covers the
+   content ahead of it (before the card scrolls up to this position, it
+   just sits in normal document flow and never becomes an overlay pressing
+   down on anything), so no extra "is the card tall enough" check is
+   needed. */
 
 .review-actions {
   position: sticky;
@@ -238,8 +264,10 @@
   opacity: 0.75;
 }
 
-/* 桌面宽一点,打分按钮不必挤在一起;桌面页签变成侧栏(见 layout.css),
-   底部不再有固定页签占位,贴底偏移量归零即可。 */
+/* On wider desktop screens, the grade buttons don't need to crowd
+   together; on desktop the tab bar becomes a side rail (see layout.css),
+   so there's no more fixed tab bar taking up space at the bottom, and the
+   bottom offset can just be zeroed out. */
 @media (min-width: 900px) {
   .review-grades {
     max-width: 480px;
@@ -251,7 +279,7 @@
   }
 }
 
-/* 剔除入口:与四档打分保持距离,视觉上明确不属于同一组操作 */
+/* Remove entry point: kept at a distance from the four grade buttons, visually distinct as not belonging to the same group of actions */
 .review-cull {
   display: flex;
   justify-content: center;
@@ -260,7 +288,7 @@
   border-top: 1px solid var(--rule);
 }
 
-/* --- 完成页 ------------------------------------------------------------ */
+/* --- Done page ------------------------------------------------------------ */
 
 .review-done {
   display: grid;
@@ -270,10 +298,13 @@
   text-align: center;
 }
 
-/* 完成页顶上那行朱砂小字。它原本借用 .pos —— 但 .pos 是词性标签(v. / adj.),
-   这里是一枚眉标,只是碰巧同一套排版。眉标本来就是朱砂被允许的用法之一
-   (见 tokens.css 顶部),所以外观照旧,只是不再蹭词性标签的类名。
-   与 Quiz 页的 .quiz-q__label 同一个做法。 */
+/* The small vermilion line at the top of the done page. It used to borrow
+   .pos — but .pos is a part-of-speech tag (v. / adj.), and this is an
+   eyebrow label that just happened to share the same typography. An
+   eyebrow label is already one of vermilion's permitted uses (see the top
+   of tokens.css), so the look stays the same, it just no longer piggybacks
+   on the POS-tag class name. Same approach as the Quiz page's
+   .quiz-q__label. */
 .review-done__label {
   font-size: var(--fs-eyebrow);
   font-weight: 700;

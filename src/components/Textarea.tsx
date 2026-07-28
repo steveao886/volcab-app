@@ -1,6 +1,6 @@
 import type { ComponentPropsWithRef } from 'react'
 
-/** 多行输入框(编辑释义/例句用)。 */
+/** Multi-line text input (for editing definitions/example sentences). */
 export function Textarea({
   className,
   rows = 3,

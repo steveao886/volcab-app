@@ -1,10 +1,13 @@
 /**
- * api.dictionaryapi.dev 取词与响应映射。
+ * Word lookup against api.dictionaryapi.dev and response mapping.
  *
- * 全应用唯一会跟第三方、无认证公开接口打交道的地方 —— 不发送任何凭据,
- * 响应形状完全不受我们控制。映射函数是纯函数,吃什么都不抛错:任何意外
- * 形状(404 的错误体、字段缺失、类型不对)都退化成空结果,交由页面的
- * 手动表单兜底。唯一有单测覆盖的部分,见 dictionaryApi.test.ts。
+ * The only place in the whole app that talks to a third-party,
+ * unauthenticated public API — no credentials are ever sent, and the
+ * response shape is entirely outside our control. The mapping function is
+ * pure and never throws regardless of input: any unexpected shape (a 404
+ * error body, missing fields, wrong types) degrades to an empty result,
+ * with the page's manual form as the fallback. The only part covered by
+ * unit tests, see dictionaryApi.test.ts.
  */
 
 const ENDPOINT = 'https://api.dictionaryapi.dev/api/v2/entries/en'
@@ -19,7 +22,7 @@ export interface DictLookup {
   meanings: DictMeaning[]
 }
 
-/** 本应用对词性的缩写约定,与 data/words.json 里现有词条保持一致 */
+/** This app's convention for part-of-speech abbreviations, kept consistent with existing entries in data/words.json */
 const POS_ABBREVIATIONS: Record<string, string> = {
   noun: 'n.',
   pronoun: 'pron.',
@@ -41,12 +44,13 @@ function abbreviatePos(raw: string): string {
   if (!pos) return ''
   const known = POS_ABBREVIATIONS[pos.toLowerCase()]
   if (known) return known
-  // 未知词性(接口偶尔给 "phrase" 这类非标准值):退化成「词.」的通用缩写,
-  // 而不是原样塞入一整个英文单词。
+  // Unknown part of speech (the API occasionally returns non-standard
+  // values like "phrase"): falls back to a generic "word." abbreviation
+  // rather than stuffing in the whole English word as-is.
   return `${pos.toLowerCase()}.`
 }
 
-/** 音标统一成 /.../ 形式;接口有时已带斜杠,有时不带,偶尔是空字符串 */
+/** Normalizes phonetics into /.../ form; the API sometimes already includes slashes, sometimes doesn't, and occasionally returns an empty string */
 function normalizePhonetic(raw: string): string {
   const trimmed = raw.trim()
   if (!trimmed) return ''
@@ -59,11 +63,15 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 }
 
 /**
- * 把 api.dictionaryapi.dev 的原始响应体映射成本应用需要的最小字段:
- * 音标 + 前 3 条「确实带英文释义」的 meaning(词性 + 英文释义,中文留给
- * 用户填)。只取数组第一个词条 —— 同一页面里多义词共用同一段音标区。
+ * Maps api.dictionaryapi.dev's raw response body into the minimal fields
+ * this app needs: phonetic + the first 3 meanings that "actually have an
+ * English definition" (part of speech + English meaning; Chinese is left
+ * for the user to fill in). Only the first entry in the array is used —
+ * multiple entries on the same page would share a single phonetics
+ * section.
  *
- * 纯函数,不发请求、不抛异常:任何不符合预期的形状都安全退化成空结果。
+ * A pure function that never makes a request and never throws: any shape
+ * that doesn't match expectations safely degrades to an empty result.
  */
 export function mapDictionaryResponse(data: unknown): DictLookup {
   const entries = Array.isArray(data) ? data : []
@@ -93,7 +101,7 @@ export function mapDictionaryResponse(data: unknown): DictLookup {
         (d): d is Record<string, unknown> & { definition: string } =>
           isRecord(d) && typeof d.definition === 'string' && d.definition.trim() !== '',
       )
-      if (!firstDef) continue // 该 meaning 没有可用的英文释义,不计入前 3 条配额
+      if (!firstDef) continue // This meaning has no usable English definition, so it doesn't count toward the first-3 quota
       const en = firstDef.definition.trim()
       const pos = typeof m.partOfSpeech === 'string' ? abbreviatePos(m.partOfSpeech) : ''
       meanings.push({ pos, en })
@@ -109,9 +117,12 @@ export type LookupOutcome =
   | { status: 'error'; message: string }
 
 /**
- * 实际发请求的部分,不参与单测(网络行为,测试环境不联网,见任务说明)。
- * 无认证接口,不带任何凭据。404、非 2xx、超时、网络失败分别落到不同的
- * outcome,页面据此决定是提示重试还是直接转入全手动表单。
+ * The part that actually makes the request; not covered by unit tests
+ * (network behavior, and the test environment has no network access, per
+ * the task notes). An unauthenticated API, no credentials sent. 404,
+ * non-2xx, timeout, and network failure each land in a different outcome,
+ * which the page uses to decide whether to offer a retry or fall straight
+ * through to the fully manual form.
  */
 export async function lookupWord(word: string, timeoutMs = 8000): Promise<LookupOutcome> {
   const controller = new AbortController()

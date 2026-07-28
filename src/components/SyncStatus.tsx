@@ -2,22 +2,27 @@ import { Badge } from './Badge'
 import type { AppState } from '../state/store'
 
 /**
- * 同步状态的唯一展示口。两种形态,一套行为。
+ * The single presentation surface for sync status. Two shapes, one behavior.
  *
- * badge 角标塞进页头的 actions 槽(今日页);note 是正文里的一句话
- * (添加新词的回执、词库/词条页的失败提示)。
+ * badge slots into the header's actions area (today page); note is a
+ * sentence inline in the page body (the receipt after adding a word, the
+ * failure notice on the library/word detail pages).
  *
- * 行为统一为:synced 之外的三态 —— pending / offline / error —— 都可点重试。
- * offline 用 info 色调而不是 danger:没网不是错误,重试也只是提前试一次。
- * synced 是一段静态文字,不可聚焦、不可点(没什么可重试的)。
+ * Behavior is unified as: the three states other than synced — pending /
+ * offline / error — are all clickable to retry.
+ * offline uses the info tone rather than danger: no network isn't an error,
+ * retrying is just trying a bit early.
+ * synced is static text, not focusable, not clickable (nothing to retry).
  *
- * 「什么时候显示」仍由调用方决定:今日页与添加新词页常驻四态,词库页与词条页
- * 只在同步失败时才提示(那两页的正文是词条本身,不该被状态条常年占一行)。
+ * "When to show it" is still up to the caller: the today page and add-word
+ * page show all four states permanently; the library and word detail pages
+ * only surface it when sync has failed (those pages' body content is the
+ * word entry itself, which shouldn't be permanently crowded out by a status row).
  */
 
 type SyncStatusValue = AppState['syncStatus']
 
-/** 角标文案与色调。offline 走 info,不当成错误。 */
+/** Badge copy and tone. offline uses info, not treated as an error. */
 const BADGE_COPY = {
   pending: { tone: 'warning', label: '待同步' },
   offline: { tone: 'info', label: '离线' },
@@ -31,9 +36,9 @@ const NOTE_COPY = {
 
 interface SyncStatusProps {
   status: SyncStatusValue
-  /** badge:页头角标;note:正文里的整句 */
+  /** badge: header chip; note: full sentence in the body */
   variant?: 'badge' | 'note'
-  /** 同步失败的具体原因(store 的 syncError),note 形态下拼进句子 */
+  /** The specific reason sync failed (the store's syncError); spliced into the sentence in note form */
   message?: string | null
   onRetry: () => void
 }
@@ -42,8 +47,9 @@ export function SyncStatus({ status, variant = 'badge', message = null, onRetry 
   if (variant === 'badge') {
     if (status === 'synced') return <Badge>已同步</Badge>
     const { tone, label } = BADGE_COPY[status]
-    // Badge 本身是 <span>,外面这层原生 <button> 负责可点语义与键盘可达;
-    // 命中区由 .sync-badge::after 纵向补到 44px。
+    // Badge itself is a <span>; this outer native <button> handles clickable
+    // semantics and keyboard reachability. The hit area is padded vertically
+    // to 44px by .sync-badge::after.
     return (
       <button type="button" className="sync-badge" onClick={onRetry} aria-label={`${label},点击重试同步`}>
         <Badge tone={tone}>{label}</Badge>

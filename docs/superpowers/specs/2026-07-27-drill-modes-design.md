@@ -1,148 +1,148 @@
-# 加练模式设计（辨析 / 听音 / 极速）+ 词源
+# Extra-Practice Modes Design (Discrimination / Listening / Sprint) + Etymology
 
-**日期**:2026-07-27
-**背景**:今日队列清空后没有可做的事。「今日完成 🎉」是个禁用按钮,而快速测试的六种题型里五种是再认(四选一),唯一的产出型是拼写。缺的不是安全的加练通道 —— 那个已经有了 —— 是加练的形式。
+**Date**: 2026-07-27
+**Background**: once the daily queue is empty, there's nothing left to do. "Done for today 🎉" is a disabled button, and of the six question types in Quick Test, five are recognition (multiple-choice) and the only production-type one is spelling. What's missing isn't a safe channel for extra practice — that already exists — it's a *form* for that extra practice to take.
 
-## 前提:加练不污染 SRS 这件事已经解决
+## Prerequisite: extra practice not polluting SRS is already solved
 
-`recordQuiz` 只把错词的 `due` 提前到今天,`ease` 与 `intervalDays` 一律不动(`store.tsx:527`)。**三种新模式全部照抄这条约定**,不需要重新设计调度,也不需要动 `srs.ts`。
-
----
-
-## 一、入口:`/quiz` 顶部模式切换
-
-不新建页面,`/quiz` 顶部加一行 chips:**综合 / 辨析 / 听音 / 极速**,走 `?mode=` 查询参数(与 `/review?mode=lapses` 的既有先例一致)。
-
-**为什么不新开 `/drill` 页**:三个新模式本质都是测验,复用现成的 `QuizQuestionView` 渲染与 `recordQuiz` 约定;今日页已经有 3 个按钮,再加 3 个就是一坨。
-
-**默认停在「综合」,日常路径一步不变** —— 不给每天都走的那条路增加成本。
-
-切换模式即开新一局(靠 `key` 换掉会话组件,与现有「再测一轮」同一个手法)。
+`recordQuiz` only moves a missed word's `due` up to today; `ease` and `intervalDays` are never touched (`store.tsx:527`). **All three new modes copy this convention exactly**, so there's no need to redesign the scheduling, and no need to touch `srs.ts`.
 
 ---
 
-## 二、辨析模式
+## I. Entry point: mode switcher at the top of `/quiz`
 
-### 数据依据
+No new page — add a row of chips at the top of `/quiz`: **Mixed / Discrimination / Listening / Sprint**, driven by the `?mode=` query param (matching the existing precedent of `/review?mode=lapses`).
 
-`sharedSynonyms()` 目前算出被多个词条共享的近义词,用途是**排除**它们(免得四个选项里两个都对,`quiz.ts:82`)。反过来看,那是一张现成的易混词图。
+**Why not a new `/drill` page**: all three new modes are fundamentally quizzes, reusing the existing `QuizQuestionView` rendering and the `recordQuiz` convention; the Today page already has 3 buttons, adding 3 more would be clutter.
 
-实测 476 词:**317 对可配对,涉及 293 个词(占词库 62%)**,其中互为近义词的 94 对、共享 2 个以上近义词的 83 对。
+**Defaults to "Mixed," the everyday path is unchanged in every step** — no added cost on the path taken every day.
 
-### 配对质量必须打分,不能一刀切
+Switching modes starts a fresh round (swapping the session component via `key`, the same trick already used for "take another round").
 
-杂质是真实存在的:`promulgate` 与 `metastasize` 共享 `disseminate`,但一个是颁布法令一个是癌细胞扩散,二选一会送分。
+---
 
-新纯函数 `src/lib/contrast.ts`:
+## II. Discrimination mode
+
+### Data basis
+
+`sharedSynonyms()` currently computes synonyms shared across multiple entries, and is used to **exclude** them (so you don't end up with two correct-looking options out of four, `quiz.ts:82`). Looked at the other way around, that's a ready-made map of confusable words.
+
+Measured against the full 476-word list: **317 pairable pairs, covering 293 words (62% of the list)**, of which 94 pairs are mutual synonyms and 83 pairs share 2 or more synonyms.
+
+### Pairing quality must be scored, not treated uniformly
+
+Noise is a real issue: `promulgate` and `metastasize` share `disseminate`, but one is about enacting a law and the other is about cancer cells spreading — a two-way choice between them would be a free point.
+
+New pure function `src/lib/contrast.ts`:
 
 ```
 buildContrastPairs(words) → ContrastPair[]
-score = 共享近义词数 + (互为近义词 ? 2 : 0) + (主义项词性相同 ? 1 : 0)
+score = number of shared synonyms + (mutual synonyms ? 2 : 0) + (same part of speech for the main sense ? 1 : 0)
 ```
 
-按 score 降序,同分按 id 字典序(保证确定性)。实现用**倒排索引**(近义词 → 词 id 列表)只在桶内配对,不做 476² 的双重循环。
+Sorted by score descending, ties broken by id lexical order (to guarantee determinism). Implemented with an **inverted index** (synonym → list of word ids), pairing only within buckets, avoiding a 476² nested loop.
 
-出题时取 score 最高的一批作候选池再打乱 —— 偏向紧密对,但不会每次都是同样几道题。
+When generating a question, take the top-scoring batch as a candidate pool and shuffle it — favoring tight pairs, but not the same handful of questions every time.
 
-### 题型
+### Question type
 
-取 A 的例句挖空(复用 `headword.ts` 的定位规则,与现有挖空题同一份实现),**选项只有两个**:A 和 B。靠搭配与语境判断。
+Take a cloze from A's example sentences (reusing `headword.ts`'s location logic, the same implementation as the existing cloze questions), with **only two options**: A and B. Answered by judging collocation and context.
 
-定位不到就换 B 当答案;两边都定位不到则跳过这一对。
+If it can't be located, swap in B as the answer instead; if neither can be located, skip that pair.
 
-### 对比卡是这个功能的真正价值
+### The comparison card is where the real value is
 
-答完并排展示 A / B 的释义、例句、搭配。就算某道题两个词都塞得进去(近义词难免),并排一看差别也就出来了 —— **把「题目可能有歧义」这个缺陷变成教学点**。
+After answering, show A and B's definitions, examples, and collocations side by side. Even when a question could arguably fit both words (unavoidable with synonyms), laying them side by side makes the distinction clear — **turning "the question might be ambiguous" from a flaw into a teaching moment**.
 
-移动优先,375px 下两栏太挤,所以是上下两块加分隔线,不是左右分栏。
+Mobile-first, and two columns are too cramped at 375px, so it's two stacked blocks with a divider rather than a side-by-side layout.
 
-`QuizQuestion` 加 `contrastId?: string` 带上对方的词 id。渲染层从 `useApp().words` 里查 —— `ChoiceQuestion` 本来就调 `useApp()`。
+`QuizQuestion` gets a `contrastId?: string` carrying the counterpart word's id. The render layer looks it up from `useApp().words` — `ChoiceQuestion` already calls `useApp()`.
 
 ---
 
-## 三、听音模式
+## III. Listening mode
 
-两种题轮换,都用现成的 `lib/tts.ts`:
+Two question types in rotation, both using the existing `lib/tts.ts`:
 
-| 题型 | 题面 | 选项 | 考什么 |
+| Type | Prompt | Options | Tests |
 |---|---|---|---|
-| `audio2meaning` | 朗读词头 | 四个释义 | 音 → 义 |
-| `audio2spelling` | 朗读词头 | 输入框 | 音 → 形 |
+| `audio2meaning` | reads the headword aloud | four definitions | sound → meaning |
+| `audio2spelling` | reads the headword aloud | text input | sound → form |
 
-**`prompt` 字段存的是要朗读的内容,渲染层绝不能把它显示出来** —— 显示了就是直接给答案。这是个真实的脚印:`SpellingQuestion` 现在会把 `prompt` 渲染成可见题面,音频题必须走另一个分支。
+**The `prompt` field stores what's to be read aloud, and the render layer must never display it** — displaying it would just be handing over the answer. This is a real footgun: `SpellingQuestion` currently renders `prompt` as a visible question, so the audio questions have to go through a different branch.
 
-`audio2spelling` **不显示音标**:用户刚听过发音,再给 IPA 就没什么可考的了。答案揭晓时两者都给。
+`audio2spelling` **doesn't show the phonetics**: the user just heard the pronunciation, so showing the IPA too would leave nothing left to test. Both are shown once the answer is revealed.
 
-### iOS 自动播放风险(已知,不阻塞)
+### iOS autoplay risk (known, not a blocker)
 
-`speechSynthesis` 在 iOS 上可能拦截无用户手势的自动播放。
+`speechSynthesis` on iOS may block autoplay without a user gesture.
 
-**处理方式**:每题都有一个显式的「🔊 再听一遍」按钮,进题时尝试自动播一次,**被拦截也不影响作答**。不为自动播放做任何错误检测或状态提示 —— 检测不可靠,而按钮本身就是完整的退路。
+**Handling**: every question has an explicit "🔊 play again" button, and it attempts to autoplay once on question entry — **being blocked doesn't affect the ability to answer**. No error detection or status indication is done for the autoplay attempt at all — such detection is unreliable, and the button itself is a complete fallback.
 
-配一句「听不到?检查系统音量与静音开关」的提示。iOS 侧边静音拨片的坑在 HANDOFF 里已经记过一次。
-
----
-
-## 四、极速模式
-
-60 秒倒计时,只出「看词选义」与「看义选词」两种四选一 —— 拼写题会拖垮节奏。
-
-- 点选项**立即判分并推进**,不需要再点「下一题」;正确/错误的颜色闪 350ms
-- 答错不扣分,直接下一题
-- 结束显示得分 + 个人最好成绩 + 是否破纪录
-
-因为交互与「答完点下一题」完全不同,单独一个 `src/pages/QuizSprint.tsx`,不往 `Quiz.tsx` 里塞计时器。
-
-倒计时用**截止时间戳 + 定时 tick**,不是累加 setInterval —— 避免漂移。
-
-### 最好成绩
-
-`Progress` 加 `bestSprint?: { score: number; date: string }`。
-
-**可选字段**,与 `soundEnabled`、`settings.updatedAt` 同样的兼容理由:另一台设备的旧版 App 推上来一份没有这个字段的 progress,正确结果是「还没有纪录」,而不是整份数据被判坏。
-
-**合并规则**(动 `merge.ts`,配测试):取 score 大的;同分取 date 早的 —— 先达成的那次才是纪录;任一方缺席取另一方,都缺则不写这个键。
-
-`generateQuiz` 加一个可选的题型限制参数(默认为现有的 `QUIZ_TYPES`)。该参数**必须是 `QUIZ_TYPES` 的子集** —— 辨析与听音有各自的生成函数,函数体不处理它们。
+Includes a hint: "Can't hear it? Check the system volume and mute switch." The iOS side mute switch pitfall has already been noted once in HANDOFF.
 
 ---
 
-## 五、词源
+## IV. Sprint mode
 
-`Word` 加 `etymology?: string`,一句话,形如:
+A 60-second countdown, only "see word pick meaning" and "see meaning pick word," both four-choice — spelling questions would kill the pace.
+
+- Tapping an option **scores it immediately and advances**, no need to tap "Next"; correct/incorrect flashes a color for 350ms
+- A wrong answer doesn't cost points, straight to the next question
+- The end screen shows the score + personal best + whether it's a new record
+
+Because the interaction is completely different from "answer, then tap next," it gets its own `src/pages/QuizSprint.tsx` rather than stuffing a timer into `Quiz.tsx`.
+
+The countdown uses a **deadline timestamp + periodic tick**, not accumulating `setInterval` calls — to avoid drift.
+
+### Personal best
+
+`Progress` gets `bestSprint?: { score: number; date: string }`.
+
+**Optional field**, for the same compatibility reason as `soundEnabled` and `settings.updatedAt`: when an older app version on another device pushes up a progress record without this field, the correct outcome is "no record yet," not "the whole data set gets judged corrupt."
+
+**Merge rule** (touches `merge.ts`, with tests): take the higher score; on a tie, take the earlier date — whichever was achieved first is the record; if only one side has it, take that side; if neither has it, don't write the key at all.
+
+`generateQuiz` gets an optional question-type restriction parameter (defaults to the existing `QUIZ_TYPES`). This parameter **must be a subset of `QUIZ_TYPES`** — discrimination and listening have their own generator functions, the function body doesn't handle them.
+
+---
+
+## V. Etymology
+
+`Word` gets `etymology?: string`, one sentence, shaped like:
 
 ```
-ab-(离开) + rogare(提议) → 废除
+ab-(away) + rogare(to propose) → to abolish
 ```
 
-- 展示在**复习卡背面**(贴着同根词)和**词条详情页**
-- 两个表单加一个可选输入框
-- `validate-words.ts` **只在字段存在时**校验格式(非空、长度上限),不强制必填
-- 476 个词在会话里分批回填
+- Shown on the **review card back** (next to the same-root words) and on the **entry detail page**
+- Both forms get an optional input field
+- `validate-words.ts` validates the format (non-empty, length cap) **only when the field is present**, it's not required
+- Backfilled in batches, in-session, across the 476 words
 
-### 为什么保持可选,而不是回填完就升级成必填
+### Why it stays optional rather than becoming required once backfilled
 
-不是所有词都有可拆解的词源。日耳曼来源的常用词、来源不明的词,**编一个比留空糟得多** —— 词源写错比不写更有害,它会变成一个错误的记忆锚点。
+Not every word has a breakable etymology. For common words of Germanic origin, or words of uncertain origin, **making one up is far worse than leaving it blank** — a wrong etymology is more harmful than no etymology, because it becomes a false memory anchor.
 
-预计覆盖 60–75%(拉丁/希腊来源的高阶词占大头),没有的就不显示这一块。
+Expected coverage is 60–75% (advanced words of Latin/Greek origin make up most of it); words without one simply don't show that block.
 
-这也意味着 `usageScore` 那条「写入端严格、读取端宽容」的路子在这里只走一半:两端都宽容。这是刻意的,不是漏了。
+This also means the "strict on write, lenient on read" approach used for `usageScore` is only half-applied here: both ends are lenient. That's deliberate, not an oversight.
 
 ---
 
-## 测试
+## Testing
 
-按项目惯例:纯函数强制 TDD,UI 不写组件测试。
+Per project convention: pure functions get mandatory TDD, UI gets no component tests.
 
-| 文件 | 测什么 |
+| File | What it tests |
 |---|---|
-| `lib/contrast.test.ts` | 配对打分、排序确定性、倒排索引与朴素双重循环结果一致 |
-| `lib/quiz.test.ts` | 三个新题型的生成:选项数、答案在选项内、挖空不泄题、题型限制参数 |
-| `lib/merge.test.ts` | bestSprint 四种情况(双方都有/各缺一边/都缺) |
-| `scripts/validate-words.ts` | etymology 存在时的格式校验 |
+| `lib/contrast.test.ts` | pairing score, sort determinism, inverted index gives the same result as a naive nested loop |
+| `lib/quiz.test.ts` | generation of the three new question types: option count, answer is among the options, cloze doesn't leak the answer, the type-restriction parameter |
+| `lib/merge.test.ts` | the four bestSprint cases (both sides have it / one side missing / both missing) |
+| `scripts/validate-words.ts` | format validation when etymology is present |
 
-## 不做
+## Not doing
 
-- **今日回想(自由回忆)** —— 每天复习几十个词,默写不构成难度,检索强度上不去。砍。
-- **造句 + 会话里 AI 批改** —— 砍。
-- 极速模式的排行榜、连胜、成就系统 —— 单人应用,没有对手,YAGNI。
+- **Today's free recall (unprompted recall)** — reviewing several dozen words a day, writing them from memory doesn't add difficulty, retrieval strength doesn't go up enough. Cut.
+- **Sentence composition + AI grading in-session** — cut.
+- Sprint mode leaderboard, win streaks, achievement system — single-user app, no opponents, YAGNI.

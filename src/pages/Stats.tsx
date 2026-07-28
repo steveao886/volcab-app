@@ -11,23 +11,29 @@ import { computeStreak } from './todayStats'
 import './Stats.css'
 
 const WINDOW_DAYS = 30
-/** 全 0 窗口时柱子仍给一档「最矮但看得见」的高度,理由与 Today 页「最近」块一致。 */
+/** Even in an all-zero window, bars still get a "shortest but still visible" height, for the same reason as the Today page's "recent" block. */
 const MIN_BAR_FRACTION = 0.04
 
 /**
- * Task 9 实现:近 30 天复习量、正确率趋势、连续天数与断签日历、词库掌握分布、累计数据。
+ * Task 9 implementation: reviews over the last 30 days, accuracy trend,
+ * streak days with a missed-day calendar, library mastery breakdown,
+ * cumulative totals.
  *
- * 全部指标只由 progress.dailyStats 与各词的 state 派生 —— 不存复习日志,理由见
- * v1.1 spec §5.1:progress.json 走 GitHub Contents API 的 1 MB 读取上限,完整
- * 日志约 9 个月就会撞顶,届时新设备无法登录。因此这里画得出「量」和「率」的
- * 趋势,画不出单词级历史或时段分析。
+ * Every metric is derived purely from progress.dailyStats and each word's
+ * state — no review log is stored, per v1.1 spec §5.1: progress.json goes
+ * through the GitHub Contents API's 1 MB read limit, and a full log would
+ * hit that ceiling in roughly 9 months, at which point new devices
+ * couldn't sign in. So this can chart "volume" and "rate" trends, but not
+ * word-level history or time-of-day analysis.
  */
 export function Stats() {
   const { words, progress } = useApp()
   const today = todayStr(new Date())
 
-  // useApp() 的 context value 每次 provider 渲染都是新对象(后台同步心跳也算),
-  // 派生要过一遍全部词条,值没变就不该重算 —— 与 Today.tsx 同一先例。
+  // useApp()'s context value is a new object on every provider render
+  // (background sync heartbeats count too), and deriving this requires
+  // iterating every entry — it shouldn't recompute when nothing actually
+  // changed, the same precedent as Today.tsx.
   const { days, acc, streak, mastery, totals, coverage, hasHistory } = useMemo(() => {
     return {
       days: dailySeries(progress, today, WINDOW_DAYS),
@@ -36,8 +42,9 @@ export function Stats() {
       mastery: masteryBreakdown(words, progress),
       coverage: usageCoverage(words, progress),
       totals: cumulativeTotals(progress),
-      // 完全没有 dailyStats 才是「从没学过」的新用户 —— 走整页空状态,
-      // 不渲染一堆空图表。
+      // Only a complete absence of dailyStats counts as a "never studied"
+      // new user — that gets the full-page empty state instead of a
+      // bunch of empty charts.
       hasHistory: Object.keys(progress.dailyStats).length > 0,
     }
   }, [words, progress, today])
@@ -90,7 +97,7 @@ export function Stats() {
       <Card>
         <p className="section-title stats-section-title">词库掌握分布</p>
         <div className="stats-mastery-bar">
-          {/* 顺序与视觉进度一致:已掌握在前(最靠左),未学在最后 */}
+          {/* Order matches visual progress: mastered comes first (furthest left), not-yet-learned comes last */}
           <span
             className="stats-mastery-bar__seg stats-mastery-bar__seg--review"
             style={{ width: `${masteryPct(mastery.review)}%` }}
@@ -111,9 +118,11 @@ export function Stats() {
         </div>
       </Card>
 
-      {/* 高频词覆盖率。上面那张「词库掌握分布」数的是总量,而总量会说谎 ——
-          学完 300 个 3 分词的成就感是假的。这一张答的是「你在最常用的那批词上
-          走到哪了」,分档口径见 statsDerive.usageCoverage。 */}
+      {/* High-frequency word coverage. The "library mastery breakdown"
+          card above counts the total, and totals can lie — the sense of
+          achievement from finishing 300 words scoring a 3 is hollow. This
+          card answers "how far along are you on the most commonly used
+          words"; see statsDerive.usageCoverage for the banding logic. */}
       <Card>
         <p className="section-title stats-section-title">高频词掌握率</p>
         <div className="stats-coverage-headline">
@@ -163,9 +172,12 @@ export function Stats() {
 }
 
 /**
- * 近 30 天复习量柱状图。手写 SVG(viewBox 定宽高 + preserveAspectRatio="none"),
- * 用向量缩放代替像素柱宽 —— 30 根柱子在 375px 卡片里若按像素分配,四舍五入
- * 误差会在窄屏上累积成溢出;viewBox 缩放则永远精确填满容器宽度。
+ * Bar chart of reviews over the last 30 days. Hand-rolled SVG (viewBox
+ * fixes the width/height + preserveAspectRatio="none"), using vector
+ * scaling instead of pixel bar widths — if 30 bars in a 375px card were
+ * allocated by pixels, rounding error would accumulate into overflow on
+ * narrow screens; viewBox scaling always fills the container width
+ * exactly.
  */
 function ReviewBars({ days }: { days: DayPoint[] }) {
   const W = 300
@@ -205,10 +217,12 @@ function ReviewBars({ days }: { days: DayPoint[] }) {
 }
 
 /**
- * 正确率趋势折线。null(当天没复习)的日子必须断开而不是画到 0 —— 理由与
- * accuracySeries 本身一致:0% 会谎称「那天全错了」。做法:把连续的非 null
- * 点分段,每段单独画一条 polyline;落单的点(前后都断开)画成一个孤立的点,
- * 因为一个点连不成线。
+ * Accuracy-trend line chart. Days with null (no review that day) must
+ * break the line rather than be plotted at 0 — for the same reason as
+ * accuracySeries itself: 0% would falsely claim "everything was wrong that
+ * day". Approach: split consecutive non-null points into segments and draw
+ * each segment as its own polyline; an isolated point (broken on both
+ * sides) is drawn as a lone dot, since a single point can't form a line.
  */
 function AccuracyTrend({ points }: { points: AccuracyPoint[] }) {
   const W = 300

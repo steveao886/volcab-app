@@ -1,31 +1,42 @@
 /* ==========================================================================
-   Volcab 设计令牌 — 「墨与纸 / Ink & Paper」
+   Volcab design tokens — "Ink and Paper"
    --------------------------------------------------------------------------
-   视觉方向:辞书排版。暖色纸面、近黑的墨、朱砂作批注色;
-   发丝细线取代阴影分隔,圆角克制(2–6px)接近印刷品而非塑料卡片。
-   朱砂(--accent)只做「批注」:眉标、活动页签的刻度、进度条、印章;
-   实心朱砂块面**仅**用于危险操作。主操作按钮是一块墨色实心板(深色模式反相)。
+   Visual direction: dictionary typesetting. Warm paper surface, near-black
+   ink, vermilion as the annotation color; hairline rules replace shadows for
+   separation, restrained corner radii (2–6px) closer to print than to
+   plastic cards.
+   Vermilion (--accent) is for annotation only: eyebrows, the active tab's
+   tick, progress bars, the seal; a solid vermilion block is used **only**
+   for dangerous actions. The primary action button is a solid ink slab
+   (inverted in dark mode).
 
-   命名一律语义化,不要在组件里写死色值。
+   Naming is always semantic — don't hardcode color values in components.
    ========================================================================== */
 
 :root {
   color-scheme: light dark;
-  accent-color: var(--accent); /* 原生 checkbox / radio / range 跟随品牌色 */
+  accent-color: var(--accent); /* native checkbox / radio / range follow the brand color */
 
-  /* --- 字体族 -----------------------------------------------------------
-     离线 PWA,不引外部字体,全部走系统栈。四条栈各有分工:
-     ui   中英混排界面文字(中文字重齐全)
-     word 英文词头 —— 衬线体,辞书气质,与界面无衬线体拉开层次
-     ipa  国际音标 —— 优先列出已知覆盖 IPA Extensions 的系统字体
-          (Windows: Cambria;macOS/iOS: Lucida Grande / -apple-system;
-           Linux/Android: Charis SIL / Noto),避免逐字回退导致的混排
-     mono 等宽 —— 需要「原样呈现」的字符串:代码片段、token 名、路径
-     num  数字 —— 等宽,统计数值不跳动(tabular-nums 配合 .num 使用)
+  /* --- Font families -----------------------------------------------------
+     Offline PWA, no external fonts, everything runs on the system stack.
+     Four stacks, each with its own job:
+     ui   mixed Chinese/English UI text (full Chinese weight coverage)
+     word English headwords — serif, dictionary character, sets itself apart
+          from the sans-serif UI
+     ipa  IPA phonetics — lists system fonts known to cover IPA Extensions
+          first (Windows: Cambria; macOS/iOS: Lucida Grande / -apple-system;
+          Linux/Android: Charis SIL / Noto), avoiding the mixed rendering
+          that comes from falling back glyph by glyph
+     mono monospace — for strings that need "as-is" presentation: code
+          snippets, token names, paths
+     num  digits — monospace, so stat values don't jitter (tabular-nums used
+          together with .num)
 
-     mono 与 num 目前是同一套栈,但用途不同,别互相借用:mono 是「这是代码」,
-     num 是「这是不该跳动的数字」。哪天数字要换成带真正 tabular figures 的
-     专门字体,只动 --font-num 即可,代码块不受影响。
+     mono and num currently share the same stack, but their purposes differ —
+     don't borrow one for the other: mono means "this is code," num means
+     "this is a number that shouldn't jitter." If digits ever need to switch
+     to a dedicated font with real tabular figures, only --font-num needs to
+     change; code blocks are unaffected.
   --------------------------------------------------------------------- */
   --font-ui:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
@@ -42,27 +53,27 @@
     Consolas, monospace;
   --font-num: var(--font-mono);
 
-  /* --- 字号 ------------------------------------------------------------ */
-  --fs-eyebrow: 0.6875rem; /* 11 眉标 */
+  /* --- Font sizes -------------------------------------------------------- */
+  --fs-eyebrow: 0.6875rem; /* 11 eyebrow */
   --fs-xs: 0.75rem;        /* 12 */
   --fs-sm: 0.875rem;       /* 14 */
-  --fs-base: 1rem;         /* 16 正文 */
+  --fs-base: 1rem;         /* 16 body */
   --fs-md: 1.125rem;       /* 18 */
-  --fs-xl: 1.5rem;         /* 24 页标题 */
-  --fs-2xl: 1.875rem;      /* 30 桌面页标题 */
-  --fs-word: 2.125rem;     /* 34 词头 */
-  --fs-word-xl: 2.75rem;   /* 44 复习卡词头上限,长词自动收缩见 .word--xl */
+  --fs-xl: 1.5rem;         /* 24 page title */
+  --fs-2xl: 1.875rem;      /* 30 desktop page title */
+  --fs-word: 2.125rem;     /* 34 headword */
+  --fs-word-xl: 2.75rem;   /* 44 review-card headword cap; long words auto-shrink, see .word--xl */
 
-  /* --- 行高 ------------------------------------------------------------ */
-  --lh-word: 1.05;         /* 词头大字 */
-  --lh-tight: 1.2;         /* 标题、按钮 */
-  --lh-snug: 1.4;          /* 音标、提示、紧凑文本 */
-  --lh-body: 1.7;          /* 中文正文需要更松的行距 */
+  /* --- Line height -------------------------------------------------------- */
+  --lh-word: 1.05;         /* large headword text */
+  --lh-tight: 1.2;         /* headings, buttons */
+  --lh-snug: 1.4;          /* phonetics, hints, compact text */
+  --lh-body: 1.7;          /* Chinese body text needs looser line spacing */
 
   --tracking-eyebrow: 0.18em;
   --tracking-tight: -0.015em;
 
-  /* --- 间距(4px 基准)-------------------------------------------------- */
+  /* --- Spacing (4px base) -------------------------------------------------- */
   --sp-1: 4px;
   --sp-2: 8px;
   --sp-3: 12px;
@@ -74,51 +85,51 @@
   --sp-12: 48px;
   --sp-16: 64px;
 
-  /* --- 圆角 ------------------------------------------------------------ */
+  /* --- Corner radius ------------------------------------------------------ */
   --r-xs: 2px;
   --r-sm: 3px;
   --r-md: 6px;
   --r-full: 999px;
 
-  /* --- 动效 ------------------------------------------------------------ */
+  /* --- Motion -------------------------------------------------------------- */
   --ease: cubic-bezier(0.2, 0, 0, 1);
   --dur-1: 120ms;
   --dur-2: 200ms;
   --dur-3: 320ms;
 
-  /* --- 层级 ------------------------------------------------------------
-     一处定义,组件里不要再写字面量。 */
+  /* --- Z-index --------------------------------------------------------
+     Defined in one place — don't write literal values in components. */
   --z-grain: 0;
   --z-content: 1;
-  --z-sticky: 10;   /* 页头 */
-  --z-nav: 20;      /* 页签 / 侧栏 */
-  --z-bar: 30;      /* 页面级底部操作条(如「删除所选 (N)」)*/
-  --z-overlay: 40;  /* 遮罩、对话框 */
+  --z-sticky: 10;   /* page header */
+  --z-nav: 20;      /* tab bar / sidebar */
+  --z-bar: 30;      /* page-level bottom action bar (e.g. "Delete selected (N)") */
+  --z-overlay: 40;  /* scrim, dialogs */
   --z-toast: 50;
 
-  /* --- 布局 ------------------------------------------------------------ */
+  /* --- Layout --------------------------------------------------------------- */
   --page-max: 720px;
   --rail-w: 216px;
   --tabbar-h: 58px;
-  --tap: 44px;             /* 最小可点区域 */
-  --tick-w: 28px;          /* 朱砂刻度宽度:全站重复的标记母题 */
+  --tap: 44px;             /* minimum tappable area */
+  --tick-w: 28px;          /* vermilion tick width: a marker motif repeated site-wide */
 
-  /* --- 色彩:浅色(纸)-------------------------------------------------- */
+  /* --- Color: light (paper) -------------------------------------------------- */
   --bg: #f4f1ea;
   --surface: #fdfbf7;
   --surface-sunken: #eae5da;
   --text: #1a1814;
   --text-muted: #56504a;
   --text-faint: #6e655c;
-  --rule: rgba(26, 24, 20, 0.13);        /* 发丝分隔线,纯装饰 */
-  --rule-strong: rgba(26, 24, 20, 0.26); /* 强调分隔、虚线框 */
-  --rule-control: #8a8175;               /* 交互控件描边,≥3:1(WCAG 1.4.11)*/
+  --rule: rgba(26, 24, 20, 0.13);        /* hairline divider, purely decorative */
+  --rule-strong: rgba(26, 24, 20, 0.26); /* emphasized dividers, dashed borders */
+  --rule-control: #8a8175;               /* interactive control outline, ≥3:1 (WCAG 1.4.11) */
 
-  --accent: #be3c24;              /* 朱砂 */
+  --accent: #be3c24;              /* vermilion */
   --accent-soft: rgba(190, 60, 36, 0.1);
-  --on-tone: #fdfbf7;             /* 任意语义色实心块面上的文字 */
+  --on-tone: #fdfbf7;             /* text on any solid semantic-color block */
 
-  --slab: #1a1814;                /* 主按钮:墨板 */
+  --slab: #1a1814;                /* primary button: ink slab */
   --slab-text: #f4f1ea;
   --slab-hover: #332e28;
 
@@ -131,12 +142,12 @@
   --info-soft: rgba(39, 107, 105, 0.1);
   --danger-soft: rgba(190, 60, 36, 0.1);
 
-  /* 词条学习状态 */
+  /* Word learning states */
   --state-new: var(--text-faint);
   --state-learning: var(--warning);
   --state-review: var(--success);
 
-  /* SRS 打分:热 → 冷的一条温度带,四个按钮读作同一套系统 */
+  /* SRS grading: a hot → cold temperature band, the four buttons read as one system */
   --grade-again: var(--danger);
   --grade-hard: var(--warning);
   --grade-good: var(--success);
@@ -146,10 +157,13 @@
   --grade-good-soft: var(--success-soft);
   --grade-easy-soft: var(--info-soft);
 
-  /* 模态遮罩。刻意**不**在深色分支里改写:遮罩的职责是「把背景压暗」,
-     深色模式下同样要压暗,跟着 --bg 反相会让 <dialog> 底下的页面反而变亮。
-     它也不属于品牌色范畴(不是纸、不是墨、更不是朱砂),所以既不能借
-     --surface-sunken 也不能借 --text,只能是中性黑 + 透明度自己一个令牌。 */
+  /* Modal scrim. Deliberately **not** overridden in the dark branch: the
+     scrim's job is to "dim the background," and dark mode still needs
+     dimming — inverting it along with --bg would make the page under the
+     <dialog> lighter instead. It also doesn't belong to the brand-color
+     palette (it's not paper, not ink, and definitely not vermilion), so it
+     can't borrow --surface-sunken or --text either — it gets its own
+     neutral black + opacity token. */
   --scrim: rgb(0 0 0 / 45%);
 
   --shadow-1: 0 1px 1px rgba(26, 24, 20, 0.04), 0 1px 3px rgba(26, 24, 20, 0.05);
@@ -157,7 +171,7 @@
   --grain-opacity: 0.04;
 }
 
-/* --- 色彩:深色(墨)---------------------------------------------------- */
+/* --- Color: dark (ink) ---------------------------------------------------- */
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #141210;
@@ -174,7 +188,7 @@
     --accent-soft: rgba(233, 116, 87, 0.13);
     --on-tone: #1a1108;
 
-    /* 深色下墨板反相为纸板,主按钮依旧是「一整块」的语言 */
+    /* In dark mode the ink slab inverts to a paper slab; the primary button keeps the same "single solid block" language */
     --slab: #f0ebe2;
     --slab-text: #141210;
     --slab-hover: #ffffff;

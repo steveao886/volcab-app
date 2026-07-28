@@ -1,32 +1,39 @@
 ﻿<#
-  生成 PWA 图标(public/icon-192.png、public/icon-512.png)。
+  Generates the PWA icons (public/icon-192.png, public/icon-512.png).
 
-  复用应用内已有的「印章」母题(见 src/components/TabBar.tsx 的
-  .brand__seal、src/pages/Login.tsx):朱砂(--accent)实心方块 + 居中的
-  「词」字,与 index.html 的 favicon.svg 同源、同一套色值。
+  Reuses the "seal" motif already used elsewhere in the app (see
+  .brand__seal in src/components/TabBar.tsx, src/pages/Login.tsx): a solid
+  vermilion (--accent) square with a centered "词" (word) character, sharing
+  the same source and color values as index.html's favicon.svg.
 
-  两枚 PNG 都是整幅色块直达画布边缘(不在图内自行画圆角),所以同一份
-  文件可以同时满足 manifest 里的 "any" 与 "maskable" 用途:系统按各自
-  的形状去裁切时,字形都留在安全区(居中 80%)以内,不会被裁到。
+  Both PNGs are a solid color block running to the canvas edge (no rounded
+  corners drawn into the image itself), so the same file can satisfy both
+  the manifest's "any" and "maskable" purposes: whichever shape the system
+  crops it to, the glyph stays inside the safe zone (centered 80%) and is
+  never clipped.
 
-  安全区实测(读 icon-512.png 像素,不是按 CSS 比例估算):字形包围盒约
-  245x254px / 512px,即画布的 48% x 50%;其外接圆直径约为画布的 69%,
-  仍在 maskable 的 80% 安全区内,留有余量。
-  改动 $fontSize 后必须重新实测这个数,不要沿用上面的数字。
+  Safe zone measured directly (reading icon-512.png pixels, not estimated
+  from CSS ratios): the glyph's bounding box is about 245x254px out of
+  512px, i.e. 48% x 50% of the canvas; its circumscribed circle diameter is
+  about 69% of the canvas, still inside maskable's 80% safe zone with room
+  to spare.
+  After changing $fontSize, this number must be re-measured -- don't reuse
+  the figures above.
 
-  用法(仓库根目录下执行):
+  Usage (run from the repo root):
     pwsh -File scripts/generate-icons.ps1
-    # 或不带扩展名的 Windows PowerShell:
+    # or Windows PowerShell without the extension:
     powershell -File scripts/generate-icons.ps1
 
-  未安装任何图像库 —— 直接用 .NET System.Drawing 栅格化到位图再存 PNG。
+  No image library installed -- rasterizes straight to a bitmap with .NET's
+  System.Drawing and saves it as PNG.
 #>
 
 Add-Type -AssemblyName System.Drawing
 
-# --- 色值:与 src/styles/tokens.css 的浅色主题(纸)保持一致 ---------------
-$bgHex = '#be3c24' # --accent 朱砂
-$fgHex = '#fdfbf7' # --on-tone 象牙白(实心色块上的文字)
+# --- Color values: kept consistent with src/styles/tokens.css's light (paper) theme -----
+$bgHex = '#be3c24' # --accent vermilion
+$fgHex = '#fdfbf7' # --on-tone ivory white (text on the solid color block)
 
 $bg = [System.Drawing.ColorTranslator]::FromHtml($bgHex)
 $fg = [System.Drawing.ColorTranslator]::FromHtml($fgHex)
@@ -42,19 +49,21 @@ foreach ($size in $sizes) {
   $g.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::AntiAliasGridFit
   $g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
 
-  # 满版底色,不做圆角 —— 圆角交给系统按 any / maskable 各自裁切
+  # Full-bleed background color, no rounded corners -- corner-cropping is left to the system for any / maskable respectively
   $bgBrush = New-Object System.Drawing.SolidBrush($bg)
   $g.FillRectangle($bgBrush, 0, 0, $size, $size)
 
-  # 居中「词」字,与 .brand__seal 同字重(600/Bold)、同字体(Microsoft YaHei,
-  # 对应 --font-ui 在 Windows 上的解析结果)
+  # Centered "词" character, same weight (600/Bold) and font (Microsoft
+  # YaHei, matching how --font-ui resolves on Windows) as .brand__seal
   $fontSize = [float]($size * 0.52)
-  # GDI+ 在字体缺失时会静默替换成默认字体,脚本照样「成功」但图标是错的 ——
-  # 所以先确认字体真的装了,宁可报错也不要产出一张看起来不对的图。
+  # GDI+ silently substitutes the default font when the requested one is
+  # missing, so the script would "succeed" while producing a wrong icon --
+  # so this confirms the font is actually installed first, and would rather
+  # error out than produce an image that looks wrong.
   $fontFamily = 'Microsoft YaHei'
   $installed = (New-Object System.Drawing.Text.InstalledFontCollection).Families.Name
   if ($installed -notcontains $fontFamily) {
-    throw "缺少字体 '$fontFamily'。GDI+ 会静默回退到默认字体并生成错误的图标,已中止。请安装该字体,或改用本机已有的等价中文黑体并重新实测安全区。"
+    throw "Missing font '$fontFamily'. GDI+ would silently fall back to the default font and produce a wrong icon, so this has been aborted instead. Install the font, or switch to an equivalent Chinese sans-serif font already on this machine and re-measure the safe zone."
   }
   $font = New-Object System.Drawing.Font($fontFamily, $fontSize, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
   $fgBrush = New-Object System.Drawing.SolidBrush($fg)
@@ -63,11 +72,12 @@ foreach ($size in $sizes) {
   $format.Alignment = [System.Drawing.StringAlignment]::Center
   $format.LineAlignment = [System.Drawing.StringAlignment]::Center
 
-  # 「词」= U+8BCD,用码位而非字面量写入,避免脚本文件编码(BOM/ANSI)
-  # 在不同环境下把多字节字符读花
+  # "词" = U+8BCD, written via its code point rather than a literal
+  # character to avoid the script file's encoding (BOM/ANSI) garbling a
+  # multi-byte character differently across environments
   $glyph = [char]::ConvertFromUtf32(0x8BCD)
 
-  # 中文字形在 em 框内略偏上,手动下移一点做光学居中
+  # The Chinese glyph sits slightly high within its em box, so nudge it down a bit for optical centering
   $rect = New-Object System.Drawing.RectangleF(0, [float]($size * 0.03), $size, $size)
   $g.DrawString($glyph, $font, $fgBrush, $rect, $format)
 

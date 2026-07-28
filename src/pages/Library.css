@@ -1,7 +1,8 @@
-/* Library(词库)页面专属样式。搜索框、两组筛选 chips、词条列表、
-   管理模式(复选框 + 全选 + 底部批量删除条)、删除确认对话框。 */
+/* Library page-specific styles. Search box, two groups of filter chips,
+   the entry list, manage mode (checkboxes + select-all + bottom bulk-delete
+   bar), and the delete confirmation dialog. */
 
-/* --- 搜索框:放大镜图标叠在输入框左侧 ------------------------------------ */
+/* --- Search box: magnifying-glass icon overlaid on the left of the input ------------------------------------ */
 
 .library-search {
   position: relative;
@@ -20,13 +21,14 @@
   padding-inline-start: 40px;
 }
 
-/* 各浏览器 type="search" 自带的清除按钮外观不一,统一走系统默认即可,
-   这里只压掉 WebKit 的取消按钮不一致的内边距 */
+/* Browsers' built-in clear button for type="search" varies in appearance;
+   just going with the system default is fine — this only overrides
+   WebKit's inconsistent cancel-button padding */
 .library-search__input::-webkit-search-cancel-button {
   margin-inline-end: 2px;
 }
 
-/* --- 筛选 chips:状态一组 + sourceNote 一组 ------------------------------- */
+/* --- Filter chips: one group for status + one group for sourceNote ------------------------------- */
 
 .library-filters {
   display: grid;
@@ -39,14 +41,15 @@
   gap: var(--sp-2);
 }
 
-/* sourceNote 可能有二十多个取值,横向滚动而不是把页面撑得很长 */
+/* sourceNote may have twenty-some possible values — scroll horizontally
+   instead of stretching the page very tall */
 .library-chiprow--scroll {
   flex-wrap: nowrap;
   overflow-x: auto;
-  padding-block: 2px; /* 给 focus 环留出空间,避免被裁切 */
+  padding-block: 2px; /* leaves room for the focus ring so it isn't clipped */
 }
 
-/* --- 全选行(仅管理模式)-------------------------------------------------- */
+/* --- Select-all row (manage mode only) -------------------------------------------------- */
 
 .library-selectall {
   display: flex;
@@ -59,12 +62,13 @@
   color: var(--text-muted);
 }
 
-/* --- 词条列表 -------------------------------------------------------------
-   整份列表共用一个 Card 外框(pad="none"),行与行之间用发丝线分隔,
-   而不是每行单独一张卡片 —— 476 行时更轻,视觉上也更像词典索引。 */
+/* --- Entry list -------------------------------------------------------------
+   The whole list shares one Card frame (pad="none"), with rows separated by
+   a hairline rather than each row being its own card — lighter at 476 rows,
+   and visually closer to a dictionary index. */
 
 .library-list {
-  overflow: hidden; /* 裁到 Card 的圆角内 */
+  overflow: hidden; /* clip to the Card's rounded corners */
 }
 
 .library-row {
@@ -116,11 +120,13 @@
   flex: none;
 }
 
-/* 三种空状态(词库为空 / 搜不到 / 筛选没命中)共用 .empty-state 这层外壳
-   （components.css),文案各说各的,见 Library.tsx 的 emptyStateCopy()。 */
+/* The three empty states (library empty / no search results / no filter
+   matches) share the .empty-state shell (components.css); each has its own
+   copy, see emptyStateCopy() in Library.tsx. */
 
-/* --- 底部批量操作条(管理模式)--------------------------------------------
-   createPortal 到 #overlay-root:层级在页签之上,且不随路由切换动画被冻结。 */
+/* --- Bottom bulk-action bar (manage mode) --------------------------------------------
+   createPortal'd to #overlay-root: sits above the tab bar in stacking
+   order, and isn't frozen by route-transition animations. */
 
 .library-bulkbar {
   position: fixed;
@@ -143,17 +149,18 @@
   color: var(--text-muted);
 }
 
-/* 桌面端页签变成左侧栏,底部条不必再给它让位 */
+/* On desktop the tab bar becomes a left rail, so the bottom bar no longer needs to make room for it */
 @media (min-width: 900px) {
   .library-bulkbar {
     inset-inline-start: var(--rail-w);
   }
 }
 
-/* 删除确认走共享的 ConfirmDialog / .confirm-dialog,同步失败提示走
-   SyncStatus / .sync-note(都在 components.css)。 */
+/* Delete confirmation goes through the shared ConfirmDialog / .confirm-dialog,
+   and the sync-failure notice goes through SyncStatus / .sync-note (both in
+   components.css). */
 
-/* 页头右上的两个动作:添加 + 管理 */
+/* The two actions in the top-right of the header: add + manage */
 .library-actions {
   display: flex;
   align-items: center;

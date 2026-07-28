@@ -1,6 +1,7 @@
 /* ==========================================================================
-   布局层:应用外壳、底部页签(桌面转侧栏)、页面骨架与切换动效。
-   移动优先(375px 起),≥900px 切换为侧栏 + 居中内容栏。
+   Layout layer: app shell, bottom tab bar (becomes a sidebar on desktop),
+   page skeleton, and transition animation.
+   Mobile-first (from 375px), switches to a sidebar + centered content column at ≥900px.
    ========================================================================== */
 
 .app {
@@ -15,7 +16,7 @@
   padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
 }
 
-/* --- 页签导航 ------------------------------------------------------------ */
+/* --- Tab navigation -------------------------------------------------------- */
 
 .tabbar {
   position: fixed;
@@ -58,7 +59,7 @@
   color: var(--text);
 }
 
-/* 朱砂刻度:书口标签一样的母题,与页头下缘的刻度呼应 */
+/* Vermilion tick: the same motif as a book-edge tab, echoing the tick at the bottom of the page header */
 .tabbar__item[aria-current='page']::before {
   content: '';
   position: absolute;
@@ -70,7 +71,7 @@
   transform: translateX(-50%);
 }
 
-/* --- 页面骨架 ------------------------------------------------------------ */
+/* --- Page skeleton ----------------------------------------------------------- */
 
 .page {
   max-width: var(--page-max);
@@ -99,7 +100,7 @@
   background: var(--accent);
 }
 
-/* 命中区完整 44px;负外边距把 20px 图标的光学左缘拉回 16px 的版心线上 */
+/* Full 44px hit area; a negative margin pulls the 20px icon's optical left edge back onto the 16px content margin */
 .page__back {
   display: grid;
   place-items: center;
@@ -154,12 +155,12 @@
   padding: var(--sp-5) var(--sp-4) var(--sp-10);
 }
 
-/* grid 子项默认 min-width:auto,超长英文词会把版心撑破 —— 显式解开 */
+/* Grid items default to min-width:auto, and an overly long English word would blow out the content column — explicitly overridden */
 .page__body > * {
   min-width: 0;
 }
 
-/* --- 登录页(在 App 外壳之外,无页签)----------------------------------- */
+/* --- Login page (outside the app shell, no tab bar) ------------------------- */
 
 .auth {
   display: grid;
@@ -182,15 +183,21 @@
   color: var(--text-faint);
 }
 
-/* --- 路由切换 ------------------------------------------------------------
-   这里刻意**不做**整页进场动画,两条都是踩过的坑:
-   - transform 位移会让包裹层变成 position:fixed 后代的包含块,页面内的
-     底部操作条与遮罩会被钉死在版心盒子上;
-   - 淡入(哪怕只动 opacity)在标签页不可见时动画时钟不推进,整个 App
-     会停在起始帧的 opacity:0。任何「进场」动画被冻在 t=0 都会藏住内容。
+/* --- Route transitions ------------------------------------------------------
+   Deliberately **not** doing a full-page entrance animation here — both
+   options are traps that have already been stepped in:
+   - a transform offset turns the wrapper into the containing block for any
+     position:fixed descendant, pinning the page's bottom action bar and
+     scrim to the content box;
+   - a fade-in (even just animating opacity) has its animation clock frozen
+     while the tab is not visible, so the whole app can get stuck at the
+     starting frame's opacity:0. Any "entrance" animation frozen at t=0 hides
+     the content.
 
-   改为只让页头那道朱砂刻度画出来:它是纯装饰,被冻住最多是少一个
-   28×2px 的标记,内容永远可读。换路由时页头节点本身会重建,动画自然重放。 */
+   Instead, only the vermilion tick in the page header gets drawn in: it's
+   purely decorative, so at worst a frozen animation is missing a
+   28×2px mark — the content stays readable either way. The header node
+   itself gets rebuilt on every route change, so the animation replays naturally. */
 @keyframes tick-draw {
   from {
     width: 0;
@@ -205,9 +212,10 @@
   animation: tick-draw var(--dur-3) var(--ease);
 }
 
-/* 弹层挂载点:createPortal 到 #overlay-root,
-   这样对话框/底部条既不受路由动画影响,层级也确定在页签之上。
-   自身 fixed + 零尺寸,不参与外壳的 flex/grid 排版。 */
+/* Overlay mount point: createPortal targets #overlay-root,
+   so dialogs/bottom bars are unaffected by route animation and their
+   stacking is guaranteed above the tab bar.
+   It's itself fixed + zero-size, and takes no part in the shell's flex/grid layout. */
 .overlay-root {
   position: fixed;
   inset-block-start: 0;
@@ -217,7 +225,7 @@
   z-index: var(--z-overlay);
 }
 
-/* --- 桌面:底部页签变左侧栏 --------------------------------------------- */
+/* --- Desktop: bottom tab bar becomes a left sidebar ------------------------- */
 
 @media (min-width: 900px) {
   .app {

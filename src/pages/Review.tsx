@@ -19,34 +19,45 @@ import { useApp } from '../state/store'
 import type { Grade } from '../types'
 import './Review.css'
 
-/* 键盘只在"没有落在文本输入控件里"时接管空格/数字键 —— 这条判断与测验页
-   的选项快捷键共用一份实现,见 lib/keys.ts。 */
+/* Keyboard shortcuts only take over the space/number keys when focus
+   "isn't inside a text input control" — this check shares one
+   implementation with the quiz page's option shortcuts, see lib/keys.ts. */
 
 const GRADE_KEYS: Record<string, Grade> = { '1': 'again', '2': 'hard', '3': 'good', '4': 'easy' }
 
-/** pendingRef 卡死时的兜底超时(ms)—— 见 advance effect 上的说明。 */
+/** Fallback timeout (ms) for when pendingRef gets stuck — see the note on the advance effect. */
 const PENDING_STUCK_TIMEOUT_MS = 2000
 
 /**
- * Task 17 实现。
+ * Task 17 implementation.
  *
- * 会话队列在挂载时用 buildQueue() 建一次(见 useState 惰性初始值),此后只用
- * reviewQueue.ts 的纯函数推进 —— grade() 会改全局 progress,现算的队列会在
- * 用户眼皮底下重排,所以中途绝不能重新调用 buildQueue()。
+ * The session queue is built once on mount via buildQueue() (see the
+ * useState lazy initial value); after that, it's only ever advanced by
+ * reviewQueue.ts's pure functions — grade() mutates global progress, and
+ * recomputing the queue live would reshuffle it right under the user's
+ * eyes, so buildQueue() must never be called again mid-session.
  *
- * "翻面"状态不用 useEffect 同步:直接从 (当前卡 id, 该词 progress 状态,
- * 用户对*这张卡*的手动翻面) 三者在渲染时算出来 —— 手动翻面记录着 {id, value},
- * 一旦队首换了词,id 对不上,自然回退到"是否新词"的默认值,不需要另外重置。
+ * The "flipped" state isn't synced via useEffect: it's derived directly at
+ * render time from three things — (the current card's id, that word's
+ * progress state, the user's manual flip for *this specific card*). The
+ * manual flip records {id, value}; the moment the head of the queue
+ * changes to a different word, the id no longer matches, so it naturally
+ * falls back to the "is this a new word" default — no separate reset
+ * needed.
  */
 export function Review() {
   const { words, progress, grade, deleteWords } = useApp()
   const [today] = useState(() => todayStr(new Date()))
-  // ?mode=lapses 是「专攻顽固词」:同一套卡片与打分逻辑,只是队列换成按失误
-  // 次数排的那批,且不看到期日。用 query 而不是另开一个路由,是因为除了建队列
-  // 那一行之外,这一页的行为(翻面、打分、学习步长重现、当场删词)完全一样。
+  // ?mode=lapses means "focus on lapsed words": the same card and grading
+  // logic, just with the queue swapped to the batch sorted by lapse count,
+  // ignoring due dates. It's a query param rather than a separate route
+  // because, aside from the one line that builds the queue, this page's
+  // behavior (flipping, grading, learning-step reappearance, deleting a
+  // word on the spot) is exactly the same either way.
   //
-  // **只在挂载时读一次**:和 buildQueue 同理,会话中途换模式会让队列在用户眼皮
-  // 底下重排。想换模式就退出去重进。
+  // **Only read once, on mount**: same reasoning as buildQueue — switching
+  // modes mid-session would reshuffle the queue right under the user's
+  // eyes. To switch modes, leave and re-enter.
   const [searchParams] = useSearchParams()
   const [mode] = useState(() => (searchParams.get('mode') === 'lapses' ? 'lapses' : 'due'))
   const [queue, setQueue] = useState<SessionQueue>(() => {
@@ -57,12 +68,17 @@ export function Review() {
   const [manualFlip, setManualFlip] = useState<{ id: string; value: boolean } | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
-  // 打分之后需要"读回落库结果"才能决定要不要塞回队尾(见 reviewQueue.advance 的注释),
-  // 这个 ref 只是在等待这一读之间记一下是哪张卡、防止同一张卡被连点两次打分。
+  // After grading, the committed result needs to be "read back" before
+  // deciding whether to push the card back to the tail of the queue (see
+  // the comment on reviewQueue.advance) — this ref just tracks which card
+  // is being waited on during that read, to keep the same card from being
+  // graded twice by a double click.
   const pendingRef = useRef<string | undefined>(undefined)
   const pendingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  // 会话完成音只能响一次:finished 保持 true 期间本组件会因为其他状态
-  // (如同步 tick)重渲染很多次,不能靠"finished 为 true 就播"这种条件本身去重。
+  // The session-complete sound must only ever play once: while finished
+  // stays true, this component can re-render many times for unrelated
+  // reasons (e.g. a sync tick), so "play whenever finished is true" can't
+  // be used as its own dedup condition.
   const sessionDonePlayedRef = useRef(false)
 
   const soundEnabled = isSoundEnabled(progress.settings)
@@ -81,21 +97,27 @@ export function Review() {
 
   const handleGrade = useCallback(
     (g: Grade) => {
-      if (pendingRef.current !== undefined) return // 上一次打分还没落定,忽略连点
-      if (curId === undefined || !flipped) return // 没翻面就打分没有意义
-      // 在点击的调用栈内同步播放:iOS 要求 AudioContext 的创建/resume 发生在
-      // 用户手势内,这里是打分音唯一、也是最早的发声点(见 lib/sound.ts)。
+      if (pendingRef.current !== undefined) return // Previous grade hasn't landed yet, ignore the repeat click
+      if (curId === undefined || !flipped) return // Grading before flipping doesn't mean anything
+      // Played synchronously within the click's call stack: iOS requires
+      // the AudioContext's creation/resume to happen inside a user
+      // gesture, and this is the single, earliest point where sound plays
+      // for a grade (see lib/sound.ts).
       playGrade(g, soundEnabled)
       pendingRef.current = curId
-      // 兜底:下面的 effect 依赖"grade() 落库后 progress 一定会变成新引用"这条跨模块
-      // 约定(见 effect 里的说明)。万一它被打破,pendingRef 会永远卡住、打分从此
-      // 在这个会话里全部失灵且没有任何报错 —— 2s 后没等到就自己解锁并留个痕迹。
+      // Fallback: the effect below relies on the cross-module contract
+      // that "progress is guaranteed to become a new reference once
+      // grade() commits" (see the note on that effect). If that contract
+      // is ever broken, pendingRef would stay stuck forever, silently
+      // disabling grading for the rest of this session with no error at
+      // all — so if it isn't resolved within 2s, unlock it and leave a
+      // trace.
       pendingTimeoutRef.current = setTimeout(() => {
         if (pendingRef.current === curId) {
           console.error(
-            `[Review] 打分 "${curId}" 后 ${PENDING_STUCK_TIMEOUT_MS}ms 内没有等到新的 progress,` +
-              '已强制解锁 pendingRef,否则打分按钮会在本会话内一直失效。' +
-              '这通常意味着 store.tsx 的 grade() 没有像预期那样产出新的 progress 引用。',
+            `[Review] No new progress arrived within ${PENDING_STUCK_TIMEOUT_MS}ms of grading "${curId}". ` +
+              'Force-releasing pendingRef, otherwise the grade buttons stay dead for the rest of this session. ' +
+              "This usually means store.tsx's grade() did not produce a new progress reference as expected.",
           )
           pendingRef.current = undefined
         }
@@ -105,9 +127,11 @@ export function Review() {
     [curId, flipped, grade, soundEnabled],
   )
 
-  // 复习会话完成音:只在 finished 由 false 变 true 那一刻响一次。
-  // queue.total === 0(本来就没有待复习的词,见下方"暂无待复习"分支)不算
-  // 完成了一次会话,不放这个音——没有任何一张卡被看过,谈不上"完成"。
+  // Review session complete sound: fires exactly once, at the moment
+  // finished transitions from false to true. queue.total === 0 (there was
+  // never anything to review, see the "nothing due" branch below) doesn't
+  // count as completing a session, so this sound doesn't play — no card
+  // was ever seen, so there's nothing to call "complete".
   useEffect(() => {
     if (finished && queue.total > 0 && !sessionDonePlayedRef.current) {
       sessionDonePlayedRef.current = true
@@ -115,13 +139,18 @@ export function Review() {
     }
   }, [finished, queue.total, soundEnabled])
 
-  // grade() 是同步落盘但异步渲染:此刻拿到的 progress 还是旧的,必须等
-  // 下一次带着新 progress 的渲染,再从里面读回真实落库结果去推进队列。
+  // grade() commits synchronously but renders asynchronously: the progress
+  // available right now is still the old one, so we have to wait for the
+  // next render carrying the new progress, and only then read the real
+  // committed result back out of it to advance the queue.
   //
-  // 这个 effect 能否被触发,系着一条跨模块的隐含约定:store.tsx 的 grade() 每次都会
-  // 用展开运算符产出一个全新的 progress 对象(见 store.tsx 的 commitProgress/update),
-  // 所以 [progress] 依赖保证打分之后一定会重新跑一次。store.tsx 对本任务是冻结文件,
-  // 这条约定没有编译期保证 —— 上面 handleGrade 里的超时就是防它被静默打破。
+  // Whether this effect ever fires depends on an implicit cross-module
+  // contract: store.tsx's grade() always produces a brand-new progress
+  // object via the spread operator (see commitProgress/update in
+  // store.tsx), so the [progress] dependency guarantees this reruns after
+  // every grade. store.tsx is a frozen file for this task, and that
+  // contract has no compile-time guarantee — the timeout in handleGrade
+  // above exists specifically to guard against it being silently broken.
   useEffect(() => {
     const pendingId = pendingRef.current
     if (pendingId === undefined) return
@@ -132,13 +161,17 @@ export function Review() {
     }
     const entry = progress.words[pendingId]
     setQueue((q) => advance(q, pendingId, entry, today))
-    // 队首换成了"下一次展示"—— 哪怕重新插到队尾的还是同一个 id(会话内重现),
-    // 也必须清掉手动翻面记录:否则它会被 curId===manualFlip.id 误认成上一次那次展示,
-    // 让本该需要用户重新翻面的重现卡直接带着答案面出场。
+    // The head of the queue has moved on to "the next showing" — even if
+    // the card reinserted at the tail happens to have the same id
+    // (reappearing within this session), the manual flip record must
+    // still be cleared: otherwise curId===manualFlip.id would mistake it
+    // for the previous showing, and a reappearing card that should
+    // require the user to flip it again would show up already flipped to
+    // the answer side.
     setManualFlip(null)
   }, [progress, today])
 
-  // 卸载时把兜底定时器收掉,别让它在页面走掉之后还去戳一个不存在的 ref。
+  // Clears the fallback timer on unmount, so it doesn't reach for a ref that no longer exists after the page is gone.
   useEffect(
     () => () => {
       if (pendingTimeoutRef.current !== undefined) clearTimeout(pendingTimeoutRef.current)
@@ -146,9 +179,12 @@ export function Review() {
     [],
   )
 
-  // 队首这个词在 words 里已经找不到了(另一台设备把它删了,同步跑在会话中途)——
-  // 不能打分也没法渲染卡片,只能摘掉它、继续看队列里下一张。等打分落定(pendingRef
-  // 清空)以后再摘,避免和上面那个 effect 同时改队列。
+  // The word at the head of the queue can no longer be found in words
+  // (deleted from another device, sync landed mid-session) — it can't be
+  // graded and there's no card to render for it, so all that's left is to
+  // drop it and move on to the next one in the queue. This only happens
+  // once grading has settled (pendingRef cleared), to avoid mutating the
+  // queue at the same time as the effect above.
   useEffect(() => {
     if (pendingRef.current !== undefined) return
     if (curId !== undefined && curWord === undefined) {
@@ -159,8 +195,11 @@ export function Review() {
   function handleDelete() {
     if (curWord === undefined || deleting) return
     setDeleting(true)
-    // 与 WordDetail 同一套取舍:本地删除已是权威结果,不等网络推送完成。
-    // 这里额外要把它从会话队列里摘掉,否则队首还指着一个已不存在的词。
+    // The same tradeoff as WordDetail: the local delete is already the
+    // authoritative result, without waiting for the network push to
+    // finish. It also needs to be dropped from the session queue here,
+    // otherwise the head of the queue would still point at a word that no
+    // longer exists.
     void deleteWords([curWord.id]).finally(() => setDeleting(false))
     setQueue((q) => dropCurrent(q))
     setConfirmDelete(false)
@@ -168,12 +207,14 @@ export function Review() {
 
   const handleCardKeyDown = useCallback(
     (e: ReactKeyboardEvent<HTMLDivElement>) => {
-      // 只处理卡片本身拿到焦点的情况;子元素(发音按钮)的按键交给它自己原生处理,
-      // 否则从发音按钮冒泡上来的 Space/Enter 会被这里再重复处理一次。
+      // Only handles the case where the card itself has focus; a child
+      // element's (the speak button's) keypress is left to its own native
+      // handling, otherwise a Space/Enter bubbling up from the speak
+      // button would get handled a second time here.
       if (e.target !== e.currentTarget) return
       if (e.key === 'Enter' || e.key === ' ' || e.code === 'Space') {
         e.preventDefault()
-        e.stopPropagation() // 别让同一个事件再冒泡到 window 上的全局监听器,避免重复翻面
+        e.stopPropagation() // Stops this same event from bubbling up to the global listener on window, avoiding a double flip
         toggleFlip()
       }
     },
@@ -184,13 +225,17 @@ export function Review() {
     function onKeyDown(e: KeyboardEvent) {
       if (curId === undefined || isEditableTarget(document.activeElement)) return
       if (e.key === ' ' || e.code === 'Space') {
-        // 只在"什么都没聚焦"(activeElement===body)时把空格接管为翻面快捷键。
-        // 卡片本身聚焦时由它自己的 onKeyDown 处理(见 handleCardKeyDown);聚焦在
-        // 发音按钮/打分按钮/返回链接等原生控件上时,必须把空格让给它们自己的默认
-        // 行为——否则会出现"Tab 到发音按钮按空格,结果卡片翻面而不是重新发音"
-        // 这种抢焦点控件按键语义的问题。
+        // Only takes over Space as the flip shortcut when "nothing at all
+        // has focus" (activeElement===body). When the card itself has
+        // focus, its own onKeyDown handles it (see handleCardKeyDown);
+        // when focus is on a native control like the speak button / grade
+        // buttons / back link, Space must be left to their own default
+        // behavior — otherwise you'd get bugs like "Tab to the speak
+        // button, press Space, and the card flips instead of the
+        // pronunciation replaying", stealing key semantics from a focused
+        // control.
         if (document.activeElement !== document.body) return
-        e.preventDefault() // 空格默认会滚动页面,必须挡掉
+        e.preventDefault() // Space scrolls the page by default, which must be blocked
         toggleFlip()
         return
       }
@@ -242,9 +287,12 @@ export function Review() {
   }
 
   if (!curWord) {
-    // curId 存在(队列没空)但词条在 words 里已经找不到了 —— 上面的 effect 会把它
-    // 从队列摘掉并推进到下一张,这里只是那一次(通常一帧内就过去)的过渡态,不能
-    // 尝试渲染卡片(会因为 curWord 是 undefined 崩溃),也不能当成"会话已完成"。
+    // curId exists (the queue isn't empty) but the word can no longer be
+    // found in words — the effect above will drop it from the queue and
+    // advance to the next one; this is just that transitional state
+    // (usually gone within one frame), and must neither try to render the
+    // card (would crash on curWord being undefined) nor be treated as
+    // "session complete".
     return (
       <Page eyebrow={eyebrow} title={title} back="/">
         <p className="muted">正在跳过一个已被移除的词条…</p>
@@ -291,7 +339,7 @@ export function Review() {
             className="review-card__speak"
             aria-label="发音"
             onClick={(e) => {
-              e.stopPropagation() // 别让点发音也把卡片翻过去
+              e.stopPropagation() // Stops clicking to speak from also flipping the card
               speak(curWord.headword)
             }}
           >

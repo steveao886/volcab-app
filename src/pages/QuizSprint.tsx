@@ -10,37 +10,45 @@ import { useApp } from '../state/store'
 import type { Word } from '../types'
 
 /**
- * 60 秒极速赛。
+ * The 60-second sprint.
  *
- * 与「综合/辨析/听音」三种模式的关键区别:**点选项立即判分并推进**,不需要再点
- * 一次「下一题」。练的是提取流畅度 —— 真实阅读里没有三秒钟去想 —— 所以每题多
- * 一次点击会把这个模式的意义抵消掉。正因为交互不同,它没有复用 QuizQuestionView。
+ * The key difference from the "mixed/contrast/audio" modes: **choosing an
+ * option grades it and advances immediately**, with no separate "Next
+ * question" click needed. This mode trains retrieval fluency — real
+ * reading doesn't give you three seconds to think — so an extra click per
+ * question would cancel out the whole point of the mode. Precisely because
+ * the interaction is different, it doesn't reuse QuizQuestionView.
  */
 
 const SPRINT_SECONDS = 60
 /**
- * 只出两种四选一。**拼写题会拖垮节奏** —— 一道拼写题的时间够答四道选择题,
- * 分数就变成了"这轮抽到几道拼写题"的函数。
+ * Only generates two four-choice types. **Spelling questions would wreck
+ * the pace** — one spelling question takes as long as four multiple-choice
+ * ones, turning the score into a function of "how many spelling questions
+ * this round happened to draw".
  */
 const SPRINT_TYPES: readonly QuizType[] = ['word2meaning', 'meaning2word']
-/** 一分钟最多也就答二三十题,60 道是宽裕的上限;真答完了提前结束。 */
+/** At most twenty or thirty questions get answered in a minute; 60 is a comfortable upper bound, and the round ends early if actually exhausted. */
 const SPRINT_QUESTIONS = 60
-/** 判对判错的颜色停留时长,之后自动进下一题。 */
+/** How long the correct/incorrect color holds before automatically advancing to the next question. */
 const FLASH_MS = 350
-/** 倒计时刷新间隔。200ms 足够让秒数看起来跟手,又不至于每秒重渲染五次以上。 */
+/** Countdown refresh interval. 200ms is responsive enough for the seconds display to feel live, without re-rendering more than five times a second. */
 const TICK_MS = 200
 
 export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: () => void }) {
   const { progress, recordSprint } = useApp()
   const soundEnabled = isSoundEnabled(progress.settings)
 
-  // 惰性初始值,理由同 QuizSession:generateQuiz 走 Math.random,渲染期间重新
-  // 调用会在答题过程中把题目集悄悄换掉。
+  // Lazy initial value, same reasoning as QuizSession: generateQuiz uses
+  // Math.random, and calling it again during a re-render would silently
+  // swap out the question set mid-quiz.
   const [questions] = useState(() =>
     generateQuiz(words, progress, SPRINT_QUESTIONS, Math.random, SPRINT_TYPES),
   )
-  // 开局那一刻的纪录:recordSprint 会就地刷新 progress.bestSprint,不先存一份
-  // 就没法判断这轮到底破没破纪录(结算后一比,永远是"追平")。
+  // Snapshot of the record at the moment the round starts: recordSprint
+  // updates progress.bestSprint in place, so without saving a copy first
+  // there'd be no way to tell whether this round actually beat the record
+  // (comparing after it's already updated would always read as "tied").
   const [prevBest] = useState(() => progress.bestSprint)
 
   const [index, setIndex] = useState(0)
@@ -54,8 +62,10 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
   const advanceRef = useRef<number | null>(null)
   const recordedRef = useRef(false)
 
-  // 倒计时用**截止时间戳**而不是累加计数:后者每次 tick 的误差会累积,标签页
-  // 被系统降频时误差尤其大,一分钟能跑成一分十几秒。
+  // The countdown uses a **deadline timestamp** rather than an accumulated
+  // count: the latter accumulates error on every tick, and that error gets
+  // especially bad when the tab is throttled by the system — a minute
+  // could easily stretch into a minute and change.
   useEffect(() => {
     const deadline = Date.now() + SPRINT_SECONDS * 1000
     const id = window.setInterval(() => {
@@ -69,7 +79,7 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
     return () => window.clearInterval(id)
   }, [])
 
-  // 题目提前答完也算结束(60 道是上限,不是配额)
+  // Finishing all the questions early also ends the round (60 is a cap, not a quota)
   useEffect(() => {
     if (questions.length > 0 && index >= questions.length) setDone(true)
   }, [index, questions.length])
@@ -81,7 +91,7 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
     }
   }, [done, score, wrongIds, recordSprint])
 
-  // 卸载时清掉待推进的定时器,免得在已卸载的组件上 setState
+  // Clears the pending-advance timer on unmount, so setState never fires on an already-unmounted component
   useEffect(() => () => {
     if (advanceRef.current !== null) window.clearTimeout(advanceRef.current)
   }, [])
@@ -89,11 +99,11 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
   const q = questions[index]
 
   const choose = useCallback((opt: string) => {
-    // done 之后不再收答案:时间到那一刻手指可能正落在按钮上
+    // No longer accepts answers once done: the instant time runs out, a finger might still be landing on a button
     if (answeredRef.current || done || q === undefined) return
     answeredRef.current = true
     const correct = opt === q.answer
-    // 在点击的调用栈内同步播放,iOS 要求 AudioContext 解锁发生在用户手势内
+    // Played synchronously within the click's call stack — iOS requires the AudioContext unlock to happen inside a user gesture
     playQuizResult(correct, soundEnabled)
     setChosen(opt)
     if (correct) setScore(s => s + 1)
@@ -106,9 +116,12 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
     }, FLASH_MS)
   }, [done, q, soundEnabled])
 
-  // 数字键 1–4 作答。**这个模式最需要它** —— 一分钟里手在四个按钮之间来回移动
-  // 的时间是纯损耗,而键盘上四个键在手指底下不用瞄。判分与推进都走 choose,
-  // 与点击完全同一条路(含 answeredRef 的连击守卫)。
+  // Number keys 1–4 answer the question. **This mode needs it most** — the
+  // time spent moving a finger back and forth between four buttons within
+  // one minute is pure overhead, whereas four keyboard keys sit right
+  // under the fingers with no aiming required. Grading and advancing both
+  // go through choose, exactly the same path as clicking (including the
+  // answeredRef repeat-click guard).
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (done || q === undefined) return
@@ -168,8 +181,11 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
   return (
     <>
       <div className="quiz-sprint__bar">
-        {/* 倒计时**不做 live region**:每秒播报一次剩余秒数会把屏幕阅读器彻底淹掉,
-            而题目本身才是要读的内容。role="timer" 让它可被主动查询。 */}
+        {/* The countdown **deliberately isn't a live region**: announcing
+            the remaining seconds every single second would completely
+            drown out the screen reader, and the question itself is what
+            actually needs to be read. role="timer" lets it still be
+            queried on demand. */}
         <p className="num quiz-sprint__clock" role="timer" aria-label={`剩余 ${left} 秒`}>
           {left}
           <span className="faint quiz-sprint__unit">s</span>

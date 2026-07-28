@@ -1,17 +1,19 @@
 /**
- * 词源字段的规则。**脚本与两个表单共用这一份** —— 和 senseShare.ts 同样的理由:
- * 校验脚本(入库闸门)与 App 内的表单各写一份,迟早悄悄漂移,然后表单里存下的
- * 词条让 data/words.json 脱离 schema,等跑校验时才发现。
+ * Rules for the etymology field. **Shared by the script and both forms** — same reason as
+ * senseShare.ts: if the validation script (the ingestion gate) and the in-app forms each
+ * wrote their own copy, they'd eventually drift apart, and an entry saved via the form
+ * would knock data/words.json out of schema, only discovered once validation runs.
  */
 
-/** 词源是复习卡背面的一行边注,不是词源学词条。超了该删,不是折行。 */
+/** Etymology is a one-line margin note on the back of a review card, not an etymology-dictionary entry. Over the limit means delete, not wrap. */
 export const ETYMOLOGY_MAX = 60
 
 /**
- * 表单输入 → 存储值。
+ * Form input → stored value.
  *
- * 空白返回 undefined 而不是空串:调用方据此**整个不写这个键**。空串会让展示层的
- * `word.etymology !== undefined` 判为「有词源」,然后渲染一个只有标题没有内容的小节。
+ * Blank returns undefined rather than an empty string: callers use this to **omit the key
+ * entirely**. An empty string would make the display layer's `word.etymology !== undefined`
+ * check read as "has etymology" and render a section with a heading but no content.
  */
 export function normalizeEtymology(input: string): string | undefined {
   const v = input.trim()
@@ -19,10 +21,11 @@ export function normalizeEtymology(input: string): string | undefined {
 }
 
 /**
- * 返回错误信息,合法返回 null。
+ * Returns an error message, or null when valid.
  *
- * **不填是合法的** —— 词源是唯一一个宁可不写的字段(见 docs/word-entry-spec.md):
- * 不是所有词都有可拆解的词源,编一个比留空糟得多。
+ * **Leaving it blank is valid** — etymology is the one field where omitting it is preferable
+ * (see docs/word-entry-spec.md): not every word has a decomposable etymology, and making one
+ * up is far worse than leaving it empty.
  */
 export function validateEtymology(input: string): string | null {
   const v = normalizeEtymology(input)

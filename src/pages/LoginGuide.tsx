@@ -1,10 +1,13 @@
 const TOKEN_SETTINGS_URL = 'https://github.com/settings/personal-access-tokens'
 
 /**
- * 折叠的取 token 指引(默认收起)。没有图片素材,「图文」靠编号 + <code>
- * 精确文案代替 —— 用户要点的按钮、要填的名字,一字不差地摆出来。
- * 用原生 <details>/<summary>:浏览器自带展开/收起的无障碍语义,
- * 不必自己拼 aria-expanded / 键盘处理。
+ * Collapsible guide for getting a token (collapsed by default). There's no
+ * image asset, so "illustrated steps" are replaced by numbering + <code>
+ * with exact copy — the button the user needs to click, the name they need
+ * to fill in, laid out verbatim.
+ * Uses native <details>/<summary>: the browser provides expand/collapse
+ * accessibility semantics for free, so there's no need to hand-roll
+ * aria-expanded / keyboard handling.
  */
 export function LoginGuide() {
   return (

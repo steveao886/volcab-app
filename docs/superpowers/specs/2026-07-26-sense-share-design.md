@@ -1,136 +1,137 @@
-# 义项占比与词频分数上复习卡 — 设计
+# Sense Share and Usage-Frequency Score on the Review Card — Design
 
-日期:2026-07-26
-状态:已与用户确认
-前置:v1.1 已上线,`usageScore` 已覆盖全库 476 词
+Date: 2026-07-26
+Status: confirmed with user
+Prerequisite: v1.1 is live, `usageScore` already covers all 476 words in the list
 
-## 1. 背景
+## 1. Background
 
-用户在真机复习时提出两件事:
+While reviewing on a real device, the user raised two things:
 
-1. **复习卡上看不到词频分数。** 这不是缺陷,是从未实现 —— `usageScore` 目前只出现在词条详情页([`WordDetail.tsx`](../../../src/pages/WordDetail.tsx) 的统计格),复习卡背面([`ReviewCard.tsx`](../../../src/pages/ReviewCard.tsx))从未引用过它。
-2. **一词多义时看不出哪个意思更常用。** 全库 476 词中 95 个是多义词(94 个两义、1 个三义),`Meaning` 只有 `pos / en / zh` 三个字段,占比信息在数据层根本不存在。
+1. **The usage-frequency score isn't shown on the review card.** This isn't a bug, it was simply never built — `usageScore` currently only appears on the entry detail page (the stats row in [`WordDetail.tsx`](../../../src/pages/WordDetail.tsx)); the back of the review card ([`ReviewCard.tsx`](../../../src/pages/ReviewCard.tsx)) has never referenced it.
+2. **For polysemous words, there's no way to tell which sense is more common.** Of the 476 words in the list, 95 are polysemous (94 with two senses, 1 with three), and `Meaning` only has the three fields `pos / en / zh` — share information doesn't exist at the data layer at all.
 
-用户随后追加一条要求:**以后新加的词,入库时就要带上这些 metadata**,不能事后补。
+The user then added a further requirement: **from now on, newly added words need to carry this metadata at intake time**, not have it backfilled afterward.
 
-### 1.1 数据诚实性(前置声明)
+### 1.1 Data honesty (a preliminary note)
 
-释义占比**没有语料统计支撑**,和 `usageScore` 一样是会话中 AI 依据当代英语用法常识给出的估计量级。因此:
+Sense share **has no corpus statistics behind it** — like `usageScore`, it's a magnitude estimate the AI produces in-session based on general knowledge of contemporary English usage. As a result:
 
-- 占比**只到整十**(10–90)。写成 `87% / 13%` 会暗示背后有 COCA 之类的语料统计,那是假精度。
-- 呈现时走弱化色,作为边注存在,不与英文释义抢视觉权重。
+- Share is **rounded to the nearest ten** (10–90). Writing `87% / 13%` would imply there's a corpus source like COCA behind it, which would be false precision.
+- It's rendered in a muted color, sitting as a marginal annotation, not competing visually with the English definition.
 
-## 2. 范围
+## 2. Scope
 
-| | 改动 | 触及范围 |
+| | Change | Surface area |
 |---|---|---|
-| A | `Meaning` 新增 `share?: number` | `types.ts` |
-| B | 回填 95 个多义词的 `share` 并按占比降序重排 | `data/words.json` |
-| C | 校验规则升级 | `scripts/validate-words.ts` |
-| D | 复习卡背面显示遇见概率 + 义项占比 | `ReviewCard.tsx` / `Review.css` |
-| E | 词条详情页释义列表显示义项占比 | `WordDetail.tsx` / `WordDetail.css` |
-| F | 两个表单开放 `usageScore` / `share` 录入 | `AddWord.tsx` / `WordEditForm.tsx` |
-| G | 词条规范文档 | 新增 `docs/word-entry-spec.md`,`HANDOFF.md` 改为指向它 |
+| A | Add `share?: number` to `Meaning` | `types.ts` |
+| B | Backfill `share` for the 95 polysemous words and re-sort by share descending | `data/words.json` |
+| C | Upgrade validation rules | `scripts/validate-words.ts` |
+| D | Show likelihood-of-encounter + sense share on the review card back | `ReviewCard.tsx` / `Review.css` |
+| E | Show sense share in the definition list on the entry detail page | `WordDetail.tsx` / `WordDetail.css` |
+| F | Open up `usageScore` / `share` entry in both forms | `AddWord.tsx` / `WordEditForm.tsx` |
+| G | Word-entry spec document | New `docs/word-entry-spec.md`, with `HANDOFF.md` updated to point to it |
 
-**同步链路(`src/state/sync.ts`)一行不改** —— 理由见 §7.4。
+**The sync pipeline (`src/state/sync.ts`) is untouched, not a single line** — see §7.4 for why.
 
 ---
 
-## 3. A —— schema
+## 3. A — schema
 
 ```ts
 export interface Meaning {
   pos: string
   en: string
   zh: string
-  /** 该义项在当代语境里的大致占比,整十(10–90)。同一个词的所有义项要么都有、
-      要么都没有,总和恒为 100;单义词不写。AI 估计的量级,不是语料统计。 */
+  /** This sense's approximate share of contemporary usage, rounded to the nearest ten (10–90).
+      All senses of a word either all have it or none do; the total always sums to 100;
+      monosemous words don't get one. An AI-estimated magnitude, not corpus statistics. */
   share?: number
 }
 ```
 
-`Word` 不变,`usageScore?: number` 保持可选(理由见 §7.4)。
+`Word` is unchanged; `usageScore?: number` stays optional (see §7.4 for why).
 
-## 4. B —— 数据回填
+## 4. B — data backfill
 
-- 95 个多义词补 `share`,整十,同一词内总和为 100。
-- **同时把 `meanings` 数组按 `share` 降序重排。** 存储层就有序,三个渲染处(复习卡、详情页、编辑表单)天然一致,没有任何一处需要排序逻辑。释义前的序号(`review-meaning__idx`)顺带成为常用度序号。
-- 两义势均力敌时允许 `50/50`,此时保持原有顺序。
-- 381 个单义词**一律不写** `share`。不写 `100`:那是噪音,还会让「有 `share` 即多义词」这条判断失效。
+- Add `share` to the 95 polysemous words, rounded to the nearest ten, summing to 100 within each word.
+- **At the same time, re-sort the `meanings` array by `share` descending.** With ordering baked in at the storage layer, all three rendering sites (review card, detail page, edit form) are naturally consistent, with no sorting logic needed anywhere. The index number in front of each definition (`review-meaning__idx`) incidentally becomes a commonness ranking.
+- When two senses are evenly matched, `50/50` is allowed, in which case the original order is kept.
+- The 381 monosemous words **never get a `share` field, uniformly**. Not even `100`: that would be noise, and it would break the rule that "having `share` at all means polysemous."
 
-数值由会话中逐词判断生成,用户抽查后可随时修正。
+Values are produced word-by-word in-session; the user can spot-check and correct at any time afterward.
 
-## 5. C —— 校验升级(`scripts/validate-words.ts`)
+## 5. C — validation upgrade (`scripts/validate-words.ts`)
 
-`usageScore` 从「可选,存在则须 1–10 整数」升级为 **无条件必填**。全库 476 词现已全部具备,升级后立即为绿,不需要先补数据。
+`usageScore` is upgraded from "optional, but must be a 1–10 integer if present" to **unconditionally required**. All 476 words in the list already have it, so the check is green immediately after the upgrade — no data backfill needed first.
 
-新增 `share` 规则,对每个词:
+New `share` rules, for each word:
 
-- 若任一义项有 `share`,则**所有**义项都必须有;
-- 每个 `share` 是 10–90 的整十;
-- 同一词内总和 `=== 100`;
-- 数组按 `share` **降序**排列;
-- 义项数必须 > 1 —— 单义词带 `share` 直接判错;
-- 义项数 > 1 时 `share` **必填**。
+- If any sense has `share`, **all** senses must have it;
+- Each `share` is a multiple of ten between 10 and 90;
+- The values within a word must sum to exactly 100;
+- The array must be sorted by `share` **descending**;
+- Sense count must be > 1 — a monosemous word with `share` is flagged as an error;
+- When sense count > 1, `share` is **required**.
 
-校验逻辑抽成可导入的纯函数(`validateWord(word): string[]`),配 vitest 测试;脚本本体只负责读文件、聚合错误、设置退出码。
+Validation logic is extracted into an importable pure function (`validateWord(word): string[]`), with vitest tests; the script itself only handles reading the file, aggregating errors, and setting the exit code.
 
-## 6. D/E —— UI 呈现
+## 6. D/E — UI presentation
 
-**复习卡背面**([`ReviewCard.tsx`](../../../src/pages/ReviewCard.tsx)):
+**Review card back** ([`ReviewCard.tsx`](../../../src/pages/ReviewCard.tsx)):
 
-- 音标那一行右端显示「遇见概率 **6**/10」。分数走 `.num`,标签走 `.faint`。
-- 多义词每条释义的头部,在 `pos` 之后加占比:`① v. 90%`,走 `.faint` 弱化一档。
+- On the right end of the phonetics row, show "likelihood **6**/10". The score uses `.num`, the label uses `.faint`.
+- For polysemous words, add the share after `pos` at the head of each definition: `① v. 90%`, styled one step further muted via `.faint`.
 
-分数放**背面**而非正面:它属于「关于这个词的事实」,与释义、例句同属答案侧;正面保持「只有词头 + 发音」的干净回忆环境,不给出「低分 → 记不住也正常」这类暗示。
+The score sits on the **back**, not the front: it's "a fact about the word," belonging with the definitions and examples on the answer side; the front stays a clean recall environment with "just the headword + pronunciation," with no hint like "low score → it's fine if you can't recall it."
 
-**词条详情页**([`WordDetail.tsx`](../../../src/pages/WordDetail.tsx)):释义列表同样加占比,与复习卡呈现一致。底部统计格的「当代遇见概率 6 / 10」原样不动。
+**Entry detail page** ([`WordDetail.tsx`](../../../src/pages/WordDetail.tsx)): the definition list gets the same share annotation, consistent with the review card's presentation. The "contemporary likelihood of encounter 6 / 10" stat at the bottom is left as-is.
 
-**降级**:没有 `share` 的词(旧数据、别的设备用旧版 App 加的词)不显示占比,其余照旧;没有 `usageScore` 的词不显示那一行。
+**Degradation**: words without `share` (old data, or words added on another device with an older app version) show no share; everything else is unaffected. Words without `usageScore` don't show that row at all.
 
-## 7. F/G —— 新词入库的保证
+## 7. F/G — guaranteeing this for newly added words
 
-三道,缺一不可。
+Three layers, all required.
 
-### 7.1 两个表单必填
+### 7.1 Required in both forms
 
-`/add` 完整表单与词条编辑表单用同一套规则:
+The `/add` full form and the entry-edit form share the same rules:
 
-- **遇见概率**:1–10 选择器,必填。
-- **释义占比**:仅在释义 ≥ 2 条时出现,每条一个 **10–90 整十下拉**。用下拉而非输入框 —— 「整十」这条约束因此在结构上不可能违反,不必靠校验去抓。
-- 表单实时显示合计(如「合计 90%,需为 100%」),不足或超出**拦下提交并提示**,不静默丢弃。
-- 增删释义时占比行随之增减;删到只剩一条,占比区块整体消失。
-- **保存时按 `share` 降序重排 `meanings`**,与 §4 的存储不变式对齐,不麻烦用户自己排。
+- **Likelihood of encounter**: a 1–10 picker, required.
+- **Sense share**: only appears when there are ≥ 2 definitions, each a **10–90-in-tens-of-ten dropdown**. A dropdown rather than a text field — so the "multiple of ten" constraint becomes structurally impossible to violate, no need to catch it in validation.
+- The form shows a running total live (e.g. "total 90%, needs to be 100%"); submission is **blocked with a prompt** when it's under or over, never silently discarded.
+- The share rows grow/shrink as definitions are added/removed; deleting down to a single definition makes the whole share block disappear.
+- **On save, `meanings` is re-sorted by `share` descending**, matching the storage invariant from §4, so the user doesn't have to sort it themselves.
 
-这推翻了 v1.1 设计文档「不为 `usageScore` 增加手动录入界面」那条决定。当时的理由是保护捕获成本,但那条成本约束属于**生词暂存区**(一个输入框);`/add` 完整表单本来就要手填词性、释义、例句、近义反义搭配,多两项是边际成本。
+This overturns the v1.1 design doc's decision "no manual entry UI for `usageScore`." The reasoning back then was to protect capture cost, but that cost constraint belongs to the **staging area** (a single input box); the `/add` full form already requires manually filling in part of speech, definitions, examples, synonyms/antonyms/collocations — two more fields is a marginal cost.
 
-**必须同时开放编辑表单**:只让 `/add` 能填而编辑页不能改,等于填错了无从修正,且 `share` 仍会被 [`WordEditForm.tsx`](../../../src/pages/WordEditForm.tsx) 的 `{pos, en, zh}` 重建静默抹掉。
+**The edit form must be opened up at the same time**: letting only `/add` fill these in while the edit page can't change them means there's no way to fix a mistake, and `share` would still get silently wiped out whenever [`WordEditForm.tsx`](../../../src/pages/WordEditForm.tsx) rebuilds `{pos, en, zh}`.
 
-### 7.2 校验强制
+### 7.2 Validation enforcement
 
-见 §5。`validate-words.ts` 是仓库侧的准入闸门,任何进入 `data/words.json` 的词条都要过它。
+See §5. `validate-words.ts` is the repo-side admission gate; every entry going into `data/words.json` has to pass it.
 
-### 7.3 生成规范落到一个文件
+### 7.3 Getting the generation spec down into one file
 
-「一条完整词条长什么样」目前散在 v1.1 设计文档与 `HANDOFF.md` 中。新建 **`docs/word-entry-spec.md`** 作为唯一权威,列全必填字段及 `usageScore` / `share` 的取值规则;暂存区批量补全时,会话读这个文件。`HANDOFF.md` 相应段落改为指向它。
+"What a complete entry must look like" is currently scattered across the v1.1 design doc and `HANDOFF.md`. Create **`docs/word-entry-spec.md`** as the single source of truth, listing every required field plus the value rules for `usageScore` / `share`; when batch-completing the staging area, the session reads this file. Update the relevant section in `HANDOFF.md` to point to it.
 
-### 7.4 一处刻意不收紧
+### 7.4 One deliberate spot left un-tightened
 
-`src/types.ts` 的 `usageScore?` 与 `share?` 保持可选,`src/state/sync.ts` 的 `isWord` / `isMeaning` **不加**这两项检查。
+`src/types.ts`'s `usageScore?` and `share?` stay optional, and `src/state/sync.ts`'s `isWord` / `isMeaning` **do not add** checks for these two fields.
 
-写入端严格(表单 + 校验脚本),读取端宽容。另一台设备上的旧版 App 推上来一个缺字段的词,正确结果是「这个词没分数,UI 那格不渲染」,而不是整份 `words.json` 被判成坏数据、拒绝合并。这条既有容错不能因为收紧写入端而丢掉。
+Strict on write (forms + validation script), lenient on read. When an older app version on another device pushes up a word missing a field, the correct outcome is "this word has no score, that UI slot doesn't render," not "the whole `words.json` gets judged corrupt and the merge is rejected." This existing fault-tolerance can't be lost just because the write side is being tightened.
 
-## 8. 测试
+## 8. Testing
 
-- `validateWord` 纯函数:covers 缺 `usageScore`、`share` 部分缺失、非整十、总和不为 100、未降序、单义词带 `share`、多义词缺 `share`。
-- 两个表单的占比归一化/重排逻辑抽成纯函数(`normalizeMeanings`),配测试:合计校验、降序重排、单义时剥离 `share`。
-- 全库跑 `npm run validate-words`,476 词须全绿。
-- UI 改动本项目无组件测试传统,起 dev server 目视验证。
+- `validateWord` pure function: covers missing `usageScore`, partially-missing `share`, non-multiple-of-ten values, sums not equal to 100, not sorted descending, a monosemous word with `share`, a polysemous word missing `share`.
+- The share-normalization/re-sort logic for both forms is extracted into a pure function (`normalizeMeanings`), with tests: total validation, descending re-sort, stripping `share` when monosemous.
+- Run `npm run validate-words` across the whole list; all 476 words must pass.
+- No component-test tradition for UI changes in this project — spin up the dev server and verify visually.
 
-## 9. 明确不做(YAGNI)
+## 9. Explicitly out of scope (YAGNI)
 
-- 词库列表页显示分数或占比。
-- 测验页显示分数或占比。
-- 单义词标注 `share: 100`。
-- 占比的个位精度、置信区间、语料来源标注。
-- 为存量 381 个单义词做任何改动。
+- Showing score or share on the word-list page.
+- Showing score or share on the quiz page.
+- Annotating monosemous words with `share: 100`.
+- Single-digit precision, confidence intervals, or corpus-source annotation for share.
+- Any changes to the existing 381 monosemous words.

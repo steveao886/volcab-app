@@ -1,46 +1,46 @@
-# 短文选词填空 Implementation Plan
+# Passage Cloze Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 给 `/quiz` 加第五个模式「短文」——一篇 80~120 词的短文挖 3~7 个空,下方给候选词,填完整篇再交卷,交卷后逐句中英对照。
+**Goal:** Add a fifth mode, "短文" (Passage), to `/quiz` — a passage of 80–120 words with 3–7 blanks, candidate words listed below it, submit only after filling in the whole passage, then a sentence-by-sentence Chinese-English comparison after submission.
 
-**Architecture:** 全部出题逻辑落在纯函数 `src/lib/passage.ts`(解析标记 → 选空 → 配候选词 → 选篇打分),渲染层 `src/pages/QuizPassage.tsx` 只负责把算好的结果画出来。语料 `src/data/passages.json` 随 App 发布,用 `import()` 拆成独立 chunk。判分复用现有 `recordQuiz(score, total, wrongIds)`,`store.tsx` 与 `srs.ts` 一行不改。
+**Architecture:** All question-generation logic lives in the pure-function module `src/lib/passage.ts` (parse markers → select blanks → assemble candidate words → score passages); the render layer `src/pages/QuizPassage.tsx` is only responsible for painting the already-computed result. The content file `src/data/passages.json` ships with the app and is split into its own chunk via `import()`. Scoring reuses the existing `recordQuiz(score, total, wrongIds)` — not a single line of `store.tsx` or `srs.ts` changes.
 
-**Tech Stack:** React 19 + TypeScript + Vite + vitest(happy-dom)。无新依赖。
+**Tech Stack:** React 19 + TypeScript + Vite + vitest (happy-dom). No new dependencies.
 
-**设计文档:** `docs/superpowers/specs/2026-07-28-passage-cloze-design.md`
+**Design doc:** `docs/superpowers/specs/2026-07-28-passage-cloze-design.md`
 
 ---
 
 ## File Structure
 
-| 文件 | 职责 |
+| File | Responsibility |
 |---|---|
-| `src/lib/passage.ts`(新) | 标记解析、选空、候选词、选篇打分。**全部纯函数**,不碰 DOM 不碰 localStorage |
-| `src/lib/passage.test.ts`(新) | 上面的测试 |
-| `src/lib/headword.ts`(改) | 新增 `isInflectionOf` —— 严格词尾判定,给校验脚本用 |
-| `src/lib/headword.test.ts`(改) | `isInflectionOf` 的测试 |
-| `src/data/passages.json`(新) | 语料。随 App 发布的只读内容 |
-| `src/lib/storage.ts`(改) | 加 `recentPassages` 键 |
-| `src/pages/QuizPassage.tsx`(新) | 短文模式的整个会话:做题态 + 交卷态 |
-| `src/pages/Quiz.tsx`(改) | `MODES` 加一项,分支到 `PassageSession` |
-| `src/pages/Quiz.css`(改) | `.quiz-passage-*` 样式 |
-| `scripts/validate-passages.ts`(新) | 写入端闸门 |
-| `package.json`(改) | 加 `validate-passages` 脚本 |
+| `src/lib/passage.ts` (new) | Marker parsing, blank selection, candidate words, passage scoring. **All pure functions** — touches neither the DOM nor localStorage |
+| `src/lib/passage.test.ts` (new) | Tests for the above |
+| `src/lib/headword.ts` (modified) | Adds `isInflectionOf` — strict suffix matching, for the validation script |
+| `src/lib/headword.test.ts` (modified) | Tests for `isInflectionOf` |
+| `src/data/passages.json` (new) | Content. Read-only, shipped with the app |
+| `src/lib/storage.ts` (modified) | Adds the `recentPassages` key |
+| `src/pages/QuizPassage.tsx` (new) | The entire passage-mode session: answering state + submitted state |
+| `src/pages/Quiz.tsx` (modified) | Adds an entry to `MODES`, branches to `PassageSession` |
+| `src/pages/Quiz.css` (modified) | `.quiz-passage-*` styles |
+| `scripts/validate-passages.ts` (new) | The write-path gate |
+| `package.json` (modified) | Adds the `validate-passages` script |
 
-**为什么不复用 `QuizQuestionView`:** 短文是交卷制(可改答案、一次判全篇),与现有「点了就锁死、一题一判」是两套交互。`QuizSprint.tsx` 因为同样的理由也没复用它——那个先例就在旁边。
+**Why not reuse `QuizQuestionView`:** Passage mode is submit-once (answers can be changed, the whole passage is judged at once), which is a different interaction from the existing "tap and it locks, one question judged at a time." `QuizSprint.tsx` didn't reuse it either, for the same reason — that precedent sits right alongside it.
 
 ---
 
-## Task 1: 标记解析
+## Task 1: Marker Parsing
 
 **Files:**
 - Create: `src/lib/passage.ts`
 - Create: `src/lib/passage.test.ts`
 
-- [ ] **Step 1: 写失败的测试**
+- [ ] **Step 1: Write a failing test**
 
-创建 `src/lib/passage.test.ts`:
+Create `src/lib/passage.test.ts`:
 
 ```ts
 import { describe, expect, it } from 'vitest'
@@ -48,8 +48,9 @@ import { parsePassage, parseSentence } from './passage'
 import type { Passage } from './passage'
 
 /**
- * 短文出题的纯逻辑。UI 不写组件测试(照仓库约定,见 store.test.tsx 顶部),
- * 所以值得测的分支必须全部落在这个文件里。
+ * Pure logic for generating passage questions. The UI has no component tests
+ * (per repo convention, see the top of store.test.tsx), so every branch worth
+ * testing has to live in this file.
  */
 
 const passage = (over: Partial<Passage> = {}): Passage => ({
@@ -61,7 +62,7 @@ const passage = (over: Partial<Passage> = {}): Passage => ({
 })
 
 describe('parseSentence', () => {
-  it('简写标记:词头即句中形式', () => {
+  it('shorthand marker: surface form equals the headword', () => {
     expect(parseSentence('a {{refute}} b')).toEqual([
       { kind: 'text', text: 'a ' },
       { kind: 'word', wordId: 'refute', surface: 'refute' },
@@ -69,7 +70,7 @@ describe('parseSentence', () => {
     ])
   })
 
-  it('带竖线的标记:句中形式与词头不同', () => {
+  it('marker with a pipe: surface form differs from the headword', () => {
     expect(parseSentence('they {{refute|refuted}} it')).toEqual([
       { kind: 'text', text: 'they ' },
       { kind: 'word', wordId: 'refute', surface: 'refuted' },
@@ -77,68 +78,69 @@ describe('parseSentence', () => {
     ])
   })
 
-  it('一句里多个标记', () => {
+  it('multiple markers in one sentence', () => {
     const tokens = parseSentence('{{a}} and {{b|bs}}')
     expect(tokens?.filter(t => t.kind === 'word')).toHaveLength(2)
   })
 
-  it('没有标记时整句一个 text 片段', () => {
+  it('no markers means one text segment for the whole sentence', () => {
     expect(parseSentence('plain text')).toEqual([{ kind: 'text', text: 'plain text' }])
   })
 
-  it('畸形标记返回 null —— 宁可整篇跳过,不出一道挖错空的题', () => {
-    expect(parseSentence('a {{b} c')).toBeNull()       // 括号没配对
-    expect(parseSentence('a {{b|c|d}} e')).toBeNull()  // 两根竖线
-    expect(parseSentence('a {{}} b')).toBeNull()       // 空 id
-    expect(parseSentence('a {{b|}} c')).toBeNull()     // 空形式
+  it('malformed markers return null — better to skip the whole passage than produce a question with the wrong blank', () => {
+    expect(parseSentence('a {{b} c')).toBeNull()       // unbalanced braces
+    expect(parseSentence('a {{b|c|d}} e')).toBeNull()  // two pipes
+    expect(parseSentence('a {{}} b')).toBeNull()       // empty id
+    expect(parseSentence('a {{b|}} c')).toBeNull()     // empty surface form
   })
 })
 
 describe('parsePassage', () => {
-  it('逐句解析,句数与 zh 一致时返回二维 token', () => {
+  it('parses sentence by sentence, returns a 2D token array when the sentence count matches zh', () => {
     const r = parsePassage(passage({ en: ['{{a}} x.', 'y {{b}}.'], zh: ['甲', '乙'] }))
     expect(r).toHaveLength(2)
   })
 
-  it('中译句数对不上返回 null —— 读取端对坏数据宽容,跳过这一篇', () => {
+  it('returns null when the zh sentence count is off — the read path is tolerant of bad data, it just skips this passage', () => {
     expect(parsePassage(passage({ en: ['a', 'b'], zh: ['甲'] }))).toBeNull()
   })
 
-  it('空短文返回 null', () => {
+  it('returns null for an empty passage', () => {
     expect(parsePassage(passage({ en: [], zh: [] }))).toBeNull()
   })
 
-  it('任何一句畸形,整篇返回 null', () => {
+  it('returns null for the whole passage if any single sentence is malformed', () => {
     expect(parsePassage(passage({ en: ['ok {{a}}', 'bad {{b}'], zh: ['甲', '乙'] }))).toBeNull()
   })
 })
 ```
 
-- [ ] **Step 2: 跑测试确认它失败**
+- [ ] **Step 2: Run the test and confirm it fails**
 
 ```bash
 npx vitest run src/lib/passage.test.ts
 ```
 
-预期:FAIL,`Failed to resolve import "./passage"`。
+Expected: FAIL, `Failed to resolve import "./passage"`.
 
-- [ ] **Step 3: 写实现**
+- [ ] **Step 3: Write the implementation**
 
-创建 `src/lib/passage.ts`:
+Create `src/lib/passage.ts`:
 
 ```ts
 /**
- * 短文选词填空的出题逻辑。全部纯函数 —— 渲染层只负责把这里算出来的结果画出来。
+ * Question-generation logic for passage word-choice cloze. All pure functions —
+ * the render layer is only responsible for painting the result computed here.
  *
- * 设计见 docs/superpowers/specs/2026-07-28-passage-cloze-design.md
+ * Design: docs/superpowers/specs/2026-07-28-passage-cloze-design.md
  */
 
 export interface Passage {
   id: string
   title: string
-  /** 逐句英文。目标词用 {{wordId|句中形式}} 标记,形式与词头相同时简写 {{concoct}} */
+  /** Sentence-by-sentence English. Target words are marked with {{wordId|surface form}}; shorthand to {{concoct}} when the surface form matches the headword */
   en: string[]
-  /** 逐句中译,与 en 一一对应 */
+  /** Sentence-by-sentence Chinese translation, one-to-one with en */
   zh: string[]
 }
 
@@ -149,19 +151,22 @@ export type Token =
   | { kind: 'word'; wordId: string; surface: string }
 
 /**
- * `{{wordId}}` 或 `{{wordId|句中形式}}`。
+ * `{{wordId}}` or `{{wordId|surface form}}`.
  *
- * id 与形式都不允许含 `{}|`,所以 `{{a|b|c}}` 这种写坏的标记**匹配不上**,
- * 会原样留在文本片段里 —— 下面那条残留花括号检查再把整句判死。
+ * Neither the id nor the form may contain `{}|`, so a broken marker like
+ * `{{a|b|c}}` **won't match** and is left as-is in the text segment — the
+ * leftover-brace check below then fails the whole sentence.
  */
 const MARKER = /\{\{([^{}|]+)(?:\|([^{}|]+))?\}\}/g
 
 /**
- * 解析一句。畸形标记返回 null。
+ * Parse one sentence. Malformed markers return null.
  *
- * **宁可整篇跳过也不将就**:标记写坏的后果不是少一个空,是挖错空或者把
- * `{{refute` 这种半截字符串印在题面上。与 words.json 那条「写入端严格、
- * 读取端宽容」是同一条规矩 —— 校验脚本是闸门,这里是不白屏的兜底。
+ * **Better to skip the whole passage than to settle for something wrong**: a
+ * broken marker doesn't just mean one fewer blank, it means the wrong blank
+ * gets dug, or a half-string like `{{refute` gets printed straight into the
+ * question. Same rule as words.json's "strict on write, lenient on read" —
+ * the validation script is the gate, this is the no-blank-screen fallback.
  */
 export function parseSentence(s: string): Token[] | null {
   const out: Token[] = []
@@ -179,7 +184,7 @@ export function parseSentence(s: string): Token[] | null {
   return out
 }
 
-/** 逐句解析整篇。任何一句畸形、或中英句数对不上,整篇返回 null。 */
+/** Parses the whole passage sentence by sentence. Returns null for the whole passage if any sentence is malformed, or if the English/Chinese sentence counts don't match. */
 export function parsePassage(p: Passage): Token[][] | null {
   if (p.en.length === 0 || p.en.length !== p.zh.length) return null
   const out: Token[][] = []
@@ -192,103 +197,109 @@ export function parsePassage(p: Passage): Token[][] | null {
 }
 ```
 
-- [ ] **Step 4: 跑测试确认通过**
+- [ ] **Step 4: Run the test and confirm it passes**
 
 ```bash
 npx vitest run src/lib/passage.test.ts
 ```
 
-预期:PASS,9 个用例全绿。
+Expected: PASS, all 9 cases green.
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add src/lib/passage.ts src/lib/passage.test.ts
-git commit -m "feat(passage): 短文标记解析"
+git commit -m "feat(passage): passage marker parsing"
 ```
 
 ---
 
-## Task 2: `isInflectionOf` —— 给校验脚本的严格词形判定
+## Task 2: `isInflectionOf` — Strict Word-Form Matching for the Validation Script
 
 **Files:**
 - Modify: `src/lib/headword.ts`
 - Modify: `src/lib/headword.test.ts`
 
-- [ ] **Step 1: 写失败的测试**
+- [ ] **Step 1: Write a failing test**
 
-在 `src/lib/headword.test.ts` 末尾追加:
+Append to the end of `src/lib/headword.test.ts`:
 
 ```ts
 describe('isInflectionOf', () => {
-  it('原形本身算', () => {
+  it('the base form itself counts', () => {
     expect(isInflectionOf('refute', 'refute')).toBe(true)
   })
 
-  it('常见屈折变形算', () => {
+  it('common inflected forms count', () => {
     expect(isInflectionOf('refuted', 'refute')).toBe(true)
     expect(isInflectionOf('ratified', 'ratify')).toBe(true)
     expect(isInflectionOf('inundated', 'inundate')).toBe(true)
     expect(isInflectionOf('thwarting', 'thwart')).toBe(true)
   })
 
-  it('大小写不敏感', () => {
+  it('case-insensitive', () => {
     expect(isInflectionOf('Refuted', 'refute')).toBe(true)
   })
 
   /**
-   * 这条是这个函数存在的全部理由。headwordPattern 在原形缺席时会退回
-   * 松散词干 `stem + [a-z]*`,拿它做校验会把 reference 判成 refute 的变形 ——
-   * 定位一整句话时那条松散规则是必要的退路,校验单个词时它是漏洞。
+   * This case is this function's entire reason for existing. headwordPattern
+   * falls back to the loose stem match `stem + [a-z]*` when the base form is
+   * absent, and using that for validation would judge reference to be an
+   * inflected form of refute — that loose rule is a necessary fallback when
+   * locating a word across a whole sentence, but it's a loophole when
+   * validating a single word.
    */
-  it('形近但无关的词不算', () => {
+  it('words that merely look similar but are unrelated do not count', () => {
     expect(isInflectionOf('reference', 'refute')).toBe(false)
     expect(isInflectionOf('mirth', 'mire')).toBe(false)
     expect(isInflectionOf('officials', 'officiate')).toBe(false)
   })
 
-  it('多余的前后缀不算', () => {
+  it('extra prefixes or suffixes do not count', () => {
     expect(isInflectionOf('unrefuted', 'refute')).toBe(false)
     expect(isInflectionOf('refutation', 'refute')).toBe(false)
   })
 
-  it('空串不算', () => {
+  it('empty strings do not count', () => {
     expect(isInflectionOf('', 'refute')).toBe(false)
     expect(isInflectionOf('refute', '')).toBe(false)
   })
 })
 ```
 
-同时把文件顶部的 import 改成包含 `isInflectionOf`:
+Also update the import at the top of the file to include `isInflectionOf`:
 
 ```ts
 import { escapeRe, headwordPattern, isInflectionOf, splitByHeadword } from './headword'
 ```
 
-（若原 import 行的成员不同,只需在其中加入 `isInflectionOf`,不要删掉已有成员。）
+(If the original import line's members differ, just add `isInflectionOf` to it — don't remove any existing members.)
 
-- [ ] **Step 2: 跑测试确认它失败**
+- [ ] **Step 2: Run the test and confirm it fails**
 
 ```bash
 npx vitest run src/lib/headword.test.ts
 ```
 
-预期:FAIL,`isInflectionOf is not a function`。
+Expected: FAIL, `isInflectionOf is not a function`.
 
-- [ ] **Step 3: 写实现**
+- [ ] **Step 3: Write the implementation**
 
-在 `src/lib/headword.ts` 里,把 `tightPattern` 上方的 `SUFFIX` 常量保持原样,并在 `headwordPattern` 之后追加:
+In `src/lib/headword.ts`, leave the `SUFFIX` constant above `tightPattern` unchanged, and append after `headwordPattern`:
 
 ```ts
 /**
- * `surface` 是不是 `headword` 的一个屈折变形。
+ * Whether `surface` is an inflected form of `headword`.
  *
- * **只用紧规则,不走 headwordPattern 的松散退路。** 那条退路(`stem + [a-z]*`)
- * 是为了在一整句话里定位得到词头而存在的,校验单个词时它会把 `reference` 判成
- * `refute` 的变形、把 `mirth` 判成 `mire` 的变形。校验时候选只有一个词,没有
- * 「定位不到就漏题」的压力,该用严格的词尾枚举。
+ * **Only uses the tight rule, never falls back to headwordPattern's loose path.**
+ * That fallback (`stem + [a-z]*`) exists so a headword can still be located
+ * across a whole sentence; used to validate a single word, it would judge
+ * `reference` to be an inflected form of `refute`, and `mirth` an inflected
+ * form of `mire`. During validation there's only one candidate word, so
+ * there's none of the "skip the question if you can't locate it" pressure —
+ * this calls for the strict suffix-enumeration rule.
  *
- * 只给写入端的校验脚本用(scripts/validate-passages.ts)。
+ * Only used by the write-path validation script (scripts/validate-passages.ts).
  */
 export function isInflectionOf(surface: string, headword: string): boolean {
   const s = surface.trim().toLowerCase()
@@ -300,32 +311,32 @@ export function isInflectionOf(surface: string, headword: string): boolean {
 }
 ```
 
-- [ ] **Step 4: 跑测试确认通过**
+- [ ] **Step 4: Run the test and confirm it passes**
 
 ```bash
 npx vitest run src/lib/headword.test.ts
 ```
 
-预期:PASS,新增 6 个用例全绿,原有用例不受影响。
+Expected: PASS, 6 new cases green, existing cases unaffected.
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add src/lib/headword.ts src/lib/headword.test.ts
-git commit -m "feat(headword): 加 isInflectionOf,校验短文标记的句中形式"
+git commit -m "feat(headword): add isInflectionOf, validates the surface form of passage markers"
 ```
 
 ---
 
-## Task 3: 选空
+## Task 3: Selecting Blanks
 
 **Files:**
 - Modify: `src/lib/passage.ts`
 - Modify: `src/lib/passage.test.ts`
 
-- [ ] **Step 1: 写失败的测试**
+- [ ] **Step 1: Write a failing test**
 
-在 `src/lib/passage.test.ts` 里,先在顶部 import 补上新符号,并加一组测试替身:
+In `src/lib/passage.test.ts`, first add the new symbols to the top import, and add a set of test doubles:
 
 ```ts
 import { MAX_BLANKS, parsePassage, parseSentence, selectBlanks } from './passage'
@@ -333,10 +344,10 @@ import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
 ```
 
-在 `const passage = ...` 之后追加:
+Append after `const passage = ...`:
 
 ```ts
-/** 造一个够用的词条。测试只关心 id / headword / meanings[0].pos。 */
+/** Builds a word entry that's good enough for testing. Tests only care about id / headword / meanings[0].pos. */
 const word = (id: string, pos = 'v.'): Word => ({
   id, headword: id, phonetic: '', 
   meanings: [{ pos, en: '', zh: id }],
@@ -344,7 +355,7 @@ const word = (id: string, pos = 'v.'): Word => ({
   sourceNote: 'test', addedAt: '2026-01-01',
 })
 
-/** state=review、到期日可控的进度。ids 里的词算学过。 */
+/** Progress with state=review and a controllable due date. Words listed in ids count as learned. */
 const progressWith = (entries: Record<string, string>): Progress => {
   const p = emptyProgress()
   for (const [id, due] of Object.entries(entries)) {
@@ -361,35 +372,35 @@ const byId = (ws: Word[]) => new Map(ws.map(w => [w.id, w]))
 const TODAY = '2026-07-28'
 ```
 
-再追加测试:
+Then append more tests:
 
 ```ts
 describe('selectBlanks', () => {
-  it('只挖学过的词,没学过的原样留在正文里当阅读材料', () => {
+  it('only blanks words that are learned; unlearned ones stay in the passage as-is, as reading material', () => {
     const sentences = parsePassage(passage({
       en: ['{{a}} {{b}} {{c}}'], zh: ['甲'],
     }))!
     const words = [word('a'), word('b'), word('c')]
-    const progress = progressWith({ a: TODAY, b: TODAY })  // c 没学过
+    const progress = progressWith({ a: TODAY, b: TODAY })  // c is unlearned
     const blanks = selectBlanks(sentences, byId(words), progress, TODAY)
     expect(blanks.map(b => b.wordId)).toEqual(['a', 'b'])
   })
 
-  it('词库里查不到的词不挖 —— 仓库副本与线上词库会分叉', () => {
+  it('words missing from the word list are never blanked — the repo copy and the live word list diverge', () => {
     const sentences = parsePassage(passage({ en: ['{{a}} {{ghost}}'], zh: ['甲'] }))!
     const progress = progressWith({ a: TODAY, ghost: TODAY })
     const blanks = selectBlanks(sentences, byId([word('a')]), progress, TODAY)
     expect(blanks.map(b => b.wordId)).toEqual(['a'])
   })
 
-  it('同一个词一篇里最多一个空,否则候选词区会出现两个一模一样的词', () => {
+  it('the same word gets at most one blank per passage, otherwise the candidate area would show two identical words', () => {
     const sentences = parsePassage(passage({ en: ['{{a}} then {{a|as}}'], zh: ['甲'] }))!
     const blanks = selectBlanks(sentences, byId([word('a')]), progressWith({ a: TODAY }), TODAY)
     expect(blanks).toHaveLength(1)
     expect(blanks[0].surface).toBe('a')
   })
 
-  it('带上句中形式与位置', () => {
+  it('carries the surface form and position', () => {
     const sentences = parsePassage(passage({
       en: ['x {{refute|refuted}} y', 'z {{a}}'], zh: ['甲', '乙'],
     }))!
@@ -399,13 +410,13 @@ describe('selectBlanks', () => {
     expect(blanks[1]).toMatchObject({ si: 1, wordId: 'a' })
   })
 
-  it('超过上限时到期的优先,但仍按正文顺序返回', () => {
+  it('when over the cap, due words are prioritized, but the return order still follows the passage', () => {
     const ids = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
     const sentences = parsePassage(passage({
       en: [ids.map(i => `{{${i}}}`).join(' ')], zh: ['甲'],
     }))!
     const words = ids.map(i => word(i))
-    // 前两个未到期,其余到期 —— 9 个候选砍到 7 个,应该砍掉前两个
+    // the first two are not due, the rest are — 9 candidates cut down to 7, the first two should be dropped
     const progress = progressWith(Object.fromEntries(
       ids.map((i, n) => [i, n < 2 ? '2099-01-01' : TODAY]),
     ))
@@ -416,44 +427,47 @@ describe('selectBlanks', () => {
 })
 ```
 
-- [ ] **Step 2: 跑测试确认它失败**
+- [ ] **Step 2: Run the test and confirm it fails**
 
 ```bash
 npx vitest run src/lib/passage.test.ts
 ```
 
-预期:FAIL,`selectBlanks is not exported`。
+Expected: FAIL, `selectBlanks is not exported`.
 
-- [ ] **Step 3: 写实现**
+- [ ] **Step 3: Write the implementation**
 
-在 `src/lib/passage.ts` 末尾追加(并在文件顶部加 import):
+Append to the end of `src/lib/passage.ts` (and add an import at the top of the file):
 
 ```ts
 import type { Progress, Word } from '../types'
 ```
 
 ```ts
-/** 一篇里至少要凑够 3 个空。两个空互为线索的推理不成立,退化成两道单句挖空。 */
+/** A passage needs at least 3 blanks. With two blanks the mutual-clue inference doesn't hold — it degenerates into a couple of single-sentence clozes. */
 export const MIN_BLANKS = 3
-/** 一屏最多 7 个空,再多就做不完。 */
+/** At most 7 blanks per screen — any more and you won't finish. */
 export const MAX_BLANKS = 7
 
 export interface Blank {
-  /** 第几句 */
+  /** Which sentence */
   si: number
-  /** 该句里第几个 token */
+  /** Which token within that sentence */
   ti: number
   wordId: string
-  /** 句中形式,判对后填进去的就是它 */
+  /** Surface form — this is what gets filled in once judged correct */
   surface: string
 }
 
 /**
- * 选出要挖的空。
+ * Selects which blanks to dig.
  *
- * **只挖学过的词**(`state !== 'new'`),没学过的、以及在词库里查不到的原样印出来。
- * 这条沿用辨析模式那条教训(见 quiz.ts 的 generateContrastQuiz):不拿没见过的词
- * 考你。但与辨析不同的是,没见过的词可以留在上下文里 —— 它不是题,是读物。
+ * **Only blanks words that are learned** (`state !== 'new'`); unlearned
+ * words, and words that can't be found in the word list, are printed as-is.
+ * This follows the same lesson contrast mode already learned (see
+ * generateContrastQuiz in quiz.ts): don't quiz you on a word you've never
+ * seen. But unlike contrast mode, an unseen word is allowed to stay in the
+ * context — it isn't a question there, it's reading material.
  */
 export function selectBlanks(
   sentences: Token[][],
@@ -467,8 +481,9 @@ export function selectBlanks(
   sentences.forEach((tokens, si) => {
     tokens.forEach((t, ti) => {
       if (t.kind !== 'word') return
-      // 同一个词一篇里最多一个空 —— 否则候选词区会出现两个一模一样的词,
-      // 而「用掉就划掉」的规则立刻自相矛盾。
+      // The same word gets at most one blank per passage — otherwise the
+      // candidate area would show two identical words, and the rule
+      // "used means crossed off" would immediately contradict itself.
       if (seen.has(t.wordId)) return
       if (!words.has(t.wordId)) return
       const e = progress.words[t.wordId]
@@ -480,51 +495,53 @@ export function selectBlanks(
 
   if (eligible.length <= MAX_BLANKS) return eligible
 
-  // 到期的先占坑,再按正文顺序还原 —— 渲染必须按出现顺序,砍的是「挖谁」不是「怎么排」
+  // Due ones claim a spot first, then passage order is restored — rendering
+  // must follow the order things appear in; what gets cut is "which word to
+  // blank," not "how to order them"
   const isDue = (b: Blank) => progress.words[b.wordId].due <= today
   const picked = new Set([...eligible.filter(isDue), ...eligible.filter(b => !isDue(b))].slice(0, MAX_BLANKS))
   return eligible.filter(b => picked.has(b))
 }
 ```
 
-- [ ] **Step 4: 跑测试确认通过**
+- [ ] **Step 4: Run the test and confirm it passes**
 
 ```bash
 npx vitest run src/lib/passage.test.ts
 ```
 
-预期:PASS,共 14 个用例。
+Expected: PASS, 14 cases total.
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add src/lib/passage.ts src/lib/passage.test.ts
-git commit -m "feat(passage): 选空 —— 只挖学过的词,到期优先"
+git commit -m "feat(passage): select blanks — only learned words, due ones prioritized"
 ```
 
 ---
 
-## Task 4: 候选词
+## Task 4: Candidate Words
 
 **Files:**
 - Modify: `src/lib/passage.ts`
 - Modify: `src/lib/passage.test.ts`
 
-- [ ] **Step 1: 写失败的测试**
+- [ ] **Step 1: Write a failing test**
 
-顶部 import 补上 `pickDistractors`,并加:
+Add `pickDistractors` to the top import, and add:
 
 ```ts
 import { buildContrastPairs } from './contrast'
 ```
 
-追加测试:
+Append tests:
 
 ```ts
 describe('pickDistractors', () => {
   const rng = () => 0.5
 
-  it('优先取与某个答案易混的已学词', () => {
+  it('prioritizes already-learned words that are easily confused with one of the answers', () => {
     const answer = { ...word('alpha'), synonyms: ['shared'] }
     const confusable = { ...word('bravo'), synonyms: ['shared'] }
     const unrelated = word('charlie')
@@ -536,27 +553,27 @@ describe('pickDistractors', () => {
     expect(out.map(w => w.id)).toEqual(['bravo'])
   })
 
-  it('易混词不够时退回词性相同的已学词', () => {
+  it('falls back to already-learned words with a matching part of speech when there are not enough confusables', () => {
     const words = [word('alpha', 'adj.'), word('bravo', 'adj.'), word('charlie', 'n.')]
     const progress = progressWith({ alpha: TODAY, bravo: TODAY, charlie: TODAY })
     const out = pickDistractors(new Set(['alpha']), words, progress, [], 1, rng)
     expect(out.map(w => w.id)).toEqual(['bravo'])
   })
 
-  it('绝不选中答案自己', () => {
+  it('never picks one of the answers itself', () => {
     const words = [word('alpha'), word('bravo')]
     const progress = progressWith({ alpha: TODAY, bravo: TODAY })
     const out = pickDistractors(new Set(['alpha', 'bravo']), words, progress, [], 2, rng)
     expect(out).toHaveLength(0)
   })
 
-  it('没学过的词不当干扰项', () => {
+  it('unlearned words are never used as distractors', () => {
     const words = [word('alpha'), word('bravo')]
     const out = pickDistractors(new Set(['alpha']), words, progressWith({ alpha: TODAY }), [], 2, rng)
     expect(out).toHaveLength(0)
   })
 
-  it('凑不满就少给 —— 少一个干扰词只是简单些,重复选项是缺陷', () => {
+  it('gives fewer when it cannot fill the quota — one fewer distractor just makes it easier, a duplicate option is a defect', () => {
     const words = [word('alpha'), word('bravo')]
     const progress = progressWith({ alpha: TODAY, bravo: TODAY })
     const out = pickDistractors(new Set(['alpha']), words, progress, [], 5, rng)
@@ -565,37 +582,41 @@ describe('pickDistractors', () => {
 })
 ```
 
-- [ ] **Step 2: 跑测试确认它失败**
+- [ ] **Step 2: Run the test and confirm it fails**
 
 ```bash
 npx vitest run src/lib/passage.test.ts -t pickDistractors
 ```
 
-预期:FAIL,`pickDistractors is not exported`。
+Expected: FAIL, `pickDistractors is not exported`.
 
-- [ ] **Step 3: 写实现**
+- [ ] **Step 3: Write the implementation**
 
-顶部 import 补上(**只导入这里真正用到的** —— `noUnusedLocals` 是开着的,多导一个 `buildContrastPairs` 会直接编译失败,它到 Task 6 才用得上):
+Add to the top import (**only import what's actually used here** — `noUnusedLocals` is on, and importing `buildContrastPairs` here too would fail compilation outright; it isn't needed until Task 6):
 
 ```ts
 import type { ContrastPair } from './contrast'
 import { shuffle } from './quiz'
 ```
 
-末尾追加:
+Append to the end:
 
 ```ts
-/** 候选词比空多几个。真题的选词填空一律给多,逼你排除。 */
+/** How many more candidate words there are than blanks. Real word-choice cloze questions always give extra, to force you to eliminate options. */
 export const DISTRACTOR_COUNT = 2
 
 /**
- * 挑干扰词。三级降级,凑不满就少给 —— 少一个干扰词只是这篇稍微简单些,
- * 而拿一个与答案重复的选项出来是缺陷(与 quiz.ts 里 sharedSynonyms 要防的
- * 是同一类问题)。
+ * Picks distractors. Three-tier fallback, and it gives fewer when it can't
+ * fill the quota — one fewer distractor just makes this passage slightly
+ * easier, while surfacing an option that duplicates an answer is a defect
+ * (the same class of problem sharedSynonyms in quiz.ts guards against).
  *
- * 1. `buildContrastPairs` 里与某个答案易混的已学词 —— 现成的易混词图
- * 2. 与某个答案主义项词性相同的已学词(词性不同的词在句子里根本不会打架)
- * 3. 任意已学词
+ * 1. Already-learned words from `buildContrastPairs` that are easily confused
+ *    with one of the answers — a ready-made confusable-word graph
+ * 2. Already-learned words whose primary sense shares its part of speech with
+ *    one of the answers (words with a different part of speech would never
+ *    clash within a sentence anyway)
+ * 3. Any already-learned word
  */
 export function pickDistractors(
   answerIds: Set<string>,
@@ -647,32 +668,32 @@ export function pickDistractors(
 }
 ```
 
-- [ ] **Step 4: 跑测试确认通过**
+- [ ] **Step 4: Run the test and confirm it passes**
 
 ```bash
 npx vitest run src/lib/passage.test.ts
 ```
 
-预期:PASS,共 19 个用例。
+Expected: PASS, 19 cases total.
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add src/lib/passage.ts src/lib/passage.test.ts
-git commit -m "feat(passage): 候选词 —— 易混词优先,三级降级"
+git commit -m "feat(passage): candidate words — confusables first, three-tier fallback"
 ```
 
 ---
 
-## Task 5: 组装一道短文题
+## Task 5: Assembling a Passage Question
 
 **Files:**
 - Modify: `src/lib/passage.ts`
 - Modify: `src/lib/passage.test.ts`
 
-- [ ] **Step 1: 写失败的测试**
+- [ ] **Step 1: Write a failing test**
 
-顶部 import 补上 `buildPassageQuestion`,追加:
+Add `buildPassageQuestion` to the top import, and append:
 
 ```ts
 describe('buildPassageQuestion', () => {
@@ -682,61 +703,62 @@ describe('buildPassageQuestion', () => {
   const allLearned = progressWith(Object.fromEntries(ids.map(i => [i, TODAY])))
   const threeBlank = passage({ en: ['{{a}} {{b}} {{c}}'], zh: ['甲'] })
 
-  it('候选词 = 全部答案 + 干扰词', () => {
+  it('candidate words = all answers + distractors', () => {
     const q = buildPassageQuestion(threeBlank, words, allLearned, TODAY, [], rng)!
     expect(q.blanks).toHaveLength(3)
     expect(q.choices).toHaveLength(3 + 2)
-    expect(new Set(q.choices.map(c => c.wordId)).size).toBe(5)  // 无重复
+    expect(new Set(q.choices.map(c => c.wordId)).size).toBe(5)  // no duplicates
     for (const b of q.blanks) {
       expect(q.choices.some(c => c.wordId === b.wordId)).toBe(true)
     }
   })
 
-  it('候选词带词头原形,给界面显示用', () => {
+  it('candidate words carry the base form, for the UI to display', () => {
     const q = buildPassageQuestion(threeBlank, words, allLearned, TODAY, [], rng)!
     expect(q.choices.every(c => c.headword !== '')).toBe(true)
   })
 
-  it('可挖空不足 3 个返回 null', () => {
+  it('returns null when there are fewer than 3 eligible blanks', () => {
     const p = passage({ en: ['{{a}} {{b}}'], zh: ['甲'] })
     expect(buildPassageQuestion(p, words, allLearned, TODAY, [], rng)).toBeNull()
   })
 
-  it('解析失败返回 null,不抛错', () => {
+  it('returns null on parse failure, without throwing', () => {
     const p = passage({ en: ['{{a}} {{b} {{c}}'], zh: ['甲'] })
     expect(buildPassageQuestion(p, words, allLearned, TODAY, [], rng)).toBeNull()
   })
 })
 ```
 
-- [ ] **Step 2: 跑测试确认它失败**
+- [ ] **Step 2: Run the test and confirm it fails**
 
 ```bash
 npx vitest run src/lib/passage.test.ts -t buildPassageQuestion
 ```
 
-预期:FAIL,`buildPassageQuestion is not exported`。
+Expected: FAIL, `buildPassageQuestion is not exported`.
 
-- [ ] **Step 3: 写实现**
+- [ ] **Step 3: Write the implementation**
 
-末尾追加:
+Append to the end:
 
 ```ts
-/** 候选词。`wordId` 用来判分,`headword` 用来显示 —— 两者不一定相同。 */
+/** A candidate word. `wordId` is used for scoring, `headword` for display — the two aren't necessarily the same. */
 export interface Choice { wordId: string; headword: string }
 
 export interface PassageQuestion {
   passage: Passage
   sentences: Token[][]
-  /** 按正文出现顺序 */
+  /** In the order they appear in the passage */
   blanks: Blank[]
-  /** 已打乱 */
+  /** Already shuffled */
   choices: Choice[]
 }
 
 /**
- * 把一篇短文组装成一道题。出不来(解析失败 / 可挖空不足)返回 null,
- * 由调用方换下一篇。
+ * Assembles a passage into a question. Returns null when it can't produce one
+ * (parse failure / not enough eligible blanks); it's up to the caller to move
+ * on to the next passage.
  */
 export function buildPassageQuestion(
   passage: Passage,
@@ -768,32 +790,32 @@ export function buildPassageQuestion(
 }
 ```
 
-- [ ] **Step 4: 跑测试确认通过**
+- [ ] **Step 4: Run the test and confirm it passes**
 
 ```bash
 npx vitest run src/lib/passage.test.ts
 ```
 
-预期:PASS,共 23 个用例。
+Expected: PASS, 23 cases total.
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add src/lib/passage.ts src/lib/passage.test.ts
-git commit -m "feat(passage): 组装短文题"
+git commit -m "feat(passage): assemble a passage question"
 ```
 
 ---
 
-## Task 6: 选篇打分
+## Task 6: Passage-Selection Scoring
 
 **Files:**
 - Modify: `src/lib/passage.ts`
 - Modify: `src/lib/passage.test.ts`
 
-- [ ] **Step 1: 写失败的测试**
+- [ ] **Step 1: Write a failing test**
 
-顶部 import 补上 `pickPassage, pushRecent, RECENT_LIMIT`,追加:
+Add `pickPassage, pushRecent, RECENT_LIMIT` to the top import, and append:
 
 ```ts
 describe('pickPassage', () => {
@@ -804,28 +826,28 @@ describe('pickPassage', () => {
   const p1 = passage({ id: 'p1', en: ['{{a}} {{b}} {{c}}'], zh: ['甲'] })
   const p2 = passage({ id: 'p2', en: ['{{d}} {{e}} {{f}}'], zh: ['乙'] })
 
-  it('挑今天到期词最多的那篇', () => {
+  it('picks the passage with the most words due today', () => {
     const progress = progressWith({
-      a: TODAY, b: TODAY, c: TODAY,        // p1:三个都到期
-      d: TODAY, e: '2099-01-01', f: '2099-01-01',  // p2:只有一个到期
+      a: TODAY, b: TODAY, c: TODAY,        // p1: all three are due
+      d: TODAY, e: '2099-01-01', f: '2099-01-01',  // p2: only one is due
     })
     expect(pickPassage([p1, p2], words, progress, TODAY, [], rng)?.passage.id).toBe('p1')
   })
 
-  it('最近做过的要让位 —— 第二次做记住的是上次的答案,不是词', () => {
+  it('recently done passages give way — the second time through you remember last time\'s answers, not the words', () => {
     const progress = progressWith({
       a: TODAY, b: TODAY, c: TODAY,
-      d: TODAY, e: TODAY, f: '2099-01-01',  // p2 分数本来比 p1 低
+      d: TODAY, e: TODAY, f: '2099-01-01',  // p2's score would normally be lower than p1's
     })
     expect(pickPassage([p1, p2], words, progress, TODAY, ['p1'], rng)?.passage.id).toBe('p2')
   })
 
-  it('一篇都出不来时返回 null', () => {
-    const progress = progressWith({ a: TODAY })  // 每篇最多一个空
+  it('returns null when not a single passage can produce a question', () => {
+    const progress = progressWith({ a: TODAY })  // at most one blank per passage
     expect(pickPassage([p1, p2], words, progress, TODAY, [], rng)).toBeNull()
   })
 
-  it('坏数据的那篇被跳过,不影响别的篇', () => {
+  it('the passage with bad data gets skipped, without affecting the others', () => {
     const broken = passage({ id: 'bad', en: ['{{a} {{b}} {{c}}'], zh: ['甲'] })
     const progress = progressWith({ a: TODAY, b: TODAY, c: TODAY })
     expect(pickPassage([broken, p1], words, progress, TODAY, [], rng)?.passage.id).toBe('p1')
@@ -833,15 +855,15 @@ describe('pickPassage', () => {
 })
 
 describe('pushRecent', () => {
-  it('新的排在最前', () => {
+  it('the newest goes first', () => {
     expect(pushRecent(['b', 'c'], 'a')).toEqual(['a', 'b', 'c'])
   })
 
-  it('已在列表里的挪到最前而不是留两份', () => {
+  it('an id already in the list moves to the front instead of being duplicated', () => {
     expect(pushRecent(['b', 'a', 'c'], 'a')).toEqual(['a', 'b', 'c'])
   })
 
-  it('超过上限时砍掉最旧的', () => {
+  it('drops the oldest once past the limit', () => {
     const long = Array.from({ length: RECENT_LIMIT }, (_, i) => `p${i}`)
     const out = pushRecent(long, 'new')
     expect(out).toHaveLength(RECENT_LIMIT)
@@ -851,34 +873,37 @@ describe('pushRecent', () => {
 })
 ```
 
-- [ ] **Step 2: 跑测试确认它失败**
+- [ ] **Step 2: Run the test and confirm it fails**
 
 ```bash
 npx vitest run src/lib/passage.test.ts -t pickPassage
 ```
 
-预期:FAIL,`pickPassage is not exported`。
+Expected: FAIL, `pickPassage is not exported`.
 
-- [ ] **Step 3: 写实现**
+- [ ] **Step 3: Write the implementation**
 
-顶部 import 补上 `buildContrastPairs`(与已有的 `import type { ContrastPair } from './contrast'` 并列):
+Add `buildContrastPairs` to the top import (alongside the existing `import type { ContrastPair } from './contrast'`):
 
 ```ts
 import { buildContrastPairs } from './contrast'
 ```
 
-末尾追加:
+Append to the end:
 
 ```ts
-/** 到期词的权重高于已学未到期 —— 这题首先是复习工具,其次才是阅读。 */
+/** Due words are weighted above learned-but-not-due — this question type is first a review tool, and only second a reading exercise. */
 export const DUE_WEIGHT = 3
 export const LEARNED_WEIGHT = 1
 /**
- * 最近做过的惩罚。**刻意压过「多一个到期词」(+3)**:宁可换一篇覆盖略差的新
- * 短文,也别连着做同一篇 —— 第二次做时你记住的是上次的答案,不是词。
+ * The penalty for having done a passage recently. **Deliberately set to
+ * outweigh "one more due word" (+3)**: better to switch to a new passage
+ * with slightly worse coverage than to do the same one back-to-back — the
+ * second time through, what you remember is last time's answers, not the
+ * words.
  */
 export const RECENT_PENALTY = 5
-/** 「最近做过」记多少篇。存 localStorage,不进 progress.json。 */
+/** How many passages to remember as "recently done." Stored in localStorage, not in progress.json. */
 export const RECENT_LIMIT = 10
 
 export function scoreQuestion(
@@ -895,9 +920,11 @@ export function scoreQuestion(
 }
 
 /**
- * 挑一篇今天最该做的短文。一篇都出不来返回 null(由调用方给空状态文案)。
+ * Picks the passage most worth doing today. Returns null when not a single
+ * passage can produce a question (the caller supplies the empty-state copy).
  *
- * `buildContrastPairs` 对全词库只算一次 —— 放进循环就是每篇重算一遍倒排索引。
+ * `buildContrastPairs` is computed once for the whole word list — putting it
+ * inside the loop would mean recomputing the inverted index once per passage.
  */
 export function pickPassage(
   passages: Passage[],
@@ -910,7 +937,8 @@ export function pickPassage(
   const pairs = buildContrastPairs(words)
   let best: PassageQuestion | null = null
   let bestScore = -Infinity
-  // 先打乱:同分时取先遇到的那篇,不打乱就永远是数组里靠前的那几篇
+  // Shuffle first: on a tie, the first one encountered wins — without
+  // shuffling it would always be whichever passages sit earlier in the array
   for (const p of shuffle(passages, rng)) {
     const q = buildPassageQuestion(p, words, progress, today, pairs, rng)
     if (q === null) continue
@@ -923,37 +951,37 @@ export function pickPassage(
   return best
 }
 
-/** 把 id 推到「最近做过」的最前面,超过上限砍掉最旧的。 */
+/** Pushes an id to the front of "recently done," dropping the oldest once past the limit. */
 export function pushRecent(recent: string[], id: string, limit = RECENT_LIMIT): string[] {
   return [id, ...recent.filter(x => x !== id)].slice(0, limit)
 }
 ```
 
-- [ ] **Step 4: 跑测试确认通过**
+- [ ] **Step 4: Run the test and confirm it passes**
 
 ```bash
 npx vitest run src/lib/passage.test.ts
 ```
 
-预期:PASS,共 30 个用例。
+Expected: PASS, 30 cases total.
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add src/lib/passage.ts src/lib/passage.test.ts
-git commit -m "feat(passage): 选篇打分与最近做过"
+git commit -m "feat(passage): passage-selection scoring and recently-done tracking"
 ```
 
 ---
 
-## Task 7: 种子语料
+## Task 7: Seed Content
 
 **Files:**
 - Create: `src/data/passages.json`
 
-- [ ] **Step 1: 写语料**
+- [ ] **Step 1: Write the content**
 
-创建 `src/data/passages.json`。两篇都只用 `usageScore >= 7` 的词(这批词最可能已经学过):
+Create `src/data/passages.json`. Both passages use only words with `usageScore >= 7` (this batch is the most likely to already be learned):
 
 ```json
 {
@@ -997,56 +1025,59 @@ git commit -m "feat(passage): 选篇打分与最近做过"
 }
 ```
 
-- [ ] **Step 2: 确认引用的词都在词库里**
+- [ ] **Step 2: Confirm every referenced word exists in the word list**
 
 ```bash
-node -e "const d=require('./data/words.json');const p=require('./src/data/passages.json');const ids=new Set(d.words.map(w=>w.id));const used=[...JSON.stringify(p).matchAll(/\{\{([^{}|]+)/g)].map(m=>m[1]);const bad=used.filter(i=>!ids.has(i));console.log('引用',used.length,'个标记, 词库缺失:',bad)"
+node -e "const d=require('./data/words.json');const p=require('./src/data/passages.json');const ids=new Set(d.words.map(w=>w.id));const used=[...JSON.stringify(p).matchAll(/\{\{([^{}|]+)/g)].map(m=>m[1]);const bad=used.filter(i=>!ids.has(i));console.log('referenced',used.length,'markers, missing from word list:',bad)"
 ```
 
-预期:`引用 16 个标记, 词库缺失: []`
+Expected: `referenced 16 markers, missing from word list: []`
 
-- [ ] **Step 3: 提交**
+- [ ] **Step 3: Commit**
 
 ```bash
 git add src/data/passages.json
-git commit -m "data: 短文选词填空的两篇种子语料"
+git commit -m "data: two seed passages for passage cloze"
 ```
 
 ---
 
-## Task 8: 校验脚本
+## Task 8: Validation Script
 
 **Files:**
 - Create: `scripts/validate-passages.ts`
 - Modify: `package.json`
 
-- [ ] **Step 1: 写脚本**
+- [ ] **Step 1: Write the script**
 
-创建 `scripts/validate-passages.ts`:
+Create `scripts/validate-passages.ts`:
 
 ```ts
 /**
- * 短文语料的写入端闸门。校验不过不进仓库。
+ * The write-path gate for passage content. A passage that fails validation
+ * does not go into the repo.
  *
- * 运行:npm run validate-passages
+ * Run: npm run validate-passages
  *
- * 读取端(lib/passage.ts)对坏数据是宽容的 —— 跳过那一篇,不抛错不白屏。
- * 那是不白屏的兜底,不是质量保证;质量保证在这里。
+ * The read path (lib/passage.ts) is tolerant of bad data — it skips that
+ * passage, without throwing and without a blank screen. That's the
+ * no-blank-screen fallback, not a quality guarantee; the quality guarantee
+ * lives here.
  */
 import { readFileSync } from 'node:fs'
 import { isInflectionOf } from '../src/lib/headword.ts'
 
-/** 每篇至少标记多少个词。挖空只挖学过的,标记少了早期一篇也凑不出 3 个空。 */
+/** Minimum number of marked words per passage. Blanks only ever come from learned words, so too few markers means even an early passage can't scrape together 3 blanks. */
 const MIN_MARKS = 6
 
 const MARKER = /\{\{([^{}|]+)(?:\|([^{}|]+))?\}\}/g
 
-// 与 validate-words.ts 一致:脚本里不套类型,校验的对象本来就可能不合形状
+// Consistent with validate-words.ts: no types in this script — the objects being validated may well not match the expected shape anyway
 const words = JSON.parse(readFileSync('data/words.json', 'utf8'))
 const file = JSON.parse(readFileSync('src/data/passages.json', 'utf8'))
 
-if (file.version !== 1) { console.error('version 必须为 1'); process.exit(1) }
-if (!Array.isArray(file.passages)) { console.error('passages 必须是数组'); process.exit(1) }
+if (file.version !== 1) { console.error('version must be 1'); process.exit(1) }
+if (!Array.isArray(file.passages)) { console.error('passages must be an array'); process.exit(1) }
 
 const byId = new Map<string, { headword: string }>(
   words.words.map((w: { id: string; headword: string }) => [w.id, w]),
@@ -1058,26 +1089,26 @@ const useCount = new Map<string, number>()
 for (const p of file.passages) {
   const at = (msg: string) => errors.push(`[${p.id}] ${msg}`)
 
-  // 形状先兜一层,否则下面 p.en.entries() 会抛出一个看不出哪篇出问题的栈
+  // Guard the shape first, otherwise p.en.entries() below throws a stack trace that doesn't say which passage is at fault
   if (typeof p.id !== 'string' || typeof p.title !== 'string'
       || !Array.isArray(p.en) || !Array.isArray(p.zh)) {
-    errors.push(`[${String(p.id)}] 缺 id / title / en / zh,或类型不对`)
+    errors.push(`[${String(p.id)}] missing id / title / en / zh, or wrong type`)
     continue
   }
 
-  if (!/^[a-z0-9-]+$/.test(p.id)) at('id 只允许小写字母、数字与连字符')
-  if (seenIds.has(p.id)) at('id 重复')
+  if (!/^[a-z0-9-]+$/.test(p.id)) at('id may only contain lowercase letters, digits, and hyphens')
+  if (seenIds.has(p.id)) at('duplicate id')
   seenIds.add(p.id)
 
-  if (p.title.trim() === '') at('title 不能为空')
-  if (p.en.length === 0) at('en 不能为空')
-  if (p.en.length !== p.zh.length) at(`中英句数对不上:en ${p.en.length} 句,zh ${p.zh.length} 句`)
+  if (p.title.trim() === '') at('title cannot be empty')
+  if (p.en.length === 0) at('en cannot be empty')
+  if (p.en.length !== p.zh.length) at(`en/zh sentence count mismatch: en has ${p.en.length}, zh has ${p.zh.length}`)
 
   let marks = 0
   for (const [si, sentence] of p.en.entries()) {
-    // 先把合法标记摘掉,残留花括号说明写坏了
+    // Strip out valid markers first — any leftover braces mean this one is broken
     const stripped = sentence.replace(MARKER, '')
-    if (/[{}]/.test(stripped)) at(`第 ${si + 1} 句有畸形标记`)
+    if (/[{}]/.test(stripped)) at(`sentence ${si + 1} has a malformed marker`)
 
     for (const m of sentence.matchAll(MARKER)) {
       marks += 1
@@ -1085,117 +1116,117 @@ for (const p of file.passages) {
       const surface = (m[2] ?? m[1]).trim()
       const w = byId.get(wordId)
       if (w === undefined) {
-        at(`第 ${si + 1} 句引用了词库里没有的 ${wordId}`)
+        at(`sentence ${si + 1} references ${wordId}, which isn't in the word list`)
         continue
       }
       if (!isInflectionOf(surface, w.headword)) {
-        at(`第 ${si + 1} 句:「${surface}」不是 ${w.headword} 的变形`)
+        at(`sentence ${si + 1}: "${surface}" is not an inflected form of ${w.headword}`)
       }
       useCount.set(wordId, (useCount.get(wordId) ?? 0) + 1)
     }
   }
-  if (marks < MIN_MARKS) at(`只标记了 ${marks} 个词,至少要 ${MIN_MARKS} 个`)
+  if (marks < MIN_MARKS) at(`only ${marks} words marked, need at least ${MIN_MARKS}`)
 }
 
-// --- 覆盖分布报告(不算错误,是给下一批语料的输入) ---
+// --- Coverage-distribution report (not an error — it's input for the next batch of content) ---
 const covered = [...useCount.keys()].length
-console.log(`短文 ${file.passages.length} 篇,覆盖 ${covered} / ${words.words.length} 个词`)
+console.log(`${file.passages.length} passages, covering ${covered} / ${words.words.length} words`)
 const multi = [...useCount.values()].filter(c => c >= 3).length
-console.log(`其中出现 3 次以上的:${multi} 个`)
+console.log(`of which appear 3+ times: ${multi}`)
 
 if (errors.length > 0) {
-  console.error(`\n校验不通过,共 ${errors.length} 条:`)
+  console.error(`\nValidation failed, ${errors.length} issue(s):`)
   for (const e of errors) console.error('  ' + e)
   process.exit(1)
 }
-console.log('校验通过')
+console.log('Validation passed')
 ```
 
-- [ ] **Step 2: 加 npm 脚本**
+- [ ] **Step 2: Add the npm script**
 
-在 `package.json` 的 `scripts` 里,`validate-words` 之后加一行:
+In `package.json`'s `scripts`, add a line after `validate-words`:
 
 ```json
     "validate-passages": "tsx scripts/validate-passages.ts"
 ```
 
-- [ ] **Step 3: 跑它**
+- [ ] **Step 3: Run it**
 
 ```bash
 npm run validate-passages
 ```
 
-预期:
+Expected:
 
 ```
-短文 2 篇,覆盖 16 / 471 个词
-其中出现 3 次以上的:0 个
-校验通过
+2 passages, covering 16 / 471 words
+of which appear 3+ times: 0
+Validation passed
 ```
 
-- [ ] **Step 4: 确认它抓得住坏数据**
+- [ ] **Step 4: Confirm it catches bad data**
 
-临时把 `src/data/passages.json` 里 `{{refute|refuted}}` 改成 `{{refute|reference}}`,再跑一次:
+Temporarily change `{{refute|refuted}}` to `{{refute|reference}}` in `src/data/passages.json`, then run it again:
 
 ```bash
 npm run validate-passages
 ```
 
-预期:退出码 1,报 `[committee-report] 第 2 句:「reference」不是 refute 的变形`。
+Expected: exit code 1, reporting `[committee-report] sentence 2: "reference" is not an inflected form of refute`.
 
-**确认后把改动还原:**
+**After confirming, revert the change:**
 
 ```bash
 git checkout src/data/passages.json
 ```
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add scripts/validate-passages.ts package.json
-git commit -m "feat(scripts): 短文语料校验"
+git commit -m "feat(scripts): passage content validation"
 ```
 
 ---
 
-## Task 9: localStorage 键
+## Task 9: localStorage Key
 
 **Files:**
 - Modify: `src/lib/storage.ts`
 
-- [ ] **Step 1: 加键**
+- [ ] **Step 1: Add the key**
 
-在 `src/lib/storage.ts` 的 `KEYS` 里,`stagingOps` 之后加一行:
+In `KEYS` in `src/lib/storage.ts`, add a line after `stagingOps`:
 
 ```ts
-  recentPassages: 'volcab.recentPassages', // 最近做过的短文 id。只防重复,不值得为它往 progress.json 加同步字段
+  recentPassages: 'volcab.recentPassages', // ids of recently done passages. Only guards against repeats — not worth adding a sync field to progress.json for this
 ```
 
-- [ ] **Step 2: 确认类型仍然通过**
+- [ ] **Step 2: Confirm the types still pass**
 
 ```bash
 npx tsc -b
 ```
 
-预期:无输出(成功)。
+Expected: no output (success).
 
-- [ ] **Step 3: 提交**
+- [ ] **Step 3: Commit**
 
 ```bash
 git add src/lib/storage.ts
-git commit -m "feat(storage): 记最近做过的短文"
+git commit -m "feat(storage): track recently done passages"
 ```
 
 ---
 
-## Task 10: 短文会话的做题态
+## Task 10: Passage Session — Answering State
 
 **Files:**
 - Create: `src/pages/QuizPassage.tsx`
 
-- [ ] **Step 1: 写组件**
+- [ ] **Step 1: Write the component**
 
-创建 `src/pages/QuizPassage.tsx`:
+Create `src/pages/QuizPassage.tsx`:
 
 ```tsx
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -1212,12 +1243,17 @@ import { useApp } from '../state/store'
 import type { Word } from '../types'
 
 /**
- * 短文选词填空。
+ * Passage word-choice cloze.
  *
- * 与其余四个模式的关键区别:**交卷制**。现有题型点了就锁死,这里是填完整篇再交,
- * 中途随便改。理由是几个空互为线索 —— 做到第五个空发现第二个填错了,是这题正常
- * 的解题路径,不是失误;不让改等于剥夺了这个题型最核心的推理过程。
- * 正因为交互不同,它没有复用 QuizQuestionView(与 QuizSprint 同一条理由)。
+ * The key difference from the other four modes: **submit-once**. Existing
+ * question types lock as soon as you tap an answer; here you fill in the
+ * whole passage, then submit, and you're free to change anything along the
+ * way. The reason is that the blanks are mutual clues — realizing at the
+ * fifth blank that the second one is wrong is the normal way to solve this
+ * question, not a mistake; refusing to let you change an answer would strip
+ * away the core inference process of this question type.
+ * Precisely because the interaction is different, it doesn't reuse
+ * QuizQuestionView (same reason as QuizSprint).
  */
 export function PassageSession({
   words,
@@ -1231,8 +1267,9 @@ export function PassageSession({
   const { progress, recordQuiz } = useApp()
   const soundEnabled = isSoundEnabled(progress.settings)
 
-  // 惰性初始值,理由同 QuizSession:pickPassage 走 Math.random,渲染期间重新
-  // 调用会在答题过程中把短文悄悄换掉。
+  // Lazy initial value, same reason as QuizSession: pickPassage runs on
+  // Math.random, and calling it again during a re-render would quietly swap
+  // out the passage mid-answer.
   const [question] = useState<PassageQuestion | null>(() => {
     const recent = storage.get<string[]>('recentPassages') ?? []
     const q = pickPassage(passages, words, progress, todayStr(new Date()), recent)
@@ -1240,7 +1277,7 @@ export function PassageSession({
     return q
   })
 
-  /** 空下标 → 选中的候选词 wordId */
+  /** Blank index → the wordId of the chosen candidate */
   const [filled, setFilled] = useState<Record<number, string>>({})
   const [active, setActive] = useState<number | null>(0)
   const [submitted, setSubmitted] = useState(false)
@@ -1250,7 +1287,7 @@ export function PassageSession({
   const filledCount = Object.keys(filled).length
   const allFilled = blanks.length > 0 && filledCount === blanks.length
 
-  /** wordId → 它占着第几个空;没被用掉就是 undefined */
+  /** wordId → which blank it occupies; undefined if unused */
   const usedBy = useMemo(() => {
     const m = new Map<string, number>()
     for (const [k, v] of Object.entries(filled)) m.set(v, Number(k))
@@ -1264,7 +1301,7 @@ export function PassageSession({
 
   const chooseWord = (wordId: string) => {
     if (submitted) return
-    // 已经占着某个空的词:再点一次就是撤回
+    // A word that's already occupying a blank: tapping it again withdraws it
     const at = usedBy.get(wordId)
     if (at !== undefined) {
       setFilled(f => {
@@ -1278,7 +1315,7 @@ export function PassageSession({
     const i = active ?? blanks.findIndex((_, n) => filled[n] === undefined)
     if (i < 0) return
     setFilled(f => ({ ...f, [i]: wordId }))
-    // 自动跳到下一个还空着的空 —— 每填一个都要手动点下一个空太累
+    // Auto-advance to the next still-empty blank — having to tap the next blank by hand every time is too tiring
     const nextEmpty = blanks.findIndex((_, n) => n !== i && filled[n] === undefined)
     setActive(nextEmpty < 0 ? null : nextEmpty)
   }
@@ -1287,7 +1324,7 @@ export function PassageSession({
 
   const submit = useCallback(() => {
     if (submitted || !allFilled) return
-    // 在点击的调用栈内同步播放,iOS 要求 AudioContext 解锁发生在用户手势内
+    // Play synchronously within the click's call stack — iOS requires AudioContext unlocking to happen inside a user gesture
     playQuizResult(score === blanks.length, soundEnabled)
     setSubmitted(true)
     setActive(null)
@@ -1311,7 +1348,7 @@ export function PassageSession({
     )
   }
 
-  /** 某个 token 是第几个空;不是空返回 -1 */
+  /** Which blank a given token is; -1 if it isn't one */
   const blankIndexAt = (si: number, ti: number) =>
     blanks.findIndex(b => b.si === si && b.ti === ti)
 
@@ -1405,7 +1442,7 @@ export function PassageSession({
 }
 ```
 
-（`PassageResult` 在 Task 11 补上；本步先加一个占位实现放在同文件末尾,让编译通过：）
+(`PassageResult` gets filled in during Task 11; for this step, add a placeholder implementation at the end of the same file, just enough to compile:)
 
 ```tsx
 function PassageResult({
@@ -1425,40 +1462,42 @@ function PassageResult({
 }
 ```
 
-- [ ] **Step 2: 确认类型通过**
+- [ ] **Step 2: Confirm the types pass**
 
 ```bash
 npx tsc -b
 ```
 
-预期:无输出。
+Expected: no output.
 
-- [ ] **Step 3: 提交**
+- [ ] **Step 3: Commit**
 
 ```bash
 git add src/pages/QuizPassage.tsx
-git commit -m "feat(quiz): 短文模式的做题态"
+git commit -m "feat(quiz): passage mode answering state"
 ```
 
 ---
 
-## Task 11: 交卷态 —— 成绩与逐句对照
+## Task 11: Submitted State — Score and Sentence-by-Sentence Comparison
 
 **Files:**
 - Modify: `src/pages/QuizPassage.tsx`
 
-- [ ] **Step 1: 换掉占位的 PassageResult**
+- [ ] **Step 1: Replace the placeholder PassageResult**
 
-把 Task 10 里那个占位实现整个替换成下面这段。
+Replace the placeholder implementation from Task 10 entirely with the block below.
 
-注意 `wrongSentences` 是**传进来的**,不是从 `question` 里算的:`Blank` 是纯出题结果,不该背着答题状态。哪个空填错了只有 `PassageSession` 知道。
+Note that `wrongSentences` is **passed in**, not computed from `question`: `Blank` is a pure question-generation result and shouldn't carry answering state. Only `PassageSession` knows which blank was filled wrong.
 
 ```tsx
 /**
- * 交卷后的结果:成绩 + 逐句中英对照。
+ * The result after submitting: score + sentence-by-sentence Chinese-English comparison.
  *
- * **中译只在这里出现。**做题时给中译等于把答案翻译成中文摆在旁边 ——
- * 「董事会对并购感到忧虑」,apprehensive 就不用想了。
+ * **The Chinese translation only appears here.** Showing it while you're
+ * still answering would put the answer in Chinese right next to the blank —
+ * "董事会对并购感到忧虑" (the board is apprehensive about the merger), and
+ * there's nothing left to think about for apprehensive.
  */
 function PassageResult({
   question,
@@ -1468,7 +1507,7 @@ function PassageResult({
 }: {
   question: PassageQuestion
   score: number
-  /** 有填错的空的句子下标 */
+  /** Indices of the sentences containing a blank that was filled wrong */
   wrongSentences: Set<number>
   onRestart: () => void
 }) {
@@ -1510,15 +1549,15 @@ function PassageResult({
   )
 }
 
-/** 把 token 还原成不带标记的英文原句 —— 对照区展示的是完整句子,不是题面。 */
+/** Reconstructs the plain, unmarked English sentence from tokens — the comparison area shows the complete sentence, not the question text with blanks. */
 function plainSentence(tokens: Token[]): string {
   return tokens.map(t => (t.kind === 'text' ? t.text : t.surface)).join('')
 }
 ```
 
-- [ ] **Step 2: 在 `PassageSession` 里把判错信息传下去**
+- [ ] **Step 2: Pass the wrong-answer info down in `PassageSession`**
 
-把渲染 `PassageResult` 那一行改成:
+Change the line that renders `PassageResult` to:
 
 ```tsx
       {submitted ? (
@@ -1531,79 +1570,81 @@ function plainSentence(tokens: Token[]): string {
       ) : null}
 ```
 
-- [ ] **Step 3: 补 import**
+- [ ] **Step 3: Add the import**
 
-文件顶部的 type import 加上 `Token`:
+Add `Token` to the type import at the top of the file:
 
 ```tsx
 import type { Passage, PassageQuestion, Token } from '../lib/passage'
 ```
 
-- [ ] **Step 4: 确认类型通过**
+- [ ] **Step 4: Confirm the types pass**
 
 ```bash
 npx tsc -b
 ```
 
-预期:无输出。
+Expected: no output.
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add src/pages/QuizPassage.tsx
-git commit -m "feat(quiz): 短文交卷后的成绩与逐句对照"
+git commit -m "feat(quiz): passage submission score and sentence-by-sentence comparison"
 ```
 
 ---
 
-## Task 12: 接进 `/quiz` 与样式
+## Task 12: Wire Into `/quiz` and Styling
 
 **Files:**
 - Modify: `src/pages/Quiz.tsx`
 - Modify: `src/pages/Quiz.css`
 
-- [ ] **Step 1: `MODES` 加一项**
+- [ ] **Step 1: Add an entry to `MODES`**
 
-在 `src/pages/Quiz.tsx` 的 `MODES` 数组末尾加:
+Add to the end of the `MODES` array in `src/pages/Quiz.tsx`:
 
 ```tsx
   { key: 'passage', label: '短文' },
 ```
 
-- [ ] **Step 2: 收窄 `EMPTY_HINT` 的类型**
+- [ ] **Step 2: Narrow the type of `EMPTY_HINT`**
 
-`EMPTY_HINT` 只服务走 `QuizSession` 的三种模式。把它的类型从
+`EMPTY_HINT` only serves the three modes that go through `QuizSession`. Change its type from
 
 ```tsx
 const EMPTY_HINT: Record<Exclude<QuizMode, 'sprint'>, string> = {
 ```
 
-改成
+to
 
 ```tsx
 const EMPTY_HINT: Record<Exclude<QuizMode, 'sprint' | 'passage'>, string> = {
 ```
 
-同时把 `QuizSession` 的 props 类型改成:
+Also change `QuizSession`'s props type to:
 
 ```tsx
   mode: Exclude<QuizMode, 'sprint' | 'passage'>
 ```
 
-- [ ] **Step 3: 分支到 `PassageSession`**
+- [ ] **Step 3: Branch to `PassageSession`**
 
-在 `Quiz.tsx` 顶部加 import:
+Add an import at the top of `Quiz.tsx`:
 
 ```tsx
 import { PassageSession } from './QuizPassage'
 import type { Passage } from '../lib/passage'
 ```
 
-在 `Quiz()` 组件里,`const restart = ...` 之前加语料的惰性加载 —— **动态 import,不进首屏包体**:
+In the `Quiz()` component, before `const restart = ...`, add lazy loading of the content — **dynamic import, so it never enters the initial bundle**:
 
 ```tsx
-  // 语料只在真的进短文模式时才拉。它是随 App 发布的静态内容,
-  // 用 import() 拆成独立 chunk,不让四种日常模式为它多下几十 KB。
+  // The content is only fetched once you actually enter passage mode. It's
+  // static content shipped with the app, split into a separate chunk via
+  // import() so the four everyday modes don't have to download an extra
+  // few dozen KB for it.
   const [passages, setPassages] = useState<Passage[] | null>(null)
   useEffect(() => {
     if (mode !== 'passage' || passages !== null) return
@@ -1615,7 +1656,7 @@ import type { Passage } from '../lib/passage'
   }, [mode, passages])
 ```
 
-把渲染分支改成:
+Change the render branch to:
 
 ```tsx
       {mode === 'sprint' ? (
@@ -1636,15 +1677,15 @@ import type { Passage } from '../lib/passage'
       )}
 ```
 
-`Quiz.tsx` 已经 import 了 `Card` 与 `useEffect`;若 `useEffect` 不在 import 列表里,补进去。
+`Quiz.tsx` already imports `Card` and `useEffect`; if `useEffect` isn't in the import list, add it.
 
-- [ ] **Step 4: 加样式**
+- [ ] **Step 4: Add styles**
 
-在 `src/pages/Quiz.css` 末尾追加:
+Append to the end of `src/pages/Quiz.css`:
 
 ```css
 /* ==========================================================================
-   短文选词填空
+   Passage word-choice cloze
    ========================================================================== */
 
 .quiz-passage__title {
@@ -1654,15 +1695,16 @@ import type { Passage } from '../lib/passage'
   color: var(--text-muted);
 }
 
-/* 正文是一整段可读的散文,行高必须比按钮里的文字松 —— 这是要读的,不是要点的 */
+/* The passage text is a block of readable prose; the line height needs to be looser than button text — this is meant to be read, not tapped */
 .quiz-passage__text {
   margin-top: var(--sp-4);
   font-size: var(--fs-base);
   line-height: 2;
 }
 
-/* 空是行内按钮。用下划线而不是方框:方框会把一段散文切成一格格表单,
-   读起来不再像文章。行高 2 就是为了给它留出下划线的位置。 */
+/* A blank is an inline button. Underline rather than a box: a box would chop
+   a block of prose into a grid of form fields and it would stop reading like
+   an article. Line height 2 exists specifically to leave room for the underline. */
 .quiz-blank-slot {
   display: inline;
   padding: 0 var(--sp-1);
@@ -1693,8 +1735,9 @@ import type { Passage } from '../lib/passage'
   cursor: default;
 }
 
-/* 填错时,你填的那个词划掉留在正确答案前面 —— 光给正确答案,
-   你不会记得自己刚才错在哪 */
+/* When wrong, the word you filled in stays struck through in front of the
+   correct answer — showing only the correct answer, you wouldn't remember
+   where you went wrong */
 .quiz-blank-slot__wrong {
   margin-inline-end: var(--sp-1);
   text-decoration: line-through;
@@ -1709,7 +1752,7 @@ import type { Passage } from '../lib/passage'
   margin-top: var(--sp-5);
 }
 
-/* 用掉的候选词置灰,但不移除 —— 位置固定才好再点一次撤回 */
+/* A used candidate word is greyed out, not removed — keeping its position fixed makes it easy to tap again to withdraw it */
 .quiz-passage__choices .chip[aria-pressed='true'] {
   opacity: 0.4;
 }
@@ -1726,53 +1769,53 @@ import type { Passage } from '../lib/passage'
   line-height: var(--lh-snug);
 }
 
-/* 填错的那一句在译文里标出来:朱砂只做批注,这里正是「这句你错了」这条批注 */
+/* The sentence containing a wrong answer gets marked in the translation: vermillion is reserved for annotations, and this is exactly the annotation "you got this sentence wrong" */
 .quiz-passage__pair--wrong {
   padding-left: var(--sp-3);
   border-left: 2px solid var(--accent);
 }
 ```
 
-- [ ] **Step 5: 构建与全量测试**
+- [ ] **Step 5: Build and run the full test suite**
 
 ```bash
 npm run build
 ```
 
-预期:构建成功,产物里多出一个 `passages` 的独立 chunk。
+Expected: build succeeds, and the output includes one more standalone `passages` chunk.
 
 ```bash
 npm test
 ```
 
-预期:全部通过。
+Expected: everything passes.
 
-- [ ] **Step 6: 真机走一遍**
+- [ ] **Step 6: Walk through it on a real device**
 
-启动 dev server,进 `/quiz?mode=passage`,确认:
+Start the dev server, go to `/quiz?mode=passage`, and confirm:
 
-1. 短文正文里出现 `___`,候选词在下方
-2. 点空 → 高亮;点候选词 → 填入并自动跳到下一个空;再点该候选词 → 撤回
-3. 没填满时交卷按钮显示「还剩 N 个空」且不可点
-4. 交卷后:填对的空变绿并显示句中形式(`refuted` 而不是 `refute`),填错的空显示划掉的错词 + 正确形式
-5. 逐句对照出现,填错的那句左侧有朱砂批注条
-6. 375px 下正文不横向溢出
+1. `___` appears in the passage text, with candidate words below
+2. Tap a blank → it highlights; tap a candidate word → it fills the blank and auto-advances to the next blank; tap that candidate word again → it's withdrawn
+3. While not fully filled, the submit button shows "还剩 N 个空" and can't be tapped
+4. After submitting: correctly filled blanks turn green and show the surface form (`refuted`, not `refute`), and wrongly filled blanks show the struck-through wrong word plus the correct form
+5. The sentence-by-sentence comparison appears, with a vermillion annotation bar on the left of any sentence answered wrong
+6. At 375px the passage text doesn't overflow horizontally
 
-- [ ] **Step 7: 提交**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add src/pages/Quiz.tsx src/pages/Quiz.css
-git commit -m "feat(quiz): 短文模式接进 /quiz"
+git commit -m "feat(quiz): wire passage mode into /quiz"
 ```
 
 ---
 
-## Task 13: 批量生产语料
+## Task 13: Batch-Producing Content
 
 **Files:**
 - Modify: `src/data/passages.json`
 
-- [ ] **Step 1: 挑词分组**
+- [ ] **Step 1: Pick words and group them**
 
 ```bash
 node -e "
@@ -1782,83 +1825,83 @@ const pool=d.words.filter(w=>(w.usageScore??0)>=6&&!used.has(w.id));
 pool.sort((a,b)=>(b.usageScore??0)-(a.usageScore??0));
 const groups=[];
 for(let i=0;i<pool.length&&groups.length<28;i+=7) groups.push(pool.slice(i,i+7).map(w=>w.id+' — '+w.meanings[0].pos+' '+w.meanings[0].zh));
-groups.forEach((g,i)=>console.log('组 '+(i+1)+':\n  '+g.join('\n  ')+'\n'));
+groups.forEach((g,i)=>console.log('Group '+(i+1)+':\n  '+g.join('\n  ')+'\n'));
 "
 ```
 
-输出直接看终端即可;要存盘就重定向到 scratchpad 目录,不要写进仓库。
+Just read the output straight from the terminal; if you need to save it, redirect it to the scratchpad directory — don't write it into the repo.
 
-- [ ] **Step 2: 并行派 agent 写**
+- [ ] **Step 2: Dispatch agents in parallel to write**
 
-每组派一个 agent,提示词模板(把 `<组内容>` 换成上一步该组的实际内容):
+Dispatch one agent per group, using this prompt template (replace `<group contents>` with that group's actual contents from the previous step):
 
 ```
-你在给一个中文用户的英语词汇 App 写「选词填空」短文语料。
+You're writing "word-choice cloze" passage content for a Chinese-speaking user's English vocabulary app.
 
-写 1 篇短文,把下面这组词自然地串进同一个情境里:
-<组内容>
+Write 1 passage that naturally strings the following group of words into the same scenario:
+<group contents>
 
-硬性要求:
-1. 输出严格的 JSON 对象,字段为 id / title / en / zh,不要任何解释文字
-2. id:小写字母+连字符,能一眼看出这篇讲什么,如 "committee-report"
-3. title:一句中文短语,如「一票通过的那份报告」
-4. en:字符串数组,一句一个元素,共 4~6 句,总长 80~120 词
-5. zh:字符串数组,与 en 一一对应,是地道中文而不是逐词直译
-6. 目标词在 en 里用 {{wordId}} 标记;若句中用的是变形,写 {{wordId|句中形式}}
-   例:{{refute|refuted}}、{{ratify|ratified}}、{{oversight}}
-7. 每个目标词只标记一次
-8. 全部 7 个词都要用上
+Hard requirements:
+1. Output a strict JSON object with fields id / title / en / zh — no explanatory text of any kind
+2. id: lowercase letters + hyphens, should make it obvious what the passage is about at a glance, e.g. "committee-report"
+3. title: one Chinese phrase, e.g. "一票通过的那份报告"
+4. en: array of strings, one sentence per element, 4–6 sentences total, 80–120 words total
+5. zh: array of strings, one-to-one with en, idiomatic Chinese rather than word-for-word translation
+6. Mark target words in en with {{wordId}}; if the sentence uses an inflected form, write {{wordId|surface form}}
+   e.g.: {{refute|refuted}}, {{ratify|ratified}}, {{oversight}}
+7. Mark each target word only once
+8. Use all 7 words
 
-内容要求:
-- 一个具体的现代场景(职场、新闻、城市生活),有事件、有转折,不是词义的堆砌
-- 每个空必须靠上下文能判断出来。如果换成另一个同组词句子也通顺,重写那句
-- 不写考试腔的空泛句子("It is important that...")
+Content requirements:
+- A specific, contemporary scenario (workplace, news, city life) with an event and a turn — not a pile-up of word definitions
+- Every blank must be decidable from context. If swapping in another word from the same group would still read naturally, rewrite that sentence
+- Don't write vague, test-prep-style sentences ("It is important that...")
 
-只输出 JSON 对象。
+Output only the JSON object.
 ```
 
-- [ ] **Step 3: 合并进语料文件**
+- [ ] **Step 3: Merge into the content file**
 
-把各 agent 返回的对象追加进 `src/data/passages.json` 的 `passages` 数组。
+Append each agent's returned object into the `passages` array in `src/data/passages.json`.
 
-- [ ] **Step 4: 校验**
+- [ ] **Step 4: Validate**
 
 ```bash
 npm run validate-passages
 ```
 
-预期:校验通过,并打印覆盖分布。任何一条错误都必须改掉——**校验不过不进仓库**。
+Expected: validation passes and prints the coverage distribution. Every single error must be fixed — **a passage that fails validation does not go into the repo**.
 
-- [ ] **Step 5: 人工抽查**
+- [ ] **Step 5: Spot-check by hand**
 
-随机读 3 篇,逐条确认:
+Read 3 passages at random and confirm, one item at a time:
 
-1. 每个空换成同组另一个词后,句子是否明显不通?(通顺 = 这个空有两个答案,必须重写)
-2. 中译是不是地道中文,而不是英文语序的翻译腔?
-3. 有没有事实性错误或别扭的搭配?
+1. Does the sentence clearly stop making sense if each blank is swapped for another word from the same group? (Still reads fine = this blank has two valid answers, and must be rewritten)
+2. Is the Chinese translation idiomatic, rather than translationese that follows English word order?
+3. Are there any factual errors or awkward collocations?
 
-- [ ] **Step 6: 跑一轮真题**
+- [ ] **Step 6: Run through a real round**
 
 ```bash
 npm run build
 ```
 
-启动 dev server,进 `/quiz?mode=passage` 连做 5 篇,确认选出来的短文确实覆盖了当天到期的词。
+Start the dev server, go to `/quiz?mode=passage`, and do 5 passages in a row, confirming the passages chosen really do cover the words due that day.
 
-- [ ] **Step 7: 提交**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add src/data/passages.json
-git commit -m "data: 短文语料补到 N 篇"
+git commit -m "data: content filled out to N passages"
 ```
 
-（把 `N` 换成实际篇数。）
+(Replace `N` with the actual passage count.)
 
 ---
 
-## 收尾
+## Wrap-up
 
-- [ ] `npm run build && npm test` 全绿
-- [ ] `npm run validate-passages` 通过
-- [ ] 在真机(手机浏览器)上做完一整篇,确认 375px 下正文不溢出、候选词不换行错乱
-- [ ] 用一周后回头看:短文题的错词率与单句挖空比是高是低?如果差不多,说明这个题型没带来额外价值,该考虑是撑到全库还是就停在试点规模
+- [ ] `npm run build && npm test` all green
+- [ ] `npm run validate-passages` passes
+- [ ] Complete a full passage on a real device (mobile browser), confirming the text doesn't overflow at 375px and the candidate words don't wrap awkwardly
+- [ ] Look back after a week of use: is the wrong-answer rate for passage questions higher or lower than for single-sentence cloze? If they're about the same, that means this question type isn't adding extra value, and it's worth reconsidering whether to scale it up to the full word list or just stop at pilot scale

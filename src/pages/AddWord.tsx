@@ -29,11 +29,14 @@ import type { CaptureCheck } from './stagingCapture'
 import './AddWord.css'
 
 /**
- * 表单里可重复的行:比 Word 对应类型多一个稳定 key,专供 React 列表用,
- * 提交前 validate() 会重新拼一份干净对象,不会带着 key 存进 Word。
- * 用数组下标当 React key 在删除中间行时会导致 DOM 节点复用错位
- * （光标位置、组合输入法状态跟着挪到别的行上),所以每行在创建时领一个
- * 单调递增的号,删除、增加都不影响其余行的号。
+ * Repeatable rows in the form: each adds a stable key on top of the
+ * corresponding Word type, used solely for React lists. validate() rebuilds
+ * a clean object before submit, so the key never ends up stored in Word.
+ * Using the array index as the React key causes DOM node reuse to get
+ * misaligned when a middle row is removed (cursor position, IME composition
+ * state end up drifting onto the wrong row), so each row is issued a
+ * monotonically increasing number at creation time; removing or adding
+ * rows never affects the numbers of the rest.
  */
 interface MeaningRow extends Meaning {
   key: number
@@ -56,7 +59,7 @@ const emptyMeaning = (): MeaningRow => ({ key: nextRowKey(), pos: '', en: '', zh
 const emptyRelated = (): RelatedRow => ({ key: nextRowKey(), form: '', pos: '', zh: '' })
 const emptyExample = (): ExampleRow => ({ key: nextRowKey(), value: '' })
 
-/** 快速收词的拦截提示。抽出来只是为了不在 JSX 里套三层三元表达式。 */
+/** Blocking hint for quick capture. Pulled out only to avoid nesting three ternaries in JSX. */
 function captureNotice(check: CaptureCheck): ReactNode {
   if (check.kind === 'in-library') {
     return (
@@ -76,7 +79,7 @@ type LookupState =
   | { status: 'not-found'; message: string }
   | { status: 'error'; message: string }
 
-/** 逗号(半角/全角)/顿号/换行分隔的自由文本 → 去空白、去空项、去重、剔除词条本身 */
+/** Free text separated by commas (half/full-width) / dun commas / newlines → trim whitespace, drop empty entries, dedupe, and exclude the headword itself */
 function splitTagList(raw: string, headword: string): string[] {
   const seen = new Set<string>()
   const out: string[] = []
@@ -92,9 +95,12 @@ function splitTagList(raw: string, headword: string): string[] {
 }
 
 /**
- * Task 20 实现:输入单词 → 查询词典 API 预填 → 可编辑表单 → 保存。
- * v1.1 E:页面顶部加一块「快速收词」—— 手机上看到生词的那一刻,只记单词就走,
- * 其余十个字段留给会话中的 AI 批量补全(设计文档 §6.3)。完整表单原样留在下方。
+ * Task 20 implementation: type a word → look up the dictionary API to
+ * prefill → editable form → save.
+ * v1.1 E: a "quick capture" block was added at the top of the page — the
+ * moment you spot a new word on your phone, jot down just the word and move
+ * on, leaving the other ten fields for the AI to batch-fill in a chat
+ * session later (design doc §6.3). The full form is left unchanged below.
  */
 export function AddWord() {
   const { words, staging, addStaging, saveWord, syncStatus, syncError, syncNow } = useApp()
@@ -111,10 +117,13 @@ export function AddWord() {
   const [antonymsText, setAntonymsText] = useState('')
   const [collocationsText, setCollocationsText] = useState('')
   const [relatedForms, setRelatedForms] = useState<RelatedRow[]>([])
-  // 空串 = 还没选。**不给默认值**:默认成 5 只会让词库里堆满没人想过的 5 分,
-  // 那比缺分数更糟 —— 缺分数至少是诚实的「未评分」。
+  // Empty string = not yet chosen. **No default value**: defaulting to 5
+  // would just flood the library with 5s nobody actually decided on, which
+  // is worse than a missing score — a missing score is at least an honest
+  // "unscored".
   const [usageScoreInput, setUsageScoreInput] = useState('')
-  // 与 usageScore 相反,空是合法终态:词源是唯一允许缺席的字段。
+  // Unlike usageScore, empty is a valid final state here: etymology is the
+  // only field allowed to be absent.
   const [etymologyInput, setEtymologyInput] = useState('')
 
   const [lookup, setLookup] = useState<LookupState>({ status: 'idle' })
@@ -123,16 +132,18 @@ export function AddWord() {
   const [savedWord, setSavedWord] = useState<{ id: string; headword: string } | null>(null)
 
   const headword = headwordInput.trim()
-  // 词库约定(见计划 Task 10 步骤 2.5):含空格的短语词条 id 用连字符,如
-  // "ad hoc" → "ad-hoc",与 data/words.json 里 due-diligence 等一致。
-  // headword 本身照常保留空格显示,只有 id 折叠。
+  // Library convention (see plan Task 10 step 2.5): phrase headwords that
+  // contain spaces use hyphens in their id, e.g. "ad hoc" → "ad-hoc",
+  // consistent with entries like due-diligence in data/words.json.
+  // headword itself keeps its spaces for display; only the id is collapsed.
   const id = headword.toLowerCase().replace(/\s+/g, '-')
   const existing = useMemo(() => words.find((w) => w.id === id), [words, id])
   const duplicate = id !== '' && existing !== undefined
 
   const capture = useMemo(() => checkCapture(captureInput, words, staging), [captureInput, words, staging])
 
-  // 占比合计只做实时提示;真正拦提交的是 validate() 里的 validateShares。
+  // The share total here is only a live hint; the actual submit-blocking
+  // check is validateShares inside validate().
   const shareTotal = shareSum(meanings)
 
   async function handleCapture() {
@@ -140,8 +151,10 @@ export function AddWord() {
     const added = capture.headword
     setCapturing(true)
     try {
-      // addStaging 先本地入列再推送,推送成败由下面常驻的 SyncStatus 说明 ——
-      // 离线时词已经在本机队列里了,联网后自动并上去,不需要用户重来一次。
+      // addStaging enqueues locally first, then pushes; whether the push
+      // succeeds is reported by the persistent SyncStatus below — if
+      // offline, the word is already in the local queue and syncs
+      // automatically once back online, so the user never has to redo it.
       await addStaging(added)
       setCaptureInput('')
       setCaptured(added)
@@ -151,8 +164,9 @@ export function AddWord() {
   }
 
   function handleCaptureKeyDown(e: KeyboardEvent<HTMLInputElement>) {
-    // 这块不在 <form> 里(下方还有一个完整表单,套嵌套 form 是非法的),
-    // 所以回车提交要自己接 —— 手机上「一个输入框 + 回车」才是最快的收词路径。
+    // This block isn't inside a <form> (there's a full form further down,
+    // and nesting forms is invalid), so Enter-to-submit has to be handled
+    // manually — on mobile, "one input + Enter" is the fastest capture path.
     if (e.key !== 'Enter') return
     e.preventDefault()
     void handleCapture()
@@ -184,8 +198,10 @@ export function AddWord() {
           ? result.meanings.map((m) => ({ key: nextRowKey(), ...m, zh: '' }))
           : [emptyMeaning()],
       )
-      // 音标和释义是词典分别提供的,不是同进同出(如 abrogate:有释义、无音标)——
-      // 分别判断,措辞照实说,别让通用的「都填好了」文案在只填了一半时说谎。
+      // Phonetics and meanings are provided independently by the dictionary,
+      // not always together (e.g. abrogate: has a meaning but no phonetic) —
+      // check them separately and word the message honestly, rather than
+      // letting a generic "all filled in" message lie when only half is.
       const hasPhonetic = result.phonetic !== ''
       const hasMeanings = result.meanings.length > 0
       let note: string | undefined
@@ -216,10 +232,13 @@ export function AddWord() {
   const removeRelated = (i: number) => setRelatedForms((rows) => rows.filter((_, idx) => idx !== i))
 
   /**
-   * 组装并校验。data/words.json 的 schema 比查词典给出的原始数据严格得多
-   * （scripts/validate-words.ts):音标必须是 /.../ 形式,至少一条完整释义,
-   * **例句至少 2 句**。这里把校验规则前移到表单里,而不是等保存后才在别处
-   * 校验失败 —— 保存的词条必须能过 validate-words.ts,不留「先存后崩」的口子。
+   * Assemble and validate. The data/words.json schema is a lot stricter
+   * than what the dictionary lookup returns raw (scripts/validate-words.ts):
+   * phonetics must be in /.../ form, at least one complete meaning is
+   * required, and **at least 2 examples**. The validation rules are pulled
+   * forward into the form here rather than letting validation fail
+   * elsewhere after save — a saved entry must pass validate-words.ts, with
+   * no "save now, break later" loophole left open.
    */
   function validate(): Word | null {
     const errors: Record<string, string> = {}
@@ -230,9 +249,12 @@ export function AddWord() {
     const phon = phonetic.trim()
     if (!/^\/.+\/$/.test(phon)) errors.phonetic = '音标需形如 /ˈæbrəɡeɪt/(以斜杠包住)'
 
-    // 先归一再校验:归一会把只剩一条释义时的残留 share 剥掉,否则用户把第二条
-    // 释义清空(整行被下面的 filter 滤掉)之后,剩下那条还挂着 share,会撞上
-    // 「单义词不应标注义项占比」这条与他实际操作对不上的报错。
+    // Normalize before validating: normalization strips the leftover share
+    // when only one meaning remains. Otherwise, once the user clears the
+    // second meaning (the whole row gets filtered out below), the remaining
+    // one still carries a share value and trips the "a single-sense word
+    // shouldn't have a meaning-share" error, which doesn't match what they
+    // actually did.
     const meaningRows = normalizeMeanings(
       meanings
         .map((m) => {
@@ -281,8 +303,9 @@ export function AddWord() {
       addedAt: todayStr(new Date()),
       usageScore,
     }
-    // 留空就整个不写这个键,而不是写一个空串 —— 空串会让展示层判为「有词源」
-    // 然后渲染一个只有标题没有内容的小节。
+    // Leave it blank and omit the key entirely, rather than writing an
+    // empty string — an empty string would make the display layer treat it
+    // as "has etymology" and render a section with a heading but no content.
     const etymology = normalizeEtymology(etymologyInput)
     if (etymology !== undefined) word.etymology = etymology
     return word
@@ -334,9 +357,12 @@ export function AddWord() {
 
   return (
     <Page eyebrow="New Entry" title="添加新词" back="/library">
-      {/* 快速收词在最上面,是打开这一页默认看到的东西:捕获必须保持一个输入框的
-          成本。它**不能**放进下面那个 <form> 里 —— 嵌套 form 是非法的,而且回车
-          会误触整个词条的保存。完整表单原样留在下方,给「我现在就想填完」的场景。 */}
+      {/* Quick capture sits at the very top, the default thing you see on
+          opening this page: capturing must stay as cheap as one input box.
+          It **cannot** go inside the <form> below — nesting forms is invalid,
+          and Enter would accidentally trigger a full entry save. The full
+          form is left unchanged below, for the "I want to fill it all in
+          right now" case. */}
       <Card className="addword-capture">
         <div className="addword-section-head">
           <h2 className="addword-section-title">快速收词</h2>
@@ -528,8 +554,11 @@ export function AddWord() {
                       placeholder="待填写"
                     />
                   </Field>
-                  {/* 占比只在一词多义时才有意义,单义时整格不出现(不是禁用):
-                      单义词标 100% 是噪音,还会让「有 share 即多义词」失效。 */}
+                  {/* Share only makes sense when a word has multiple
+                      meanings; with a single meaning the whole field is
+                      absent (not just disabled): marking a single-sense
+                      word 100% is noise, and it would also break the
+                      "having a share implies multiple senses" invariant. */}
                   {meanings.length > 1 && (
                     <Field label="占比" htmlFor={`aw-mean-share-${i}`}>
                       <Select

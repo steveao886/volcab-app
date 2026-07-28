@@ -4,21 +4,27 @@ import type { Progress, ProgressEntry, StagingFile, StagingItem, Word, WordsFile
 import { BACKUP_HINT, errText, GIVE_UP } from './errors'
 
 /**
- * 同步编排:两个文件的「推一次,冲突就合并重推一次」。
+ * Sync orchestration: for two files, "push once, and if there's a conflict, merge and push once more".
  *
- * 刻意不依赖 React,也不依赖 GitHubClient 具体类 —— 只吃下面这个结构接口,
- * 因此整条冲突重试路径可以用纯对象假 client 测(见 sync.test.ts)。
+ * Deliberately doesn't depend on React, nor on the concrete GitHubClient
+ * class -- it only consumes the structural interface below, so the whole
+ * conflict-retry path can be tested with a plain-object fake client (see
+ * sync.test.ts).
  *
- * 职责边界:本模块管**远端簿记**(progressSha / wordsSha / dirty),
- * store 管本地状态与 words / progress 正文的缓存。
+ * Division of responsibility: this module owns **remote bookkeeping**
+ * (progressSha / wordsSha / dirty); store owns local state and the caching
+ * of the words / progress payloads themselves.
  */
 
 export const WORDS_PATH = 'words.json'
 export const PROGRESS_PATH = 'progress.json'
 /**
- * 生词暂存区。**单独一个文件**而不是塞进上面两个:放进 words.json,半成品词条
- * 通不过 schema 校验还会直接进复习队列;放进 progress.json,它会卷进那套为学习
- * 进度设计的按词合并逻辑。单独文件 = 独立的冲突域(设计文档 §6.2)。
+ * The new-word staging area. Kept as **its own separate file** instead of
+ * being stuffed into the two above: putting it in words.json means
+ * half-finished entries would fail schema validation and land straight in
+ * the review queue; putting it in progress.json would drag it into the
+ * per-word merge logic designed for review progress. A separate file means
+ * an independent conflict domain (design doc §6.2).
  */
 export const STAGING_PATH = 'staging.json'
 
@@ -28,24 +34,26 @@ export interface SyncClient {
 }
 
 export interface PushOptions {
-  /** 返回 false 表示会话已经结束(登出/换号),此时一个簿记键都不该再写 */
+  /** Returning false means the session has already ended (logout/account switch); no bookkeeping key should be written after that */
   alive?: () => boolean
 }
 
 export type PushOutcome<T> =
-  | { ok: true; sha: string; data: T }   // data 是最终落盘的内容(可能已与远端合并)
+  | { ok: true; sha: string; data: T }   // data is the content that actually landed (may already be merged with the remote)
   | { ok: false; error: string }
 
-/** 本次会话对词库做过的改动,冲突时在重新拉取的远端副本上重放 */
+/** Changes made to the vocabulary during this session, replayed onto the freshly re-pulled remote copy on conflict */
 export type WordsOp =
   | { kind: 'upsert'; word: Word }
   | { kind: 'delete'; ids: string[] }
 
-// --- 形状校验 -------------------------------------------------------------
-// 远端文件是「别的进程写的、可能被手改过的」外部输入。只查顶层不够:一份
-// dailyStats 缺字段、meanings 为空的半坏文件能过顶层校验,却会在渲染时炸成
-// undefined.map()。§8 要的是「解析不了或对不上 schema 就拒绝覆盖远端」,
-// 所以这里逐条查到叶子。
+// --- Shape validation -------------------------------------------------------
+// A remote file is external input "written by some other process, possibly
+// hand-edited". Checking only the top level isn't enough: a dailyStats
+// missing a field, or a half-broken file with empty meanings, would pass a
+// top-level check but blow up as undefined.map() at render time. §8 requires
+// "reject overwriting the remote if it fails to parse or doesn't match the
+// schema", so this validates all the way down to the leaves.
 
 const isRecord = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v)
@@ -95,9 +103,10 @@ export function isProgress(v: unknown): v is Progress {
 const DATE = /^\d{4}-\d{2}-\d{2}$/
 
 /**
- * 暂存条目只有两个字段,两个都查死。
- * `headword` 不能是空白串 —— 一条空条目在页面上是个看不见却占位的幽灵,
- * 并且归一化后键为空,会和下一条空条目撞在一起。
+ * A staging entry only has two fields, and both are strictly checked.
+ * `headword` can't be a blank string -- an empty entry is an invisible but
+ * space-occupying ghost on the page, and after normalization its key would
+ * be empty, colliding with the next empty entry.
  */
 export function isStagingItem(v: unknown): v is StagingItem {
   return isRecord(v)
@@ -112,8 +121,8 @@ export function isWordsOp(v: unknown): v is WordsOp {
   return false
 }
 
-// --- 序列化与解析 ---------------------------------------------------------
-// 缩进 2 空格 + 结尾换行:GitHub 网页上的 diff 才是逐词条可读的。
+// --- Serialization & parsing -------------------------------------------------
+// 2-space indent + trailing newline: only this way is the diff on GitHub's web UI readable entry by entry.
 
 export const serializeProgress = (p: Progress): string => `${JSON.stringify(p, null, 2)}\n`
 
@@ -127,14 +136,14 @@ function parseJson(text: string): unknown {
   try { return JSON.parse(text) } catch { throw new Error(BACKUP_HINT) }
 }
 
-/** 解析远端 progress.json;形状不对就抛错,由调用方拒绝覆盖远端 */
+/** Parses the remote progress.json; throws on a bad shape, leaving the caller to refuse overwriting the remote */
 export function parseProgress(text: string): Progress {
   const raw = parseJson(text)
   if (!isProgress(raw)) throw new Error(BACKUP_HINT)
   return raw
 }
 
-/** 解析远端 words.json;形状不对就抛错,由调用方拒绝覆盖远端 */
+/** Parses the remote words.json; throws on a bad shape, leaving the caller to refuse overwriting the remote */
 export function parseWords(text: string): Word[] {
   const raw = parseJson(text)
   if (!isRecord(raw) || raw.version !== 1 || !Array.isArray(raw.words)) throw new Error(BACKUP_HINT)
@@ -142,7 +151,7 @@ export function parseWords(text: string): Word[] {
   return raw.words
 }
 
-/** 解析远端 staging.json;形状不对就抛错,由调用方决定是拒绝覆盖还是当作没有 */
+/** Parses the remote staging.json; throws on a bad shape, leaving the caller to decide whether to refuse overwriting or treat it as absent */
 export function parseStaging(text: string): StagingItem[] {
   const raw = parseJson(text)
   if (!isRecord(raw) || raw.version !== 1 || !Array.isArray(raw.items)) throw new Error(BACKUP_HINT)
@@ -150,42 +159,50 @@ export function parseStaging(text: string): StagingItem[] {
   return raw.items
 }
 
-// --- 暂存区合并 -----------------------------------------------------------
+// --- Staging area merge ---------------------------------------------------
 
-/** 去首尾空白,内部连续空白折成一个空格。保留大小写,给人看的就是这一份。 */
+/** Trims leading/trailing whitespace, folds internal runs of whitespace to a single space. Case is preserved -- this is what people actually see. */
 export const cleanHeadword = (s: string): string => s.trim().replace(/\s+/g, ' ')
 
-/** 去重与合并的键:在 cleanHeadword 之上再转小写。「Ad  Hoc」与「ad hoc」是同一个词。 */
+/** The dedup/merge key: lowercased on top of cleanHeadword. "Ad  Hoc" and "ad hoc" are the same word. */
 export const normalizeHeadword = (s: string): string => cleanHeadword(s).toLowerCase()
 
 /**
- * 暂存区合并 = 按归一化词头取并集,同词保留较早的 `addedAt`。
+ * Staging merge = union by normalized headword, keeping the earlier `addedAt` for the same word.
  *
- * 比 progress 那套按词比 `lastReviewedAt` 简单得多,因为这里只有「追加」这一种
- * 动作(移除发生在会话里,由人推一次新文件),所以并集天然幂等 —— 同一条重放
- * 多少次结果都一样,不需要待推送队列去区分「这次到底改了什么」。
+ * Much simpler than progress's per-word comparison of `lastReviewedAt`,
+ * because here there's only one kind of action, "append" (removal happens
+ * within a session, via a person pushing a fresh file), so the union is
+ * naturally idempotent -- replaying the same entry any number of times
+ * yields the same result, with no need for a pending-push queue to
+ * distinguish "what actually changed this time".
  *
- * 「保留较早的」取整条,不只取日期:日期是 YYYY-MM-DD,字典序即时间序。
- * 内容与合并方向无关(a∪b 和 b∪a 得到同一组条目),只有排列顺序按首次出现。
+ * "Keep the earlier one" takes the whole entry, not just the date: the date
+ * is YYYY-MM-DD, so lexicographic order is chronological order. The content
+ * doesn't depend on merge direction (a∪b and b∪a produce the same set of
+ * entries), only the ordering follows first appearance.
  */
 export function mergeStaging(a: StagingItem[], b: StagingItem[]): StagingItem[] {
   const byKey = new Map<string, StagingItem>()
   for (const it of [...a, ...b]) {
     const key = normalizeHeadword(it.headword)
-    if (key === '') continue        // 空条目不入列(远端已被 parseStaging 挡掉,这里防本地构造)
+    if (key === '') continue        // empty entries don't get queued (the remote is already blocked by parseStaging; this guards against local construction)
     const prev = byKey.get(key)
-    if (!prev || it.addedAt < prev.addedAt) byKey.set(key, it)   // Map.set 不改已有键的位置
+    if (!prev || it.addedAt < prev.addedAt) byKey.set(key, it)   // Map.set doesn't move an existing key's position
   }
   return [...byKey.values()]
 }
 
 /**
- * 读远端 staging.json,**任何失败都当作「远端还没有这个文件」**。
+ * Reads the remote staging.json, **treating any failure as "the remote doesn't have this file yet"**.
  *
- * 三个同步文件里它最不重要:词库和进度是用户的真实资产,暂存区只是几个还没
- * 补全的单词。所以缺失、解析失败、甚至读取报错,都不能让异常冒到登录/启动
- * 路径上去 —— 那条路径上一个抛错就是「登不进去」或「progress 不同步」。
- * 推送路径不用这个函数,那里必须区分「没有」和「坏了」(见 pushStaging)。
+ * Of the three sync files it's the least important: vocabulary and progress
+ * are the user's real assets, staging is just a handful of not-yet-completed
+ * words. So a missing file, a parse failure, even a read error, must never
+ * let an exception bubble up to the login/boot path -- a throw there means
+ * "can't log in" or "progress isn't syncing". The push path doesn't use this
+ * function; there, "absent" and "corrupted" must be distinguished (see
+ * pushStaging).
  */
 export async function loadStaging(
   client: SyncClient,
@@ -198,7 +215,7 @@ export async function loadStaging(
   }
 }
 
-// --- 词库改动重放 ---------------------------------------------------------
+// --- Vocabulary change replay ----------------------------------------------
 
 export function applyWordOps(words: Word[], ops: WordsOp[]): Word[] {
   let out = words
@@ -216,10 +233,13 @@ export function applyWordOps(words: Word[], ops: WordsOp[]): Word[] {
   return out
 }
 
-// --- 推送返回后的对账 -----------------------------------------------------
-// 推送是异步的,`pushed` 是请求**发出那一刻**的快照(可能又和远端合并过)。
-// 直接拿它盖回本地,会把请求飞行途中用户新做的改动吞掉 —— 这是这个 App 最
-// 严重的失败模式,所以单独成函数并有测试盯着,别当成 sync 内部合并的冗余删掉。
+// --- Reconciling once a push returns ---------------------------------------
+// A push is asynchronous, and `pushed` is a snapshot from the **instant the
+// request went out** (possibly already merged with the remote). Overwriting
+// local state with it directly would swallow whatever changes the user made
+// while the request was in flight -- this is this App's worst failure mode,
+// so it's pulled into its own function with tests watching it; don't delete
+// it as if it were redundant with sync's internal merging.
 
 export function reconcileProgress(current: Progress, pushed: Progress): Progress {
   return pushed === current ? current : mergeProgress(current, pushed)
@@ -235,13 +255,15 @@ export function reconcileStaging(
   return pushed === current ? current : mergeStaging(pushed, stillPending)
 }
 
-// --- 推送 -----------------------------------------------------------------
+// --- Push -------------------------------------------------------------------
 
 /**
- * 推 progress.json。
+ * Pushes progress.json.
  *
- * dirty 在发请求**前**就清掉:飞行途中用户又打了分会把它重新置 true,
- * 这样这次成功不会把那笔改动一起「吞」成已同步。失败则重新置脏。
+ * dirty is cleared **before** the request goes out: if the user grades
+ * another word while it's in flight, that sets it back to true, so this
+ * success doesn't "swallow" that change into looking synced. Re-marked
+ * dirty on failure.
  */
 export async function pushProgress(
   client: SyncClient, local: Progress, opts: PushOptions = {},
@@ -274,8 +296,10 @@ export async function pushProgress(
 }
 
 /**
- * 推 words.json(整份覆盖)。冲突时不做字段级合并 —— 重新拉远端,
- * 把尚未确认落地的增删重放上去,他端并发添加的词条因此得以保留。
+ * Pushes words.json (whole-file overwrite). No field-level merge on
+ * conflict -- instead the remote is re-pulled and any not-yet-confirmed
+ * add/deletes are replayed onto it, which is how entries added concurrently
+ * elsewhere get preserved.
  */
 export async function pushWords(
   client: SyncClient, local: Word[], ops: WordsOp[], opts: PushOptions = {},
@@ -303,14 +327,19 @@ export async function pushWords(
 }
 
 /**
- * 推 staging.json。时机与冲突策略照抄 words.json(变更即推、不防抖;冲突就重新
- * 拉远端、把本次收的词合上去、再推一次,仍冲突就放弃留到下次)。
+ * Pushes staging.json. Timing and conflict strategy are copied straight
+ * from words.json (push on every change, no debounce; on conflict, re-pull
+ * the remote, merge in this session's staged words, and push again; give up
+ * and leave it for next time if it conflicts again).
  *
- * 与 pushWords 的唯一区别是「重放」换成了并集合并 —— 没有删除动作要重放,
- * 所以 `pending` 直接就是要并进去的条目。
+ * The only difference from pushWords is that "replay" becomes a union merge
+ * -- there's no delete action to replay, so `pending` is directly the set
+ * of entries to merge in.
  *
- * 注意这里**不**吞解析错误:远端文件坏掉时必须中止,而不是拿本地那份盖过去。
- * 启动/登录路径上的宽容由 loadStaging 负责,两条路径要的东西正好相反。
+ * Note this **doesn't** swallow parse errors: a corrupted remote file must
+ * abort, not get overwritten with the local copy. The leniency on the
+ * boot/login path is loadStaging's job -- the two paths want exactly
+ * opposite things.
  */
 export async function pushStaging(
   client: SyncClient, local: StagingItem[], pending: StagingItem[], opts: PushOptions = {},

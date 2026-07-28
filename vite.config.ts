@@ -14,12 +14,17 @@ export default defineConfig({
         description: '个人记单词 App',
         display: 'standalone',
         start_url: '/volcab-app/',
-        // 界面语言是中文(index.html 是 lang="zh-CN"),不能留 vite-plugin-pwa
-        // 默认的 'en' —— 系统安装提示与朗读会按这个字段处理应用名。
+        // The UI language is Chinese (index.html has lang="zh-CN"), so this
+        // can't be left at vite-plugin-pwa's default of 'en' -- the system
+        // install prompt and screen readers handle the app name based on
+        // this field.
         lang: 'zh-CN',
-        // 「墨与纸」调色板(见 src/styles/tokens.css):manifest 只能取一组静态
-        // 色值,取浅色(纸)主题作为默认 —— 与 index.html 里无 media query 时
-        // 的默认外观、以及 :root 未命中 dark 媒体查询时的取值一致。
+        // The "ink and paper" palette (see src/styles/tokens.css): the
+        // manifest can only take one static set of color values, so the
+        // light (paper) theme is used as the default -- consistent with
+        // index.html's default appearance when there's no media query, and
+        // with what :root resolves to when the dark media query doesn't
+        // match.
         theme_color: '#f4f1ea',
         background_color: '#f4f1ea',
         icons: [
@@ -27,9 +32,12 @@ export default defineConfig({
             src: 'icon-192.png',
             sizes: '192x192',
             type: 'image/png',
-            // 满版色块 + 居中字形。实测字形包围盒约为画布的 48%x50%,外接圆
-            // 直径约 69%,在 maskable 的 80% 安全区内,故同一张图兼任两种用途。
-            // (实测方法与「改字号后须重测」的提醒见 scripts/generate-icons.ps1)
+            // Full-bleed color block + centered glyph. Measured directly,
+            // the glyph's bounding box is about 48%x50% of the canvas, and
+            // its circumscribed circle diameter is about 69%, within
+            // maskable's 80% safe zone -- so the same image serves both
+            // purposes. (Measurement method and the "re-measure after
+            // changing font size" reminder live in scripts/generate-icons.ps1)
             purpose: 'any maskable',
           },
           {
@@ -44,11 +52,14 @@ export default defineConfig({
   ],
   test: {
     environment: 'happy-dom',
-    // Claude Code 的后台任务会在 .claude/worktrees/ 下挂 git worktree —— 那是**整个
-    // 仓库的另一份签出**,里面有一模一样的一套测试文件。不排掉的话 vitest 会把两份
-    // 都跑一遍:测试数凭空翻倍(实测 24 个文件 469 条变成 47 个文件 924 条),而且
-    // 另一份的红灯会算到这份头上。默认的 exclude 只挡 node_modules/dist 之类,
-    // 覆写时必须把它们一起写回来。
+    // Claude Code's background tasks mount a git worktree under
+    // .claude/worktrees/ -- that's **a second full checkout of the repo**,
+    // containing an identical copy of every test file. Without excluding
+    // it, vitest would run both copies: the test count doubles out of
+    // nowhere (measured: 24 files / 469 tests becomes 47 files / 924
+    // tests), and failures in the other copy would get attributed to this
+    // one. The default exclude only blocks things like node_modules/dist,
+    // so overriding it means writing those back in alongside this one.
     exclude: ['**/node_modules/**', '**/dist/**', '**/.claude/worktrees/**'],
   },
 })

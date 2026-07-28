@@ -29,11 +29,11 @@ function clean(html: string): string {
     .trim()
 }
 
-// CLI 入口:npm run parse-enex
+// CLI entry point: npm run parse-enex
 if (process.argv[1]?.replace(/\\/g, '/').endsWith('parse-enex.ts')) {
   const xml = readFileSync('Volcab.enex', 'utf8')
   const notes = parseEnex(xml)
   mkdirSync('scripts/out', { recursive: true })
   writeFileSync('scripts/out/candidates.json', JSON.stringify(notes, null, 2))
-  console.log(`解析 ${notes.length} 篇笔记,粗体词共 ${notes.reduce((n, x) => n + x.boldTerms.length, 0)} 个`)
+  console.log(`parsed ${notes.length} notes, ${notes.reduce((n, x) => n + x.boldTerms.length, 0)} bold terms total`)
 }

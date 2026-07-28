@@ -3,17 +3,18 @@ import { Link } from 'react-router-dom'
 import { Icon } from './Icon'
 
 /**
- * 页面骨架。粘顶页头 = 辞书的书眉:朱砂眉标(英文)+ 中文标题,
- * 下缘发丝线左端一段朱砂刻度,与底部页签的刻度是同一个母题。
+ * Page shell. The sticky header is the dictionary's running head: a
+ * vermilion eyebrow (English) + a Chinese title, with a short vermilion tick
+ * at the left end of the bottom hairline — the same motif as the tab bar's tick.
  */
 interface PageProps {
-  /** 页标题。词条详情页可以传 <span className="word" lang="en">…</span> */
+  /** Page title. The word detail page can pass <span className="word" lang="en">…</span> */
   title: ReactNode
-  /** 英文眉标(CSS 转大写),已带 lang="en" */
+  /** English eyebrow (uppercased via CSS), already carries lang="en" */
   eyebrow: string
-  /** 传入路径则页头左侧出现返回按钮 */
+  /** When a path is passed, a back button appears on the left of the header */
   back?: string
-  /** 页头右侧操作区 */
+  /** Action area on the right of the header */
   actions?: ReactNode
   children: ReactNode
 }

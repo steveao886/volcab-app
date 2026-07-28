@@ -1,7 +1,8 @@
 /**
- * 短文选词填空的出题逻辑。全部纯函数 —— 渲染层只负责把这里算出来的结果画出来。
+ * Question-generation logic for the passage word-choice cloze mode. All pure functions —
+ * the rendering layer just draws whatever gets computed here.
  *
- * 设计见 docs/superpowers/specs/2026-07-28-passage-cloze-design.md
+ * Design doc: docs/superpowers/specs/2026-07-28-passage-cloze-design.md
  */
 
 import type { Progress, Word } from '../types'
@@ -10,35 +11,44 @@ import type { ContrastPair } from './contrast'
 import { shuffle } from './quiz'
 
 /**
- * 故意不放进 src/types.ts:那份文件是「会同步」的数据模型 —— 跟 volcab-data
- * 仓库互相拉取推送,要过 merge/冲突处理那一套。短文是只读内容,随 App 打包
- * 一起发布,从不参与同步,不属于那份 schema 管的范围。下次别把它「归位」过去。
+ * Deliberately not placed in src/types.ts: that file is the "synced" data model — it pulls
+ * and pushes against the volcab-data repo and goes through the whole merge/conflict-handling
+ * setup. Passages are read-only content shipped bundled with the App, never participate in
+ * sync, and don't belong under that schema's jurisdiction. Don't "relocate" this there later.
  */
 export interface Passage {
   id: string
   title: string
-  /** 逐句英文。目标词用 {{wordId|句中形式}} 标记,形式与词头相同时简写 {{concoct}} */
+  /** English, one sentence per entry. Target words are marked as {{wordId|surface form}}, shortened to {{concoct}} when the form matches the headword */
   en: string[]
-  /** 逐句中译,与 en 一一对应 */
+  /** Chinese translation, one sentence per entry, aligned 1:1 with en */
   zh: string[]
   /**
-   * 绝不能当这篇干扰词的词 id。
+   * Word ids that must never be used as distractors for this passage.
    *
-   * 干扰词来自易混词图,而那张图是**按共享近义词**建的 —— 它天然会端出
-   * 「填进去也对」的词。direct 过滤挡掉了词典级别的同义(substantiate
-   * 之于 corroborate),但挡不住只共享近义词、语义却照样贴合的那种
-   * (antipathy 之于 animosity、slacken 之于 abate —— 实测不点名的话它们分别
-   * 出现在 84.9% 与 18.8% 的题里,而且句子读起来完全成立)。
+   * Distractors come from the confusable-word map, and that map is built **from shared
+   * synonyms** — so it naturally surfaces words that "would also fit if filled in." The
+   * direct filter blocks dictionary-level synonymy (substantiate vs. corroborate), but
+   * doesn't catch the kind that merely shares a synonym while still fitting the meaning
+   * (antipathy vs. animosity, slacken vs. abate — measured: without calling them out
+   * explicitly they show up in 84.9% and 18.8% of questions respectively, and the sentence
+   * reads perfectly fine either way).
    *
-   * 这一小撮只能靠人眼:某个词能不能填进这篇的某个空,是读出来的,不是算出来的。
-   * 好在候选池**基本可穷举** —— 干扰词绝大多数来自标记词在易混词图上的非 direct
-   * 邻居,实测两篇分别是 2 个和 10 个词。校验脚本会把这个池子打印出来给作者过目。
+   * This small handful can only be caught by a human: whether a word can be filled into a
+   * given blank in this passage is something you have to read, not compute. Fortunately the
+   * candidate pool is **essentially enumerable** — the vast majority of distractors come
+   * from a marked word's non-direct neighbors on the confusable-word map, measured at 2 and
+   * 10 words for the two current passages. The validation script prints this pool out for
+   * the author to review.
    *
-   * **注意池子不是密不透风的**:一级候选见底时会降到「同词性的已学词」与「任意
-   * 已学词」,那两级抽的是全词库。实测 committee-report 有 24.1% 的题至少有一个
-   * 选项来自降级(它的一级池只剩 2 个词,答案组合一变就不够用)。降级抽到的是
-   * 语义上八竿子打不着的词,不构成歧义,但作者过校验脚本那份名单时要知道:
-   * 名单是「必须逐个读过」的那批,不是「只可能出现这些」。
+   * **Note the pool isn't airtight**: when the tier-1 candidates run dry it falls back to
+   * "learned words with the same part of speech" and then "any learned word," both of which
+   * draw from the entire word library. Measured: committee-report has at least one option
+   * from the fallback tiers in 24.1% of its questions (its tier-1 pool only has 2 words left,
+   * and any change in the answer combination isn't enough to cover it). Fallback picks are
+   * semantically unrelated and don't create ambiguity, but when the author reviews the
+   * validation script's printed list, they should know: that list is "must be read one by
+   * one," not "these are the only words that can possibly appear."
    */
   exclude?: string[]
 }
@@ -50,24 +60,30 @@ export type Token =
   | { kind: 'word'; wordId: string; surface: string }
 
 /**
- * `{{wordId}}` 或 `{{wordId|句中形式}}`。
+ * `{{wordId}}` or `{{wordId|surface form}}`.
  *
- * id 与形式都不允许含 `{}|`,所以 `{{a|b|c}}` 这种写坏的标记**匹配不上**,
- * 会原样留在文本片段里 —— 下面那条残留花括号检查再把整句判死。
+ * Neither the id nor the form may contain `{}|`, so a malformed marker like `{{a|b|c}}`
+ * **fails to match** and is left as-is in the text segment — the leftover-brace check below
+ * then fails the whole sentence.
  *
- * **导出给 scripts/validate-passages.ts 用。** 那边曾经抄了一份一模一样的字面量,
- * 而「匹配不上就等于畸形」这条行为完全依赖这个 pattern 的确切写法 —— 抄两份等于
- * 让闸门和读取端各自解释一次「什么算标记」,改一处漏一处就是漏掉一整类坏数据。
- * 跨 src/ 与 scripts/ 引用是既有做法(那边已经在 import isInflectionOf)。
+ * **Exported for scripts/validate-passages.ts to use.** That script used to have its own
+ * copy of the exact same literal, and the behavior of "failing to match means malformed"
+ * depends entirely on this pattern's exact wording — keeping two copies means the gate and
+ * the read side each interpret "what counts as a marker" separately, and fixing one while
+ * missing the other lets an entire class of bad data through. Cross-referencing between
+ * src/ and scripts/ is already established practice (that script already imports
+ * isInflectionOf).
  */
 export const MARKER = /\{\{([^{}|]+)(?:\|([^{}|]+))?\}\}/g
 
 /**
- * 解析一句。畸形标记返回 null。
+ * Parses one sentence. Returns null for a malformed marker.
  *
- * **宁可整篇跳过也不将就**:标记写坏的后果不是少一个空,是挖错空或者把
- * `{{refute` 这种半截字符串印在题面上。与 words.json 那条「写入端严格、
- * 读取端宽容」是同一条规矩 —— 校验脚本是闸门,这里是不白屏的兜底。
+ * **Better to skip the whole passage than to compromise**: a broken marker doesn't just
+ * mean one fewer blank — it means blanking the wrong thing, or printing a half-string like
+ * `{{refute` straight into the question. This follows the same rule as words.json's
+ * "strict on write, lenient on read": the validation script is the gate, and this is the
+ * fallback that keeps things from going blank-screen.
  */
 export function parseSentence(s: string): Token[] | null {
   const out: Token[] = []
@@ -76,10 +92,11 @@ export function parseSentence(s: string): Token[] | null {
     const wordId = m[1].trim()
     const surface = (m[2] ?? m[1]).trim()
     if (wordId === '' || surface === '') return null
-    // {{refute refuted}} 是忘了写竖线的典型笔误 —— 没有这条检查,它会被当成
-    // 一个带空格的 id 直接放行。validate-words.ts 早就规定每个 Word.id
-    // 必须是小写且无空白,所以任何不满足这一条的 wordId 都注定匹配不到词,
-    // 与其让它混进题面查无此词,不如在这里就判成畸形标记。
+    // {{refute refuted}} is the classic typo of forgetting the pipe — without this check
+    // it would be waved through as an id that happens to contain a space. validate-words.ts
+    // has long required every Word.id to be lowercase with no whitespace, so any wordId
+    // that fails that would be doomed to match no word anyway — better to flag it as a
+    // malformed marker here than let it end up in a question referencing a nonexistent word.
     if (wordId !== wordId.toLowerCase() || /\s/.test(wordId)) return null
     if (m.index > last) out.push({ kind: 'text', text: s.slice(last, m.index) })
     out.push({ kind: 'word', wordId, surface })
@@ -90,7 +107,7 @@ export function parseSentence(s: string): Token[] | null {
   return out
 }
 
-/** 逐句解析整篇。任何一句畸形、或中英句数对不上,整篇返回 null。 */
+/** Parses the whole passage, sentence by sentence. Returns null for the whole passage if any sentence is malformed, or if the Chinese and English sentence counts don't match. */
 export function parsePassage(p: Passage): Token[][] | null {
   if (p.en.length === 0 || p.en.length !== p.zh.length) return null
   const out: Token[][] = []
@@ -102,37 +119,43 @@ export function parsePassage(p: Passage): Token[][] | null {
   return out
 }
 
-/** 一篇里至少要凑够 3 个空。两个空互为线索的推理不成立,退化成两道单句挖空。 */
+/** A passage needs at least 3 blanks. With only two blanks, the "clues cross-reference each other" reasoning breaks down and it degenerates into two separate single-sentence cloze questions. */
 export const MIN_BLANKS = 3
-/** 一屏最多 7 个空,再多就做不完。 */
+/** At most 7 blanks per screen — any more and it's too much to finish. */
 export const MAX_BLANKS = 7
 
 export interface Blank {
-  /** 第几句 */
+  /** Sentence index */
   si: number
-  /** 该句里第几个 token */
+  /** Token index within that sentence */
   ti: number
   wordId: string
-  /** 句中形式,判对后填进去的就是它 */
+  /** The in-sentence surface form, filled in once answered correctly */
   surface: string
 }
 
 /**
- * 选出要挖的空。
+ * Selects which blanks to create.
  *
- * **只挖学过的词**(`state !== 'new'`),没学过的、以及在词库里查不到的原样印出来。
- * 这条沿用辨析模式那条教训(见 quiz.ts 的 generateContrastQuiz):不拿没见过的词
- * 考你。但与辨析不同的是,没见过的词可以留在上下文里 —— 它不是题,是读物。
+ * **Only blanks out learned words** (`state !== 'new'`); words not yet learned, and words
+ * not found in the library, are printed as-is. This follows the same lesson as the
+ * discrimination mode (see generateContrastQuiz in quiz.ts): don't test you on a word you've
+ * never seen. Unlike discrimination mode, though, unlearned words can stay in the
+ * surrounding context — they're not being tested, just read.
  *
- * **超过 `MAX_BLANKS` 时组内先打乱再截断。** 原本这里是 `[...due, ...notDue]`
- * 直接 slice —— 一刀切在固定的位置上,砍掉的永远是同几个词。实测两篇各跑 200 个
- * 种子,committee-report 只出过 7 个答案词、`ratify` **一次都没被挖过**,
- * sweltering-commute 同样从没挖过 `abate`:语料里标了、校验也过了的词,永远
- * 考不到。这与 quiz.ts 的 pickCloze 那条(同一个词的挖空题面永远是同一句,
- * 实测 63 个词 0 个第二种题面)是同一类缺陷 —— 顺着数组取,取到的永远是同一批。
+ * **When over `MAX_BLANKS`, shuffles within each group before truncating.** This used to be
+ * a straight `[...due, ...notDue]` followed by slice — a hard cut at a fixed position that
+ * always drops the same handful of words. Measured across 200 seeds each for two passages:
+ * committee-report only ever produced 7 distinct answer words, and `ratify` was **never
+ * blanked out even once**; sweltering-commute likewise never blanked out `abate` — words
+ * marked in the source text and passing validation were nonetheless never testable. This is
+ * the same class of defect as pickCloze in quiz.ts (the same word's cloze question is always
+ * the same sentence — measured at 0 second sentences out of 63 words), namely: taking
+ * elements in array order always returns the same subset.
  *
- * 打乱只发生在**组内**:到期的仍然整组排在未到期的前面,复习优先级不受影响。
- * 截断之后本来就会按正文顺序还原,渲染顺序也不受影响。
+ * The shuffle only happens **within each group**: due words as a group still come before
+ * not-yet-due words as a group, so review priority is unaffected. Truncation is followed by
+ * restoring the original passage order anyway, so rendering order is also unaffected.
  */
 export function selectBlanks(
   sentences: Token[][],
@@ -147,8 +170,9 @@ export function selectBlanks(
   sentences.forEach((tokens, si) => {
     tokens.forEach((t, ti) => {
       if (t.kind !== 'word') return
-      // 同一个词一篇里最多一个空 —— 否则候选词区会出现两个一模一样的词,
-      // 而「用掉就划掉」的规则立刻自相矛盾。
+      // At most one blank per word per passage — otherwise the choice pool would show two
+      // identical words, and the "used means crossed off" rule would immediately
+      // contradict itself.
       if (seen.has(t.wordId)) return
       if (!words.has(t.wordId)) return
       const e = progress.words[t.wordId]
@@ -160,7 +184,8 @@ export function selectBlanks(
 
   if (eligible.length <= MAX_BLANKS) return eligible
 
-  // 到期的先占坑,再按正文顺序还原 —— 渲染必须按出现顺序,砍的是「挖谁」不是「怎么排」
+  // Due words claim slots first, then the original passage order is restored — rendering
+  // must follow appearance order; what gets cut is "which words," not "what order"
   const isDue = (b: Blank) => progress.words[b.wordId].due <= today
   const picked = new Set([
     ...shuffle(eligible.filter(isDue), rng),
@@ -169,26 +194,32 @@ export function selectBlanks(
   return eligible.filter(b => picked.has(b))
 }
 
-/** 候选词比空多几个。真题的选词填空一律给多,逼你排除。 */
+/** How many more candidate words than blanks. Real word-choice cloze exams always give you extras, forcing you to eliminate wrong ones. */
 export const DISTRACTOR_COUNT = 2
 
 /**
- * 挑干扰词。三级降级,凑不满就少给 —— 少一个干扰词只是这篇稍微简单些,
- * 而拿一个与答案重复的选项出来是缺陷(与 quiz.ts 里 sharedSynonyms 要防的
- * 是同一类问题)。
+ * Picks distractors. Three fallback tiers, and if it can't fill the quota it simply gives
+ * fewer — one fewer distractor just makes the passage slightly easier, whereas offering an
+ * option that duplicates the answer is a real defect (the same category of problem
+ * sharedSynonyms in quiz.ts guards against).
  *
- * 1. `buildContrastPairs` 里与某个答案易混的已学词 —— 现成的易混词图
- * 2. 与某个答案主义项词性相同的已学词(词性不同的词在句子里根本不会打架)
- * 3. 任意已学词
+ * 1. Learned words that are confusable with some answer, from `buildContrastPairs` — the
+ *    confusable-word map already built for this
+ * 2. Learned words sharing a part of speech with some answer's primary meaning (words with
+ *    different parts of speech never compete within a sentence)
+ * 3. Any learned word
  *
- * @param excludeIds 除答案外还必须排除的词 id。**这不是可有可无的洁癖**:
- *   一篇标记了 8 个词、`MAX_BLANKS` 只挖 7 个,那第 8 个词是**原样印在正文里**的
- *   ——它当干扰词时用户扫一眼正文就划掉了,两个干扰词白白废掉一个,而且看着像 bug。
- *   实测 committee-report 的 `ratify` 正是这种情况:N=471 已学词时 24.5% 的题里
- *   它当了干扰词,N=200 时 50.7%,N=100 时 100%。没学过的标记词同理(它不够格
- *   被挖空,却照样印在正文里)。
- * @param byId `words` 的 id 索引,由调用方传入。`buildPassageQuestion` 已经对
- *   同一份词表建过一遍,这里再建一遍是白建。
+ * @param excludeIds Word ids that must be excluded besides the answers themselves. **This
+ *   isn't an optional nicety**: if a passage marks 8 words but `MAX_BLANKS` only blanks out
+ *   7, that 8th word is **printed as-is in the passage** — using it as a distractor means the
+ *   user crosses it off with a single glance at the text, wasting one of only two
+ *   distractors and looking like a bug besides. Measured: committee-report's `ratify` is
+ *   exactly this case — with N=471 learned words it was a distractor in 24.5% of questions,
+ *   50.7% at N=200, and 100% at N=100. The same applies to marked-but-unlearned words (not
+ *   eligible to be blanked out, yet still printed in the passage as-is).
+ * @param byId An id index over `words`, passed in by the caller. `buildPassageQuestion`
+ *   already builds one over the same word list, so building another here would be wasted
+ *   work.
  */
 export function pickDistractors(
   answerIds: Set<string>,
@@ -218,33 +249,42 @@ export function pickDistractors(
 
   for (const p of shuffle(pairs, rng)) {
     if (out.length >= count) break
-    // **direct 的一律不要。** `direct` 的含义是一方把另一方的词头写进了自己的
-    // synonyms —— 那是词典级别的「这俩是一个意思」,正是绝不能拿来当错误选项的
-    // 东西。实测 committee-report 的 corroborate/substantiate 就是这样一对:
-    // 「no independent team could substantiate」既是通顺英文,意思也完全对,
-    // 26.6% 的题里它当了干扰词,用户会判定这题两个答案都对。
+    // **Any `direct` pair is always excluded.** `direct` means one side wrote the other's
+    // headword directly into its own synonyms — that's a dictionary-level "these two mean
+    // the same thing," exactly the kind of thing that must never be offered as a wrong
+    // answer. Measured: committee-report's corroborate/substantiate is exactly such a
+    // pair — "no independent team could substantiate" is both grammatical English and
+    // entirely correct in meaning, and it was a distractor in 26.6% of questions, with
+    // users concluding both options were valid answers.
     //
-    // 这只是**部分修复,而且单独用会更糟**:direct 只覆盖词典写死的同义,挡不住
-    // 「只共享近义词、语义却照样贴合」的那种(animosity/antipathy 共享 hostility、
-    // abate/slacken 共享 ease)。更要命的是 direct 的邻居里有**安全**的那些
-    // (acrimonious / disputatious / disreputable 之于 contentious 与 dubious),
-    // 一并挡掉之后 animosity 只剩 grievance 与 antipathy 两个邻居 —— 实测 2000 个
-    // 种子:antipathy 的出场率从修前的 23.2% **涨到 84.9%**。歧义词只能靠
-    // `Passage.exclude` 人工点名,点名之后这两篇都是 0.0%。
+    // This is only a **partial fix, and using it alone would make things worse**: direct
+    // only covers dictionary-hardcoded synonymy, and doesn't catch the kind that merely
+    // shares a synonym while still fitting the meaning (animosity/antipathy share
+    // hostility, abate/slacken share ease). Worse still, direct's neighbors include some
+    // that are **safe** (acrimonious / disputatious / disreputable relative to contentious
+    // and dubious) — excluding all of them at once leaves animosity with only grievance and
+    // antipathy as neighbors. Measured across 2000 seeds: antipathy's appearance rate
+    // **rose from 23.2% before the fix to 84.9%**. Ambiguous words can only be handled by
+    // manually calling them out via `Passage.exclude`; once called out, both passages drop
+    // to 0.0%.
     //
-    // 也别指望用分数卡:disputatious 4 分是安全的,antipathy 2 分是歧义的,
-    // 而 2 分里大多数安全 —— 没有阈值能把它们分开。
+    // Don't bother trying to use the score as a cutoff either: disputatious at 4 points is
+    // safe, antipathy at 2 points is ambiguous, and most things at 2 points are safe — no
+    // threshold can separate them.
     if (p.direct) continue
     if (answerIds.has(p.a)) add(p.b)
     else if (answerIds.has(p.b)) add(p.a)
   }
 
-  // **降级前先看还缺不缺。** 这两级各要 `shuffle` 一遍全词库,而 `shuffle` 是
-  // Fisher-Yates:471 个词就是 470 次 rng。原本无条件求值,实测一道题一共消耗
-  // 1268 次 rng,其中 940 次(74%)出自这两个 shuffle —— 而一级候选绝大多数
-  // 时候就把名额填满了,那 940 次抽出来的结果一个都用不上。
-  // 加上早退之后实测:N=471 已学词 387.5 次/题,N=100 时 586.5,N=50 时 798
-  // ——已学词越多、一级候选越容易填满,这两级动用得越少。
+  // **Check whether more are still needed before falling back.** Each of these two tiers
+  // does a `shuffle` over the entire word library, and `shuffle` is Fisher-Yates: 471 words
+  // means 470 rng calls. This originally ran unconditionally — measured, a single question
+  // consumed 1268 rng calls total, with 940 of them (74%) coming from these two shuffles —
+  // yet the tier-1 candidates fill the quota the vast majority of the time, so none of those
+  // 940 draws ever got used. After adding the early exit, measured: 387.5 calls/question at
+  // N=471 learned words, 586.5 at N=100, 798 at N=50 — the more learned words there are, the
+  // easier it is for tier 1 to fill the quota, and the less these two fallback tiers get
+  // used.
   if (out.length < count) {
     const poses = new Set<string>()
     for (const id of answerIds) {
@@ -267,21 +307,21 @@ export function pickDistractors(
   return out
 }
 
-/** 候选词。`wordId` 用来判分,`headword` 用来显示 —— 两者不一定相同。 */
+/** A candidate choice. `wordId` is used for grading, `headword` for display — the two aren't necessarily the same. */
 export interface Choice { wordId: string; headword: string }
 
 export interface PassageQuestion {
   passage: Passage
   sentences: Token[][]
-  /** 按正文出现顺序 */
+  /** In original passage order */
   blanks: Blank[]
-  /** 已打乱 */
+  /** Already shuffled */
   choices: Choice[]
 }
 
 /**
- * 把一篇短文组装成一道题。出不来(解析失败 / 可挖空不足)返回 null,
- * 由调用方换下一篇。
+ * Assembles a passage into a question. Returns null if it can't be built (parse failure /
+ * not enough eligible blanks), and the caller moves on to the next passage.
  */
 export function buildPassageQuestion(
   passage: Passage,
@@ -299,9 +339,11 @@ export function buildPassageQuestion(
   if (blanks.length < MIN_BLANKS) return null
 
   const answerIds = new Set(blanks.map(b => b.wordId))
-  // 正文里出现过的标记词全都不能当干扰词 —— 不只是被挖成空的那些。没挖成空的
-  // 标记词(超出 MAX_BLANKS 的、或者还没学过的)是**原样印在正文里**的。
-  // 再并上作者人工点名的 exclude(见 Passage.exclude):算不出来的那一小撮歧义词。
+  // Every marked word that appears in the passage text is barred from being a distractor —
+  // not just the ones that got blanked out. Marked words that didn't get blanked out
+  // (beyond MAX_BLANKS, or not yet learned) are **printed as-is in the passage text**.
+  // Then union in the author's manually called-out exclude (see Passage.exclude): the small
+  // handful of ambiguous words that can't be computed.
   const excluded = new Set<string>(passage.exclude)
   for (const tokens of sentences) {
     for (const t of tokens) if (t.kind === 'word') excluded.add(t.wordId)
@@ -319,15 +361,17 @@ export function buildPassageQuestion(
   return { passage, sentences, blanks, choices }
 }
 
-/** 到期词的权重高于已学未到期 —— 这题首先是复习工具,其次才是阅读。 */
+/** Due words are weighted higher than learned-but-not-due — this feature is a review tool first, reading material second. */
 export const DUE_WEIGHT = 3
 export const LEARNED_WEIGHT = 1
 /**
- * 最近做过的惩罚。**刻意压过「多一个到期词」(+3)**:宁可换一篇覆盖略差的新
- * 短文,也别连着做同一篇 —— 第二次做时你记住的是上次的答案,不是词。
+ * The penalty for having been done recently. **Deliberately outweighs "one extra due word"
+ * (+3)**: better to switch to a fresh passage with slightly worse coverage than to do the
+ * same passage back to back — the second time through, what you remember is last time's
+ * answers, not the words.
  */
 export const RECENT_PENALTY = 5
-/** 「最近做过」记多少篇。存 localStorage,不进 progress.json。 */
+/** How many passages "recently done" tracks. Stored in localStorage, not in progress.json. */
 export const RECENT_LIMIT = 10
 
 export function scoreQuestion(
@@ -344,15 +388,20 @@ export function scoreQuestion(
 }
 
 /**
- * 挑一篇今天最该做的短文。一篇都出不来返回 null(由调用方给空状态文案)。
+ * Picks the passage most worth doing today. Returns null if none can be built (the caller
+ * supplies the empty-state copy).
  *
- * `buildContrastPairs` 对全词库只算一次 —— 放进循环就是每篇重算一遍倒排索引。
+ * `buildContrastPairs` is computed only once for the whole word library — putting it inside
+ * the loop would mean recomputing the inverted index once per passage.
  *
- * **每篇都完整组装一遍再打分,这是有意的**:打分要数到期词,而到期词就是
- * `selectBlanks` 的产物,先打分再组装等于把选空逻辑抄一份出来。实测这台机器上
- * 30 篇 3.7 ms、200 篇 18.0 ms(30 篇是近期语料规模,200 篇是规划规模),
- * 都在一次点击的噪声里。语料再涨过 200 篇就该改成「先算轻量分、只组装最高分的
- * 那几篇」—— 到那时再改,现在改是拿可读性换看不见的收益。
+ * **Every passage is fully assembled and then scored — this is deliberate**: scoring needs
+ * to count due words, and due words are a product of `selectBlanks`, so scoring before
+ * assembling would mean duplicating the blank-selection logic. Measured on this machine: 3.7
+ * ms for 30 passages, 18.0 ms for 200 passages (30 is roughly the current corpus size, 200
+ * the planned size) — both well within the noise of a single click. If the corpus grows
+ * past 200 passages, this should switch to "compute a lightweight score first, then only
+ * fully assemble the top-scoring few" — but that's a change for when it's needed; doing it
+ * now would trade readability for an invisible gain.
  */
 export function pickPassage(
   passages: Passage[],
@@ -365,7 +414,8 @@ export function pickPassage(
   const pairs = buildContrastPairs(words)
   let best: PassageQuestion | null = null
   let bestScore = -Infinity
-  // 先打乱:同分时取先遇到的那篇,不打乱就永远是数组里靠前的那几篇
+  // Shuffle first: on a tie, whichever is encountered first wins; without shuffling it
+  // would always be one of the same few passages near the front of the array
   for (const p of shuffle(passages, rng)) {
     const q = buildPassageQuestion(p, words, progress, today, pairs, rng)
     if (q === null) continue
@@ -378,7 +428,7 @@ export function pickPassage(
   return best
 }
 
-/** 把 id 推到「最近做过」的最前面,超过上限砍掉最旧的。 */
+/** Pushes an id to the front of "recently done," dropping the oldest once past the limit. */
 export function pushRecent(recent: string[], id: string, limit = RECENT_LIMIT): string[] {
   return [id, ...recent.filter(x => x !== id)].slice(0, limit)
 }

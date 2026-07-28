@@ -12,17 +12,20 @@ import { computeStreak, reviewProgress } from './todayStats'
 import './Today.css'
 
 const RECENT_DAYS = 7
-/** 全 0 周时柱子仍给一档「最矮但看得见」的高度,不然一排 0 高度的柱子会像页面渲染坏了。 */
+/** Even in an all-zero week, bars still get a "shortest but still visible" height, otherwise a row of zero-height bars would look like the page is broken. */
 const MIN_BAR_PCT = 6
 
-/** Task 16 实现:到期/新词数、连续天数、总进度、开始复习 / 快速测试、同步角标。 */
+/** Task 16 implementation: due/new word counts, streak days, overall progress, start review / quick quiz, sync badge. */
 export function Today() {
   const { words, progress, syncStatus, syncError, syncNow } = useApp()
 
   const today = todayStr(new Date())
-  // useApp() 的 context value 在任何 provider 重渲染时都会是新对象(比如 syncStatus
-  // 翻转),这三项推导都要过一遍 476 个词,值没变就不用重算 —— Library 的搜索接下来
-  // 会照着这个先例在每次按键时跑同一份数组,这里先立好规矩。
+  // useApp()'s context value is a new object on any provider re-render
+  // (e.g. syncStatus flipping), and all three of these derivations require
+  // iterating 476 words — they shouldn't recompute when nothing actually
+  // changed. Library's search will later follow this same precedent for an
+  // array recomputed on every keystroke, so the rule is established here
+  // first.
   const { due, fresh, streak, count, total, ratio, queueEmpty, lapseCount } = useMemo(() => {
     const queue = buildQueue(words, progress, today)
     const streak = computeStreak(progress.dailyStats, today)
@@ -39,8 +42,10 @@ export function Today() {
     }
   }, [words, progress, today])
 
-  // 「最近」块单独一个 memo,依赖只到 [progress, today] —— 不随词库大小重算,
-  // 且遵循上面那条先例:provider 任何一次重渲染 progress 对象都是新的。
+  // The "recent" block gets its own separate memo, depending only on
+  // [progress, today] — it doesn't recompute with library size, and it
+  // follows the same precedent above: on any provider re-render, the
+  // progress object is a new reference.
   const { recentDays, weekMax, weekAccuracy, hasHistory } = useMemo(() => {
     const recentDays = dailySeries(progress, today, RECENT_DAYS)
     const weekMax = Math.max(0, ...recentDays.map(d => d.reviewed))
@@ -52,8 +57,11 @@ export function Today() {
       recentDays,
       weekMax,
       weekAccuracy,
-      // 完全没有 dailyStats 才是「从没学过」的新用户;七天窗口恰好全 0(比如活动
-      // 都发生在七天前)不算 —— 那是柱状图取「最矮档」的场景,不是空状态的场景。
+      // Only a complete absence of dailyStats counts as a "never studied"
+      // new user; the seven-day window happening to be all zeros (e.g. all
+      // activity happened more than seven days ago) doesn't count — that's
+      // the scenario where bars fall back to their shortest height, not
+      // the empty-state scenario.
       hasHistory: Object.keys(progress.dailyStats).length > 0,
     }
   }, [progress, today])
@@ -64,9 +72,13 @@ export function Today() {
       title="今日"
       actions={<SyncStatus status={syncStatus} onRetry={() => void syncNow()} />}
     >
-      {/* 角标只有「同步失败」四个字,装不下要给用户看的那句话 —— 而 §8 里最要紧的
-          一条(远端文件损坏,请先导出备份再操作)正是靠这句话传达。首页是用户最
-          常打开的一屏,失败原因必须在这里说全,不能只留在词库/词条页。 */}
+      {/* The badge only has room for the words "sync failed" — nowhere
+          near enough to hold the sentence the user actually needs to see —
+          and the most critical case in §8 (the remote file is corrupted,
+          export a backup before doing anything else) depends entirely on
+          that sentence getting through. The home screen is the one users
+          open most often, so the failure reason must be spelled out in
+          full here, not left only on the library/word-detail pages. */}
       {syncStatus === 'error' && syncError !== null && (
         <SyncStatus variant="note" status={syncStatus} message={syncError} onRetry={() => void syncNow()} />
       )}
@@ -109,8 +121,10 @@ export function Today() {
 
       <div className="today-actions">
         {queueEmpty ? (
-          // 队列为空时按钮直接禁用:Review 页此刻没有可复习的内容可导航,
-          // 用禁用态比「点进去看一个空页面」更诚实。
+          // The button is simply disabled when the queue is empty: there's
+          // nothing on the Review page to navigate to right now, and a
+          // disabled state is more honest than "click through to see an
+          // empty page".
           <Button variant="primary" size="lg" block disabled>
             今日完成 🎉
           </Button>
@@ -122,8 +136,10 @@ export function Today() {
         <Link to="/quiz" className="btn btn--secondary btn--lg btn--block">
           快速测试
         </Link>
-        {/* 顽固词入口只在真有顽固词时出现:一个恒亮的「专攻错得最多的 0 个词」
-            按钮毫无意义,而且会把两个主操作挤成三选一。 */}
+        {/* The lapsed-words entry point only appears when lapsed words
+            actually exist: an always-visible "focus on the 0 words you
+            get most wrong" button would be meaningless, and it would also
+            crowd the two primary actions into a choice of three. */}
         {lapseCount > 0 && (
           <Link to="/review?mode=lapses" className="btn btn--ghost btn--block today-lapse">
             专攻顽固词
@@ -132,8 +148,10 @@ export function Today() {
         )}
       </div>
 
-      {/* 「最近」——统计页的入口,不进底部导航(四格已满,见 v1.1 §5.2)。
-          近 7 天复习量柱状图纯手写 CSS,不引图表库。 */}
+      {/* "Recent" — the entry point to the stats page; it doesn't get a
+          slot in the bottom nav (all four are already taken, see v1.1
+          §5.2). The last-7-days review bar chart is entirely hand-rolled
+          CSS, with no charting library. */}
       <Link to="/stats" className="card card--interactive today-recent">
         <div className="today-recent__head">
           <p className="today-recent__title">最近</p>

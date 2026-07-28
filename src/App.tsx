@@ -13,10 +13,13 @@ import { Today } from './pages/Today'
 import { WordDetail } from './pages/WordDetail'
 
 /**
- * 路由表。GitHub Pages 无服务端重写,固定用 HashRouter。
- * /login 之外的所有页面都在 RequireAuth 之内;/login 反过来被 GuestOnly 守着,
- * 已登录时弹回首页。
- * /dev 组件总览只在开发模式注册,且刻意留在守卫之外 —— 未登录也要能看。
+ * Route table. GitHub Pages has no server-side rewrites, so HashRouter is
+ * used unconditionally.
+ * Every page besides /login sits inside RequireAuth; /login, in turn, is
+ * guarded by GuestOnly, which bounces back to the home page once logged in.
+ * The /dev component gallery is only registered in dev mode, and is
+ * deliberately left outside the guard — it needs to be viewable even when
+ * logged out.
  */
 function App() {
   return (

@@ -3,31 +3,36 @@ import type { ReactNode } from 'react'
 import { Button } from './Button'
 
 /**
- * 破坏性操作的二次确认(原生 <dialog> + showModal())。
+ * Second confirmation for destructive actions (native <dialog> + showModal()).
  *
- * 用原生 dialog 而不是自己搭浮层:顶层堆叠、焦点陷阱、Esc 关闭都由浏览器提供。
- * 代价是它的开合是命令式的,所以这里把「受控的 open 布尔值 ↔ showModal/close」
- * 这段 ref + effect 的接线收在组件内部 —— 调用方只管一个 state。
+ * Uses the native dialog instead of a hand-rolled overlay: top-layer
+ * stacking, focus trapping, and Esc-to-close all come from the browser for
+ * free. The cost is that its open/close is imperative, so this component
+ * keeps the "controlled open boolean ↔ showModal/close" ref + effect wiring
+ * internal — the caller only has to manage a single piece of state.
  *
- * Esc 关闭不会经过取消按钮,只会派发 close 事件,所以 onClose 也要接回 onCancel,
- * 否则弹窗关了而调用方的 open 还是 true,再点一次就打不开了。
+ * Esc-to-close doesn't go through the cancel button, it only dispatches a
+ * close event, so onClose also has to call back into onCancel — otherwise
+ * the dialog closes while the caller's open is still true, and the next
+ * click can't reopen it.
  *
- * 确认按钮固定是 danger 实心朱砂:本组件只服务于破坏性操作,
- * 别的确认场景不要借这里的外观(见 tokens.css 顶部的用色约定)。
+ * The confirm button is always solid danger vermilion: this component only
+ * serves destructive actions, so other confirmation contexts should not
+ * borrow this look (see the color conventions at the top of tokens.css).
  */
 interface ConfirmDialogProps {
-  /** 受控开合 */
+  /** Controlled open state */
   open: boolean
-  /** 标题元素的 id,接到 dialog 的 aria-labelledby 上 */
+  /** id of the title element, wired to the dialog's aria-labelledby */
   titleId: string
   title: ReactNode
-  /** 标题下的说明:说清楚会丢什么、能不能恢复 */
+  /** Explanation under the title: spell out what's lost and whether it's recoverable */
   body: ReactNode
-  /** 可选的补充块(如即将删除的词头清单),排在说明之后 */
+  /** Optional extra block (e.g. a list of headwords about to be deleted), placed after the body */
   detail?: ReactNode
   confirmLabel: string
   cancelLabel?: string
-  /** 确认动作进行中:确认按钮转圈、取消置灰 */
+  /** Confirm action in progress: confirm button spins, cancel is disabled */
   busy?: boolean
   onConfirm: () => void
   onCancel: () => void
@@ -46,8 +51,9 @@ export function ConfirmDialog({
   onCancel,
 }: ConfirmDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
-  // 双击/连击守卫:同步置位挡掉第二次点击,不等 busy 在下一次渲染后才把按钮禁用。
-  // 关上时解锁,下次打开重新计一次。
+  // Double/repeat-click guard: set synchronously to block the second click,
+  // rather than waiting for `busy` to disable the button on the next render.
+  // Unlocked on close, recounted fresh next time it opens.
   const firedRef = useRef(false)
 
   useEffect(() => {

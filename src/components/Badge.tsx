@@ -1,6 +1,6 @@
 import type { HTMLAttributes } from 'react'
 
-/** 小徽标:同步状态、「新词」标记等。 */
+/** Small badge: sync status, "new word" markers, etc. */
 interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   tone?: 'neutral' | 'accent' | 'success' | 'warning' | 'danger' | 'info'
 }

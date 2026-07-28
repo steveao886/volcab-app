@@ -1,151 +1,151 @@
-# Volcab 项目交接备忘
+# Volcab Project Handoff Notes
 
-**更新时间**:加练三模式 + 词源那一轮
-**状态**:**已上线并在日常使用中**。后续只做小修小补,不再有成规模的开发。
+**Last updated:** the extra-practice three-modes + etymology round
+**Status:** **shipped and in daily use.** Only small fixes from here on, no more development at scale.
 
-线上地址:https://steveao886.github.io/volcab-app/
+Live URL: https://steveao886.github.io/volcab-app/
 
 ---
 
-## 一句话状态
+## One-line status
 
-记单词 PWA,SM-2 间隔重复 + 四种模式的测验 + 词库管理,学习进度经私有仓库 `volcab-data` 跨设备同步。**六个页面全部完成并在真机日常使用**,432 个测试,类型检查 / 构建 / lint / 词库校验全绿,GitHub Actions 推送即部署。
+A vocabulary-learning PWA: SM-2 spaced repetition + four quiz modes + word-list management, with learning progress synced across devices via the private repo `volcab-data`. **All six pages are complete and in daily use on real devices**, 432 tests, type-check / build / lint / word-list validation all green, GitHub Actions deploys on every push.
 
-**今日队列清空之后还有事可做**:测试页的辨析 / 听音 / 极速三个加练模式。三者都不污染 SRS —— 照抄 `recordQuiz` 的约定,错词只提前到期,`ease` 与 `intervalDays` 一律不动。
+**Once today's queue is empty there's still work to do**: the test page's three extra-practice modes — discrimination, listening, and sprint. None of the three pollute SRS state — they follow `recordQuiz`'s convention exactly: a wrong answer only moves the due date up, `ease` and `intervalDays` are never touched.
 
-## 两个仓库
+## Two repos
 
-| 仓库 | 可见性 | 内容 |
+| Repo | Visibility | Contents |
 |---|---|---|
-| `steveao886/volcab-app` | 公开 | 源码。push 到 master 自动构建部署到 Pages |
-| `steveao886/volcab-data` | 私有 | `words.json`(471 词 / 每词 5 句例句)、`progress.json`(学习进度)、`staging.json`(待补全生词) |
+| `steveao886/volcab-app` | Public | Source code. Pushing to master auto-builds and deploys to Pages |
+| `steveao886/volcab-data` | Private | `words.json` (471 words / 5 example sentences each), `progress.json` (learning progress), `staging.json` (words awaiting completion) |
 
-⚠️ **`data/words.json`(app 仓库)不是线上词库。** 它只喂开发模式的演示数据和两条全库回归测试;App 运行时读的是 `volcab-data` 里那一份。两者**曾经分叉过**:用户在 App 里删掉 5 个词,只写进了 `volcab-data`,仓库副本还停在最初 476 词的导入快照上,分叉了几个月没人发现(演示数据多 5 个词不报错)。
+⚠️ **`data/words.json` (in the app repo) is not the live word list.** It only feeds dev-mode demo data and two full-list regression tests; the app at runtime reads the copy in `volcab-data`. The two **have diverged before**: the user deleted 5 words in the app, and that only got written to `volcab-data` — the repo copy stayed frozen at the original 476-word import snapshot, and the drift went unnoticed for months (the demo data having 5 extra words throws no error).
 
-要做词库级的批量改动(补字段、回填数据),**改之前先把 `volcab-data` 的现状拉下来比一遍**:
+For list-wide bulk edits (backfilling fields, filling in data), **pull the current state of `volcab-data` and diff against it before making changes**:
 
 ```bash
 gh api repos/steveao886/volcab-data/contents/words.json -H "Accept: application/vnd.github.raw" > /tmp/live.json
 ```
 
-然后**把改动套到线上那份上,而不是把本地那份覆盖上去** —— 后者会把用户删掉的词复活。这正是词条规范里「直接覆盖词库,若用户已在 App 内改动词库则失效」那条失效条件,它真的触发过一次。
+Then **apply the change on top of the live copy, rather than overwriting it with the local copy** — the latter would resurrect words the user had deleted. This is exactly the failure condition noted in the word-entry spec for "overwrite the list directly, invalid if the user has already modified the list in-app" — and it really did trigger once.
 
-认证是 GitHub fine-grained PAT,仅授权 `volcab-data` 的 Contents 读写,存在浏览器 localStorage。无服务器。
+Auth is a GitHub fine-grained PAT scoped to read/write on `volcab-data` Contents only, stored in browser localStorage. No server.
 
-## 验证命令(应全绿)
+## Verification commands (should all be green)
 
 ```bash
 npm test && npx tsc -b --noEmit && npm run build && npx oxlint && npm run validate-words
 ```
 
-**看设计系统**:`npm run dev` → `#/dev`(仅开发模式),每个组件的每种状态都在那一页。
-**没有真实 token 时看界面**:登录页底部「演示模式(仅开发)」按钮,载入本地 476 词词库,不连网络。生产构建里不存在(已验证 `dist` 里零命中)。
+**To see the design system**: `npm run dev` → `#/dev` (dev mode only) — every state of every component is on that one page.
+**To see the UI without a real token**: the "Demo mode (dev only)" button at the bottom of the login page loads the local 476-word list with no network connection. Absent from the production build (verified: zero hits in `dist`).
 
 ---
 
-## 功能一览
+## Feature overview
 
-| 页面 | 能做什么 |
+| Page | What it does |
 |---|---|
-| 登录 | 粘贴 PAT + 七步图文指引(含**有效期**那一步,漏了会让人一个月后被锁在外面) |
-| 今日 | 到期数 / 新词数 / 连续天数 / 总进度;近 7 天柱状图;同步状态角标;**有顽固词时多一个「专攻顽固词」入口** |
-| 复习 | SRS 卡片,翻面看释义/例句/**词源**/同根词 + **遇见概率与一词多义的义项占比**,例句里**词头高亮**,四档打分,**翻面后可当场删词**,进度显示「还剩 N 张」。**`?mode=lapses` 是顽固词专项**:队列换成按失误次数排的前 20 个且不看到期日,其余行为完全一样 |
-| 快速测试 | **顶部四个模式 chip,走 `?mode=`,默认「综合」**(不带参数时行为与加模式之前完全一致)。综合=六种题型轮换:看词选义、看义选词、拼写、例句挖空、搭配填空、近义反义提示,多义词按义项占比加权抽释义。**辨析**=易混词对二选一挖空 + 答完并排对比卡。**听音**=音→义 / 音→形轮换。**极速**=60 秒,点选项立即判分推进,记个人最好成绩 |
-| 词库 | 476 行搜索(词头/中英释义,大小写不敏感)+ 状态与来源筛选 + 批量删除 |
-| 词条详情 | 完整词条 + 发音 + 学习统计 + **当代遇见概率评分与义项占比** + **词源** + 编辑 + 删除 |
-| 添加新词 | 顶部**快速收词**(只输单词,进暂存区);下方完整表单(查词典预填,**遇见概率与义项占比必填**) |
-| 统计 `/stats` | 30 天复习量、正确率趋势、断签日历、掌握分布、**高频词掌握率(按遇见概率分三档)**、累计量 |
-| 设置 | 每日新词数、音效开关、账号信息、导出备份 |
+| Login | Paste a PAT + a seven-step illustrated guide (including the **expiration** step — skip it and you get locked out a month later) |
+| Today | Due count / new-word count / streak days / total progress; 7-day bar chart; sync-status badge; **an extra "focus on lapses" entry point appears when there are stubborn words** |
+| Review | SRS cards, flip to see definitions/examples/**etymology**/related forms + **likelihood-of-encounter score and sense-share for polysemous words**, **headword highlighted** in example sentences, four-tier grading, **can delete the word on the spot after flipping**, progress shown as "N left". **`?mode=lapses` is the lapses-only mode**: the queue switches to the top 20 words ranked by miss count and ignores due dates, everything else behaves identically |
+| Quick Test | **Four mode chips at the top, driven by `?mode=`, defaulting to "mixed"** (behavior with no query param is identical to before the extra modes existed). Mixed = six question types in rotation: see word pick meaning, see meaning pick word, spelling, cloze-in-example, collocation fill-in, synonym/antonym hints, weighted by sense share for polysemous words. **Discrimination** = pick-one-of-two-confusable-words cloze + a side-by-side comparison card after answering. **Listening** = sound→meaning / sound→form in rotation. **Sprint** = 60 seconds, tapping an option scores it immediately and advances, tracks personal best |
+| Word List | Searchable list of 476 rows (headword/Chinese-English definitions, case-insensitive) + status and source filters + bulk delete |
+| Entry Detail | Full entry + pronunciation + learning stats + **contemporary likelihood-of-encounter score and sense share** + **etymology** + edit + delete |
+| Add Word | **Quick-capture** at the top (word only, goes to staging); full form below (dictionary lookup pre-fills, **likelihood score and sense share required**) |
+| Stats `/stats` | 30-day review volume, accuracy trend, streak-break calendar, mastery distribution, **mastery rate for high-frequency words (bucketed by likelihood score into three tiers)**, cumulative volume |
+| Settings | Daily new-word count, sound toggle, account info, export backup |
 
-**一条词条必须长什么样,以 [`docs/word-entry-spec.md`](../word-entry-spec.md) 为准**(唯一权威,别翻各阶段的设计文档)。里面写清了全部必填字段、`usageScore` 的评分锚点、义项占比 `share` 的硬约束、`etymology` 的「宁可不写」规则,以及生词暂存区的补全流程。
+**For what a word entry must look like, [`docs/word-entry-spec.md`](../word-entry-spec.md) is authoritative** (the single source of truth — don't consult the phase design docs). It spells out every required field, the scoring anchors for `usageScore`, the hard constraints on sense share `share`, the "better to omit" rule for `etymology`, and the workflow for completing entries in the staging area.
 
-**每个词 5 句例句**(共 2355 句)。这个数字有意义:挖空题的题面就是从这 5 句里随机挑的,句子越多同一个词越不容易重样。加词时也按 5 句写。
+**5 example sentences per word** (2355 total). This number matters: the cloze-quiz prompt is randomly picked from these 5, and the more there are, the less likely you are to hit the same prompt for the same word twice. Follow the same 5-sentence rule when adding words.
 
-全库有 3 句定位不到词头(`deify/deifies`、`delve/delving`、`requite/unrequited`),挖空与高亮会跳过它们,每个词都还剩 4 句可用。**不要为此去松动 `lib/headword.ts` 的词干规则** —— 那套枚举词尾是实测调出来的,松开会让 `mire` 的词干命中 **mirth**。0.13% 的瑕疵不值这个风险。
+Across the whole list, 3 sentences fail to locate the headword (`deify/deifies`, `delve/delving`, `requite/unrequited`) — cloze and highlighting skip them, and each of those words still has 4 usable sentences left. **Don't loosen the stemming rules in `lib/headword.ts` over this** — that set of enumerated suffixes was tuned empirically, and loosening it makes the `mire` stem match **mirth**. A 0.13% blemish isn't worth that risk.
 
-**词源覆盖 460/471**(仓库副本与线上一致)。剩下 11 个是刻意留空的:`harangue` / `grouse` / `rabble` / `obscene` / `agog` / `turmoil` / `vehement` 词源本身有争议,`purebred` / `interchangeability` / `wastefulness` / `undervaluation` 拆开也没信息量。**别为了凑满而补上** —— 词源写错不是少一条信息,是往脑子里钉一个错误的记忆锚点,民间词源比空白有害。
+**Etymology coverage is 460/471** (repo copy matches the live one). The remaining 11 are deliberately left blank: `harangue` / `grouse` / `rabble` / `obscene` / `agog` / `turmoil` / `vehement` have etymologies that are themselves disputed, and breaking down `purebred` / `interchangeability` / `wastefulness` / `undervaluation` yields no useful information. **Don't fill these in just to hit 100%** — a wrong etymology isn't just a missing piece of information, it's a false memory anchor driven into your head; folk etymology is worse than a blank.
 
-**生词暂存区怎么用**:`/add` 顶部输入框丢单词进去,只需要单词。攒够了在会话里让 AI 读 `staging.json`,按词条规范批量生成完整词条(**`usageScore` 与多义词的 `share` 在这一步一并产出**,不要先入库再补分)后合并进 `words.json`,并**按 headword 精确移除已提升的条目**(不要清空整个文件——用户可能在此期间又加了词)。
+**How the staging area for new words works**: the input box at the top of `/add` drops a word in — just the word, nothing else. Once enough have piled up, have the AI read `staging.json` in-session, batch-generate complete entries per the word-entry spec (**produce `usageScore` and, for polysemous words, `share`, at this step** — don't add them after the fact once already in the store), merge into `words.json`, and **remove exactly the promoted entries by headword** (don't clear the whole file — the user may have added more words in the meantime).
 
 ---
 
-## 架构与关键约定
+## Architecture and key conventions
 
 ```
 src/
-├── lib/        纯函数,全部有测试:srs(SM-2)/ queue / merge / quiz / github / storage / tts / sound
-│              + senseShare(义项占比规则,校验脚本反过来 import 它)
-│              + etymology(词源字段规则,同样被校验脚本 import)
-│              + headword(在句中定位词头,挖空与高亮共用同一份)
-│              + contrast(易混词配对:近义词重叠建倒排索引,按紧密度打分)
-├── state/      store.tsx(React 绑定)+ sync/session/errors(纯逻辑,重测试)
-├── components/ 设计系统组件
+├── lib/        pure functions, all tested: srs (SM-2) / queue / merge / quiz / github / storage / tts / sound
+│              + senseShare (sense-share rules, imported by the validation script)
+│              + etymology (etymology field rules, also imported by the validation script)
+│              + headword (locates the headword within a sentence, shared by cloze and highlighting)
+│              + contrast (confusable-word pairing: builds an inverted index over overlapping synonyms, scores by closeness)
+├── state/      store.tsx (React bindings) + sync/session/errors (pure logic, heavily tested)
+├── components/ design-system components
 ├── styles/     tokens / base / components / layout
-└── pages/      八个页面 + 各自的纯函数(reviewQueue / libraryFilter / statsDerive / todayStats / stagingCapture / dictionaryApi)
+└── pages/      eight pages + their own pure functions (reviewQueue / libraryFilter / statsDerive / todayStats / stagingCapture / dictionaryApi)
 ```
 
-**测试哲学**:UI 不写组件测试(有意决定);**但凡有真实逻辑就抽成纯函数文件并强制 TDD**。386 个测试绝大多数来自这些纯函数文件,外加 `store.test.tsx` 的 32 个编排集成测试。
+**Testing philosophy**: no component tests for UI (a deliberate decision); **but any real logic gets extracted into a pure-function file and TDD is mandatory.** The great majority of the 386 tests come from those pure-function files, plus 32 orchestration/integration tests in `store.test.tsx`.
 
-**设计语言「墨与纸」**:暖象牙纸 / 墨黑,朱砂**只做批注**(眉标、页签刻度、进度条、印章),发丝描边而非阴影,英文词头用衬线、音标用专门字体栈、中文用 CJK 优先无衬线。移动优先 375px,深浅色双套。`--tap: 44px` 是最小可点区域。
+**Design language, "ink and paper"**: warm ivory paper / ink black, vermillion **used only for annotation** (margin marks, tab-index ticks, progress bars, stamps), hairline strokes rather than shadows, serif for English headwords, a dedicated font stack for phonetics, CJK-first sans-serif for Chinese. Mobile-first at 375px, both light and dark themes. `--tap: 44px` is the minimum tappable size.
 
-**同步机制**:
-- 进度防抖 30 秒推送;词库与暂存区变更即推
-- 冲突:重新拉取 → 按词合并(取 `lastReviewedAt` 较新)→ 重推,**只重试一次**
-- **settings 按 `settings.updatedAt` 判优**,缺时间戳视为最旧
-- 待推送队列持久化在 localStorage,推送失败关标签页也不丢
-
----
-
-## 已知问题(**没修**,按严重程度排)
-
-1. ~~**`words.json` 撞 1 MB 读取上限**~~ —— **已修**:`getFile` 改走 `Accept: application/vnd.github.raw`,上限 100 MB。sha 从 raw 响应的 ETag 取(实测即 blob sha,且在 `Access-Control-Expose-Headers` 里),形状不对则回退多发一次 JSON 请求只取 sha。**注意 `progress.json` 走的是同一个 `getFile`,所以那条「完整日志约 9 个月撞顶」的顾虑(v1.1 spec §5.1)也一并解除了。**
-2. **四处仍无自动化测试**:30 秒防抖(需把 `PUSH_DEBOUNCE_MS` 做成可注入)、`online`/`offline`/`visibilitychange`(需在测试里覆盖 `navigator.onLine` 与 `document.visibilityState`)、演示模式、**极速赛的 60 秒倒计时与 350ms 自动推进**(两个定时器都长在 `QuizSprint.tsx` 里,要测得先把时长做成可注入 —— 出题与结算逻辑本身已经有测试,没测的只是计时)。
-3. **词库/词条页返回是 push 不是 pop**:搜索词、筛选、滚动位置每次都丢,476 行列表回到顶部;历史栈只增不减,独立窗口下系统返回手势会送回刚看完的词。
-4. **测验结果页点错词就丢结果**:进词条详情后 `QuizSession` 卸载,回来是全新一轮。
-5. ~~**新添加的词几个月内不会进复习队列**~~ —— **已修**:`buildQueue` 的新词改按 `usageScore` 降序取,不再是数组顺序;复习词的末位 tiebreaker 也从字母序换成遇见概率。
-6. **两套柱状图实现**:今日页 7 根用 CSS flex,统计页 30 根用 SVG(375px 下 30 根 flex 柱子的舍入误差会溢出)。理由成立,但留了重复。
-7. **音效偏轻**:90ms 正弦、峰值增益 0.12。iOS 的**侧边静音拨片会屏蔽 Web Audio**,这不是缺陷但极易被当成缺陷。
-
-   同一个坑在**听音模式**上更要命:iOS 可能拦掉没有用户手势的 `speechSynthesis`,所以每题都有显式的「再听一遍」按钮,进题时的自动播放**被拦掉也不影响作答**。刻意不做播放成功与否的检测 —— 检测不可靠,按钮本身就是完整的退路。真机上听不到时先查静音拨片,别急着改代码。
-8. **设置页版本号是常量**,`package.json` 仍是 `0.0.0`。要真实版本号需在 `vite.config.ts` 加 `define`。
-9. **眉标样式散在四处**(`.pos` / `.page__eyebrow` / `.quiz-q__label` / `.review-done__label`),只差颜色。抽 `.eyebrow` 是设计决定,没做。
+**Sync mechanism**:
+- Progress pushes on a 30-second debounce; word-list and staging-area changes push immediately
+- Conflict handling: re-fetch → merge per word (keep the newer `lastReviewedAt`) → push again, **retried only once**
+- **settings is resolved by `settings.updatedAt`**; a missing timestamp is treated as oldest
+- The pending-push queue is persisted to localStorage, so a failed push isn't lost even if the tab is closed
 
 ---
 
-## 踩过的坑(重要,别再踩一遍)
+## Known issues (**not fixed**, ordered by severity)
 
-**本环境的浏览器面板不合成画面。** 截图必超时、`requestAnimationFrame` 永不触发、坐标点击不生效、`getComputedStyle` 在 CSS 过渡期间返回旧值。**整个项目没有一张截图**,所有视觉结论都止于 DOM 与计算样式层面。要验证布局,用 `getBoundingClientRect()` 算矩形相交,别靠肉眼。
+1. ~~**`words.json` hits the 1 MB read limit**~~ — **fixed**: `getFile` now uses `Accept: application/vnd.github.raw`, raising the limit to 100 MB. The sha is read from the raw response's ETag (verified to be the blob sha, and it's exposed via `Access-Control-Expose-Headers`); if the shape is wrong it falls back to an extra JSON request for the sha alone. **Note that `progress.json` goes through this same `getFile`, so the concern about "the full log hitting the ceiling in about 9 months" (v1.1 spec §5.1) is resolved along with it.**
+2. **Four spots still have no automated tests**: the 30-second debounce (would need `PUSH_DEBOUNCE_MS` made injectable), `online`/`offline`/`visibilitychange` (would need tests that stub `navigator.onLine` and `document.visibilityState`), demo mode, and **sprint mode's 60-second countdown and 350ms auto-advance** (both timers live inside `QuizSprint.tsx`; testing them requires making the durations injectable — the question-generation and scoring logic itself is already tested, only the timing isn't).
+3. **Word-list/entry-detail back navigation pushes instead of popping**: search terms, filters, and scroll position are lost every time, the 476-row list resets to the top; the history stack only grows, so under a standalone-window system back gesture you land back on the word you just viewed.
+4. **Quiz results page loses its results if you tap the wrong word**: entering entry detail unmounts `QuizSession`, and coming back starts a fresh round.
+5. ~~**Newly added words don't enter the review queue for months**~~ — **fixed**: `buildQueue` now sorts new words by `usageScore` descending instead of array order; the tiebreaker for review words also switched from alphabetical to likelihood-of-encounter score.
+6. **Two separate bar-chart implementations**: the Today page's 7 bars use CSS flex, the Stats page's 30 bars use SVG (rounding error in 30 flex bars at 375px width would overflow). The reasoning holds, but it leaves duplication behind.
+7. **Sound effects are subtle**: 90ms sine wave, peak gain 0.12. iOS's **side mute switch silences Web Audio**, which isn't a bug but is very easy to mistake for one.
 
-**HMR 会骗人。** 改完代码页面行为不变时,先强制刷新再下结论。至少两次差点误判修复无效。
-
-**面板没有焦点时 `el.blur()` 不产生 React 能收到的 `focusout`。** 测表单提交要派发冒泡的 `focusout`,否则会误以为 `onBlur` 没接上。
-
-**`preview_start` 不带显式 URL 时可能在主仓库起服务**,而不是当前 worktree。
-
-**并行 agent 共用同一个浏览器会话**,会互相抢标签页,还撞过 "Tab cap reached"。要用就自己建 tab 并每次带显式 `tabId`。
-
----
-
-## 这个项目是怎么建起来的(方法论,值得复用)
-
-**并行 + 隔离**:八个页面由八个 agent 在各自的 git worktree 里同时开发,`node_modules` 用 junction 共享。规则是**页面 agent 一律不许改 `src/styles/` 和 `src/components/`**,缺样式就写自己的页面 CSS 并在报告里列出——合并后统一收编一次。八路并行,合并零冲突。
-
-**每个任务两阶段审查**:先查规格合规(建了没建对的东西),再查代码质量(建得好不好)。审查者被明确要求"不要相信实现者的报告,自己读代码验证"。这套流程捞出的东西包括:PAT 指引漏了有效期(照抄计划就会犯,一个月后用户被锁在外面)、词库编辑推送失败后被远端静默覆盖、添加新词页压根没有入口、每答一题焦点掉回 body、全角逗号切不开标签。
-
-**变异测试**:改完必须故意把生产代码改坏,确认对应测试变红。这条抓到过一次真实的空转——三条测试因为一个逃生口从未执行断言却显示绿色。
-
-**规格里写明失效条件。** 「直接覆盖词库」这条策略在文档里注明了「若用户已在 App 内改动词库则失效」。后来推送被拒时,不需要临场判断,只要去核实那个条件是否触发。**写下来的失效条件比任何小心谨慎都管用。**
+   The same trap is more serious in **listening mode**: iOS can block `speechSynthesis` calls that lack a user gesture, so every question has an explicit "play again" button, and autoplay on question entry **being blocked doesn't affect the ability to answer**. Deliberately no detection of whether playback succeeded — such detection is unreliable, and the button itself is a complete fallback. If you can't hear anything on a real device, check the mute switch before touching the code.
+8. **The version number on the settings page is a constant**; `package.json` is still `0.0.0`. A real version number would need a `define` added to `vite.config.ts`.
+9. **Eyebrow-label styling is scattered across four places** (`.pos` / `.page__eyebrow` / `.quiz-q__label` / `.review-done__label`), differing only in color. Extracting `.eyebrow` was a design decision that was never carried out.
 
 ---
 
-## 环境
+## Pitfalls hit along the way (important, don't repeat them)
 
-- Windows,PowerShell 与 Git Bash 均可用
-- `gh` 登录账号:**steveao886**
-- `Volcab.enex` 是个人笔记,已 gitignore,**永远不要 git add**(app 仓库是公开的)。已确认从未被跟踪。
+**This environment's browser panel doesn't composite frames.** Screenshots always time out, `requestAnimationFrame` never fires, coordinate clicks don't register, `getComputedStyle` returns stale values mid CSS-transition. **Not a single screenshot exists anywhere in this project** — every visual conclusion is grounded in the DOM and computed-style layer only. To verify layout, use `getBoundingClientRect()` to check rectangle intersection, don't eyeball it.
 
-## 用户偏好
+**HMR lies.** When behavior doesn't change after editing code, force-refresh before drawing any conclusion. At least twice this nearly led to misjudging a fix as ineffective.
 
-- 界面中文,释义中英双语
-- 例句必须有具体场景和画面感,拒绝教科书式空泛句
-- 阶段之间会喊停,不要自作主张跨阶段推进
+**`el.blur()` doesn't produce a React-visible `focusout` when the panel isn't focused.** To test form submission, dispatch a bubbling `focusout`, otherwise you'll wrongly conclude `onBlur` isn't wired up.
+
+**`preview_start` without an explicit URL may start a server in the main repo** rather than the current worktree.
+
+**Parallel agents sharing the same browser session fight over tabs**, and have hit "Tab cap reached." If you need one, create your own tab and always pass an explicit `tabId`.
+
+---
+
+## How this project got built (methodology, worth reusing)
+
+**Parallelism + isolation**: the eight pages were built by eight agents working simultaneously, each in its own git worktree, with `node_modules` shared via a junction. The rule was that **page agents were never allowed to touch `src/styles/` or `src/components/`** — if a page needed styling that didn't exist yet, it wrote its own page-level CSS and listed it in its report, to be consolidated in one pass after merging. Eight parallel tracks, zero merge conflicts.
+
+**Two-phase review per task**: first check spec compliance (was the right thing built), then check code quality (was it built well). Reviewers were explicitly instructed to "not trust the implementer's report — read the code yourself and verify." This process caught things like: the PAT walkthrough missing the expiration step (an easy mistake to make copying the plan verbatim, and one that locks the user out a month later), a word-list edit getting silently overwritten by the remote after a failed push, the add-word page having no entry point at all, focus dropping back to `body` after every answered question, and full-width commas failing to split tags.
+
+**Mutation testing**: after finishing, deliberately break the production code and confirm the corresponding tests go red. This process once caught a real no-op — three tests that, because of an early-exit path, never executed their assertions yet still showed green.
+
+**Write failure conditions into the spec.** The "overwrite the word list directly" strategy is documented with an explicit note: "invalid if the user has already modified the list in-app." Later, when a push was rejected, no on-the-spot judgment call was needed — it was just a matter of checking whether that condition had triggered. **A written-down failure condition beats any amount of careful caution.**
+
+---
+
+## Environment
+
+- Windows, both PowerShell and Git Bash available
+- `gh` logged in as: **steveao886**
+- `Volcab.enex` is a personal note file, already gitignored, **never `git add` it** (the app repo is public). Confirmed it has never been tracked.
+
+## User preferences
+
+- UI in Chinese, definitions bilingual (Chinese/English)
+- Example sentences must have a concrete scene and vividness, no textbook-flat filler
+- The user pauses between phases; don't push ahead to the next phase on your own initiative

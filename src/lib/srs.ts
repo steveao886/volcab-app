@@ -1,6 +1,6 @@
 import type { Grade, ProgressEntry } from '../types'
 
-export const LEARNING_STEPS = 2      // 学习步数:当次会话内 1 分钟、10 分钟重现
+export const LEARNING_STEPS = 2      // Learning steps: reappears at 1 minute and 10 minutes within the same session
 export const MIN_EASE = 1.3
 export const MAX_INTERVAL_DAYS = 365
 const GRADUATE_DAYS = 1
@@ -23,7 +23,7 @@ const freshEntry = (now: Date): ProgressEntry => ({
   stepIndex: 0, reps: 0, lapses: 0, lastReviewedAt: now.toISOString(),
 })
 
-// ±5% 随机模糊,3 天以内不模糊
+// ±5% random fuzz; no fuzzing within 3 days
 function fuzz(days: number, rng: () => number): number {
   if (days < 3) return Math.min(days, MAX_INTERVAL_DAYS)
   const factor = 1 + (rng() * 2 - 1) * 0.05
@@ -50,7 +50,7 @@ export function gradeWord(
     return e
   }
 
-  // review 阶段
+  // review phase
   if (grade === 'again') {
     e.lapses += 1
     e.ease = Math.max(MIN_EASE, e.ease - 0.2)

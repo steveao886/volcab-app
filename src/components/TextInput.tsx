@@ -1,6 +1,6 @@
 import type { ComponentPropsWithRef } from 'react'
 
-/** 单行输入框。 */
+/** Single-line text input. */
 export function TextInput({
   className,
   type = 'text',

@@ -1,9 +1,11 @@
 /**
- * 同步与登录的错误分类和用户可见文案,集中一处。
+ * Error classification and user-visible copy for sync and login, kept in one place.
  *
- * github.ts 只会抛带 `(HTTP xxx)` 的 Error,是我们唯一能拿到的机器可读信号,
- * 因此分类靠解析文案。放在这里而不是散在 store 里,是为了让「什么错该退登、
- * 什么错只提示」这条策略可以单测,也免得同一句话在两处各写一遍。
+ * github.ts only ever throws an Error carrying `(HTTP xxx)`, the one
+ * machine-readable signal we get, so classification relies on parsing that
+ * text. This lives here instead of scattered through store so the policy of
+ * "which errors log you out, which just notify" can be unit tested, and so
+ * the same sentence isn't written out twice in two places.
  */
 
 export const GIVE_UP =
@@ -31,23 +33,23 @@ export function logoutDiscarded(words: number, hadProgress: boolean, staging = 0
   const parts: string[] = []
   if (hadProgress) parts.push('未同步的学习进度')
   if (words > 0) parts.push(`${words} 条未同步的词库改动`)
-  // 暂存区的收词同样是用户敲进去的东西,退出时一并清掉就必须一并说出来
+  // Staged words are just as much something the user typed in — clearing them out on logout has to be disclosed too
   if (staging > 0) parts.push(`${staging} 个待补全的生词`)
   return `退出前还有${parts.join('、')},已随本机数据一并清除。`
 }
 
 export const errText = (e: unknown) => (e instanceof Error ? e.message : String(e))
 
-/** 从报错文案里取回 HTTP 状态码;也吃 sync.ts 回传的 error 字符串 */
+/** Recovers the HTTP status code from error copy; also accepts the error string sync.ts hands back */
 export function httpStatus(e: unknown): number | null {
   const m = /HTTP (\d{3})/.exec(errText(e))
   return m ? Number(m[1]) : null
 }
 
-/** github.ts 在限流时会在文案里带上这个标记(403 既可能是限流也可能是权限不足) */
+/** github.ts stamps this marker into the copy when rate-limited (a 403 could mean either rate limiting or insufficient permissions) */
 export const isRateLimited = (e: unknown) => errText(e).includes('rate-limited')
 
-/** 登录路径上的报错:直接给用户看的一句话 */
+/** An error on the login path: a sentence shown directly to the user */
 export function friendlyError(e: unknown): string {
   if (!navigator.onLine) return OFFLINE
   switch (httpStatus(e)) {
@@ -58,14 +60,15 @@ export function friendlyError(e: unknown): string {
 }
 
 /**
- * 后台推送失败的处置。
+ * How a background push failure is handled.
  *
- * 只有 401(token 被撤销)才清 token 退回登录页;403 一律**不**退登 ——
- * 限流是暂时的,为此清掉一个有效 token 是净损失。
+ * Only a 401 (token revoked) clears the token and falls back to the login
+ * page; a 403 **never** logs out — rate limiting is temporary, and clearing
+ * a valid token over it is a net loss.
  */
 export type SyncFailure =
-  | { kind: 'auth'; message: string }      // 必须退回登录页
-  | { kind: 'notice'; message: string }    // 只提示,数据留在本地等下次重试
+  | { kind: 'auth'; message: string }      // must fall back to the login page
+  | { kind: 'notice'; message: string }    // just a notice, data stays local awaiting the next retry
 
 export function classifySyncFailure(error: string): SyncFailure {
   if (!navigator.onLine) return { kind: 'notice', message: OFFLINE }

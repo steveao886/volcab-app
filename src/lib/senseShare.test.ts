@@ -5,135 +5,135 @@ import type { Meaning } from '../types'
 const m = (zh: string, share?: number): Meaning => ({ pos: 'v.', en: zh, zh, share })
 
 describe('SHARE_OPTIONS', () => {
-  it('是 10–90 的整十,不含 0 和 100', () => {
+  it('is the multiples of ten from 10 to 90, excluding 0 and 100', () => {
     expect(SHARE_OPTIONS).toEqual([10, 20, 30, 40, 50, 60, 70, 80, 90])
   })
 })
 
 describe('validateShares', () => {
-  it('单义词不带 share 时通过', () => {
+  it('passes when a single-sense word has no share', () => {
     expect(validateShares([m('唯一义')])).toBeNull()
   })
 
-  it('单义词带 share 判错 —— 100% 是噪音,且会让「有 share 即多义词」失效', () => {
+  it('a single-sense word with a share is an error — 100% is noise, and it would break the "having a share means multi-sense" rule', () => {
     expect(validateShares([m('唯一义', 100)])).toMatch(/单义/)
     expect(validateShares([m('唯一义', 90)])).toMatch(/单义/)
   })
 
-  it('多义词全部带 share 且合计 100 时通过', () => {
+  it('passes when a multi-sense word has shares on every sense summing to 100', () => {
     expect(validateShares([m('甲', 90), m('乙', 10)])).toBeNull()
     expect(validateShares([m('甲', 50), m('乙', 30), m('丙', 20)])).toBeNull()
   })
 
-  it('多义词允许 50/50', () => {
+  it('a multi-sense word allows 50/50', () => {
     expect(validateShares([m('甲', 50), m('乙', 50)])).toBeNull()
   })
 
-  it('多义词一条都没填时判错', () => {
+  it('errors when a multi-sense word has no shares filled in at all', () => {
     expect(validateShares([m('甲'), m('乙')])).toMatch(/每条/)
   })
 
-  it('多义词只填了一部分时判错', () => {
+  it('errors when a multi-sense word only has some shares filled in', () => {
     expect(validateShares([m('甲', 90), m('乙')])).toMatch(/每条/)
   })
 
-  it('非整十判错', () => {
+  it('errors when not a multiple of ten', () => {
     expect(validateShares([m('甲', 85), m('乙', 15)])).toMatch(/整十/)
   })
 
-  it('小数判错', () => {
+  it('errors on decimals', () => {
     expect(validateShares([m('甲', 90.5), m('乙', 9.5)])).toMatch(/整十/)
   })
 
-  it('超出 10–90 判错', () => {
+  it('errors when outside the 10-90 range', () => {
     expect(validateShares([m('甲', 100), m('乙', 0)])).toMatch(/整十/)
   })
 
-  it('合计不为 100 判错,并带上当前合计', () => {
+  it('errors when the total is not 100, and includes the current total', () => {
     const err = validateShares([m('甲', 90), m('乙', 20)])
     expect(err).toMatch(/合计/)
     expect(err).toContain('110')
   })
 
-  it('未按降序排列不算错 —— 排序由 normalizeMeanings 落库时负责', () => {
+  it("not being sorted descending is not an error — ordering is normalizeMeanings' job at save time", () => {
     expect(validateShares([m('甲', 10), m('乙', 90)])).toBeNull()
   })
 
-  it('空数组不归它管,交给上游的「至少一条释义」校验', () => {
+  it('an empty array is not this function\'s concern — that is handled by the upstream "at least one sense" validation', () => {
     expect(validateShares([])).toBeNull()
   })
 })
 
 describe('isShareOrdered', () => {
-  it('降序为真', () => {
+  it('descending is true', () => {
     expect(isShareOrdered([m('甲', 90), m('乙', 10)])).toBe(true)
   })
 
-  it('相等视为有序(50/50)', () => {
+  it('equal values count as ordered (50/50)', () => {
     expect(isShareOrdered([m('甲', 50), m('乙', 50)])).toBe(true)
   })
 
-  it('升序为假', () => {
+  it('ascending is false', () => {
     expect(isShareOrdered([m('甲', 10), m('乙', 90)])).toBe(false)
   })
 
-  it('没有 share 时视为有序', () => {
+  it('no shares counts as ordered', () => {
     expect(isShareOrdered([m('甲'), m('乙')])).toBe(true)
     expect(isShareOrdered([m('唯一义')])).toBe(true)
   })
 })
 
 describe('normalizeMeanings', () => {
-  it('多义词按 share 降序重排', () => {
+  it('a multi-sense word is re-sorted by share descending', () => {
     const out = normalizeMeanings([m('少见', 10), m('主流', 90)])
     expect(out.map(x => x.zh)).toEqual(['主流', '少见'])
   })
 
-  it('占比相等时保持原有顺序(稳定排序)', () => {
+  it('keeps the original order when shares are equal (stable sort)', () => {
     const out = normalizeMeanings([m('甲', 50), m('乙', 50)])
     expect(out.map(x => x.zh)).toEqual(['甲', '乙'])
   })
 
-  it('单义词剥掉 share', () => {
+  it('strips share from a single-sense word', () => {
     const out = normalizeMeanings([m('唯一义', 100)])
     expect(out).toHaveLength(1)
     expect('share' in out[0]).toBe(false)
   })
 
-  it('单义词本来就没有 share 时原样返回', () => {
+  it('returns as-is when a single-sense word already had no share', () => {
     const out = normalizeMeanings([m('唯一义')])
     expect(out[0].zh).toBe('唯一义')
     expect(out[0].share).toBeUndefined()
   })
 
-  it('多义词都没有 share 时保持原顺序,不凭空造值', () => {
+  it('keeps the original order when a multi-sense word has no shares at all, without inventing values', () => {
     const out = normalizeMeanings([m('甲'), m('乙')])
     expect(out.map(x => x.zh)).toEqual(['甲', '乙'])
     expect(out.every(x => x.share === undefined)).toBe(true)
   })
 
-  it('不改动入参数组', () => {
+  it('does not mutate the input array', () => {
     const input = [m('少见', 10), m('主流', 90)]
     normalizeMeanings(input)
     expect(input.map(x => x.zh)).toEqual(['少见', '主流'])
   })
 
-  it('保留 share 之外的字段', () => {
+  it('preserves fields other than share', () => {
     const out = normalizeMeanings([{ pos: 'n.', en: 'a thing', zh: '东西', share: 60 }, m('别的', 40)])
     expect(out[0]).toEqual({ pos: 'n.', en: 'a thing', zh: '东西', share: 60 })
   })
 })
 
 describe('shareSum', () => {
-  it('求和', () => {
+  it('sums the values', () => {
     expect(shareSum([m('甲', 90), m('乙', 10)])).toBe(100)
   })
 
-  it('缺 share 的义项按 0 计 —— 表单合计提示要能显示「还差多少」', () => {
+  it('a sense missing share counts as 0 — the form\'s total display needs to be able to show "how much is left"', () => {
     expect(shareSum([m('甲', 90), m('乙')])).toBe(90)
   })
 
-  it('空数组为 0', () => {
+  it('an empty array is 0', () => {
     expect(shareSum([])).toBe(0)
   })
 })

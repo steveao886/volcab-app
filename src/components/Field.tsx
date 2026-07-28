@@ -7,11 +7,12 @@ interface ControlAria {
 }
 
 /**
- * 表单字段外壳:标签 + 控件 + 提示/错误。
- * 调用方只要给控件设好 id(与 htmlFor 一致),aria-describedby 与
- * aria-invalid 由这里自动接上 —— 有 error 时控件同时会被
- * `.input[aria-invalid='true']` 描红,不会只有下面一行红字。
- * 调用方自己写的 aria-describedby / aria-invalid 优先保留。
+ * Form field shell: label + control + hint/error.
+ * The caller just needs to set the control's id (matching htmlFor) —
+ * aria-describedby and aria-invalid get wired up automatically here, so
+ * when there's an error the control is also outlined red via
+ * `.input[aria-invalid='true']`, not just a line of red text below it.
+ * Any aria-describedby / aria-invalid the caller sets explicitly is kept as-is.
  */
 interface FieldProps {
   label: ReactNode

@@ -1,26 +1,32 @@
 import type { Meaning } from '../types'
 
 /**
- * 词条上两项评分类 metadata 的共用规则:义项占比(`Meaning.share`)与当代遇见
- * 概率(`Word.usageScore`)的取值范围。一处定义、三处共用:`/add` 表单、词条
- * 编辑表单、以及 `scripts/validate-words.ts` 的入库校验。
+ * Shared rules for two rating-style metadata fields on a word entry: meaning share
+ * (`Meaning.share`) and contemporary usage likelihood (`Word.usageScore`), and the value
+ * ranges each may take. Defined once, used in three places: the `/add` form, the entry edit
+ * form, and `scripts/validate-words.ts`'s ingestion validation.
  *
- * 放在 src/lib 而不是 scripts/ 里,是因为 WordEditForm.tsx 里那条注释已经踩过一次坑
- * ——「校验必须和 scripts/validate-words.ts 对齐,否则这里存下的词条会悄悄脱离
- * schema」。两边各写一份迟早会漂移,所以让脚本反过来 import 这个模块。
+ * Lives in src/lib rather than scripts/ because a comment in WordEditForm.tsx already paid
+ * for this lesson once — "validation must stay aligned with scripts/validate-words.ts, or
+ * entries saved here will silently drift out of schema." Maintaining two separate copies
+ * would eventually drift apart, so the script imports this module instead.
  */
 
-/** 当代遇见概率的可选值。表单渲染成下拉,于是「1–10 的整数」不可能填错。 */
+/** The selectable values for contemporary usage likelihood. The form renders it as a dropdown, so "an integer from 1–10" can never be entered wrong. */
 export const USAGE_SCORE_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const
 
 /**
- * 占比只到整十,且不含 0 与 100。
+ * Share values are restricted to multiples of ten, excluding both 0 and 100.
  *
- * 这不是懒:占比是会话中 AI 依据当代用法常识估的量级,背后没有语料统计。
- * 87%/13% 会暗示有 COCA 之类的来源,那是假精度。0 和 100 也排除 —— 100% 意味着
- * 它其实是单义词(那就不该有 share),0% 意味着这条释义不该收进来。
+ * This isn't laziness: share is a rough order-of-magnitude estimate the AI makes during the
+ * session based on general knowledge of contemporary usage, with no corpus statistics behind
+ * it. A value like 87%/13% would imply a source like COCA, which would be false precision.
+ * 0 and 100 are excluded too — 100% would mean the word is actually single-meaning (and
+ * shouldn't have a share at all), while 0% would mean this meaning shouldn't have been
+ * included in the first place.
  *
- * 表单用它渲染下拉选项,于是「整十」这条约束在结构上就不可能违反。
+ * The form uses this to render its dropdown options, so the "multiples of ten" constraint
+ * becomes structurally impossible to violate.
  */
 export const SHARE_OPTIONS = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
 
@@ -29,19 +35,22 @@ type HasShare = Pick<Meaning, 'share'>
 const isValidShare = (s: number | undefined): boolean =>
   s !== undefined && Number.isInteger(s) && s >= 10 && s <= 90 && s % 10 === 0
 
-/** 合计;缺 share 的义项按 0 计,好让表单的「合计 X%」能显示出还差多少。 */
+/** The total; meanings missing a share count as 0, so the form's "total X%" can show how far short it still is. */
 export function shareSum(meanings: readonly HasShare[]): number {
   return meanings.reduce((sum, m) => sum + (m.share ?? 0), 0)
 }
 
 /**
- * 一组义项的占比是否自洽。通过返回 null,否则返回一条可直接展示给用户的中文说明。
+ * Whether a set of meanings' shares are internally consistent. Returns null when valid,
+ * otherwise a message ready to show the user directly.
  *
- * **不查排序**:表单允许用户随手填,落库前由 normalizeMeanings 统一按降序重排,
- * 没必要拿一个自己能修的问题去拦用户。数据文件里的顺序由 isShareOrdered 单独把关。
+ * **Does not check ordering**: the form lets the user fill things in in any order, and
+ * normalizeMeanings re-sorts them descending before they're saved, so there's no need to
+ * block the user over something that gets fixed automatically. Ordering within the data
+ * file is checked separately by isShareOrdered.
  */
 export function validateShares(meanings: readonly HasShare[]): string | null {
-  if (meanings.length === 0) return null // 「至少一条释义」是上游的校验,不在这里重复
+  if (meanings.length === 0) return null // "At least one meaning" is validated upstream; not repeated here
 
   const filled = meanings.filter(m => m.share !== undefined)
 
@@ -65,10 +74,12 @@ export function validateShares(meanings: readonly HasShare[]): string | null {
 }
 
 /**
- * 数据文件里的义项是否已按占比从高到低排好。
+ * Whether the meanings in the data file are already sorted by share, highest to lowest.
  *
- * 存储层就有序,三个渲染处(复习卡、详情页、编辑表单)才能天然一致、一处都不必
- * 现算排序;释义前的序号也顺带成为常用度序号。占比相等(50/50)算有序。
+ * Keeping the storage layer sorted lets the three rendering sites (the review card, the
+ * detail page, the edit form) stay naturally consistent without any of them having to sort
+ * on the fly; it also means the number in front of each meaning doubles as a
+ * frequency-of-use rank. Equal shares (50/50) count as sorted.
  */
 export function isShareOrdered(meanings: readonly HasShare[]): boolean {
   for (let i = 1; i < meanings.length; i++) {
@@ -81,10 +92,12 @@ export function isShareOrdered(meanings: readonly HasShare[]): boolean {
 }
 
 /**
- * 落库前的归一化:单义词剥掉 share,多义词按 share 降序稳定重排。不改动入参。
+ * Normalization before saving to the store: strips share from single-meaning words, and
+ * stably re-sorts multi-meaning words by share descending. Does not mutate the input.
  *
- * 占比相等时靠稳定排序保持原有先后 —— 50/50 的词本来就分不出主次,不该因为
- * 一次无关的编辑就把两条释义调个个儿。
+ * When shares tie, a stable sort preserves the original ordering — a 50/50 word has no
+ * inherent primary/secondary distinction to begin with, and shouldn't have its two meanings
+ * swapped just because of some unrelated edit.
  */
 export function normalizeMeanings<T extends HasShare>(meanings: readonly T[]): T[] {
   if (meanings.length <= 1) {

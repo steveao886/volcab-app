@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import { TabBar } from './TabBar'
 
-/** 已登录区域的外壳:导航 + 路由出口 + 弹层挂载点。 */
+/** Shell for the authenticated area: nav + route outlet + overlay mount point. */
 export function AppLayout() {
   return (
     <div className="app">
@@ -10,9 +10,11 @@ export function AppLayout() {
         <Outlet />
       </main>
       {/*
-        固定定位/浮层内容(底部「删除所选」条、确认对话框)请用
-        createPortal(node, document.getElementById('overlay-root')) 挂到这里:
-        层级确定在页签之上,也不受页面自身的层叠上下文影响。
+        Fixed-position/overlay content (bottom "delete selected" bar, confirm
+        dialogs) should mount here via
+        createPortal(node, document.getElementById('overlay-root')):
+        stacking order is guaranteed above the tab bar, unaffected by any
+        page's own stacking context.
       */}
       <div className="overlay-root" id="overlay-root" />
     </div>

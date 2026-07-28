@@ -3,9 +3,10 @@ import { QUIZ_TYPES, clozeCollocation, clozeExample, generateAudioQuiz, generate
 import { emptyProgress } from '../types'
 import type { Meaning, Progress, Word } from '../types'
 
-// 字段覆盖六种题型所需的全部原料:examples/collocations 含词头原形(挖空题要能
-// 定位到它),synonyms/antonyms 以 id 为前缀天然互不相同、也不与其他 fixture 词共享
-// (否则会被 sharedSynonyms 排除,synonymHint 就出不来)。
+// These fields cover everything the six question types need: examples/collocations contain
+// the base headword form (the cloze question must be able to locate it), synonyms/antonyms
+// are prefixed with the id so they're naturally distinct and never shared with other fixture
+// words (otherwise sharedSynonyms would exclude them and synonymHint could never come up).
 const word = (id: string, zh: string): Word => ({
   id, headword: id, phonetic: `/${id}/`, meanings: [{ pos: 'v.', en: `def of ${id}`, zh }],
   examples: [`We ${id} things daily.`, `They ${id} it again.`],
@@ -30,11 +31,12 @@ const wordP = (id: string, pos: string, zh: string): Word => ({
   examples: ['a', 'b'], synonyms: [], antonyms: [], collocations: [], relatedForms: [], sourceNote: 't', addedAt: '2026-07-01',
 })
 
-/** 多义词 fixture:释义已按占比降序排好(与 data/words.json 的存储不变式一致) */
+/** Multi-sense-word fixture: senses are pre-sorted by share in descending order (matches the storage invariant in data/words.json) */
 const multi = (id: string, shares: number[]): Word => ({
   id, headword: id, phonetic: `/${id}/`,
-  // zh 必须带上 id:释义标签在 pickDistractorLabels 里按显示文本去重,
-  // 各词共用「义0/义1」会让干扰项全被滤掉,题一道也出不来。
+  // zh must include the id: sense labels are deduplicated by display text inside
+  // pickDistractorLabels, and words sharing generic labels like "sense0/sense1" would get all
+  // their distractors filtered out, so not a single question could be generated.
   meanings: shares.map((share, i): Meaning => ({ pos: 'v.', en: `sense ${i} of ${id}`, zh: `${id}义${i}`, share })),
   examples: [`We ${id} things daily.`, `They ${id} it again.`],
   synonyms: [`${id}-syn1`], antonyms: [], collocations: [`${id} a plan`],
@@ -42,12 +44,12 @@ const multi = (id: string, shares: number[]): Word => ({
 })
 
 describe('pickMeaning', () => {
-  it('单义词直接返回那一条', () => {
+  it('a single-sense word returns that one sense directly', () => {
     const w = word('solo', '甲')
     expect(pickMeaning(w, () => 0.99).zh).toBe('甲')
   })
 
-  it('按占比分段:90/10 时 rng<0.9 落第一条,≥0.9 落第二条', () => {
+  it('segmented by share: at 90/10, rng<0.9 lands on the first sense, ≥0.9 lands on the second', () => {
     const w = multi('m', [90, 10])
     expect(pickMeaning(w, () => 0).zh).toBe('m义0')
     expect(pickMeaning(w, () => 0.5).zh).toBe('m义0')
@@ -56,7 +58,7 @@ describe('pickMeaning', () => {
     expect(pickMeaning(w, () => 0.999).zh).toBe('m义1')
   })
 
-  it('三义 60/30/10 的分段边界', () => {
+  it('segment boundaries for a three-sense 60/30/10 split', () => {
     const w = multi('m', [60, 30, 10])
     expect(pickMeaning(w, () => 0.59).zh).toBe('m义0')
     expect(pickMeaning(w, () => 0.6).zh).toBe('m义1')
@@ -64,25 +66,25 @@ describe('pickMeaning', () => {
     expect(pickMeaning(w, () => 0.9).zh).toBe('m义2')
   })
 
-  it('rng 返回接近 1 时不越界', () => {
+  it('does not go out of bounds when rng returns close to 1', () => {
     const w = multi('m', [50, 50])
     expect(pickMeaning(w, () => 0.9999999999).zh).toBe('m义1')
   })
 
-  it('多义但没有占比(外部推来的旧数据)退回第一条,不凭空随机', () => {
+  it('multi-sense but no share data (old data pushed from elsewhere) falls back to the first sense, instead of randomizing blindly', () => {
     const w = multi('m', [50, 50])
     w.meanings = w.meanings.map(m => ({ pos: m.pos, en: m.en, zh: m.zh }))
     expect(pickMeaning(w, () => 0.99).zh).toBe('m义0')
   })
 
-  it('占比只填了一部分也退回第一条 —— 半份数据不足以加权', () => {
+  it('falls back to the first sense even when only some shares are filled in — partial data is not enough to weight by', () => {
     const w = multi('m', [50, 50])
     delete w.meanings[1].share
     expect(pickMeaning(w, () => 0.99).zh).toBe('m义0')
   })
 })
 
-describe('generateQuiz —— 义项占比', () => {
+describe('generateQuiz — sense share weighting', () => {
   const multiWords = [multi('alpha', [70, 30]), multi('bravo', [70, 30]), multi('carol', [70, 30]), multi('delta', [70, 30]), multi('echo', [70, 30]), multi('fox', [70, 30])]
   const studiedMulti = (): Progress => {
     const p = emptyProgress()
@@ -92,8 +94,8 @@ describe('generateQuiz —— 义项占比', () => {
     return p
   }
 
-  it('次要义项也会被考到 —— 原本写死 meanings[0],30% 的那条永远遇不到', () => {
-    // rng 恒 0.95 → 每次都落在 70/30 的后 30% 段上
+  it('a minor sense can be tested too — it used to be hardcoded to meanings[0], so the 30% sense would never come up', () => {
+    // rng is always 0.95 → every draw lands in the last 30% of the 70/30 split
     const qs = generateQuiz(multiWords, studiedMulti(), 6, () => 0.95)
     const withMeaning = qs.filter(q => q.type === 'word2meaning' || q.type === 'meaning2word' || q.type === 'spelling')
     expect(withMeaning.length).toBeGreaterThan(0)
@@ -101,11 +103,12 @@ describe('generateQuiz —— 义项占比', () => {
     expect(texts.some(t => /义1$/.test(t))).toBe(true)
   })
 
-  it('同一个词的另一个义项绝不出现在选项里 —— 题面只有词头时两个都对', () => {
-    // 必须用**会变化**的 rng:恒定 rng 下 meaningOf(w) 永远返回同一条释义,
-    // 于是它总是等于 answer、被 seen 挡掉,pickDistractorLabels 里那道
-    // `x.id !== w.id` 的过滤根本走不到 —— 断言会空转。(实测:去掉那道过滤,
-    // 恒定 rng 的版本依然全绿。)
+  it('another sense of the same word never appears among the options — when the prompt is just the headword, both would be correct', () => {
+    // This must use an rng that **actually varies**: with a constant rng, meaningOf(w) always
+    // returns the same sense, so it always equals answer and gets blocked by seen — the
+    // `x.id !== w.id` filter in pickDistractorLabels never even gets exercised, and the
+    // assertion would be a no-op. (Verified: removing that filter, the constant-rng version
+    // still passes entirely.)
     const lcg = (seed: number) => () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff), seed / 0x7fffffff)
     for (let s = 1; s <= 40; s++) {
       const qs = generateQuiz(multiWords, studiedMulti(), 12, lcg(s))
@@ -119,16 +122,17 @@ describe('generateQuiz —— 义项占比', () => {
 })
 
 describe('generateQuiz', () => {
-  it('生成指定数量,题型轮换,不重复选词', () => {
+  it('generates the requested count, rotates question types, never repeats a word', () => {
     const qs = generateQuiz(words, studied(), 6, seq())
     expect(qs).toHaveLength(6)
     expect(new Set(qs.map(q => q.wordId)).size).toBe(6)
-    // 题型确定性轮换,一轮内均衡分布。这里不再硬编码题型总数 ——
-    // 断言的是「轮换」这个契约本身,新增题型时不必再改这一行。
+    // question types rotate deterministically, evenly distributed within one round. No longer
+    // hardcoding the total number of types here — this asserts the "rotation" contract itself,
+    // so this line doesn't need to change when a new type is added.
     const types = qs.map(q => q.type)
     expect(new Set(types).size).toBe(Math.min(qs.length, QUIZ_TYPES.length))
   })
-  it('选择题 4 个选项且含正确答案,选项不重复', () => {
+  it('multiple-choice questions have 4 options including the correct answer, with no duplicate options', () => {
     const qs = generateQuiz(words, studied(), 6, seq())
     for (const q of qs.filter(q => q.type !== 'spelling')) {
       expect(q.options).toHaveLength(4)
@@ -136,39 +140,40 @@ describe('generateQuiz', () => {
       expect(q.options).toContain(q.answer)
     }
   })
-  it('拼写题无选项,答案为词头', () => {
+  it('spelling questions have no options, and the answer is the headword', () => {
     const qs = generateQuiz(words, studied(), 6, seq())
     const sp = qs.find(q => q.type === 'spelling')!
     expect(sp.options).toEqual([])
     expect(sp.answer).toBe(sp.wordId)
   })
-  it('已学词不足 4 个时回退用全词库', () => {
+  it('falls back to the full word list when fewer than 4 words have been learned', () => {
     const qs = generateQuiz(words, emptyProgress(), 4, seq())
     expect(qs).toHaveLength(4)
   })
-  it('词库不足 4 个时返回空', () => {
+  it('returns empty when the word list has fewer than 4 words', () => {
     expect(generateQuiz(words.slice(0, 3), emptyProgress(), 5, seq())).toEqual([])
   })
-  it('拼写题携带独立的 phonetic 字段,prompt 不再拼接音标', () => {
+  it('spelling questions carry a separate phonetic field, the prompt no longer has the phonetic appended', () => {
     const qs = generateQuiz(words, studied(), 6, seq())
     const sp = qs.find(q => q.type === 'spelling')!
     const w = words.find(x => x.id === sp.wordId)!
     expect(sp.phonetic).toBe(w.phonetic)
     expect(sp.prompt).not.toContain(w.phonetic)
   })
-  it('选择题不携带 phonetic 字段', () => {
+  it('multiple-choice questions do not carry a phonetic field', () => {
     const qs = generateQuiz(words, studied(), 6, seq())
     for (const q of qs.filter(q => q.type !== 'spelling')) {
       expect(q.phonetic).toBeUndefined()
     }
   })
-  it('干扰项按显示文本去重,近义词共享释义时不出现重复选项或重复正确答案', () => {
-    // abolish/rescind 共享同一 meaningLabel("v. 废除")。只学习前 4 个词(含这对近义词 +
-    // 2 个不同释义的词),使已学词池里非碰撞候选不足 3 个,必须从全词库(含未学的
-    // delta/echo)补足干扰项,才能凑出 4 个互不相同的选项。
+  it('distractors are deduplicated by display text, so synonyms sharing a sense never produce a duplicate option or a duplicate correct answer', () => {
+    // abolish/rescind share the same meaningLabel ("v. 废除"). Only the first 4 words are marked
+    // learned (this synonym pair plus 2 words with distinct senses), so the learned pool has
+    // fewer than 3 non-colliding candidates, forcing distractors to be topped up from the full
+    // word list (including the unlearned delta/echo) to make up 4 mutually distinct options.
     const collisionWords = [
       wordP('abolish', 'v.', '废除'),
-      wordP('rescind', 'v.', '废除'), // 与 abolish 共享同一 meaningLabel
+      wordP('rescind', 'v.', '废除'), // shares the same meaningLabel as abolish
       wordP('bravo', 'n.', '乙'),
       wordP('carol', 'n.', '丙'),
       wordP('delta', 'n.', '丁'),
@@ -190,50 +195,50 @@ describe('generateQuiz', () => {
 })
 
 describe('clozeExample', () => {
-  it('挖掉原形出现的词头', () => {
+  it('blanks out the headword when it appears in its base form', () => {
     expect(clozeExample('She concoct a story quickly.', 'concoct'))
       .toBe('She ___ a story quickly.')
   })
-  it('挖掉变形出现的词头', () => {
+  it('blanks out the headword when it appears as an inflected form', () => {
     expect(clozeExample('She concocted an elaborate excuse.', 'concoct'))
       .toBe('She ___ an elaborate excuse.')
   })
-  it('大小写不敏感', () => {
+  it('is case-insensitive', () => {
     expect(clozeExample('Concocting excuses is his talent.', 'concoct'))
       .toBe('___ excuses is his talent.')
   })
-  it('同句多次出现时全部挖掉,不留下泄题的那一处', () => {
+  it('blanks out every occurrence within the same sentence, leaving none that would give away the answer', () => {
     expect(clozeExample('He concocted it, then concocted more.', 'concoct'))
       .toBe('He ___ it, then ___ more.')
   })
-  it('多词词头按整体挖', () => {
+  it('multi-word headwords are blanked as a whole', () => {
     expect(clozeExample('They agreed on an ad hoc basis.', 'ad hoc'))
       .toBe('They agreed on an ___ basis.')
   })
-  it('定位不到就返回 null,由调用方跳过该例句', () => {
+  it('returns null when it cannot be located, leaving it to the caller to skip this example', () => {
     expect(clozeExample('Nothing relevant here.', 'concoct')).toBeNull()
   })
 })
 
 describe('clozeCollocation', () => {
-  it('挖掉搭配里的词头', () => {
+  it('blanks out the headword within the collocation', () => {
     expect(clozeCollocation('abrogate a treaty', 'abrogate')).toBe('___ a treaty')
   })
-  it('词头在中间也能挖', () => {
+  it('can blank the headword even in the middle', () => {
     expect(clozeCollocation('formally abrogate an accord', 'abrogate'))
       .toBe('formally ___ an accord')
   })
-  it('变形同样处理', () => {
+  it('inflected forms are handled the same way', () => {
     expect(clozeCollocation('abrogated the agreement', 'abrogate'))
       .toBe('___ the agreement')
   })
-  it('定位不到返回 null', () => {
+  it('returns null when it cannot be located', () => {
     expect(clozeCollocation('a binding accord', 'abrogate')).toBeNull()
   })
 })
 
 describe('sharedSynonyms', () => {
-  it('找出被多个词条共享的同义/反义词(小写归一)', () => {
+  it('finds synonyms/antonyms shared by multiple entries (case-normalized to lowercase)', () => {
     const ws = [
       word('alpha', '甲'), word('bravo', '乙'),
     ]
@@ -243,7 +248,7 @@ describe('sharedSynonyms', () => {
     expect(shared.has('common')).toBe(true)
     expect(shared.has('onlya')).toBe(false)
   })
-  it('反义词与同义词一起统计', () => {
+  it('antonyms are counted together with synonyms', () => {
     const ws = [word('alpha', '甲'), word('bravo', '乙')]
     ws[0].synonyms = ['x']
     ws[1].antonyms = ['X']
@@ -251,24 +256,24 @@ describe('sharedSynonyms', () => {
   })
 })
 
-describe('新题型', () => {
-  it('例句挖空:提示含空格且不含答案词,四个词头选一', () => {
+describe('new question types', () => {
+  it('example cloze: the prompt contains a blank and not the answer word, choose one headword out of four', () => {
     const qs = generateQuiz(words, studied(), 12, seq())
     const q = qs.find(x => x.type === 'clozeExample')
-    if (q === undefined) return // 该轮未轮到,不算失败
+    if (q === undefined) return // did not come up this round, not a failure
     expect(q.prompt).toContain('___')
     expect(q.prompt.toLowerCase()).not.toContain(q.answer.toLowerCase())
     expect(q.options).toHaveLength(4)
     expect(q.options).toContain(q.answer)
   })
-  it('搭配填空:同样不泄题', () => {
+  it('collocation cloze: likewise does not give away the answer', () => {
     const qs = generateQuiz(words, studied(), 12, seq())
     const q = qs.find(x => x.type === 'clozeCollocation')
     if (q === undefined) return
     expect(q.prompt).toContain('___')
     expect(q.prompt.toLowerCase()).not.toContain(q.answer.toLowerCase())
   })
-  it('近义/反义提示:标明种类,且提示词不是共享词', () => {
+  it('synonym/antonym hint: labels the kind, and the hint word is not a shared synonym', () => {
     const qs = generateQuiz(words, studied(), 12, seq())
     const q = qs.find(x => x.type === 'synonymHint')
     if (q === undefined) return
@@ -277,9 +282,9 @@ describe('新题型', () => {
   })
 })
 
-// --- 加练三模式 ------------------------------------------------------------
+// --- Bonus-practice modes ------------------------------------------------------
 
-/** 易混词 fixture:两个词共享近义词,例句里各自含自己的词头、不含对方的。 */
+/** Confusable-word fixture: two words share a synonym, and each example sentence contains only its own headword, not the other's. */
 const pairWord = (id: string, syns: string[], pos = 'v.'): Word => ({
   id, headword: id, phonetic: `/${id}/`,
   meanings: [{ pos, en: `def of ${id}`, zh: `${id}义` }],
@@ -304,7 +309,7 @@ describe('generateContrastQuiz', () => {
     pairWord('delta', ['other1', 'other2', 'other3']),
   ]
 
-  it('只出两个选项 —— 辨析是二选一,不是四选一', () => {
+  it('produces only two options — discrimination questions are a binary choice, not four-way', () => {
     const qs = generateContrastQuiz(pairWords, studiedOf(pairWords), 4, seq())
     expect(qs.length).toBeGreaterThan(0)
     for (const q of qs) {
@@ -314,7 +319,7 @@ describe('generateContrastQuiz', () => {
     }
   })
 
-  it('题面挖空且不泄露答案词', () => {
+  it('the prompt is blanked and does not leak the answer word', () => {
     const qs = generateContrastQuiz(pairWords, studiedOf(pairWords), 4, seq())
     for (const q of qs) {
       expect(q.prompt).toContain('___')
@@ -322,22 +327,24 @@ describe('generateContrastQuiz', () => {
     }
   })
 
-  it('contrastId 指向对照词,且不等于本题的词', () => {
+  it('contrastId points to the contrasting word, and never equals this question\'s word', () => {
     const qs = generateContrastQuiz(pairWords, studiedOf(pairWords), 4, seq())
     for (const q of qs) {
       expect(q.contrastId).toBeDefined()
       expect(q.contrastId).not.toBe(q.wordId)
-      // 两个选项恰好是这两个词的词头
+      // the two options are exactly these two words' headwords
       const ids = [q.wordId, q.contrastId]
       const heads = ids.map(id => pairWords.find(w => w.id === id)?.headword)
       expect([...q.options].sort()).toEqual([...heads as string[]].sort())
     }
   })
 
-  it('两个词都在句中就不出这题 —— 挖掉一个另一个还杵在那儿,答案不言自明', () => {
-    // **两边的例句都同时含两个词**,所以无论哪个当答案都必须被守卫挡掉,唯一
-    // 正确的结果是一道题也出不来。早先只让一边泄题,生成器随机挑到干净的那边
-    // 就绕过了守卫,断言等于没写(变异测试抓到过)。
+  it('the question is not generated when both words appear in the sentence — blanking one would leave the other sitting right there, giving away the answer', () => {
+    // **Both words' example sentences contain both words**, so whichever one is picked as the
+    // answer must be blocked by the guard — the only correct outcome is zero questions. Earlier,
+    // only one side leaked the answer, so the generator could randomly land on the clean side
+    // and bypass the guard entirely, making the assertion equivalent to not writing one at all
+    // (mutation testing caught this).
     const both = ['We alpha and bravo together.', 'They alpha then bravo.']
     const leaky = [
       { ...pairWord('alpha', ['s1']), examples: both },
@@ -346,10 +353,10 @@ describe('generateContrastQuiz', () => {
     expect(generateContrastQuiz(leaky, studiedOf(leaky), 4, seq())).toEqual([])
   })
 
-  it('一边挖不出空时换另一边当答案,不浪费这一对', () => {
+  it('switches to the other side as the answer when one side cannot be blanked, so the pair is not wasted', () => {
     const noSelfMention = { ...pairWord('alpha', ['s1']), examples: ['Nothing here matches.', 'Still nothing.'] }
     const ws = [noSelfMention, pairWord('bravo', ['s1'])]
-    // 两个常量 rng 分别走「先试 alpha」与「先试 bravo」两条分支,两条都得出得来题
+    // the two constant rngs each walk the "try alpha first" and "try bravo first" branches, and both must succeed in producing a question
     for (const r of [() => 0.1, () => 0.9]) {
       const qs = generateContrastQuiz(ws, studiedOf(ws), 4, r)
       expect(qs).toHaveLength(1)
@@ -357,28 +364,28 @@ describe('generateContrastQuiz', () => {
     }
   })
 
-  it('配不出词对时返回空数组,不抛错', () => {
+  it('returns an empty array without throwing when no pair can be formed', () => {
     const lonely = [pairWord('alpha', ['x']), pairWord('bravo', ['y'])]
     expect(generateContrastQuiz(lonely, studiedOf(lonely), 4, seq())).toEqual([])
   })
 
-  it('不超过请求的题数', () => {
+  it('never exceeds the requested question count', () => {
     expect(generateContrastQuiz(pairWords, studiedOf(pairWords), 1, seq())).toHaveLength(1)
   })
 })
 
 describe('generateAudioQuiz', () => {
-  it('听音选义:四个释义选一,prompt 是要朗读的词头', () => {
+  it('listen-and-choose-meaning: choose one out of four senses, the prompt is the headword to be read aloud', () => {
     const qs = generateAudioQuiz(words, studied(), 6, seq())
     const q = qs.find(x => x.type === 'audio2meaning')
     expect(q).toBeDefined()
     expect(q!.options).toHaveLength(4)
     expect(q!.options).toContain(q!.answer)
-    // prompt 存的是词头(朗读内容),**不是**给人看的题面
+    // prompt stores the headword (what gets read aloud), **not** the text shown to the user
     expect(words.some(w => w.headword === q!.prompt)).toBe(true)
   })
 
-  it('听音拼写:没有选项,答案是词头,并带上音标供揭晓时显示', () => {
+  it('listen-and-spell: no options, the answer is the headword, with the phonetic included for display on reveal', () => {
     const qs = generateAudioQuiz(words, studied(), 6, seq())
     const q = qs.find(x => x.type === 'audio2spelling')
     expect(q).toBeDefined()
@@ -387,77 +394,81 @@ describe('generateAudioQuiz', () => {
     expect(q!.phonetic).toBeDefined()
   })
 
-  it('两种题型轮换,不会整轮只出一种', () => {
+  it('the two question types rotate, never sticking to just one for a whole round', () => {
     const qs = generateAudioQuiz(words, studied(), 6, seq())
     expect(new Set(qs.map(q => q.type)).size).toBe(2)
   })
 
-  it('词库不足 4 个词时返回空数组', () => {
+  it('returns an empty array when the word list has fewer than 4 words', () => {
     expect(generateAudioQuiz(words.slice(0, 3), emptyProgress(), 4, seq())).toEqual([])
   })
 })
 
-describe('generateQuiz 的题型限制(极速模式用)', () => {
-  it('只出指定题型', () => {
+describe('generateQuiz question-type restriction (used by sprint mode)', () => {
+  it('only generates the specified types', () => {
     const qs = generateQuiz(words, studied(), 6, seq(), ['word2meaning'])
     expect(qs.length).toBeGreaterThan(0)
     expect(qs.every(q => q.type === 'word2meaning')).toBe(true)
   })
 
-  it('限定两种时两种都出得来', () => {
+  it('when two types are specified, both actually come up', () => {
     const qs = generateQuiz(words, studied(), 6, seq(), ['word2meaning', 'meaning2word'])
     expect(new Set(qs.map(q => q.type))).toEqual(new Set(['word2meaning', 'meaning2word']))
   })
 
-  it('空题型列表返回空数组,不死循环也不落回默认题型', () => {
+  it('an empty type list returns an empty array, without looping forever or falling back to the default types', () => {
     expect(generateQuiz(words, studied(), 6, seq(), [])).toEqual([])
   })
 
-  it('不传这个参数时行为不变 —— 六种题型仍在轮换', () => {
+  it('behavior is unchanged when this parameter is omitted — all six types still rotate', () => {
     const qs = generateQuiz(words, studied(), 6, seq())
     expect(new Set(qs.map(q => q.type)).size).toBeGreaterThan(1)
     expect(qs.every(q => QUIZ_TYPES.includes(q.type))).toBe(true)
   })
 })
 
-// --- 挖空题面的多样性 ------------------------------------------------------
-// 实测(拿用户真实进度跑 400 轮):63 个出过挖空题的词,**没有一个**出现过第二种
-// 题面,而其中 297/471 的词有 3 句例句。根因是取例句的循环命中第一条就 break。
-// 多写例句之前必须先修这里,否则新句子一句也用不上。
+// --- Cloze-prompt diversity ------------------------------------------------------
+// Measured (400 rounds against a real user's progress): of the 63 words that produced a cloze
+// question, **not one** ever showed a second variant of the prompt, even though 297/471 words
+// have 3 example sentences. The root cause: the loop that picks an example sentence breaks on
+// the first hit. This had to be fixed before writing more example sentences, or the new ones
+// would never get used.
 
 describe('pickCloze', () => {
   const three = ['We alpha the plan.', 'They alpha it twice.', 'She alpha nothing.']
 
-  it('挑出的句子来自候选,且已挖空', () => {
+  it('the picked sentence comes from the candidates and is already blanked', () => {
     const got = pickCloze(three, 'alpha', () => 0.4)
     expect(got).not.toBeNull()
     expect(got).toContain('___')
     expect(got!.toLowerCase()).not.toContain('alpha')
   })
 
-  it('**不同 rng 给出不同的句子** —— 这条就是这个函数存在的理由', () => {
+  it('**different rng values give different sentences** — this is the whole reason this function exists', () => {
     const a = pickCloze(three, 'alpha', () => 0)
     const b = pickCloze(three, 'alpha', () => 0.99)
     expect(a).not.toBe(b)
   })
 
-  it('只有一句能挖空时,不管 rng 都返回那一句', () => {
+  it('when only one sentence can be blanked, that sentence is returned regardless of rng', () => {
     const mixed = ['Nothing here.', 'They alpha it twice.', 'Still nothing.']
     expect(pickCloze(mixed, 'alpha', () => 0)).toBe(pickCloze(mixed, 'alpha', () => 0.99))
     expect(pickCloze(mixed, 'alpha', () => 0.5)).toContain('___')
   })
 
-  it('一句都定位不到时返回 null,不返回没有空格的题面', () => {
+  it('returns null when no sentence can be located, never a prompt without a blank', () => {
     expect(pickCloze(['Nothing.', 'Still nothing.'], 'alpha', () => 0.5)).toBeNull()
     expect(pickCloze([], 'alpha', () => 0.5)).toBeNull()
   })
 })
 
-// --- 辨析模式只考学过的词 --------------------------------------------------
-// 实测:排序不等于过滤。用户 63 个已学词只配得出 7 对,排完就掉进未学词,
-// 53.7% 的题考的是从没见过的词。综合与听音靠 questionPool 硬过滤,都是 0%。
+// --- Discrimination mode only tests learned words --------------------------------------
+// Measured: sorting is not the same as filtering. A user's 63 learned words only paired up
+// into 7 contrast pairs, and once those ran out it fell through to unlearned words — 53.7% of
+// the questions tested words the user had never seen. The combined and listening modes hard-
+// filter via questionPool and both measured 0%.
 
-describe('generateContrastQuiz 只考学过的词', () => {
+describe('generateContrastQuiz only tests learned words', () => {
   const ws = [
     pairWord('alpha', ['s1']),
     pairWord('bravo', ['s1']),
@@ -472,7 +483,7 @@ describe('generateContrastQuiz 只考学过的词', () => {
     return p
   }
 
-  it('两个词都学过才出题', () => {
+  it('a question is only generated when both words have been learned', () => {
     const qs = generateContrastQuiz(ws, learnedOnly(['alpha', 'bravo']), 10, seq())
     expect(qs.length).toBeGreaterThan(0)
     for (const q of qs) {
@@ -481,21 +492,23 @@ describe('generateContrastQuiz 只考学过的词', () => {
     }
   })
 
-  it('宁可少出几题也不掺未学词 —— 只有一对学过就只出一题', () => {
+  it('better to produce fewer questions than to mix in unlearned words — with only one pair learned, only one question comes out', () => {
     expect(generateContrastQuiz(ws, learnedOnly(['alpha', 'bravo']), 10, seq())).toHaveLength(1)
   })
 
-  it('只学过一对里的一个,那一对也不出 —— 选项里同样不该有没见过的词', () => {
+  it('learning only one word of a pair means that pair produces no question either — the options must not contain an unseen word', () => {
     expect(generateContrastQuiz(ws, learnedOnly(['alpha', 'carol']), 10, seq())).toEqual([])
   })
 
-  it('一个词都没学过时出空,**不退回全库** —— 空状态有说明,超纲题只会浪费时间', () => {
+  it('produces nothing when no word at all has been learned, **and does not fall back to the full library** — the empty state has an explanation, and out-of-syllabus questions would only waste time', () => {
     expect(generateContrastQuiz(ws, emptyProgress(), 4, seq())).toEqual([])
   })
 
-  it('同一对词反复出题时会换句子,不是永远同一句', () => {
-    // 只有一对词、答案侧固定,变的只有例句 —— 否则「题面不同」可能只是因为
-    // 这一轮换了个词当答案,断言就测不到打乱本身。
+  it('repeated questions on the same pair use different sentences, not the same one every time', () => {
+    // Only one pair of words, with the answer side fixed, so the only thing that varies is the
+    // example sentence — otherwise "the prompt differs" could simply be because this round
+    // picked a different word as the answer, and the assertion would never actually test the
+    // shuffling itself.
     const three = {
       ...pairWord('alpha', ['s1']),
       examples: [
@@ -506,12 +519,12 @@ describe('generateContrastQuiz 只考学过的词', () => {
     }
     const pair = [three, pairWord('bravo', ['s1'])]
     const p = studiedOf(pair)
-    // rng 调用次序:①选哪边当答案 ②③例句打乱(3 个元素两次交换) ④选项打乱
+    // rng call order: (1) which side is the answer (2)(3) example-sentence shuffle (3 elements, two swaps) (4) option shuffle
     const seqOf = (vals: number[]) => { let i = 0; return () => vals[i++ % vals.length] }
     const a = generateContrastQuiz(pair, p, 1, seqOf([0.1, 0, 0, 0.5]))
     const b = generateContrastQuiz(pair, p, 1, seqOf([0.1, 0.99, 0.99, 0.5]))
     expect(a[0].answer).toBe('alpha')
-    expect(b[0].answer).toBe('alpha')   // 答案侧一致,确认变的确实是句子
+    expect(b[0].answer).toBe('alpha')   // answer side is consistent, confirming that what varies is indeed the sentence
     expect(a[0].prompt).not.toBe(b[0].prompt)
   })
 })

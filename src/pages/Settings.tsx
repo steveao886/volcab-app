@@ -12,16 +12,19 @@ import { useApp } from '../state/store'
 import './Settings.css'
 
 /**
- * package.json 的 version 冻结在占位值 "0.0.0"(其他并行任务共用,不能改),
- * vite.config.ts 同样冻结所以拿不到 `define` 注入构建期版本号。这里就手写一个
- * 明确不暗示正式发布的常量,而不是去读 package.json 或编一个假号码。
+ * package.json's version is frozen at the placeholder "0.0.0" (shared with
+ * other parallel tasks, can't be changed), and vite.config.ts is likewise
+ * frozen so there's no way to get a build-time version number injected via
+ * `define`. So this hand-writes a constant that clearly doesn't imply an
+ * official release, rather than reading package.json or making up a fake
+ * number.
  */
 const APP_VERSION = '开发预览版'
 
 const NEW_PER_DAY_MIN = 1
 const NEW_PER_DAY_MAX = 50
 
-/** 把任意输入钳到 [1, 50] 的整数;解析不出数字(空/纯字母/粘贴的垃圾)就退回上一个合法值。 */
+/** Clamps arbitrary input to an integer in [1, 50]; falls back to the previous valid value when it doesn't parse as a number (empty/letters only/pasted garbage). */
 function clampNewPerDay(raw: string, fallback: number): number {
   const n = Number.parseInt(raw, 10)
   if (!Number.isFinite(n)) return fallback
@@ -29,28 +32,35 @@ function clampNewPerDay(raw: string, fallback: number): number {
 }
 
 /**
- * 本机是否欠着没推上远端的东西 —— 直接读缓存标记,不依赖 syncStatus(它在离线时
- * 会把这件事盖住)。词库那半用 pendingOps() 而不是自己读 'wordOps':它会过滤掉不合
- * 形状的脏数据(session.ts:39-43),跟 store.tsx 的 logout() 数「丢了多少」用的是
- * 同一个函数 —— 这里的「提醒」和退出后的「告知」必须算出同一个数字,否则就是在撒谎。
+ * Whether the local machine has anything owed to the remote that hasn't
+ * been pushed yet — reads the cached flag directly rather than relying on
+ * syncStatus (which masks this while offline). For the library half, this
+ * uses pendingOps() instead of reading 'wordOps' directly: it filters out
+ * malformed dirty data (session.ts:39-43), and it's the exact same
+ * function store.tsx's logout() uses to count "how much would be lost" —
+ * the "warning" here and the "notice" after signing out must compute the
+ * same number, otherwise one of them is lying.
  */
 function hasUnsyncedChanges(): boolean {
   return storage.get<boolean>('dirty') === true
     || pendingOps().length > 0
-    || pendingStaging().length > 0   // 待补全的生词同理:logout() 也数它,两处必须一致
+    || pendingStaging().length > 0   // Same reasoning for staged words awaiting completion: logout() counts these too, and the two must stay consistent
 }
 
-/** Task 21 实现:每日新词数、账号信息与退出登录、导出备份、App 版本号。 */
+/** Task 21 implementation: daily new-word count, account info & sign out, export backup, app version. */
 export function Settings() {
   const { owner, progress, updateSettings, logout, exportAll } = useApp()
 
   const [newPerDayInput, setNewPerDayInput] = useState(String(progress.settings.newPerDay))
   const [confirmingLogout, setConfirmingLogout] = useState(false)
   const newPerDayRef = useRef<HTMLInputElement>(null)
-  // 目前 newPerDay 只可能因为本组件自己的 commitNewPerDay 而变 —— mergeProgress
-  // (lib/merge.ts:23)原样保留 local.settings,冲突合并不会带来外部新值。但那是一份
-  // 冻结文件里的不变量,不归这页管;真正兜底的是这条焦点判断:输入框拿着焦点时
-  // 跳过同步,以后即便那条不变量变了,也不会在用户打字时把内容冲掉。
+  // Right now, newPerDay can only ever change because of this component's
+  // own commitNewPerDay — mergeProgress (lib/merge.ts:23) preserves
+  // local.settings as-is, so conflict merging never introduces a new
+  // external value. But that's an invariant living in a frozen file, not
+  // this page's to own; the real fallback is this focus check: while the
+  // input has focus, syncing is skipped, so even if that invariant ever
+  // changes, it will never clobber what the user is typing.
   useEffect(() => {
     if (document.activeElement === newPerDayRef.current) return
     setNewPerDayInput(String(progress.settings.newPerDay))
@@ -64,8 +74,10 @@ export function Settings() {
     }
   }, [newPerDayInput, progress.settings, updateSettings])
 
-  // 导出是同步的一整段(无 await 断点),真正的风险是双击/双击触发两次保存对话框,
-  // 用一个 ref 锁而不是 state 防抖 —— 不依赖重渲染的时机。
+  // Export runs as one synchronous block (no await breakpoints); the real
+  // risk is a double-click triggering two save dialogs, so a ref lock is
+  // used instead of state-based debouncing — it doesn't depend on
+  // re-render timing.
   const exportLockRef = useRef(false)
   const exportTimeoutRef = useRef<ReturnType<typeof window.setTimeout> | null>(null)
   useEffect(
@@ -96,13 +108,15 @@ export function Settings() {
     }
   }, [exportAll])
 
-  // token 是凭证:只取末 4 位展示,不落日志、不进 URL、不进文件名。
+  // The token is a credential: only the last 4 characters are ever shown, never logged, never put in a URL, never put in a filename.
   const tokenTail = storage.get<string>('token')?.slice(-4) ?? null
   const unsynced = confirmingLogout && hasUnsyncedChanges()
 
-  // 退出登录会直接从 DOM 里换掉那颗按钮:警示面板出现时,焦点得跟过去
-  // (落在「取消」这个安全默认项上),role="alert" 负责让屏幕阅读器把这段话念出来
-  // —— 面板一挂载就当整块内容播报,不用等用户自己去找。
+  // Signing out swaps that button out of the DOM directly: when the
+  // warning panel appears, focus must follow it (landing on "Cancel", the
+  // safe default), and role="alert" makes the screen reader read this
+  // text out — the moment the panel mounts, the whole block is announced,
+  // with no need for the user to go hunting for it.
   const cancelLogoutRef = useRef<HTMLButtonElement>(null)
   useEffect(() => {
     if (confirmingLogout) cancelLogoutRef.current?.focus()
@@ -136,9 +150,11 @@ export function Settings() {
       </Card>
 
       <Card>
-        {/* 整行都是 <label>,点哪里都能切换——与 Library.tsx 的 LibraryRow 同一个模式。
-            默认开启(spec §3.3):progress.settings.soundEnabled 缺省视为 true,
-            isSoundEnabled 是 src/lib/sound.ts 里同一份判定,这里不重复写一遍 ?? true。 */}
+        {/* The whole row is a <label>, so clicking anywhere toggles it —
+            the same pattern as Library.tsx's LibraryRow. Defaults to on
+            (spec §3.3): progress.settings.soundEnabled is treated as true
+            when absent, and isSoundEnabled is the single source of that
+            check in src/lib/sound.ts, so ?? true isn't duplicated here. */}
         <label className="settings-toggle">
           <span className="settings-toggle__text">
             <span className="settings-toggle__label">音效</span>

@@ -1,7 +1,8 @@
 /* ==========================================================================
-   Login 页面专属样式(Task 15)。
-   页面本身复用全局 .auth / .brand(见 src/styles/layout.css、components.css),
-   这里只补取 token 指引这块设计系统里还没有的样式。
+   Login page-specific styles (Task 15).
+   The page itself reuses the global .auth / .brand (see
+   src/styles/layout.css, components.css); this file only adds the styles
+   for the "getting a token" guide, which the design system doesn't have yet.
    ========================================================================== */
 
 .login-form {
@@ -9,10 +10,12 @@
   gap: var(--sp-4);
 }
 
-/* --- 页面级通知 ------------------------------------------------------------
-   「退出时丢弃了未同步的数据」这类告知。中性:一块下沉的纸面 + 发丝线,
-   不用 --danger,也不用朱砂 —— 它不是错误,更不是需要批注的重点,
-   而字段级的红色报错(.field__error)必须留给「这个框填错了」。 */
+/* --- Page-level notice ------------------------------------------------------------
+   For things like "unsynced data was discarded on sign-out". Neutral: a
+   sunken paper block + hairline, no --danger and no vermilion — it isn't
+   an error, and definitely isn't an annotation-worthy point, whereas the
+   red field-level error (.field__error) must be reserved for "this field
+   was filled in wrong". */
 
 .login-notice {
   padding: var(--sp-3) var(--sp-4);
@@ -24,10 +27,11 @@
   color: var(--text-muted);
 }
 
-/* --- 折叠指引 --------------------------------------------------------------
-   外壳(边框、summary、开合三角)是共享的 .disclosure(components.css)。
-   .login-guide 只剩下一个作用域钩子:让下面几条选择器只作用在这份指引里,
-   不影响别处的折叠块。 */
+/* --- Collapsible guide --------------------------------------------------------------
+   The shell (border, summary, disclosure triangle) is the shared
+   .disclosure (components.css). .login-guide is left as just a scoping
+   hook, so the selectors below only apply within this guide and don't
+   affect disclosure blocks elsewhere. */
 
 .login-guide__steps {
   display: grid;
@@ -48,8 +52,9 @@
   color: var(--accent);
 }
 
-/* 指引里的 <code> 是「原样照抄的界面文字」,走 --font-mono;
-   --font-num 那条栈按注释只管统计数字,别在这里借用。 */
+/* <code> in the guide is "UI text copied verbatim", so it uses
+   --font-mono; per its own comment, the --font-num stack is only meant for
+   statistics figures — don't borrow it here. */
 .login-guide code {
   padding-inline: 5px;
   border-radius: var(--r-xs);
@@ -59,8 +64,10 @@
   color: var(--text);
 }
 
-/* 仅供屏幕阅读器:外链在视觉上已有下划线可辨,新开标签页这件事非视觉用户
-   看不出来,补一句不占版面的说明。标准 clip 隐藏手法,不落成组件级工具类。 */
+/* Screen-reader only: the external link is already visually distinguishable
+   by its underline, but non-visual users can't tell it opens a new tab —
+   this adds a note that takes up no layout space. Standard clip-hiding
+   technique, not promoted to a component-level utility class. */
 .login-guide__visually-hidden {
   position: absolute;
   width: 1px;
@@ -73,8 +80,10 @@
   border: 0;
 }
 
-/* --- 开发演示入口 ------------------------------------------------------
-   视觉上要明显弱于「登录」主操作,不是产品功能,靠 ghost + 顶部留白撑开距离。 */
+/* --- Dev demo entry point ------------------------------------------------------
+   Should read as visually much weaker than the primary "Sign in" action,
+   since it isn't a product feature — achieved with ghost + top margin for
+   separation. */
 
 .login-demo {
   margin-top: var(--sp-2);

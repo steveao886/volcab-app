@@ -3,8 +3,9 @@ const API = 'https://api.github.com'
 export interface RemoteFile { content: string; sha: string }
 
 /**
- * 403 既可能是「token 权限不够」也可能是「被限流」,两者的处置完全不同
- * (前者要重新授权,后者只需等一会儿),所以把配额用尽这一位带进报错文案里。
+ * A 403 can mean either "the token lacks permission" or "rate-limited" — the two call for
+ * completely different handling (the former needs re-authorization, the latter just needs
+ * waiting), so this surfaces the rate-limit-exhausted bit in the error message.
  */
 function statusTag(res: Response): string {
   const limited = res.status === 403 && res.headers.get('x-ratelimit-remaining') === '0'
@@ -30,7 +31,7 @@ export class GitHubClient {
     }
   }
 
-  /** 返回 token 对应的 GitHub 用户名;无效抛错 */
+  /** Returns the GitHub username for the token; throws if invalid */
   static async whoAmI(token: string): Promise<string> {
     const res = await fetch(`${API}/user`, {
       headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
@@ -39,7 +40,7 @@ export class GitHubClient {
     return (await res.json()).login as string
   }
 
-  /** 确认 token 能访问数据仓库 */
+  /** Confirms the token can access the data repository */
   async validate(): Promise<void> {
     const res = await fetch(`${API}/repos/${this.owner}/${this.repo}`, { headers: this.headers() })
     if (res.status === 404) throw new Error(`找不到 ${this.owner}/${this.repo}——请确认 token 已勾选该仓库的访问权限`)
@@ -47,16 +48,20 @@ export class GitHubClient {
   }
 
   /**
-   * 读文件。**必须走 raw 媒体类型**:默认的 `application/vnd.github+json` 只回
-   * 1 MB 以内的 base64 正文,再大就把 content 留空 —— 而 words.json 已经占到
-   * 上限的 55%。撞上那天的表现极其阴险:老设备靠本地缓存照常用,**新设备永远
-   * 登录不上**,而且报错里一个字都不会提"文件太大"。raw 的上限是 100 MB。
+   * Reads a file. **Must use the raw media type**: the default
+   * `application/vnd.github+json` only returns the base64 body for files under 1 MB, and
+   * leaves content blank above that — and words.json already sits at 55% of that cap. When
+   * that limit gets hit, the failure mode is nasty: old devices keep working off their local
+   * cache, **new devices can never log in**, and the error message never mentions "file too
+   * large" anywhere. raw's cap is 100 MB.
    *
-   * 代价是响应体里没有 sha 了(putFile 的乐观并发要用)。实测 GitHub 在 raw
-   * 响应的 ETag 里返回的就是 blob sha,且 ETag 在 Access-Control-Expose-Headers
-   * 里,浏览器读得到 —— 所以正常路径仍然只有一次请求。但这条不是文档承诺的
-   * 行为,所以 ETag 形状不对就回退去要一次 JSON,只取 sha。**宁可多发一次请求,
-   * 也不能拿一个猜出来的 sha 去写**:那会让每一次推送都撞 conflict。
+   * The cost is that the response body no longer carries a sha (needed for putFile's
+   * optimistic concurrency). Measured: GitHub returns exactly the blob sha in the raw
+   * response's ETag, and ETag is listed in Access-Control-Expose-Headers, so the browser can
+   * read it — meaning the normal path still costs only one request. But that's not a
+   * documented guarantee, so if the ETag doesn't have the expected shape, this falls back to
+   * a separate JSON request just for the sha. **Better to send one extra request than to
+   * write with a guessed sha** — that would make every single push collide with a conflict.
    */
   async getFile(path: string): Promise<RemoteFile | null> {
     const res = await fetch(`${API}/repos/${this.owner}/${this.repo}/contents/${path}`, {
@@ -70,7 +75,7 @@ export class GitHubClient {
     return { content, sha: sha ?? (await this.getSha(path)) }
   }
 
-  /** 只取 sha 的兜底请求,见 getFile 的说明。 */
+  /** The fallback request that fetches only the sha; see getFile's explanation. */
   private async getSha(path: string): Promise<string> {
     const res = await fetch(`${API}/repos/${this.owner}/${this.repo}/contents/${path}`, {
       headers: this.headers(),
@@ -80,7 +85,7 @@ export class GitHubClient {
     return (await res.json()).sha as string
   }
 
-  /** sha 不匹配(他端已推送)返回 'conflict',调用方负责合并重试 */
+  /** Returns 'conflict' when the sha doesn't match (another client already pushed); the caller is responsible for merging and retrying */
   async putFile(path: string, content: string, message: string, sha?: string): Promise<{ sha: string } | 'conflict'> {
     const res = await fetch(`${API}/repos/${this.owner}/${this.repo}/contents/${path}`, {
       method: 'PUT',
@@ -94,9 +99,10 @@ export class GitHubClient {
 }
 
 /**
- * 从 ETag 里取 blob sha。强弱两种形状都认(`"<sha>"` / `W/"<sha>"`),
- * 只接受 40 位十六进制 —— 别的形状一律返回 null 让调用方回退,见 getFile。
- * 统一转小写:git sha 一律小写,大小写不一致会让 putFile 的 sha 比对失败。
+ * Extracts the blob sha from an ETag. Accepts both the strong and weak forms
+ * (`"<sha>"` / `W/"<sha>"`), only accepting 40 hex digits — any other shape returns null
+ * so the caller falls back, see getFile. Always lowercased: git shas are always lowercase,
+ * and a case mismatch would break putFile's sha comparison.
  */
 export function blobShaFromETag(etag: string | null): string | null {
   if (!etag) return null
@@ -105,8 +111,9 @@ export function blobShaFromETag(etag: string | null): string | null {
 }
 
 /**
- * 写入用。**没有配套的 fromBase64** —— getFile 改走 raw 之后不再解码任何东西,
- * 留一个没人调用的解码器只会让下一个人以为读取路径还在过 base64。
+ * For writing. **There's no matching fromBase64** — once getFile switched to raw it stopped
+ * decoding anything, and leaving an unused decoder around would just make the next person
+ * assume the read path still goes through base64.
  */
 export function toBase64(s: string): string {
   const bytes = new TextEncoder().encode(s)

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   基础层:重置、文档级排版、焦点样式、纸纹底。
+   Base layer: resets, document-level typography, focus styles, paper-grain background.
    ========================================================================== */
 
 *,
@@ -31,7 +31,7 @@ body {
   overscroll-behavior-y: none;
 }
 
-/* 纸纹:内联 SVG 噪声,离线可用,压在内容之下只作用于页面底色 */
+/* Paper grain: inline SVG noise, works offline, sits under the content and only affects the page's base color */
 body::before {
   content: '';
   position: fixed;

@@ -6,7 +6,7 @@ const LABELS: Record<WordState, string> = {
   review: '已掌握',
 }
 
-/** 词条学习状态的色点。未学是空心圈(尚未落墨),其余实心。 */
+/** Color dot for a word's learning state. New is a hollow ring (ink not yet applied), the rest are solid. */
 export function StateDot({
   state,
   className,

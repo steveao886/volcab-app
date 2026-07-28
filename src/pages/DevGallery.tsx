@@ -14,12 +14,16 @@ import { TextInput } from '../components/TextInput'
 import { Textarea } from '../components/Textarea'
 
 /**
- * 仅 DEV 可见的组件总览(路由 /dev,不进页签)。
- * 计划有意不给 UI 层写组件测试,这一页就是人工回归的落点:
- * 每个组件的每种状态都摆出来,改完设计系统对着扫一遍。
- * 生产构建里 App.tsx 用 import.meta.env.DEV 把整条路由摇掉。
+ * Component overview visible only in DEV (route /dev, not in the tab bar).
+ * The plan deliberately skips writing component tests for the UI layer, so
+ * this page is where manual regression happens: every state of every
+ * component is laid out here, to be scanned by eye after design-system
+ * changes.
+ * In production builds, App.tsx tree-shakes the whole route out via
+ * import.meta.env.DEV.
  *
- * 排版辅助用内联样式而非 CSS 类,免得 dev 专用样式混进生产样式表。
+ * Layout helpers use inline styles rather than CSS classes, so dev-only
+ * styles don't leak into the production stylesheet.
  */
 
 const ROW: CSSProperties = {
@@ -36,9 +40,11 @@ const STACK: CSSProperties = {
   marginTop: 'var(--sp-3)',
 }
 
-/* 分组标题原本借用 .pos,但 .pos 是词性标签(朱砂 = 批注),不是小节标题;
-   而且本页正好也展示 .pos 本身,两者长得一样只会看不清哪个是样本。
-   与 components.css 的 .section-title 同一个处置,只是这里走内联样式。 */
+/* The group title originally borrowed .pos, but .pos is a part-of-speech
+   tag (vermilion = annotation), not a section heading; and this page also
+   happens to display .pos itself, so the two looking identical would just
+   make it unclear which one is the sample. Same treatment as
+   components.css's .section-title, just via inline styles here. */
 const LABEL: CSSProperties = {
   fontSize: 'var(--fs-sm)',
   fontWeight: 600,
@@ -47,7 +53,8 @@ const LABEL: CSSProperties = {
   color: 'var(--text-muted)',
 }
 
-/* 统计格的容器归页面管(分几栏是版面决策),这里就地给一个 */
+/* The stat grid's container is the page's responsibility (column count is a
+   layout decision) — this just provides one inline for the demo */
 const statsGrid = (columns: number): CSSProperties => ({
   display: 'grid',
   gridTemplateColumns: `repeat(${columns}, 1fr)`,
@@ -73,7 +80,8 @@ function Group({
   )
 }
 
-/* 词库里最长的七个词头 —— 375px 断行的回归样本 */
+/* The seven longest headwords in the library — a regression sample for
+   wrapping at 375px */
 const LONGEST = [
   'interchangeability',
   'canonicalization',
@@ -84,7 +92,7 @@ const LONGEST = [
   'circumlocution',
 ]
 
-/** ConfirmDialog 的三种样子:纯说明 / 带清单 / 确认进行中 */
+/** ConfirmDialog's three looks: plain explanation / with a list / confirming in progress */
 type ConfirmDemo = null | 'plain' | 'list' | 'busy'
 
 export function DevGallery() {
@@ -148,9 +156,11 @@ export function DevGallery() {
         </Button>
       </Group>
 
-      {/* Button 声明了 ref prop(React 19 的 ref-as-prop),测验页判完题把焦点
-          交给「下一题」、设置页展开退出确认把焦点交给「取消」都靠它。
-          点左边那颗,焦点应当立刻落在右边那颗上(能看到焦点环)。 */}
+      {/* Button declares a ref prop (React 19's ref-as-prop); the quiz page
+          relies on it to hand focus to "Next question" after grading, and
+          the settings page's exit-confirm relies on it to hand focus to
+          "Cancel". Clicking the left one should move focus to the right one
+          immediately (you should see the focus ring). */}
       <Group title="button / ref">
         <Button variant="secondary" onClick={() => focusTargetRef.current?.focus()}>
           把焦点交给右边
@@ -226,7 +236,7 @@ export function DevGallery() {
         </a>
       </Group>
 
-      {/* --- 以下是整合阶段从各页面提上来的共享原语 --- */}
+      {/* --- Below are shared primitives promoted from individual pages during the integration phase --- */}
 
       <Group title="stat · 三栏(今日页)" layout={statsGrid(3)}>
         <div className="stat">
@@ -265,8 +275,10 @@ export function DevGallery() {
         </div>
       </Group>
 
-      {/* 与 .stat 是两种故意分开的原语:那个是居中的大数字瓦片,
-          这个是标签左 / 值右的一行只读元信息。别合并。 */}
+      {/* Deliberately a separate primitive from .stat: that one is a
+          centered big-number tile, this one is a single-line read-only
+          metadata row with the label on the left and value on the right.
+          Don't merge them. */}
       <Group title="settings-row(≠ stat)" layout={STACK}>
         <div className="settings-row">
           <p className="settings-row__label">GitHub 用户</p>
@@ -362,7 +374,7 @@ export function DevGallery() {
         ))}
       </Group>
 
-      {/* 三种确认弹窗共用一个组件实例位:同一时刻只会打开一个 */}
+      {/* The three confirm dialogs share one component instance slot: only one can be open at a time */}
       <ConfirmDialog
         open={confirmDemo !== null}
         titleId="dev-confirm-title"

@@ -9,7 +9,7 @@ const entry = (lastReviewedAt: string, reps: number): ProgressEntry => ({
 })
 
 describe('mergeProgress', () => {
-  it('每个词取 lastReviewedAt 较新的记录', () => {
+  it('takes the newer record by lastReviewedAt for each word', () => {
     const local = emptyProgress(), remote = emptyProgress()
     local.words['a'] = entry('2026-07-24T10:00:00Z', 5)
     remote.words['a'] = entry('2026-07-23T10:00:00Z', 4)
@@ -18,7 +18,7 @@ describe('mergeProgress', () => {
     expect(m.words['a'].reps).toBe(5)
     expect(m.words['b'].reps).toBe(2)
   })
-  it('dailyStats 按日按字段取最大值', () => {
+  it('dailyStats takes the max value per field per day', () => {
     const local = emptyProgress(), remote = emptyProgress()
     local.dailyStats['2026-07-24'] = { reviewed: 10, newLearned: 3, correct: 8, quizTaken: 0 }
     remote.dailyStats['2026-07-24'] = { reviewed: 6, newLearned: 5, correct: 5, quizTaken: 1 }
@@ -27,100 +27,104 @@ describe('mergeProgress', () => {
     expect(m.dailyStats['2026-07-24']).toEqual({ reviewed: 10, newLearned: 5, correct: 8, quizTaken: 1 })
     expect(m.dailyStats['2026-07-23'].reviewed).toBe(20)
   })
-  // 原断言是「settings 以本地为准」。那条规则让设置在两台设备间**永远无法同步**:
-  // A 改成 28 推上去,B 拉下来合并时本地赢,B 保持原值,再推回去又把 28 冲掉。
-  // 用户实际撞上了这个问题(改了每日新词数,另一台没变)。改为按 updatedAt 判优,
-  // 与词条进度用 lastReviewedAt 判优是同一套思路。
-  describe('settings 按更新时间判优', () => {
+  // The original assertion was "settings default to the local copy." That rule made settings
+  // **permanently unable to sync** between two devices: device A changes it to 28 and pushes,
+  // device B pulls and merges with local winning, so B keeps its old value and pushes that back,
+  // wiping out the 28. A user actually hit this (changed the daily new-word count, the other
+  // device never picked it up). Switched to deciding by updatedAt, the same approach used for
+  // word progress via lastReviewedAt.
+  describe('settings are decided by update time', () => {
     const withSettings = (newPerDay: number, updatedAt?: string) => {
       const p = emptyProgress()
       p.settings = { ...p.settings, newPerDay, ...(updatedAt === undefined ? {} : { updatedAt }) }
       return p
     }
 
-    it('远端改得更晚,采用远端', () => {
+    it('remote was updated later, remote wins', () => {
       const local = withSettings(10, '2026-07-25T09:00:00Z')
       const remote = withSettings(28, '2026-07-25T10:00:00Z')
       expect(mergeProgress(local, remote).settings.newPerDay).toBe(28)
     })
 
-    it('本地改得更晚,采用本地', () => {
+    it('local was updated later, local wins', () => {
       const local = withSettings(28, '2026-07-25T10:00:00Z')
       const remote = withSettings(10, '2026-07-25T09:00:00Z')
       expect(mergeProgress(local, remote).settings.newPerDay).toBe(28)
     })
 
-    it('本地没有时间戳(从未改过设置),远端有:采用远端', () => {
-      // 这台设备一直用默认值,另一台改过 —— 该跟随改过的那台,而不是把默认值推回去
+    it('local has no timestamp (settings never changed), remote does: remote wins', () => {
+      // This device has always used the default, the other device changed it — it should
+      // follow the device that changed it, not push the default back
       const local = withSettings(10)
       const remote = withSettings(28, '2026-07-25T10:00:00Z')
       expect(mergeProgress(local, remote).settings.newPerDay).toBe(28)
     })
 
-    it('远端没有时间戳(旧数据),本地有:采用本地', () => {
+    it('remote has no timestamp (old data), local does: local wins', () => {
       const local = withSettings(28, '2026-07-25T10:00:00Z')
       const remote = withSettings(10)
       expect(mergeProgress(local, remote).settings.newPerDay).toBe(28)
     })
 
-    it('两边都没有时间戳:保持本地,不无谓翻动', () => {
+    it('neither side has a timestamp: keep local, no pointless churn', () => {
       expect(mergeProgress(withSettings(20), withSettings(10)).settings.newPerDay).toBe(20)
     })
 
-    it('时间戳相同:保持本地,结果稳定', () => {
+    it('timestamps are equal: keep local, result is stable', () => {
       const t = '2026-07-25T10:00:00Z'
       expect(mergeProgress(withSettings(20, t), withSettings(10, t)).settings.newPerDay).toBe(20)
     })
 
-    it('整个 settings 一起搬,不逐字段挑 —— soundEnabled 不能被留在旧那份里', () => {
+    it('the whole settings object moves together, not field by field — soundEnabled must not get left behind in the stale copy', () => {
       const local = withSettings(10, '2026-07-25T09:00:00Z')
       local.settings.soundEnabled = true
       const remote = withSettings(28, '2026-07-25T10:00:00Z')
       remote.settings.soundEnabled = false
       const m = mergeProgress(local, remote)
-      expect(m.settings.soundEnabled).toBe(false)   // 跟着 newPerDay 一起来自远端
+      expect(m.settings.soundEnabled).toBe(false)   // comes from remote together with newPerDay
       expect(m.settings.newPerDay).toBe(28)
     })
   })
 })
 
-describe('mergeProgress 的 bestSprint', () => {
+describe("mergeProgress's bestSprint", () => {
   const withBest = (score: number, date: string) => {
     const p = emptyProgress()
     p.bestSprint = { score, date }
     return p
   }
 
-  it('取分高的那一边', () => {
+  it('takes whichever side has the higher score', () => {
     expect(mergeProgress(withBest(30, '2026-07-20'), withBest(42, '2026-07-25')).bestSprint)
       .toEqual({ score: 42, date: '2026-07-25' })
     expect(mergeProgress(withBest(42, '2026-07-25'), withBest(30, '2026-07-20')).bestSprint)
       .toEqual({ score: 42, date: '2026-07-25' })
   })
 
-  it('同分取日期早的 —— 先达成的那次才是纪录', () => {
+  it('ties take the earlier date — the record belongs to whichever happened first', () => {
     expect(mergeProgress(withBest(42, '2026-07-25'), withBest(42, '2026-07-20')).bestSprint)
       .toEqual({ score: 42, date: '2026-07-20' })
     expect(mergeProgress(withBest(42, '2026-07-20'), withBest(42, '2026-07-25')).bestSprint)
       .toEqual({ score: 42, date: '2026-07-20' })
   })
 
-  it('一边没有就取另一边 —— 旧版 App 推上来的 progress 没有这个字段', () => {
+  it('when one side is missing it, take the other — progress pushed by an old app version lacks this field', () => {
     expect(mergeProgress(emptyProgress(), withBest(20, '2026-07-21')).bestSprint)
       .toEqual({ score: 20, date: '2026-07-21' })
     expect(mergeProgress(withBest(20, '2026-07-21'), emptyProgress()).bestSprint)
       .toEqual({ score: 20, date: '2026-07-21' })
   })
 
-  it('两边都没有时整个键不写,而不是写一个 undefined', () => {
+  it('when neither side has it, the key is omitted entirely, not written as undefined', () => {
     const m = mergeProgress(emptyProgress(), emptyProgress())
     expect(m.bestSprint).toBeUndefined()
     expect(Object.hasOwn(m, 'bestSprint')).toBe(false)
   })
 
-  it('0 分的纪录也算数,不能被当成「没有纪录」', () => {
-    // `local.bestSprint ?? remote.bestSprint` 之类的写法在这里是对的,但
-    // `score || other` 那种就会把 0 分吞掉。0 分是一次真实的、很差的成绩。
+  it('a record of 0 still counts — it must not be treated as "no record"', () => {
+    // A pattern like `local.bestSprint ?? remote.bestSprint` is correct here, but something
+    // like `score || other` would swallow a score of 0. A score of 0 is a real, if very poor,
+    // result.
     expect(mergeProgress(withBest(0, '2026-07-20'), emptyProgress()).bestSprint)
       .toEqual({ score: 0, date: '2026-07-20' })
   })

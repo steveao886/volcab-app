@@ -3,44 +3,54 @@ export interface Meaning {
   en: string
   zh: string
   /**
-   * 该义项在当代语境里的大致占比,整十(10–90)。同一个词的所有义项要么都有、
-   * 要么都没有,总和恒为 100;单义词不写(写 100 是噪音,还会让「有 share
-   * 即多义词」这条判断失效)。
+   * This meaning's approximate share of contemporary usage, rounded to the
+   * nearest ten (10–90). All meanings of a word either all have this field
+   * or none do; the total across meanings always sums to 100. A word with a
+   * single meaning leaves it unset (writing 100 would be noise, and it would
+   * also break the "having `share` means it's polysemous" check).
    *
-   * 只到整十是刻意的:这是会话中 AI 依据当代用法常识估的量级,背后**没有**
-   * 语料统计。写成 87%/13% 会暗示有 COCA 之类的来源,那是假精度。
+   * Rounding to the nearest ten is deliberate: this is a rough magnitude the
+   * AI estimates during the session from general knowledge of contemporary
+   * usage, and there is **no** corpus statistic behind it. Writing 87%/13%
+   * would imply a source like COCA, which would be false precision.
    *
-   * 可选而不是必填 —— 写入端严格(表单 + validate-words.ts),读取端宽容:
-   * 另一台设备的旧版 App 推上来一个缺这个字段的词,正确结果是「不显示占比」,
-   * 而不是整份 words.json 被判成坏数据拒绝合并。见 sync.ts 的 isMeaning。
+   * Optional rather than required — strict on the write path (the form +
+   * validate-words.ts), lenient on the read path: when another device's
+   * older app version pushes up a word missing this field, the correct
+   * outcome is "don't show a share," not having the entire words.json
+   * judged bad data and rejected from the merge. See isMeaning in sync.ts.
    */
   share?: number
 }
 
-/** 同根变形:未单独收词,但在词条页展示,便于成族记忆 */
+/** Related forms sharing the same root: not entered as separate words, but shown on the word detail page to aid remembering them as a family. */
 export interface RelatedForm { form: string; pos: string; zh: string }
 
 export interface Word {
-  id: string          // 词元小写,唯一
+  id: string          // lowercase lemma, unique
   headword: string
-  phonetic: string    // 美式,形如 /ˈæbrəɡeɪt/
+  phonetic: string    // American pronunciation, e.g. /ˈæbrəɡeɪt/
   meanings: Meaning[]
-  examples: string[]  // 2-3 句现代生活/工作场景例句
+  examples: string[]  // 2-3 example sentences in modern everyday/work contexts
   synonyms: string[]
   antonyms: string[]
   collocations: string[]
-  relatedForms: RelatedForm[]  // 同根变形,无则空数组
-  sourceNote: string  // 来源笔记标题,手动添加为 "manual"
+  relatedForms: RelatedForm[]  // same-root variants, empty array if none
+  sourceNote: string  // source note title, manually added entries use "manual"
   addedAt: string     // YYYY-MM-DD
-  /** 当代遇见概率 1–10:在真实语境里碰到这个词的可能性。缺省表示尚未评分。 */
+  /** Contemporary encounter likelihood 1–10: how likely you are to run into this word in real contexts. Unset means not yet scored. */
   usageScore?: number
   /**
-   * 词源拆解,一句话,形如 `ab-(离开) + rogare(提议) → 废除`。
+   * Etymology breakdown, one line, in the form
+   * `ab-(away) + rogare(propose) → abrogate`.
    *
-   * **永远可选**,与 usageScore 那条「写入端严格、读取端宽容」的路子不同 ——
-   * 这里两端都宽容,是刻意的:不是所有词都有可拆解的词源,日耳曼来源的常用词、
-   * 来源不明的词,**编一个比留空糟得多**。词源写错不是少一条信息,是往脑子里
-   * 钉一个错误的记忆锚点。没有就不显示这一块。
+   * **Always optional**, unlike usageScore's "strict on write, lenient on
+   * read" path — here both ends are lenient, deliberately: not every word
+   * has a decomposable etymology; for common words of Germanic origin or
+   * words of unclear origin, **making one up is far worse than leaving it
+   * blank**. A wrong etymology isn't just a missing piece of information,
+   * it's driving a false memory anchor into your head. If there isn't one,
+   * this block simply doesn't show.
    */
   etymology?: string
 }
@@ -55,39 +65,47 @@ export interface ProgressEntry {
   ease: number
   intervalDays: number
   due: string            // YYYY-MM-DD
-  stepIndex: number      // learning 步长下标;review 阶段置 0
+  stepIndex: number      // index into the learning step sequence; set to 0 once in the review phase
   reps: number
   lapses: number
-  lastReviewedAt: string // ISO 时间戳,冲突合并的依据
+  lastReviewedAt: string // ISO timestamp, the basis for conflict-merge resolution
 }
 
 export interface DailyStat { reviewed: number; newLearned: number; correct: number; quizTaken: number }
 
-/** 60 秒极速赛的个人最好成绩。date 是达成那天(YYYY-MM-DD)。 */
+/** Personal best score in the 60-second sprint. date is the day it was set (YYYY-MM-DD). */
 export interface SprintRecord { score: number; date: string }
 
 export interface Progress {
   version: 1
   /**
-   * soundEnabled 可选,undefined 视为 true(默认开启,见 src/lib/sound.ts
-   * 的 isSoundEnabled)。这不是随手偷懒——用户真实的 progress.json 在同步
-   * 中,加一个必填字段要么校验不过,要么逼一次迁移;可选字段两台设备
-   * 各自缺省为「开」,天然兼容,不需要动 sync.ts 的 isWord/校验逻辑。
+   * soundEnabled is optional; undefined is treated as true (sound on by
+   * default, see isSoundEnabled in src/lib/sound.ts). This isn't casual
+   * laziness — for a real user's progress.json going through sync, adding a
+   * required field would either fail validation or force a migration;
+   * with an optional field, both devices default to "on" independently,
+   * naturally compatible, with no need to touch sync.ts's isWord/validation logic.
    */
   /**
-   * updatedAt 是设置的「最后修改时刻」(ISO),合并时据此判优 —— 没有它,
-   * settings 在两台设备之间永远同步不了:谁拉下来都以本地为准,互相覆盖。
-   * 可选:旧数据与从未改过设置的设备没有这个字段,视为「最旧」,自动让位给
-   * 改过的那一方。整个 settings 作为一个整体搬运,不逐字段挑。
+   * updatedAt is the settings' "last modified at" timestamp (ISO), used to
+   * decide precedence when merging — without it, settings could never
+   * actually sync between two devices: whichever pulls down would just
+   * overwrite with its own local copy every time.
+   * Optional: legacy data, and devices that have never touched settings,
+   * lack this field and are treated as "oldest," automatically yielding to
+   * whichever side has changed it. The entire settings object is carried as
+   * one unit, not picked apart field by field.
    */
   settings: { newPerDay: number; soundEnabled?: boolean; updatedAt?: string }
   words: Record<string, ProgressEntry>
   dailyStats: Record<string, DailyStat>
   /**
-   * 极速赛最好成绩。**可选**,理由与 soundEnabled / settings.updatedAt 一致:
-   * 另一台设备的旧版 App 推上来一份没有这个字段的 progress,正确结果是「还没有
-   * 纪录」,而不是整份数据被 isProgress 判成坏数据、拒绝合并。
-   * 合并规则见 lib/merge.ts —— 取分高者,同分取日期早的。
+   * Sprint personal-best score. **Optional**, for the same reason as
+   * soundEnabled / settings.updatedAt: when another device's older app
+   * version pushes up a progress record missing this field, the correct
+   * outcome is "no record yet," not having the entire payload judged bad
+   * data by isProgress and rejected from the merge.
+   * Merge rule is in lib/merge.ts — the higher score wins, ties go to the earlier date.
    */
   bestSprint?: SprintRecord
 }
@@ -102,15 +120,17 @@ export const emptyProgress = (): Progress => ({
 export const emptyStat = (): DailyStat => ({ reviewed: 0, newLearned: 0, correct: 0, quizTaken: 0 })
 
 /**
- * 生词暂存区(staging)的一条待补全记录。
+ * A pending-completion record in the new-word staging area.
  *
- * **只有两个字段**,这是刻意的:捕获必须保持「一个输入框」的成本,备注、来源、
- * 词典预查一律不做,其余字段全部由会话中的 AI 事后补全(设计文档 §6.2)。
+ * **Exactly two fields**, deliberately: capturing a word must stay a
+ * "single text box" cost — no notes, no source, no dictionary pre-lookup;
+ * every other field gets filled in later by the AI during a session (see
+ * design doc §6.2).
  */
 export interface StagingItem {
-  headword: string   // 用户输入的原样写法(去首尾空白、内部空白折成一个空格)
+  headword: string   // the user's input verbatim (leading/trailing whitespace trimmed, internal whitespace collapsed to a single space)
   addedAt: string    // YYYY-MM-DD
 }
 
-/** volcab-data 里的第三个文件 staging.json */
+/** The third file in volcab-data: staging.json */
 export interface StagingFile { version: 1; items: StagingItem[] }

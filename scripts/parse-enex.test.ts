@@ -14,7 +14,7 @@ const sample = `<?xml version="1.0"?>
 </en-export>`
 
 describe('parseEnex', () => {
-  it('提取每篇笔记的标题、粗体词、纯文本', () => {
+  it('extracts each note\'s title, bold terms, and plain text', () => {
     const notes = parseEnex(sample)
     expect(notes).toHaveLength(2)
     expect(notes[0].title).toBe('12-15')

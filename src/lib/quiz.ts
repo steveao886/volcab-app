@@ -8,57 +8,69 @@ export type QuizType =
   | 'contrast' | 'audio2meaning' | 'audio2spelling'
 
 /**
- * 「综合」模式的轮换题型。
+ * The rotating question types for "mixed" mode.
  *
- * **新增的 contrast / audio2* 刻意不在这里** —— 它们有各自的生成函数与各自的
- * 模式入口。混进综合模式会改变用户每天都走的那条路(而且音频题在静音环境里
- * 是道死题)。这个常量现在同时是 generateQuiz 的默认题型集与其合法取值域。
+ * **The newer contrast / audio2* are deliberately excluded here** — they each have their
+ * own generator function and their own mode entry point. Mixing them into the mixed mode
+ * would change the path users walk through every single day (and audio questions are a dead
+ * end in a muted environment). This constant now serves double duty as generateQuiz's
+ * default type set and its domain of valid values.
  */
 export const QUIZ_TYPES: readonly QuizType[] = [
   'word2meaning', 'meaning2word', 'spelling',
   'clozeExample', 'clozeCollocation', 'synonymHint',
 ]
 
-/** 听音模式轮换的两种题型:音→义、音→形。 */
+/** The two question types that rotate in listening mode: audio→meaning, audio→spelling. */
 export const AUDIO_TYPES: readonly QuizType[] = ['audio2meaning', 'audio2spelling']
 
 export interface QuizQuestion {
   type: QuizType
   wordId: string
   /**
-   * 题面文本。
+   * The prompt text.
    *
-   * **音频题(audio2meaning / audio2spelling)例外:这里存的是要朗读的词头,
-   * 渲染层绝不能把它显示出来** —— 显示了就是直接把答案印在题面上。渲染层见到
-   * 这两种类型必须画播放按钮而不是文字。
+   * **Exception for audio questions (audio2meaning / audio2spelling): this holds the
+   * headword to be read aloud, and the rendering layer must never display it** — showing
+   * it would print the answer directly in the prompt. When the rendering layer sees either
+   * of these two types it must draw a play button instead of text.
    */
   prompt: string
-  options: string[]   // spelling / audio2spelling 题为 []
+  options: string[]   // [] for spelling / audio2spelling questions
   answer: string
-  /** spelling 与 audio2spelling 题携带:释义与音标是两个独立字段,不再拼进 prompt
-   *  字符串里 ——调用方（渲染层)不该靠正则从 prompt 里"抠"音标出来,那是在为一个
-   *  拼接细节维护一份没人签字的隐性契约。
-   *  audio2spelling **答题时不显示音标**(刚听过发音,再给 IPA 就没什么可考的),
-   *  只在揭晓答案时显示。 */
+  /** Carried by spelling and audio2spelling questions: the meaning and the phonetic
+   *  transcription are two separate fields, no longer concatenated into the prompt string —
+   *  the caller (rendering layer) shouldn't have to regex the phonetic transcription back
+   *  out of prompt; that would mean maintaining an unwritten contract around a formatting
+   *  detail nobody signed off on.
+   *  audio2spelling **does not show the phonetic transcription while answering** (you just
+   *  heard the pronunciation, so showing the IPA too leaves nothing left to test), only
+   *  once the answer is revealed. */
   phonetic?: string
-  /** 仅 synonymHint 题携带:提示词是近义还是反义,界面必须标明,
-   *  否则用户无从判断该选意思相同的还是相反的。 */
+  /** Carried only by synonymHint questions: whether the hint word is a synonym or antonym,
+   *  which the UI must indicate — otherwise the user has no way to know whether to pick the
+   *  word with the same meaning or the opposite one. */
   hintKind?: 'synonym' | 'antonym'
-  /** 仅 contrast 题携带:对照词的 id。渲染层据此在揭晓答案后并排展示两个词的
-   *  释义/例句/搭配 —— 那张对比卡才是辨析模式的真正价值。 */
+  /** Carried only by contrast questions: the id of the contrasted word. The rendering layer
+   *  uses this to show both words' meanings/examples/collocations side by side once the
+   *  answer is revealed — that comparison card is the actual point of discrimination mode. */
   contrastId?: string
 }
 
 /**
- * 按义项占比抽一条释义。
+ * Picks a meaning weighted by its share.
  *
- * 原本这里写死 `w.meanings[0]`,后果是**次要义项永远不会被考到** —— `rhetoric`
- * 的「修辞学」、`mire` 的「泥沼」再也遇不到。按 share 加权之后,70% 的义项七成
- * 概率出场,30% 的三成,与真实语境里遇到它们的比例一致。
+ * This used to hardcode `w.meanings[0]`, with the consequence that **secondary meanings
+ * would never come up in a quiz** — `rhetoric`'s "rhetoric [as a field]" or `mire`'s
+ * "quagmire" sense would never be encountered again. Weighting by share means a 70% meaning
+ * comes up 70% of the time and a 30% meaning 30% of the time, matching the proportions
+ * you'd actually encounter them in real usage.
  *
- * 没有占比(单义词,或外部设备推来的未标注多义词)一律退回第一条:数据不全时
- * 不凭空随机,保持原有行为。半份占比(只有部分义项有 share)同样按不全处理 ——
- * 拿一份残缺的权重去抽,比不抽更糟。
+ * When there's no share data (a single-meaning word, or a multi-meaning word pushed in from
+ * an external device without annotation), it always falls back to the first meaning: when
+ * the data is incomplete, don't randomize out of thin air — preserve the original behavior.
+ * Partial share data (only some meanings have share) is likewise treated as incomplete —
+ * drawing against a partial set of weights is worse than not weighting at all.
  */
 export function pickMeaning(w: Word, rng: () => number): Meaning {
   const ms = w.meanings
@@ -70,7 +82,7 @@ export function pickMeaning(w: Word, rng: () => number): Meaning {
     r -= m.share ?? 0
     if (r < 0) return m
   }
-  return ms[ms.length - 1] // 浮点误差兜底:rng 返回极接近 1 时可能一格都不触发
+  return ms[ms.length - 1] // Floating-point-error fallback: when rng returns something extremely close to 1, none of the buckets might trigger
 }
 
 const meaningLabel = (m: Meaning) => `${m.pos} ${m.zh}`
@@ -78,32 +90,40 @@ const meaningLabel = (m: Meaning) => `${m.pos} ${m.zh}`
 const BLANK = '___'
 
 /**
- * 把例句里的词头挖成空格。定位规则见 lib/headword.ts —— 挖空与复习卡上的高亮
- * 找的是同一个东西,共用一份实现。
+ * Blanks out the headword in an example sentence. Locating rules are in lib/headword.ts —
+ * cloze blanking and the review card's highlighting are looking for the same thing and
+ * share one implementation.
  *
- * **同句里原形与变形必须一起挖掉**:留下任何一处都会直接泄题。这条以前没做到,
- * placate 的例句「to placate passengers…, which placated almost no one」只挖掉了
- * 原形,答案就明晃晃留在句子里。
+ * **The base form and any inflected form in the same sentence must be blanked out
+ * together**: leaving even one in place gives the answer away directly. This wasn't always
+ * true — placate's example sentence "to placate passengers…, which placated almost no one"
+ * used to blank out only the base form, leaving the answer sitting right there in plain
+ * sight.
  *
- * 定位不到返回 null —— 宁可跳过这条例句,也不出一道没有空格的挖空题。
+ * Returns null when it can't be located — better to skip the sentence than to ship a cloze
+ * question with no blank in it.
  */
 export function clozeExample(sentence: string, headword: string): string | null {
   const re = headwordPattern(sentence, headword)
   return re === null ? null : sentence.replace(re, BLANK)
 }
 
-/** 搭配挖空。规则与 clozeExample 相同,单列一个函数是因为搭配是短语、语义不同。 */
+/** Blanks out a collocation. Same rules as clozeExample; kept as a separate function because a collocation is a phrase with a different meaning. */
 export function clozeCollocation(collocation: string, headword: string): string | null {
   return clozeExample(collocation, headword)
 }
 
 /**
- * 从若干候选句里**随机**挑一句能挖空的,一句都挑不出返回 null。
+ * Picks a **random** sentence from a set of candidates that can be blanked out; returns
+ * null if none can be.
  *
- * **随机不是锦上添花。** 原本这里是「顺着数组取第一条能挖空的」,而几乎每个词的
- * `examples[0]` 都定位得到词头 —— 于是同一个词的挖空题面**永远是同一句**。
- * 实测拿真实进度跑 400 轮,63 个出过挖空题的词里**没有一个**出现过第二种题面,
- * 尽管 297/471 的词写了 3 句例句:写好的句子有三分之二从没被用过。
+ * **Randomness isn't a nice-to-have here.** This used to just take the first sentence in
+ * the array that could be blanked out, and for almost every word `examples[0]` happens to
+ * locate the headword successfully — so the same word's cloze question **was always the
+ * same sentence**. Measured across 400 runs against real progress data: of the 63 words
+ * that ever produced a cloze question, **not one** ever showed a second sentence, even
+ * though 297 of 471 words have 3 example sentences written — two-thirds of the sentences
+ * written were never used at all.
  */
 export function pickCloze(sources: string[], headword: string, rng: () => number): string | null {
   for (const s of shuffle(sources, rng)) {
@@ -114,10 +134,11 @@ export function pickCloze(sources: string[], headword: string, rng: () => number
 }
 
 /**
- * 被一个以上词条共享的近义/反义词(全部小写)。
+ * Synonyms/antonyms shared by more than one entry (all lowercased).
  *
- * 实测 1597 个同义词里有 228 个出现在多个词条(overbearing、decree、flexibility……)。
- * 拿它们当提示会出现「两个选项都对」,用户会判定测验有缺陷 —— 所以出题时必须排除。
+ * Measured: 228 of 1597 synonyms show up under more than one entry (overbearing, decree,
+ * flexibility, …). Using them as hints produces "both options are correct," and users will
+ * conclude the quiz is broken — so these must be excluded when generating questions.
  */
 export function sharedSynonyms(words: Word[]): Set<string> {
   const count = new Map<string, number>()
@@ -139,9 +160,11 @@ export function shuffle<T>(arr: T[], rng: () => number): T[] {
   return a
 }
 
-// 按 labelFn 渲染后的显示文本去重收集干扰项,排除 w 自身与 answerLabel。
-// 先从 pool 里找,不够 3 个再从全词库 fallback 补足;去重后仍不足 3 个则返回 null,
-// 由调用方跳过该候选词——绝不允许输出带重复选项(或重复正确答案)的题目。
+// Collects distractors deduped by the display text labelFn renders, excluding w itself and
+// answerLabel. Looks in pool first, and if fewer than 3 are found falls back to the whole
+// word library to fill the rest; if still fewer than 3 after deduping, returns null and the
+// caller skips this candidate word — a question with duplicate options (or a duplicated
+// correct answer) must never be output.
 function pickDistractorLabels(
   w: Word,
   answerLabel: string,
@@ -169,7 +192,7 @@ function pickDistractorLabels(
   return result.length === 3 ? result : null
 }
 
-/** 出题的候选池:学过的词优先,不足 4 个就退回全词库。三个生成函数共用。 */
+/** Candidate pool for question generation: learned words take priority, falling back to the whole word library if fewer than 4. Shared by three generator functions. */
 function questionPool(words: Word[], progress: Progress): Word[] | null {
   const learned = words.filter(w => progress.words[w.id] && progress.words[w.id].state !== 'new')
   const pool = learned.length >= 4 ? learned : words
@@ -177,9 +200,10 @@ function questionPool(words: Word[], progress: Progress): Word[] | null {
 }
 
 /**
- * @param types 轮换的题型,**必须是 `QUIZ_TYPES` 的子集** —— 函数体只处理那六种,
- *   contrast 与 audio2* 有各自的生成函数。极速模式靠这个参数把题型收窄到两种
- *   四选一(拼写题会拖垮 60 秒的节奏)。
+ * @param types The rotating question types, **must be a subset of `QUIZ_TYPES`** — the
+ *   function body only handles those six; contrast and audio2* have their own generator
+ *   functions. Sprint mode uses this parameter to narrow things down to two four-choice
+ *   types (a spelling question would blow the 60-second pace).
  */
 export function generateQuiz(
   words: Word[],
@@ -190,11 +214,12 @@ export function generateQuiz(
 ): QuizQuestion[] {
   const pool = questionPool(words, progress)
   if (pool === null) return []
-  // 空题型列表要在这里挡住:下面 `types[questions.length % types.length]` 会得到
-  // undefined,然后每个候选词都走到最后那个分支、生成一堆 type 为 undefined 的题。
+  // An empty type list has to be blocked here: otherwise `types[questions.length %
+  // types.length]` below would evaluate to undefined, and every candidate word would fall
+  // through to the last branch, producing a pile of questions with type undefined.
   if (types.length === 0) return []
 
-  // 共享词集合对全词库只算一次 —— 放进循环会变成 O(n²)
+  // The shared-word set is computed once for the whole word library — putting it inside the loop would make it O(n²)
   const sharedSynonymsCache = sharedSynonyms(words)
 
   const candidates = shuffle(pool, rng)
@@ -219,7 +244,7 @@ export function generateQuiz(
     if (type === 'clozeExample' || type === 'clozeCollocation') {
       const sources = type === 'clozeExample' ? w.examples : w.collocations
       const prompt = pickCloze(sources, w.headword, rng)
-      if (prompt === null) continue // 这条词的例句/搭配都定位不到词头,换下一个候选词
+      if (prompt === null) continue // None of this word's examples/collocations could locate the headword — move to the next candidate word
       const distractors = pickDistractorLabels(w, w.headword, headwordLabel, pool, words, rng)
       if (!distractors) continue
       questions.push({
@@ -235,7 +260,7 @@ export function generateQuiz(
       const syn = w.synonyms.find(s => !shared.has(s.trim().toLowerCase()))
       const ant = w.antonyms.find(s => !shared.has(s.trim().toLowerCase()))
       const hint = syn ?? ant
-      if (hint === undefined) continue // 该词的近反义词全被共享,换下一个候选词
+      if (hint === undefined) continue // This word's synonyms and antonyms are all shared with other entries — move to the next candidate word
       const distractors = pickDistractorLabels(w, w.headword, headwordLabel, pool, words, rng)
       if (!distractors) continue
       questions.push({
@@ -247,18 +272,20 @@ export function generateQuiz(
       continue
     }
 
-    // 这个词本次出场用哪条释义:按占比抽,不再写死 meanings[0]。
+    // Which meaning this word uses this time around: drawn by share, no longer hardcoded to meanings[0].
     const ownMeaning = meaningLabel(pickMeaning(w, rng))
-    // 干扰项的释义同样按占比抽 —— 别让四个选项里三个都是别人的主流义、唯独正确
-    // 答案是个冷僻义,那本身就成了一条题外线索。
-    // pickDistractorLabels 已经把 w 自己排除在外(见其 collect 里的 filter),
-    // **这一点不能改**:word2meaning 的题面只有词头,把 mire 的两个义项都放进选项
-    // 就是两个都对,与 sharedSynonyms 要防的是同一类缺陷。
+    // Distractor meanings are likewise drawn by share — don't let three of the four options
+    // be some other word's dominant meaning while the correct answer alone is an obscure
+    // sense; that would itself become an extraneous clue.
+    // pickDistractorLabels already excludes w itself (see the filter inside its collect),
+    // **and this must not change**: a word2meaning prompt shows only the headword, so
+    // putting both of mire's meanings into the options would make both correct — the same
+    // class of defect sharedSynonyms guards against.
     const meaningOf = (x: Word) => meaningLabel(pickMeaning(x, rng))
     const labelFn = type === 'word2meaning' ? meaningOf : (x: Word) => x.headword
     const answer = type === 'word2meaning' ? ownMeaning : w.headword
     const distractors = pickDistractorLabels(w, answer, labelFn, pool, words, rng)
-    if (!distractors) continue // 干扰项不足 3 个去重后仍不够,跳过该词,换下一个候选词补位
+    if (!distractors) continue // Still fewer than 3 distractors after deduping — skip this word, next candidate takes its place
 
     questions.push({
       type, wordId: w.id,
@@ -272,27 +299,33 @@ export function generateQuiz(
 }
 
 /**
- * 辨析题的紧密度门槛。
+ * The closeness threshold for discrimination questions.
  *
- * 2 分以下都是「共享一个近义词、其余毫无关系」的杂质:`promulgate` 与
- * `metastasize` 共享 `disseminate`,但一个是颁布法令、一个是癌细胞扩散,摆成
- * 二选一是送分题。实测 476 词里 3 分及以上有 140 对,够出题了。
+ * Below 2 points, it's all noise — "shares one synonym, otherwise unrelated": `promulgate`
+ * and `metastasize` share `disseminate`, but one means enacting a law and the other means
+ * cancer cells spreading, so pairing them up is a free point. Measured: among 476 words,
+ * 140 pairs score 3 or above — enough to generate questions from.
  */
 export const CONTRAST_MIN_SCORE = 3
 
 /**
- * 一道辨析题:挖掉 `answer` 例句里的词头,让用户在 answer / other 之间二选一。
- * 出不来返回 null,由调用方换一边或换一对。
+ * A single discrimination question: blanks out the headword in `answer`'s example
+ * sentence, having the user choose between answer and other. Returns null if it can't be
+ * built, and the caller swaps sides or tries a different pair.
  */
 function contrastQuestion(answer: Word, other: Word, rng: () => number): QuizQuestion | null {
-  // 与 pickCloze 一样先打乱 —— 顺着取第一条会让同一对词的题面永远是同一句。
-  // 这里没直接用 pickCloze,是因为多一道「对方词头不能留在句子里」的过滤。
+  // Shuffles first, same as pickCloze — taking the first candidate in order would make the
+  // same pair's question always the same sentence. pickCloze isn't used directly here
+  // because there's an extra filter: "the other word's headword must not remain in the
+  // sentence."
   for (const s of shuffle(answer.examples, rng)) {
     const prompt = clozeExample(s, answer.headword)
     if (prompt === null) continue
-    // **对方的词头不能留在句子里**:两个候选词同时出现在题面上,这题就没得选了
-    // (「We alpha and bravo together」挖掉 alpha,bravo 还在,答案不言自明)。
-    // 用与挖空同一套定位规则,连变形一起挡 —— 宁可跳过这条例句。
+    // **The other word's headword must not remain in the sentence**: if both candidate
+    // words appear in the prompt at once, there's no real choice left ("We alpha and bravo
+    // together" — blank out alpha, and bravo is still sitting right there, giving the
+    // answer away). Uses the same locating rules as cloze blanking, catching inflected
+    // forms too — better to skip this sentence.
     if (headwordPattern(prompt, other.headword) !== null) continue
     return {
       type: 'contrast',
@@ -307,10 +340,12 @@ function contrastQuestion(answer: Word, other: Word, rng: () => number): QuizQue
 }
 
 /**
- * 辨析模式出题:从易混词对里抽,**两个选项**,靠搭配与语境判断。
+ * Question generation for discrimination mode: draws from confusable-word pairs, **two
+ * options**, judged by collocation and context.
  *
- * 高阶词汇真正的难点不是「认识」,是「知道该用哪个」—— 这是现有六种题型完全没
- * 覆盖的一块,而数据(近义词重叠)一直躺在词库里。
+ * The real difficulty with advanced vocabulary isn't "recognizing" a word, it's "knowing
+ * which one to use" — a gap the existing six question types don't cover at all, even though
+ * the data (synonym overlap) has been sitting in the word library the whole time.
  */
 export function generateContrastQuiz(
   words: Word[],
@@ -326,21 +361,28 @@ export function generateContrastQuiz(
     return e !== undefined && e.state !== 'new'
   }
 
-  // **两个词都学过才出题**,与综合/听音靠 questionPool 硬过滤是同一条规矩。
+  // **A question is only generated when both words are learned** — the same rule enforced
+  // by questionPool's hard filter for mixed/listening mode.
   //
-  // 原本这里只是把「都学过」的排到前面 —— **排序不是保证**:实测用户 63 个已学词
-  // 在 471 词的库里只配得出 7 对,排完就掉进未学词,53.7% 的题考的是从没见过的词
-  // (同一份进度下综合与听音都是 0%)。辨析考的是「该用哪个」,拿两个没学过的词
-  // 问这个问题没有意义。
+  // This used to just sort "both learned" pairs to the front — **sorting isn't a
+  // guarantee**: measured, a user with 63 learned words in the 471-word library could only
+  // form 7 pairs from them, so sorting still fell through into unlearned words, and 53.7%
+  // of questions tested words the user had never seen (mixed and listening mode were both
+  // 0% under the same progress data). Discrimination questions test "which one to use," and
+  // asking that about two words you've never learned is meaningless.
   //
-  // **没有「学过的词配不出对就退回全库」这条兜底**,这是刻意的。曾经写过一版,
-  // 结果正是用户报的那个问题:学了 20 个词、恰好一对都没凑出来时,整轮题全是
-  // 没见过的词。空模式不是故障 —— 它有一句说明告诉你为什么(见 Quiz.tsx 的
-  // EMPTY_HINT.contrast);而超纲题是在默默浪费时间,还会让人不再信任整个测验。
+  // **There is deliberately no fallback of "retreat to the whole library if learned words
+  // can't form enough pairs."** An earlier version had exactly that, and it reproduced the
+  // exact bug users reported: after learning 20 words, if they happened to form zero pairs,
+  // the entire round of questions was on words never seen before. An empty mode isn't a
+  // malfunction — it comes with a line of copy explaining why (see EMPTY_HINT.contrast in
+  // Quiz.tsx) — whereas out-of-scope questions silently waste time and erode trust in the
+  // whole quiz.
   const base = all.filter(p => isLearned(p.a) && isLearned(p.b))
   const tight = base.filter(p => p.score >= CONTRAST_MIN_SCORE)
-  // 紧密对不够一轮时退回这批词里的全部词对 —— 松一点的**学过的**词对,
-  // 好过紧密但没学过的。
+  // When there aren't enough tight pairs for a full round, fall back to every pair within
+  // this set of words — a looser pair of **learned** words beats a tight pair that hasn't
+  // been learned.
   const pool = tight.length >= count ? tight : base
 
   const byId = new Map(words.map(w => [w.id, w]))
@@ -351,7 +393,7 @@ export function generateContrastQuiz(
     const wa = byId.get(pair.a)
     const wb = byId.get(pair.b)
     if (wa === undefined || wb === undefined) continue
-    // 哪个词当答案随机,否则字典序在前的那个永远是答案 —— 用户会学会这条规律
+    // Which word becomes the answer is randomized, otherwise the alphabetically earlier one would always be the answer — users would learn to exploit that pattern
     const [first, second] = rng() < 0.5 ? [wa, wb] : [wb, wa]
     const q = contrastQuestion(first, second, rng) ?? contrastQuestion(second, first, rng)
     if (q !== null) questions.push(q)
@@ -360,9 +402,9 @@ export function generateContrastQuiz(
 }
 
 /**
- * 听音模式出题:音→义 与 音→形 轮换。
+ * Question generation for listening mode: audio→meaning and audio→spelling rotate.
  *
- * `prompt` 存的是**要朗读的词头**,不是给人看的题面 —— 见 QuizQuestion.prompt 的注释。
+ * `prompt` holds **the headword to be read aloud**, not a prompt meant for display — see the comment on QuizQuestion.prompt.
  */
 export function generateAudioQuiz(
   words: Word[],

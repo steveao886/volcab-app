@@ -21,14 +21,14 @@ function mkWord(overrides: Partial<Word> & { id: string }): Word {
 
 const ids = (words: Word[]) => words.map(w => w.id)
 
-describe('filterWords - 搜索:大小写与命中字段', () => {
-  it('大小写不敏感:大写查询命中小写词头', () => {
+describe('filterWords - search: case sensitivity and matched fields', () => {
+  it('case-insensitive: an uppercase query matches a lowercase headword', () => {
     const words = [mkWord({ id: 'abrogate', headword: 'abrogate' })]
     const result = filterWords(words, emptyProgress(), { query: 'ABRO', status: 'all', sourceNote: null })
     expect(ids(result)).toEqual(['abrogate'])
   })
 
-  it('查询大小写混合也能命中释义里的大写单词', () => {
+  it('a mixed-case query also matches an uppercase word inside a meaning', () => {
     const words = [
       mkWord({
         id: 'nasa-related',
@@ -41,9 +41,11 @@ describe('filterWords - 搜索:大小写与命中字段', () => {
     ])
   })
 
-  it('zh 释义里的拉丁字母同样大小写不敏感', () => {
-    // 中文释义里夹英文缩写很常见(AI、CEO、DNA……)。查询词会被转成小写,
-    // 若 zh 侧不一起转,这些词就变成了大小写敏感匹配 —— 这条挡的就是那个回归。
+  it('Latin letters inside a zh meaning are likewise case-insensitive', () => {
+    // Chinese meanings commonly mix in English abbreviations (AI, CEO,
+    // DNA...). The query is lowercased; if zh weren't lowercased too,
+    // matching against these words would become case-sensitive — this
+    // test is exactly what guards against that regression.
     const words = [
       mkWord({
         id: 'algorithm',
@@ -56,8 +58,8 @@ describe('filterWords - 搜索:大小写与命中字段', () => {
     ])
   })
 
-  it('命中落在第二个及以后的义项上也算命中', () => {
-    // 搜索要遍历全部 meanings,不能只看首义项。
+  it('a match landing on the second or later meaning still counts', () => {
+    // Search must iterate every meaning, not just look at the first one.
     const words = [
       mkWord({
         id: 'concoct',
@@ -76,7 +78,7 @@ describe('filterWords - 搜索:大小写与命中字段', () => {
     ])
   })
 
-  it('en 释义子串命中,即使词头完全不含查询词', () => {
+  it('en meaning substring match, even when the headword contains none of the query', () => {
     const words = [
       mkWord({ id: 'abrogate', headword: 'abrogate', meanings: [{ pos: 'v.', en: 'to formally cancel a law', zh: '正式废除' }] }),
       mkWord({ id: 'unrelated', headword: 'unrelated', meanings: [{ pos: 'adj.', en: 'not connected', zh: '无关的' }] }),
@@ -86,7 +88,7 @@ describe('filterWords - 搜索:大小写与命中字段', () => {
     ])
   })
 
-  it('zh 释义子串命中,即使词头完全不含查询词', () => {
+  it('zh meaning substring match, even when the headword contains none of the query', () => {
     const words = [
       mkWord({ id: 'abrogate', headword: 'abrogate', meanings: [{ pos: 'v.', en: 'to formally cancel a law', zh: '正式废除' }] }),
       mkWord({ id: 'unrelated', headword: 'unrelated', meanings: [{ pos: 'adj.', en: 'not connected', zh: '无关的' }] }),
@@ -96,7 +98,7 @@ describe('filterWords - 搜索:大小写与命中字段', () => {
     ])
   })
 
-  it('空查询返回全部词条,按词头字母序排列', () => {
+  it('an empty query returns every entry, sorted alphabetically by headword', () => {
     const words = [mkWord({ id: 'zebra', headword: 'zebra' }), mkWord({ id: 'abrogate', headword: 'abrogate' })]
     expect(ids(filterWords(words, emptyProgress(), { query: '', status: 'all', sourceNote: null }))).toEqual([
       'abrogate',
@@ -104,7 +106,7 @@ describe('filterWords - 搜索:大小写与命中字段', () => {
     ])
   })
 
-  it('查询词包含首尾空白会被忽略', () => {
+  it('leading/trailing whitespace on the query is ignored', () => {
     const words = [mkWord({ id: 'abrogate', headword: 'abrogate' })]
     expect(ids(filterWords(words, emptyProgress(), { query: '  abro  ', status: 'all', sourceNote: null }))).toEqual([
       'abrogate',
@@ -112,18 +114,18 @@ describe('filterWords - 搜索:大小写与命中字段', () => {
   })
 })
 
-describe('filterWords - 排序:词头前缀优先于词头子串,子串优先于释义命中', () => {
-  it('三档命中顺序:词头前缀 > 词头子串 > 仅释义命中,同档内按字母序', () => {
+describe('filterWords - sorting: headword prefix beats headword substring, substring beats meaning match', () => {
+  it('three-tier match order: headword prefix > headword substring > meaning-only match, alphabetical within a tier', () => {
     const words = [
-      mkWord({ id: 'precancel', headword: 'precancel' }), // 词头子串(不是前缀)
-      mkWord({ id: 'abrogate', headword: 'abrogate', meanings: [{ pos: 'v.', en: 'to formally cancel a law', zh: '正式废除' }] }), // 仅释义命中
-      mkWord({ id: 'cancelable', headword: 'cancelable' }), // 词头前缀
+      mkWord({ id: 'precancel', headword: 'precancel' }), // headword substring (not a prefix)
+      mkWord({ id: 'abrogate', headword: 'abrogate', meanings: [{ pos: 'v.', en: 'to formally cancel a law', zh: '正式废除' }] }), // meaning-only match
+      mkWord({ id: 'cancelable', headword: 'cancelable' }), // headword prefix
     ]
     const result = filterWords(words, emptyProgress(), { query: 'cancel', status: 'all', sourceNote: null })
     expect(ids(result)).toEqual(['cancelable', 'precancel', 'abrogate'])
   })
 
-  it('不命中的词条被排除', () => {
+  it('non-matching entries are excluded', () => {
     const words = [mkWord({ id: 'abrogate', headword: 'abrogate' }), mkWord({ id: 'zzz', headword: 'zzz' })]
     expect(ids(filterWords(words, emptyProgress(), { query: 'abro', status: 'all', sourceNote: null }))).toEqual([
       'abrogate',
@@ -131,16 +133,16 @@ describe('filterWords - 排序:词头前缀优先于词头子串,子串优先于
   })
 })
 
-describe('filterWords - 状态筛选', () => {
+describe('filterWords - status filter', () => {
   const words = [mkWord({ id: 'a', headword: 'alpha' }), mkWord({ id: 'b', headword: 'bravo' }), mkWord({ id: 'c', headword: 'carol' })]
 
-  it('progress 中缺失记录视为 new,匹配「未学」', () => {
+  it('a missing record in progress is treated as new, matching "not yet learned"', () => {
     const progress: Progress = emptyProgress()
     progress.words['b'] = { state: 'learning', ease: 2.5, intervalDays: 0, due: '2026-07-25', stepIndex: 0, reps: 1, lapses: 0, lastReviewedAt: '2026-07-25T00:00:00Z' }
     expect(ids(filterWords(words, progress, { query: '', status: 'new', sourceNote: null }))).toEqual(['a', 'c'])
   })
 
-  it('learning / review 精确匹配 progress.state', () => {
+  it('learning / review match progress.state exactly', () => {
     const progress: Progress = emptyProgress()
     progress.words['b'] = { state: 'learning', ease: 2.5, intervalDays: 0, due: '2026-07-25', stepIndex: 0, reps: 1, lapses: 0, lastReviewedAt: '2026-07-25T00:00:00Z' }
     progress.words['c'] = { state: 'review', ease: 2.5, intervalDays: 10, due: '2026-08-01', stepIndex: 0, reps: 3, lapses: 0, lastReviewedAt: '2026-07-25T00:00:00Z' }
@@ -148,7 +150,7 @@ describe('filterWords - 状态筛选', () => {
     expect(ids(filterWords(words, progress, { query: '', status: 'review', sourceNote: null }))).toEqual(['c'])
   })
 
-  it('status:"all" 不做任何状态过滤', () => {
+  it('status:"all" applies no status filtering at all', () => {
     expect(ids(filterWords(words, emptyProgress(), { query: '', status: 'all', sourceNote: null }))).toEqual([
       'a',
       'b',
@@ -157,14 +159,14 @@ describe('filterWords - 状态筛选', () => {
   })
 })
 
-describe('filterWords - sourceNote 筛选', () => {
+describe('filterWords - sourceNote filter', () => {
   const words = [
     mkWord({ id: 'a', headword: 'alpha', sourceNote: '8-11' }),
     mkWord({ id: 'b', headword: 'bravo', sourceNote: '12-15' }),
     mkWord({ id: 'c', headword: 'carol', sourceNote: '8-11' }),
   ]
 
-  it('sourceNote 为 null 时不过滤', () => {
+  it('no filtering when sourceNote is null', () => {
     expect(ids(filterWords(words, emptyProgress(), { query: '', status: 'all', sourceNote: null }))).toEqual([
       'a',
       'b',
@@ -172,7 +174,7 @@ describe('filterWords - sourceNote 筛选', () => {
     ])
   })
 
-  it('指定 sourceNote 时只保留精确匹配的词条', () => {
+  it('only entries matching exactly are kept when sourceNote is specified', () => {
     expect(ids(filterWords(words, emptyProgress(), { query: '', status: 'all', sourceNote: '8-11' }))).toEqual([
       'a',
       'c',
@@ -180,8 +182,8 @@ describe('filterWords - sourceNote 筛选', () => {
   })
 })
 
-describe('filterWords - 两组筛选按 AND 组合', () => {
-  it('状态筛选与 sourceNote 筛选同时生效,必须都满足才保留', () => {
+describe('filterWords - the two filter groups are ANDed together', () => {
+  it('status filter and sourceNote filter both apply at once, and both must be satisfied to keep an entry', () => {
     const words = [
       mkWord({ id: 'a', headword: 'alpha', sourceNote: '8-11' }),
       mkWord({ id: 'b', headword: 'bravo', sourceNote: '8-11' }),
@@ -190,12 +192,12 @@ describe('filterWords - 两组筛选按 AND 组合', () => {
     const progress: Progress = emptyProgress()
     progress.words['a'] = { state: 'review', ease: 2.5, intervalDays: 10, due: '2026-08-01', stepIndex: 0, reps: 3, lapses: 0, lastReviewedAt: '2026-07-25T00:00:00Z' }
     progress.words['c'] = { state: 'review', ease: 2.5, intervalDays: 10, due: '2026-08-01', stepIndex: 0, reps: 3, lapses: 0, lastReviewedAt: '2026-07-25T00:00:00Z' }
-    // b: sourceNote 命中但状态是 new,不满足「已掌握」;c: 状态命中但 sourceNote 不对
-    // 只有 a 同时满足两个条件
+    // b: sourceNote matches but its status is new, so it fails "mastered";
+    // c: status matches but sourceNote doesn't — only a satisfies both conditions
     expect(ids(filterWords(words, progress, { query: '', status: 'review', sourceNote: '8-11' }))).toEqual(['a'])
   })
 
-  it('搜索与筛选 chips 也按 AND 组合', () => {
+  it('search and filter chips are also ANDed together', () => {
     const words = [
       mkWord({ id: 'alpha', headword: 'alpha', sourceNote: '8-11' }),
       mkWord({ id: 'albatross', headword: 'albatross', sourceNote: '12-15' }),
@@ -207,11 +209,11 @@ describe('filterWords - 两组筛选按 AND 组合', () => {
 })
 
 describe('wordState', () => {
-  it('progress.words 中没有该词条的记录时视为 "new"', () => {
+  it('is treated as "new" when there\'s no record for the entry in progress.words', () => {
     expect(wordState(mkWord({ id: 'a' }), emptyProgress())).toBe('new')
   })
 
-  it('有记录时返回记录里的 state', () => {
+  it('returns the state from the record when one exists', () => {
     const progress: Progress = emptyProgress()
     progress.words['a'] = { state: 'review', ease: 2.5, intervalDays: 10, due: '2026-08-01', stepIndex: 0, reps: 3, lapses: 0, lastReviewedAt: '2026-07-25T00:00:00Z' }
     expect(wordState(mkWord({ id: 'a' }), progress)).toBe('review')
@@ -219,19 +221,20 @@ describe('wordState', () => {
 })
 
 describe('distinctSourceNotes', () => {
-  it('去重并按数值区间升序排列(而非字符串字典序)', () => {
+  it('deduplicates and sorts by numeric range ascending (not string dictionary order)', () => {
     const words = [
       mkWord({ id: 'a', sourceNote: '12-15' }),
       mkWord({ id: 'b', sourceNote: '8-11' }),
       mkWord({ id: 'c', sourceNote: '8-11' }),
       mkWord({ id: 'd', sourceNote: '104-106' }),
     ]
-    // 纯字符串排序会把 "104-106" 排在 "12-15" 和 "8-11" 之前(字典序 '1' < '8'),
-    // 这里要求按区间起始数值排序,"8-11" 应排在 "12-15" 之前
+    // Plain string sorting would put "104-106" before "12-15" and "8-11"
+    // (dictionary order: '1' < '8'); this requires sorting by the range's
+    // starting number instead, so "8-11" should sort before "12-15"
     expect(distinctSourceNotes(words)).toEqual(['8-11', '12-15', '104-106'])
   })
 
-  it('非数值前缀的 sourceNote(如手动添加的 "manual")落在末尾,按字母序', () => {
+  it('a sourceNote with a non-numeric prefix (like manually-added "manual") sorts to the end, alphabetically', () => {
     const words = [mkWord({ id: 'a', sourceNote: 'manual' }), mkWord({ id: 'b', sourceNote: '8-11' })]
     expect(distinctSourceNotes(words)).toEqual(['8-11', 'manual'])
   })

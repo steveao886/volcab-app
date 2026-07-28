@@ -2,14 +2,18 @@ import { addDays } from '../lib/srs'
 import type { DailyStat, Progress, Word } from '../types'
 
 /**
- * 连续复习天数(streak)。
+ * The review streak, in consecutive days.
  *
- * 规则:
- * - 从今天起往前数,数「reviewed > 0」的连续天数;
- * - 今天还没复习不算断签 —— 早上打开 App 时连胜条不应该先掉一天,
- *   这种情况下改从昨天起往前数;
- * - 今天已经复习过,则今天计入,并继续从今天往前数;
- * - 除今天外,任何一天缺失或 reviewed=0 都会截断计数(缺失视为 0,不是跳过)。
+ * Rules:
+ * - Count backward from today, counting consecutive days with `reviewed > 0`;
+ * - Not having reviewed yet today doesn't count as a broken streak —
+ *   opening the app in the morning shouldn't make the streak counter drop
+ *   by a day before you've even done anything; in that case counting
+ *   starts from yesterday instead;
+ * - If today has already been reviewed, today is included and counting
+ *   continues backward from today;
+ * - Aside from today, any day that's missing or has reviewed=0 truncates
+ *   the count (missing is treated as 0, not skipped over).
  */
 export function computeStreak(
   dailyStats: Record<string, DailyStat>,
@@ -25,14 +29,14 @@ export function computeStreak(
 }
 
 export interface ReviewProgress {
-  /** 已进入 review 阶段(已掌握)的词数 */
+  /** Count of words that have entered the review stage (mastered) */
   count: number
   total: number
-  /** count / total,词库为空时为 0 */
+  /** count / total, 0 when the library is empty */
   ratio: number
 }
 
-/** 总进度:词库里 state === 'review' 的词数占比。词条缺席于 progress.words 视为 new。 */
+/** Overall progress: the proportion of words in the library with state === 'review'. An entry absent from progress.words is treated as new. */
 export function reviewProgress(words: Word[], progress: Progress): ReviewProgress {
   const total = words.length
   if (total === 0) return { count: 0, total: 0, ratio: 0 }

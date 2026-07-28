@@ -19,11 +19,13 @@ import {
 import type { SyncClient, WordsOp } from './sync'
 
 /**
- * 全局状态 + 同步编排的 React 绑定。
+ * React bindings for global state + sync orchestration.
  *
- * 能不依赖 React 的都摘出去了:远端编排在 ./sync.ts,本机缓存与启动状态在
- * ./session.ts,错误分类与文案在 ./errors.ts。这里只剩本地落盘、防抖时机、
- * 在线/可见性事件,以及把结果映射成页面能读的状态。
+ * Everything that doesn't need React has been pulled out: remote
+ * orchestration lives in ./sync.ts, local caching and boot state in
+ * ./session.ts, error classification and copy in ./errors.ts. What's left
+ * here is local persistence, debounce timing, online/visibility events, and
+ * mapping the result into state the pages can read.
  */
 
 const DATA_REPO = 'volcab-data'
@@ -34,19 +36,24 @@ export interface AppState {
   owner: string | null
   words: Word[]
   progress: Progress
-  /** 生词暂存区:只记了单词、还没补全的待办。补全在会话里做,不在 App 里。 */
+  /** New-word staging area: just headwords, todos not yet filled in. Filling in happens in a session, not in the App. */
   staging: StagingItem[]
   syncStatus: 'synced' | 'pending' | 'offline' | 'error'
   /**
-   * 登录失败的原因,且**只有**登录失败。登录页把它接在 token 输入框的
-   * Field error 上,会同时把输入框标成 aria-invalid —— 输入框本身没问题的
-   * 通知(如退出时丢弃了未同步数据)不能走这里,走 syncError。
+   * The reason login failed, and **only** login failures. The login page
+   * attaches it as the field error on the token input, which also marks the
+   * input aria-invalid — notices where the input itself isn't the problem
+   * (e.g. unsynced data discarded on logout) must not go through here; use
+   * syncError instead.
    */
   loginError: string | null
   /**
-   * 同步降级/数据丢弃的具体原因(冲突放弃、远端文件损坏要导出备份、限流、
-   * 跨账号丢弃、退出时丢弃未同步数据……)。syncStatus 只有四个枚举值,装不下
-   * 要给用户看的那句话。成功一次即清空;退到登录页时由登录页的通知区展示。
+   * The specific reason for a sync degradation / data discard (gave up
+   * after a conflict, remote file corrupted and needs a backup export,
+   * rate limited, discarded on account switch, unsynced data discarded on
+   * logout...). syncStatus only has four enum values, not enough room for
+   * the sentence users need to see. Cleared on the next success; shown by
+   * the login page's notice area when we fall back there.
    */
   syncError: string | null
 }
@@ -56,24 +63,27 @@ export interface AppActions {
   logout(): void
   grade(wordId: string, g: Grade): void
   recordQuiz(correct: number, total: number, wrongIds: string[]): void
-  /** 极速赛结算:与 recordQuiz 同样只提前错词的到期日,外加刷新个人最好成绩 */
+  /** Sprint settlement: like recordQuiz, only pulls forward the due date of missed words, plus refreshes the personal best score */
   recordSprint(score: number, wrongIds: string[]): void
-  /** 新增或编辑词条(按 id upsert),立即推送 words.json */
+  /** Add or edit an entry (upsert by id), pushes words.json immediately */
   saveWord(word: Word): Promise<void>
-  /** 删除词条,同时清掉它们的进度记录 */
+  /** Delete entries, also clearing their progress records */
   deleteWords(ids: string[]): Promise<void>
   /**
-   * 把一个单词丢进待补全暂存区,立即推送 staging.json。
+   * Drops a word into the staging area awaiting completion, pushes
+   * staging.json immediately.
    *
-   * 只做机械追加:大小写/空白归一后已在列表里就原地返回。「这个词已经在词库里了」
-   * 这类策略判断留给调用页(它同时握着 words 和 staging,能就地给出可点的提示)。
+   * Pure mechanical append: if it's already in the list after case/whitespace
+   * normalization, this returns as a no-op. Policy judgments like "this word
+   * is already in the vocabulary" are left to the calling page (it holds
+   * both words and staging, so it can give an actionable hint in place).
    */
   addStaging(headword: string): Promise<void>
   updateSettings(s: Progress['settings']): void
   syncNow(): Promise<void>
-  /** 导出 {words, progress, staging} JSON 字符串 */
+  /** Export a {words, progress, staging} JSON string */
   exportAll(): string
-  /** 仅开发模式:用仓库自带词库进入演示,全程不触网;生产构建里为 undefined */
+  /** Dev mode only: enter demo mode using the vocabulary bundled in the repo, never touching the network; undefined in production builds */
   enterDemoMode?: () => Promise<void>
 }
 
@@ -91,18 +101,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     syncError: null,
   }))
 
-  // 推送发生在 async 回调里,必须读到「此刻」的状态,所以状态同时挂一份 ref
+  // Pushes happen inside async callbacks and must read "right now" state, so state is also mirrored on a ref
   const stateRef = useRef(state)
   const clientRef = useRef<SyncClient | null>(null)
   const demoRef = useRef(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const pushingRef = useRef(false)           // progress 推送互斥
+  const pushingRef = useRef(false)           // progress push mutex
   const rerunRef = useRef(false)
-  const wordsPushingRef = useRef(false)      // words 推送互斥
+  const wordsPushingRef = useRef(false)      // words push mutex
   const wordsRerunRef = useRef(false)
-  const stagingPushingRef = useRef(false)    // staging 推送互斥
+  const stagingPushingRef = useRef(false)    // staging push mutex
   const stagingRerunRef = useRef(false)
-  const sessionRef = useRef(0)               // 登录/登出递增:飞行中的响应据此作废
+  const sessionRef = useRef(0)               // incremented on login/logout: in-flight responses are invalidated against this
   const bootedRef = useRef(false)
 
   const update = useCallback((patch: Partial<AppState>) => {
@@ -113,14 +123,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const settleStatus = useCallback((): AppState['syncStatus'] => {
     if (demoRef.current) return 'synced'
     if (!navigator.onLine) return 'offline'
-    // 待推送的收词同样算「还欠着远端」。它也是这里最重要的一条:staging 推送
-    // 失败后 flushProgress 成功会把 syncError 清掉,那时只剩这个 pending 在提示
-    // 「还没同步完」—— 少了它,一次失败的收词推送会被显示成「已同步」。
+    // Pending staged words also count as "still owed to the remote". This is
+    // the most important line here: if a staging push fails and a later
+    // flushProgress succeeds, that clears syncError — at that point this
+    // pending check is the only thing still signaling "not fully synced".
+    // Without it, a failed staging push would end up displayed as "synced".
     const owing = storage.get<boolean>('dirty') || pendingOps().length > 0 || pendingStaging().length > 0
     return owing ? 'pending' : 'synced'
   }, [])
 
-  /** 一次推送成功后的收尾:状态归位,并清掉上一次失败留下的说明 */
+  /** Cleanup after a successful push: settle status, and clear whatever explanation the last failure left behind */
   const markSettled = useCallback(() => {
     update({ syncStatus: settleStatus(), syncError: null })
   }, [settleStatus, update])
@@ -132,7 +144,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  /** 演示模式的词库每次都从仓库现读,不落盘,免得本地白留一份 500KB 的旧副本 */
+  /** In demo mode, the vocabulary is read fresh from the repo every time and never persisted, so we don't leave a stale 500KB copy sitting around locally */
   const cacheWords = useCallback((words: Word[]) => {
     if (!demoRef.current) storage.set('words', words)
   }, [])
@@ -145,16 +157,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     clearTimer()
     sessionRef.current += 1
     clientRef.current = null
-    // 只清 token,owner 留着:重新登录时据此认出是同一个人,把没推上去的改动并回来
+    // Only clear the token, keep owner: on re-login this is how we recognize it's the same person and carry unpushed changes back over
     if (clearToken) storage.remove('token')
-    // syncError 一并清掉:上一条同步失败的说明在登录页已经无从处置,留着只会
-    // 和这里真正的原因(loginError)在两个区域各说一句,读起来像出了两件事。
+    // Clear syncError too: the previous sync-failure explanation has nowhere
+    // to go on the login page — leaving it would just say one thing in each
+    // of two areas alongside the real reason (loginError) here, reading as
+    // if two separate things went wrong.
     update({ phase: 'login', loginError, owner: null, syncError: null })
   }, [clearTimer, update])
 
   /**
-   * 推送失败的统一落点。只有 401(token 被撤销)才退回登录页;403 一律不退登
-   * —— 限流是暂时的,为它清掉一个有效 token 是净损失,提示用户等一等即可。
+   * The single landing point for push failures. Only a 401 (token revoked)
+   * falls back to the login page; a 403 never does — rate limiting is
+   * temporary, and clearing a valid token over it is a net loss, so we just
+   * tell the user to wait.
    */
   const failSync = useCallback((error: string) => {
     const failure = classifySyncFailure(error)
@@ -162,7 +178,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     update({ syncStatus: navigator.onLine ? 'error' : 'offline', syncError: failure.message })
   }, [toLogin, update])
 
-  // --- 推送 ---------------------------------------------------------------
+  // --- Push -----------------------------------------------------------------
 
   const flushProgress = useCallback(async (): Promise<void> => {
     clearTimer()
@@ -170,7 +186,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (demoRef.current || !client) return
     if (!navigator.onLine) { update({ syncStatus: 'offline' }); return }
     if (!storage.get<boolean>('dirty')) { update({ syncStatus: settleStatus() }); return }
-    // 已有一次在飞:让它跑完再补一轮,不要并发写同一个文件
+    // One is already in flight: let it finish and run one more round after, don't write the same file concurrently
     if (pushingRef.current) { rerunRef.current = true; return }
 
     pushingRef.current = true
@@ -180,7 +196,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       for (;;) {
         rerunRef.current = false
         const out = await pushProgress(client, stateRef.current.progress, { alive })
-        if (!alive()) return                      // 期间登出/换号,结果作废
+        if (!alive()) return                      // logged out/switched accounts meanwhile, discard the result
         if (!out.ok) { failSync(out.error); return }
 
         const next = reconcileProgress(stateRef.current.progress, out.data)
@@ -205,15 +221,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }, PUSH_DEBOUNCE_MS)
   }, [clearTimer, flushProgress])
 
-  /** 词库改动不防抖,立即推。op 省略表示只重试队列里积压的改动。 */
+  /** Vocabulary changes aren't debounced, pushed immediately. Omitting op means only retrying whatever's backed up in the queue. */
   const flushWords = useCallback(async (op?: WordsOp): Promise<void> => {
     if (op) appendPendingOp(op)
     const client = clientRef.current
-    // 演示模式没有远端可推,队列清掉是对的 —— 它本来就不欠任何东西。
+    // Demo mode has no remote to push to, so clearing the queue is correct —
+    // it never owed anything to begin with.
     if (demoRef.current) { setPendingOps([]); return }
-    // 但「没有 client」完全是另一回事:token 失效被踢回登录页时会故意留下
-    // owner / wordOps / dirty,等重新登录后由 carryOverFor 重放。这时候清队列
-    // 就是把用户没同步成功的词条改动直接抹掉。原地返回,什么都不动。
+    // But "no client" is a completely different story: when the token is
+    // revoked and we're kicked back to the login page, owner / wordOps /
+    // dirty are deliberately left behind so carryOverFor can replay them on
+    // re-login. Clearing the queue here would wipe out the user's unsynced
+    // vocabulary edits outright. Return in place, touch nothing.
     if (!client) return
     if (!navigator.onLine) { update({ syncStatus: 'offline' }); return }
     if (wordsPushingRef.current) { wordsRerunRef.current = true; return }
@@ -229,7 +248,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (!alive()) return
         if (!out.ok) { failSync(out.error); return }
 
-        const remaining = pendingOps().slice(sending.length)   // 推送途中新产生的改动
+        const remaining = pendingOps().slice(sending.length)   // changes made while the push was in flight
         setPendingOps(remaining)
         const next = reconcileWords(stateRef.current.words, out.data, remaining)
         if (next !== stateRef.current.words) {
@@ -245,11 +264,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [cacheWords, failSync, markSettled, update])
 
   /**
-   * 收词不防抖,立即推 —— 与词库改动同一套时机。item 省略表示只重试队列里积压的。
+   * Staged words aren't debounced either, pushed immediately — same timing
+   * as vocabulary changes. Omitting item means only retrying whatever's
+   * backed up in the queue.
    *
-   * 逐行对着 flushWords 写,包括那两条不能省的分支:演示模式清队列、没有 client
-   * 时**原地返回**(那时 stagingOps 要留着等重新登录后重放,清掉就是把用户
-   * 敲进去的词直接抹掉)。
+   * Written line-for-line against flushWords, including the two branches
+   * that can't be skipped: clear the queue in demo mode, and **return in
+   * place** when there's no client (stagingOps needs to stay put so it can
+   * be replayed after re-login; clearing it would wipe out the words the
+   * user typed in).
    */
   const flushStaging = useCallback(async (it?: StagingItem): Promise<void> => {
     if (it) appendPendingStaging(it)
@@ -268,13 +291,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const sending = pendingStaging()
         const out = await pushStaging(client, stateRef.current.staging, sending, { alive })
         if (!alive()) return
-        // 失败时队列原样留着(不 setPendingStaging),下次上线 / 切后台 / 手动同步
-        // 自动重来。与另外两个文件同一套处置:只有 401 退登,其余只提示。
-        // 之后任何一次推送成功都会把这条提示清掉,而 settleStatus 仍会因为队列
-        // 非空报「待同步」—— 失败不会被粉饰成「已同步」,也不会一直挡在那里。
+        // On failure the queue is left as-is (no setPendingStaging), and
+        // retried automatically next time we're back online / go to
+        // background / sync manually. Same handling as the other two files:
+        // only a 401 logs out, everything else just notifies. Any later
+        // successful push clears this notice, while settleStatus still
+        // reports "pending" because the queue is non-empty — a failure is
+        // never dressed up as "synced", nor does it block forever.
         if (!out.ok) { failSync(out.error); return }
 
-        const remaining = pendingStaging().slice(sending.length)   // 推送途中新收的词
+        const remaining = pendingStaging().slice(sending.length)   // words staged while the push was in flight
         setPendingStaging(remaining)
         const next = reconcileStaging(stateRef.current.staging, out.data, remaining)
         if (next !== stateRef.current.staging) {
@@ -289,29 +315,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [cacheStaging, failSync, markSettled, update])
 
-  /** 本地落盘 + 置脏 + 刷新状态;推送时机(防抖 / 立即)由调用方决定 */
+  /** Persist locally + mark dirty + refresh state; push timing (debounced / immediate) is up to the caller */
   const commitProgress = useCallback((progress: Progress) => {
     storage.set('progress', progress)
-    if (!demoRef.current) storage.set('dirty', true)   // 演示模式不欠远端任何东西
+    if (!demoRef.current) storage.set('dirty', true)   // demo mode never owes the remote anything
     update({ progress, syncStatus: settleStatus() })
   }, [settleStatus, update])
 
-  // --- 会话 ---------------------------------------------------------------
+  // --- Session --------------------------------------------------------------
 
   const enterDemoMode = useCallback(async (): Promise<void> => {
-    // 整块包在 DEV 分支里:生产构建折成 if(false),词库的动态 import 连同分块一起被摇掉
+    // The whole block is wrapped in the DEV branch: production builds fold it to if(false), and the vocabulary's dynamic import gets tree-shaken away along with its chunk
     if (import.meta.env.DEV) {
       clearTimer()
       sessionRef.current += 1
       const session = sessionRef.current
       clientRef.current = null
       const words: Word[] = (await import('../../data/words.json')).default.words
-      if (session !== sessionRef.current) return   // 期间真登录/登出了,别把演示数据盖上去
+      if (session !== sessionRef.current) return   // a real login/logout happened meanwhile, don't overwrite it with demo data
       demoRef.current = true
       setPendingOps([])
       setPendingStaging([])
       const progress = cachedProgress() ?? emptyProgress()
-      storage.set('owner', 'demo')       // 词库不进缓存:每次演示都从仓库现读,只留进度
+      storage.set('owner', 'demo')       // vocabulary isn't cached: every demo run reads fresh from the repo, only progress is kept
       storage.set('progress', progress)
       update({
         phase: 'ready', owner: 'demo', words, progress, staging: [],
@@ -340,25 +366,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
         progress = parseProgress(pf.content)
         progressSha = pf.sha
       } else {
-        // 首次登录:远端还没有 progress.json,建一份空的推上去
+        // First login: the remote doesn't have progress.json yet, create an empty one and push it up
         const put = await client.putFile(PROGRESS_PATH, serializeProgress(progress), 'init progress')
         progressSha = put === 'conflict' ? null : put.sha
       }
 
-      // 第三个文件放在最后读,并且**永远不抛**(loadStaging 把缺失/损坏/读失败
-      // 一律折成 null)。它是三者里最不重要的一个:为了几个还没补全的单词而让
-      // 用户登不进去、看不到自己的词库和复习进度,是完全不成比例的。
-      // 远端还没有 staging.json 时也不在这里创建 —— 第一次收词推上去时自然会建。
+      // The third file is read last and **never throws** (loadStaging folds
+      // missing/corrupted/read-failure all into null). It's the least
+      // important of the three: locking the user out of their vocabulary
+      // and review progress over a handful of not-yet-completed words would
+      // be wildly disproportionate.
+      // Also not created here if the remote doesn't have staging.json yet —
+      // it naturally gets created the first time a staged word gets pushed.
       const sf = await loadStaging(client)
       if (session !== sessionRef.current) return
 
-      // token 被撤销会把本机停在「有未推送改动」的状态,重新登录不能拿远端直接盖掉。
-      // 同账号带走,换账号丢弃并报出丢的是谁 —— 判定在 session.ts 里,有测试盯着。
+      // A revoked token leaves this device stuck with "unpushed changes";
+      // re-login must not just overwrite them with the remote. Carry over on
+      // the same account, discard and report who lost what on an account
+      // switch — the decision lives in session.ts, guarded by tests.
       const carry = carryOverFor(owner)
       if (carry.progress) progress = mergeProgress(carry.progress, progress)
       const words = applyWordOps(remoteWords, carry.ops)
-      // 远端读不到就当空,只留本机没推上去的那几个 —— 不拿一份陈旧的本地缓存
-      // 去猜远端有什么,那会在下一次推送时把他端收的词盖掉
+      // Treat an unreadable remote as empty, keeping only the handful this
+      // device hasn't pushed yet — don't use a stale local cache to guess
+      // what the remote has, that would overwrite words staged elsewhere on
+      // the next push.
       const staging = mergeStaging(sf?.items ?? [], carry.staging)
 
       storage.set('token', token)
@@ -371,15 +404,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
       else storage.remove('progressSha')
       if (sf) storage.set('stagingSha', sf.sha)
       else storage.remove('stagingSha')
-      storage.set('dirty', carry.progress !== null)   // 并回来的旧改动还欠远端一次推送
+      storage.set('dirty', carry.progress !== null)   // carried-over old changes still owe the remote one more push
       setPendingOps(carry.ops)
       setPendingStaging(carry.staging)
 
       clientRef.current = client
       demoRef.current = false
-      // 登录成功一定重写 syncError:要么换成「换账号丢弃了谁的改动」,要么清空。
-      // 上一次退出留下的丢弃告知到此为止,两条不会叠在一起,也不会互相盖掉 ——
-      // 后者只在这一刻产生,前者只活到下一次登录成功。
+      // A successful login always rewrites syncError: either it becomes
+      // "whose changes got discarded on account switch", or it's cleared.
+      // Whatever discard notice was left by the last logout ends here — the
+      // two never stack, and never overwrite each other, since the latter
+      // is only produced at this instant and the former only lives until
+      // the next successful login.
       update({
         phase: 'ready', owner, words, progress, staging, loginError: null,
         syncError: carry.discardedOwner ? ownerSwitched(carry.discardedOwner) : null,
@@ -387,7 +423,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       })
       if (carry.ops.length > 0) await flushWords()
       if (carry.staging.length > 0) await flushStaging()
-      if (carry.progress) await flushProgress()   // progress 最重要,放最后一步收尾
+      if (carry.progress) await flushProgress()   // progress matters most, so it's the last cleanup step
     } catch (e) {
       if (session !== sessionRef.current) return
       update({ phase: 'login', loginError: friendlyError(e) })
@@ -395,27 +431,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [flushProgress, flushStaging, flushWords, settleStatus, update])
 
   const logout = useCallback(() => {
-    // 退出等于「把本机上这个账号的数据清干净」,没推上去的只能丢 —— 但要说一声
+    // Logging out means "wipe this account's data off this device"; anything unpushed just has to be dropped — but we need to say so
     const droppedOps = pendingOps().length
     const droppedStaging = pendingStaging().length
-    // dirty 不足以判断「进度是否欠着远端」:pushProgress 在发请求之前就把它清了
-    // (那是防止飞行途中的打分被吞掉的机制,不能动)。于是一次推送的整个往返里
-    // dirty 都是 false,而进度并没有送达 —— 此时登出会一声不吭地清空本机,这次
-    // 复习既不在本地也不在远端。
-    // 对照 wordOps / stagingOps:它们是确认成功之后才清的,所以数得对。这个不对称
-    // 就是根因,所以这里补上另一半:请求还在飞,就是还欠着。
+    // dirty alone isn't enough to tell whether progress still owes the
+    // remote: pushProgress clears it before the request even goes out
+    // (that's the mechanism preventing a grade made mid-flight from being
+    // swallowed, and it can't change). So for the whole round trip of a
+    // push, dirty stays false while progress hasn't actually landed yet — if
+    // logout happened right then it would silently wipe the device, and
+    // that review would exist neither locally nor remotely.
+    // Compare with wordOps / stagingOps: those are only cleared after
+    // confirmed success, so they count correctly. This asymmetry is the
+    // root cause, so here's the other half of the fix: a request still in
+    // flight still counts as owed.
     const droppedProgress = storage.get<boolean>('dirty') === true || pushingRef.current
     clearTimer()
     sessionRef.current += 1
     clientRef.current = null
     demoRef.current = false
-    pushingRef.current = false      // 万一有请求卡住不返回,别让互斥锁把下次登录后的推送也堵死
+    pushingRef.current = false      // in case a request gets stuck and never returns, don't let the mutex block the next login's push too
     wordsPushingRef.current = false
     stagingPushingRef.current = false
     storage.clearAll()
-    // 「丢了什么」是一条数据告知,不是登录失败:走 syncError,由登录页的中性通知区
-    // 展示。放 loginError 会让 token 输入框被标成 aria-invalid —— 那个框此刻没有
-    // 任何问题,用户甚至还没开始填。没丢东西就写 null,顺带清掉退出前那次同步失败。
+    // "What got discarded" is a data notice, not a login failure: it goes
+    // through syncError, shown by the login page's neutral notice area.
+    // Putting it in loginError would mark the token input aria-invalid —
+    // that field has nothing wrong with it right now, the user hasn't even
+    // started typing. Write null when nothing was discarded, which also
+    // clears out whatever sync failure existed before logout.
     update({
       phase: 'login', owner: null, words: [], progress: emptyProgress(), staging: [], loginError: null,
       syncError: droppedOps > 0 || droppedProgress || droppedStaging > 0
@@ -425,20 +469,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
     })
   }, [clearTimer, update])
 
-  // --- 启动 ---------------------------------------------------------------
+  // --- Boot -----------------------------------------------------------------
 
   const boot = useCallback(async (): Promise<void> => {
     const token = storage.get<string>('token')
     const owner = storage.get<string>('owner')
     if (import.meta.env.DEV && !token && owner === 'demo') { await enterDemoMode(); return }
-    if (!token || !owner) return   // 初始状态已经是 login
+    if (!token || !owner) return   // initial state is already login
 
     const client = new GitHubClient(token, owner, DATA_REPO)
     clientRef.current = client
     const session = sessionRef.current
     try {
-      // loadStaging 自己吞掉一切失败,所以它绝不会让这个 Promise.all 整体 reject
-      // —— staging.json 缺失或损坏不能把 words/progress 的启动路径一起拖进 catch。
+      // loadStaging swallows every failure itself, so it can never make this
+      // whole Promise.all reject — a missing or corrupted staging.json must
+      // not drag the words/progress boot path down into the catch with it.
       const [wf, pf, sf] = await Promise.all([
         client.getFile(WORDS_PATH), client.getFile(PROGRESS_PATH), loadStaging(client),
       ])
@@ -446,8 +491,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       let words = stateRef.current.words
       if (wf) {
-        // 词库以远端为准,但上次没推成功的增删要先重放上去,否则这份缓存一覆盖
-        // 就把用户的编辑抹了 —— 队列是持久化的,关掉页面再回来也还在。
+        // Vocabulary defers to the remote, but any add/delete that failed to
+        // push last time needs replaying first, or overwriting with this
+        // cache would erase the user's edits — the queue is persisted, so
+        // it's still there even after closing and reopening the page.
         words = applyWordOps(parseWords(wf.content), pendingOps())
         cacheWords(words)
         storage.set('wordsSha', wf.sha)
@@ -461,9 +508,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         storage.set('progressSha', pf.sha)
       }
 
-      // 与词库同样的规矩:远端为准 + 重放没推上去的收词。远端读不到(缺失/损坏/
-      // 读失败)则保留本机这份继续用 —— 只有这样,补全流程从远端移走的条目才会
-      // 真的消失,而不会被本地缓存又并回去。
+      // Same rule as vocabulary: defer to the remote + replay staged words
+      // that failed to push. If the remote can't be read (missing/corrupt/
+      // read failure), keep using this device's copy — only that way do
+      // entries the completion flow removed from the remote actually stay
+      // gone, instead of getting merged back in by the local cache.
       const staging = mergeStaging(sf ? sf.items : stateRef.current.staging, pendingStaging())
       if (sf) storage.set('stagingSha', sf.sha)
       cacheStaging(staging)
@@ -478,7 +527,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } catch (e) {
       if (session !== sessionRef.current) return
       if (httpStatus(e) === 401) { toLogin(friendlyError(e), true); return }
-      // 有本地缓存就照常用,只把同步状态标出来;没有缓存则退回登录页说明原因
+      // If there's a local cache, keep using it as usual and just flag the sync status; without a cache, fall back to the login page and explain why
       if (stateRef.current.phase === 'ready') {
         update({ syncStatus: navigator.onLine ? 'error' : 'offline', syncError: friendlyError(e) })
         return
@@ -496,7 +545,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     void boot()
   }, [boot])
 
-  // --- 动作 ---------------------------------------------------------------
+  // --- Actions --------------------------------------------------------------
 
   const grade = useCallback((wordId: string, g: Grade) => {
     const now = new Date()
@@ -505,7 +554,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const prev = cur.words[wordId]
     const stat = { ...(cur.dailyStats[day] ?? emptyStat()) }
     stat.reviewed += 1
-    // 没有记录、或还停在 new,都算今天新学的一个 —— 与 buildQueue 的新词判定一致
+    // No record, or still sitting at new, both count as one new word learned today — consistent with how buildQueue determines new words
     if (!prev || prev.state === 'new') stat.newLearned += 1
     if (g !== 'again') stat.correct += 1
     commitProgress({
@@ -516,7 +565,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     schedulePush()
   }, [commitProgress, schedulePush])
 
-  // 得分不入库:错词已经通过提前到期反映到复习计划里,dailyStats 只记「今天测过一次」
+  // The score itself isn't stored: missed words are already reflected in the review schedule by having their due date pulled forward; dailyStats just records "took a quiz today"
   const recordQuiz = useCallback((_correct: number, _total: number, wrongIds: string[]) => {
     const now = new Date()
     const day = todayStr(now)
@@ -526,14 +575,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const words = { ...cur.words }
     for (const id of wrongIds) {
       const e = words[id]
-      if (e) words[id] = { ...e, due: day, lastReviewedAt: now.toISOString() }  // 只提前到期,ease/间隔不动
+      if (e) words[id] = { ...e, due: day, lastReviewedAt: now.toISOString() }  // only pull the due date forward, ease/interval untouched
     }
     commitProgress({ ...cur, words, dailyStats: { ...cur.dailyStats, [day]: stat } })
     void flushProgress()
   }, [commitProgress, flushProgress])
 
-  // 极速赛与 recordQuiz 共用同一条约定(错词只提前到期,ease/间隔不动),
-  // 多的只有一件事:刷新最好成绩。
+  // Sprint shares the same contract as recordQuiz (missed words only get
+  // their due date pulled forward, ease/interval untouched); the one extra
+  // thing it does is refresh the best score.
   const recordSprint = useCallback((score: number, wrongIds: string[]) => {
     const now = new Date()
     const day = todayStr(now)
@@ -546,8 +596,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (e) words[id] = { ...e, due: day, lastReviewedAt: now.toISOString() }
     }
     const next: Progress = { ...cur, words, dailyStats: { ...cur.dailyStats, [day]: stat } }
-    // **严格大于**才刷新:打平不该把纪录日期改写成今天。与 merge.ts 里
-    // 「同分取日期早的」是同一条规矩,两处必须一致,否则同步一来一回会打架。
+    // Only refresh on a **strict** greater-than: a tie shouldn't rewrite the
+    // record date to today. Same rule as merge.ts's "equal score keeps the
+    // earlier date" — the two must stay consistent, or a sync round trip
+    // would fight itself.
     if (cur.bestSprint === undefined || score > cur.bestSprint.score) {
       next.bestSprint = { score, date: day }
     }
@@ -566,10 +618,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const words = applyWordOps(stateRef.current.words, [{ kind: 'delete', ids }])
     const cur = stateRef.current.progress
     const entries = { ...cur.words }
-    for (const id of ids) delete entries[id]   // 顺手清掉孤儿进度
+    for (const id of ids) delete entries[id]   // clean up orphaned progress while we're at it
     cacheWords(words)
     update({ words })
-    commitProgress({ ...cur, words: entries })  // progress 走正常防抖
+    commitProgress({ ...cur, words: entries })  // progress goes through the normal debounce
     schedulePush()
     await flushWords({ kind: 'delete', ids })
   }, [cacheWords, commitProgress, flushWords, schedulePush, update])
@@ -578,7 +630,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const it: StagingItem = { headword: cleanHeadword(raw), addedAt: todayStr(new Date()) }
     if (it.headword === '') return
     const staging = mergeStaging(stateRef.current.staging, [it])
-    // 并集:已经在列表里(大小写/空白不同也算)就一条都没多,那就什么都不用做
+    // Union: if it's already in the list (case/whitespace differences included), nothing got added, so there's nothing to do
     if (staging.length === stateRef.current.staging.length) return
     cacheStaging(staging)
     update({ staging })
@@ -586,8 +638,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [cacheStaging, flushStaging, update])
 
   const updateSettings = useCallback((s: Progress['settings']) => {
-    // 盖上修改时刻:mergeProgress 靠它判断两台设备谁的设置更新。不盖的话字段
-    // 永远为空,合并退化回「一律取本地」,设置又同步不了了。
+    // Stamp the modification time: mergeProgress relies on it to decide
+    // whose settings are newer across two devices. Without it the field
+    // would always be empty, merging would degrade to "always take local",
+    // and settings would stop syncing again.
     const settings = { ...s, updatedAt: new Date().toISOString() }
     commitProgress({ ...stateRef.current.progress, settings })
     schedulePush()
@@ -601,7 +655,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await flushProgress()
   }, [flushProgress, flushStaging, flushWords, update])
 
-  // 备份要把暂存区也带上:那几个词是用户敲进去的,只是还没补全而已
+  // Backups must include the staging area too: those words were typed in by the user, just not filled in yet
   const exportAll = useCallback(
     () => JSON.stringify({
       words: stateRef.current.words,
@@ -611,12 +665,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [],
   )
 
-  // --- 网络与可见性 -------------------------------------------------------
+  // --- Network & visibility ---------------------------------------------------
 
   useEffect(() => {
     const onOnline = () => { update({ syncStatus: settleStatus() }); void syncNow() }
     const onOffline = () => update({ syncStatus: demoRef.current ? 'synced' : 'offline' })
-    // 切后台/锁屏很可能就是这次会话的终点,有未推的改动就别等防抖了
+    // Backgrounding/locking the screen could well be the end of this session, so don't wait on the debounce if there are unpushed changes
     const onVisibility = () => {
       if (document.visibilityState !== 'hidden') return
       if (storage.get<boolean>('dirty')) void flushProgress()
@@ -633,7 +687,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [flushProgress, flushStaging, flushWords, settleStatus, syncNow, update])
 
-  useEffect(() => clearTimer, [clearTimer])   // 卸载时别把防抖定时器留下
+  useEffect(() => clearTimer, [clearTimer])   // don't leave the debounce timer behind on unmount
 
   const value = useMemo<AppContextValue>(() => ({
     ...state,
@@ -648,12 +702,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return <AppContext value={value}>{children}</AppContext>
 }
 
-// 刻意和 AppProvider 同文件:页面只需要 `from '../state/store'` 一个入口。
-// Fast Refresh 的告警在这里不成立 —— 全部状态都挂在 AppProvider 上,
-// 改动本文件无论如何都要重挂一次。
+// Deliberately kept in the same file as AppProvider: pages only need one
+// entry point, `from '../state/store'`. The Fast Refresh warning doesn't
+// apply here — all state lives on AppProvider, so any change to this file
+// forces a remount regardless.
 // oxlint-disable-next-line react/only-export-components
 export function useApp(): AppContextValue {
   const ctx = useContext(AppContext)
-  if (!ctx) throw new Error('useApp 必须在 <AppProvider> 之内使用')
+  if (!ctx) throw new Error('useApp must be used within <AppProvider>')
   return ctx
 }

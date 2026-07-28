@@ -1,11 +1,12 @@
 /**
- * 内联 SVG 图标集(不引图标库,离线可用)。
- * 线条统一 1.5px、圆头圆角、24 网格,与发丝分隔线是同一套语言。
- * 新增图标:往 PATHS 里加一条即可,name 的联合类型会自动跟上。
+ * Inline SVG icon set (no icon library, works offline).
+ * Strokes are consistently 1.5px, round caps/joins, 24 grid — same visual
+ * language as the hairline dividers.
+ * To add an icon: just add an entry to PATHS, the `name` union type follows automatically.
  */
 
 const PATHS = {
-  /* 今日:地平线上的日出 */
+  /* Today: sunrise over the horizon */
   today: (
     <>
       <path d="M3.5 18h17" />
@@ -16,7 +17,7 @@ const PATHS = {
       <path d="M20.5 21h-17" />
     </>
   ),
-  /* 词库:立着的书 */
+  /* Library: a standing book */
   library: (
     <>
       <path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v18H6.5A1.5 1.5 0 0 1 5 19.5z" />
@@ -24,7 +25,7 @@ const PATHS = {
       <path d="M9 3v14" />
     </>
   ),
-  /* 测试:选择题两行,首行打勾 */
+  /* Quiz: two rows of multiple choice, first row checked */
   quiz: (
     <>
       <rect x="3" y="4.5" width="18" height="6.5" rx="1.5" />
@@ -32,7 +33,7 @@ const PATHS = {
       <path d="m6.5 7.8 1.3 1.3 2.4-2.6" />
     </>
   ),
-  /* 设置:推子 */
+  /* Settings: sliders */
   settings: (
     <>
       <path d="M3.5 7.5h9" />
@@ -43,9 +44,9 @@ const PATHS = {
       <circle cx="10" cy="16.5" r="2.5" />
     </>
   ),
-  /* 返回 */
+  /* Back */
   back: <path d="m14.5 4.5-7.5 7.5 7.5 7.5" />,
-  /* 发音:喇叭 + 两道声波(复习卡与词条详情) */
+  /* Speak: a speaker + two sound waves (review card and word detail) */
   speak: (
     <>
       <path d="M11 4.5 6.5 8.5H3.5v7h3l4.5 4z" />
@@ -53,7 +54,7 @@ const PATHS = {
       <path d="M17.8 6.4a8 8 0 0 1 0 11.2" />
     </>
   ),
-  /* 搜索:放大镜(词库) */
+  /* Search: magnifying glass (library) */
   search: (
     <>
       <circle cx="10.5" cy="10.5" r="6.5" />
@@ -64,7 +65,7 @@ const PATHS = {
 
 interface IconProps {
   name: keyof typeof PATHS
-  /** 边长(px),默认 22 */
+  /** Side length (px), defaults to 22 */
   size?: number
   className?: string
 }

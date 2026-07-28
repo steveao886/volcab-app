@@ -1,9 +1,8 @@
-# 词条规范
+# Word Entry Spec
 
-**一条词条必须长什么样。** 这是唯一权威 —— 会话里给暂存区的生词批量补全时读这一份,
-不要去翻各阶段的设计文档。改了这里,同步改 `scripts/validate-words.ts`(它是入库闸门)。
+**What a word entry must look like.** This is the single source of truth — when a session batch-completes staged new words, read this file, not the phase design docs. If you change this, update `scripts/validate-words.ts` in lockstep (it's the gate into the store).
 
-校验:
+Validate with:
 
 ```bash
 npm run validate-words
@@ -11,129 +10,112 @@ npm run validate-words
 
 ---
 
-## 字段
+## Fields
 
-| 字段 | 类型 | 必填 | 规则 |
+| Field | Type | Required | Rule |
 |---|---|---|---|
-| `id` | string | ✅ | 词元小写,唯一。含空格的短语用连字符:`ad hoc` → `ad-hoc` |
-| `headword` | string | ✅ | 原样写法,保留空格 |
-| `phonetic` | string | ✅ | 美式,形如 `/ˈæbrəɡeɪt/`,必须以斜杠包住 |
-| `meanings` | Meaning[] | ✅ | 至少 1 条,见下 |
-| `examples` | string[] | ✅ | **5 句**(现存词条全部是 5 句),现代生活/工作场景,拒绝教科书式空泛句。见下 |
-| `synonyms` | string[] | ✅ | 可为空数组;**不得包含词条本身** |
-| `antonyms` | string[] | ✅ | 同上 |
-| `collocations` | string[] | ✅ | 同上 |
-| `relatedForms` | RelatedForm[] | ✅ | 可为空数组;每条需 `form` / `pos` / `zh` |
-| `sourceNote` | string | ✅ | 来源笔记标题;App 内手动添加的写 `manual` |
+| `id` | string | ✅ | Lowercase lemma, unique. Phrases with spaces use hyphens: `ad hoc` → `ad-hoc` |
+| `headword` | string | ✅ | Written as-is, spaces preserved |
+| `phonetic` | string | ✅ | American pronunciation, shaped like `/ˈæbrəɡeɪt/`, must be wrapped in slashes |
+| `meanings` | Meaning[] | ✅ | At least 1 entry, see below |
+| `examples` | string[] | ✅ | **5 sentences** (every existing entry has 5), set in modern life/work scenes, no textbook-flat filler. See below |
+| `synonyms` | string[] | ✅ | May be an empty array; **must not include the headword itself** |
+| `antonyms` | string[] | ✅ | Same as above |
+| `collocations` | string[] | ✅ | Same as above |
+| `relatedForms` | RelatedForm[] | ✅ | May be an empty array; each entry needs `form` / `pos` / `zh` |
+| `sourceNote` | string | ✅ | Title of the source note; entries added manually in-app use `manual` |
 | `addedAt` | string | ✅ | `YYYY-MM-DD` |
-| `usageScore` | number | ✅ | **1–10 的整数**,见下 |
-| `etymology` | string | ❌ | 词源拆解,一句话,≤ 60 字。**只在真有可拆解词源时写**,见下 |
+| `usageScore` | number | ✅ | **Integer, 1–10**, see below |
+| `etymology` | string | ❌ | One-sentence etymology breakdown, ≤ 60 characters. **Only write it when the word actually has a breakable etymology** — see below |
 
 ### Meaning
 
-| 字段 | 类型 | 必填 | 规则 |
+| Field | Type | Required | Rule |
 |---|---|---|---|
 | `pos` | string | ✅ | `v.` / `n.` / `adj.` / `adv.` … |
-| `en` | string | ✅ | 英文释义。复习翻面后的主目标是「用英语理解英语」,这条要写得能独立成立 |
-| `zh` | string | ✅ | 中文释义 |
-| `share` | number | 多义时✅ | **10–90 的整十**,见下 |
+| `en` | string | ✅ | English definition. After flipping the review card, the main goal is "understand English in English" — this needs to stand on its own |
+| `zh` | string | ✅ | Chinese definition |
+| `share` | number | ✅ when polysemous | **Multiple of 10, between 10 and 90**, see below |
 
 ---
 
-## `usageScore` —— 当代遇见概率
+## `usageScore` — likelihood of encountering it today
 
-**1–10:在真实语境里碰到这个词的可能性。** 复习卡背面和词条详情页都会显示它。
+**1–10: how likely you are to run into this word in real-world context.** Shown on the back of the review card and on the entry detail page.
 
-参考锚点:
+Reference anchors:
 
-| 分 | 大致含义 |
+| Score | Rough meaning |
 |---|---|
-| 9–10 | 日常新闻、社交媒体里高频出现 |
-| 6–8 | 认真阅读英文内容时常碰到 |
-| 4–5 | 书面语、专业文章里会遇到,口语基本不用 |
-| 1–3 | 生僻、文学化,或只在特定专业语境出现 |
+| 9–10 | High-frequency in everyday news and social media |
+| 6–8 | Common when reading serious English content |
+| 4–5 | Shows up in formal writing and specialist articles, rarely spoken |
+| 1–3 | Rare, literary, or confined to a specific specialist context |
 
-现有词库以 4–7 为主 —— 收词标准本来就在 C1/C2,不必强行拉开分布。
+The existing word list skews 4–7 — the intake bar is already C1/C2, so there's no need to force a wider spread.
 
-## `share` —— 义项占比
+## `share` — sense proportion
 
-**只在一词多义(`meanings.length > 1`)时出现**,规则是硬约束,校验会拦:
+**Only present when a word is polysemous (`meanings.length > 1`).** This is a hard constraint the validator enforces:
 
-- 要么每条释义都有,要么一条都没有(多义词必须有)。
-- 每个值是 **10–90 的整十**。0 和 100 不允许:100% 说明它其实是单义词,0% 说明这条释义不该收。
-- 同一个词的所有值**合计为 100**。
-- `meanings` 数组必须**按 `share` 从高到低排好**。占比相等(50/50)时顺序随意。
-- **单义词不写 `share`。** 写 `100` 是噪音,还会让「有 `share` 即多义词」这条判断失效。
+- Either every sense has it, or none does (polysemous words must all have it).
+- Each value is a **multiple of 10, between 10 and 90**. 0 and 100 aren't allowed: 100% means the word is actually monosemous, 0% means that sense shouldn't be included at all.
+- All the values for a given word **must sum to 100**.
+- The `meanings` array must be **sorted by `share`, highest first**. When two shares tie (50/50), either order is fine.
+- **Monosemous words don't get a `share`.** Writing `100` is noise, and it would break the rule that "having `share` at all means polysemous."
 
-**只到整十是刻意的。** 这是依据当代用法常识估的量级,背后没有语料统计;写成 `87%/13%`
-会暗示有 COCA 之类的来源,那是假精度。
+**Rounding to the nearest ten is deliberate.** These are magnitude estimates based on general knowledge of contemporary usage, not backed by any corpus statistics; writing `87%/13%` would imply a source like COCA, which would be false precision.
 
-估的时候按「在当代英语文本里遇到这个义项的相对频率」判断,不是按词典的义项排序 ——
-词典常把词源上更早的义项排在前面,那和遇见概率是两回事(如 `rhetoric`:「修辞学」是
-本义,但当代文本里绝大多数是「华而不实的空话」)。
+Estimate by "relative frequency of encountering this sense in contemporary English text," not by dictionary sense ordering — dictionaries often list the etymologically earlier sense first, which is a different thing from likelihood of encounter (e.g. for `rhetoric`, "the art of rhetoric" is the original sense, but in contemporary text the overwhelming majority of uses mean "empty, showy language").
 
-## `examples` —— 例句
+## `examples` — example sentences
 
-**写 5 句。** 这不是凑数:挖空题的题面是从这 5 句里**随机**挑一句能定位到词头的,
-句子越多,同一个词越不容易连着遇到同一道题。校验脚本的下限仍是 2 句(容忍外部
-设备推来的旧词条),但新写的词条一律 5 句。
+**Write 5 sentences.** This isn't padding: the cloze-quiz prompt is **randomly** picked from these 5 sentences among the ones where the headword can be located — the more sentences there are, the less likely you are to hit the same prompt for the same word twice in a row. The validation script's floor is still 2 sentences (to tolerate old entries pushed from other devices), but every newly written entry gets 5.
 
-每句都要满足:
+Every sentence must satisfy:
 
-- **含词头本身,优先用原形。** 语法上必须变形时只用常规屈折(-s/-es/-ed/-ing/-ly 等)。
-  只出现同根的其他词(词头 `abrogate`,句里只有 `abrogation`)等于这句话废了 ——
-  挖空定位不到,复习卡上也不会高亮。
-- **具体场景 + 画面感。** `The new CEO abrogated the remote-work policy over a single
-  Slack message, and half the team started job-hunting that week.` 是好的;
-  `The government decided to abrogate the treaty.` 是坏的 —— 没有场景、谁都能写。
-- **5 句之间场景互不重复**,不要换个说法讲同一件事。
-- 12–30 词,**挖掉词头后仍能从上下文推断出该填什么**。
-- 多义词按 `share` 分配:主要义项多写,占比 30% 以上的次要义项至少一句。
+- **Contain the headword itself, preferably in its base form.** Where grammar forces inflection, use only regular inflections (-s/-es/-ed/-ing/-ly, etc.). A sentence that only contains a same-root word (headword `abrogate`, sentence only has `abrogation`) is wasted — the cloze can't locate it, and the review card won't highlight it either.
+- **Concrete scene + vividness.** `The new CEO abrogated the remote-work policy over a single Slack message, and half the team started job-hunting that week.` is good; `The government decided to abrogate the treaty.` is bad — no scene, anyone could write it.
+- **No two of the 5 sentences repeat the same scene**, don't just restate the same situation a different way.
+- 12–30 words, and **after the headword is blanked out, the surrounding context still lets you infer what goes there**.
+- For polysemous words, allocate by `share`: write more sentences for the dominant sense, and at least one for any secondary sense with a share of 30% or more.
 
 ---
 
-## `etymology` —— 词源
+## `etymology` — word origin
 
-复习卡背面与词条详情页会显示它。一句话,≤ 60 字,形如:
+Shown on the back of the review card and on the entry detail page. One sentence, ≤ 60 characters, shaped like:
 
 ```
-ab-(离开) + rogare(提议) → 废除
-mis-(坏) + anthrōpos(人) → 厌恶人类的
+ab-(away) + rogare(to propose) → to abolish
+mis-(bad) + anthrōpos(person) → hating humankind
 ```
 
-**这是唯一一个「宁可不写」的字段。** 不是所有词都有可拆解的词源:日耳曼来源的常用词、
-来源不明的词、以及虽有词源但拆开对记忆毫无帮助的词,**一律整个字段不写**。
+**This is the one field where it's better to leave it out.** Not every word has a breakable etymology: common words of Germanic origin, words of uncertain origin, and words that do have an etymology but whose breakdown does nothing for memorability — **all of these should skip the field entirely**.
 
-理由:词源写错不是少一条信息,是往脑子里钉一个错误的记忆锚点。民间词源(folk etymology)
-比空白有害得多。拿不准就跳过。
+Reasoning: a wrong etymology isn't just a missing piece of information, it's a false memory anchor driven into your head. Folk etymology is far worse than a blank. If you're not sure, skip it.
 
-写的时候:
+When writing one:
 
-- 给出**词根的原义**,不是又一个英文同义词 —— `rogare(提议)` 有用,`rogare(to ask)` 是在用英语解释英语,读者还得再翻译一次
-- 拆到**能看出词义怎么来的**为止,不做完整的印欧语系溯源
-- 中文标注词根含义,与界面语言一致
-- 空串 / 纯空白是脏数据,校验会拦 —— 不需要词源就不写这个键
+- Give the **root's original meaning**, not another English synonym — `rogare (to propose)` is useful, `rogare (to ask)` explains English with English, forcing the reader to translate it a second time
+- Break it down only as far as **needed to show where the meaning comes from**, not a full Indo-European derivation
+- Annotate root meanings in Chinese, matching the app's interface language
+- An empty string or whitespace-only value is dirty data and the validator will reject it — if you don't need the etymology, omit the key entirely
 
-校验只查存在时的形状(非空、≤ 60 字),**不查是否存在**。这与 `usageScore`
-「写入端严格」的路子相反,是刻意的:两端都宽容。
+Validation only checks the shape when the field is present (non-empty, ≤ 60 characters); it does **not** check whether the field exists. This is the opposite of the "strict at write time" approach used for `usageScore`, deliberately: both ends here are lenient.
 
 ---
 
-## 生词暂存区的补全流程
+## Completing entries in the staging area
 
-1. 读 `volcab-data` 的 `staging.json`。
-2. 按本规范批量生成完整词条,**`usageScore` 与 `share` 在这一步一并产出**,不要先入库再补分。
-   词源有把握就一并写 `etymology`,没把握就不写 —— 它是唯一允许缺席的字段。
-3. 合并进 `words.json`。
-4. **按 `headword` 精确移除 `staging.json` 里已提升的条目** —— 不要清空整个文件,用户可能
-   在此期间又加了词。
-5. 跑 `npm run validate-words` 确认全绿。
+1. Read `staging.json` from `volcab-data`.
+2. Batch-generate complete entries per this spec — **produce `usageScore` and `share` at this step**, don't add them after the fact once the entry is already in the store. Write `etymology` too if you're confident in it; skip it if not — it's the only field allowed to be absent.
+3. Merge into `words.json`.
+4. **Remove exactly the promoted entries from `staging.json`, matched by `headword`** — don't clear the whole file, since the user may have added more words in the meantime.
+5. Run `npm run validate-words` and confirm it's all green.
 
-## 手动添加的词
+## Manually added words
 
-`/add` 的完整表单会强制填 `usageScore`,多义时也会强制填 `share` 并校验合计 100%,
-所以这条路进来的词条同样满足本规范。词条编辑表单可以改这两项。
+The full `/add` form forces `usageScore` to be filled in, and for polysemous words forces `share` to be filled in and validates that it sums to 100%, so entries coming through that path already satisfy this spec. The entry-edit form lets you change both.
 
-**`src/types.ts` 与 `src/state/sync.ts` 里这两个字段仍是可选的**,这是刻意的:写入端严格、
-读取端宽容。另一台设备上的旧版 App 推上来一个缺字段的词,正确结果是「那一处不渲染」,
-而不是整份 `words.json` 被判成坏数据、拒绝合并。
+**These two fields remain optional in `src/types.ts` and `src/state/sync.ts`**, deliberately: strict on write, lenient on read. If an older version of the app on another device pushes up a word missing a field, the correct outcome is "that one thing doesn't render," not "the whole `words.json` gets judged corrupt and the merge is rejected."

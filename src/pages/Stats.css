@@ -1,14 +1,16 @@
-/* Stats(/stats,学习数据)页面专属样式。五块卡片:近 30 天复习量、正确率
-   趋势、连续天数与断签日历、词库掌握分布、累计数据。空状态用共享的
-   .empty-state(components.css)。 */
+/* Stats (/stats, learning data) page-specific styles. Five cards: reviews
+   over the last 30 days, accuracy trend, streak days with a missed-day
+   calendar, library mastery breakdown, cumulative totals. The empty state
+   uses the shared .empty-state (components.css). */
 
-/* 只留间距;字号/字重/颜色由 components.css 的 .section-title 提供,
-   与 WordDetail 页的 .worddetail-section-title 同一约定。 */
+/* Only spacing is left here; font size/weight/color come from
+   components.css's .section-title, the same convention as the WordDetail
+   page's .worddetail-section-title. */
 .stats-section-title {
   margin-bottom: var(--sp-3);
 }
 
-/* --- 近 30 天复习量:手写 SVG 柱状图(见 Stats.tsx 的 ReviewBars)---------- */
+/* --- Reviews over the last 30 days: a hand-rolled SVG bar chart (see ReviewBars in Stats.tsx) ---------- */
 
 .stats-bars {
   display: block;
@@ -20,7 +22,7 @@
   fill: var(--accent);
 }
 
-/* --- 正确率趋势:手写 SVG 折线,null 的日子断开(见 AccuracyTrend)-------- */
+/* --- Accuracy trend: a hand-rolled SVG line chart, broken at null days (see AccuracyTrend) -------- */
 
 .stats-accuracy {
   display: block;
@@ -46,9 +48,11 @@
   text-align: center;
 }
 
-/* --- 连续天数 + 断签日历 ---------------------------------------------------
-   数字复用 .num 的等宽数字令牌,但版式(居中、大号、朱砂点睛)是本页专属,
-   不是 .stat 原语——.stat 是「一格」,这里是卡片顶部单独一段。 */
+/* --- Streak days + missed-day calendar ---------------------------------------------------
+   The number reuses .num's tabular-numeral token, but the layout (centered,
+   large, a touch of vermilion) is specific to this page — not the .stat
+   primitive. .stat is "a single tile"; this is its own standalone block at
+   the top of the card. */
 
 .stats-streak {
   display: grid;
@@ -70,7 +74,7 @@
   color: var(--text-faint);
 }
 
-/* 10 列 × 3 行 = 30 天,固定列数而不是像素柱宽,375px 下天然不溢出。 */
+/* 10 columns x 3 rows = 30 days; a fixed column count rather than a pixel bar width naturally avoids overflow at 375px. */
 .stats-calendar {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
@@ -89,10 +93,12 @@
   border-color: var(--accent);
 }
 
-/* --- 词库掌握分布:堆叠条 + 三个 Chip 计数 ---------------------------------
-   分段色复用 tokens.css 的 --state-*(与 StateDot 同一套语义色),
-   不新造颜色。总数为 0(词库为空)时三段都是 0 宽,条只剩底色轨道,
-   不会除零也不会看起来是坏的。 */
+/* --- Library mastery breakdown: a stacked bar + three Chip counts ---------------------------------
+   Segment colors reuse tokens.css's --state-* (the same semantic colors as
+   StateDot); no new colors are invented. When the total is 0 (empty
+   library), all three segments are 0 width and the bar is left showing
+   just its background track — no division by zero, and it never looks
+   broken. */
 
 .stats-mastery-bar {
   display: flex;
@@ -126,7 +132,7 @@
   gap: var(--sp-2);
 }
 
-/* --- 累计:总复习次数 / 已掌握词数 / 日均新词,三栏共用 .stat 原语 --------- */
+/* --- Cumulative: total reviews / mastered word count / average new words per day, three columns sharing the .stat primitive --------- */
 
 .stats-totals {
   display: grid;
@@ -135,9 +141,11 @@
   text-align: center;
 }
 
-/* --- 高频词掌握率 ---------------------------------------------------------
-   与上面的「词库掌握分布」并列但回答不同的问题:那张数总量,这张只问
-   「最常用的那批词你走到哪了」。头条是一个大百分比,下面三行给出分档明细。 */
+/* --- High-frequency word mastery rate ---------------------------------------------------------
+   Sits alongside "library mastery breakdown" above but answers a different
+   question: that one counts the total, this one only asks "how far along
+   are you on the most commonly used words". The headline is one big
+   percentage, with three rows of banded detail below it. */
 
 .stats-coverage-headline {
   display: flex;

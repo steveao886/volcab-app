@@ -1,8 +1,10 @@
 /* ==========================================================================
-   AddWord 页面专属样式(Task 20)。
-   全部类名以 .addword- 打头,与全局 .field/.input/.btn/.card 组合使用,
-   不重新定义那些组件本身的样式。移动优先:所有多列布局在 375px 下
-   先退化成单列,断点以上再横排,避免任何横向溢出。
+   AddWord page-specific styles (Task 20).
+   All class names are prefixed with .addword- and are combined with the
+   global .field/.input/.btn/.card, without redefining those components'
+   own styles. Mobile-first: every multi-column layout collapses to a
+   single column below 375px and only goes side-by-side above the
+   breakpoint, avoiding any horizontal overflow.
    ========================================================================== */
 
 .addword-form {
@@ -10,15 +12,16 @@
   gap: var(--sp-4);
 }
 
-/* Card 内部纵向堆叠多个 Field 时补一条统一间距 */
+/* Adds a consistent gap when a Card stacks multiple Fields vertically */
 .addword-stack {
   display: grid;
   gap: var(--sp-4);
 }
 
-/* --- 快速收词(v1.1 E:生词暂存区)---------------------------------------
-   结构与下面的「查词典」行完全一样(输入框 + 一个按钮),刻意如此:
-   两块在视觉上是同一种操作,区别只在按钮的措辞与主次。 */
+/* --- Quick capture (v1.1 E: staging area for new words) -----------------
+   Structurally identical to the "look up dictionary" row below (input +
+   one button), deliberately: the two visually read as the same kind of
+   action, differing only in button wording and emphasis. */
 
 .addword-capture {
   display: grid;
@@ -36,14 +39,15 @@
   gap: var(--sp-2);
 }
 
-/* section-head 自带的下边距是给非 grid 的 Card 用的;这两个容器本身有 gap,
-   留着就成了双倍间距 */
+/* section-head's built-in bottom margin is meant for non-grid Cards; these
+   two containers already have their own gap, so keeping it would double up */
 .addword-capture > .addword-section-head,
 .addword-stack > .addword-section-head {
   margin-bottom: 0;
 }
 
-/* --- 查词典:输入框 + 查询按钮同一行,按输入框底边对齐 -------------------- */
+/* --- Dictionary lookup: input + query button on the same row, aligned to
+   the input's bottom edge -------------------------------------------------- */
 
 .addword-lookup-row {
   display: flex;
@@ -82,7 +86,7 @@
   color: var(--success);
 }
 
-/* --- 可重复的分组:释义 / 例句 / 同根变形 -------------------------------- */
+/* --- Repeatable groups: meanings / examples / related forms -------------- */
 
 .addword-section-head {
   display: grid;
@@ -128,7 +132,8 @@
   grid-template-columns: 1fr;
 }
 
-/* 占比合计的实时提示。挨着「+ 添加释义」上方,不抢按钮的位置。 */
+/* Live hint for the share total. Sits right above "+ Add meaning" so it
+   doesn't crowd the button. */
 .addword-share-total {
   margin-block: var(--sp-3);
   font-size: var(--fs-sm);
@@ -139,7 +144,9 @@
     grid-template-columns: 88px 1.6fr 1fr;
   }
 
-  /* 多义时最后多一列占比下拉。窄屏走 .addword-row__grid 的单列堆叠,不用管。 */
+  /* When there are multiple meanings, add one more column for the share
+     dropdown. Narrow screens fall back to .addword-row__grid's single-column
+     stack, so no special handling is needed there. */
   .addword-row__grid--meaning:has(> .field:nth-child(4)) {
     grid-template-columns: 88px 1.6fr 1fr 88px;
   }
@@ -149,7 +156,7 @@
   }
 }
 
-/* --- 保存成功后的回执卡片 ------------------------------------------------- */
+/* --- Receipt card shown after a successful save --------------------------- */
 
 .addword-saved {
   display: grid;
@@ -161,7 +168,8 @@
   color: var(--text-muted);
 }
 
-/* 回执里的同步状态是共享的 SyncStatus / .sync-note(components.css)。 */
+/* The sync status in the receipt is the shared SyncStatus / .sync-note
+   (components.css). */
 
 .addword-saved__actions {
   display: flex;

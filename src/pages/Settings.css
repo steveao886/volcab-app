@@ -1,9 +1,11 @@
-/* Settings(设置)页面专属样式:音效开关、账号信息行、退出确认、版本落款。 */
+/* Settings page-specific styles: sound toggle, account info rows, sign-out confirmation, version footer. */
 
-/* --- 音效开关:整行可点的 label,左文右控 --------------------------------
-   与 .settings-row(标签左/值右的只读行)故意不同——这行是可交互的,
-   且左边是两行文字(名称 + 说明)而不是一个值,所以单独一套类名,
-   不去借 .settings-row 或 .field 凑合。 */
+/* --- Sound toggle: a whole-row clickable label, text on the left, control on the right --------------------------------
+   Deliberately different from .settings-row (a read-only row with label on
+   the left / value on the right) — this row is interactive, and the left
+   side has two lines of text (name + description) rather than a single
+   value, so it gets its own set of class names instead of making do by
+   borrowing .settings-row or .field. */
 
 .settings-toggle {
   display: flex;
@@ -30,9 +32,11 @@
   color: var(--text-faint);
 }
 
-/* --- 账号信息:标签左 / 值右的一组只读行 ---------------------------------
-   行本身(.settings-row / __label / __value)已经提升到 components.css,
-   那里也写明了它与 .stat 是两种故意分开的原语。这里只留容器的排布。 */
+/* --- Account info: a group of read-only rows with label on the left / value on the right ---------------------------------
+   The row itself (.settings-row / __label / __value) has already been
+   promoted up to components.css, which also notes that it's deliberately
+   kept separate from .stat as two different primitives. Only the
+   container layout is left here. */
 
 .settings-rows {
   display: grid;
@@ -40,7 +44,7 @@
   margin-block: var(--sp-3) var(--sp-4);
 }
 
-/* --- 退出登录:点击后原地展开成说明 + 二次确认,不用弹窗 ------------------- */
+/* --- Sign out: clicking expands in place into an explanation + a second confirmation, no modal ------------------------- */
 
 .settings-confirm {
   display: grid;
@@ -55,7 +59,7 @@
   color: var(--text-muted);
 }
 
-/* 有未同步改动时才升级到警示色,呼应「朱砂只做批注」——这里批注的是真实风险 */
+/* Only escalates to the warning color when there are unsynced changes, echoing "vermilion is only ever for annotation" — here it's annotating a real risk */
 .settings-confirm__text--warn {
   color: var(--danger);
 }
@@ -66,7 +70,7 @@
   gap: var(--sp-3);
 }
 
-/* --- 备份 ------------------------------------------------------------------ */
+/* --- Backup ------------------------------------------------------------------ */
 
 .settings-hint {
   margin-block: var(--sp-2) var(--sp-4);
@@ -75,7 +79,7 @@
   color: var(--text-muted);
 }
 
-/* --- 版本落款 ---------------------------------------------------------------- */
+/* --- Version footer ---------------------------------------------------------------- */
 
 .settings-version {
   padding-block: var(--sp-2) var(--sp-4);

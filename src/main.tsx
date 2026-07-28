@@ -10,9 +10,10 @@ createRoot(document.getElementById('root')!).render(
     <AppProvider>
       <App />
     </AppProvider>
-    {/* 独立于登录态之外:一份陈旧的 JS 可能停在 /login 页也可能停在任何已登录
-        页面,更新提示不应该依赖 AppLayout 内的 #overlay-root(未登录时那棵子树
-        根本没挂载)。见 components/UpdatePrompt.tsx 顶部注释。 */}
+    {/* Independent of login state: stale JS can be stuck on the /login page
+        or on any logged-in page, so the update prompt shouldn't depend on
+        AppLayout's #overlay-root (that subtree isn't even mounted when
+        logged out). See the top-of-file comment in components/UpdatePrompt.tsx. */}
     <UpdatePrompt />
   </StrictMode>,
 )

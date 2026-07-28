@@ -6,7 +6,7 @@ export interface AccuracyPoint { date: string; accuracy: number | null }
 export interface Mastery { new: number; learning: number; review: number; total: number }
 export interface Totals { totalReviewed: number; activeDays: number; avgNewPerActiveDay: number }
 
-/** 从 today 往回数 days 天的连续序列;缺失的日子补 0,图表才不会有断口。 */
+/** A continuous series counting back `days` days from today; missing days are filled with 0 so the chart doesn't have gaps. */
 export function dailySeries(progress: Progress, today: string, days: number): DayPoint[] {
   const out: DayPoint[] = []
   for (let i = days - 1; i >= 0; i--) {
@@ -17,7 +17,7 @@ export function dailySeries(progress: Progress, today: string, days: number): Da
   return out
 }
 
-/** 正确率。当天没复习时为 null —— 0% 会让折线掉到底,谎称「那天全错了」。 */
+/** Accuracy. null on a day with no review — 0% would drop the line to the bottom, falsely claiming "everything was wrong that day". */
 export function accuracySeries(progress: Progress, today: string, days: number): AccuracyPoint[] {
   const out: AccuracyPoint[] = []
   for (let i = days - 1; i >= 0; i--) {
@@ -28,7 +28,7 @@ export function accuracySeries(progress: Progress, today: string, days: number):
   return out
 }
 
-/** 词库掌握分布。progress 里没有记录的词视为未学。 */
+/** Library mastery breakdown. A word with no record in progress is treated as not yet learned. */
 export function masteryBreakdown(words: Word[], progress: Progress): Mastery {
   const m: Mastery = { new: 0, learning: 0, review: 0, total: words.length }
   for (const w of words) {
@@ -43,14 +43,16 @@ export function masteryBreakdown(words: Word[], progress: Progress): Mastery {
 export interface CoverageBand { label: string; range: string; mastered: number; total: number }
 export interface UsageCoverage {
   bands: CoverageBand[]
-  /** 头条数字:最常用那一档的掌握情况。total 为 0 时 ratio 记 0。 */
+  /** The headline number: mastery status of the most-common-words band. ratio is recorded as 0 when total is 0. */
   headline: { mastered: number; total: number; ratio: number }
 }
 
 /**
- * 档位按 usageScore 切。分界点是照着**真实词库分布**定的
- * (7–10 共 77 词 / 5–6 共 260 词 / 1–4 共 139 词),不是拍脑袋的等分:
- * 8 分以上全库只有 9 个词,单独成档的话「9 个里掌握了 3 个」纯属噪音。
+ * Bands are split by usageScore. The cutoffs are set based on the
+ * **actual library distribution** (77 words for 7–10 / 260 words for 5–6 /
+ * 139 words for 1–4), not an arbitrary even split: only 9 words in the
+ * whole library score above 8, so giving that its own band would make
+ * "mastered 3 out of 9" pure noise.
  */
 const BANDS = [
   { label: '最常用', range: '7–10', min: 7, max: 10 },
@@ -59,16 +61,20 @@ const BANDS = [
 ] as const
 
 /**
- * 按遇见概率分档的掌握率。
+ * Mastery rate banded by usage score.
  *
- * 统计页原本数的是总量(复习了多少、掌握了多少),但**总量会说谎**:学完 300 个
- * 3 分词的成就感是假的。真正该看的是「你在最常用的那批词上走到哪了」。
+ * The stats page originally just counted totals (how many reviewed, how
+ * many mastered), but **totals can lie**: the sense of achievement from
+ * finishing 300 words scoring a 3 is hollow. What actually matters is "how
+ * far along are you on the most commonly used words".
  *
- * 「掌握」沿用 reviewProgress 与 masteryBreakdown 的口径:state === 'review'。
- * 三处必须一致,否则同一页上会出现两个互相矛盾的「掌握数」。
+ * "Mastered" follows the same definition as reviewProgress and
+ * masteryBreakdown: state === 'review'. All three must stay consistent,
+ * otherwise the same page would show two contradictory "mastered counts".
  *
- * 缺 usageScore 的词不进任何一档 —— 未评分不等于任何一个档位,硬塞进去会让
- * 分母凭空变大、掌握率被稀释。
+ * Words missing a usageScore go into no band at all — unscored doesn't
+ * equal any particular band, and forcing it in would inflate the
+ * denominator out of nowhere, diluting the mastery rate.
  */
 export function usageCoverage(words: Word[], progress: Progress): UsageCoverage {
   const bands: CoverageBand[] = BANDS.map(b => {
@@ -88,7 +94,7 @@ export function usageCoverage(words: Word[], progress: Progress): UsageCoverage 
   }
 }
 
-/** 累计量。平均只按「有复习的天」算 —— 把没打开 app 的日子算进分母会低估强度。 */
+/** Cumulative totals. The average only counts "days with a review" — including days the app was never opened in the denominator would understate intensity. */
 export function cumulativeTotals(progress: Progress): Totals {
   const days = Object.values(progress.dailyStats)
   const active = days.filter(d => d.reviewed > 0)

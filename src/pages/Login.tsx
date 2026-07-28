@@ -7,13 +7,13 @@ import { useApp } from '../state/store'
 import { LoginGuide } from './LoginGuide'
 import './Login.css'
 
-/** Task 15 实现:PAT 输入 + 折叠的 6 步取 token 指引。 */
+/** Task 15 implementation: PAT input + a collapsible 6-step guide to getting a token. */
 export function Login() {
   const { loginError, syncError, login, enterDemoMode } = useApp()
   const [token, setToken] = useState('')
   const [pending, setPending] = useState(false)
 
-  // 去空白后判断:纯空格也当作没填,不发起请求
+  // Check after trimming: whitespace-only counts as not filled in, so no request is made
   const trimmed = token.trim()
   const canSubmit = trimmed !== '' && !pending
 
@@ -21,7 +21,7 @@ export function Login() {
     e.preventDefault()
     if (!canSubmit) return
     setPending(true)
-    // login() 内部吃掉所有失败并落到 loginError,这里只需要收好 pending 状态
+    // login() internally swallows all failures and surfaces them via loginError; here we just need to clean up the pending state
     void login(trimmed).finally(() => setPending(false))
   }
 
@@ -38,10 +38,13 @@ export function Login() {
         </div>
         <p className="auth__tagline">个人词汇记忆本</p>
 
-        {/* 页面级通知,与下面字段级的红色报错分属两条通道:这里说的是「上一次
-            退出时丢弃了未同步的数据」这类既成事实,token 输入框本身没有问题,
-            所以不染红、也不该把输入框标成 aria-invalid。role="status" 是礼貌
-            播报 —— 用户不需要为它中断当前操作。 */}
+        {/* Page-level notice, on a separate channel from the red field-level
+            error below: what's said here is an already-happened fact like
+            "unsynced data was discarded on the last sign-out" — the token
+            input itself isn't at fault, so it isn't colored red, and the
+            input shouldn't be marked aria-invalid either. role="status" is
+            a polite announcement — the user doesn't need to be interrupted
+            for it. */}
         {syncError !== null && (
           <p className="login-notice" role="status">
             {syncError}
@@ -75,8 +78,10 @@ export function Login() {
 
         <LoginGuide />
 
-        {/* 数据仓库还没建起来之前,页面开发靠这个入口拿到真实词库,保留至 Phase 4。
-            视觉上刻意弱化(ghost + 独立留白),不是产品功能。 */}
+        {/* Before the data repo existed, page development relied on this
+            entry point to get a real word library; kept around through
+            Phase 4. Deliberately de-emphasized visually (ghost + its own
+            margin) — it isn't a product feature. */}
         {import.meta.env.DEV && enterDemoMode && (
           <div className="login-demo">
             <Button variant="ghost" block onClick={() => void enterDemoMode()}>

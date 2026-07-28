@@ -3,10 +3,12 @@ import type { Progress, Word } from '../types'
 export interface DailyQueue { due: string[]; fresh: string[] }
 
 /**
- * 遇见概率,缺省算 0。
+ * Likelihood of encountering the word, defaulting to 0.
  *
- * **未评分不等于高频**,所以缺省要排在最后而不是中间:词库里凡是经过补全流程
- * 的词都有分,没分的要么是老数据要么是别处推来的,拿不准的东西不该插队。
+ * **Unscored doesn't mean high-frequency**, so the default has to sort last, not somewhere
+ * in the middle: every word that went through the completion pipeline has a score, and
+ * unscored words are either legacy data or pushed in from elsewhere — something we're
+ * unsure about shouldn't jump the queue.
  */
 const score = (w: Word): number => w.usageScore ?? 0
 
@@ -22,19 +24,23 @@ export function buildQueue(words: Word[], progress: Progress, today: string): Da
       const ea = progress.words[a], eb = progress.words[b]
       if (ea.state !== eb.state) return ea.state === 'learning' ? -1 : 1
       if (ea.due !== eb.due) return ea.due < eb.due ? -1 : 1
-      // 末位 tiebreaker 从字母序换成遇见概率:到这一步的两个词学习状态与到期日
-      // 完全相同,先看谁都不违反 SRS —— 那就该先看更常用的那个。会话没做完时
-      // 这个顺序决定了你今天到底复习到了什么。字母序在这里纯属没有信息量。
+      // The final tiebreaker changed from alphabetical to likelihood of encountering the
+      // word: by this point the two words have identical learning state and due date, so
+      // either order is equally valid under SRS — which means the more commonly used one
+      // should go first. When a session isn't finished, this ordering decides what you
+      // actually end up reviewing today. Alphabetical order carries zero information here.
       const d = score(byId.get(b)!) - score(byId.get(a)!)
-      return d !== 0 ? d : a.localeCompare(b)  // 分数也相同才回到字母序,保证确定性
+      return d !== 0 ? d : a.localeCompare(b)  // Only fall back to alphabetical when scores also tie, to guarantee determinism
     })
 
   const learnedToday = progress.dailyStats[today]?.newLearned ?? 0
   const budget = Math.max(0, progress.settings.newPerDay - learnedToday)
-  // 新词按遇见概率降序取,而不是词库数组顺序。每天只学 newPerDay 个,
-  // 取哪几个直接决定这份投入的回报 —— 先学 formidable(8 分)还是
-  // criticality(2 分),不该由它们进词库的先后决定。
-  // 分数相同时保持词库原有顺序(下面靠下标做稳定排序),不无端打乱。
+  // New words are taken in descending order of encounter likelihood, not word-list array
+  // order. Only newPerDay words get learned each day, so which ones get picked directly
+  // decides the return on that investment — whether formidable (8 points) or criticality
+  // (2 points) gets learned first shouldn't be decided by which entered the word list
+  // first. When scores tie, the word list's original order is preserved (via a stable sort
+  // on index below), with no gratuitous shuffling.
   const fresh = words
     .filter(w => !progress.words[w.id] || progress.words[w.id].state === 'new')
     .map((w, i) => ({ w, i }))
@@ -45,16 +51,19 @@ export function buildQueue(words: Word[], progress: Progress, today: string): Da
   return { due, fresh }
 }
 
-/** 顽固词专项一次最多带几个词。20 个大约是一次能坐下来清完的量。 */
+/** How many words a max a dedicated lapse-word session brings in at once. 20 is roughly what one sitting can clear. */
 export const LAPSE_SESSION_SIZE = 20
 
 /**
- * 顽固词:失误次数最多的那批,**不看到期日**。
+ * Lapse words: the ones with the most failures, **ignoring due date**.
  *
- * progress 里一直记着 lapses,统计页也画出来了,但没有任何入口能直接冲这批词 ——
- * SRS 会让常错的词自然多来几次,可用户想主动清算的时候没工具。
+ * progress has always tracked lapses, and the stats page charts it too, but there was no
+ * way to directly work through this batch of words — SRS naturally brings frequently-missed
+ * words back around more often, but there was no tool for a user who wants to tackle them
+ * head-on.
  *
- * 失误为 0 的不算(那不叫顽固);失误次数相同时看遇见概率,常用的先来。
+ * Words with 0 lapses don't count (that's not "stubborn"); when lapse counts tie, encounter
+ * likelihood breaks the tie, with more common words coming first.
  */
 export function buildLapseQueue(words: Word[], progress: Progress, limit = LAPSE_SESSION_SIZE): string[] {
   return words

@@ -3,9 +3,12 @@ import { ExampleSentence } from '../components/ExampleSentence'
 import type { Word } from '../types'
 
 /**
- * 复习卡翻面后的内容:音标 + 全部释义 + 例句 + 近/反义词 + 搭配 + 同根词。
- * 拆成单独组件是因为这块内容比正面(词头 + 发音)重得多,
- * 且每个区块都要在数组为空时整体不渲染 —— 单独放一个文件更容易看清这条规则。
+ * Content shown on the back of a review card: phonetic + all meanings +
+ * examples + synonyms/antonyms + collocations + related forms.
+ * Split into its own component because this content is a lot heavier than
+ * the front (headword + pronunciation), and every section needs to not
+ * render at all when its array is empty — keeping it in its own file makes
+ * that rule easier to see at a glance.
  */
 
 function TagRow({ label, items }: { label: string; items: string[] }) {
@@ -26,8 +29,10 @@ export function ReviewCardBack({ word }: { word: Word }) {
 
   return (
     <div className="review-back">
-      {/* 音标整体 aria-hidden(屏幕阅读器读 IPA 只会念出一串乱码),但遇见概率
-          必须读得出来 —— 所以它是同一行里的另一个元素,不能塞进 .ipa 里。 */}
+      {/* The phonetic as a whole is aria-hidden (a screen reader reading
+          IPA out loud just produces gibberish), but the usage score must
+          be readable — so it's a separate element on the same row, and
+          can't be stuffed inside .ipa. */}
       <div className="review-back__head">
         <p className="ipa" lang="en" aria-hidden="true">
           {word.phonetic}
@@ -47,19 +52,31 @@ export function ReviewCardBack({ word }: { word: Word }) {
             <p className="review-meaning__head">
               {showIndex && <span className="review-meaning__idx num faint">{i + 1}</span>}
               <span className="pos">{m.pos}</span>
-              {/* 占比走 .faint,是边注不是主角:翻面后第一眼该落在英文释义上。
-                  数据层已按占比降序排好(见 scripts/validate-words.ts),这里
-                  不排序 —— 前面那个序号因此顺带就是常用度次序。 */}
+              {/* The share value uses .faint, a marginal note rather than
+                  the protagonist: the first thing seen after flipping
+                  should be the English meaning. The data layer already
+                  sorts by share descending (see
+                  scripts/validate-words.ts), so this doesn't sort — which
+                  means the index number above incidentally doubles as
+                  frequency-of-use order. */}
               {m.share !== undefined && (
                 <span className="num faint review-meaning__share">{m.share}%</span>
               )}
             </p>
-            {/* 故意选择:英文释义走全权重正文色,中文释义走 .muted 降一档。
-                词库定位在 C1/C2(circumlocution / grandiloquence 这个难度),
-                复习翻面后应该先靠英文释义完成"用英语理解英语"的复述与确认——
-                这也是页面视觉方向"辞书排版"的应有取舍:辞书正文是被释义的语言,
-                译文是边注。中文译文仍然在场、随时可读,只是不作为主目标。
-                这不是"中文不重要",是刻意把认知目标锚在英文释义上。 */}
+            {/* Deliberate choice: the English meaning uses full-weight body
+                color, the Chinese meaning drops one notch to .muted. This
+                library targets C1/C2 (the difficulty of words like
+                circumlocution / grandiloquence), and after flipping, review
+                should first go through recalling and confirming via
+                "understanding English in English" using the English
+                meaning — this is also the tradeoff the page's "dictionary
+                typography" visual direction calls for: in a dictionary,
+                the headword is defined in its own language, and the
+                translation is a marginal note. The Chinese translation is
+                still present and readable at any time, it just isn't the
+                primary target. This isn't "Chinese doesn't matter" — it's
+                deliberately anchoring the cognitive goal on the English
+                meaning. */}
             <p lang="en">{m.en}</p>
             <p className="muted">{m.zh}</p>
           </li>
@@ -83,9 +100,12 @@ export function ReviewCardBack({ word }: { word: Word }) {
       {word.antonyms.length > 0 && <TagRow label="反义词" items={word.antonyms} />}
       {word.collocations.length > 0 && <TagRow label="搭配" items={word.collocations} />}
 
-      {/* 词源紧挨着同根词:两者讲的是同一件事的两半 —— 词根怎么来的、这个根还
-          长出了哪些词。分开放会让"成族记忆"这条线断掉。
-          没有 etymology 的词整块不渲染(约三到四成),不留空标题。 */}
+      {/* Etymology sits right next to related forms: they're two halves of
+          the same story — where the root came from, and what other words
+          that root has grown into. Separating them would break the
+          "learn as a word family" thread.
+          Words without an etymology (roughly 30-40%) render nothing for
+          this whole block, rather than leaving an empty heading. */}
       {word.etymology !== undefined && (
         <div className="review-tags">
           <p className="review-tags__label section-title">词源</p>

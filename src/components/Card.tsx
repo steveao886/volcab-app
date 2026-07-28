@@ -1,10 +1,10 @@
 import type { HTMLAttributes } from 'react'
 
-/** 纸面容器:发丝描边 + 极浅投影,不是塑料卡片。 */
+/** Paper surface container: hairline outline + very subtle shadow, not a plastic card. */
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  /** md 默认;sm 更紧凑;none 由内部自己排版(如整块列表) */
+  /** md is the default; sm is more compact; none lets the content handle its own layout (e.g. a flush list) */
   pad?: 'none' | 'sm' | 'md'
-  /** 抬高一层,用于弹层/置顶条 */
+  /** Raise one layer, for overlays / sticky bars */
   raised?: boolean
 }
 

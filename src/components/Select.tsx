@@ -1,12 +1,15 @@
 import type { ComponentPropsWithRef } from 'react'
 
 /**
- * 下拉选择框。沿用 .input 的外观,但**保留原生箭头**:tokens.css 声明了
- * `color-scheme: light dark`,原生控件会自己跟着深浅色走,自绘一个箭头反而
- * 要为两套主题各画一遍、还得管好点击区域。
+ * Dropdown select. Reuses .input's appearance but **keeps the native
+ * arrow**: tokens.css declares `color-scheme: light dark`, so the native
+ * control already follows light/dark automatically — drawing a custom arrow
+ * would mean painting it twice for both themes and managing its hit area.
  *
- * 用它而不是数字输入框,是为了让取值范围在结构上就无法违反(义项占比只能是
- * 10–90 的整十,遇见概率只能是 1–10 的整数),校验不必再去抓打错的字。
+ * Used instead of a number input so the valid range can't be violated by
+ * construction (meaning share is only ever a multiple of 10 from 10–90,
+ * usage score only ever an integer from 1–10) — validation doesn't have to
+ * catch mistyped values.
  */
 export function Select({ className, ...rest }: ComponentPropsWithRef<'select'>) {
   return <select className={className ? `input ${className}` : 'input'} {...rest} />

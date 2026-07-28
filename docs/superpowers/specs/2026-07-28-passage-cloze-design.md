@@ -1,210 +1,210 @@
-# 短文选词填空设计
+# Passage Cloze Design
 
-**日期**:2026-07-28
-**背景**:现有七种题型里,`clozeExample` 与 `clozeCollocation` 已经是「在语境里认词」,但语境只有**一句话**,而且一句里只考一个词。真正难的不是「认识 apprehensive」,是「这句话该用 apprehensive 还是 agnostic」—— 几个词互相竞争同一个空,这件事单句挖空做不到。
+**Date**: 2026-07-28
+**Background**: Of the seven existing question types, `clozeExample` and `clozeCollocation` already test "recognizing a word in context," but the context is only **a single sentence**, and each sentence tests only one word. The real difficulty isn't "knowing apprehensive" — it's "should this sentence use apprehensive or agnostic" — several words competing for the same blank, and a single-sentence cloze simply can't do that.
 
-词库的原始来源本身就是一段段对话式笔记,把生词串在一起讲。这个功能是把那种形式接回到测验里。
+The original source material for the word list is itself a series of conversational notes that string new words together into a narrative. This feature brings that format back into the quiz.
 
-## 前提:不污染 SRS,不动 store
+## Premise: Don't Pollute the SRS, Don't Touch the Store
 
-`recordQuiz(score, total, wrongIds)` 只把错词的 `due` 提前到今天,`ease` 与 `intervalDays` 一律不动(`store.tsx`)。**短文模式照抄这条约定**:每个空算一题,交卷时调一次 `recordQuiz`。统计页、错词表、顽固词全自动接上,`store.tsx` 与 `srs.ts` 一行不用改。
-
----
-
-## 一、题型形态:选词填空
-
-一篇 80~120 词的短文,挖 3~7 个空,正文下方给一组候选词(比空多 2 个),逐空点选。
-
-**为什么不是逐空四选一**:那只是把 `clozeExample` 的题面从单句换成短文,候选词之间没有竞争关系,难度和现在一样。选词填空逼你在几个词之间做语境辨析,而且**几个空互为线索** —— 确定了 A 空是 `apprehensive`,B 空就不可能再是它。这是这个题型独有的推理过程。
-
-**为什么不是手打拼写**:一篇 6 空要打 6 个长单词,节奏太慢,容易半途放弃。产出能力由现有的 `spelling` / `audio2spelling` 负责。
+`recordQuiz(score, total, wrongIds)` only pulls the `due` date of wrong words forward to today; `ease` and `intervalDays` are never touched (`store.tsx`). **Passage mode copies this convention exactly**: each blank counts as one question, and `recordQuiz` is called once at submit time. The stats page, the wrong-word list, and stubborn words all wire up automatically — not a single line of `store.tsx` or `srs.ts` needs to change.
 
 ---
 
-## 二、数据结构
+## I. Question Format: Word-Choice Cloze
 
-`src/data/passages.json`,随 App 发布。
+A passage of 80–120 words with 3–7 blanks; a set of candidate words (two more than the number of blanks) is listed below the passage, and you tap to fill each blank one at a time.
+
+**Why not four-choices-per-blank**: that would just swap `clozeExample`'s question from a single sentence to a passage, with no competition between the candidate words — the difficulty stays exactly where it is today. Word-choice cloze forces you to discriminate between several words based on context, and **the blanks are mutual clues** — once blank A is settled as `apprehensive`, blank B can no longer be it. That inference process is unique to this question format.
+
+**Why not typed spelling**: typing out 6 long words for a 6-blank passage is too slow a pace, and it's easy to give up halfway through. Production ability is already covered by the existing `spelling` / `audio2spelling` types.
+
+---
+
+## II. Data Structure
+
+`src/data/passages.json`, shipped with the app.
 
 ```ts
 interface Passage {
-  id: string        // 稳定短 id,如 "merger-friday"
-  title: string     // 「并购泡汤的那个周五」,空状态与结果页用
-  /** 逐句英文。目标词用 {{wordId|句中形式}} 标记;形式与词头相同时简写 {{concoct}} */
+  id: string        // stable short id, e.g. "merger-friday"
+  title: string     // 「并购泡汤的那个周五」, used on the empty state and results page
+  /** Sentence-by-sentence English. Target words are marked with {{wordId|surface form}}; shorthand to {{concoct}} when the surface form matches the headword */
   en: string[]
-  /** 逐句中译,与 en 一一对应 */
+  /** Sentence-by-sentence Chinese translation, one-to-one with en */
   zh: string[]
 }
 
 interface PassagesFile { version: 1; passages: Passage[] }
 ```
 
-**英文也逐句存,不是一整段字符串。**中英对照要求句子一一对应,而按标点切句是个陷阱:`9 a.m.`、`Inc.`、`U.S.` 都会把一句切成两句,而例句里这类写法很常见(`concoct` 的例句就有 `9 a.m. standup`)。把配对做成**结构上的**而不是推导出来的,这个问题就不存在了。渲染整段时用空格连起来即可。
+**The English is also stored sentence by sentence, not as one long string.** Pairing the Chinese and English requires the sentences to line up one-to-one, and splitting on punctuation is a trap: `9 a.m.`, `Inc.`, and `U.S.` would each split one sentence into two, and this kind of usage is common in the example sentences (`concoct`'s example sentence even has "9 a.m. standup"). Making the pairing **structural** rather than derived makes the problem disappear entirely. When rendering the whole passage, just join with spaces.
 
-### 为什么放在 `src/data/` 而不是 volcab-data
+### Why It Lives in `src/data/` Instead of volcab-data
 
-短文是**只读内容,不是用户数据** —— 你永远不会在手机上编辑一篇短文。
+A passage is **read-only content, not user data** — you will never edit a passage on your phone.
 
-放进 volcab-data 就要为它付一整套双向同步的代价:`isPassage` 校验、merge 策略、冲突处理、`store.tsx` 里再加一条推送路径。那一层不是接线,是数据安全逻辑(互斥锁、补跑标志、会话作废检查),为只读内容付这个代价不划算。
+Putting it in volcab-data means paying the full cost of two-way sync: `isPassage` validation, a merge strategy, conflict handling, one more push path added to `store.tsx`. That layer isn't wiring, it's data-safety logic (mutex locks, catch-up flags, session-invalidation checks) — and paying that price for read-only content isn't worth it.
 
-`words.json` 已经 753KB,逼近 GitHub Contents API 的 1MB 正文上限,短文更不该往那份文件里塞。
+`words.json` is already 753KB, closing in on the GitHub Contents API's 1MB body limit; passages should be kept out of that file even more so.
 
-`data/` 目录留给脚本用的词表副本(它与线上词库会分叉,见 `f53adb9`),`src/data/` 是**随 App 发布的内容**,两者不混。
+The `data/` directory is reserved for the script-facing copy of the word list (which diverges from the live word list — see `f53adb9`); `src/data/` is **content shipped with the app**. The two are never mixed.
 
-用 `import()` 动态加载成单独 chunk,不进首屏包体。30 篇约 45KB;真扩到 200 篇约 300KB 时也不会拖慢启动。
+Loaded dynamically as a separate chunk via `import()`, so it never enters the initial bundle. 30 passages comes to about 45KB; even scaled up to 200 passages at roughly 300KB, it still won't slow down startup.
 
-### 为什么用标记而不是现场定位
+### Why Explicit Markers Instead of Runtime Location
 
-`headwordPattern`(`lib/headword.ts`)是在**单句**上实测出来的:原形在场时用紧规则,原形缺席时退回松散词干 `stem + [a-z]*`。松散规则在单句上实测零误伤,但短文有 100 词,误伤概率高得多 —— 而这里误伤一次就是挖错空、或者把不该挖的词挖了。
+`headwordPattern` (`lib/headword.ts`) was validated empirically on **single sentences**: it uses a tight rule when the base form is present, and falls back to a loose stem match `stem + [a-z]*` when the base form is absent. That loose rule tested at zero false hits on single sentences, but a passage runs to about 100 words, so the odds of a false hit are far higher — and here, one false hit means either the wrong word gets blanked, or a word that shouldn't be blanked gets blanked.
 
-所以正文里由作者显式标记,`headwordPattern` 改当**校验器**用:校验脚本拿它确认 `{{concoct|concocted}}` 里的 `concocted` 真是 `concoct` 的一个变形。定位算法当校验器比当定位器更合适 —— 校验时候选只有一个词,没有歧义空间。
-
----
-
-## 三、挖空与候选词
-
-### 只挖学过的词
-
-标记词里**只有 `state !== 'new'` 的才挖空**;没学过的、以及在用户词库里查不到的(仓库副本与线上分叉那个坑),原样印出来当阅读材料。
-
-这条沿用辨析模式那条教训(见 `quiz.ts` 里 `generateContrastQuiz` 的长注释):不拿没见过的词考你。但与辨析不同的是,**没见过的词可以留在上下文里** —— 它不是题,是读物。
-
-### 空数上下限
-
-- 可挖空 **< 3** → 这篇整体跳过(三个空以下互为线索的推理就不成立了,退化成三道单句挖空)
-- 可挖空 **> 7** → 按「今天到期 > 学过未到期」取前 7,其余原样印出。一屏太多空会做不完
-
-**同一个词在一篇里最多挖一个空。**同一个词标记了多处时只挖第一处,其余原样印出 —— 否则候选词区会出现两个一模一样的词,而「用掉就划掉」的规则立刻自相矛盾。
-
-### 候选词
-
-候选词 = 全部空的答案 + **2 个干扰词**,打乱后排在正文下方。
-
-干扰词来源,按优先级:
-
-1. `buildContrastPairs`(`lib/contrast.ts`)里与某个答案易混、且用户已学过的词 —— 现成的易混词图,用在这里正合适
-2. 凑不够时从已学词里取「主义项词性与某个答案相同」的
-3. 再凑不够就从已学词里随机取
-
-干扰词不能与任何一个答案是同一个词,也不能重复。凑不满 2 个就少给 —— 少一个干扰词只是这篇稍微简单些,而拿一个重复的选项出来是缺陷。
-
-### 候选词显示原形,填入句中形式
-
-候选词一律显示**词头原形**(`concoct`);选中后空里填入的是**句中形式**(`concocted`)。
-
-这题考的是选哪个词,不是考屈折变形。变形直接给你看,顺带记住 —— 这比让你自己拼出 `concocting` 更有价值,也不会让一道语境题被一个 `-ing` 判错。
+So the author marks the passage text explicitly, and `headwordPattern` is repurposed as a **validator**: the validation script uses it to confirm that `concocted` in `{{concoct|concocted}}` really is an inflected form of `concoct`. A location algorithm is a better fit as a validator than as a locator — during validation there's only ever one candidate word, so there's no room for ambiguity.
 
 ---
 
-## 四、选篇算法
+## III. Blanks and Candidate Words
+
+### Only Blank Out Words You've Learned
+
+Among marked words, **only ones with `state !== 'new'` get blanked**; words that haven't been learned yet, and words that can't be found in the user's word list (the pitfall where the repo copy and the live word list diverge), are printed as-is, as reading material.
+
+This follows the same lesson contrast mode already learned (see the long comment on `generateContrastQuiz` in `quiz.ts`): don't quiz you on a word you've never seen. But unlike contrast mode, **an unseen word is allowed to stay in the context** — it isn't a question there, it's reading material.
+
+### Upper and Lower Bounds on Blank Count
+
+- Eligible blanks **< 3** → skip the whole passage (with fewer than three blanks the mutual-clue inference no longer holds; it degenerates into a few single-sentence clozes)
+- Eligible blanks **> 7** → take the top 7 by priority "due today > learned but not due," and print the rest as-is. Too many blanks on one screen and you won't finish
+
+**The same word gets at most one blank per passage.** When the same word is marked in more than one place, only the first is blanked and the rest are printed as-is — otherwise the candidate area would show two identical words, and the rule "used means crossed off" would immediately contradict itself.
+
+### Candidate Words
+
+Candidate words = every blank's answer + **2 distractors**, shuffled and placed below the passage.
+
+Distractor sources, in priority order:
+
+1. Words from `buildContrastPairs` (`lib/contrast.ts`) that are easily confused with one of the answers and that the user has already learned — a ready-made confusable-word graph, and a natural fit here
+2. If that's not enough, take already-learned words whose primary sense shares its part of speech with one of the answers
+3. If still not enough, take random already-learned words
+
+A distractor can never be the same word as any answer, and distractors can't repeat each other. If 2 can't be filled, give fewer — one fewer distractor just makes this particular passage a bit easier, whereas surfacing a duplicate option is a defect.
+
+### Candidate Words Show the Base Form, the Blank Takes the Surface Form
+
+Candidate words always display the **headword's base form** (`concoct`); once one is chosen, what fills the blank is the **surface form** (`concocted`).
+
+This question tests which word to pick, not inflection. The inflected form is handed to you directly, and you pick it up along the way — that's worth more than making you spell out `concocting` yourself, and it keeps a context question from being marked wrong over a stray `-ing`.
+
+---
+
+## IV. Passage Selection Algorithm
 
 ```
-有效篇 = 可挖空数 ≥ 3
-打分   = 今天到期的空数 × 3
-       + 已学未到期的空数 × 1
-       − (最近 10 篇里做过 ? 5 : 0)
-取分最高;同分随机
+valid passage = eligible blank count ≥ 3
+score         = (blanks due today) × 3
+              + (blanks learned, not due) × 1
+              − (done within the last 10 passages ? 5 : 0)
+pick the highest score; ties broken at random
 ```
 
-惩罚取 5 是有意压过「多一个到期词」(+3):宁可换一篇覆盖略差的新短文,也别连着做同一篇 —— 第二次做时你记住的是上次的答案,不是词。
+The penalty is set to 5 specifically to outweigh "one more due word" (+3): better to switch to a new passage with slightly worse coverage than to do the same passage two times in a row — the second time through, what you remember is last time's answers, not the words.
 
-到期词权重高于已学词,因为这题**首先是复习工具**,其次才是阅读。
+Due words are weighted above merely-learned words, because this question type is **first a review tool**, and only second a reading exercise.
 
-### 「最近做过」存 localStorage,不进 progress.json
+### "Recently Done" Lives in localStorage, Not progress.json
 
-记最近 10 篇的 id,走 `lib/storage.ts`。
+Records the ids of the last 10 passages done, via `lib/storage.ts`.
 
-为一条防重复的记录往 `progress.json` 加字段,要连着 merge 规则、同步冲突、跨设备语义一起想,而它的价值只是「别连着两天做同一篇」。两台设备各记各的完全可以接受。
+Adding a field to `progress.json` for a de-duplication record would mean thinking through merge rules, sync conflicts, and cross-device semantics all at once, and all it buys you is "don't do the same passage two days running." It's perfectly fine for each device to keep its own record.
 
-### 一篇短文可以重复做,但空会变
+### A Passage Can Be Redone, but Its Blanks Change
 
-学过的词变多之后,同一篇里可挖的空就变了 —— 天然轮换,不需要额外机制。惩罚项只保证不会连着撞上同一篇。
+As you learn more words, which blanks are available in the same passage changes — a natural rotation that needs no extra mechanism. The penalty term only guarantees you won't run into the same passage two times in a row.
 
-### 出不来题时
+### When No Question Can Be Produced
 
-照 `EMPTY_HINT` 的先例给**具体**原因,而不是通用文案:
+Following the precedent set by `EMPTY_HINT`, give a **specific** reason rather than generic copy:
 
 > 短文题只考你学过的词,一篇里至少要凑够 3 个。再学一阵子,这里的题会自己多起来。
 
 ---
 
-## 五、交互与判分
+## V. Interaction and Scoring
 
-### 入口
+### Entry Point
 
-`/quiz` 顶部第五个 chip「短文」,`?mode=passage`,与现有四个模式同一套(`MODES` 数组加一项)。默认仍停在「综合」。
+A fifth chip, "短文", at the top of `/quiz`, `?mode=passage`, part of the same set as the existing four modes (one entry added to the `MODES` array). The default still stays on "综合" (Mixed).
 
-### 交卷制 —— 与现有题型刻意不同
+### Submit-Once — A Deliberate Departure from Existing Question Types
 
-现有题型点了就锁死(`answeredRef` 同步置位)。短文模式是**填完整篇再交卷**:
+Existing question types lock as soon as you tap an answer (`answeredRef` is set synchronously). Passage mode is **fill in the whole passage, then submit**:
 
-- 点空 → 选中该空
-- 点候选词 → 填入选中的空,该候选词划掉
-- 点已填的空 → 撤回,候选词恢复可选
-- 全部空填满才能交卷
+- Tap a blank → that blank is selected
+- Tap a candidate word → it fills the selected blank, and that candidate word is crossed off
+- Tap a filled blank → it's cleared, and the candidate word becomes available again
+- Submit is only possible once every blank is filled
 
-理由:几个空互为线索,不让你改等于剥夺了这个题型最核心的推理过程 —— 做到第五个空发现第二个空填错了,是这题正常的解题路径,不是失误。
+Rationale: the blanks are mutual clues, so refusing to let you change an answer would strip away the core inference process of this question type — realizing at the fifth blank that the second one is wrong is the normal way to solve this kind of question, not a mistake.
 
-进度显示按「已填 / 总空数」,不是「第几题」。
+Progress is shown as "filled / total blank count," not "which question number."
 
-### 判分
+### Scoring
 
-交卷后一次性判完:
+Everything is scored at once after submission:
 
-- 每个空标对错,错的显示正确答案
-- 正文下方展开**逐句中英对照**,填错的那句在译文里标出来
-- `recordQuiz(score, total, wrongIds)` 调一次,`total` = 空数,`wrongIds` = 填错的空对应的 wordId
-- 音效 `playQuizResult` 在交卷时按整体对错播**一次**,不是每空一次(那会吵)
+- Each blank is marked right or wrong; wrong ones show the correct answer
+- Below the passage, a **sentence-by-sentence Chinese-English comparison** expands, with the sentence(s) containing a wrong blank marked in the translation
+- `recordQuiz(score, total, wrongIds)` is called once, with `total` = the number of blanks and `wrongIds` = the wordIds behind the blanks that were filled wrong
+- The `playQuizResult` sound plays **once**, based on the overall right/wrong outcome at submit time — not once per blank (that would be noisy)
 
-**每个空算一题**意味着一篇 6 空当 6 题记入 `dailyStats`,「今日测试」的数字会比现在涨得快。这是对的:6 个空确实做了 6 次提取。
+**Each blank counting as one question** means a 6-blank passage logs as 6 questions in `dailyStats`, so the "今日测试" (today's tests) number will climb faster than it does now. That's correct: 6 blanks really is 6 retrievals.
 
-### 中译只在交卷后出现
+### The Chinese Translation Only Appears After Submission
 
-做题时给中译等于把答案翻译成中文摆在旁边 —— 「董事会对并购感到忧虑」,`apprehensive` 就不用想了。
-
----
-
-## 六、语料生产
-
-### 规模:先试点 20~30 篇
-
-只覆盖 `usageScore` 高、且用户已学过的那批词。先把题型做出来用一周,确认这种题真比单句挖空强,再决定要不要撑到全库(每词 ≥3 篇约需 200 篇,两万多词英文加中译)。
-
-写错了也只浪费 30 篇的工夫。
-
-### 生产流程
-
-1. 按 `usageScore` 与已学状态挑词,分成若干组,每组 6~8 个词
-2. 并行派 agent,每个 agent 拿一组写 1~2 篇,输出统一格式的 JSON 片段
-3. 合并去重,跑校验脚本
-4. 人工抽查后进仓库
-
-### 校验脚本 `scripts/validate-passages.ts`
-
-照 `validate-words.ts` 的路子。检查:
-
-- `id` 唯一,且格式合法
-- 每个 `{{wordId|form}}` 的 `wordId` 在词库里存在
-- `form` 确实是该词头的一个变形 —— 用 `lib/headword.ts` 新导出的 `isInflectionOf(form, headword)` 判定。**不能直接用 `headwordPattern`**:它在原形缺席时会退回松散词干 `stem + [a-z]*`,那条规则会把 `reference` 判成 `refute` 的变形。校验时候选只有一个词,该用严格的词尾枚举规则
-- 每篇标记词 ≥ 6 个(挖空只挖学过的,标记少了早期一篇也凑不出 3 个空)
-- `zh` 的句数与英文句数一致
-- 覆盖分布报告:哪些词一次都没被串到、哪些词出现在几篇里
-
-**校验不过不进仓库。**
-
-### 运行时对坏数据宽容
-
-校验脚本是写入端的闸门,读取端仍要能扛住一篇坏短文:标记畸形、`zh` 句数对不上、`wordId` 查不到 —— 一律**跳过这一篇**,不抛错、不白屏。与 `words.json` 那条「写入端严格、读取端宽容」是同一条规矩(见 `types.ts` 里 `Meaning.share` 的注释)。
+Showing the Chinese translation while you're still answering would put the answer in Chinese right next to the blank — "董事会对并购感到忧虑" (the board is apprehensive about the merger), and there's nothing left to think about for `apprehensive`.
 
 ---
 
-## 七、测试
+## VI. Content Production
 
-纯逻辑全部落在 `src/lib/passage.ts`,配 `src/lib/passage.test.ts`:
+### Scale: Pilot with 20–30 Passages First
 
-- 标记解析:`{{concoct}}` 与 `{{concoct|concocted}}` 两种写法、畸形标记、正文里出现裸 `{{`
-- 挖空取舍:只挖学过的、可挖 < 3 跳过、可挖 > 7 时按到期优先取前 7
-- 候选词生成:干扰项来源优先级、不重复、不与答案冲突、凑不满时的降级
-- 选篇打分:到期权重、最近做过的惩罚、同分随机的确定性(注入 rng)
-- 边界:词不在库里、`zh` 句数对不上、一篇一个标记都没有
+Cover only the batch of words with a high `usageScore` that the user has already learned. Build the question type first, use it for a week, confirm this kind of question really does beat single-sentence cloze, before deciding whether to scale it up to the full word list (covering every word with ≥3 passages needs roughly 200 passages — English plus Chinese translation for twenty-thousand-plus words).
 
-UI 不写组件测试,照仓库约定(见 `store.test.tsx` 顶部那段说明)。渲染层只剩「把纯函数算出来的结果画出来」。
+Getting it wrong only wastes the effort of 30 passages.
+
+### Production Pipeline
+
+1. Pick words by `usageScore` and learned status, split into groups of 6–8 words each
+2. Dispatch agents in parallel, each agent taking one group and writing 1–2 passages, outputting a JSON fragment in a shared format
+3. Merge and de-duplicate, run the validation script
+4. Spot-check by hand, then check into the repo
+
+### Validation Script `scripts/validate-passages.ts`
+
+Follows the same pattern as `validate-words.ts`. Checks:
+
+- `id` is unique and well-formed
+- Every `{{wordId|form}}`'s `wordId` exists in the word list
+- `form` really is an inflected form of that headword — decided using the newly exported `isInflectionOf(form, headword)` from `lib/headword.ts`. **Can't use `headwordPattern` directly**: when the base form is absent it falls back to the loose stem match `stem + [a-z]*`, and that rule would judge `reference` to be an inflected form of `refute`. A location algorithm is a better fit as a validator than as a locator — during validation there's only ever one candidate word, and this calls for the strict suffix-enumeration rule
+- Every passage has ≥ 6 marked words (blanks only ever come from learned words, and too few markers means even an early passage can't scrape together 3 blanks)
+- The sentence count in `zh` matches the English sentence count
+- A coverage-distribution report: which words have never been strung into a passage, and which words appear in how many passages
+
+**A passage that fails validation does not go into the repo.**
+
+### Tolerant of Bad Data at Runtime
+
+The validation script is the gate at write time; the read path still has to survive a broken passage: a malformed marker, a `zh` sentence count that doesn't match, a `wordId` that can't be found — in every case, **skip that passage**, without throwing and without a blank screen. This is the same rule as the "strict on write, lenient on read" rule for `words.json` (see the comment on `Meaning.share` in `types.ts`).
+
+---
+
+## VII. Testing
+
+All the pure logic lives in `src/lib/passage.ts`, paired with `src/lib/passage.test.ts`:
+
+- Marker parsing: both `{{concoct}}` and `{{concoct|concocted}}` forms, malformed markers, a bare `{{` appearing in the passage text
+- Blank selection: only learned words get blanked, skip when eligible < 3, take the top 7 by due-first priority when eligible > 7
+- Candidate word generation: distractor source priority, no duplicates, no conflict with answers, degradation when there aren't enough
+- Passage-selection scoring: due weighting, the recently-done penalty, determinism of random tie-breaking (inject an rng)
+- Edge cases: a word not in the word list, `zh` sentence count mismatch, a passage with no markers at all
+
+No component tests for the UI, following the repo's convention (see the note at the top of `store.test.tsx`). All that's left for the render layer is "paint the result the pure functions already computed."

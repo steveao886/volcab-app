@@ -2,13 +2,14 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { isEditableTarget, optionIndexFromKey } from './keys'
 
 /**
- * 快捷键的判断逻辑测在这里,而不是在页面上做组件测试 ——
- * 「UI 本身不写组件测试」那条约定依然成立(见 store.test.tsx 顶部)。
- * 页面那一层只剩「把下标映射到选项并调用 choose」这一句,值得测的分支
- * (修饰键、越界、输入框里)全在这个纯函数里。
+ * The shortcut-key decision logic is tested here, not with a component test on the page —
+ * the convention that "the UI itself gets no component tests" still holds (see the top of
+ * store.test.tsx). The page layer is reduced to a single line — "map the index to an option
+ * and call choose" — and every branch worth testing (modifier keys, out of range, inside an
+ * input) lives in this pure function.
  */
 
-/** 造一个按键事件。默认不带任何修饰键。 */
+/** Build a key event. No modifier keys by default. */
 function key(k: string, mods: Partial<KeyboardEventInit> = {}): KeyboardEvent {
   return new KeyboardEvent('keydown', { key: k, ...mods })
 }
@@ -18,55 +19,55 @@ afterEach(() => {
 })
 
 describe('isEditableTarget', () => {
-  it('null 不算', () => {
+  it('null does not count', () => {
     expect(isEditableTarget(null)).toBe(false)
   })
 
-  it('input / textarea / select 都算', () => {
+  it('input / textarea / select all count', () => {
     for (const tag of ['input', 'textarea', 'select']) {
       expect(isEditableTarget(document.createElement(tag))).toBe(true)
     }
   })
 
-  it('contentEditable 也算', () => {
+  it('contentEditable counts too', () => {
     const el = document.createElement('div')
     el.contentEditable = 'true'
     document.body.append(el)
     expect(isEditableTarget(el)).toBe(true)
   })
 
-  it('普通按钮不算 —— 否则 Tab 到选项上就再也用不了数字键', () => {
+  it('a plain button does not count — otherwise tabbing onto an option would make number keys unusable', () => {
     expect(isEditableTarget(document.createElement('button'))).toBe(false)
   })
 })
 
 describe('optionIndexFromKey', () => {
-  it('1–4 映射到 0–3', () => {
+  it('1-4 maps to 0-3', () => {
     expect(optionIndexFromKey(key('1'), 4)).toBe(0)
     expect(optionIndexFromKey(key('4'), 4)).toBe(3)
   })
 
-  it('超出选项数量返回 -1', () => {
+  it('returns -1 when it exceeds the option count', () => {
     expect(optionIndexFromKey(key('5'), 4)).toBe(-1)
   })
 
-  it('0 与非数字键返回 -1', () => {
+  it('0 and non-digit keys return -1', () => {
     for (const k of ['0', 'Enter', ' ', 'a', 'F1', 'ArrowDown']) {
       expect(optionIndexFromKey(key(k), 4)).toBe(-1)
     }
   })
 
-  it('Ctrl / Cmd / Alt 组合放过 —— 那是浏览器切标签页', () => {
+  it('Ctrl / Cmd / Alt combos are let through — those are browser tab-switching shortcuts', () => {
     expect(optionIndexFromKey(key('1', { ctrlKey: true }), 4)).toBe(-1)
     expect(optionIndexFromKey(key('1', { metaKey: true }), 4)).toBe(-1)
     expect(optionIndexFromKey(key('1', { altKey: true }), 4)).toBe(-1)
   })
 
-  it('Shift 不排除 —— AZERTY 上数字本来就要按 Shift', () => {
+  it('Shift is not excluded — on AZERTY, digits require Shift anyway', () => {
     expect(optionIndexFromKey(key('1', { shiftKey: true }), 4)).toBe(0)
   })
 
-  it('焦点在输入框里时一律返回 -1', () => {
+  it('always returns -1 when focus is inside an input', () => {
     const input = document.createElement('input')
     document.body.append(input)
     input.focus()

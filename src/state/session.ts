@@ -5,10 +5,13 @@ import { isProgress, isStagingItem, isWord, isWordsOp, mergeStaging } from './sy
 import type { WordsOp } from './sync'
 
 /**
- * localStorage 里的本机会话:缓存、待推送队列,以及由它们推导出的启动状态。
+ * The local device session in localStorage: caches, the pending-push queue,
+ * and the boot state derived from them.
  *
- * 和 sync.ts 一样不依赖 React —— 「刷新后该进哪个 phase」「换账号登录时本地
- * 欠账怎么办」这两件事最容易写错又最难在组件里测,所以摘成纯函数。
+ * Like sync.ts, this doesn't depend on React -- "which phase to enter after
+ * a refresh" and "what to do with local debt when logging in under a
+ * different account" are the two things easiest to get wrong and hardest to
+ * test inside a component, so they're pulled out as pure functions.
  */
 
 export interface BootSnapshot {
@@ -16,11 +19,11 @@ export interface BootSnapshot {
   owner: string | null
   words: Word[]
   progress: Progress
-  /** 生词暂存区。**不参与 phase 判定** —— 见 bootSnapshot 里的说明 */
+  /** New-word staging area. **Does not factor into the phase decision** -- see the note inside bootSnapshot */
   staging: StagingItem[]
 }
 
-/** 缓存形状不对就当没有,免得一份坏缓存把整个 App 带崩 */
+/** Treat a cache with the wrong shape as absent, so one bad cache doesn't take down the whole App */
 export function cachedProgress(): Progress | null {
   const p = storage.get<unknown>('progress')
   return isProgress(p) ? p : null
@@ -31,18 +34,21 @@ export function cachedWords(): Word[] | null {
   return Array.isArray(w) && w.length > 0 && w.every(isWord) ? w : null
 }
 
-/** 同上;暂存区可以是空数组(合法的「没攒任何词」),所以不像 cachedWords 那样要求非空 */
+/** Same idea; the staging area can legitimately be an empty array ("nothing staged yet"), so unlike cachedWords it doesn't require non-empty */
 export function cachedStaging(): StagingItem[] | null {
   const s = storage.get<unknown>('staging')
   return Array.isArray(s) && s.every(isStagingItem) ? s : null
 }
 
 /**
- * 尚未确认推上远端的词库增删。
+ * Vocabulary add/deletes not yet confirmed pushed to the remote.
  *
- * progress 用一个 dirty 布尔就够(整份重推),词库不行:冲突时要在重新拉回的
- * 远端副本上**重放具体动作**,所以必须留住动作本身。只存在内存里的话,推送
- * 失败后关掉页面,下次启动 boot 会拿远端覆盖本地缓存,这条改动就没了。
+ * A single dirty boolean is enough for progress (the whole thing gets
+ * re-pushed), but not for vocabulary: on conflict, the specific actions have
+ * to be **replayed** on the freshly re-pulled remote copy, so the actions
+ * themselves must be retained. Keeping them only in memory would mean that
+ * if a push fails and the page is closed, the next boot overwrites the local
+ * cache with the remote and that change is simply gone.
  */
 export function pendingOps(): WordsOp[] {
   const raw = storage.get<unknown>('wordOps')
@@ -62,9 +68,12 @@ export function appendPendingOp(op: WordsOp): WordsOp[] {
 }
 
 /**
- * 尚未推上远端的收词。与 wordOps 同一套机制、同样的理由(推送失败后关掉页面,
- * 下次启动会拿远端覆盖本地缓存),只是队列元素就是条目本身 —— 暂存区只有
- * 「追加」一种动作,并集合并即重放,不需要额外的动作描述。
+ * Staged words not yet pushed to the remote. Same mechanism, same rationale
+ * as wordOps (a failed push followed by closing the page means the next boot
+ * overwrites the local cache with the remote) -- except here the queue
+ * elements are the items themselves. The staging area only ever has one
+ * kind of action, "append", so a union merge is the replay; no separate
+ * action description is needed.
  */
 export function pendingStaging(): StagingItem[] {
   const raw = storage.get<unknown>('stagingOps')
@@ -77,17 +86,19 @@ export function setPendingStaging(items: StagingItem[]): void {
   else storage.set('stagingOps', items)
 }
 
-/** 并集追加:同一个词按下两次「加入待补全」只会排队一条 */
+/** Union append: pressing "add to staging" twice on the same word only queues one entry */
 export function appendPendingStaging(it: StagingItem): StagingItem[] {
   const next = mergeStaging(pendingStaging(), [it])
   setPendingStaging(next)
   return next
 }
 
-/** 首帧状态:有完整缓存就直接可用,远端放到后台拉 */
+/** First-frame state: usable immediately if the cache is complete, remote fetch happens in the background */
 export function bootSnapshot(isDev: boolean): BootSnapshot {
-  // 暂存区不参与 phase 判定:缓存缺失或损坏只表示「暂存区是空的」,
-  // 绝不能因此把一个词库和进度都齐全的本机拖回 boot 态去等网络。
+  // Staging doesn't factor into the phase decision: a missing or corrupted
+  // cache only means "the staging area is empty", and must never drag a
+  // device that has a complete vocabulary and progress back into boot state
+  // to wait on the network.
   const staging = cachedStaging() ?? []
   const idle: BootSnapshot = {
     phase: 'login', owner: null, words: [], progress: emptyProgress(), staging,
@@ -95,7 +106,7 @@ export function bootSnapshot(isDev: boolean): BootSnapshot {
   const token = storage.get<string>('token')
   const owner = storage.get<string>('owner')
 
-  // 开发演示模式没有 token,刷新后自动回到演示,免得每次调页面都要重新点一次
+  // Dev demo mode has no token, so refreshing returns to the demo automatically, saving a re-click every time the page is worked on
   if (isDev && !token && owner === 'demo') return { ...idle, phase: 'boot', owner }
   if (!token || !owner) return idle
 
@@ -106,22 +117,24 @@ export function bootSnapshot(isDev: boolean): BootSnapshot {
 }
 
 export interface CarryOver {
-  /** 需要并回远端的本地进度;null 表示本地没有欠账 */
+  /** Local progress that needs to be merged back into the remote; null means the device has no debt */
   progress: Progress | null
-  /** 需要在远端副本上重放的词库改动 */
+  /** Vocabulary changes that need replaying onto the remote copy */
   ops: WordsOp[]
-  /** 需要并进远端暂存区的收词 */
+  /** Staged words that need merging into the remote staging area */
   staging: StagingItem[]
-  /** 有欠账但属于别的账号,已经丢弃 —— 必须告诉用户,不能静默 */
+  /** There was debt but it belongs to a different account and has been discarded -- must be disclosed to the user, never silent */
   discardedOwner: string | null
 }
 
 /**
- * 重新登录时,本机上没推完的东西哪些能带过去。
+ * On re-login, which of the things this device never finished pushing can be carried over.
  *
- * token 被撤销会把本机停在「有未推送改动」的状态,重新登录若直接拿远端覆盖
- * 就等于吞掉那段复习记录。但跨账号合并同样不行 —— 那是把别人的数据混进来。
- * 所以:同账号带走,换账号丢弃 + 报出丢的是谁。
+ * A revoked token leaves the device stuck with "unpushed changes"; if
+ * re-login just overwrote them with the remote, that review history would
+ * be swallowed. But merging across accounts is equally wrong -- that would
+ * mix someone else's data in. So: carry over on the same account, discard on
+ * an account switch + report who lost what.
  */
 export function carryOverFor(owner: string): CarryOver {
   const previous = storage.get<string>('owner')

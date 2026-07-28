@@ -1,29 +1,34 @@
 import type { ProgressEntry } from '../types'
 
 /**
- * 复习会话的队列状态机 —— 纯函数,不碰 React。
+ * State machine for the review session's queue — pure functions, no React.
  *
- * 会话开始时用 buildQueue() 的 due+fresh 建一次(buildSessionQueue),
- * 之后只能通过 advance() 变化。绝不能在会话中途拿 buildQueue() 的新结果
- * 整个替换 ids —— grade() 会改 progress,现算的队列会在用户眼皮底下重排。
+ * Built once at the start of a session from buildQueue()'s due+fresh
+ * (buildSessionQueue); after that, it can only change via advance(). It
+ * must never be replaced mid-session by wholesale swapping in a fresh
+ * result from buildQueue() — grade() mutates progress, and a freshly
+ * recomputed queue would reshuffle right under the user's eyes.
  */
 export interface SessionQueue {
-  /** 待复习的词 id,队列。ids[0] 就是当前展示的卡,清空即会话完成 */
+  /** Queue of word ids awaiting review. ids[0] is the currently displayed card; empty means the session is done */
   ids: string[]
-  /** 已打分的次数,即进度分子 x */
+  /** Number of cards graded so far, i.e. the progress numerator x */
   seen: number
-  /** 累计排入队列的卡片总数(含学习步长内的重现),即进度分母 y。
-   *  重来/学习步长会让它随会话增长,这样 x/y 不会在卡片被塞回队尾时显得停滞或倒退。 */
+  /** Cumulative count of cards ever enqueued (including reappearances
+   *  within a learning step), i.e. the progress denominator y.
+   *  "Again" / learning steps grow this over the course of the session, so
+   *  x/y never looks stalled or goes backward when a card is pushed back
+   *  to the tail of the queue. */
   total: number
 }
 
-/** 会话队列 = due 词(到期复习)在前,fresh 词(今日新词额度内)在后。 */
+/** Session queue = due words (due for review) first, followed by fresh words (within today's new-word quota). */
 export function buildSessionQueue(due: readonly string[], fresh: readonly string[]): SessionQueue {
   const ids = [...due, ...fresh]
   return { ids, seen: 0, total: ids.length }
 }
 
-/** 队首,即当前应展示的卡;队列已清空则为 undefined。 */
+/** The head of the queue, i.e. the card that should currently be shown; undefined once the queue is empty. */
 export function currentId(q: SessionQueue): string | undefined {
   return q.ids[0]
 }
@@ -33,16 +38,22 @@ export function isDone(q: SessionQueue): boolean {
 }
 
 /**
- * 打分之后推进队列。
+ * Advances the queue after a card is graded.
  *
- * entry 必须是调用方在 grade() 落库之后、从 progress.words[id] **读回**的结果 ——
- * 这里不重算 SRS 规则(那是 srs.ts 的职责),只看落库后的状态做队列决策,
- * 否则两处对"学习步长有没有走完"的判断迟早会对不上。
+ * entry must be the result the caller **reads back** from
+ * progress.words[id] after grade() has committed it — this function
+ * doesn't recompute SRS rules (that's srs.ts's job), it only makes queue
+ * decisions based on the already-committed state, otherwise the two
+ * places' judgment of "has the learning step finished" would eventually
+ * drift out of sync.
  *
- * 若该词打分后仍处于 learning 且 due 仍是今天 —— 说明会话内的学习步长
- * (1min/10min 重现)还没走完 —— 把它重新插到队尾;否则彻底出队。
+ * If, after grading, the word is still in learning and its due date is
+ * still today — meaning the in-session learning step (1min/10min
+ * reappearance) hasn't finished yet — it's reinserted at the tail of the
+ * queue; otherwise it's dequeued for good.
  *
- * 前提:id 必须是 currentId(q)(即 q.ids[0])—— 调用方只应该对当前展示的卡打分。
+ * Precondition: id must be currentId(q) (i.e. q.ids[0]) — the caller
+ * should only ever grade the currently displayed card.
  */
 export function advance(
   q: SessionQueue,
@@ -60,22 +71,28 @@ export function advance(
 }
 
 /**
- * 队首这张词条在词库里已经找不到了(另一台设备删掉了它,同步跑在会话中途)——
- * 不是打分,只是把它从队列里摘掉:不计入 seen,也把 total 一起减掉,
- * 否则进度条分母会永远比实际卡数多一个,看起来卡在不到 100%。
+ * The word at the head of the queue can no longer be found in the library
+ * (deleted from another device, sync landed mid-session) — this isn't a
+ * grade, it's just dropping it from the queue: it doesn't count toward
+ * seen, and total is decremented along with it, otherwise the progress
+ * bar's denominator would permanently be one more than the actual card
+ * count, and appear stuck below 100%.
  *
- * 前提与 advance() 相同:调用方只应该对 currentId(q) 调用。
+ * Same precondition as advance(): the caller should only ever call this on currentId(q).
  */
 export function dropCurrent(q: SessionQueue): SessionQueue {
   return { ids: q.ids.slice(1), seen: q.seen, total: q.total - 1 }
 }
 
 /**
- * 还剩几张要看。
+ * How many cards are left to see.
  *
- * 为什么不再直接显示 seen/total:total 会随学习步长重现而增长,用户设了
- * 「每日新词 50」却看到分母 60,第一反应是算错了。剩余张数只减不增,
- * 永远不与设置矛盾;重现只是让它下降变慢。
+ * Why this isn't just seen/total displayed directly: total grows with
+ * learning-step reappearances, so a user who set "50 new words per day"
+ * but sees a denominator of 60 would first assume something was
+ * miscalculated. The remaining count only ever decreases, never
+ * increases, so it never contradicts the setting — reappearances just
+ * make it fall more slowly.
  */
 export function remaining(q: SessionQueue): number {
   return q.ids.length

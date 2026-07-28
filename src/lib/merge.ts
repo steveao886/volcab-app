@@ -1,9 +1,10 @@
 import type { Progress, SprintRecord } from '../types'
 
 /**
- * 极速赛纪录取分高者;**同分取日期早的** —— 先达成的那次才是纪录,后来再打平
- * 不该把日期改写成今天。任一方缺席取另一方(旧版 App 推上来的 progress 没有
- * 这个字段),都缺返回 undefined。
+ * The sprint record with the higher score wins; **on a tie, the earlier date wins** — the
+ * first time it was achieved is the record, and matching it later shouldn't overwrite the
+ * date to today. If one side is missing (progress pushed up from an older App version
+ * lacks this field), the other side wins; if both are missing, returns undefined.
  */
 function pickBestSprint(a: SprintRecord | undefined, b: SprintRecord | undefined): SprintRecord | undefined {
   if (a === undefined) return b
@@ -32,19 +33,22 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
     }
   }
 
-  // settings 按 updatedAt 判优,整体搬运。
-  // 曾经是「一律取本地」,那让设置在设备间永远无法同步:A 改了推上去,B 合并时
-  // 本地赢、再推回去就把 A 的改动冲掉。缺时间戳视为最旧 —— 于是「从未改过设置
-  // 的设备」会跟随「改过的设备」,而不是把自己的默认值推回去。
+  // settings wins by updatedAt, and is carried over wholesale.
+  // This used to be "local always wins," which meant settings could never sync across
+  // devices: device A changes a setting and pushes, device B merges with local winning and
+  // pushes back, wiping out A's change. A missing timestamp is treated as the oldest —
+  // so "a device that never touched settings" defers to "a device that did," instead of
+  // pushing its own defaults back over the change.
   const lt = local.settings.updatedAt ?? ''
   const rt = remote.settings.updatedAt ?? ''
   const settings = rt > lt ? remote.settings : local.settings
 
   const bestSprint = pickBestSprint(local.bestSprint, remote.bestSprint)
 
-  // 两边都没有纪录时**整个键不写**,而不是写一个 `bestSprint: undefined`:
-  // 后者会让 `Object.hasOwn(p, 'bestSprint')` 为真,也会在结构相等的断言里
-  // 与一份真正没有这个键的 progress 判为不等。
+  // When neither side has a record, **omit the key entirely** rather than writing
+  // `bestSprint: undefined`: the latter would make `Object.hasOwn(p, 'bestSprint')` true,
+  // and would also cause a structural-equality assertion to judge it unequal to a progress
+  // object that genuinely lacks the key.
   return bestSprint === undefined
     ? { version: 1, settings, words, dailyStats }
     : { version: 1, settings, words, dailyStats, bestSprint }

@@ -1,18 +1,21 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 /**
- * chip 有两种用法:
- * - interactive(默认):词库页的筛选开关,渲染 <button aria-pressed>,选中态是墨板
- * - 静态标签:近义词/反义词/搭配/同根词,渲染 <span>,不进 Tab 序列
- *   （复习卡上可能一次出现十几个,全做成按钮会平白多出十几个焦点停靠点)
+ * chip has two uses:
+ * - interactive (default): the filter toggles on the library page, renders
+ *   <button aria-pressed>, selected state is the ink slab
+ * - static label: synonyms/antonyms/collocations/related forms, renders
+ *   <span>, does not enter the Tab sequence
+ *   (a review card can show a dozen or more at once — making them all
+ *   buttons would add a dozen-plus pointless focus stops)
  */
 interface ChipProps
   extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   label: ReactNode
-  /** 可点开关;false 时渲染为纯展示标签 */
+  /** Clickable toggle; renders as a plain display label when false */
   interactive?: boolean
   selected?: boolean
-  /** 右侧计数,等宽数字 */
+  /** Count shown on the right, tabular digits */
   count?: number
 }
 

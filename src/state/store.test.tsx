@@ -14,30 +14,40 @@ import { emptyProgress } from '../types'
 import type { Progress, StagingItem, Word } from '../types'
 
 /**
- * store.tsx 的**同步编排**测试。
+ * **Sync orchestration** tests for store.tsx.
  *
- * 【关于「UI 本身不写组件测试」这条约定】
- * 计划里写的是「UI 本身不写组件测试」——逻辑测在纯函数文件里,界面写行为契约 +
- * 人工验收。**那条约定对页面和组件依然成立**,这里是一次经过明确授权、范围仅限
- * store.tsx 的例外。理由:这个文件里那一百多行不是「把状态接到界面上」,而是真正
- * 的数据安全逻辑——三条推送路径各自的互斥锁与补跑标志、会话作废检查、请求返回后
- * 与「此刻」本地状态的对账、状态收尾。sync.ts / session.ts / errors.ts 有 150+ 条
- * 测试盯着,把它们拼起来的这一层此前一条都没有,而拼错的代价是用户不可再生的复习
- * 记录。别拿这个文件当先例去给页面或组件补组件测试。
+ * [On the "no component tests for the UI itself" convention]
+ * The plan says "the UI itself doesn't get component tests" -- logic is
+ * tested in pure-function files, the interface gets behavioral contracts +
+ * manual acceptance testing. **That convention still holds for pages and
+ * components**; this is a deliberately authorized exception scoped only to
+ * store.tsx. Reason: the 100-odd lines in this file aren't "wiring state up
+ * to the interface" -- they're genuine data-safety logic: the mutex and
+ * catch-up flag for each of the three push paths, session-invalidation
+ * checks, reconciling a response against "local state right now", and
+ * status settling. sync.ts / session.ts / errors.ts are watched by 150+
+ * tests; the layer that wires them together had none before this, and the
+ * cost of wiring it wrong is the user's review history, which can't be
+ * regenerated. Don't take this file as precedent for adding component tests
+ * to pages or components.
  *
- * 【手法】
- * 不引入 @testing-library:用 react-dom/client 把 Provider 渲进一个游离容器,
- * 再用一个探针子组件把 context 值捞出来,配合 React 19 自带的 act()。
- * 远端一律走**纯对象假 client**(照 sync.test.ts 的路子),不 mock 模块、不触网;
- * GitHubClient 的四个方法在 beforeEach 里改接到假 client,afterEach 原样还原。
+ * [Approach]
+ * No @testing-library: react-dom/client renders the Provider into a
+ * detached container, a probe child component pulls the context value out,
+ * paired with React 19's built-in act().
+ * The remote always goes through a **plain-object fake client** (same
+ * approach as sync.test.ts) -- no module mocking, no network touched;
+ * GitHubClient's four methods are rewired to the fake client in beforeEach
+ * and restored as-is in afterEach.
  */
 
-// React 的 act() 需要这个全局开关,否则会警告「不在 act 环境里」
+// React's act() needs this global flag, or it warns "not inside an act environment"
 ;(globalThis as unknown as Record<string, unknown>).IS_REACT_ACT_ENVIRONMENT = true
 
-// --- 测试替身:远端 -------------------------------------------------------
-// 与 sync.test.ts 同一套思路,多了「把一次 put 扣在半空」的能力 —— 互斥锁、
-// 补跑标志、飞行途中改动这几件事,只有请求真的悬在那里才测得到。
+// --- Test double: remote ------------------------------------------------------
+// Same approach as sync.test.ts, plus the ability to "leave a put hanging
+// mid-air" -- the mutex, catch-up flag, and mid-flight changes can only be
+// tested if the request genuinely stays pending.
 
 type PutResult = { sha: string } | 'conflict'
 interface PutCall { path: string; content: string; message: string; sha?: string }
@@ -47,9 +57,9 @@ function fakeRemote() {
   const getCalls: string[] = []
   const files: Record<string, { content: string; sha: string } | undefined> = {}
   const getThrows: Record<string, Error | undefined> = {}
-  /** 按路径排队的预设 put 结果;用完了就返回一个自动生成的新 sha */
+  /** Preset put results queued per path; once exhausted, returns an auto-generated new sha */
   const scripted: Record<string, (PutResult | Error)[] | undefined> = {}
-  /** 这些路径上的 put 悬在半空,由测试用 settleNext 逐个放行 */
+  /** Puts on these paths hang mid-air, released one at a time by the test via settleNext */
   const hold = new Set<string>()
   const held: Array<{ call: PutCall; settle: (r: PutResult | Error) => void }> = []
   let n = 0
@@ -82,11 +92,11 @@ function fakeRemote() {
   return {
     client, putCalls, getCalls, files, getThrows, scripted, hold, held,
     putsTo: (path: string) => putCalls.filter(c => c.path === path),
-    /** 放行最早一个悬着的 put(可指定路径);不给结果就用预设/自动 sha */
+    /** Releases the earliest pending put (optionally for a specific path); uses the preset/auto sha if no result is given */
     release(result?: PutResult | Error, path?: string) {
       const i = path ? held.findIndex(h => h.call.path === path) : 0
       const h = held[i]
-      if (!h) throw new Error(`没有悬着的 put${path ? `(${path})` : ''}`)
+      if (!h) throw new Error(`no pending put${path ? ` (${path})` : ''}`)
       held.splice(i, 1)
       h.settle(result ?? nextResult(h.call.path))
     },
@@ -95,7 +105,7 @@ function fakeRemote() {
 
 type Remote = ReturnType<typeof fakeRemote>
 
-// --- 测试替身:Provider 挂载 ----------------------------------------------
+// --- Test double: Provider mount ----------------------------------------------
 
 let ctx: AppContextValue | null = null
 
@@ -107,7 +117,7 @@ function Probe() {
 let root: Root | null = null
 let container: HTMLDivElement | null = null
 
-/** 让 React 提交、并让已经落地的 Promise 链继续往下跑几步 */
+/** Lets React commit, and lets already-settled Promise chains advance a few more steps */
 async function flush(): Promise<void> {
   for (let i = 0; i < 4; i++) {
     await act(async () => { await new Promise(r => setTimeout(r, 0)) })
@@ -123,25 +133,25 @@ async function mount(): Promise<void> {
   await flush()
 }
 
-/** 当前的 context 值。每次重新取 —— 状态字段会随重渲染换新对象。 */
+/** The current context value. Re-fetched every time -- state fields get a new object on every re-render. */
 function app(): AppContextValue {
-  if (!ctx) throw new Error('Provider 还没挂上')
+  if (!ctx) throw new Error('Provider not mounted yet')
   return ctx
 }
 
-/** 触发一个动作并把随之而来的渲染/微任务跑完。异步动作请在回调里 void 掉。 */
+/** Triggers an action and runs the resulting render/microtasks to completion. Void async actions inside the callback. */
 async function step(fn: () => void): Promise<void> {
   await act(async () => { fn() })
   await flush()
 }
 
-/** 放行一个悬着的 put,并把它引发的后续跑完 */
+/** Releases a pending put, and runs whatever it triggers to completion */
 async function release(result?: PutResult | Error, path?: string): Promise<void> {
   await act(async () => { remote.release(result, path) })
   await flush()
 }
 
-// --- 夹具 -----------------------------------------------------------------
+// --- Fixtures ------------------------------------------------------------------
 
 const word = (id: string): Word => ({
   id, headword: id, phonetic: `/${id}/`,
@@ -192,7 +202,7 @@ afterEach(async () => {
   GitHubClient.prototype.putFile = original.putFile
 })
 
-/** 远端三个文件都在、本机有 token 的正常启动 */
+/** A normal boot where all three remote files exist and the device has a token */
 async function bootAsAlice(opts: {
   words?: string[]
   progress?: Progress
@@ -208,54 +218,56 @@ async function bootAsAlice(opts: {
   await mount()
 }
 
-// === 0. 先证明这套夹具真的能跑 =============================================
+// === 0. First, prove this fixture setup actually works =======================
 
-describe('夹具本身', () => {
-  it('act() 确实把 effect 冲刷了 —— 挂载后 boot 已经跑完并落到 ready', async () => {
+describe('the fixture setup itself', () => {
+  it('act() really does flush effects -- after mounting, boot has run to completion and landed on ready', async () => {
     await bootAsAlice()
-    // boot 在 useEffect 里,还要等三个 await;这两条断言同时证明 effect 跑了、异步也追平了
+    // boot lives inside useEffect and still has three awaits to go; these two assertions together prove the effect ran and the async chain caught up
     expect(app().phase).toBe('ready')
     expect(ids(app().words)).toEqual(['alpha', 'beta'])
     expect(storage.get('wordsSha')).toBe('w-remote')
 
-    // 动作引起的重渲染也能看见
+    // re-renders triggered by an action are visible too
     await step(() => { app().updateSettings({ newPerDay: 42 }) })
     expect(app().progress.settings.newPerDay).toBe(42)
   })
 })
 
-// === 1. 互斥锁 + 补跑标志 ==================================================
-// 第二次推送撞上飞行中的第一次,必须置补跑标志、由循环接手,而不是并发写同一
-// 个文件。三条路径逐一验;progress / words 这两条从 Phase 3 起就没测过。
+// === 1. Mutex + catch-up flag =================================================
+// A second push that runs into the first one still in flight must set the
+// catch-up flag and let the loop pick it up, rather than concurrently
+// writing the same file. Verified one path at a time; progress / words
+// haven't been tested since Phase 3.
 
-describe('flushProgress:互斥锁与补跑标志', () => {
-  it('飞行途中再来一次推送不并发,而是等第一次落地后补跑一轮', async () => {
+describe('flushProgress: mutex and catch-up flag', () => {
+  it('a second push while one is in flight doesn\'t run concurrently, but waits for the first to land and then catches up', async () => {
     await bootAsAlice()
-    await step(() => { app().grade('alpha', 'good') })     // 置脏(防抖 30s,不会自己飞)
+    await step(() => { app().grade('alpha', 'good') })     // marks dirty (30s debounce, won't fly on its own)
     remote.hold.add('progress.json')
 
     await step(() => { void app().syncNow() })
-    expect(remote.putsTo('progress.json')).toHaveLength(1)  // 第一次在飞
+    expect(remote.putsTo('progress.json')).toHaveLength(1)  // the first one is in flight
 
-    // 飞行途中做完一次测验:置脏 + 立即请求推送 —— 这一下只能置补跑标志
+    // finished a quiz while mid-flight: marks dirty + requests an immediate push -- this can only set the catch-up flag
     await step(() => { app().recordQuiz(1, 1, []) })
-    expect(remote.putsTo('progress.json')).toHaveLength(1)  // 互斥:没有第二个并发请求
+    expect(remote.putsTo('progress.json')).toHaveLength(1)  // mutex: no second concurrent request
 
     await release({ sha: 'p-1' })
     const puts = remote.putsTo('progress.json')
-    expect(puts).toHaveLength(2)                            // 补跑标志被循环接住了
-    expect(puts[1].sha).toBe('p-1')                         // 用的是上一次回来的 sha:确实是串行的
+    expect(puts).toHaveLength(2)                            // the catch-up flag was picked up by the loop
+    expect(puts[1].sha).toBe('p-1')                         // uses the sha the previous call returned: genuinely serialized
 
     const sent = JSON.parse(puts[1].content) as Progress
-    expect(sent.dailyStats[today].quizTaken).toBe(1)        // 补跑带上了飞行途中那笔
+    expect(sent.dailyStats[today].quizTaken).toBe(1)        // the catch-up run carried the mid-flight change along
 
     await release({ sha: 'p-2' })
-    expect(remote.putsTo('progress.json')).toHaveLength(2)  // 补跑标志已清,不再无限循环
+    expect(remote.putsTo('progress.json')).toHaveLength(2)  // the catch-up flag is cleared, no infinite loop
     expect(storage.get('progressSha')).toBe('p-2')
     expect(app().syncStatus).toBe('synced')
   })
 
-  it('已经不脏了就直接收尾,不发请求', async () => {
+  it('settles immediately without sending a request if already clean', async () => {
     await bootAsAlice()
     await step(() => { void app().syncNow() })
     expect(remote.putsTo('progress.json')).toHaveLength(0)
@@ -263,8 +275,8 @@ describe('flushProgress:互斥锁与补跑标志', () => {
   })
 })
 
-describe('flushWords:互斥锁与补跑标志', () => {
-  it('飞行途中再编辑一个词:排队等下一轮,不并发写 words.json', async () => {
+describe('flushWords: mutex and catch-up flag', () => {
+  it('editing another word while mid-flight: queues for the next round, doesn\'t concurrently write words.json', async () => {
     await bootAsAlice()
     remote.hold.add('words.json')
 
@@ -273,14 +285,14 @@ describe('flushWords:互斥锁与补跑标志', () => {
     expect(pendingOps()).toHaveLength(1)
 
     await step(() => { void app().saveWord(word('delta')) })
-    expect(remote.putsTo('words.json')).toHaveLength(1)     // 互斥
-    expect(pendingOps()).toHaveLength(2)                    // 但改动进了队列,没丢
+    expect(remote.putsTo('words.json')).toHaveLength(1)     // mutex
+    expect(pendingOps()).toHaveLength(2)                    // but the change made it into the queue, wasn't lost
 
     await release({ sha: 'w-1' })
     const puts = remote.putsTo('words.json')
-    expect(puts).toHaveLength(2)                            // 补跑
-    expect(puts[1].sha).toBe('w-1')                         // 串行:第二次带着第一次回来的 sha
-    expect(pendingOps()).toHaveLength(1)                    // 只确认掉本次送出的那条
+    expect(puts).toHaveLength(2)                            // catch-up run
+    expect(puts[1].sha).toBe('w-1')                         // serialized: the second call carries the sha the first one returned
+    expect(pendingOps()).toHaveLength(1)                    // only the entry actually sent this round gets confirmed
     expect(ids(JSON.parse(puts[1].content).words as Word[])).toContain('delta')
 
     await release({ sha: 'w-2' })
@@ -290,8 +302,8 @@ describe('flushWords:互斥锁与补跑标志', () => {
   })
 })
 
-describe('flushStaging:互斥锁与补跑标志', () => {
-  it('飞行途中再收一个词:排队等下一轮,不并发写 staging.json', async () => {
+describe('flushStaging: mutex and catch-up flag', () => {
+  it('staging another word while mid-flight: queues for the next round, doesn\'t concurrently write staging.json', async () => {
     await bootAsAlice()
     remote.hold.add('staging.json')
 
@@ -300,7 +312,7 @@ describe('flushStaging:互斥锁与补跑标志', () => {
     expect(pendingStaging()).toHaveLength(1)
 
     await step(() => { void app().addStaging('perfunctory') })
-    expect(remote.putsTo('staging.json')).toHaveLength(1)   // 互斥
+    expect(remote.putsTo('staging.json')).toHaveLength(1)   // mutex
     expect(pendingStaging()).toHaveLength(2)
 
     await release({ sha: 's-1' })
@@ -318,12 +330,14 @@ describe('flushStaging:互斥锁与补跑标志', () => {
   })
 })
 
-// === 2. 会话作废 ===========================================================
-// 登出/换号之后才回来的响应必须整条作废:既不能往已经清空的 localStorage 里
-// 写簿记,也不能把上一个账号的数据塞进当前界面。
+// === 2. Session invalidation ===================================================
+// A response that only comes back after logout/account switch must be
+// invalidated in full: it must not write bookkeeping into the already
+// cleared localStorage, nor stuff the previous account's data into the
+// current UI.
 
-describe('会话作废', () => {
-  it('登出后才落地的 progress 推送:不回写簿记,也不把旧数据搬回界面', async () => {
+describe('session invalidation', () => {
+  it('a progress push that only lands after logout: doesn\'t write bookkeeping back, and doesn\'t carry old data back into the UI', async () => {
     await bootAsAlice()
     await step(() => { app().grade('alpha', 'good') })
     remote.hold.add('progress.json')
@@ -334,38 +348,42 @@ describe('会话作废', () => {
     expect(app().phase).toBe('login')
 
     await release({ sha: 'p-late' })
-    expect(storage.get('progressSha')).toBeNull()          // 清空的 storage 不许被回填
+    expect(storage.get('progressSha')).toBeNull()          // cleared storage must never be refilled
     expect(storage.get('dirty')).toBeNull()
     expect(storage.get('progress')).toBeNull()
-    expect(app().progress).toEqual(emptyProgress())        // 界面上不许冒出上一个账号的进度
+    expect(app().progress).toEqual(emptyProgress())        // the previous account's progress must never surface in the UI
     expect(app().phase).toBe('login')
-    expect(remote.putsTo('progress.json')).toHaveLength(1)  // 也不会补跑
+    expect(remote.putsTo('progress.json')).toHaveLength(1)  // and it doesn't trigger a catch-up run either
   })
 
-  it('推送在飞时登出:必须告知进度被丢弃 —— dirty 提前清掉不等于已经同步', async () => {
-    // pushProgress 在发请求「之前」就清掉 dirty(那是防止飞行途中的打分被吞掉的
-    // 机制,是对的)。于是这段往返里 storage 的 dirty 是 false —— 但进度并没有
-    // 送达。logout 若只看 dirty,就会认定「没什么可丢的」而一声不吭地清空本机,
-    // 而这次复习既不在本地也不在远端。
-    // wordOps / stagingOps 是「确认成功后」才清,所以它们数得对;dirty 是「发送前」
-    // 清的,所以它数不对 —— 这个不对称就是缺陷本身。
+  it('logging out while a push is in flight: must disclose that progress was discarded -- dirty being cleared early doesn\'t mean it actually synced', async () => {
+    // pushProgress clears dirty "before" the request goes out (that's the
+    // mechanism preventing a grade made mid-flight from being swallowed,
+    // and it's correct). So for this whole round trip, storage's dirty is
+    // false -- but progress hasn't actually landed. If logout only looked
+    // at dirty, it would conclude "nothing to discard" and silently wipe
+    // the device, and this review would exist neither locally nor
+    // remotely.
+    // wordOps / stagingOps are only cleared "after confirmed success", so
+    // they count correctly; dirty is cleared "before sending", so it counts
+    // wrong -- this asymmetry is the defect itself.
     await bootAsAlice()
     await step(() => { app().grade('alpha', 'good') })
     remote.hold.add('progress.json')
     await step(() => { void app().syncNow() })
-    expect(storage.get('dirty')).toBe(false)               // 确实已经被提前清掉
-    expect(remote.putsTo('progress.json')).toHaveLength(1)  // 但请求还在飞
+    expect(storage.get('dirty')).toBe(false)               // it really has been cleared early
+    expect(remote.putsTo('progress.json')).toHaveLength(1)  // but the request is still in flight
 
     await step(() => { app().logout() })
     expect(app().syncError).not.toBeNull()
     expect(app().syncError).toContain('未同步')
 
-    // 而且这次推送最终失败了 —— 数据是真的没了,不是虚惊一场
+    // and this push ultimately failed -- the data is genuinely gone, not a false alarm
     await release(new Error('HTTP 500'))
     expect(storage.get('progress')).toBeNull()
   })
 
-  it('登出后才落地的 words 推送:队列与词库都不许被回写', async () => {
+  it('a words push that only lands after logout: neither the queue nor the vocabulary may be written back', async () => {
     await bootAsAlice()
     remote.hold.add('words.json')
     await step(() => { void app().saveWord(word('gamma')) })
@@ -378,7 +396,7 @@ describe('会话作废', () => {
     expect(app().words).toEqual([])
   })
 
-  it('登出后才落地的 staging 推送:同样整条作废', async () => {
+  it('a staging push that only lands after logout: invalidated in full the same way', async () => {
     await bootAsAlice()
     remote.hold.add('staging.json')
     await step(() => { void app().addStaging('ostensible') })
@@ -391,14 +409,14 @@ describe('会话作废', () => {
     expect(app().staging).toEqual([])
   })
 
-  it('换账号登录后才落地的旧推送:不覆盖新账号刚写下的 sha 与进度', async () => {
+  it('an old push that only lands after logging into a different account: doesn\'t overwrite the sha and progress the new account just wrote', async () => {
     await bootAsAlice({ words: ['alpha'] })
     await step(() => { app().grade('alpha', 'good') })
     remote.hold.add('progress.json')
     await step(() => { void app().syncNow() })
     expect(remote.putsTo('progress.json')).toHaveLength(1)
 
-    // 期间换成 bob 登录(bob 的仓库里是另一套文件)
+    // meanwhile switches to logging in as bob (bob's repo has a different set of files)
     identity = async () => 'bob'
     remote.files['words.json'] = { content: wordsFile(['zeta']), sha: 'w-bob' }
     remote.files['progress.json'] = { content: JSON.stringify(emptyProgress()), sha: 'p-bob' }
@@ -407,83 +425,87 @@ describe('会话作废', () => {
 
     expect(app().owner).toBe('bob')
     expect(storage.get('progressSha')).toBe('p-bob')
-    // 注:这里**没有**断言 syncError 会报出「alice 的欠账被丢弃」。推送起飞前
-    // dirty 就被清成 false 了,所以此刻 carryOverFor 看不到那笔欠账 —— 这是一个
-    // 已发现的产品缺口,不在本次改动范围内(见交付报告),故不在此固化任何一边。
+    // Note: this deliberately does **not** assert that syncError reports
+    // "alice's debt was discarded". dirty was already cleared to false
+    // before the push took off, so carryOverFor can't see that debt at this
+    // point -- this is a known product gap, out of scope for this change
+    // (see the delivery report), so nothing is pinned down either way here.
 
     await release({ sha: 'p-alice-late' })
-    expect(storage.get('progressSha')).toBe('p-bob')        // 迟到的响应作废
-    expect(app().progress.words['alpha']).toBeUndefined()   // alice 的复习记录没混进 bob 的视图
+    expect(storage.get('progressSha')).toBe('p-bob')        // the late response is discarded
+    expect(app().progress.words['alpha']).toBeUndefined()   // alice's review record didn't leak into bob's view
     expect(ids(app().words)).toEqual(['zeta'])
   })
 })
 
-// === 3. 飞行途中的改动不许被吞 =============================================
-// 这是整个 App 最严重的失败模式:推送发出时拍的快照回来后直接盖回本地,把
-// 请求飞行途中用户做的事抹掉。对账那一步就是唯一的防线。
+// === 3. Changes made mid-flight must never be swallowed =======================
+// This is the App's worst failure mode: the snapshot taken when a push went
+// out gets overwritten straight back onto local state when it returns,
+// erasing whatever the user did while the request was in flight. The
+// reconciliation step is the only line of defense.
 
-describe('推送返回后的对账', () => {
-  it('progress 在飞时又打了一次分:那一笔必须活下来', async () => {
+describe('reconciling once a push returns', () => {
+  it('graded another word while progress was in flight: that grade must survive', async () => {
     await bootAsAlice()
     await step(() => { app().grade('alpha', 'good') })
     remote.hold.add('progress.json')
     await step(() => { void app().syncNow() })
 
-    await step(() => { app().grade('beta', 'good') })       // 请求还在飞
+    await step(() => { app().grade('beta', 'good') })       // the request is still in flight
     await release({ sha: 'p-1' })
 
-    expect(app().progress.words['beta']).toBeDefined()      // 飞行途中那一笔没被旧快照盖掉
+    expect(app().progress.words['beta']).toBeDefined()      // the mid-flight grade wasn't overwritten by the stale snapshot
     expect(app().progress.words['alpha']).toBeDefined()
     expect(app().progress.dailyStats[today].reviewed).toBe(2)
     const saved = storage.get<Progress>('progress')
-    expect(saved?.words['beta']).toBeDefined()              // 落盘的也是对账后的那份
-    expect(app().syncStatus).toBe('pending')                // 它还欠远端一次推送
+    expect(saved?.words['beta']).toBeDefined()              // what's persisted is also the reconciled version
+    expect(app().syncStatus).toBe('pending')                // it still owes the remote one more push
   })
 
-  it('words 在飞时又编辑了一个词:那一条必须活下来', async () => {
+  it('edited another word while words was in flight: that entry must survive', async () => {
     await bootAsAlice()
     remote.hold.add('words.json')
     await step(() => { void app().saveWord(word('gamma')) })
-    await step(() => { void app().saveWord(word('delta')) })  // 请求还在飞
+    await step(() => { void app().saveWord(word('delta')) })  // the request is still in flight
 
     await release({ sha: 'w-1' })
     expect(ids(app().words)).toEqual(['alpha', 'beta', 'gamma', 'delta'])
     expect(ids(storage.get<Word[]>('words') ?? [])).toContain('delta')
-    // 补跑那一轮送出去的也必须带着它,否则下次启动就被远端覆盖没了
+    // the catch-up round's outgoing payload must carry it too, or the next boot would overwrite it with the remote and lose it
     expect(ids(JSON.parse(remote.putsTo('words.json')[1].content).words as Word[])).toContain('delta')
   })
 
-  it('staging 在飞时又收了一个词:那一条必须活下来', async () => {
+  it('staged another word while staging was in flight: that entry must survive', async () => {
     await bootAsAlice()
     remote.hold.add('staging.json')
     await step(() => { void app().addStaging('ostensible') })
-    await step(() => { void app().addStaging('perfunctory') })  // 请求还在飞
+    await step(() => { void app().addStaging('perfunctory') })  // the request is still in flight
 
     await release({ sha: 's-1' })
     expect(heads(app().staging).sort()).toEqual(['ostensible', 'perfunctory'])
     expect(heads(storage.get<StagingItem[]>('staging') ?? [])).toContain('perfunctory')
   })
 
-  it('words 推送遇冲突:他端的词与飞行途中的编辑都要留下', async () => {
+  it('words push hits a conflict: both the other device\'s word and the mid-flight edit must be kept', async () => {
     await bootAsAlice({ words: ['alpha'] })
     remote.hold.add('words.json')
     await step(() => { void app().saveWord(word('gamma')) })
 
-    // 飞行途中本机又加了一个,同时远端被他端加了 omega
+    // while in flight this device adds another one, and meanwhile omega gets added elsewhere on the remote
     await step(() => { void app().saveWord(word('delta')) })
     remote.files['words.json'] = { content: wordsFile(['alpha', 'omega']), sha: 'w-other' }
 
-    await release('conflict')                               // 第一次 put 冲突,重新拉远端再推
-    await release({ sha: 'w-merged' })                      // 冲突重推落地
+    await release('conflict')                               // the first put conflicts, re-pulls the remote and pushes again
+    await release({ sha: 'w-merged' })                      // the conflict retry lands
 
     expect(ids(app().words).sort()).toEqual(['alpha', 'delta', 'gamma', 'omega'])
   })
 })
 
-// === 4. 三文件启动 =========================================================
+// === 4. Booting with three files ===============================================
 
-describe('启动:三个文件', () => {
-  it('三个文件都读,读到的都进状态', async () => {
+describe('boot: three files', () => {
+  it('reads all three files, and everything read lands in state', async () => {
     await bootAsAlice({ staging: [item('ostensible')] })
     expect(remote.getCalls.sort()).toEqual(['progress.json', 'staging.json', 'words.json'])
     expect(app().phase).toBe('ready')
@@ -491,8 +513,8 @@ describe('启动:三个文件', () => {
     expect(storage.get('stagingSha')).toBe('s-remote')
   })
 
-  it('远端还没有 staging.json:照常进 ready,不拿本地那份去创建它', async () => {
-    await bootAsAlice()                                     // 没放 staging.json
+  it('remote doesn\'t have staging.json yet: reaches ready as usual, doesn\'t use the local copy to create it', async () => {
+    await bootAsAlice()                                     // no staging.json set up
     expect(app().phase).toBe('ready')
     expect(ids(app().words)).toEqual(['alpha', 'beta'])
     expect(app().staging).toEqual([])
@@ -500,7 +522,7 @@ describe('启动:三个文件', () => {
     expect(remote.putCalls).toEqual([])
   })
 
-  it('staging.json 坏了:当作没有,绝不能拖累 words / progress', async () => {
+  it('staging.json is corrupted: treated as absent, must never drag down words / progress', async () => {
     storage.set('token', 'tok-alice')
     storage.set('owner', 'alice')
     remote.files['words.json'] = { content: wordsFile(['alpha']), sha: 'w-remote' }
@@ -512,11 +534,11 @@ describe('启动:三个文件', () => {
     expect(ids(app().words)).toEqual(['alpha'])
     expect(storage.get('progressSha')).toBe('p-remote')
     expect(app().staging).toEqual([])
-    expect(storage.get('stagingSha')).toBeNull()            // 坏文件的 sha 不许留下
+    expect(storage.get('stagingSha')).toBeNull()            // a corrupted file's sha must never be kept
     expect(app().syncStatus).toBe('synced')
   })
 
-  it('staging.json 读取本身报错:同样不许把启动路径拖进 catch', async () => {
+  it('the staging.json read itself throws: must not drag the boot path into the catch either', async () => {
     storage.set('token', 'tok-alice')
     storage.set('owner', 'alice')
     remote.files['words.json'] = { content: wordsFile(['alpha']), sha: 'w-remote' }
@@ -529,7 +551,7 @@ describe('启动:三个文件', () => {
     expect(ids(app().words)).toEqual(['alpha'])
   })
 
-  it('words.json 坏了、本机没有缓存:退回登录页说明原因,但不清 token、不推任何东西', async () => {
+  it('words.json is corrupted, device has no cache: falls back to the login page and explains why, but doesn\'t clear the token or push anything', async () => {
     storage.set('token', 'tok-alice')
     storage.set('owner', 'alice')
     remote.files['words.json'] = { content: '{"version":1,"words":[{"id":"x"}]}', sha: 'w-bad' }
@@ -538,11 +560,11 @@ describe('启动:三个文件', () => {
 
     expect(app().phase).toBe('login')
     expect(app().loginError).toContain('备份')
-    expect(storage.get('token')).toBe('tok-alice')          // 远端坏文件不该毁掉一个有效凭据
-    expect(remote.putCalls).toEqual([])                     // 更不该拿本地那份去覆盖远端
+    expect(storage.get('token')).toBe('tok-alice')          // a corrupted remote file shouldn't destroy a valid credential
+    expect(remote.putCalls).toEqual([])                     // and definitely shouldn't overwrite the remote with the local copy
   })
 
-  it('words.json 坏了、本机有缓存:留在 ready 用缓存,只标同步失败,仍不覆盖远端', async () => {
+  it('words.json is corrupted, device has a cache: stays on ready using the cache, only flags the sync failure, still doesn\'t overwrite the remote', async () => {
     storage.set('token', 'tok-alice')
     storage.set('owner', 'alice')
     storage.set('words', [word('cached')])
@@ -558,7 +580,7 @@ describe('启动:三个文件', () => {
     expect(remote.putCalls).toEqual([])
   })
 
-  it('progress.json 坏了:拒绝覆盖远端,token 与本机数据都留着', async () => {
+  it('progress.json is corrupted: refuses to overwrite the remote, both token and local data are kept', async () => {
     storage.set('token', 'tok-alice')
     storage.set('owner', 'alice')
     remote.files['words.json'] = { content: wordsFile(['alpha']), sha: 'w-remote' }
@@ -572,27 +594,27 @@ describe('启动:三个文件', () => {
   })
 })
 
-// === 5. settleStatus 不许说谎 ==============================================
+// === 5. settleStatus must never lie ============================================
 
 describe('settleStatus', () => {
-  it('收词推送失败后,一次成功的 progress 推送不能把状态粉饰成「已同步」', async () => {
+  it('after a staged-word push fails, a successful progress push must not dress the status up as "synced"', async () => {
     await bootAsAlice()
     remote.scripted['staging.json'] = [new Error('写入 staging.json 失败 (HTTP 500)')]
 
     await step(() => { void app().addStaging('ostensible') })
     expect(app().syncStatus).toBe('error')
-    expect(pendingStaging()).toHaveLength(1)                // 队列留着,等下次重试
+    expect(pendingStaging()).toHaveLength(1)                // the queue stays put, awaiting the next retry
 
-    // 之后 progress 推送成功 —— 它会把上一条失败提示清掉
+    // afterward the progress push succeeds -- it clears the previous failure notice
     await step(() => { app().recordQuiz(1, 1, []) })
     expect(remote.putsTo('progress.json')).toHaveLength(1)
     expect(app().syncError).toBeNull()
 
-    expect(pendingStaging()).toHaveLength(1)                // 还欠着远端一个文件
-    expect(app().syncStatus).toBe('pending')                // 所以不能是 synced
+    expect(pendingStaging()).toHaveLength(1)                // still owes the remote one file
+    expect(app().syncStatus).toBe('pending')                // so it can't be synced
   })
 
-  it('词库队列非空时同理', async () => {
+  it('the same holds when the vocabulary queue is non-empty', async () => {
     await bootAsAlice()
     remote.scripted['words.json'] = [new Error('写入 words.json 失败 (HTTP 500)')]
     await step(() => { void app().saveWord(word('gamma')) })
@@ -603,10 +625,10 @@ describe('settleStatus', () => {
   })
 })
 
-// === 6. 401 与 403 =========================================================
+// === 6. 401 vs 403 ==============================================================
 
-describe('推送失败的处置:401 退登、403 不退登', () => {
-  it('401:退回登录页并清 token,但 owner 与未推送的改动都留着等重新登录', async () => {
+describe('handling push failures: 401 logs out, 403 does not', () => {
+  it('401: falls back to the login page and clears the token, but owner and unpushed changes stay put awaiting re-login', async () => {
     await bootAsAlice()
     remote.scripted['words.json'] = [new Error('写入 words.json 失败 (HTTP 401)')]
 
@@ -615,24 +637,24 @@ describe('推送失败的处置:401 退登、403 不退登', () => {
     expect(app().phase).toBe('login')
     expect(app().loginError).toBe(TOKEN_REVOKED)
     expect(app().owner).toBeNull()
-    expect(app().syncError).toBeNull()                      // 登录页只说一件事
+    expect(app().syncError).toBeNull()                      // the login page only says one thing
     expect(storage.get('token')).toBeNull()
-    expect(storage.get('owner')).toBe('alice')              // 靠它认出是同一个人
-    expect(pendingOps()).toHaveLength(1)                    // 那条编辑没丢
+    expect(storage.get('owner')).toBe('alice')              // this is how it recognizes it's the same person
+    expect(pendingOps()).toHaveLength(1)                    // that edit wasn't lost
   })
 
-  it('401 之后没有 client 了:再改词只进队列,绝不清空队列', async () => {
+  it('after a 401 there\'s no client anymore: further edits only go into the queue, the queue is never cleared', async () => {
     await bootAsAlice()
     remote.scripted['words.json'] = [new Error('写入 words.json 失败 (HTTP 401)')]
     await step(() => { void app().saveWord(word('gamma')) })
     expect(pendingOps()).toHaveLength(1)
 
     await step(() => { void app().saveWord(word('delta')) })
-    expect(pendingOps()).toHaveLength(2)                    // 排队等重新登录后重放
-    expect(remote.putsTo('words.json')).toHaveLength(1)     // 没有再去打远端
+    expect(pendingOps()).toHaveLength(2)                    // queued, awaiting replay after re-login
+    expect(remote.putsTo('words.json')).toHaveLength(1)     // never hits the remote again
   })
 
-  it('403 限流:不退登、不清 token,给一句能照做的提示', async () => {
+  it('403 rate-limited: doesn\'t log out or clear the token, gives an actionable notice', async () => {
     await bootAsAlice()
     remote.scripted['progress.json'] = [new Error('写入 progress.json 失败 (HTTP 403, rate-limited)')]
 
@@ -640,14 +662,14 @@ describe('推送失败的处置:401 退登、403 不退登', () => {
     await step(() => { void app().syncNow() })
 
     expect(app().phase).toBe('ready')
-    expect(storage.get('token')).toBe('tok-alice')          // 限流绝不能毁掉一个有效凭据
+    expect(storage.get('token')).toBe('tok-alice')          // rate limiting must never destroy a valid credential
     expect(app().syncStatus).toBe('error')
     expect(app().syncError).toBe(RATE_LIMITED)
     expect(app().loginError).toBeNull()
-    expect(storage.get('dirty')).toBe(true)                 // 改动留在本地等重试
+    expect(storage.get('dirty')).toBe(true)                 // the change stays local awaiting retry
   })
 
-  it('403 权限不足:同样不退登,提示改成「去重新授权」', async () => {
+  it('403 insufficient permissions: also doesn\'t log out, the notice becomes "go re-authorize"', async () => {
     await bootAsAlice()
     remote.scripted['progress.json'] = [new Error('写入 progress.json 失败 (HTTP 403)')]
 
@@ -660,10 +682,10 @@ describe('推送失败的处置:401 退登、403 不退登', () => {
   })
 })
 
-// === 7. 退出时的丢弃告知 ===================================================
+// === 7. Discard notice on logout ================================================
 
 describe('logout', () => {
-  it('有未同步数据:逐项报出丢了什么,且走 syncError 而不是 loginError', async () => {
+  it('with unsynced data: reports what got discarded item by item, through syncError rather than loginError', async () => {
     await bootAsAlice()
     remote.hold.add('words.json')
     remote.hold.add('staging.json')
@@ -682,14 +704,14 @@ describe('logout', () => {
     expect(app().syncError).toContain('未同步的学习进度')
     expect(app().syncError).toContain('2 条未同步的词库改动')
     expect(app().syncError).toContain('2 个待补全的生词')
-    expect(app().loginError).toBeNull()                     // token 输入框此刻没有任何问题
+    expect(app().loginError).toBeNull()                     // the token input has nothing wrong with it right now
     expect(app().phase).toBe('login')
     expect(storage.get('token')).toBeNull()
     expect(storage.get('owner')).toBeNull()
     expect(pendingOps()).toEqual([])
   })
 
-  it('没有欠账:安静退出,不编造一条告知', async () => {
+  it('no debt: logs out quietly, doesn\'t fabricate a notice', async () => {
     await bootAsAlice()
     await step(() => { app().logout() })
     expect(app().syncError).toBeNull()
@@ -698,18 +720,20 @@ describe('logout', () => {
   })
 })
 
-// === 8. 登录时的欠账重放 ===================================================
-// token 被撤销会把本机停在「有未推送改动」的状态。重新登录这一刻的编排:同账号
-// 三个队列依次重放,换账号一律丢弃且一条都不许推进新账号的仓库。
+// === 8. Replaying debt at login =================================================
+// A revoked token leaves the device stuck with "unpushed changes". The
+// orchestration at the moment of re-login: same account replays all three
+// queues in turn; a different account discards everything, and none of it
+// may ever be pushed into the new account's repo.
 
-describe('登录:本机欠账的处置', () => {
+describe('login: handling this device\'s debt', () => {
   function seedUnsyncedAliceWork() {
     const p = emptyProgress()
     p.words['alpha'] = {
       state: 'review', ease: 2.5, intervalDays: 3, due: '2026-07-30',
       stepIndex: 0, reps: 4, lapses: 0, lastReviewedAt: '2026-07-25T01:00:00Z',
     }
-    storage.set('owner', 'alice')                 // token 已被撤销,owner 留着
+    storage.set('owner', 'alice')                 // token has been revoked, owner stays
     storage.set('words', [word('alpha')])
     storage.set('progress', p)
     storage.set('dirty', true)
@@ -721,7 +745,7 @@ describe('登录:本机欠账的处置', () => {
     remote.files['staging.json'] = { content: stagingFile([]), sha: 's-remote' }
   }
 
-  it('同一个账号重新登录:词库、暂存区、进度依次补推,队列清空', async () => {
+  it('re-login with the same account: vocabulary, staging, and progress get pushed in turn, queues cleared', async () => {
     seedUnsyncedAliceWork()
     await mount()
     expect(app().phase).toBe('login')
@@ -734,14 +758,14 @@ describe('登录:本机欠账的处置', () => {
     expect(app().syncError).toBeNull()
     expect(ids(app().words)).toEqual(['alpha', 'gamma'])
     expect(heads(app().staging)).toEqual(['ostensible'])
-    expect(app().progress.words['alpha'].reps).toBe(4)      // 撤销前的复习记录并回来了
+    expect(app().progress.words['alpha'].reps).toBe(4)      // the review record from before the revocation is merged back in
     expect(pendingOps()).toEqual([])
     expect(pendingStaging()).toEqual([])
     expect(storage.get('dirty')).toBe(false)
     expect(app().syncStatus).toBe('synced')
   })
 
-  it('换一个账号登录:欠账全部丢弃、报出丢的是谁,一条都不推进新账号的仓库', async () => {
+  it('logging into a different account: all debt is discarded, reports who lost it, and none of it gets pushed into the new account\'s repo', async () => {
     seedUnsyncedAliceWork()
     await mount()
 
@@ -750,7 +774,7 @@ describe('登录:本机欠账的处置', () => {
     await act(async () => { await app().login('tok-bob') })
     await flush()
 
-    expect(remote.putCalls).toEqual([])                     // alice 的改动没被写进 bob 的仓库
+    expect(remote.putCalls).toEqual([])                     // alice's changes never got written into bob's repo
     expect(app().owner).toBe('bob')
     expect(app().syncError).toBe(ownerSwitched('alice'))
     expect(ids(app().words)).toEqual(['zeta'])
@@ -760,7 +784,7 @@ describe('登录:本机欠账的处置', () => {
     expect(storage.get('dirty')).toBe(false)
   })
 
-  it('首次登录、远端还没有 progress.json:建一份空的,不碰 staging.json', async () => {
+  it('first login, remote doesn\'t have progress.json yet: creates an empty one, doesn\'t touch staging.json', async () => {
     remote.files['words.json'] = { content: wordsFile(['alpha']), sha: 'w-remote' }
     await mount()
     await act(async () => { await app().login('tok-alice') })
@@ -776,16 +800,20 @@ describe('登录:本机欠账的处置', () => {
   })
 })
 
-// === 极速赛结算 =============================================================
-// recordSprint 与 recordQuiz 共用「错词只提前到期、ease/间隔不动」这条约定,
-// 多的只有最好成绩。纪录的刷新条件必须与 merge.ts 的「同分取日期早的」一致 ——
-// 两处不一致时,同步一来一回会把日期反复改写。
+// === Sprint settlement ==========================================================
+// recordSprint shares the "missed words only get their due date pulled
+// forward, ease/interval untouched" contract with recordQuiz; the only
+// extra thing is the best score. The condition for refreshing the record
+// must match merge.ts's "equal score keeps the earlier date" -- if the two
+// disagree, a sync round trip will keep rewriting the date back and forth.
 
-describe('recordSprint:最好成绩', () => {
-  it('第一次就是纪录,并把错词提前到今天、不动 ease 与间隔', async () => {
+describe('recordSprint: best score', () => {
+  it('the first score is automatically the record, and pulls the missed word\'s due date to today without touching ease or interval', async () => {
     await bootAsAlice()
-    // 先 easy 一次让它毕业到 review、到期日排到几天后 —— 否则 due 本来就是今天,
-    // 「提前到期」这条断言不成立(它会在任何实现下都通过)。
+    // Grade it easy once first so it graduates to review with a due date a
+    // few days out -- otherwise due would already be today, and the
+    // "pulled forward" assertion wouldn't mean anything (it would pass
+    // under any implementation).
     await step(() => { app().grade('alpha', 'easy') })
     const before = app().progress.words['alpha']
     expect(before.due > today).toBe(true)
@@ -796,34 +824,34 @@ describe('recordSprint:最好成绩', () => {
     expect(app().progress.dailyStats[today].quizTaken).toBe(1)
     const after = app().progress.words['alpha']
     expect(after.due).toBe(today)
-    expect(after.ease).toBe(before.ease)               // 打分逻辑一律不碰
+    expect(after.ease).toBe(before.ease)               // grading logic never touches it
     expect(after.intervalDays).toBe(before.intervalDays)
     expect(after.lapses).toBe(before.lapses)
   })
 
-  it('分数更高才刷新纪录', async () => {
+  it('only a higher score refreshes the record', async () => {
     await bootAsAlice()
     await step(() => { app().recordSprint(12, []) })
     await step(() => { app().recordSprint(20, []) })
     expect(app().progress.bestSprint).toEqual({ score: 20, date: today })
   })
 
-  it('分数更低不动纪录', async () => {
+  it('a lower score leaves the record untouched', async () => {
     await bootAsAlice()
     await step(() => { app().recordSprint(20, []) })
     await step(() => { app().recordSprint(5, []) })
     expect(app().progress.bestSprint).toEqual({ score: 20, date: today })
   })
 
-  it('打平不刷新 —— 否则纪录日期会被后来的平局改写,与 merge 的「同分取早」打架', async () => {
+  it('a tie doesn\'t refresh -- otherwise the record date would get rewritten by a later tie, fighting merge\'s "equal score keeps the earlier one"', async () => {
     await bootAsAlice()
     await step(() => { app().recordSprint(20, []) })
     const first = app().progress.bestSprint
     await step(() => { app().recordSprint(20, []) })
-    expect(app().progress.bestSprint).toBe(first)      // 同一个对象,压根没重建
+    expect(app().progress.bestSprint).toBe(first)      // the same object, never rebuilt at all
   })
 
-  it('结算立即推送,不等 30 秒防抖', async () => {
+  it('settlement pushes immediately, doesn\'t wait for the 30-second debounce', async () => {
     await bootAsAlice()
     await step(() => { app().recordSprint(7, []) })
     const puts = remote.putsTo('progress.json')
