@@ -18,7 +18,7 @@
 | 仓库 | 可见性 | 内容 |
 |---|---|---|
 | `steveao886/volcab-app` | 公开 | 源码。push 到 master 自动构建部署到 Pages |
-| `steveao886/volcab-data` | 私有 | `words.json`(471 词)、`progress.json`(学习进度)、`staging.json`(待补全生词) |
+| `steveao886/volcab-data` | 私有 | `words.json`(471 词 / 每词 5 句例句)、`progress.json`(学习进度)、`staging.json`(待补全生词) |
 
 ⚠️ **`data/words.json`(app 仓库)不是线上词库。** 它只喂开发模式的演示数据和两条全库回归测试;App 运行时读的是 `volcab-data` 里那一份。两者**曾经分叉过**:用户在 App 里删掉 5 个词,只写进了 `volcab-data`,仓库副本还停在最初 476 词的导入快照上,分叉了几个月没人发现(演示数据多 5 个词不报错)。
 
@@ -58,6 +58,10 @@ npm test && npx tsc -b --noEmit && npm run build && npx oxlint && npm run valida
 | 设置 | 每日新词数、音效开关、账号信息、导出备份 |
 
 **一条词条必须长什么样,以 [`docs/word-entry-spec.md`](../word-entry-spec.md) 为准**(唯一权威,别翻各阶段的设计文档)。里面写清了全部必填字段、`usageScore` 的评分锚点、义项占比 `share` 的硬约束、`etymology` 的「宁可不写」规则,以及生词暂存区的补全流程。
+
+**每个词 5 句例句**(共 2355 句)。这个数字有意义:挖空题的题面就是从这 5 句里随机挑的,句子越多同一个词越不容易重样。加词时也按 5 句写。
+
+全库有 3 句定位不到词头(`deify/deifies`、`delve/delving`、`requite/unrequited`),挖空与高亮会跳过它们,每个词都还剩 4 句可用。**不要为此去松动 `lib/headword.ts` 的词干规则** —— 那套枚举词尾是实测调出来的,松开会让 `mire` 的词干命中 **mirth**。0.13% 的瑕疵不值这个风险。
 
 **词源覆盖 460/471**(仓库副本与线上一致)。剩下 11 个是刻意留空的:`harangue` / `grouse` / `rabble` / `obscene` / `agog` / `turmoil` / `vehement` 词源本身有争议,`purebred` / `interchangeability` / `wastefulness` / `undervaluation` 拆开也没信息量。**别为了凑满而补上** —— 词源写错不是少一条信息,是往脑子里钉一个错误的记忆锚点,民间词源比空白有害。
 

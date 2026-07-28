@@ -19,7 +19,7 @@ npm run validate-words
 | `headword` | string | ✅ | 原样写法,保留空格 |
 | `phonetic` | string | ✅ | 美式,形如 `/ˈæbrəɡeɪt/`,必须以斜杠包住 |
 | `meanings` | Meaning[] | ✅ | 至少 1 条,见下 |
-| `examples` | string[] | ✅ | **至少 2 句**,现代生活/工作场景,拒绝教科书式空泛句 |
+| `examples` | string[] | ✅ | **5 句**(现存词条全部是 5 句),现代生活/工作场景,拒绝教科书式空泛句。见下 |
 | `synonyms` | string[] | ✅ | 可为空数组;**不得包含词条本身** |
 | `antonyms` | string[] | ✅ | 同上 |
 | `collocations` | string[] | ✅ | 同上 |
@@ -71,6 +71,26 @@ npm run validate-words
 估的时候按「在当代英语文本里遇到这个义项的相对频率」判断,不是按词典的义项排序 ——
 词典常把词源上更早的义项排在前面,那和遇见概率是两回事(如 `rhetoric`:「修辞学」是
 本义,但当代文本里绝大多数是「华而不实的空话」)。
+
+## `examples` —— 例句
+
+**写 5 句。** 这不是凑数:挖空题的题面是从这 5 句里**随机**挑一句能定位到词头的,
+句子越多,同一个词越不容易连着遇到同一道题。校验脚本的下限仍是 2 句(容忍外部
+设备推来的旧词条),但新写的词条一律 5 句。
+
+每句都要满足:
+
+- **含词头本身,优先用原形。** 语法上必须变形时只用常规屈折(-s/-es/-ed/-ing/-ly 等)。
+  只出现同根的其他词(词头 `abrogate`,句里只有 `abrogation`)等于这句话废了 ——
+  挖空定位不到,复习卡上也不会高亮。
+- **具体场景 + 画面感。** `The new CEO abrogated the remote-work policy over a single
+  Slack message, and half the team started job-hunting that week.` 是好的;
+  `The government decided to abrogate the treaty.` 是坏的 —— 没有场景、谁都能写。
+- **5 句之间场景互不重复**,不要换个说法讲同一件事。
+- 12–30 词,**挖掉词头后仍能从上下文推断出该填什么**。
+- 多义词按 `share` 分配:主要义项多写,占比 30% 以上的次要义项至少一句。
+
+---
 
 ## `etymology` —— 词源
 
