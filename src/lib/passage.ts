@@ -25,14 +25,20 @@ export interface Passage {
    * 绝不能当这篇干扰词的词 id。
    *
    * 干扰词来自易混词图,而那张图是**按共享近义词**建的 —— 它天然会端出
-   * 「填进去也对」的词。2a 的 direct 过滤挡掉了词典级别的同义(substantiate
+   * 「填进去也对」的词。direct 过滤挡掉了词典级别的同义(substantiate
    * 之于 corroborate),但挡不住只共享近义词、语义却照样贴合的那种
-   * (antipathy 之于 animosity、slacken 之于 abate:实测这两个各自出现在
-   * 24.8% / 17.8% 的题里,而且句子读起来完全成立)。
+   * (antipathy 之于 animosity、slacken 之于 abate —— 实测不点名的话它们分别
+   * 出现在 84.9% 与 18.8% 的题里,而且句子读起来完全成立)。
    *
    * 这一小撮只能靠人眼:某个词能不能填进这篇的某个空,是读出来的,不是算出来的。
-   * 好在候选池是**可穷举的** —— 一篇的干扰词只可能来自它标记词在易混词图上的
-   * 邻居,实测两篇分别是 8 个和 12 个词。校验脚本会把这个池子打印出来给作者过目。
+   * 好在候选池**基本可穷举** —— 干扰词绝大多数来自标记词在易混词图上的非 direct
+   * 邻居,实测两篇分别是 2 个和 10 个词。校验脚本会把这个池子打印出来给作者过目。
+   *
+   * **注意池子不是密不透风的**:一级候选见底时会降到「同词性的已学词」与「任意
+   * 已学词」,那两级抽的是全词库。实测 committee-report 有 24.1% 的题至少有一个
+   * 选项来自降级(它的一级池只剩 2 个词,答案组合一变就不够用)。降级抽到的是
+   * 语义上八竿子打不着的词,不构成歧义,但作者过校验脚本那份名单时要知道:
+   * 名单是「必须逐个读过」的那批,不是「只可能出现这些」。
    */
   exclude?: string[]
 }
@@ -218,12 +224,16 @@ export function pickDistractors(
     // 「no independent team could substantiate」既是通顺英文,意思也完全对,
     // 26.6% 的题里它当了干扰词,用户会判定这题两个答案都对。
     //
-    // 这只是**部分修复**:direct 只覆盖词典写死的同义,挡不住「只共享近义词、
-    // 语义却照样贴合」的那种(animosity/antipathy 共享 hostility、abate/slacken
-    // 共享 ease)。实测 committee-report 的歧义率从 45.4% 降到约 24.8%,剩下的
-    // 那批分数与安全的干扰词完全重合(disputatious 4 分是安全的,antipathy
-    // 2 分是歧义的,而 2 分里大多数安全)—— 没有阈值能把它们分开,只能靠
-    // `Passage.exclude` 人工点名。
+    // 这只是**部分修复,而且单独用会更糟**:direct 只覆盖词典写死的同义,挡不住
+    // 「只共享近义词、语义却照样贴合」的那种(animosity/antipathy 共享 hostility、
+    // abate/slacken 共享 ease)。更要命的是 direct 的邻居里有**安全**的那些
+    // (acrimonious / disputatious / disreputable 之于 contentious 与 dubious),
+    // 一并挡掉之后 animosity 只剩 grievance 与 antipathy 两个邻居 —— 实测 2000 个
+    // 种子:antipathy 的出场率从修前的 23.2% **涨到 84.9%**。歧义词只能靠
+    // `Passage.exclude` 人工点名,点名之后这两篇都是 0.0%。
+    //
+    // 也别指望用分数卡:disputatious 4 分是安全的,antipathy 2 分是歧义的,
+    // 而 2 分里大多数安全 —— 没有阈值能把它们分开。
     if (p.direct) continue
     if (answerIds.has(p.a)) add(p.b)
     else if (answerIds.has(p.b)) add(p.a)
