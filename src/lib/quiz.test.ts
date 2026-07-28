@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { QUIZ_TYPES, clozeCollocation, clozeExample, generateQuiz, pickMeaning, sharedSynonyms } from './quiz'
+import { QUIZ_TYPES, clozeCollocation, clozeExample, generateAudioQuiz, generateContrastQuiz, generateQuiz, pickMeaning, sharedSynonyms } from './quiz'
 import { emptyProgress } from '../types'
 import type { Meaning, Progress, Word } from '../types'
 
@@ -274,5 +274,148 @@ describe('新题型', () => {
     if (q === undefined) return
     expect(q.hintKind === 'synonym' || q.hintKind === 'antonym').toBe(true)
     expect(sharedSynonyms(words).has(q.prompt.toLowerCase())).toBe(false)
+  })
+})
+
+// --- 加练三模式 ------------------------------------------------------------
+
+/** 易混词 fixture:两个词共享近义词,例句里各自含自己的词头、不含对方的。 */
+const pairWord = (id: string, syns: string[], pos = 'v.'): Word => ({
+  id, headword: id, phonetic: `/${id}/`,
+  meanings: [{ pos, en: `def of ${id}`, zh: `${id}义` }],
+  examples: [`The board voted to ${id} the policy.`, `They ${id} it every spring.`],
+  synonyms: syns, antonyms: [], collocations: [`${id} a plan`],
+  relatedForms: [], sourceNote: 't', addedAt: '2026-07-01',
+})
+
+const studiedOf = (ws: Word[]): Progress => {
+  const p = emptyProgress()
+  for (const w of ws) {
+    p.words[w.id] = { state: 'review', ease: 2.5, intervalDays: 3, due: '2026-08-01', stepIndex: 0, reps: 1, lapses: 0, lastReviewedAt: '2026-07-20T00:00:00Z' }
+  }
+  return p
+}
+
+describe('generateContrastQuiz', () => {
+  const pairWords = [
+    pairWord('alpha', ['shared1', 'shared2', 'shared3']),
+    pairWord('bravo', ['shared1', 'shared2', 'shared3']),
+    pairWord('carol', ['other1', 'other2', 'other3']),
+    pairWord('delta', ['other1', 'other2', 'other3']),
+  ]
+
+  it('只出两个选项 —— 辨析是二选一,不是四选一', () => {
+    const qs = generateContrastQuiz(pairWords, studiedOf(pairWords), 4, seq())
+    expect(qs.length).toBeGreaterThan(0)
+    for (const q of qs) {
+      expect(q.type).toBe('contrast')
+      expect(q.options).toHaveLength(2)
+      expect(q.options).toContain(q.answer)
+    }
+  })
+
+  it('题面挖空且不泄露答案词', () => {
+    const qs = generateContrastQuiz(pairWords, studiedOf(pairWords), 4, seq())
+    for (const q of qs) {
+      expect(q.prompt).toContain('___')
+      expect(q.prompt.toLowerCase()).not.toContain(q.answer.toLowerCase())
+    }
+  })
+
+  it('contrastId 指向对照词,且不等于本题的词', () => {
+    const qs = generateContrastQuiz(pairWords, studiedOf(pairWords), 4, seq())
+    for (const q of qs) {
+      expect(q.contrastId).toBeDefined()
+      expect(q.contrastId).not.toBe(q.wordId)
+      // 两个选项恰好是这两个词的词头
+      const ids = [q.wordId, q.contrastId]
+      const heads = ids.map(id => pairWords.find(w => w.id === id)?.headword)
+      expect([...q.options].sort()).toEqual([...heads as string[]].sort())
+    }
+  })
+
+  it('两个词都在句中就不出这题 —— 挖掉一个另一个还杵在那儿,答案不言自明', () => {
+    // **两边的例句都同时含两个词**,所以无论哪个当答案都必须被守卫挡掉,唯一
+    // 正确的结果是一道题也出不来。早先只让一边泄题,生成器随机挑到干净的那边
+    // 就绕过了守卫,断言等于没写(变异测试抓到过)。
+    const both = ['We alpha and bravo together.', 'They alpha then bravo.']
+    const leaky = [
+      { ...pairWord('alpha', ['s1']), examples: both },
+      { ...pairWord('bravo', ['s1']), examples: both },
+    ]
+    expect(generateContrastQuiz(leaky, studiedOf(leaky), 4, seq())).toEqual([])
+  })
+
+  it('一边挖不出空时换另一边当答案,不浪费这一对', () => {
+    const noSelfMention = { ...pairWord('alpha', ['s1']), examples: ['Nothing here matches.', 'Still nothing.'] }
+    const ws = [noSelfMention, pairWord('bravo', ['s1'])]
+    // 两个常量 rng 分别走「先试 alpha」与「先试 bravo」两条分支,两条都得出得来题
+    for (const r of [() => 0.1, () => 0.9]) {
+      const qs = generateContrastQuiz(ws, studiedOf(ws), 4, r)
+      expect(qs).toHaveLength(1)
+      expect(qs[0].answer).toBe('bravo')
+    }
+  })
+
+  it('配不出词对时返回空数组,不抛错', () => {
+    const lonely = [pairWord('alpha', ['x']), pairWord('bravo', ['y'])]
+    expect(generateContrastQuiz(lonely, studiedOf(lonely), 4, seq())).toEqual([])
+  })
+
+  it('不超过请求的题数', () => {
+    expect(generateContrastQuiz(pairWords, studiedOf(pairWords), 1, seq())).toHaveLength(1)
+  })
+})
+
+describe('generateAudioQuiz', () => {
+  it('听音选义:四个释义选一,prompt 是要朗读的词头', () => {
+    const qs = generateAudioQuiz(words, studied(), 6, seq())
+    const q = qs.find(x => x.type === 'audio2meaning')
+    expect(q).toBeDefined()
+    expect(q!.options).toHaveLength(4)
+    expect(q!.options).toContain(q!.answer)
+    // prompt 存的是词头(朗读内容),**不是**给人看的题面
+    expect(words.some(w => w.headword === q!.prompt)).toBe(true)
+  })
+
+  it('听音拼写:没有选项,答案是词头,并带上音标供揭晓时显示', () => {
+    const qs = generateAudioQuiz(words, studied(), 6, seq())
+    const q = qs.find(x => x.type === 'audio2spelling')
+    expect(q).toBeDefined()
+    expect(q!.options).toEqual([])
+    expect(q!.answer).toBe(q!.prompt)
+    expect(q!.phonetic).toBeDefined()
+  })
+
+  it('两种题型轮换,不会整轮只出一种', () => {
+    const qs = generateAudioQuiz(words, studied(), 6, seq())
+    expect(new Set(qs.map(q => q.type)).size).toBe(2)
+  })
+
+  it('词库不足 4 个词时返回空数组', () => {
+    expect(generateAudioQuiz(words.slice(0, 3), emptyProgress(), 4, seq())).toEqual([])
+  })
+})
+
+describe('generateQuiz 的题型限制(极速模式用)', () => {
+  it('只出指定题型', () => {
+    const qs = generateQuiz(words, studied(), 6, seq(), ['word2meaning'])
+    expect(qs.length).toBeGreaterThan(0)
+    expect(qs.every(q => q.type === 'word2meaning')).toBe(true)
+  })
+
+  it('限定两种时两种都出得来', () => {
+    const qs = generateQuiz(words, studied(), 6, seq(), ['word2meaning', 'meaning2word'])
+    expect(new Set(qs.map(q => q.type))).toEqual(new Set(['word2meaning', 'meaning2word']))
+  })
+
+  it('空题型列表返回空数组,不死循环也不落回默认题型', () => {
+    expect(generateQuiz(words, studied(), 6, seq(), [])).toEqual([])
+  })
+
+  it('不传这个参数时行为不变 —— 六种题型仍在轮换', () => {
+    const qs = generateQuiz(words, studied(), 6, seq())
+    expect(new Set(qs.map(q => q.type)).size).toBeGreaterThan(1)
+    expect(qs.every(q => QUIZ_TYPES.includes(q.type))).toBe(true)
   })
 })

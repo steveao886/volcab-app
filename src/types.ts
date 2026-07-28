@@ -63,6 +63,9 @@ export interface ProgressEntry {
 
 export interface DailyStat { reviewed: number; newLearned: number; correct: number; quizTaken: number }
 
+/** 60 秒极速赛的个人最好成绩。date 是达成那天(YYYY-MM-DD)。 */
+export interface SprintRecord { score: number; date: string }
+
 export interface Progress {
   version: 1
   /**
@@ -80,6 +83,13 @@ export interface Progress {
   settings: { newPerDay: number; soundEnabled?: boolean; updatedAt?: string }
   words: Record<string, ProgressEntry>
   dailyStats: Record<string, DailyStat>
+  /**
+   * 极速赛最好成绩。**可选**,理由与 soundEnabled / settings.updatedAt 一致:
+   * 另一台设备的旧版 App 推上来一份没有这个字段的 progress,正确结果是「还没有
+   * 纪录」,而不是整份数据被 isProgress 判成坏数据、拒绝合并。
+   * 合并规则见 lib/merge.ts —— 取分高者,同分取日期早的。
+   */
+  bestSprint?: SprintRecord
 }
 
 export const emptyProgress = (): Progress => ({

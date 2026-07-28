@@ -56,6 +56,8 @@ export interface AppActions {
   logout(): void
   grade(wordId: string, g: Grade): void
   recordQuiz(correct: number, total: number, wrongIds: string[]): void
+  /** 极速赛结算:与 recordQuiz 同样只提前错词的到期日,外加刷新个人最好成绩 */
+  recordSprint(score: number, wrongIds: string[]): void
   /** 新增或编辑词条(按 id upsert),立即推送 words.json */
   saveWord(word: Word): Promise<void>
   /** 删除词条,同时清掉它们的进度记录 */
@@ -530,6 +532,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
     void flushProgress()
   }, [commitProgress, flushProgress])
 
+  // 极速赛与 recordQuiz 共用同一条约定(错词只提前到期,ease/间隔不动),
+  // 多的只有一件事:刷新最好成绩。
+  const recordSprint = useCallback((score: number, wrongIds: string[]) => {
+    const now = new Date()
+    const day = todayStr(now)
+    const cur = stateRef.current.progress
+    const stat = { ...(cur.dailyStats[day] ?? emptyStat()) }
+    stat.quizTaken += 1
+    const words = { ...cur.words }
+    for (const id of wrongIds) {
+      const e = words[id]
+      if (e) words[id] = { ...e, due: day, lastReviewedAt: now.toISOString() }
+    }
+    const next: Progress = { ...cur, words, dailyStats: { ...cur.dailyStats, [day]: stat } }
+    // **严格大于**才刷新:打平不该把纪录日期改写成今天。与 merge.ts 里
+    // 「同分取日期早的」是同一条规矩,两处必须一致,否则同步一来一回会打架。
+    if (cur.bestSprint === undefined || score > cur.bestSprint.score) {
+      next.bestSprint = { score, date: day }
+    }
+    commitProgress(next)
+    void flushProgress()
+  }, [commitProgress, flushProgress])
+
   const saveWord = useCallback(async (word: Word): Promise<void> => {
     const words = applyWordOps(stateRef.current.words, [{ kind: 'upsert', word }])
     cacheWords(words)
@@ -612,11 +637,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AppContextValue>(() => ({
     ...state,
-    login, logout, grade, recordQuiz, saveWord, deleteWords, addStaging,
+    login, logout, grade, recordQuiz, recordSprint, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll,
     ...(import.meta.env.DEV ? { enterDemoMode } : {}),
   }), [
-    state, login, logout, grade, recordQuiz, saveWord, deleteWords, addStaging,
+    state, login, logout, grade, recordQuiz, recordSprint, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll, enterDemoMode,
   ])
 

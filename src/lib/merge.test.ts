@@ -83,3 +83,45 @@ describe('mergeProgress', () => {
     })
   })
 })
+
+describe('mergeProgress 的 bestSprint', () => {
+  const withBest = (score: number, date: string) => {
+    const p = emptyProgress()
+    p.bestSprint = { score, date }
+    return p
+  }
+
+  it('取分高的那一边', () => {
+    expect(mergeProgress(withBest(30, '2026-07-20'), withBest(42, '2026-07-25')).bestSprint)
+      .toEqual({ score: 42, date: '2026-07-25' })
+    expect(mergeProgress(withBest(42, '2026-07-25'), withBest(30, '2026-07-20')).bestSprint)
+      .toEqual({ score: 42, date: '2026-07-25' })
+  })
+
+  it('同分取日期早的 —— 先达成的那次才是纪录', () => {
+    expect(mergeProgress(withBest(42, '2026-07-25'), withBest(42, '2026-07-20')).bestSprint)
+      .toEqual({ score: 42, date: '2026-07-20' })
+    expect(mergeProgress(withBest(42, '2026-07-20'), withBest(42, '2026-07-25')).bestSprint)
+      .toEqual({ score: 42, date: '2026-07-20' })
+  })
+
+  it('一边没有就取另一边 —— 旧版 App 推上来的 progress 没有这个字段', () => {
+    expect(mergeProgress(emptyProgress(), withBest(20, '2026-07-21')).bestSprint)
+      .toEqual({ score: 20, date: '2026-07-21' })
+    expect(mergeProgress(withBest(20, '2026-07-21'), emptyProgress()).bestSprint)
+      .toEqual({ score: 20, date: '2026-07-21' })
+  })
+
+  it('两边都没有时整个键不写,而不是写一个 undefined', () => {
+    const m = mergeProgress(emptyProgress(), emptyProgress())
+    expect(m.bestSprint).toBeUndefined()
+    expect(Object.hasOwn(m, 'bestSprint')).toBe(false)
+  })
+
+  it('0 分的纪录也算数,不能被当成「没有纪录」', () => {
+    // `local.bestSprint ?? remote.bestSprint` 之类的写法在这里是对的,但
+    // `score || other` 那种就会把 0 分吞掉。0 分是一次真实的、很差的成绩。
+    expect(mergeProgress(withBest(0, '2026-07-20'), emptyProgress()).bestSprint)
+      .toEqual({ score: 0, date: '2026-07-20' })
+  })
+})

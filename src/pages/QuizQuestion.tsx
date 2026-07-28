@@ -1,11 +1,15 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Button } from '../components/Button'
+import { Chip } from '../components/Chip'
 import { Field } from '../components/Field'
+import { Icon } from '../components/Icon'
 import { TextInput } from '../components/TextInput'
 import type { QuizQuestion, QuizType } from '../lib/quiz'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
+import { speak } from '../lib/tts'
 import { useApp } from '../state/store'
+import type { Word } from '../types'
 
 /** 每种题型的作答说明。 */
 const TYPE_LABEL: Record<QuizType, string> = {
@@ -15,7 +19,13 @@ const TYPE_LABEL: Record<QuizType, string> = {
   clozeExample: '根据例句选出正确的单词',
   clozeCollocation: '根据搭配选出正确的单词',
   synonymHint: '选出对应的单词',
+  contrast: '两个近义词,哪个更贴合这句话?',
+  audio2meaning: '听发音,选出正确的释义',
+  audio2spelling: '听发音,拼写这个单词',
 }
+
+/** 题面是音频而非文字的题型。 */
+const isAudio = (t: QuizType) => t === 'audio2meaning' || t === 'audio2spelling'
 
 /** synonymHint 题的种类标签:界面必须标明提示词是近义还是反义,
  *  否则用户无从判断该选意思相同的还是相反的。 */
@@ -52,10 +62,91 @@ interface QuizQuestionViewProps {
  * 天然随之清空,不需要额外的 reset effect。
  */
 export function QuizQuestionView({ question, onAnswered, onNext, nextLabel }: QuizQuestionViewProps) {
-  if (question.type === 'spelling') {
+  if (question.type === 'spelling' || question.type === 'audio2spelling') {
     return <SpellingQuestion question={question} onAnswered={onAnswered} onNext={onNext} nextLabel={nextLabel} />
   }
   return <ChoiceQuestion question={question} onAnswered={onAnswered} onNext={onNext} nextLabel={nextLabel} />
+}
+
+/**
+ * 音频题的题面。
+ *
+ * **绝不渲染 question.prompt** —— 那个字段存的是要朗读的词头,印出来就是把答案
+ * 直接写在题面上(见 lib/quiz.ts 里 QuizQuestion.prompt 的注释)。
+ *
+ * 进题时尝试自动播一次。iOS 上 `speechSynthesis` 可能拦掉没有用户手势的播放,
+ * 这里**不做任何成功与否的检测**:检测本身不可靠,而下面那个按钮就是完整的退路。
+ * 被拦掉的后果只是"要自己点一下",不影响作答。
+ */
+function AudioPrompt({ text }: { text: string }) {
+  useEffect(() => {
+    speak(text)
+  }, [text])
+
+  return (
+    <div className="quiz-audio">
+      <Button type="button" variant="secondary" onClick={() => speak(text)} aria-label="再播放一次读音">
+        <Icon name="speak" />
+        再听一遍
+      </Button>
+      {/* iOS 侧边静音拨片会屏蔽声音,这不是缺陷但极易被当成缺陷 —— 与其让人以为
+          功能坏了,不如把最常见的两个原因写在这儿。 */}
+      <p className="faint quiz-audio__hint">听不到?检查系统音量与静音开关</p>
+    </div>
+  )
+}
+
+/**
+ * 辨析题答完后的对比卡:两个易混词并排给释义、例句、搭配。
+ *
+ * **这才是辨析模式的真正价值。** 近义词难免有"两个都塞得进去"的句子,与其把这
+ * 当缺陷躲开,不如答完就把差别摊开 —— 题目只是把注意力引到这一对上。
+ *
+ * 375px 下左右分栏太挤,所以是上下两块、中间一道分隔线。
+ */
+function ContrastCard({ answerId, otherId }: { answerId: string; otherId: string }) {
+  const { words } = useApp()
+  const a = words.find(w => w.id === answerId)
+  const b = words.find(w => w.id === otherId)
+  if (a === undefined || b === undefined) return null
+
+  return (
+    <div className="quiz-contrast">
+      <p className="quiz-q__label">两个词的差别</p>
+      <ContrastSide word={a} isAnswer />
+      <ContrastSide word={b} isAnswer={false} />
+    </div>
+  )
+}
+
+function ContrastSide({ word, isAnswer }: { word: Word; isAnswer: boolean }) {
+  const m = word.meanings[0]
+  return (
+    <div className={isAnswer ? 'quiz-contrast__side quiz-contrast__side--answer' : 'quiz-contrast__side'}>
+      <p className="quiz-contrast__head">
+        <span className="word" lang="en">{word.headword}</span>
+        {isAnswer && <span className="quiz-option__tag">本题答案</span>}
+      </p>
+      {m !== undefined && (
+        <>
+          <p lang="en">
+            <span className="pos">{m.pos}</span> {m.en}
+          </p>
+          <p className="muted">{m.zh}</p>
+        </>
+      )}
+      {word.examples[0] !== undefined && (
+        <p className="quiz-contrast__example" lang="en">{word.examples[0]}</p>
+      )}
+      {word.collocations.length > 0 && (
+        <div className="quiz-contrast__collocations">
+          {word.collocations.slice(0, 3).map(c => (
+            <Chip key={c} interactive={false} label={<span lang="en">{c}</span>} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 interface AnswerFeedbackProps {
@@ -101,10 +192,11 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
   // 防止同一渲染帧内的连续点击(如误触双击)在状态还没落地前判两次分
   const answeredRef = useRef(false)
   const locked = chosen !== null
-  // 选项是英文词头的题型:meaning2word / clozeExample / clozeCollocation / synonymHint。
-  // 只有 word2meaning 的选项是中文释义。
-  const optionLang = question.type === 'word2meaning' ? undefined : 'en'
-  const isCloze = question.type === 'clozeExample' || question.type === 'clozeCollocation'
+  // 选项是中文释义的题型:word2meaning / audio2meaning。其余都是英文词头。
+  const optionLang = question.type === 'word2meaning' || question.type === 'audio2meaning' ? undefined : 'en'
+  // contrast 的题面同样是挖了空的例句,渲染上与 clozeExample 完全一致。
+  const isCloze =
+    question.type === 'clozeExample' || question.type === 'clozeCollocation' || question.type === 'contrast'
   // 例句/搭配挖空与近义反义提示的 prompt 都是英文,但不是单个词头——沿用下面
   // word2meaning 专属的辞书衬线体会误导,那套视觉语言留给「整屏唯一词头」。
   const promptLang = question.type === 'word2meaning' || isCloze || question.type === 'synonymHint' ? 'en' : undefined
@@ -130,12 +222,16 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
           刻意保留按钮的界面字体——衬线大字会把按钮撑得高矮不一,还会让「唯一主角」
           这个视觉信号在一组选项里被稀释成噪音,这里的取舍以后不要因为「都是英文词」
           就顺手统一成 .word。 */}
-      <p
-        className={question.type === 'word2meaning' ? 'word quiz-q__prompt' : 'quiz-q__prompt'}
-        lang={promptLang}
-      >
-        {isCloze ? renderBlanked(question.prompt) : question.prompt}
-      </p>
+      {isAudio(question.type) ? (
+        <AudioPrompt text={question.prompt} />
+      ) : (
+        <p
+          className={question.type === 'word2meaning' ? 'word quiz-q__prompt' : 'quiz-q__prompt'}
+          lang={promptLang}
+        >
+          {isCloze ? renderBlanked(question.prompt) : question.prompt}
+        </p>
+      )}
 
       <div className="quiz-options" role="group" aria-label="选项">
         {question.options.map(opt => {
@@ -166,7 +262,11 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
       </div>
 
       {locked ? (
-        <AnswerFeedback correct={chosen === question.answer} onNext={onNext} nextLabel={nextLabel} />
+        <AnswerFeedback correct={chosen === question.answer} onNext={onNext} nextLabel={nextLabel}>
+          {question.type === 'contrast' && question.contrastId !== undefined ? (
+            <ContrastCard answerId={question.wordId} otherId={question.contrastId} />
+          ) : null}
+        </AnswerFeedback>
       ) : null}
     </div>
   )
@@ -194,18 +294,24 @@ function SpellingQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuest
 
   return (
     <div className="quiz-q">
-      <p className="quiz-q__label">{TYPE_LABEL.spelling}</p>
-      <p className="quiz-q__prompt">
-        {question.prompt}
-        {question.phonetic ? (
-          <>
-            {' '}
-            <span className="ipa" lang="en">
-              {question.phonetic}
-            </span>
-          </>
-        ) : null}
-      </p>
+      <p className="quiz-q__label">{TYPE_LABEL[question.type]}</p>
+      {/* 听音拼写**答题时不显示音标**:刚听过发音,再把 IPA 摆出来就没什么可考的了。
+          音标留到揭晓答案时给(见下面的 quiz-spelling-answer)。 */}
+      {question.type === 'audio2spelling' ? (
+        <AudioPrompt text={question.prompt} />
+      ) : (
+        <p className="quiz-q__prompt">
+          {question.prompt}
+          {question.phonetic ? (
+            <>
+              {' '}
+              <span className="ipa" lang="en">
+                {question.phonetic}
+              </span>
+            </>
+          ) : null}
+        </p>
+      )}
 
       <form
         className="quiz-spelling"
@@ -238,6 +344,14 @@ function SpellingQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuest
         <AnswerFeedback correct={correct} onNext={onNext} nextLabel={nextLabel}>
           <p className="quiz-spelling-answer">
             正确拼写:<span className="word" lang="en">{question.answer}</span>
+            {question.type === 'audio2spelling' && question.phonetic ? (
+              <>
+                {' '}
+                <span className="ipa" lang="en">
+                  {question.phonetic}
+                </span>
+              </>
+            ) : null}
           </p>
         </AnswerFeedback>
       ) : null}

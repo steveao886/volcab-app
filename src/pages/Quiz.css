@@ -130,3 +130,121 @@
 .quiz-hint-kind {
   margin-bottom: var(--sp-2);
 }
+
+/* ==========================================================================
+   加练三模式(辨析 / 听音 / 极速)。
+   ========================================================================== */
+
+/* 模式切换:一行 chip,横向可滚。四个词标签在 375px 下放得下,但字号设置调大
+   或将来多一个模式就会溢出 —— 允许横滚比让它们换行挤成两排体面。 */
+.quiz-modes {
+  display: flex;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+  overflow-x: auto;
+  /* 滚动时不让 chip 的焦点圈被容器裁掉 */
+  padding: 2px;
+  margin-left: -2px;
+  scrollbar-width: none;
+}
+
+.quiz-modes::-webkit-scrollbar {
+  display: none;
+}
+
+/* --- 听音题 --------------------------------------------------------------- */
+
+.quiz-audio {
+  display: grid;
+  justify-items: start;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+}
+
+.quiz-audio__hint {
+  font-size: var(--fs-xs);
+}
+
+/* --- 辨析题的对比卡 ------------------------------------------------------- */
+
+/* 答完才出现。375px 下左右分栏太挤,所以上下两块 + 一道分隔线。 */
+.quiz-contrast {
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--rule);
+}
+
+.quiz-contrast__side {
+  display: grid;
+  gap: var(--sp-1);
+  padding: var(--sp-3) 0;
+}
+
+.quiz-contrast__side + .quiz-contrast__side {
+  border-top: 1px dashed var(--rule);
+}
+
+/* 本题答案那一侧用朱砂做左侧批注条 —— 朱砂只做批注,这里正是「哪个是答案」
+   这条批注,不是给整块内容上色。 */
+.quiz-contrast__side--answer {
+  padding-left: var(--sp-3);
+  border-left: 2px solid var(--accent);
+}
+
+.quiz-contrast__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.quiz-contrast__example {
+  margin-top: var(--sp-1);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  line-height: var(--lh-snug);
+}
+
+.quiz-contrast__collocations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+}
+
+/* --- 极速赛 --------------------------------------------------------------- */
+
+/* 倒计时条钉在题目上方:秒数、进度、当前得分一行摆平。 */
+.quiz-sprint__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.quiz-sprint__clock {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  /* 秒数从两位掉到一位时不让后面的进度条跟着跳 */
+  min-width: 3ch;
+}
+
+.quiz-sprint__unit {
+  font-size: var(--fs-xs);
+  font-weight: 400;
+}
+
+.quiz-sprint__progress {
+  flex: 1;
+}
+
+.quiz-sprint__score {
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+
+.quiz-sprint__best {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-sm);
+}

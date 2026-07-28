@@ -1,16 +1,42 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
+import { Chip } from '../components/Chip'
 import { Page } from '../components/Page'
-import { generateQuiz } from '../lib/quiz'
+import { generateAudioQuiz, generateContrastQuiz, generateQuiz } from '../lib/quiz'
 import type { QuizQuestion } from '../lib/quiz'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
 import { QuizQuestionView } from './QuizQuestion'
+import { SprintSession } from './QuizSprint'
 import './Quiz.css'
 
 const QUESTION_COUNT = 10
+
+/**
+ * 加练模式。走 `?mode=` 查询参数,与 `/review?mode=lapses` 的既有先例一致。
+ *
+ * **默认是「综合」,与加模式之前的行为完全一致** —— 这是每天都会走的一条路,
+ * 不该因为多了三个模式就多一次点击或多一层页面。
+ */
+const MODES = [
+  { key: 'mixed', label: '综合' },
+  { key: 'contrast', label: '辨析' },
+  { key: 'audio', label: '听音' },
+  { key: 'sprint', label: '极速' },
+] as const
+
+type QuizMode = (typeof MODES)[number]['key']
+
+const isMode = (v: string | null): v is QuizMode => MODES.some(m => m.key === v)
+
+/** 出不来题时的说明:每种模式缺的东西不一样,一句通用文案会让人不知道该干嘛。 */
+const EMPTY_HINT: Record<Exclude<QuizMode, 'sprint'>, string> = {
+  mixed: '需要至少 4 个词条才能测试。当前词库还不够,先去添加或多学几个单词吧。',
+  contrast: '词库里还找不出足够接近的易混词对。辨析题要靠近义词重叠来配对,再多收几个近义的高阶词就会出现了。',
+  audio: '需要至少 4 个词条才能开始听音练习。当前词库还不够,先去添加或多学几个单词吧。',
+}
 
 /**
  * 一轮测试的全部状态。刻意用 `key` 换掉这个组件本身(见 Quiz() 末尾)来实现
@@ -19,17 +45,23 @@ const QUESTION_COUNT = 10
  */
 function QuizSession({
   words,
+  mode,
   onRestart,
 }: {
   words: Word[]
+  mode: Exclude<QuizMode, 'sprint'>
   onRestart: () => void
 }) {
   const { progress, recordQuiz } = useApp()
 
-  // 只在组件挂载时生成一次:generateQuiz 默认走 Math.random,若在渲染期间
+  // 只在组件挂载时生成一次:三个生成函数默认都走 Math.random,若在渲染期间
   // 重新调用会在答题过程中把题目集悄悄换掉。惰性初始值 + 不依赖任何 state
   // 保证这轮测试从头到尾用同一份题目。
-  const [questions] = useState<QuizQuestion[]>(() => generateQuiz(words, progress, QUESTION_COUNT))
+  const [questions] = useState<QuizQuestion[]>(() => {
+    if (mode === 'contrast') return generateContrastQuiz(words, progress, QUESTION_COUNT)
+    if (mode === 'audio') return generateAudioQuiz(words, progress, QUESTION_COUNT)
+    return generateQuiz(words, progress, QUESTION_COUNT)
+  })
   const [index, setIndex] = useState(0)
   const [score, setScore] = useState(0)
   const [wrongIds, setWrongIds] = useState<string[]>([])
@@ -71,7 +103,7 @@ function QuizSession({
   if (total === 0) {
     return (
       <Card className="quiz-empty">
-        <p>需要至少 4 个词条才能测试。当前词库还不够,先去添加或多学几个单词吧。</p>
+        <p>{EMPTY_HINT[mode]}</p>
         <Link className="btn btn--primary" to="/library">
           去词库看看
         </Link>
@@ -170,11 +202,42 @@ function QuizSession({
  */
 export function Quiz() {
   const { words } = useApp()
+  const [params, setParams] = useSearchParams()
   const [session, setSession] = useState(0)
+
+  const raw = params.get('mode')
+  const mode: QuizMode = isMode(raw) ? raw : 'mixed'
+
+  const restart = useCallback(() => setSession(s => s + 1), [])
+
+  const switchMode = (next: QuizMode) => {
+    if (next === mode) return
+    // replace 而不是 push:模式切换不是"去过的地方",系统返回手势应该退回今日页,
+    // 而不是在四个模式之间倒着走一遍(词库页那条历史栈只增不减的老毛病别再犯)。
+    setParams(next === 'mixed' ? {} : { mode: next }, { replace: true })
+    setSession(s => s + 1)
+  }
 
   return (
     <Page eyebrow="Quiz" title="测试" back="/">
-      <QuizSession key={session} words={words} onRestart={() => setSession(s => s + 1)} />
+      <div className="quiz-modes" role="group" aria-label="测试模式">
+        {MODES.map(m => (
+          <Chip
+            key={m.key}
+            label={m.label}
+            selected={mode === m.key}
+            onClick={() => switchMode(m.key)}
+          />
+        ))}
+      </div>
+
+      {/* key 里带上 mode:切模式必须换一整轮新题,而不是把新题塞进旧会话的题号里。
+          这与「再测一轮」用的是同一个手法(靠重新挂载归零,不逐个字段清空)。 */}
+      {mode === 'sprint' ? (
+        <SprintSession key={`sprint-${session}`} words={words} onRestart={restart} />
+      ) : (
+        <QuizSession key={`${mode}-${session}`} words={words} mode={mode} onRestart={restart} />
+      )}
     </Page>
   )
 }

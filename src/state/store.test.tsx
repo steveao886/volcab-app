@@ -775,3 +775,60 @@ describe('登录:本机欠账的处置', () => {
     expect(app().syncStatus).toBe('synced')
   })
 })
+
+// === 极速赛结算 =============================================================
+// recordSprint 与 recordQuiz 共用「错词只提前到期、ease/间隔不动」这条约定,
+// 多的只有最好成绩。纪录的刷新条件必须与 merge.ts 的「同分取日期早的」一致 ——
+// 两处不一致时,同步一来一回会把日期反复改写。
+
+describe('recordSprint:最好成绩', () => {
+  it('第一次就是纪录,并把错词提前到今天、不动 ease 与间隔', async () => {
+    await bootAsAlice()
+    // 先 easy 一次让它毕业到 review、到期日排到几天后 —— 否则 due 本来就是今天,
+    // 「提前到期」这条断言不成立(它会在任何实现下都通过)。
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.words['alpha']
+    expect(before.due > today).toBe(true)
+
+    await step(() => { app().recordSprint(12, ['alpha']) })
+
+    expect(app().progress.bestSprint).toEqual({ score: 12, date: today })
+    expect(app().progress.dailyStats[today].quizTaken).toBe(1)
+    const after = app().progress.words['alpha']
+    expect(after.due).toBe(today)
+    expect(after.ease).toBe(before.ease)               // 打分逻辑一律不碰
+    expect(after.intervalDays).toBe(before.intervalDays)
+    expect(after.lapses).toBe(before.lapses)
+  })
+
+  it('分数更高才刷新纪录', async () => {
+    await bootAsAlice()
+    await step(() => { app().recordSprint(12, []) })
+    await step(() => { app().recordSprint(20, []) })
+    expect(app().progress.bestSprint).toEqual({ score: 20, date: today })
+  })
+
+  it('分数更低不动纪录', async () => {
+    await bootAsAlice()
+    await step(() => { app().recordSprint(20, []) })
+    await step(() => { app().recordSprint(5, []) })
+    expect(app().progress.bestSprint).toEqual({ score: 20, date: today })
+  })
+
+  it('打平不刷新 —— 否则纪录日期会被后来的平局改写,与 merge 的「同分取早」打架', async () => {
+    await bootAsAlice()
+    await step(() => { app().recordSprint(20, []) })
+    const first = app().progress.bestSprint
+    await step(() => { app().recordSprint(20, []) })
+    expect(app().progress.bestSprint).toBe(first)      // 同一个对象,压根没重建
+  })
+
+  it('结算立即推送,不等 30 秒防抖', async () => {
+    await bootAsAlice()
+    await step(() => { app().recordSprint(7, []) })
+    const puts = remote.putsTo('progress.json')
+    expect(puts.length).toBeGreaterThan(0)
+    const sent = JSON.parse(puts[puts.length - 1].content) as Progress
+    expect(sent.bestSprint).toEqual({ score: 7, date: today })
+  })
+})
