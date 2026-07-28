@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildPassageQuestion, MAX_BLANKS, parsePassage, parseSentence, pickDistractors, pickPassage, pushRecent, RECENT_LIMIT, selectBlanks } from './passage'
+import { buildPassageQuestion, DUE_WEIGHT, LEARNED_WEIGHT, MAX_BLANKS, parsePassage, parseSentence, pickDistractors, pickPassage, pushRecent, RECENT_LIMIT, RECENT_PENALTY, scoreQuestion, selectBlanks } from './passage'
 import type { Passage } from './passage'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
@@ -388,6 +388,53 @@ describe('pickPassage', () => {
     const broken = passage({ id: 'bad', en: ['{{a} {{b}} {{c}}'], zh: ['甲'] })
     const progress = progressWith({ a: TODAY, b: TODAY, c: TODAY })
     expect(pickPassage([broken, p1], words, progress, TODAY, [], rng)?.passage.id).toBe('p1')
+  })
+
+  it('同一个种子跑两次结果一模一样 —— 整套出题都建立在可复现上', () => {
+    // 用超过 MAX_BLANKS 的一篇,让选空、选干扰词、排序三处随机全都真的动起来
+    const many = Array.from({ length: MAX_BLANKS + 3 }, (_, i) => `w${i}`)
+    const spare = ['x0', 'x1', 'x2']
+    const ws = [...many, ...spare].map(i => word(i))
+    const progress = progressWith(Object.fromEntries([...many, ...spare].map(i => [i, TODAY])))
+    const big = passage({ id: 'big', en: [many.map(i => `{{${i}}}`).join(' ')], zh: ['甲'] })
+
+    expect(pickPassage([big, p1], ws, progress, TODAY, [], mulberry32(42)))
+      .toEqual(pickPassage([big, p1], ws, progress, TODAY, [], mulberry32(42)))
+
+    // 换个种子确实会给出别的结果,否则上面那条断言是废话
+    const a = pickPassage([big, p1], ws, progress, TODAY, [], mulberry32(42))!
+    const b = pickPassage([big, p1], ws, progress, TODAY, [], mulberry32(7))!
+    expect(a.choices).not.toEqual(b.choices)
+  })
+})
+
+describe('scoreQuestion', () => {
+  const ids = ['a', 'b', 'c']
+  const words = ids.map(i => word(i))
+  const p = passage({ id: 'p1', en: ['{{a}} {{b}} {{c}}'], zh: ['甲'] })
+  const build = (progress: Progress) =>
+    buildPassageQuestion(p, words, progress, TODAY, [], mulberry32(3))!
+
+  const threeDue = progressWith({ a: TODAY, b: TODAY, c: TODAY })
+  const twoDue = progressWith({ a: TODAY, b: TODAY, c: '2099-01-01' })
+
+  it('到期词权重高于已学未到期 —— 这题首先是复习工具,其次才是阅读', () => {
+    expect(scoreQuestion(build(threeDue), threeDue, TODAY, [])).toBe(DUE_WEIGHT * 3)
+    expect(scoreQuestion(build(twoDue), twoDue, TODAY, [])).toBe(DUE_WEIGHT * 2 + LEARNED_WEIGHT)
+    expect(DUE_WEIGHT).toBeGreaterThan(LEARNED_WEIGHT)
+  })
+
+  it('最近做过的惩罚压得过「多一个到期词」—— 宁可换一篇覆盖略差的', () => {
+    // 多一个到期词只值 DUE_WEIGHT - LEARNED_WEIGHT 分,惩罚必须比它重
+    expect(RECENT_PENALTY).toBeGreaterThan(DUE_WEIGHT - LEARNED_WEIGHT)
+    const recent = scoreQuestion(build(threeDue), threeDue, TODAY, ['p1'])
+    const fresh = scoreQuestion(build(twoDue), twoDue, TODAY, [])
+    expect(recent).toBeLessThan(fresh)
+  })
+
+  it('不在最近列表里就不扣分', () => {
+    expect(scoreQuestion(build(threeDue), threeDue, TODAY, ['other']))
+      .toBe(scoreQuestion(build(threeDue), threeDue, TODAY, []))
   })
 })
 
