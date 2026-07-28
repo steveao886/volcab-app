@@ -138,8 +138,35 @@ describe('isInflectionOf', () => {
     expect(isInflectionOf('refutation', 'refute')).toBe(false)
   })
 
+  it('形近但无关的词不算(headwordPattern 松散退路会踩上的那几个,校验必须继续挡住)', () => {
+    expect(isInflectionOf('president', 'preside')).toBe(false)
+    expect(isInflectionOf('sapiens', 'sapient')).toBe(false)
+  })
+
   it('空串不算', () => {
     expect(isInflectionOf('', 'refute')).toBe(false)
     expect(isInflectionOf('refute', '')).toBe(false)
+  })
+
+  /**
+   * 以下是全库回归时真实测出来的漏判(见 isInflectionOf 上方注释的实测数据)。
+   * 用真词命名,不是编出来的边界用例。
+   */
+  it('末尾辅音双写:manumit/concur/extol 的真实例句变形', () => {
+    // manumit 的 5 句例句全部用 manumitted,原形从没出现过 —— 改之前这个词完全定位不到
+    expect(isInflectionOf('manumitted', 'manumit')).toBe(true)
+    expect(isInflectionOf('concurred', 'concur')).toBe(true)
+    expect(isInflectionOf('extolled', 'extol')).toBe(true)
+    expect(isInflectionOf('extolling', 'extol')).toBe(true)
+  })
+
+  it('词头不裁剪直接接 -ly:profuse/unobtrusive 的真实例句变形', () => {
+    expect(isInflectionOf('profusely', 'profuse')).toBe(true)
+    expect(isInflectionOf('unobtrusively', 'unobtrusive')).toBe(true)
+  })
+
+  it('元音 + y 结尾的词头,y 不该被砍:convey 的屈折变形', () => {
+    expect(isInflectionOf('conveyed', 'convey')).toBe(true)
+    expect(isInflectionOf('conveys', 'convey')).toBe(true)
   })
 })

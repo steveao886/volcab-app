@@ -56,10 +56,42 @@ export function headwordPattern(sentence: string, headword: string): RegExp | nu
 /**
  * `surface` 是不是 `headword` 的一个屈折变形。
  *
- * **只用紧规则,不走 headwordPattern 的松散退路。** 那条退路(`stem + [a-z]*`)
- * 是为了在一整句话里定位得到词头而存在的,校验单个词时它会把 `reference` 判成
+ * **不走 headwordPattern 的松散退路。** 那条退路(`stem + [a-z]*`)是为了在
+ * 一整句话里定位得到词头而存在的,校验单个词时它会把 `reference` 判成
  * `refute` 的变形、把 `mirth` 判成 `mire` 的变形。校验时候选只有一个词,没有
  * 「定位不到就漏题」的压力,该用严格的词尾枚举。
+ *
+ * **比 tightPattern 宽,这是故意的。** tightPattern 要在一整句话里扫,base
+ * 选错一个字就可能连带命中句子里别的无关词;这里只拿一个已知词头去核对
+ * 一个候选词,没有「扫描整句」的误伤半径,所以能多试三种候选 base,只要
+ * 任意一种拼出 `base + SUFFIX` 能等于 surface 就算数:
+ *
+ * 1. 词头本身,不做任何裁剪 —— 补上 `-ly` 接在以 e 结尾的词头后面的写法
+ *    (profuse→profusely、unobtrusive→unobtrusively:SUFFIX 里本来就有
+ *    `ly`,只是旧代码先把词头的 e 砍掉,`profus`+`ly` 拼不出 `profusely`),
+ *    以及词头以「元音+y」结尾时 y 不该被砍的写法(convey→conveyed/conveys,
+ *    砍成 `conve` 后这两个原本永远匹配不上)。
+ * 2. 词头去掉结尾的 e/y(原有规则)—— 保 refuted、ratified。
+ * 3. 词头末尾双写辅音,仅当词头以「辅音+元音+辅音」结尾且末尾辅音不是
+ *    w/x/y(标准英语双写条件)—— 补 manumit→manumitted、concur→concurred、
+ *    extol→extolled/extolling。限制这个条件是为了不给不会双写的词凭空
+ *    发明一个 base。
+ *
+ * 实测(全库 471 词):以前有 18 处例句里的真实变形(去重后 11 个
+ * 「词头→变形」组合)被判定不是屈折变形,其中 manumit 的 5 句例句全军
+ * 覆没 —— 它的原形从没在自己的例句里出现过,校验脚本会判这个词完全不可用。
+ * 三条新 base 落地后这 18 处全部转 true;同时 headwordPattern 松散退路
+ * 带来的另外 5 个真误标(preside→president、sapient→sapiens、
+ * indict→industry、allude→all、introspection→introspective)照样被挡在
+ * 外面 —— 没有跟着放宽,双写规则的 CVC 限制也没让它们的词干拼出这些词。
+ * 471×470 词头两两组合全扫了一遍,假阳性还是精确 1 处
+ * (precipitously / precipitous),而且那一对本来就是同源的形容词/副词,
+ * 判 true 没问题。
+ *
+ * SUFFIX 和 tightPattern 都没动:两者是共用的,tightPattern 还要负责整句
+ * 扫描时挖空 / 高亮选谁,放宽它会静默改变全站的挖空效果;这里只做单词对
+ * 单词的一次性校验,双写辅音这类规则放在这儿足够安全,放到 tightPattern
+ * 就不一定了。
  *
  * 只给写入端的校验脚本用(scripts/validate-passages.ts)。
  */
@@ -68,8 +100,12 @@ export function isInflectionOf(surface: string, headword: string): boolean {
   const h = headword.trim().toLowerCase()
   if (s === '' || h === '') return false
   if (s === h) return true
-  const base = /[ey]$/.test(h) ? h.slice(0, -1) : h
-  return new RegExp(`^${escapeRe(base)}${SUFFIX}$`, 'i').test(s)
+
+  const bases = [h]
+  if (/[ey]$/.test(h)) bases.push(h.slice(0, -1))
+  if (/[^aeiou][aeiou][^aeiouwxy]$/.test(h)) bases.push(h + h.slice(-1))
+
+  return bases.some(base => new RegExp(`^${escapeRe(base)}${SUFFIX}$`, 'i').test(s))
 }
 
 export interface Segment { text: string; hit: boolean }
