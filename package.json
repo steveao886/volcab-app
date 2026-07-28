@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run --passWithNoTests",
     "parse-enex": "tsx scripts/parse-enex.ts",
-    "validate-words": "tsx scripts/validate-words.ts"
+    "validate-words": "tsx scripts/validate-words.ts",
+    "validate-passages": "tsx scripts/validate-passages.ts"
   },
   "dependencies": {
     "react": "^19.2.7",
