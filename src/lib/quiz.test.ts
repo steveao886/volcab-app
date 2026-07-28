@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { QUIZ_TYPES, clozeCollocation, clozeExample, generateAudioQuiz, generateContrastQuiz, generateQuiz, pickMeaning, sharedSynonyms } from './quiz'
+import { QUIZ_TYPES, clozeCollocation, clozeExample, generateAudioQuiz, generateContrastQuiz, generateQuiz, pickCloze, pickMeaning, sharedSynonyms } from './quiz'
 import { emptyProgress } from '../types'
 import type { Meaning, Progress, Word } from '../types'
 
@@ -417,5 +417,101 @@ describe('generateQuiz 的题型限制(极速模式用)', () => {
     const qs = generateQuiz(words, studied(), 6, seq())
     expect(new Set(qs.map(q => q.type)).size).toBeGreaterThan(1)
     expect(qs.every(q => QUIZ_TYPES.includes(q.type))).toBe(true)
+  })
+})
+
+// --- 挖空题面的多样性 ------------------------------------------------------
+// 实测(拿用户真实进度跑 400 轮):63 个出过挖空题的词,**没有一个**出现过第二种
+// 题面,而其中 297/471 的词有 3 句例句。根因是取例句的循环命中第一条就 break。
+// 多写例句之前必须先修这里,否则新句子一句也用不上。
+
+describe('pickCloze', () => {
+  const three = ['We alpha the plan.', 'They alpha it twice.', 'She alpha nothing.']
+
+  it('挑出的句子来自候选,且已挖空', () => {
+    const got = pickCloze(three, 'alpha', () => 0.4)
+    expect(got).not.toBeNull()
+    expect(got).toContain('___')
+    expect(got!.toLowerCase()).not.toContain('alpha')
+  })
+
+  it('**不同 rng 给出不同的句子** —— 这条就是这个函数存在的理由', () => {
+    const a = pickCloze(three, 'alpha', () => 0)
+    const b = pickCloze(three, 'alpha', () => 0.99)
+    expect(a).not.toBe(b)
+  })
+
+  it('只有一句能挖空时,不管 rng 都返回那一句', () => {
+    const mixed = ['Nothing here.', 'They alpha it twice.', 'Still nothing.']
+    expect(pickCloze(mixed, 'alpha', () => 0)).toBe(pickCloze(mixed, 'alpha', () => 0.99))
+    expect(pickCloze(mixed, 'alpha', () => 0.5)).toContain('___')
+  })
+
+  it('一句都定位不到时返回 null,不返回没有空格的题面', () => {
+    expect(pickCloze(['Nothing.', 'Still nothing.'], 'alpha', () => 0.5)).toBeNull()
+    expect(pickCloze([], 'alpha', () => 0.5)).toBeNull()
+  })
+})
+
+// --- 辨析模式只考学过的词 --------------------------------------------------
+// 实测:排序不等于过滤。用户 63 个已学词只配得出 7 对,排完就掉进未学词,
+// 53.7% 的题考的是从没见过的词。综合与听音靠 questionPool 硬过滤,都是 0%。
+
+describe('generateContrastQuiz 只考学过的词', () => {
+  const ws = [
+    pairWord('alpha', ['s1']),
+    pairWord('bravo', ['s1']),
+    pairWord('carol', ['s2']),
+    pairWord('delta', ['s2']),
+  ]
+  const learnedOnly = (ids: string[]): Progress => {
+    const p = emptyProgress()
+    for (const id of ids) {
+      p.words[id] = { state: 'review', ease: 2.5, intervalDays: 3, due: '2026-08-01', stepIndex: 0, reps: 1, lapses: 0, lastReviewedAt: '2026-07-20T00:00:00Z' }
+    }
+    return p
+  }
+
+  it('两个词都学过才出题', () => {
+    const qs = generateContrastQuiz(ws, learnedOnly(['alpha', 'bravo']), 10, seq())
+    expect(qs.length).toBeGreaterThan(0)
+    for (const q of qs) {
+      expect(['alpha', 'bravo']).toContain(q.wordId)
+      expect(['alpha', 'bravo']).toContain(q.contrastId)
+    }
+  })
+
+  it('宁可少出几题也不掺未学词 —— 只有一对学过就只出一题', () => {
+    expect(generateContrastQuiz(ws, learnedOnly(['alpha', 'bravo']), 10, seq())).toHaveLength(1)
+  })
+
+  it('只学过一对里的一个,那一对也不出 —— 选项里同样不该有没见过的词', () => {
+    expect(generateContrastQuiz(ws, learnedOnly(['alpha', 'carol']), 10, seq())).toEqual([])
+  })
+
+  it('一个词都没学过时出空,**不退回全库** —— 空状态有说明,超纲题只会浪费时间', () => {
+    expect(generateContrastQuiz(ws, emptyProgress(), 4, seq())).toEqual([])
+  })
+
+  it('同一对词反复出题时会换句子,不是永远同一句', () => {
+    // 只有一对词、答案侧固定,变的只有例句 —— 否则「题面不同」可能只是因为
+    // 这一轮换了个词当答案,断言就测不到打乱本身。
+    const three = {
+      ...pairWord('alpha', ['s1']),
+      examples: [
+        'The board voted to alpha the policy.',
+        'They alpha it every spring.',
+        'Nobody wanted to alpha anything.',
+      ],
+    }
+    const pair = [three, pairWord('bravo', ['s1'])]
+    const p = studiedOf(pair)
+    // rng 调用次序:①选哪边当答案 ②③例句打乱(3 个元素两次交换) ④选项打乱
+    const seqOf = (vals: number[]) => { let i = 0; return () => vals[i++ % vals.length] }
+    const a = generateContrastQuiz(pair, p, 1, seqOf([0.1, 0, 0, 0.5]))
+    const b = generateContrastQuiz(pair, p, 1, seqOf([0.1, 0.99, 0.99, 0.5]))
+    expect(a[0].answer).toBe('alpha')
+    expect(b[0].answer).toBe('alpha')   // 答案侧一致,确认变的确实是句子
+    expect(a[0].prompt).not.toBe(b[0].prompt)
   })
 })

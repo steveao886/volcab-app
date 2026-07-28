@@ -98,6 +98,22 @@ export function clozeCollocation(collocation: string, headword: string): string 
 }
 
 /**
+ * 从若干候选句里**随机**挑一句能挖空的,一句都挑不出返回 null。
+ *
+ * **随机不是锦上添花。** 原本这里是「顺着数组取第一条能挖空的」,而几乎每个词的
+ * `examples[0]` 都定位得到词头 —— 于是同一个词的挖空题面**永远是同一句**。
+ * 实测拿真实进度跑 400 轮,63 个出过挖空题的词里**没有一个**出现过第二种题面,
+ * 尽管 297/471 的词写了 3 句例句:写好的句子有三分之二从没被用过。
+ */
+export function pickCloze(sources: string[], headword: string, rng: () => number): string | null {
+  for (const s of shuffle(sources, rng)) {
+    const prompt = clozeExample(s, headword)
+    if (prompt !== null) return prompt
+  }
+  return null
+}
+
+/**
  * 被一个以上词条共享的近义/反义词(全部小写)。
  *
  * 实测 1597 个同义词里有 228 个出现在多个词条(overbearing、decree、flexibility……)。
@@ -202,11 +218,7 @@ export function generateQuiz(
 
     if (type === 'clozeExample' || type === 'clozeCollocation') {
       const sources = type === 'clozeExample' ? w.examples : w.collocations
-      let prompt: string | null = null
-      for (const s of sources) {
-        prompt = clozeExample(s, w.headword)
-        if (prompt !== null) break
-      }
+      const prompt = pickCloze(sources, w.headword, rng)
       if (prompt === null) continue // 这条词的例句/搭配都定位不到词头,换下一个候选词
       const distractors = pickDistractorLabels(w, w.headword, headwordLabel, pool, words, rng)
       if (!distractors) continue
@@ -273,7 +285,9 @@ export const CONTRAST_MIN_SCORE = 3
  * 出不来返回 null,由调用方换一边或换一对。
  */
 function contrastQuestion(answer: Word, other: Word, rng: () => number): QuizQuestion | null {
-  for (const s of answer.examples) {
+  // 与 pickCloze 一样先打乱 —— 顺着取第一条会让同一对词的题面永远是同一句。
+  // 这里没直接用 pickCloze,是因为多一道「对方词头不能留在句子里」的过滤。
+  for (const s of shuffle(answer.examples, rng)) {
     const prompt = clozeExample(s, answer.headword)
     if (prompt === null) continue
     // **对方的词头不能留在句子里**:两个候选词同时出现在题面上,这题就没得选了
@@ -305,26 +319,34 @@ export function generateContrastQuiz(
   rng: () => number = Math.random,
 ): QuizQuestion[] {
   const all = buildContrastPairs(words)
-  const tight = all.filter(p => p.score >= CONTRAST_MIN_SCORE)
-  // 词库小到紧密对不够一轮时退回全部词对 —— 出松一点的题也好过出不来题。
-  const pool = tight.length >= count ? tight : all
-  if (pool.length === 0) return []
+  if (all.length === 0) return []
 
-  const byId = new Map(words.map(w => [w.id, w]))
   const isLearned = (id: string) => {
     const e = progress.words[id]
     return e !== undefined && e.state !== 'new'
   }
 
-  // 先打乱再按「两个词都学过」稳定排序:同一档内保持随机,档间保证学过的先出。
-  // 顺序反过来(先排后乱)会把排序结果整个打散,等于没排。
-  const ordered = shuffle(pool, rng)
-    .map((p, i) => ({ p, i, both: isLearned(p.a) && isLearned(p.b) ? 1 : 0 }))
-    .sort((x, y) => y.both - x.both || x.i - y.i)
-    .map(x => x.p)
+  // **两个词都学过才出题**,与综合/听音靠 questionPool 硬过滤是同一条规矩。
+  //
+  // 原本这里只是把「都学过」的排到前面 —— **排序不是保证**:实测用户 63 个已学词
+  // 在 471 词的库里只配得出 7 对,排完就掉进未学词,53.7% 的题考的是从没见过的词
+  // (同一份进度下综合与听音都是 0%)。辨析考的是「该用哪个」,拿两个没学过的词
+  // 问这个问题没有意义。
+  //
+  // **没有「学过的词配不出对就退回全库」这条兜底**,这是刻意的。曾经写过一版,
+  // 结果正是用户报的那个问题:学了 20 个词、恰好一对都没凑出来时,整轮题全是
+  // 没见过的词。空模式不是故障 —— 它有一句说明告诉你为什么(见 Quiz.tsx 的
+  // EMPTY_HINT.contrast);而超纲题是在默默浪费时间,还会让人不再信任整个测验。
+  const base = all.filter(p => isLearned(p.a) && isLearned(p.b))
+  const tight = base.filter(p => p.score >= CONTRAST_MIN_SCORE)
+  // 紧密对不够一轮时退回这批词里的全部词对 —— 松一点的**学过的**词对,
+  // 好过紧密但没学过的。
+  const pool = tight.length >= count ? tight : base
+
+  const byId = new Map(words.map(w => [w.id, w]))
 
   const questions: QuizQuestion[] = []
-  for (const pair of ordered) {
+  for (const pair of shuffle(pool, rng)) {
     if (questions.length >= count) break
     const wa = byId.get(pair.a)
     const wb = byId.get(pair.b)
