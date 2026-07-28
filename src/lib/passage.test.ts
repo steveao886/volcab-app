@@ -33,8 +33,32 @@ describe('parseSentence', () => {
   })
 
   it('一句里多个标记', () => {
-    const tokens = parseSentence('{{a}} and {{b|bs}}')
-    expect(tokens?.filter(t => t.kind === 'word')).toHaveLength(2)
+    expect(parseSentence('{{a}} and {{b|bs}}')).toEqual([
+      { kind: 'word', wordId: 'a', surface: 'a' },
+      { kind: 'text', text: ' and ' },
+      { kind: 'word', wordId: 'b', surface: 'bs' },
+    ])
+  })
+
+  it('标记在句首:前面不出现空 text 片段', () => {
+    expect(parseSentence('{{a}} b')).toEqual([
+      { kind: 'word', wordId: 'a', surface: 'a' },
+      { kind: 'text', text: ' b' },
+    ])
+  })
+
+  it('标记在句尾:后面不出现空 text 片段', () => {
+    expect(parseSentence('a {{b}}')).toEqual([
+      { kind: 'text', text: 'a ' },
+      { kind: 'word', wordId: 'b', surface: 'b' },
+    ])
+  })
+
+  it('相邻标记之间没有内容:不出现空 text 片段', () => {
+    expect(parseSentence('{{a}}{{b}}')).toEqual([
+      { kind: 'word', wordId: 'a', surface: 'a' },
+      { kind: 'word', wordId: 'b', surface: 'b' },
+    ])
   })
 
   it('没有标记时整句一个 text 片段', () => {
@@ -46,13 +70,29 @@ describe('parseSentence', () => {
     expect(parseSentence('a {{b|c|d}} e')).toBeNull()  // 两根竖线
     expect(parseSentence('a {{}} b')).toBeNull()       // 空 id
     expect(parseSentence('a {{b|}} c')).toBeNull()     // 空形式
+    expect(parseSentence('a {{ }} b')).toBeNull()      // id 全是空白,trim 后为空
+    expect(parseSentence('a {{b| }} c')).toBeNull()    // 形式全是空白,trim 后为空
+    // 忘了写竖线:{{refute refuted}} 会被当成一个带空格的 id,
+    // 而这样的 id 永远匹配不到 words.json 里任何一个小写无空白的 Word.id
+    expect(parseSentence('a {{refute refuted}} b')).toBeNull()
+    expect(parseSentence('a {{Refute}} b')).toBeNull() // id 带大写,同样匹配不到词
   })
 })
 
 describe('parsePassage', () => {
   it('逐句解析,句数与 zh 一致时返回二维 token', () => {
     const r = parsePassage(passage({ en: ['{{a}} x.', 'y {{b}}.'], zh: ['甲', '乙'] }))
-    expect(r).toHaveLength(2)
+    expect(r).toEqual([
+      [
+        { kind: 'word', wordId: 'a', surface: 'a' },
+        { kind: 'text', text: ' x.' },
+      ],
+      [
+        { kind: 'text', text: 'y ' },
+        { kind: 'word', wordId: 'b', surface: 'b' },
+        { kind: 'text', text: '.' },
+      ],
+    ])
   })
 
   it('中译句数对不上返回 null —— 读取端对坏数据宽容,跳过这一篇', () => {

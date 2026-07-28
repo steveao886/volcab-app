@@ -4,6 +4,11 @@
  * 设计见 docs/superpowers/specs/2026-07-28-passage-cloze-design.md
  */
 
+/**
+ * 故意不放进 src/types.ts:那份文件是「会同步」的数据模型 —— 跟 volcab-data
+ * 仓库互相拉取推送,要过 merge/冲突处理那一套。短文是只读内容,随 App 打包
+ * 一起发布,从不参与同步,不属于那份 schema 管的范围。下次别把它「归位」过去。
+ */
 export interface Passage {
   id: string
   title: string
@@ -41,6 +46,11 @@ export function parseSentence(s: string): Token[] | null {
     const wordId = m[1].trim()
     const surface = (m[2] ?? m[1]).trim()
     if (wordId === '' || surface === '') return null
+    // {{refute refuted}} 是忘了写竖线的典型笔误 —— 没有这条检查,它会被当成
+    // 一个带空格的 id 直接放行。validate-words.ts 早就规定每个 Word.id
+    // 必须是小写且无空白,所以任何不满足这一条的 wordId 都注定匹配不到词,
+    // 与其让它混进题面查无此词,不如在这里就判成畸形标记。
+    if (wordId !== wordId.toLowerCase() || /\s/.test(wordId)) return null
     if (m.index > last) out.push({ kind: 'text', text: s.slice(last, m.index) })
     out.push({ kind: 'word', wordId, surface })
     last = m.index + m[0].length
