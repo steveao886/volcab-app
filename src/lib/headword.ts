@@ -53,6 +53,25 @@ export function headwordPattern(sentence: string, headword: string): RegExp | nu
   return loose.test(sentence) ? new RegExp(loose.source, 'gi') : null
 }
 
+/**
+ * `surface` 是不是 `headword` 的一个屈折变形。
+ *
+ * **只用紧规则,不走 headwordPattern 的松散退路。** 那条退路(`stem + [a-z]*`)
+ * 是为了在一整句话里定位得到词头而存在的,校验单个词时它会把 `reference` 判成
+ * `refute` 的变形、把 `mirth` 判成 `mire` 的变形。校验时候选只有一个词,没有
+ * 「定位不到就漏题」的压力,该用严格的词尾枚举。
+ *
+ * 只给写入端的校验脚本用(scripts/validate-passages.ts)。
+ */
+export function isInflectionOf(surface: string, headword: string): boolean {
+  const s = surface.trim().toLowerCase()
+  const h = headword.trim().toLowerCase()
+  if (s === '' || h === '') return false
+  if (s === h) return true
+  const base = /[ey]$/.test(h) ? h.slice(0, -1) : h
+  return new RegExp(`^${escapeRe(base)}${SUFFIX}$`, 'i').test(s)
+}
+
 export interface Segment { text: string; hit: boolean }
 
 /**

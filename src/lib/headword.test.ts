@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { headwordPattern, splitByHeadword } from './headword'
+import { headwordPattern, isInflectionOf, splitByHeadword } from './headword'
 
 const hits = (s: string, h: string) => splitByHeadword(s, h).filter(x => x.hit).map(x => x.text)
 const rebuild = (s: string, h: string) => splitByHeadword(s, h).map(x => x.text).join('')
@@ -103,5 +103,43 @@ describe('全库回归', () => {
       }
     }
     expect(wrong).toEqual([])
+  })
+})
+
+describe('isInflectionOf', () => {
+  it('原形本身算', () => {
+    expect(isInflectionOf('refute', 'refute')).toBe(true)
+  })
+
+  it('常见屈折变形算', () => {
+    expect(isInflectionOf('refuted', 'refute')).toBe(true)
+    expect(isInflectionOf('ratified', 'ratify')).toBe(true)
+    expect(isInflectionOf('inundated', 'inundate')).toBe(true)
+    expect(isInflectionOf('thwarting', 'thwart')).toBe(true)
+  })
+
+  it('大小写不敏感', () => {
+    expect(isInflectionOf('Refuted', 'refute')).toBe(true)
+  })
+
+  /**
+   * 这条是这个函数存在的全部理由。headwordPattern 在原形缺席时会退回
+   * 松散词干 `stem + [a-z]*`,拿它做校验会把 reference 判成 refute 的变形 ——
+   * 定位一整句话时那条松散规则是必要的退路,校验单个词时它是漏洞。
+   */
+  it('形近但无关的词不算', () => {
+    expect(isInflectionOf('reference', 'refute')).toBe(false)
+    expect(isInflectionOf('mirth', 'mire')).toBe(false)
+    expect(isInflectionOf('officials', 'officiate')).toBe(false)
+  })
+
+  it('多余的前后缀不算', () => {
+    expect(isInflectionOf('unrefuted', 'refute')).toBe(false)
+    expect(isInflectionOf('refutation', 'refute')).toBe(false)
+  })
+
+  it('空串不算', () => {
+    expect(isInflectionOf('', 'refute')).toBe(false)
+    expect(isInflectionOf('refute', '')).toBe(false)
   })
 })
