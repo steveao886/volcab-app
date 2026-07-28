@@ -21,6 +21,20 @@ export interface Passage {
   en: string[]
   /** 逐句中译,与 en 一一对应 */
   zh: string[]
+  /**
+   * 绝不能当这篇干扰词的词 id。
+   *
+   * 干扰词来自易混词图,而那张图是**按共享近义词**建的 —— 它天然会端出
+   * 「填进去也对」的词。2a 的 direct 过滤挡掉了词典级别的同义(substantiate
+   * 之于 corroborate),但挡不住只共享近义词、语义却照样贴合的那种
+   * (antipathy 之于 animosity、slacken 之于 abate:实测这两个各自出现在
+   * 24.8% / 17.8% 的题里,而且句子读起来完全成立)。
+   *
+   * 这一小撮只能靠人眼:某个词能不能填进这篇的某个空,是读出来的,不是算出来的。
+   * 好在候选池是**可穷举的** —— 一篇的干扰词只可能来自它标记词在易混词图上的
+   * 邻居,实测两篇分别是 8 个和 12 个词。校验脚本会把这个池子打印出来给作者过目。
+   */
+  exclude?: string[]
 }
 
 export interface PassagesFile { version: 1; passages: Passage[] }
@@ -177,6 +191,19 @@ export function pickDistractors(
 
   for (const p of shuffle(pairs, rng)) {
     if (out.length >= count) break
+    // **direct 的一律不要。** `direct` 的含义是一方把另一方的词头写进了自己的
+    // synonyms —— 那是词典级别的「这俩是一个意思」,正是绝不能拿来当错误选项的
+    // 东西。实测 committee-report 的 corroborate/substantiate 就是这样一对:
+    // 「no independent team could substantiate」既是通顺英文,意思也完全对,
+    // 26.6% 的题里它当了干扰词,用户会判定这题两个答案都对。
+    //
+    // 这只是**部分修复**:direct 只覆盖词典写死的同义,挡不住「只共享近义词、
+    // 语义却照样贴合」的那种(animosity/antipathy 共享 hostility、abate/slacken
+    // 共享 ease)。实测 committee-report 的歧义率从 45.4% 降到约 24.8%,剩下的
+    // 那批分数与安全的干扰词完全重合(disputatious 4 分是安全的,antipathy
+    // 2 分是歧义的,而 2 分里大多数安全)—— 没有阈值能把它们分开,只能靠
+    // `Passage.exclude` 人工点名。
+    if (p.direct) continue
     if (answerIds.has(p.a)) add(p.b)
     else if (answerIds.has(p.b)) add(p.a)
   }
@@ -233,11 +260,12 @@ export function buildPassageQuestion(
   const answerIds = new Set(blanks.map(b => b.wordId))
   // 正文里出现过的标记词全都不能当干扰词 —— 不只是被挖成空的那些。没挖成空的
   // 标记词(超出 MAX_BLANKS 的、或者还没学过的)是**原样印在正文里**的。
-  const markedIds = new Set<string>()
+  // 再并上作者人工点名的 exclude(见 Passage.exclude):算不出来的那一小撮歧义词。
+  const excluded = new Set<string>(passage.exclude)
   for (const tokens of sentences) {
-    for (const t of tokens) if (t.kind === 'word') markedIds.add(t.wordId)
+    for (const t of tokens) if (t.kind === 'word') excluded.add(t.wordId)
   }
-  const distractors = pickDistractors(answerIds, markedIds, words, progress, pairs, DISTRACTOR_COUNT, rng)
+  const distractors = pickDistractors(answerIds, excluded, words, progress, pairs, DISTRACTOR_COUNT, rng)
 
   const choices = shuffle<Choice>(
     [

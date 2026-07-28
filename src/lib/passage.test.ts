@@ -216,6 +216,21 @@ describe('pickDistractors', () => {
     expect(out.map(w => w.id)).toEqual(['bravo'])
   })
 
+  it('互为词典近义(direct)的那一对不当干扰词 —— 填进去也对', () => {
+    // bravo 把 alpha 的词头写进了自己的 synonyms → direct 对
+    const answer = word('alpha')
+    const same = { ...word('bravo'), synonyms: ['alpha'] }
+    // charlie 只是与 alpha 共享一个近义词,不是 direct,应该被选中
+    const answerShared = { ...answer, synonyms: ['shared'] }
+    const near = { ...word('charlie'), synonyms: ['shared'] }
+    const words = [answerShared, same, near]
+    const progress = progressWith({ alpha: TODAY, bravo: TODAY, charlie: TODAY })
+    const pairs = buildContrastPairs(words)
+    expect(pairs.find(p => p.a === 'alpha' && p.b === 'bravo')?.direct).toBe(true)
+    const out = pickDistractors(new Set(['alpha']), none, words, progress, pairs, 1, rng)
+    expect(out.map(w => w.id)).toEqual(['charlie'])
+  })
+
   it('易混词不够时退回词性相同的已学词', () => {
     const words = [word('alpha', 'adj.'), word('bravo', 'adj.'), word('charlie', 'n.')]
     const progress = progressWith({ alpha: TODAY, bravo: TODAY, charlie: TODAY })
@@ -281,6 +296,14 @@ describe('buildPassageQuestion', () => {
   it('解析失败返回 null,不抛错', () => {
     const p = passage({ en: ['{{a}} {{b} {{c}}'], zh: ['甲'] })
     expect(buildPassageQuestion(p, words, allLearned, TODAY, [], rng)).toBeNull()
+  })
+
+  it('exclude 点名的词不当干扰词 —— 算不出来的歧义只能靠人眼点名', () => {
+    const p = passage({ en: ['{{a}} {{b}} {{c}}'], zh: ['甲'], exclude: ['d'] })
+    for (let seed = 1; seed <= 50; seed++) {
+      const q = buildPassageQuestion(p, words, allLearned, TODAY, [], mulberry32(seed))!
+      expect(q.choices.map(c => c.wordId)).not.toContain('d')
+    }
   })
 
   it('标记了但没挖成空的词不当干扰词 —— 它就印在正文里,一眼就被划掉', () => {
