@@ -176,17 +176,19 @@ export const DISTRACTOR_COUNT = 2
  *   实测 committee-report 的 `ratify` 正是这种情况:N=471 已学词时 24.5% 的题里
  *   它当了干扰词,N=200 时 50.7%,N=100 时 100%。没学过的标记词同理(它不够格
  *   被挖空,却照样印在正文里)。
+ * @param byId `words` 的 id 索引,由调用方传入。`buildPassageQuestion` 已经对
+ *   同一份词表建过一遍,这里再建一遍是白建。
  */
 export function pickDistractors(
   answerIds: Set<string>,
   excludeIds: Set<string>,
   words: Word[],
+  byId: Map<string, Word>,
   progress: Progress,
   pairs: ContrastPair[],
   count: number,
   rng: () => number,
 ): Word[] {
-  const byId = new Map(words.map(w => [w.id, w]))
   const learned = (id: string): boolean => {
     const e = progress.words[id]
     return e !== undefined && e.state !== 'new'
@@ -222,19 +224,29 @@ export function pickDistractors(
     else if (answerIds.has(p.b)) add(p.a)
   }
 
-  const poses = new Set<string>()
-  for (const id of answerIds) {
-    const pos = byId.get(id)?.meanings[0]?.pos
-    if (pos !== undefined) poses.add(pos)
-  }
-  for (const w of shuffle(words, rng)) {
-    if (out.length >= count) break
-    if (poses.has(w.meanings[0]?.pos)) add(w.id)
+  // **降级前先看还缺不缺。** 这两级各要 `shuffle` 一遍全词库,而 `shuffle` 是
+  // Fisher-Yates:471 个词就是 470 次 rng。原本无条件求值,实测一道题一共消耗
+  // 1268 次 rng,其中 940 次(74%)出自这两个 shuffle —— 而一级候选绝大多数
+  // 时候就把名额填满了,那 940 次抽出来的结果一个都用不上。
+  // 加上早退之后实测:N=471 已学词 387.5 次/题,N=100 时 586.5,N=50 时 798
+  // ——已学词越多、一级候选越容易填满,这两级动用得越少。
+  if (out.length < count) {
+    const poses = new Set<string>()
+    for (const id of answerIds) {
+      const pos = byId.get(id)?.meanings[0]?.pos
+      if (pos !== undefined) poses.add(pos)
+    }
+    for (const w of shuffle(words, rng)) {
+      if (out.length >= count) break
+      if (poses.has(w.meanings[0]?.pos)) add(w.id)
+    }
   }
 
-  for (const w of shuffle(words, rng)) {
-    if (out.length >= count) break
-    add(w.id)
+  if (out.length < count) {
+    for (const w of shuffle(words, rng)) {
+      if (out.length >= count) break
+      add(w.id)
+    }
   }
 
   return out
@@ -279,7 +291,7 @@ export function buildPassageQuestion(
   for (const tokens of sentences) {
     for (const t of tokens) if (t.kind === 'word') excluded.add(t.wordId)
   }
-  const distractors = pickDistractors(answerIds, excluded, words, progress, pairs, DISTRACTOR_COUNT, rng)
+  const distractors = pickDistractors(answerIds, excluded, words, byId, progress, pairs, DISTRACTOR_COUNT, rng)
 
   const choices = shuffle<Choice>(
     [
@@ -320,6 +332,12 @@ export function scoreQuestion(
  * 挑一篇今天最该做的短文。一篇都出不来返回 null(由调用方给空状态文案)。
  *
  * `buildContrastPairs` 对全词库只算一次 —— 放进循环就是每篇重算一遍倒排索引。
+ *
+ * **每篇都完整组装一遍再打分,这是有意的**:打分要数到期词,而到期词就是
+ * `selectBlanks` 的产物,先打分再组装等于把选空逻辑抄一份出来。实测这台机器上
+ * 30 篇 3.7 ms、200 篇 18.0 ms(30 篇是近期语料规模,200 篇是规划规模),
+ * 都在一次点击的噪声里。语料再涨过 200 篇就该改成「先算轻量分、只组装最高分的
+ * 那几篇」—— 到那时再改,现在改是拿可读性换看不见的收益。
  */
 export function pickPassage(
   passages: Passage[],
