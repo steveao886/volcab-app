@@ -4,6 +4,8 @@
  * 设计见 docs/superpowers/specs/2026-07-28-passage-cloze-design.md
  */
 
+import type { Progress, Word } from '../types'
+
 /**
  * 故意不放进 src/types.ts:那份文件是「会同步」的数据模型 —— 跟 volcab-data
  * 仓库互相拉取推送,要过 merge/冲突处理那一套。短文是只读内容,随 App 打包
@@ -70,4 +72,57 @@ export function parsePassage(p: Passage): Token[][] | null {
     out.push(tokens)
   }
   return out
+}
+
+/** 一篇里至少要凑够 3 个空。两个空互为线索的推理不成立,退化成两道单句挖空。 */
+export const MIN_BLANKS = 3
+/** 一屏最多 7 个空,再多就做不完。 */
+export const MAX_BLANKS = 7
+
+export interface Blank {
+  /** 第几句 */
+  si: number
+  /** 该句里第几个 token */
+  ti: number
+  wordId: string
+  /** 句中形式,判对后填进去的就是它 */
+  surface: string
+}
+
+/**
+ * 选出要挖的空。
+ *
+ * **只挖学过的词**(`state !== 'new'`),没学过的、以及在词库里查不到的原样印出来。
+ * 这条沿用辨析模式那条教训(见 quiz.ts 的 generateContrastQuiz):不拿没见过的词
+ * 考你。但与辨析不同的是,没见过的词可以留在上下文里 —— 它不是题,是读物。
+ */
+export function selectBlanks(
+  sentences: Token[][],
+  words: Map<string, Word>,
+  progress: Progress,
+  today: string,
+): Blank[] {
+  const seen = new Set<string>()
+  const eligible: Blank[] = []
+
+  sentences.forEach((tokens, si) => {
+    tokens.forEach((t, ti) => {
+      if (t.kind !== 'word') return
+      // 同一个词一篇里最多一个空 —— 否则候选词区会出现两个一模一样的词,
+      // 而「用掉就划掉」的规则立刻自相矛盾。
+      if (seen.has(t.wordId)) return
+      if (!words.has(t.wordId)) return
+      const e = progress.words[t.wordId]
+      if (e === undefined || e.state === 'new') return
+      seen.add(t.wordId)
+      eligible.push({ si, ti, wordId: t.wordId, surface: t.surface })
+    })
+  })
+
+  if (eligible.length <= MAX_BLANKS) return eligible
+
+  // 到期的先占坑,再按正文顺序还原 —— 渲染必须按出现顺序,砍的是「挖谁」不是「怎么排」
+  const isDue = (b: Blank) => progress.words[b.wordId].due <= today
+  const picked = new Set([...eligible.filter(isDue), ...eligible.filter(b => !isDue(b))].slice(0, MAX_BLANKS))
+  return eligible.filter(b => picked.has(b))
 }
