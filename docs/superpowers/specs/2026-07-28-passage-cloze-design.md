@@ -29,14 +29,16 @@
 interface Passage {
   id: string        // 稳定短 id,如 "merger-friday"
   title: string     // 「并购泡汤的那个周五」,空状态与结果页用
-  /** 英文正文。目标词用 {{wordId|句中形式}} 标记;形式与词头相同时简写 {{concoct}} */
-  text: string
-  /** 逐句中译,句数必须与英文句数一致 */
+  /** 逐句英文。目标词用 {{wordId|句中形式}} 标记;形式与词头相同时简写 {{concoct}} */
+  en: string[]
+  /** 逐句中译,与 en 一一对应 */
   zh: string[]
 }
 
 interface PassagesFile { version: 1; passages: Passage[] }
 ```
+
+**英文也逐句存,不是一整段字符串。**中英对照要求句子一一对应,而按标点切句是个陷阱:`9 a.m.`、`Inc.`、`U.S.` 都会把一句切成两句,而例句里这类写法很常见(`concoct` 的例句就有 `9 a.m. standup`)。把配对做成**结构上的**而不是推导出来的,这个问题就不存在了。渲染整段时用空格连起来即可。
 
 ### 为什么放在 `src/data/` 而不是 volcab-data
 
@@ -182,7 +184,7 @@ interface PassagesFile { version: 1; passages: Passage[] }
 
 - `id` 唯一,且格式合法
 - 每个 `{{wordId|form}}` 的 `wordId` 在词库里存在
-- `form` 确实是该词头的一个变形 —— 用 `headwordPattern(form, headword)` 判定
+- `form` 确实是该词头的一个变形 —— 用 `lib/headword.ts` 新导出的 `isInflectionOf(form, headword)` 判定。**不能直接用 `headwordPattern`**:它在原形缺席时会退回松散词干 `stem + [a-z]*`,那条规则会把 `reference` 判成 `refute` 的变形。校验时候选只有一个词,该用严格的词尾枚举规则
 - 每篇标记词 ≥ 6 个(挖空只挖学过的,标记少了早期一篇也凑不出 3 个空)
 - `zh` 的句数与英文句数一致
 - 覆盖分布报告:哪些词一次都没被串到、哪些词出现在几篇里
