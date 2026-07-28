@@ -5,6 +5,8 @@
  */
 
 import type { Progress, Word } from '../types'
+import type { ContrastPair } from './contrast'
+import { shuffle } from './quiz'
 
 /**
  * 故意不放进 src/types.ts:那份文件是「会同步」的数据模型 —— 跟 volcab-data
@@ -125,4 +127,65 @@ export function selectBlanks(
   const isDue = (b: Blank) => progress.words[b.wordId].due <= today
   const picked = new Set([...eligible.filter(isDue), ...eligible.filter(b => !isDue(b))].slice(0, MAX_BLANKS))
   return eligible.filter(b => picked.has(b))
+}
+
+/** 候选词比空多几个。真题的选词填空一律给多,逼你排除。 */
+export const DISTRACTOR_COUNT = 2
+
+/**
+ * 挑干扰词。三级降级,凑不满就少给 —— 少一个干扰词只是这篇稍微简单些,
+ * 而拿一个与答案重复的选项出来是缺陷(与 quiz.ts 里 sharedSynonyms 要防的
+ * 是同一类问题)。
+ *
+ * 1. `buildContrastPairs` 里与某个答案易混的已学词 —— 现成的易混词图
+ * 2. 与某个答案主义项词性相同的已学词(词性不同的词在句子里根本不会打架)
+ * 3. 任意已学词
+ */
+export function pickDistractors(
+  answerIds: Set<string>,
+  words: Word[],
+  progress: Progress,
+  pairs: ContrastPair[],
+  count: number,
+  rng: () => number,
+): Word[] {
+  const byId = new Map(words.map(w => [w.id, w]))
+  const learned = (id: string): boolean => {
+    const e = progress.words[id]
+    return e !== undefined && e.state !== 'new'
+  }
+
+  const out: Word[] = []
+  const taken = new Set(answerIds)
+
+  const add = (id: string) => {
+    if (out.length >= count || taken.has(id) || !learned(id)) return
+    const w = byId.get(id)
+    if (w === undefined) return
+    taken.add(id)
+    out.push(w)
+  }
+
+  for (const p of shuffle(pairs, rng)) {
+    if (out.length >= count) break
+    if (answerIds.has(p.a)) add(p.b)
+    else if (answerIds.has(p.b)) add(p.a)
+  }
+
+  const poses = new Set<string>()
+  for (const id of answerIds) {
+    const pos = byId.get(id)?.meanings[0]?.pos
+    if (pos !== undefined) poses.add(pos)
+  }
+  for (const w of shuffle(words, rng)) {
+    if (out.length >= count) break
+    if (poses.has(w.meanings[0]?.pos)) add(w.id)
+  }
+
+  for (const w of shuffle(words, rng)) {
+    if (out.length >= count) break
+    add(w.id)
+  }
+
+  return out
 }

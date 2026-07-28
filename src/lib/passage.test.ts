@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { MAX_BLANKS, parsePassage, parseSentence, selectBlanks } from './passage'
+import { MAX_BLANKS, parsePassage, parseSentence, pickDistractors, selectBlanks } from './passage'
 import type { Passage } from './passage'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
+import { buildContrastPairs } from './contrast'
 
 /**
  * 短文出题的纯逻辑。UI 不写组件测试(照仓库约定,见 store.test.tsx 顶部),
@@ -182,5 +183,48 @@ describe('selectBlanks', () => {
     const blanks = selectBlanks(sentences, byId(words), progress, TODAY)
     expect(blanks).toHaveLength(MAX_BLANKS)
     expect(blanks.map(b => b.wordId)).toEqual(['c', 'd', 'e', 'f', 'g', 'h', 'i'])
+  })
+})
+
+describe('pickDistractors', () => {
+  const rng = () => 0.5
+
+  it('优先取与某个答案易混的已学词', () => {
+    const answer = { ...word('alpha'), synonyms: ['shared'] }
+    const confusable = { ...word('bravo'), synonyms: ['shared'] }
+    const unrelated = word('charlie')
+    const words = [answer, confusable, unrelated]
+    const progress = progressWith({ alpha: TODAY, bravo: TODAY, charlie: TODAY })
+    const out = pickDistractors(
+      new Set(['alpha']), words, progress, buildContrastPairs(words), 1, rng,
+    )
+    expect(out.map(w => w.id)).toEqual(['bravo'])
+  })
+
+  it('易混词不够时退回词性相同的已学词', () => {
+    const words = [word('alpha', 'adj.'), word('bravo', 'adj.'), word('charlie', 'n.')]
+    const progress = progressWith({ alpha: TODAY, bravo: TODAY, charlie: TODAY })
+    const out = pickDistractors(new Set(['alpha']), words, progress, [], 1, rng)
+    expect(out.map(w => w.id)).toEqual(['bravo'])
+  })
+
+  it('绝不选中答案自己', () => {
+    const words = [word('alpha'), word('bravo')]
+    const progress = progressWith({ alpha: TODAY, bravo: TODAY })
+    const out = pickDistractors(new Set(['alpha', 'bravo']), words, progress, [], 2, rng)
+    expect(out).toHaveLength(0)
+  })
+
+  it('没学过的词不当干扰项', () => {
+    const words = [word('alpha'), word('bravo')]
+    const out = pickDistractors(new Set(['alpha']), words, progressWith({ alpha: TODAY }), [], 2, rng)
+    expect(out).toHaveLength(0)
+  })
+
+  it('凑不满就少给 —— 少一个干扰词只是简单些,重复选项是缺陷', () => {
+    const words = [word('alpha'), word('bravo')]
+    const progress = progressWith({ alpha: TODAY, bravo: TODAY })
+    const out = pickDistractors(new Set(['alpha']), words, progress, [], 5, rng)
+    expect(out.map(w => w.id)).toEqual(['bravo'])
   })
 })
