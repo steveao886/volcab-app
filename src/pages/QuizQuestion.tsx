@@ -334,6 +334,21 @@ function SpellingQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuest
   const [submitted, setSubmitted] = useState(false)
   const [correct, setCorrect] = useState(false)
   const answeredRef = useRef(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Hand focus to the input on mount so a spelling question can be answered
+  // without ever touching the pointer: type, Enter submits the form, and
+  // AnswerFeedback then moves focus to "Next question" — which Enter also
+  // activates, remounting this component on the next question and starting
+  // the cycle over. The parent remounts per question via `key`, so a mount
+  // effect is all that's needed.
+  //
+  // On iOS this does *not* pop the on-screen keyboard: focus outside a user
+  // gesture never does. So mobile just gets a focused field, unchanged
+  // otherwise; the gain is entirely for the physical-keyboard case.
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
 
   const submit = () => {
     const v = value.trim()
@@ -379,6 +394,7 @@ function SpellingQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuest
       >
         <Field label="你的拼写" htmlFor="quiz-spelling-input">
           <TextInput
+            ref={inputRef}
             id="quiz-spelling-input"
             lang="en"
             autoComplete="off"
