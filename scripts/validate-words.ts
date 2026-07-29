@@ -12,7 +12,13 @@ if (!Array.isArray(data.words)) { console.error('words must be an array'); proce
 const seen = new Set<string>()
 for (const w of data.words) {
   const ctx = w.id ?? '(missing id)'
-  if (!w.id || w.id !== String(w.id).toLowerCase().trim()) errors.push(`${ctx}: id must be lowercase with no whitespace`)
+  // This was once written `w.id !== w.id.toLowerCase().trim()`, but trim() only
+  // strips leading and trailing whitespace — an id with a space in the middle, like
+  // `refute refuted`, sailed through while the error message claimed "no whitespace".
+  // parseSentence in src/lib/passage.ts rejects malformed markers on exactly the
+  // "lowercase, no whitespace" rule; a gate looser than the thing downstream of it
+  // lets ids that can never match a word slip into words.json.
+  if (!w.id || w.id !== String(w.id).toLowerCase() || /\s/.test(w.id)) errors.push(`${ctx}: id must be lowercase with no whitespace`)
   if (seen.has(w.id)) errors.push(`${ctx}: duplicate id`)
   seen.add(w.id)
   if (!w.headword) errors.push(`${ctx}: missing headword`)
