@@ -21162,6 +21162,104 @@
       "usageScore": 6,
       "sourceNote": "104-106",
       "addedAt": "2026-07-24"
+    },
+    {
+      "id": "conflate",
+      "headword": "conflate",
+      "phonetic": "/kənˈfleɪt/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to treat two distinct things as if they were one, blurring a difference that matters",
+          "zh": "把(不同的事物)混为一谈;混淆",
+          "share": 80
+        },
+        {
+          "pos": "v.",
+          "en": "to merge two or more texts, versions, or accounts into a single whole",
+          "zh": "把(文本、版本等)糅合为一体;合并",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "The article conflates burnout with ordinary tiredness, so readers finish it believing a quiet weekend can undo a brutal year.",
+        "The reviewer conflated battery life with charging speed, and the comments spent three days untangling two numbers that measure nothing alike.",
+        "My manager keeps conflating being busy with being productive, which is why the calendar is full and the roadmap has not moved.",
+        "Don't conflate a friendly landlord with a fair lease — read the clause about the deposit before you sign anything.",
+        "The editor conflated three surviving manuscripts into one readable text, noting in the margins wherever the versions disagreed."
+      ],
+      "synonyms": [
+        "confuse",
+        "equate",
+        "merge",
+        "fuse"
+      ],
+      "antonyms": [
+        "distinguish",
+        "differentiate",
+        "separate"
+      ],
+      "collocations": [
+        "conflate two issues",
+        "conflate correlation with causation",
+        "often conflated with",
+        "conflate the two senses"
+      ],
+      "relatedForms": [
+        {
+          "form": "conflation",
+          "pos": "n.",
+          "zh": "混为一谈;糅合"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "con-(一起) + flare(吹) → 吹到一起熔在一处 → 混为一谈",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-26"
+    },
+    {
+      "id": "corpus",
+      "headword": "corpus",
+      "phonetic": "/ˈkɔːrpəs/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "a large, organized collection of texts or recordings, gathered so that language or data can be studied at scale",
+          "zh": "语料库;(供研究的)文本、数据集合",
+          "share": 60
+        },
+        {
+          "pos": "n.",
+          "en": "the complete body of work produced by one writer, artist, or field",
+          "zh": "(某人或某领域的)全部作品;文集",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "The team trained the model on a corpus of thirty years of local newspapers, which is why it still writes like a 1998 city reporter.",
+        "Before signing off on the dictionary entry, she checked how often the phrase actually appeared in a corpus of spoken British English.",
+        "The startup's only real asset was a corpus of medical transcripts that nobody else had bothered to digitize.",
+        "His entire corpus fits on one shelf: two novels, a book of essays, and the letters his sister published after he died.",
+        "Critics who dismiss her early films clearly have not watched the full corpus, where the later ones quietly answer the first."
+      ],
+      "synonyms": [
+        "collection",
+        "body",
+        "compilation",
+        "dataset"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "a corpus of texts",
+        "training corpus",
+        "corpus of evidence",
+        "the author's corpus"
+      ],
+      "relatedForms": [],
+      "usageScore": 6,
+      "etymology": "拉丁 corpus(身体) → 文字的「全身」 → 文集、语料库",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-29"
     }
   ]
 }
