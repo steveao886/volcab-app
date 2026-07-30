@@ -60,9 +60,19 @@ export function advance(
   id: string,
   entry: ProgressEntry | undefined,
   today: string,
+  /**
+   * Practice drills pass false, and must.
+   *
+   * Recycling is driven by reading the committed entry back, but a
+   * practice grade deliberately writes nothing to the word when the answer
+   * is correct. A card that was still in `learning` with `due` today would
+   * therefore satisfy the recycle test forever: answer it right, it comes
+   * back unchanged, answer it right again, and the session never ends.
+   */
+  allowRecycle = true,
 ): SessionQueue {
   const rest = q.ids.slice(1)
-  const recycle = entry !== undefined && entry.state === 'learning' && entry.due <= today
+  const recycle = allowRecycle && entry !== undefined && entry.state === 'learning' && entry.due <= today
   return {
     ids: recycle ? [...rest, id] : rest,
     seen: q.seen + 1,

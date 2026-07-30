@@ -829,7 +829,12 @@ describe('recordLapseDrill: drilling never moves the schedule outward', () => {
     expect(after.due).toBe(before.due)
     expect(after.state).toBe(before.state)
     expect(after.lapses).toBe(before.lapses)
-    expect(after.lastReviewedAt > before.lastReviewedAt).toBe(true)
+    // Not even lastReviewedAt. mergeProgress takes the entry with the later
+    // timestamp whole, so stamping a word that didn't otherwise change
+    // would let this stale copy overwrite a real review from another
+    // device. "Done for today" is tracked locally instead -- see
+    // DONE_KEY in Review.tsx.
+    expect(after).toBe(before)
   })
 
   it('ten passes in one day leave the interval untouched — this is the bug that pushed a drilled word out to 2027', async () => {
@@ -879,6 +884,40 @@ describe('recordLapseDrill: drilling never moves the schedule outward', () => {
     const before = app().progress.words
     await step(() => { app().recordLapseDrill('does-not-exist', 'good') })
     expect(app().progress.words).toBe(before)
+  })
+})
+
+describe('recordConsolidation: same contract, but a fumble is not a lapse', () => {
+  it('a miss pulls due forward without counting a lapse — day-one shakiness is not forgetting', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.words['alpha']
+
+    await step(() => { app().recordConsolidation('alpha', 'again') })
+
+    const after = app().progress.words['alpha']
+    expect(after.due).toBe(today)
+    expect(after.lapses).toBe(before.lapses)     // the one difference from recordLapseDrill
+    expect(after.ease).toBe(before.ease)
+    expect(after.intervalDays).toBe(before.intervalDays)
+  })
+
+  it('a correct answer writes nothing to the word, same as the lapse drill', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.words['alpha']
+    await step(() => { app().recordConsolidation('alpha', 'good') })
+    expect(app().progress.words['alpha']).toBe(before)
+  })
+
+  it('still counts as a review, so an evening consolidation keeps the streak', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.dailyStats[today]
+    await step(() => { app().recordConsolidation('alpha', 'good') })
+    const after = app().progress.dailyStats[today]
+    expect(after.reviewed - before.reviewed).toBe(1)
+    expect(after.correct - before.correct).toBe(1)
   })
 })
 

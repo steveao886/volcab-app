@@ -8,8 +8,9 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { isEditableTarget } from '../lib/keys'
-import { buildLapseQueue, buildQueue, rankLapsedWords } from '../lib/queue'
+import { buildConsolidateQueue, buildLapseQueue, buildQueue, CONSOLIDATE_DELAY_HOURS, rankLapsedWords } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
+import { storage } from '../lib/storage'
 import { todayStr } from '../lib/srs'
 import { speak } from '../lib/tts'
 import { ReviewCardBack } from './ReviewCard'
@@ -24,6 +25,18 @@ import './Review.css'
    implementation with the quiz page's option shortcuts, see lib/keys.ts. */
 
 const GRADE_KEYS: Record<string, Grade> = { '1': 'again', '2': 'hard', '3': 'good', '4': 'easy' }
+
+/** Which local marker records "this drill is done for today"; the scheduled review has none, because finishing it is already written into the word data. */
+const DONE_KEY = { lapses: 'lapseDrilledOn', consolidate: 'consolidatedOn' } as const
+
+type ReviewMode = 'due' | 'lapses' | 'consolidate'
+
+const doneToday = (mode: ReviewMode, today: string): boolean =>
+  mode === 'due' ? false : storage.get<string>(DONE_KEY[mode]) === today
+
+const markDoneToday = (mode: ReviewMode, today: string): void => {
+  if (mode !== 'due') storage.set(DONE_KEY[mode], today)
+}
 
 /** Fallback timeout (ms) for when pendingRef gets stuck — see the note on the advance effect. */
 const PENDING_STUCK_TIMEOUT_MS = 2000
@@ -46,23 +59,37 @@ const PENDING_STUCK_TIMEOUT_MS = 2000
  * needed.
  */
 export function Review() {
-  const { words, progress, grade, recordLapseDrill, deleteWords } = useApp()
+  const { words, progress, grade, recordLapseDrill, recordConsolidation, deleteWords } = useApp()
   const [today] = useState(() => todayStr(new Date()))
-  // ?mode=lapses means "focus on lapsed words": the same card and grading
-  // logic, just with the queue swapped to the batch sorted by lapse count,
-  // ignoring due dates. It's a query param rather than a separate route
-  // because, aside from the one line that builds the queue, this page's
-  // behavior (flipping, grading, learning-step reappearance, deleting a
-  // word on the spot) is exactly the same either way.
+  // ?mode= swaps which batch the session is built from — lapses (words you
+  // keep forgetting) or consolidate (today's new words, a few hours on).
+  // Everything else about the page (flipping, grading, learning-step
+  // reappearance, deleting a word on the spot) is identical, which is why
+  // these are query params rather than separate routes.
   //
   // **Only read once, on mount**: same reasoning as buildQueue — switching
   // modes mid-session would reshuffle the queue right under the user's
   // eyes. To switch modes, leave and re-enter.
   const [searchParams] = useSearchParams()
-  const [mode] = useState(() => (searchParams.get('mode') === 'lapses' ? 'lapses' : 'due'))
+  const [mode] = useState<'due' | 'lapses' | 'consolidate'>(() => {
+    const m = searchParams.get('mode')
+    return m === 'lapses' ? 'lapses' : m === 'consolidate' ? 'consolidate' : 'due'
+  })
   const lapseMode = mode === 'lapses'
+  const consolidateMode = mode === 'consolidate'
+  // Both drills are practice: they never advance the schedule, so nothing
+  // in the word data records that today's pass happened. The marker is
+  // local (see lib/storage.ts for why it can't be synced), and it's read
+  // once here so that finishing a session doesn't blank the cards out from
+  // under the "done" screen.
+  const [alreadyDone] = useState(() => doneToday(mode, today))
   const [queue, setQueue] = useState<SessionQueue>(() => {
-    if (lapseMode) return buildSessionQueue(buildLapseQueue(words, progress, today), [])
+    if (lapseMode) {
+      return buildSessionQueue(alreadyDone ? [] : buildLapseQueue(words, progress, today), [])
+    }
+    if (consolidateMode) {
+      return buildSessionQueue(alreadyDone ? [] : buildConsolidateQueue(words, progress, new Date(), today), [])
+    }
     const q = buildQueue(words, progress, today)
     return buildSessionQueue(q.due, q.fresh)
   })
@@ -128,9 +155,10 @@ export function Review() {
       // practice multiply a word's interval several times over and push
       // the hardest words furthest into the future. See recordLapseDrill.
       if (lapseMode) recordLapseDrill(curId, g)
+      else if (consolidateMode) recordConsolidation(curId, g)
       else grade(curId, g)
     },
-    [curId, flipped, grade, recordLapseDrill, lapseMode, soundEnabled],
+    [curId, flipped, grade, recordLapseDrill, recordConsolidation, lapseMode, consolidateMode, soundEnabled],
   )
 
   // Review session complete sound: fires exactly once, at the moment
@@ -142,8 +170,11 @@ export function Review() {
     if (finished && queue.total > 0 && !sessionDonePlayedRef.current) {
       sessionDonePlayedRef.current = true
       playSessionDone(soundEnabled)
+      // Recorded on completion rather than on the first grade: abandoning
+      // a drill halfway shouldn't cost you the rest of it for the day.
+      markDoneToday(mode, today)
     }
-  }, [finished, queue.total, soundEnabled])
+  }, [finished, queue.total, soundEnabled, mode, today])
 
   // grade() commits synchronously but renders asynchronously: the progress
   // available right now is still the old one, so we have to wait for the
@@ -166,7 +197,7 @@ export function Review() {
       pendingTimeoutRef.current = undefined
     }
     const entry = progress.words[pendingId]
-    setQueue((q) => advance(q, pendingId, entry, today))
+    setQueue((q) => advance(q, pendingId, entry, today, mode === 'due'))
     // The head of the queue has moved on to "the next showing" — even if
     // the card reinserted at the tail happens to have the same id
     // (reappearing within this session), the manual flip record must
@@ -175,7 +206,7 @@ export function Review() {
     // require the user to flip it again would show up already flipped to
     // the answer side.
     setManualFlip(null)
-  }, [progress, today])
+  }, [progress, today, mode])
 
   // Clears the fallback timer on unmount, so it doesn't reach for a ref that no longer exists after the page is gone.
   useEffect(
@@ -264,38 +295,47 @@ export function Review() {
     [lapseMode, words, progress],
   )
 
-  const eyebrow = lapseMode ? 'Lapses' : 'Review'
-  const title = lapseMode ? '顽固词' : '复习'
+  const eyebrow = consolidateMode ? 'Consolidate' : lapseMode ? 'Lapses' : 'Review'
+  const title = consolidateMode ? '今日巩固' : lapseMode ? '顽固词' : '复习'
 
   if (finished) {
     const empty = queue.total === 0
-    // An empty drill has two completely different causes now that the
-    // queue filters itself, and telling them apart matters: "you have no
-    // stubborn words" is congratulations, while "you already did them
-    // today" is a schedule. Saying the first when the second is true would
-    // quietly claim the list had been cleared for good.
-    const clearedForToday = empty && lapseMode && hasLapsedWords
+    // An empty drill has two completely different causes, and telling them
+    // apart matters: "you have no stubborn words" is congratulations,
+    // while "you already did them today" is a schedule. Saying the first
+    // when the second is true would quietly claim the list had been
+    // cleared for good. `alreadyDone` is read once on mount, so it still
+    // reports the state the session *started* in.
+    const clearedForToday = empty && (alreadyDone || (lapseMode && hasLapsedWords))
     return (
       <Page eyebrow={eyebrow} title={title} back="/">
         <div className="review-done">
           <p className="review-done__label">
-            {lapseMode
-              ? empty ? (clearedForToday ? '今天已练完' : '暂无顽固词') : '顽固词已清完'
-              : empty ? '暂无待复习' : '复习完成'}
+            {consolidateMode
+              ? empty ? (clearedForToday ? '今天已巩固' : '暂无需要巩固的词') : '巩固完成'
+              : lapseMode
+                ? empty ? (clearedForToday ? '今天已练完' : '暂无顽固词') : '顽固词已清完'
+                : empty ? '暂无待复习' : '复习完成'}
           </p>
           <p className="review-done__count">
             今天已复习 <span className="num">{reviewedToday}</span> 个词
           </p>
           <p className="muted">
-            {lapseMode
+            {consolidateMode
               ? empty
                 ? clearedForToday
-                  ? '顽固词每天练一遍就够了,明天再来。'
-                  : '还没有反复记错的词 —— 这是好事。'
-                : '这一批错得最多的词都过了一遍。'
-              : empty
-                ? '暂时没有到期或新词需要复习。'
-                : '今日复习已全部完成,休息一下吧。'}
+                  ? '今天的新词已经复盘过一遍了,明天它们会正常到期。'
+                  : `今天学的新词要过 ${CONSOLIDATE_DELAY_HOURS} 小时才值得再看一遍,先去做点别的。`
+                : '刚学的词隔几小时再想起来一次,才是真正记住的那一次。'
+              : lapseMode
+                ? empty
+                  ? clearedForToday
+                    ? '顽固词每天练一遍就够了,明天再来。'
+                    : '还没有反复记错的词 —— 这是好事。'
+                  : '这一批错得最多的词都过了一遍。'
+                : empty
+                  ? '暂时没有到期或新词需要复习。'
+                  : '今日复习已全部完成,休息一下吧。'}
           </p>
           <Link to="/" className="btn btn--primary btn--lg">
             返回今日
@@ -339,7 +379,7 @@ export function Review() {
           with it, and a control that silently does less than it looks
           like it does is worse than no control. Say so once, on the page
           where it's true. */}
-      {lapseMode && (
+      {(lapseMode || consolidateMode) && (
         <p className="faint review-drill-note">这是练习:答错会把词提前到今天重新排队,答对不改变复习间隔。</p>
       )}
 

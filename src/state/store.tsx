@@ -64,6 +64,8 @@ export interface AppActions {
   grade(wordId: string, g: Grade): void
   /** Stubborn-word drill, graded one card at a time: practice only, so a miss pulls the due date forward and nothing else moves */
   recordLapseDrill(wordId: string, g: Grade): void
+  /** Same-day consolidation pass over today's new words. Practice, like recordLapseDrill, but a miss is not counted as a lapse */
+  recordConsolidation(wordId: string, g: Grade): void
   recordQuiz(correct: number, total: number, wrongIds: string[]): void
   /** Sprint settlement: like recordQuiz, only pulls forward the due date of missed words, plus refreshes the personal best score */
   recordSprint(score: number, wrongIds: string[]): void
@@ -588,23 +590,36 @@ export function AppProvider({ children }: { children: ReactNode }) {
    * that keeps a genuinely stubborn word at the top of tomorrow's list.
    * That counter feeds ranking only — it is not part of the schedule.
    */
-  const recordLapseDrill = useCallback((wordId: string, g: Grade) => {
+  /**
+   * The one grading path shared by both practice drills.
+   *
+   * A correct answer writes **nothing at all** to the word — not even
+   * lastReviewedAt. mergeProgress takes whichever side's entry has the
+   * later lastReviewedAt and takes it whole, so bumping that timestamp
+   * without changing anything else would let this device's otherwise-stale
+   * copy of the word beat a real review done on another device.
+   */
+  const practiceGrade = useCallback((wordId: string, g: Grade, countLapse: boolean) => {
     const now = new Date()
     const day = todayStr(now)
     const cur = stateRef.current.progress
     const prev = cur.words[wordId]
-    if (!prev) return   // Nothing to drill against; the word was deleted from another device mid-session
+    if (!prev) return   // Nothing to grade against; the word was deleted from another device mid-session
     const correct = g !== 'again'
     const stat = { ...(cur.dailyStats[day] ?? emptyStat()) }
     // Counted as a review, not as a quiz: this is a card you looked at and
     // graded, so it has to keep the streak alive and show up in the 30-day
-    // chart. newLearned is untouched — a drill only ever contains words
-    // that graduated long ago.
+    // chart. newLearned is untouched — neither drill ever introduces a word.
     stat.reviewed += 1
     if (correct) stat.correct += 1
     const entry = correct
-      ? { ...prev, lastReviewedAt: now.toISOString() }
-      : { ...prev, due: day, lapses: prev.lapses + 1, lastReviewedAt: now.toISOString() }
+      ? prev
+      : {
+          ...prev,
+          due: day,
+          lastReviewedAt: now.toISOString(),
+          ...(countLapse ? { lapses: prev.lapses + 1 } : {}),
+        }
     commitProgress({
       ...cur,
       words: { ...cur.words, [wordId]: entry },
@@ -612,6 +627,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
     })
     schedulePush()
   }, [commitProgress, schedulePush])
+
+  const recordLapseDrill = useCallback(
+    (wordId: string, g: Grade) => practiceGrade(wordId, g, true),
+    [practiceGrade],
+  )
+
+  /**
+   * Grading inside the same-day consolidation pass. Same practice contract
+   * as recordLapseDrill with one deliberate difference: a miss does **not**
+   * count a lapse.
+   *
+   * A lapse means forgetting a word you had already learned. Every word in
+   * this session was learned hours ago and is still on a one-day interval,
+   * so fumbling one is the normal shape of learning, not a relapse.
+   * Counting it would pour every shaky new word straight into the stubborn
+   * list and drown the words that genuinely keep coming back.
+   */
+  const recordConsolidation = useCallback(
+    (wordId: string, g: Grade) => practiceGrade(wordId, g, false),
+    [practiceGrade],
+  )
 
   // The score itself isn't stored: missed words are already reflected in the review schedule by having their due date pulled forward; dailyStats just records "took a quiz today"
   const recordQuiz = useCallback((_correct: number, _total: number, wrongIds: string[]) => {
@@ -739,11 +775,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AppContextValue>(() => ({
     ...state,
-    login, logout, grade, recordLapseDrill, recordQuiz, recordSprint, saveWord, deleteWords, addStaging,
+    login, logout, grade, recordLapseDrill, recordConsolidation, recordQuiz, recordSprint, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll,
     ...(import.meta.env.DEV ? { enterDemoMode } : {}),
   }), [
-    state, login, logout, grade, recordLapseDrill, recordQuiz, recordSprint, saveWord, deleteWords, addStaging,
+    state, login, logout, grade, recordLapseDrill, recordConsolidation, recordQuiz, recordSprint, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll, enterDemoMode,
   ])
 

@@ -77,6 +77,31 @@ describe('advance —— dequeuing and re-enqueuing', () => {
   })
 })
 
+describe('advance —— allowRecycle=false, the guard the practice drills depend on', () => {
+  it('a learning card due today is NOT recycled when recycling is off', () => {
+    // Practice grading writes nothing to the word on a correct answer, so
+    // this card would otherwise satisfy the recycle test on every pass and
+    // the session could never end.
+    const q = buildSessionQueue(['a', 'b'], [])
+    const stuck = entry({ state: 'learning', due: TODAY })
+    expect(advance(q, 'a', stuck, TODAY, false).ids).toEqual(['b'])
+    expect(advance(q, 'a', stuck, TODAY, true).ids).toEqual(['b', 'a'])
+  })
+
+  it('repeatedly grading the same unchanged card still drains the queue', () => {
+    let q = buildSessionQueue(['a', 'b'], [])
+    const unchanged = entry({ state: 'learning', due: TODAY })
+    for (let i = 0; i < 5 && !isDone(q); i++) q = advance(q, currentId(q)!, unchanged, TODAY, false)
+    expect(isDone(q)).toBe(true)
+    expect(q.seen).toBe(2)
+  })
+
+  it('recycling stays on by default, so scheduled review is untouched', () => {
+    const q = buildSessionQueue(['a'], [])
+    expect(advance(q, 'a', entry({ state: 'learning', due: TODAY }), TODAY).ids).toEqual(['a'])
+  })
+})
+
 describe('dropCurrent —— an entry disappears from the library (deleted on another device)', () => {
   it('drops the head of the queue, doesn\'t count toward seen, total decremented along with it', () => {
     const q = buildSessionQueue(['a', 'b', 'c'], [])

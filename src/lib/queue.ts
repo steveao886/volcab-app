@@ -68,6 +68,63 @@ export const LAPSE_SESSION_SIZE = 20
 export const MATURE_INTERVAL_DAYS = 21
 
 /**
+ * How long after learning a word the consolidation pass opens.
+ *
+ * The two learning steps (see LEARNING_STEPS in srs.ts) both land inside a
+ * single sitting — they requeue by queue position, not by clock — so a new
+ * word is retrieved two or three times within a few minutes and then not
+ * again until tomorrow. Those closely-spaced retrievals are the cheap
+ * ones; the durable gain comes from getting the word back after it has had
+ * time to fade.
+ *
+ * Three hours is chosen to be unambiguously a *second* sitting rather than
+ * a continuation of the first, while still leaving room for an evening
+ * pass on words learned in the morning. It is a judgement call, not a
+ * figure read off a study.
+ */
+export const CONSOLIDATE_DELAY_HOURS = 3
+
+/** Consolidation is for words that are still fragile: anything scheduled further out than tomorrow has already been answered well enough not to need it. */
+export const CONSOLIDATE_MAX_INTERVAL_DAYS = 1
+
+/**
+ * The words learned today that are ready for a second pass.
+ *
+ * Deliberately **not** a general "reopen review every few hours": mature
+ * words gain almost nothing from being retested the same day, and drilling
+ * them is what pushed a word out to a 273-day interval before
+ * recordLapseDrill existed. This queue only ever contains words whose next
+ * review is tomorrow or sooner — new words from today, plus any word that
+ * lapsed back to square one today.
+ *
+ * Ordered oldest-first: the word learned at breakfast has had the longest
+ * to fade, so it is the one whose retrieval is worth the most.
+ *
+ * No cap. The set is already bounded by how much was learned today, and
+ * truncating it would silently drop words the user has every reason to
+ * expect.
+ */
+export function buildConsolidateQueue(words: Word[], progress: Progress, now: Date, today: string): string[] {
+  const readyBefore = now.getTime() - CONSOLIDATE_DELAY_HOURS * 3600_000
+  return words
+    .filter(w => {
+      const e = progress.words[w.id]
+      if (!e || e.state === 'new') return false
+      if (e.intervalDays > CONSOLIDATE_MAX_INTERVAL_DAYS) return false
+      const last = new Date(e.lastReviewedAt)
+      if (todayStr(last) !== today) return false
+      return last.getTime() <= readyBefore
+    })
+    .sort((a, b) => {
+      const la = progress.words[a.id].lastReviewedAt, lb = progress.words[b.id].lastReviewedAt
+      if (la !== lb) return la < lb ? -1 : 1
+      const d = score(b) - score(a)
+      return d !== 0 ? d : a.id.localeCompare(b.id)
+    })
+    .map(w => w.id)
+}
+
+/**
  * Every word that has ever been forgotten, hardest first.
  *
  * Ranking, in order: lapse count, then **ease ascending**, then encounter

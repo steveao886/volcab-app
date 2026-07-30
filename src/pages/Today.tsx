@@ -4,8 +4,9 @@ import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Page } from '../components/Page'
 import { SyncStatus } from '../components/SyncStatus'
-import { buildLapseQueue, buildQueue } from '../lib/queue'
+import { buildConsolidateQueue, buildLapseQueue, buildQueue } from '../lib/queue'
 import { todayStr } from '../lib/srs'
+import { storage } from '../lib/storage'
 import { useApp } from '../state/store'
 import { accuracySeries, dailySeries } from './statsDerive'
 import { computeStreak, reviewProgress } from './todayStats'
@@ -26,7 +27,7 @@ export function Today() {
   // changed. Library's search will later follow this same precedent for an
   // array recomputed on every keystroke, so the rule is established here
   // first.
-  const { due, fresh, streak, count, total, ratio, queueEmpty, lapseCount } = useMemo(() => {
+  const { due, fresh, streak, count, total, ratio, queueEmpty, lapseCount, consolidateCount } = useMemo(() => {
     const queue = buildQueue(words, progress, today)
     const streak = computeStreak(progress.dailyStats, today)
     const rp = reviewProgress(words, progress)
@@ -38,7 +39,15 @@ export function Today() {
       total: rp.total,
       ratio: rp.ratio,
       queueEmpty: queue.due.length === 0 && queue.fresh.length === 0,
-      lapseCount: buildLapseQueue(words, progress, today).length,
+      lapseCount: storage.get<string>('lapseDrilledOn') === today
+        ? 0
+        : buildLapseQueue(words, progress, today).length,
+      // The consolidation pass only exists for a few hours a day, so its
+      // count is 0 far more often than not — the entry point below hides
+      // itself, the same way the lapse one does.
+      consolidateCount: storage.get<string>('consolidatedOn') === today
+        ? 0
+        : buildConsolidateQueue(words, progress, new Date(), today).length,
     }
   }, [words, progress, today])
 
@@ -144,6 +153,15 @@ export function Today() {
           <Link to="/review?mode=lapses" className="btn btn--ghost btn--block today-lapse">
             专攻顽固词
             <span className="num today-lapse__count">{lapseCount}</span>
+          </Link>
+        )}
+        {/* Only appears once today's new words have had a few hours to
+            fade, and disappears again after one pass — a second retrieval
+            is what this is for, not an all-evening loop. */}
+        {consolidateCount > 0 && (
+          <Link to="/review?mode=consolidate" className="btn btn--ghost btn--block today-lapse">
+            巩固今天的新词
+            <span className="num today-lapse__count">{consolidateCount}</span>
           </Link>
         )}
       </div>

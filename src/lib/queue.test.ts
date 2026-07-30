@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { buildLapseQueue, buildQueue, MATURE_INTERVAL_DAYS, rankLapsedWords } from './queue'
+import {
+  buildConsolidateQueue, buildLapseQueue, buildQueue,
+  CONSOLIDATE_DELAY_HOURS, CONSOLIDATE_MAX_INTERVAL_DAYS, MATURE_INTERVAL_DAYS, rankLapsedWords,
+} from './queue'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
 
@@ -152,7 +155,7 @@ describe('buildLapseQueue', () => {
     expect(buildLapseQueue([word('relearned'), word('stillHard')], p, TODAY)).toEqual(['stillHard'])
   })
 
-  it('a word already reviewed today drops out until tomorrow, so one pass empties the list', () => {
+  it('a word genuinely reviewed today drops out until tomorrow — no point drilling what you just did', () => {
     const p = emptyProgress()
     p.words['a'] = entry(2, { lastReviewedAt: '2026-07-24T09:00:00Z' })
     expect(buildLapseQueue([word('a')], p, TODAY)).toEqual([])
@@ -188,5 +191,68 @@ describe('rankLapsedWords', () => {
     const p = emptyProgress()
     ws.forEach((w, i) => { p.words[w.id] = entry(i + 1) })
     expect(rankLapsedWords(ws, p)).toHaveLength(30)
+  })
+})
+
+describe('buildConsolidateQueue', () => {
+  const TODAY = '2026-07-24'
+  /** hoursAgo is relative to `now` below, so the delay gate can be exercised without faking timers. */
+  const now = new Date(2026, 6, 24, 20, 0)
+  const at = (hoursAgo: number) => new Date(now.getTime() - hoursAgo * 3600_000).toISOString()
+  const entry = (over: Partial<{ state: 'learning' | 'review' | 'new'; intervalDays: number; lastReviewedAt: string }> = {}) => ({
+    state: 'review' as const, ease: 2.5, intervalDays: 1, due: '2026-07-25',
+    stepIndex: 0, reps: 3, lapses: 0, lastReviewedAt: at(CONSOLIDATE_DELAY_HOURS + 1), ...over,
+  })
+
+  it('picks up the words learned today once the delay has passed', () => {
+    const p = emptyProgress()
+    p.words['a'] = entry()
+    expect(buildConsolidateQueue([word('a')], p, now, TODAY)).toEqual(['a'])
+  })
+
+  it('a word learned minutes ago is not ready — that would just be the same sitting', () => {
+    const p = emptyProgress()
+    p.words['fresh'] = entry({ lastReviewedAt: at(CONSOLIDATE_DELAY_HOURS - 0.5) })
+    expect(buildConsolidateQueue([word('fresh')], p, now, TODAY)).toEqual([])
+  })
+
+  it('mature words are never included, however long ago they were reviewed', () => {
+    const p = emptyProgress()
+    p.words['mature'] = entry({ intervalDays: CONSOLIDATE_MAX_INTERVAL_DAYS + 1, lastReviewedAt: at(9) })
+    expect(buildConsolidateQueue([word('mature')], p, now, TODAY)).toEqual([])
+  })
+
+  it('words last seen on an earlier day are not part of today learning', () => {
+    const p = emptyProgress()
+    p.words['yesterday'] = entry({ lastReviewedAt: new Date(2026, 6, 23, 20, 0).toISOString() })
+    expect(buildConsolidateQueue([word('yesterday')], p, now, TODAY)).toEqual([])
+  })
+
+  it('a word still in the learning phase counts — it is the most fragile thing in the day', () => {
+    const p = emptyProgress()
+    p.words['stuck'] = entry({ state: 'learning', intervalDays: 0 })
+    expect(buildConsolidateQueue([word('stuck')], p, now, TODAY)).toEqual(['stuck'])
+  })
+
+  it('untouched words are excluded', () => {
+    const p = emptyProgress()
+    p.words['neverStarted'] = entry({ state: 'new' })
+    expect(buildConsolidateQueue([word('neverStarted'), word('noRecord')], p, now, TODAY)).toEqual([])
+  })
+
+  it('oldest first: the word learned at breakfast has had the longest to fade', () => {
+    const p = emptyProgress()
+    p.words['morning'] = entry({ lastReviewedAt: at(11) })
+    p.words['noon'] = entry({ lastReviewedAt: at(7) })
+    p.words['afternoon'] = entry({ lastReviewedAt: at(4) })
+    expect(buildConsolidateQueue([word('afternoon'), word('noon'), word('morning')], p, now, TODAY))
+      .toEqual(['morning', 'noon', 'afternoon'])
+  })
+
+  it('is not capped — a heavy learning day must not be silently truncated', () => {
+    const ws = Array.from({ length: 40 }, (_, i) => word(`w${i}`))
+    const p = emptyProgress()
+    ws.forEach((w, i) => { p.words[w.id] = entry({ lastReviewedAt: at(4 + i / 60) }) })
+    expect(buildConsolidateQueue(ws, p, now, TODAY)).toHaveLength(40)
   })
 })

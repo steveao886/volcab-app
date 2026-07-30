@@ -11,6 +11,21 @@ const KEYS = {
   stagingSha: 'volcab.stagingSha',
   stagingOps: 'volcab.stagingOps', // Word collections not yet confirmed pushed to the remote, same mechanism as wordOps
   recentPassages: 'volcab.recentPassages', // Ids of recently done passages. Only guards against repeats — not worth adding a sync field in progress.json for this
+  // The day (YYYY-MM-DD) each practice drill was last completed, so it
+  // isn't offered twice over. Same call as recentPassages: a second device
+  // offering the session again is a much smaller cost than a new synced
+  // field would be. They deliberately can't live in dailyStats either —
+  // mergeProgress rebuilds those entries from four named fields, so a
+  // fifth would be silently dropped on every merge.
+  //
+  // A local marker is also the *only* correct place for this. The obvious
+  // alternative, stamping lastReviewedAt when a drill card is answered
+  // correctly, would mean a word whose content didn't change carries the
+  // newest timestamp — and mergeProgress takes the entry with the later
+  // lastReviewedAt whole, so that stale copy would overwrite a real review
+  // done on another device.
+  consolidatedOn: 'volcab.consolidatedOn',
+  lapseDrilledOn: 'volcab.lapseDrilledOn',
 } as const
 
 export type StorageKey = keyof typeof KEYS
