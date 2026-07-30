@@ -1,0 +1,94 @@
+/* Discover (/discover, suggested vocabulary) page-specific styles.
+
+   One card per suggestion, each carrying enough to make the call without
+   leaving the page: the phrase, what it means in both languages, one real
+   sentence, and the trap if it has one. The decision is binary and it is
+   taken dozens of times in a row, so the two buttons are the same shape on
+   every card and never move. */
+
+.discover-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+.discover-note {
+  margin-block: var(--sp-3);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-snug);
+}
+
+.discover-empty {
+  padding-block: var(--sp-6);
+  text-align: center;
+}
+
+.discover-card {
+  margin-bottom: var(--sp-3);
+}
+
+.discover-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.discover-card__word {
+  font-size: var(--fs-md);
+  /* A phrase is several words long and must be allowed to wrap; the library's
+     single headwords never needed this. */
+  overflow-wrap: anywhere;
+}
+
+.discover-card__score {
+  font-size: var(--fs-xs);
+  flex: none;
+}
+
+.discover-card__kind {
+  margin-top: var(--sp-1);
+}
+
+.discover-card__zh {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-base);
+}
+
+.discover-card__en {
+  margin-top: var(--sp-1);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+}
+
+/* The example is the part that actually decides it — set apart with the
+   vermilion rule the app uses everywhere for annotation, not indented into
+   anonymity. */
+.discover-card__example {
+  margin-top: var(--sp-3);
+  padding-left: var(--sp-3);
+  border-left: 2px solid var(--accent);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+}
+
+.discover-card__note {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-snug);
+}
+
+/* "Accept" takes the width because it is the action worth making easy; the
+   two sit on one row so neither is ever the button under the thumb by
+   accident. */
+.discover-card__actions {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+}
+
+.discover-card__actions .btn:last-child {
+  flex: none;
+  min-width: 5em;
+}

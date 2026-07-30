@@ -185,9 +185,17 @@ export function Library() {
         // an address bar).
         <div className="library-actions">
           {manageMode ? null : (
-            <Link className="btn btn--ghost btn--sm" to="/add">
-              添加
-            </Link>
+            <>
+              {/* Sits beside 添加 because both answer "I want more words in
+                  here", and this is the one that doesn't require already
+                  knowing what to type. */}
+              <Link className="btn btn--ghost btn--sm" to="/discover">
+                推荐
+              </Link>
+              <Link className="btn btn--ghost btn--sm" to="/add">
+                添加
+              </Link>
+            </>
           )}
           <Button variant="ghost" size="sm" onClick={toggleManage} disabled={words.length === 0}>
             {manageMode ? '完成' : '管理'}

@@ -1,0 +1,2015 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "a-case-in-point",
+      "headword": "a case in point",
+      "kind": "expression",
+      "zh": "一个恰当的例证;正是一例",
+      "en": "an example that illustrates the general claim just made",
+      "usageScore": 8,
+      "example": "Regulators tend to arrive after the damage; the three years it took to ban the additive is a case in point.",
+      "note": "紧接在一般性论断之后引出印证它的实例;比 for example 更强调\"正好说明这一点\"。"
+    },
+    {
+      "id": "a-moot-point",
+      "headword": "a moot point",
+      "kind": "expression",
+      "zh": "已无实际意义的问题(美);尚有争议的问题(英)",
+      "en": "a question that no longer matters in practice (US), or one that remains open to debate (UK)",
+      "usageScore": 6,
+      "example": "Whether we should have renewed the lease is a moot point now; the landlord sold the building last Thursday.",
+      "note": "英美分歧最大的短语之一:美式重心是「争不争都没用了」,英式重心是「还没定论,值得争」。两种读法几乎相反,跨大西洋沟通时最好换成 irrelevant 或 debatable。"
+    },
+    {
+      "id": "absent",
+      "headword": "absent",
+      "kind": "expression",
+      "zh": "(作介词)在没有……的情况下;若无",
+      "en": "without; in the absence of",
+      "usageScore": 5,
+      "example": "Absent a written agreement from the estate, the auction house will not release the drawings to either brother.",
+      "note": "学习者只学过形容词「缺席的」,这里是介词,后面直接跟名词,等于 without / in the absence of。美式法律与财经写作高频,语气正式。"
+    },
+    {
+      "id": "ad-hoc",
+      "headword": "ad hoc",
+      "kind": "expression",
+      "zh": "临时的;为特定目的临时安排的",
+      "en": "arranged for one particular purpose only, without a general plan",
+      "usageScore": 8,
+      "example": "Flood relief was handled by an ad hoc committee that met four times and was dissolved before the next winter.",
+      "note": "拉丁语借词,可作形容词或副词;带有\"缺乏长期规划\"的轻微贬义。"
+    },
+    {
+      "id": "all-but",
+      "headword": "all but",
+      "kind": "expression",
+      "zh": "几乎;差不多已经",
+      "en": "almost completely; very nearly",
+      "usageScore": 8,
+      "example": "The bank has all but abandoned rural branches: only nine remain, and six of those now open twice a week.",
+      "note": "常被按字面误解成\"除了……全部\";在这个用法里 all but 等于 almost。"
+    },
+    {
+      "id": "all-the-more-so",
+      "headword": "all the more so",
+      "kind": "expression",
+      "zh": "更是如此;尤其在……情况下就更是这样",
+      "en": "even more true, for the reason that follows",
+      "usageScore": 6,
+      "example": "Reviewing the contract yourself matters, all the more so when the other side drafted every clause in it.",
+      "note": "so 回指前面整句话,后面常接 when / if / given。写成 all the more 也行,加 so 时前面必须有可回指的整句。"
+    },
+    {
+      "id": "anything-but",
+      "headword": "anything but",
+      "kind": "expression",
+      "zh": "绝不是;根本谈不上",
+      "en": "definitely not; the very opposite of",
+      "usageScore": 7,
+      "example": "The handover was billed as routine, but three servers went offline at once and the night was anything but routine.",
+      "note": "与 all but 只差一个词,意思却相反:all but routine ≈ 几乎照常,anything but routine = 根本不照常。这一对最容易记混。"
+    },
+    {
+      "id": "as-such",
+      "headword": "as such",
+      "kind": "expression",
+      "zh": "严格意义上的;就这个名义而言",
+      "en": "in the strict sense of the word just used; considered in that capacity",
+      "usageScore": 8,
+      "example": "There is no written policy as such, only a memo from 2019 that everyone treats as though it were binding.",
+      "note": "常被误当成 therefore。本义是\"严格说来的那个东西\",最典型的框架是 no X as such。"
+    },
+    {
+      "id": "at-the-expense-of",
+      "headword": "at the expense of",
+      "kind": "expression",
+      "zh": "以牺牲……为代价",
+      "en": "with something else suffering as the cost of the gain",
+      "usageScore": 9,
+      "example": "The airline cut turnaround times at the expense of maintenance checks, and the regulator grounded four aircraft in March.",
+      "note": "表示代价,不是\"由某人付钱\"(那是 at somebody's expense);后接名词或 -ing。"
+    },
+    {
+      "id": "at-the-margin",
+      "headword": "at the margin",
+      "kind": "expression",
+      "zh": "在边际上;就多加的那一点点而言",
+      "en": "with respect to one additional unit of effort, cost, or supply, rather than the total",
+      "usageScore": 5,
+      "example": "Another hour of testing helps at the margin, but the real defect rate is set by how the specs get written.",
+      "note": "经济学术语进入了一般评论文章。margin 是「边际」不是「边缘」;它是在说「再多一点点的效果」,常暗示这点效果很小。"
+    },
+    {
+      "id": "beg-the-question",
+      "headword": "beg the question",
+      "kind": "expression",
+      "zh": "预设结论:把有待证明的事当成前提(循环论证)",
+      "en": "to assume as already settled the very point that is in dispute",
+      "usageScore": 6,
+      "example": "Asking why the policy failed begs the question, since the committee has not yet shown that it failed at all.",
+      "note": "最著名的陷阱:它不是「引出一个问题」。逻辑学 petitio principii 的译名。松散用法(= raises the question)已极其普遍,连报刊也这么写,但在正式论证里用错会被抓。想说「引出问题」就直说 raises the question。"
+    },
+    {
+      "id": "bona-fide",
+      "headword": "bona fide",
+      "kind": "expression",
+      "zh": "真正的;货真价实的;出于善意的",
+      "en": "genuine and made in good faith, not pretended",
+      "usageScore": 7,
+      "example": "Only bona fide researchers get access to the archive, and each request is checked against a university's own records.",
+      "note": "法律与正式书面语色彩;作形容词,不要与名词 bona fides(资格证明)混用。"
+    },
+    {
+      "id": "by-no-means",
+      "headword": "by no means",
+      "kind": "expression",
+      "zh": "绝非;远远不是",
+      "en": "not at all; far from it",
+      "usageScore": 8,
+      "example": "The recovery is real but by no means secure: two of the three growth drivers depend on a single export market.",
+      "note": "放句首时主句要倒装 (By no means is this settled);放在 be 动词后则不倒装。"
+    },
+    {
+      "id": "by-the-same-token",
+      "headword": "by the same token",
+      "kind": "expression",
+      "zh": "同理;按同样的逻辑",
+      "en": "for the same reason, applying the logic just used to a second case",
+      "usageScore": 7,
+      "example": "If subsidies distort the solar market, then by the same token the fuel-duty freeze distorts the market for diesel.",
+      "note": "只用于\"同一条逻辑推及另一件事\",不等于 similarly(那只是\"类似地\")。"
+    },
+    {
+      "id": "caveat",
+      "headword": "caveat",
+      "kind": "expression",
+      "zh": "附带的告诫;需要留意的但书",
+      "en": "a warning or condition attached to a statement, limiting how far it holds",
+      "usageScore": 8,
+      "example": "The forecast comes with one large caveat: it assumes the port reopens in April, which nobody in shipping expects.",
+      "note": "常见搭配 with the caveat that / one caveat;比 warning 更学术,专指限定条件。"
+    },
+    {
+      "id": "de-facto",
+      "headword": "de facto",
+      "kind": "expression",
+      "zh": "事实上的(虽无法律地位)",
+      "en": "existing in fact, though not officially established",
+      "usageScore": 8,
+      "example": "With the assembly suspended for a second year, the governor has become the de facto legislature of the province.",
+      "note": "与 de jure(法律上的)成对使用;作形容词时不加连字符。"
+    },
+    {
+      "id": "fait-accompli",
+      "headword": "fait accompli",
+      "kind": "expression",
+      "zh": "既成事实",
+      "en": "something already done and presented as impossible to reverse",
+      "usageScore": 7,
+      "example": "By the time the committee was consulted the contract had been signed, and members were handed a fait accompli.",
+      "note": "常搭配 present someone with a fait accompli;强调木已成舟,协商已无意义。"
+    },
+    {
+      "id": "for-all",
+      "headword": "for all",
+      "kind": "expression",
+      "zh": "尽管有……;虽然……却",
+      "en": "in spite of; despite the existence of",
+      "usageScore": 6,
+      "example": "For all the money spent on the new ticketing system, passengers still queue at the same two machines every morning.",
+      "note": "让步用法,等于 despite,不是「为了」也不是「换来」。放句首、后面接名词短语时基本都是这个意思,后半句必有转折。"
+    },
+    {
+      "id": "for-what-its-worth",
+      "headword": "for what it's worth",
+      "kind": "expression",
+      "zh": "不知道有没有用,我提一句;姑妄言之",
+      "en": "used to offer information or an opinion while conceding it may not be useful",
+      "usageScore": 7,
+      "example": "For what it's worth, I ran the same query on last year's data and got the identical mismatch.",
+      "note": "降低姿态的礼貌铺垫,不是真的怀疑自己说的没价值。邮件与技术讨论里常缩写成 FWIW。"
+    },
+    {
+      "id": "if-anything",
+      "headword": "if anything",
+      "kind": "expression",
+      "zh": "要说有什么区别的话,反倒是……",
+      "en": "used to suggest, mildly, the opposite of what was just denied",
+      "usageScore": 8,
+      "example": "The revised figures do not weaken the case for the levy; if anything, they make it harder to argue against.",
+      "note": "用在否定之后做温和的反向修正,中文很难直译;用对了立刻显得地道。"
+    },
+    {
+      "id": "in-and-of-itself",
+      "headword": "in and of itself",
+      "kind": "expression",
+      "zh": "就其本身而言;单凭这一点",
+      "en": "considered alone, apart from its consequences or context",
+      "usageScore": 7,
+      "example": "A falling birth rate is not, in and of itself, a crisis; what matters is how fast the workforce shrinks around it.",
+      "note": "多与否定连用;比单说 itself 更强调\"孤立地看\"。"
+    },
+    {
+      "id": "in-no-small-part",
+      "headword": "in no small part",
+      "kind": "expression",
+      "zh": "在很大程度上",
+      "en": "to a considerable degree",
+      "usageScore": 7,
+      "example": "The recovery was in no small part the work of one procurement officer who refused to sign the original contract.",
+      "note": "双重否定的书面说法,等于 largely;常与 due to / thanks to 连用。"
+    },
+    {
+      "id": "in-the-wake-of",
+      "headword": "in the wake of",
+      "kind": "expression",
+      "zh": "在……之后(紧随某重大事件而来)",
+      "en": "following, and as a consequence of, a major event",
+      "usageScore": 9,
+      "example": "In the wake of the collapse, three regional lenders were forced to disclose how much of the same debt they held.",
+      "note": "只用于重大或负面事件之后,不能替代普通的 after;后接名词,不接从句。"
+    },
+    {
+      "id": "insofar-as",
+      "headword": "insofar as",
+      "kind": "expression",
+      "zh": "在……范围内;仅就……而言",
+      "en": "to the extent that; only to the degree that something is true",
+      "usageScore": 5,
+      "example": "The clause binds the contractor only insofar as the delay was within his control, which the flooding clearly was not.",
+      "note": "正式书面语,尤其常见于法律与学术。它限定范围,不等于 because——译成「因为」就丢掉了「仅在此限度内」的关键含义。英式常拆写成 in so far as。"
+    },
+    {
+      "id": "it-is-worth-noting-that",
+      "headword": "it is worth noting that",
+      "kind": "expression",
+      "zh": "值得注意的是……",
+      "en": "a marker used to flag a relevant fact the reader might otherwise pass over",
+      "usageScore": 8,
+      "example": "It is worth noting that the survey excluded firms with fewer than ten staff, which is precisely where the job losses landed.",
+      "note": "常见错误是写成 it is worth to note that;worth 后面必须接 -ing 形式。"
+    },
+    {
+      "id": "let-alone",
+      "headword": "let alone",
+      "kind": "expression",
+      "zh": "更不用说;遑论",
+      "en": "used after a negative statement to introduce something even less likely",
+      "usageScore": 9,
+      "example": "The clinic cannot staff a second nurse, let alone the scanner the regional plan promised it three years ago.",
+      "note": "前半句必须是否定;后接成分要与前面平行(名词对名词、动词原形对动词原形)。"
+    },
+    {
+      "id": "more-often-than-not",
+      "headword": "more often than not",
+      "kind": "expression",
+      "zh": "多半;十有八九",
+      "en": "in most cases, though not always",
+      "usageScore": 8,
+      "example": "Appeals against the assessment succeed more often than not, which tells you something about how the first decision is made.",
+      "note": "比 usually 更有分寸,暗示\"超过一半但并非总是\";放句中或句末都自然。"
+    },
+    {
+      "id": "much-less",
+      "headword": "much less",
+      "kind": "expression",
+      "zh": "更不用说;遑论",
+      "en": "and certainly not; used after a negative to add something even less likely",
+      "usageScore": 7,
+      "example": "The intern could not find the archive room, much less the 1994 files the partner wanted before lunch.",
+      "note": "不是「少得多」。必须跟在否定句后面,引出一件更不可能的事,等同 let alone。用在肯定句后是语法错误。"
+    },
+    {
+      "id": "not-least",
+      "headword": "not least",
+      "kind": "expression",
+      "zh": "尤其是;其中特别包括",
+      "en": "used to single out one particularly important item from a list",
+      "usageScore": 8,
+      "example": "Several ministers opposed the closure, not least the one whose constituency houses the older of the two plants.",
+      "note": "不要写成 not the least;意思是\"其中尤为重要的是\",不是\"一点也不\"。"
+    },
+    {
+      "id": "not-least-because",
+      "headword": "not least because",
+      "kind": "expression",
+      "zh": "尤其是因为;一个很重要的原因是",
+      "en": "used to add a reason that is especially important among several",
+      "usageScore": 6,
+      "example": "The hearing was postponed, not least because the only witness who saw the transfer was still in hospital.",
+      "note": "not least 是曲言法(以否定表强调),意思是「绝非最不重要的」= 尤其。看到 not 就理解成否定原因,是典型误读。"
+    },
+    {
+      "id": "nothing-if-not",
+      "headword": "nothing if not",
+      "kind": "expression",
+      "zh": "可谓十足的;至少这一点毫无疑问",
+      "en": "used before an adjective to insist that this quality at least is beyond dispute",
+      "usageScore": 7,
+      "example": "The new editor is nothing if not thorough: she read every back issue before changing a single headline.",
+      "note": "字面像否定,实为强调;后面必须紧跟形容词,不能接名词。"
+    },
+    {
+      "id": "notwithstanding",
+      "headword": "notwithstanding",
+      "kind": "expression",
+      "zh": "尽管;虽有……(仍然)",
+      "en": "in spite of; without being prevented by",
+      "usageScore": 6,
+      "example": "Notwithstanding two years of record profits, the company froze salaries and told staff the outlook remained uncertain.",
+      "note": "英语里罕见的可后置介词:the delay notwithstanding 与 notwithstanding the delay 都对,后置更书面。语气比 despite 正式一档。"
+    },
+    {
+      "id": "on-balance",
+      "headword": "on balance",
+      "kind": "expression",
+      "zh": "总的来说;权衡之后",
+      "en": "taking everything into account, after weighing both sides",
+      "usageScore": 8,
+      "example": "On balance the merger should clear, though the regulator will probably force the sale of the two overlapping depots.",
+      "note": "暗示两边都有道理、权衡后倾向某一边;比 overall 多了\"衡量过\"这层意思。"
+    },
+    {
+      "id": "on-the-face-of-it",
+      "headword": "on the face of it",
+      "kind": "expression",
+      "zh": "表面上看",
+      "en": "judging only from what is immediately apparent, before closer scrutiny",
+      "usageScore": 8,
+      "example": "On the face of it the deal saves the taxpayer money; read the indemnity clause and the liability has simply moved.",
+      "note": "后面几乎总跟一个转折;比 apparently 更明确地预告下文的反转。"
+    },
+    {
+      "id": "only-to",
+      "headword": "only to",
+      "kind": "expression",
+      "zh": "结果却……(引出出乎意料且多半令人失望的后果)",
+      "en": "used to introduce an unexpected and usually disappointing outcome of an action",
+      "usageScore": 7,
+      "example": "She drove four hours to the county office, only to be told the deeds had been moved to a warehouse in Leeds.",
+      "note": "不是「只是为了」。它标记的是落空:前半句付出努力,后半句被打脸。语气上的意外感是这个结构存在的全部理由。"
+    },
+    {
+      "id": "per-se",
+      "headword": "per se",
+      "kind": "expression",
+      "zh": "本身;就其自身而言",
+      "en": "by or in itself, as distinct from its effects or associations",
+      "usageScore": 7,
+      "example": "The tax is not unpopular per se; what voters object to is that the receipts have not reached their own hospital.",
+      "note": "放在被修饰的名词或形容词之后,不能放前面;多与否定连用。"
+    },
+    {
+      "id": "prima-facie",
+      "headword": "prima facie",
+      "kind": "expression",
+      "zh": "初步看来(已足以成立的)",
+      "en": "based on first impression, sufficient to proceed with unless later contradicted",
+      "usageScore": 6,
+      "example": "The auditors found a prima facie case of double billing, though nobody had yet traced where the money went.",
+      "note": "法律拉丁语,现已进入严肃新闻;固定搭配是 prima facie case / evidence。"
+    },
+    {
+      "id": "quid-pro-quo",
+      "headword": "quid pro quo",
+      "kind": "expression",
+      "zh": "交换条件;对等的回报",
+      "en": "something given in return for something else, as part of a bargain",
+      "usageScore": 7,
+      "example": "The loan cleared the same week the ministry received the donation, and prosecutors are treating that as a quid pro quo.",
+      "note": "现在多用于政治与腐败报道,带负面暗示;中性的交换用 trade-off 或 exchange。"
+    },
+    {
+      "id": "so-much-for",
+      "headword": "so much for",
+      "kind": "expression",
+      "zh": "……就到此为止了;所谓的……可真行(反讽)",
+      "en": "used to dismiss something as finished or exposed as false",
+      "usageScore": 6,
+      "example": "The heating failed again on the second morning — so much for the landlord's promise that the boiler had been replaced.",
+      "note": "带明显反讽,宣告某个承诺或说法已被事实推翻。另有一个中性义:演讲中收束话题(So much for the background)。语气全靠上下文区分。"
+    },
+    {
+      "id": "status-quo",
+      "headword": "status quo",
+      "kind": "expression",
+      "zh": "现状;既有格局",
+      "en": "the existing state of affairs, especially one that some party wants preserved",
+      "usageScore": 9,
+      "example": "Every party promised reform, and every party's costed plan turned out to defend the status quo in a different way.",
+      "note": "几乎总带定冠词 the;暗指\"有人从中获益、因而抗拒改变的现状\"。"
+    },
+    {
+      "id": "that-said",
+      "headword": "that said",
+      "kind": "expression",
+      "zh": "话虽如此",
+      "en": "used to concede a point and then qualify it",
+      "usageScore": 9,
+      "example": "The migration ran three months late; that said, nothing broke on the night, which is more than the last one managed.",
+      "note": "比 However 轻,承接上一句的让步;书面口语通用,句首后加逗号。"
+    },
+    {
+      "id": "to-a-fault",
+      "headword": "to a fault",
+      "kind": "expression",
+      "zh": "过分地(所修饰的还是优点)",
+      "en": "to an excessive degree, said of a quality that is otherwise a virtue",
+      "usageScore": 7,
+      "example": "He was generous to a fault, lending the deposit to a tenant he had met exactly twice.",
+      "note": "只修饰褒义形容词且后置;意思是\"好过了头\",不是\"有毛病\"。"
+    },
+    {
+      "id": "to-be-fair",
+      "headword": "to be fair",
+      "kind": "expression",
+      "zh": "平心而论;话说回来(引出对对方有利的一点)",
+      "en": "used to introduce a point in favour of the side you have just been criticizing",
+      "usageScore": 8,
+      "example": "To be fair, the vendor warned us about the deadline in April, and we booked the install anyway.",
+      "note": "是让步标记,不是「公平地说」。后面接的一定是对刚被批评那一方有利的话,所以用错方向会让整段逻辑翻车。"
+    },
+    {
+      "id": "to-no-avail",
+      "headword": "to no avail",
+      "kind": "expression",
+      "zh": "徒劳无功",
+      "en": "without achieving the intended result, despite real effort",
+      "usageScore": 7,
+      "example": "The crew pumped the hold for six hours to no avail, and the ferry settled onto the sandbar before dawn.",
+      "note": "avail 作名词几乎只活在这个短语里;重点是努力过却没用。"
+    },
+    {
+      "id": "to-put-it-mildly",
+      "headword": "to put it mildly",
+      "kind": "expression",
+      "zh": "说得客气些;这还是轻描淡写",
+      "en": "used to signal that the description just given is a considerable understatement",
+      "usageScore": 8,
+      "example": "The rollout did not go smoothly, to put it mildly; half the branches were offline for nine days.",
+      "note": "反讽标记:前面说得越轻,实际越严重;位置灵活,句末最常见。"
+    },
+    {
+      "id": "to-that-end",
+      "headword": "to that end",
+      "kind": "expression",
+      "zh": "为此;为达成刚说的那个目标",
+      "en": "in order to achieve the aim just mentioned",
+      "usageScore": 6,
+      "example": "The city wants a car-free centre by 2030; to that end, it has already closed four streets around the market.",
+      "note": "end 是古义「目的」,不是「结尾」——所以它绝不表示「最后」。前一句必须已经点明一个目标,否则 that 无处可指。"
+    },
+    {
+      "id": "vis-a-vis",
+      "headword": "vis-à-vis",
+      "kind": "expression",
+      "zh": "相对于;就……而言",
+      "en": "in relation to, or compared with",
+      "usageScore": 6,
+      "example": "The euro's weakness vis-à-vis the dollar flattered export earnings and hid a real fall in shipped volumes.",
+      "note": "法语借词,书面语用于比较关系;口语几乎不用,用多了会显得做作。"
+    },
+    {
+      "id": "with-the-benefit-of-hindsight",
+      "headword": "with the benefit of hindsight",
+      "kind": "expression",
+      "zh": "事后看来",
+      "en": "judging with knowledge that was not available at the time",
+      "usageScore": 7,
+      "example": "With the benefit of hindsight the warning signs were obvious, but in 2021 the deposit outflows looked entirely seasonal.",
+      "note": "比 looking back 正式,且明确承认当时并不掌握这些信息,常用于检讨或开脱。"
+    },
+    {
+      "id": "writ-large",
+      "headword": "writ large",
+      "kind": "expression",
+      "zh": "放大版的;同一件事在更大尺度上的重演",
+      "en": "the same thing in a bigger, more obvious, or more extreme form",
+      "usageScore": 5,
+      "example": "The dispute over the parking permits is the city's housing fight writ large, with the same landlords on both sides.",
+      "note": "writ 是 write 的古过去分词,只活在这个词组里。语序特殊:后置修饰名词(X writ large),不能写成 largely written。"
+    },
+    {
+      "id": "a-double-edged-sword",
+      "headword": "a double-edged sword",
+      "kind": "idiom",
+      "zh": "双刃剑;利弊并存的事物",
+      "en": "something that has both a clear benefit and a comparable drawback",
+      "usageScore": 8,
+      "example": "Cheap borrowing proved a double-edged sword: it financed the expansion and then made the refinancing cliff impossible to climb.",
+      "note": "与中文\"双刃剑\"完全对应,写作时可直接替换掉冗长的 has both advantages and disadvantages。"
+    },
+    {
+      "id": "a-fig-leaf",
+      "headword": "a fig leaf",
+      "kind": "idiom",
+      "zh": "遮羞布:用来掩饰难堪真相的表面说法或象征性举措",
+      "en": "a token gesture used to cover something embarrassing without changing it",
+      "usageScore": 6,
+      "example": "The pilot program was a fig leaf: forty tablets for a district of nine thousand students, announced the week before the vote.",
+      "note": "常见搭配 a fig leaf for / of。贬义,且暗示这块布谁都看得穿。"
+    },
+    {
+      "id": "a-level-playing-field",
+      "headword": "a level playing field",
+      "kind": "idiom",
+      "zh": "公平竞争的环境",
+      "en": "conditions in which every competitor is subject to the same rules and advantages",
+      "usageScore": 8,
+      "example": "European carriers want a level playing field on state aid before Gulf airlines are granted any more landing slots.",
+      "note": "贸易与监管报道的固定表达;把\"公平竞争环境\"直译成 fair competition environment 会很生硬。"
+    },
+    {
+      "id": "a-pyrrhic-victory",
+      "headword": "a Pyrrhic victory",
+      "kind": "idiom",
+      "zh": "惨胜:代价大到得不偿失的胜利",
+      "en": "a win achieved at so high a cost that it is scarcely better than a defeat",
+      "usageScore": 6,
+      "example": "They won the patent suit after four years, but the legal bills and lost customers made it a Pyrrhic victory.",
+      "note": "源自古希腊国王 Pyrrhus,故首字母大写;读 /ˈpɪrɪk/,与 psychic 无关。"
+    },
+    {
+      "id": "a-race-to-the-bottom",
+      "headword": "a race to the bottom",
+      "kind": "idiom",
+      "zh": "逐底竞争;竞相压低标准",
+      "en": "competition in which rivals keep cutting standards, prices, or wages to undercut each other",
+      "usageScore": 8,
+      "example": "Once one platform waived its commission, the others followed, and delivery pay entered a race to the bottom.",
+      "note": "经济与监管报道高频;明确的贬义,指标准而非价格的自然下降。"
+    },
+    {
+      "id": "a-rising-tide-lifts-all-boats",
+      "headword": "a rising tide lifts all boats",
+      "kind": "idiom",
+      "zh": "水涨船高:整体增长会让所有人受益",
+      "en": "the claim that general economic growth benefits everyone, rich and poor alike",
+      "usageScore": 5,
+      "example": "The minister repeated that a rising tide lifts all boats, but wages in the northern towns had not moved in a decade.",
+      "note": "政策辩论里的固定引语。注意语用:今天引用它的人多半是为了紧接着反驳它,直接当自己的主张说会显得天真。"
+    },
+    {
+      "id": "a-shot-in-the-arm",
+      "headword": "a shot in the arm",
+      "kind": "idiom",
+      "zh": "一剂强心针;及时的提振",
+      "en": "a sudden boost that revives something that was flagging",
+      "usageScore": 7,
+      "example": "The export licence was a shot in the arm for a shipyard that had not laid a keel since spring.",
+      "note": "指提振而非治本;后面常接 for + 受益的一方。"
+    },
+    {
+      "id": "a-slap-on-the-wrist",
+      "headword": "a slap on the wrist",
+      "kind": "idiom",
+      "zh": "不痛不痒的惩罚",
+      "en": "a punishment far milder than the offence deserved",
+      "usageScore": 7,
+      "example": "The bank paid two days' profit in fines, a slap on the wrist that changed nothing about how it lends.",
+      "note": "重点在\"轻得离谱\",自带批评意味;不是描述真的打手。"
+    },
+    {
+      "id": "a-slippery-slope",
+      "headword": "a slippery slope",
+      "kind": "idiom",
+      "zh": "滑坡;开了头就收不住的危险先例",
+      "en": "a course of action likely to lead, step by step, to something much worse",
+      "usageScore": 8,
+      "example": "Critics warned that letting the ministry vet one broadcast licence was a slippery slope towards vetting the news itself.",
+      "note": "同时也是逻辑谬误 slippery slope argument 的名称,写议论文时常遇到。"
+    },
+    {
+      "id": "a-smoking-gun",
+      "headword": "a smoking gun",
+      "kind": "idiom",
+      "zh": "铁证;确凿的直接证据",
+      "en": "a single piece of evidence that proves guilt or responsibility beyond argument",
+      "usageScore": 8,
+      "example": "The leaked memo was a smoking gun: it priced the recall six months before the company told the regulator anything.",
+      "note": "调查报道常用;否定式 no smoking gun 表示\"没有找到决定性证据\"。"
+    },
+    {
+      "id": "a-zero-sum-game",
+      "headword": "a zero-sum game",
+      "kind": "idiom",
+      "zh": "零和博弈;一方所得即另一方所失",
+      "en": "a situation in which one side can gain only as much as the other side loses",
+      "usageScore": 8,
+      "example": "Treating trade as a zero-sum game misses the point that both economies grew fastest when the tariffs were lowest.",
+      "note": "源自博弈论,现已进入日常评论;最常见于否定句 trade is not a zero-sum game。"
+    },
+    {
+      "id": "across-the-board",
+      "headword": "across the board",
+      "kind": "idiom",
+      "zh": "全面地;不分对象一律适用",
+      "en": "applying to everyone or everything in a group, without exception",
+      "usageScore": 9,
+      "example": "The chain cut opening hours across the board rather than close the twelve branches that were actually losing money.",
+      "note": "作定语时要加连字符 (an across-the-board pay rise),作状语时不加。"
+    },
+    {
+      "id": "bear-the-brunt",
+      "headword": "bear the brunt",
+      "kind": "idiom",
+      "zh": "首当其冲;承受最大的冲击",
+      "en": "to take the worst of an impact when it falls unevenly",
+      "usageScore": 8,
+      "example": "Small suppliers will bear the brunt of the new tariff, since none of them can absorb a nine per cent margin hit.",
+      "note": "固定搭配 bear the brunt of,定冠词 the 不能省;brunt 单独很少使用。"
+    },
+    {
+      "id": "beyond-the-pale",
+      "headword": "beyond the pale",
+      "kind": "idiom",
+      "zh": "越界;超出了可以接受的底线",
+      "en": "outside the limits of what is socially or morally acceptable",
+      "usageScore": 6,
+      "example": "Criticizing the proposal is fair; publishing the analyst's home address is beyond the pale, and the forum banned him for it.",
+      "note": "pale 在这里是古义「界桩、辖区边界」,与「苍白」毫无关系。修饰言行,不修饰人。"
+    },
+    {
+      "id": "bite-the-bullet",
+      "headword": "bite the bullet",
+      "kind": "idiom",
+      "zh": "咬紧牙关接受(不得不做的痛苦决定)",
+      "en": "to force yourself to accept something unpleasant because there is no better option",
+      "usageScore": 9,
+      "example": "After two years of deferrals the council had to bite the bullet and close the two least-used libraries.",
+      "note": "强调\"明知痛苦但躲不掉\";不等于单纯的\"下决心\",那是 make up one's mind。"
+    },
+    {
+      "id": "boil-the-ocean",
+      "headword": "boil the ocean",
+      "kind": "idiom",
+      "zh": "试图一口气解决过于庞大的问题;贪大求全",
+      "en": "to attempt something impossibly large in scope when a narrower effort would actually work",
+      "usageScore": 6,
+      "example": "Our lead engineer told the team not to boil the ocean: pick three broken endpoints and ship fixes by Friday.",
+      "note": "咨询业与科技业行话,几乎总以否定形式出现(let's not boil the ocean)。字面「把海煮开」完全猜不出来。"
+    },
+    {
+      "id": "bury-the-lede",
+      "headword": "bury the lede",
+      "kind": "idiom",
+      "zh": "把最关键的信息埋在后面;讲话抓不住重点",
+      "en": "to place the most important fact far down in a piece instead of at the start",
+      "usageScore": 6,
+      "example": "You buried the lede — the outage lasted nine hours, and that belongs in the first line, not paragraph six.",
+      "note": "lede 是新闻业为区别于铅字 lead 而改的拼法,专指导语;拼成 lead 也可以。现在早已扩用到日常讲话和邮件。"
+    },
+    {
+      "id": "cast-a-long-shadow",
+      "headword": "cast a long shadow",
+      "kind": "idiom",
+      "zh": "影响长期挥之不去",
+      "en": "to go on affecting things long afterwards",
+      "usageScore": 7,
+      "example": "The 1998 default still casts a long shadow over how the country's bonds are priced today.",
+      "note": "后接 over / on;基本只用于负面的持续影响,不用来夸功绩。"
+    },
+    {
+      "id": "circle-the-wagons",
+      "headword": "circle the wagons",
+      "kind": "idiom",
+      "zh": "抱团自保:组织内部一致对外、拒绝外部质询",
+      "en": "to close ranks defensively as a group when facing outside criticism or scrutiny",
+      "usageScore": 6,
+      "example": "Instead of answering the auditor's questions, the leadership team circled the wagons and routed every request through legal.",
+      "note": "美国西部拓荒时马车围成圈防御。含贬义,暗示封闭、心虚,不是褒义的「团结」。"
+    },
+    {
+      "id": "cut-both-ways",
+      "headword": "cut both ways",
+      "kind": "idiom",
+      "zh": "(同一理由或事实)对双方都成立;是把双刃剑",
+      "en": "to have two opposite effects, or to support both sides of an argument equally",
+      "usageScore": 7,
+      "example": "Transparency cuts both ways: the same disclosure rules that expose the supplier also let competitors read our margins.",
+      "note": "主语是论点、政策、特质,不能是人——不是「两面派」。中文的「双刃剑」偏重坏处,英文纯粹指「两边都适用」。"
+    },
+    {
+      "id": "cut-corners",
+      "headword": "cut corners",
+      "kind": "idiom",
+      "zh": "偷工减料;为省时省钱而降低标准",
+      "en": "to save time or money by skipping steps that should not be skipped",
+      "usageScore": 9,
+      "example": "The inquiry found that the contractor cut corners on fire testing to keep the tower's cladding within budget.",
+      "note": "贬义,指为省钱省时牺牲质量或安全,不是中性的\"抄近路\"。"
+    },
+    {
+      "id": "fall-on-deaf-ears",
+      "headword": "fall on deaf ears",
+      "kind": "idiom",
+      "zh": "无人理会;充耳不闻",
+      "en": "to be ignored by the people with the power to act",
+      "usageScore": 8,
+      "example": "Three years of memos from the safety inspector fell on deaf ears until the roof of the warehouse collapsed.",
+      "note": "主语是警告、请求本身而非人;暗示对方是不肯听,不是听不见。"
+    },
+    {
+      "id": "hoist-by-his-own-petard",
+      "headword": "hoist by his own petard",
+      "kind": "idiom",
+      "zh": "害人反害己;被自己设的局反噬",
+      "en": "harmed by the very scheme, rule, or weapon one devised to harm others",
+      "usageScore": 5,
+      "example": "The senator who wrote the strict disclosure law was hoist by his own petard when reporters filed a request about his own trades.",
+      "note": "物主代词随主语变(her / their / your own petard)。petard 是古代炸城门的火药包,hoist 是古过去分词「被炸上天」,两词今天都只活在这个短语里。出自莎士比亚(原文用 with),现多见于评论文章的挖苦语气。"
+    },
+    {
+      "id": "hold-water",
+      "headword": "hold water",
+      "kind": "idiom",
+      "zh": "(说法、论点)站得住脚,经得起推敲",
+      "en": "to stand up to scrutiny; to be logically sound",
+      "usageScore": 7,
+      "example": "His explanation that the server logs were deleted automatically doesn't hold water, because retention was set to ninety days.",
+      "note": "九成以上出现在否定句里(doesn't hold water)。主语必须是论点、借口、理论,不能是人。"
+    },
+    {
+      "id": "kick-the-can-down-the-road",
+      "headword": "kick the can down the road",
+      "kind": "idiom",
+      "zh": "把问题往后拖;拖延而不解决",
+      "en": "to postpone dealing with a problem instead of resolving it",
+      "usageScore": 8,
+      "example": "Rather than raise contributions before the election, the government chose to kick the can down the road for another four years.",
+      "note": "政治与财政报道的固定说法,带明显批评意味;比 postpone 多了\"回避责任\"的暗示。"
+    },
+    {
+      "id": "kick-the-tires",
+      "headword": "kick the tires",
+      "kind": "idiom",
+      "zh": "先粗略查验一下;在决定前非正式地试试深浅",
+      "en": "to give something a quick, informal inspection before committing to it",
+      "usageScore": 6,
+      "example": "Two buyers came by to kick the tires on the warehouse, but neither asked to see the roof survey.",
+      "note": "来自买二手车时踢踢轮胎。强调「初步、随手看看」,与正式尽职调查恰恰相反。"
+    },
+    {
+      "id": "low-hanging-fruit",
+      "headword": "low-hanging fruit",
+      "kind": "idiom",
+      "zh": "低垂的果实;最容易拿到的成果",
+      "en": "the easiest gains available, taken before the harder work begins",
+      "usageScore": 8,
+      "example": "The first ten per cent of emissions cuts was low-hanging fruit; insulating older housing stock will cost ten times as much.",
+      "note": "不可数,不说 a low-hanging fruit;常出现在\"容易的部分已经做完了\"这个语境。"
+    },
+    {
+      "id": "move-the-goalposts",
+      "headword": "move the goalposts",
+      "kind": "idiom",
+      "zh": "中途改变评判标准,让对方永远达不到要求",
+      "en": "to change the criteria for success after someone has already started trying to meet them",
+      "usageScore": 7,
+      "example": "Every time we hit the agreed metrics, the client moved the goalposts and asked for a fourth round of revisions.",
+      "note": "是指控对方不讲信用,不是中性的「调整目标」。足球来源,但美式英语用得同样多。"
+    },
+    {
+      "id": "move-the-needle",
+      "headword": "move the needle",
+      "kind": "idiom",
+      "zh": "产生实质性影响;明显改变局面",
+      "en": "to have a noticeable effect on a situation or a measurable outcome",
+      "usageScore": 8,
+      "example": "A quarter-point cut will not move the needle on housing affordability when the shortage is one of supply, not credit.",
+      "note": "商业与政策报道里的高频说法,常见于否定式 won't/doesn't move the needle;比 have a significant effect 自然得多。"
+    },
+    {
+      "id": "muddy-the-waters",
+      "headword": "muddy the waters",
+      "kind": "idiom",
+      "zh": "把水搅浑:引入无关信息,使本来清楚的事变得难以判断",
+      "en": "to make an issue harder to judge by introducing confusing or irrelevant material",
+      "usageScore": 7,
+      "example": "The defense muddied the waters by introducing three unrelated timelines, and the jury spent a day untangling dates.",
+      "note": "与中文「把水搅浑」几乎完全对应,但英文不一定含故意——笨拙的解释也能 muddy the waters。"
+    },
+    {
+      "id": "paper-over-the-cracks",
+      "headword": "paper over the cracks",
+      "kind": "idiom",
+      "zh": "粉饰问题;做表面功夫掩盖根本缺陷",
+      "en": "to hide a fundamental problem with a superficial fix",
+      "usageScore": 7,
+      "example": "The emergency credit line will paper over the cracks, but the bank's funding model is still short by a third.",
+      "note": "英式用法更常见;强调\"糊住裂缝\"而不是修好它。"
+    },
+    {
+      "id": "par-for-the-course",
+      "headword": "par for the course",
+      "kind": "idiom",
+      "zh": "意料之中的常态(通常指坏事)",
+      "en": "exactly what you would expect in the circumstances, usually something unwelcome",
+      "usageScore": 8,
+      "example": "A two-hour wait at the licensing office is par for the course, and the staff no longer bother apologising.",
+      "note": "出自高尔夫,语气是无奈的接受;几乎只用于不好的事,不用于夸奖。"
+    },
+    {
+      "id": "pay-lip-service-to",
+      "headword": "pay lip service to",
+      "kind": "idiom",
+      "zh": "口惠而实不至;嘴上支持却不落实",
+      "en": "to express support for something publicly while doing nothing to advance it",
+      "usageScore": 8,
+      "example": "Both parties pay lip service to rail investment, yet neither has funded a single new line north of the capital.",
+      "note": "强烈贬义;固定形式 pay lip service to + 名词,不能说 speak 或 give lip service。"
+    },
+    {
+      "id": "pull-the-plug",
+      "headword": "pull the plug",
+      "kind": "idiom",
+      "zh": "叫停;撤资停掉(项目、资助)",
+      "en": "to stop supporting or funding something, ending it abruptly",
+      "usageScore": 8,
+      "example": "If subscriber growth stalls a third quarter running, the board will pull the plug on the studio's original films.",
+      "note": "后接 on;主语通常是掌握资金或权力的一方,不是执行者自己。"
+    },
+    {
+      "id": "put-a-thumb-on-the-scale",
+      "headword": "put a thumb on the scale",
+      "kind": "idiom",
+      "zh": "暗中做手脚使结果偏向一方;吃里扒外地偏袒",
+      "en": "to quietly interfere so that a supposedly neutral process favours one side",
+      "usageScore": 6,
+      "example": "The regulator is supposed to stay neutral, yet the revised formula quietly puts a thumb on the scale for incumbent carriers.",
+      "note": "来自小贩称重时偷按秤盘。专指本应中立的一方(裁判、监管者、平台)偷偷偏袒,普通人偏心不用它。"
+    },
+    {
+      "id": "red-tape",
+      "headword": "red tape",
+      "kind": "idiom",
+      "zh": "繁文缛节;官僚手续",
+      "en": "excessive official procedure that slows things down",
+      "usageScore": 9,
+      "example": "Clinics said the grant was welcome but the red tape around it consumed a nurse's time for a fortnight.",
+      "note": "不可数,不说 a red tape 或 red tapes;比 bureaucracy 更带抱怨语气。"
+    },
+    {
+      "id": "rubber-stamp",
+      "headword": "rubber-stamp",
+      "kind": "idiom",
+      "zh": "走过场式批准;不加审查地照批",
+      "en": "to approve something formally and automatically, without real scrutiny",
+      "usageScore": 8,
+      "example": "The supervisory board rubber-stamped the chief executive's pay package in under ten minutes, with no questions from the floor.",
+      "note": "贬义,强调只是盖章、没有实质审查;名词形式 a rubber stamp 可指这样的机构。"
+    },
+    {
+      "id": "shoot-the-messenger",
+      "headword": "shoot the messenger",
+      "kind": "idiom",
+      "zh": "迁怒于报信人;把坏消息的传达者当成责任人",
+      "en": "to blame the person who delivers bad news rather than the situation the news describes",
+      "usageScore": 7,
+      "example": "Don't shoot the messenger, but the lab says the samples were contaminated before they ever reached our freezer.",
+      "note": "最常见的是否定祈使 don't shoot the messenger——说话人先给自己撇清,表示「我只是转达」。"
+    },
+    {
+      "id": "skin-in-the-game",
+      "headword": "skin in the game",
+      "kind": "idiom",
+      "zh": "自身押上了真金白银的利害关系,而非旁观者",
+      "en": "a personal stake — usually money or risk — in the outcome one is advocating",
+      "usageScore": 7,
+      "example": "The founders each put in two years of salary, so nobody could claim they had no skin in the game.",
+      "note": "金融与管理写作高频,固定搭配 have / no skin in the game。核心是「输了自己也疼」,不只是「关心」。"
+    },
+    {
+      "id": "the-acid-test",
+      "headword": "the acid test",
+      "kind": "idiom",
+      "zh": "真正的检验;试金石",
+      "en": "the decisive trial that shows whether something really works",
+      "usageScore": 7,
+      "example": "The acid test is not the demo but next January, when four thousand nurses log in at once.",
+      "note": "源自验金,含义是\"过了这关才算数\";比 the real test 更有分量。"
+    },
+    {
+      "id": "the-canary-in-the-coal-mine",
+      "headword": "the canary in the coal mine",
+      "kind": "idiom",
+      "zh": "预警信号:最先出问题、预示更大危机的那一环",
+      "en": "an early indicator whose failure warns that a wider crisis is coming",
+      "usageScore": 6,
+      "example": "Independent bookshops are the canary in the coal mine for a high street; when they close, the chains follow within two years.",
+      "note": "矿工带金丝雀下井探毒气。重点是「预警」而非「牺牲品」——用错成后者是常见误用。"
+    },
+    {
+      "id": "the-elephant-in-the-room",
+      "headword": "the elephant in the room",
+      "kind": "idiom",
+      "zh": "房间里的大象;人人都看得见却都不愿提的问题",
+      "en": "an obvious, serious problem that everyone present avoids mentioning",
+      "usageScore": 9,
+      "example": "Three hours of restructuring talk went by before anyone named the elephant in the room: the pension deficit nobody wanted to fund.",
+      "note": "常搭配 address / name / ignore the elephant in the room。"
+    },
+    {
+      "id": "the-exception-that-proves-the-rule",
+      "headword": "the exception that proves the rule",
+      "kind": "idiom",
+      "zh": "被明文列出的例外,恰恰证明存在一条通则",
+      "en": "an explicitly stated exception that implies a general rule covering all the cases it does not cover",
+      "usageScore": 5,
+      "example": "The notice reading \"no parking on Sundays\" is the exception that proves the rule: every other day, parking is clearly permitted.",
+      "note": "prove 在这里是古义「检验、证实……的存在」。通俗用法把任何反例都说成「证明了规则」,逻辑上讲不通,却连母语者也天天这么用——自己写作时按严格义用。"
+    },
+    {
+      "id": "the-jury-is-still-out",
+      "headword": "the jury is still out",
+      "kind": "idiom",
+      "zh": "尚无定论;还看不出结论",
+      "en": "no conclusion has been reached yet because the evidence is not in",
+      "usageScore": 7,
+      "example": "Two trials showed a benefit and one showed none, so the jury is still out on whether the drug slows decline.",
+      "note": "后接 on;比 it is not clear yet 地道得多,常用于科学与政策评估。"
+    },
+    {
+      "id": "the-lions-share",
+      "headword": "the lion's share",
+      "kind": "idiom",
+      "zh": "最大的那一份;绝大部分",
+      "en": "much the largest part of something being divided",
+      "usageScore": 8,
+      "example": "Three cloud providers take the lion's share of the market, leaving the rest to split what is barely a tenth.",
+      "note": "指\"最大的一份\",不一定过半;后面固定接 of。"
+    },
+    {
+      "id": "the-tail-wagging-the-dog",
+      "headword": "the tail wagging the dog",
+      "kind": "idiom",
+      "zh": "本末倒置;次要环节反过来支配了主要目标",
+      "en": "a situation where a minor part controls the whole, reversing the proper order of importance",
+      "usageScore": 6,
+      "example": "Compliance now dictates which products we launch, which feels like the tail wagging the dog to everyone on the design floor.",
+      "note": "最接近「本末倒置」,但英文强调的是「小的那个在操控大的那个」。常用完整句式 a case of the tail wagging the dog。"
+    },
+    {
+      "id": "the-thin-end-of-the-wedge",
+      "headword": "the thin end of the wedge",
+      "kind": "idiom",
+      "zh": "开口子;看似轻微的第一步,却会引出严重得多的后果",
+      "en": "a small change that seems harmless but opens the way to much larger and unwelcome ones",
+      "usageScore": 5,
+      "example": "Charging for checked bags looked minor, but frequent flyers called it the thin end of the wedge, and seat fees followed.",
+      "note": "英式为主;美式同义常说 slippery slope。楔子是「薄的一头先进去」,不是「结局很薄弱」。"
+    },
+    {
+      "id": "the-tip-of-the-iceberg",
+      "headword": "the tip of the iceberg",
+      "kind": "idiom",
+      "zh": "冰山一角",
+      "en": "the small visible part of a much larger hidden problem",
+      "usageScore": 9,
+      "example": "The four cases that reached court were the tip of the iceberg; the regulator's own audit counted more than two hundred.",
+      "note": "冠词 the 不能省;常写作 only / just the tip of the iceberg。"
+    },
+    {
+      "id": "the-writing-on-the-wall",
+      "headword": "the writing on the wall",
+      "kind": "idiom",
+      "zh": "不祥之兆;败局已定的征兆",
+      "en": "clear signs that something is about to fail or end",
+      "usageScore": 8,
+      "example": "Two of the three founders had already sold their stakes, so the staff could see the writing on the wall.",
+      "note": "常搭配 see / read / ignore;只用于坏结局,不能说好事的征兆。"
+    },
+    {
+      "id": "throw-good-money-after-bad",
+      "headword": "throw good money after bad",
+      "kind": "idiom",
+      "zh": "为挽回已亏的投入而继续追加投入,结果亏得更多",
+      "en": "to spend more on a failing venture in the hope of recovering what has already been lost",
+      "usageScore": 6,
+      "example": "After two failed rewrites, the board refused to throw good money after bad and shut the platform down in March.",
+      "note": "good / bad 说的是钱本身——「还没打水漂的钱」和「已经打水漂的钱」,与道德无关。对应沉没成本谬误。"
+    },
+    {
+      "id": "with-a-pinch-of-salt",
+      "headword": "with a pinch of salt",
+      "kind": "idiom",
+      "zh": "姑且听之;对某说法持保留态度",
+      "en": "with scepticism, treating a claim as possibly exaggerated",
+      "usageScore": 7,
+      "example": "Investors took the founder's revenue projection with a pinch of salt, given that the previous two had missed by half.",
+      "note": "美式多说 with a grain of salt;固定动词是 take,不能说 hear/listen with a pinch of salt。"
+    },
+    {
+      "id": "account-for",
+      "headword": "account for",
+      "kind": "phrasal",
+      "zh": "占(比例);说明…的原因",
+      "en": "to make up a particular proportion of a total, or to explain the reason for something",
+      "usageScore": 8,
+      "example": "Rural districts account for barely a tenth of the population but nearly half of the road deaths.",
+      "note": "课堂上只教\"解释\"这一义,而在数据写作里\"占比\"用得更多:X accounts for 30% of Y。"
+    },
+    {
+      "id": "back-down",
+      "headword": "back down",
+      "kind": "phrasal",
+      "zh": "让步,放弃原来坚持的立场",
+      "en": "to withdraw from a position or demand that you were defending",
+      "usageScore": 8,
+      "example": "Neither side would back down over the parking spaces, so the dispute reached the residents' committee.",
+      "note": "back down 是放弃立场;back off 是别再逼近、别插手,两个不能换。"
+    },
+    {
+      "id": "back-up",
+      "headword": "back up",
+      "kind": "phrasal",
+      "zh": "支持,佐证;备份(数据);倒车",
+      "en": "to support someone's claim with evidence, or to make a copy of data",
+      "usageScore": 9,
+      "example": "If the client disputes the timeline, the email thread will back up every date we ever gave them.",
+      "note": "三个常义靠语境分(声援/备份/倒车);名词形式写成一个词 backup。"
+    },
+    {
+      "id": "bake-in",
+      "headword": "bake in",
+      "kind": "phrasal",
+      "zh": "一开始就把…做进去、内建进去(成本、假设、限制)",
+      "en": "to build something into a plan, price, or system from the start so that it cannot easily be removed",
+      "usageScore": 6,
+      "example": "The delay was baked in from day one, since nobody seriously expected the permits to arrive on time.",
+      "note": "商业与技术语境的新兴说法,形象是\"烤进面团里,再也挑不出来\"。常见被动 be baked in / baked into the price。"
+    },
+    {
+      "id": "bear-out",
+      "headword": "bear out",
+      "kind": "phrasal",
+      "zh": "证实,印证(说法、担心、预测)",
+      "en": "to confirm that a claim, theory, or fear was correct",
+      "usageScore": 7,
+      "example": "The audit bore out what the junior analyst had flagged in March and everyone had politely ignored.",
+      "note": "主语是证据,宾语是说法:the data bears out the claim。与 bear\"忍受、承担\"那一族毫无关系。"
+    },
+    {
+      "id": "bottom-out",
+      "headword": "bottom out",
+      "kind": "phrasal",
+      "zh": "触底(并随后回升)",
+      "en": "to reach the lowest point before starting to improve",
+      "usageScore": 6,
+      "example": "House prices bottomed out in March and have crept up every month since, though nobody trusts it yet.",
+      "note": "含义的重点在\"之后会回升\";只说跌到最低是 hit a low。用 bottom out 等于给了一个乐观判断。"
+    },
+    {
+      "id": "bring-up",
+      "headword": "bring up",
+      "kind": "phrasal",
+      "zh": "提起(话题);抚养(孩子)",
+      "en": "to raise a topic in conversation; also, to raise a child",
+      "usageScore": 9,
+      "example": "Nobody wanted to bring up the missing receipts while the founder was still sitting in the room.",
+      "note": "mention 是中性的\"提到\",bring up 暗示主动把话题挑起来。"
+    },
+    {
+      "id": "brush-off",
+      "headword": "brush off",
+      "kind": "phrasal",
+      "zh": "不予理会,轻描淡写地打发掉",
+      "en": "to dismiss a person or a concern without giving it serious attention",
+      "usageScore": 7,
+      "example": "The manager tried to brush off the safety complaint as nerves, and the inspector wrote it into the report.",
+      "note": "重点在\"没当回事就打发了\";名词 the brush-off 指吃闭门羹。"
+    },
+    {
+      "id": "buy-into",
+      "headword": "buy into",
+      "kind": "phrasal",
+      "zh": "认同、接受(某种说法)",
+      "en": "to accept an idea or explanation, often uncritically",
+      "usageScore": 8,
+      "example": "Half the newsroom bought into the leak before anyone checked whether the document had a plausible sender.",
+      "note": "除字面的\"买入股份\"外,更常见的是\"买账\";否定式 not buy into 语气很重。"
+    },
+    {
+      "id": "call-off",
+      "headword": "call off",
+      "kind": "phrasal",
+      "zh": "取消,叫停(已安排好的活动)",
+      "en": "to cancel an event, or to stop an activity that is already under way",
+      "usageScore": 9,
+      "example": "Organizers had to call off the parade an hour before it started when the wind gusts hit fifty.",
+      "note": "cancel 是通用词;call off 更强调临时叫停已经在进行或已排定的事。"
+    },
+    {
+      "id": "carry-out",
+      "headword": "carry out",
+      "kind": "phrasal",
+      "zh": "执行,实施(命令、检查、研究)",
+      "en": "to perform or complete a task, an order, or a piece of research",
+      "usageScore": 9,
+      "example": "Inspectors carry out spot checks at the port twice a month, usually before dawn to catch the night shift.",
+      "note": "美式书面常用 conduct,但 carry out orders/a study/an attack 是通用搭配。"
+    },
+    {
+      "id": "carry-over",
+      "headword": "carry over",
+      "kind": "phrasal",
+      "zh": "结转,顺延到下一个周期",
+      "en": "to transfer something unused from one period into the next",
+      "usageScore": 7,
+      "example": "Only five leave days carry over into the new year; the rest vanish at midnight on December thirty-first.",
+      "note": "假期、预算、亏损都能 carry over。名词 carryover 在财务报表里就是\"结转\"。"
+    },
+    {
+      "id": "catch-on",
+      "headword": "catch on",
+      "kind": "phrasal",
+      "zh": "流行起来;(终于)反应过来",
+      "en": "to become popular, or to finally understand something",
+      "usageScore": 8,
+      "example": "The refill scheme took two years to catch on, and now three supermarkets on the street copy it.",
+      "note": "become popular 太长,母语者说 catch on;第二义\"开窍了\"也常用。"
+    },
+    {
+      "id": "cave-in",
+      "headword": "cave in",
+      "kind": "phrasal",
+      "zh": "顶不住而屈服;(屋顶、地面)塌陷",
+      "en": "to give way under pressure, or of a roof or wall, to collapse inward",
+      "usageScore": 7,
+      "example": "The union expected management to cave in by Friday, but the offer on the table never moved.",
+      "note": "比 give in 更狠,暗示\"撑不住了\";字面义是塌方。"
+    },
+    {
+      "id": "chip-away-at",
+      "headword": "chip away at",
+      "kind": "phrasal",
+      "zh": "一点一点削弱,蚕食",
+      "en": "to gradually reduce or weaken something through many small actions",
+      "usageScore": 7,
+      "example": "Small monthly fees chip away at the deposit until tenants get back barely half of what they paid.",
+      "note": "强调蚕食式的缓慢消耗,宾语常是信任、优势、存款、领先。"
+    },
+    {
+      "id": "chip-in",
+      "headword": "chip in",
+      "kind": "phrasal",
+      "zh": "凑钱,出份子;搭把手",
+      "en": "to contribute money or effort along with other people",
+      "usageScore": 7,
+      "example": "Everyone on the floor agreed to chip in ten pounds for the leaving present and the card.",
+      "note": "小额凑份子的固定说法;这种场合用 contribute 会显得很生硬。"
+    },
+    {
+      "id": "churn-out",
+      "headword": "churn out",
+      "kind": "phrasal",
+      "zh": "机械地大批量炮制(常暗示质量不高)",
+      "en": "to produce something rapidly and in large quantities, often without much care",
+      "usageScore": 7,
+      "example": "The site churns out thirty listicles a day, and you can tell which twenty-nine were written before lunch.",
+      "note": "几乎总是贬义:量大、快、粗糙。夸人高产要用 prolific,不能用 churn out。"
+    },
+    {
+      "id": "come-around",
+      "headword": "come around",
+      "kind": "phrasal",
+      "zh": "回心转意,想通了;(昏迷后)苏醒",
+      "en": "to change your mind and accept something, or to regain consciousness",
+      "usageScore": 7,
+      "example": "Her father took a year to come around to the idea of a daughter driving lorries for a living.",
+      "note": "英式常拼作 come round;\"想通\"义后面接 to the idea of。"
+    },
+    {
+      "id": "come-by",
+      "headword": "come by",
+      "kind": "phrasal",
+      "zh": "弄到手(尤指不容易得到的东西)",
+      "en": "to obtain something, especially something that is hard to get",
+      "usageScore": 7,
+      "example": "Honest feedback is hard to come by once you are the one signing everyone's timesheets.",
+      "note": "最高频的形式就是 hard to come by(难得)。带宾语时才是\"弄到\";不带宾语的 come by 是\"顺路过来一趟\"。"
+    },
+    {
+      "id": "come-down-to",
+      "headword": "come down to",
+      "kind": "phrasal",
+      "zh": "归根结底是……的问题",
+      "en": "to be, in the end, a question of one essential thing",
+      "usageScore": 9,
+      "example": "Strip away the rhetoric and the dispute comes down to who pays for the pipeline's last forty kilometres.",
+      "note": "常用来收束论证:\"说到底就是……\";后接名词或 wh- 从句。"
+    },
+    {
+      "id": "come-up-with",
+      "headword": "come up with",
+      "kind": "phrasal",
+      "zh": "想出,提出(办法、点子、名字)",
+      "en": "to produce an idea, plan, or solution, especially under pressure",
+      "usageScore": 10,
+      "example": "The two of them had one night to come up with a name the trademark office would actually approve.",
+      "note": "学习者常写 propose/devise;\"临时想出个办法\"在英语里就是 come up with。"
+    },
+    {
+      "id": "count-on",
+      "headword": "count on",
+      "kind": "phrasal",
+      "zh": "指望,依靠",
+      "en": "to rely on someone or something with confidence",
+      "usageScore": 9,
+      "example": "Growers here count on one week of dry weather in September, and this year it never came.",
+      "note": "rely on 的口语版;you can count on it 意思是\"这事儿准跑不了\"。"
+    },
+    {
+      "id": "crack-down",
+      "headword": "crack down",
+      "kind": "phrasal",
+      "zh": "严厉打击,整顿",
+      "en": "to start taking strict action against a behaviour or group",
+      "usageScore": 8,
+      "example": "The city plans to crack down on unlicensed rentals after a fire in a converted attic last winter.",
+      "note": "几乎总接 on;名词写作一个词 crackdown,是新闻标题常客。"
+    },
+    {
+      "id": "crowd-out",
+      "headword": "crowd out",
+      "kind": "phrasal",
+      "zh": "挤占,排挤掉(资源、空间、其他参与者)",
+      "en": "to take up so much of something that other things cannot get any",
+      "usageScore": 6,
+      "example": "Short-term rentals crowded out long-term tenants until the council capped licences at three hundred per district.",
+      "note": "经济学\"挤出效应\"(crowding out)的日常版。主语不是存心排挤的人,而是占了位子的那样东西。"
+    },
+    {
+      "id": "cut-back",
+      "headword": "cut back",
+      "kind": "phrasal",
+      "zh": "削减,缩减(开支、用量)",
+      "en": "to reduce spending, consumption, or activity",
+      "usageScore": 8,
+      "example": "The council will cut back on street cleaning before it touches the libraries, or so the leaflet claims.",
+      "note": "常接 on;名词写作 cutback。比 reduce 口语化。"
+    },
+    {
+      "id": "dawn-on",
+      "headword": "dawn on",
+      "kind": "phrasal",
+      "zh": "(某事)让某人恍然明白过来",
+      "en": "to become suddenly clear to someone after a period of not realising it",
+      "usageScore": 7,
+      "example": "Halfway to the airport it dawned on me that my passport was still on the kitchen table.",
+      "note": "主语是事情,宾语才是人,与中文语序相反:it dawned on me that…。不能说 I dawned on it。"
+    },
+    {
+      "id": "do-away-with",
+      "headword": "do away with",
+      "kind": "phrasal",
+      "zh": "废除,取消(制度、规定、习惯)",
+      "en": "to abolish something or get rid of it, especially a rule or a practice",
+      "usageScore": 7,
+      "example": "The school voted to do away with the uniform tie, and half the parents wrote in that same week.",
+      "note": "abolish 的口语版,宾语多是制度和惯例,不用于具体物品。"
+    },
+    {
+      "id": "double-down",
+      "headword": "double down",
+      "kind": "phrasal",
+      "zh": "变本加厉地坚持(尤指在已经出问题的立场上加码)",
+      "en": "to commit even more strongly to a course of action, especially a risky or failing one",
+      "usageScore": 8,
+      "example": "Instead of apologising, the brand doubled down on the campaign and bought a second round of billboards.",
+      "note": "出自二十一点的\"加倍下注\"。多含贬义:明知不妙还往里投。常搭 double down on。"
+    },
+    {
+      "id": "draw-on",
+      "headword": "draw on",
+      "kind": "phrasal",
+      "zh": "借助,调用(经验、储备、资金)",
+      "en": "to use a supply of something such as experience, savings, or resources that you have available",
+      "usageScore": 7,
+      "example": "She drew on twenty years in emergency medicine to keep the whole ward calm during the six-hour power cut.",
+      "note": "宾语必须是\"可支取的储备\":experience / savings / reserves。与\"在…上画画\"的字面义靠搭配区分。"
+    },
+    {
+      "id": "dwell-on",
+      "headword": "dwell on",
+      "kind": "phrasal",
+      "zh": "老想着,揪住不放(多指不快的事)",
+      "en": "to keep thinking or talking about something, usually something unpleasant",
+      "usageScore": 7,
+      "example": "The coach refused to dwell on the missed penalty and started the next drill within a minute.",
+      "note": "语气偏负面,暗示\"不该一直纠结\"。"
+    },
+    {
+      "id": "factor-in",
+      "headword": "factor in",
+      "kind": "phrasal",
+      "zh": "把…算进去,计入考虑",
+      "en": "to include something as a consideration when calculating or deciding",
+      "usageScore": 7,
+      "example": "The estimate looks cheap until you factor in the ferry crossing and two nights of accommodation.",
+      "note": "consider 太笼统;factor in 强调把某项成本或变量\"算进公式里\"。"
+    },
+    {
+      "id": "fall-back-on",
+      "headword": "fall back on",
+      "kind": "phrasal",
+      "zh": "退而依靠(备用办法)",
+      "en": "to resort to something dependable after the preferred option fails",
+      "usageScore": 8,
+      "example": "With the new database offline, the clerks fell back on the paper ledgers they had been told to shred.",
+      "note": "隐含\"这不是首选\";英式写作也作 fall back upon,意思相同。"
+    },
+    {
+      "id": "fall-through",
+      "headword": "fall through",
+      "kind": "phrasal",
+      "zh": "(计划、交易)落空,告吹",
+      "en": "of a plan or deal, to fail to happen after it had seemed likely",
+      "usageScore": 8,
+      "example": "The bank sat on the paperwork for a month and let the whole house sale fall through.",
+      "note": "主语只能是计划、交易、婚约这类事,不能是人。"
+    },
+    {
+      "id": "farm-out",
+      "headword": "farm out",
+      "kind": "phrasal",
+      "zh": "把(工作)外包、转包出去",
+      "en": "to send work out to other people or companies rather than doing it in-house",
+      "usageScore": 6,
+      "example": "The studio farmed out the background animation to a smaller shop in Osaka and kept the character work.",
+      "note": "比 outsource 口语,而且常带一点\"甩包袱\"的味道 —— 说自己 farm out 工作不一定好听。"
+    },
+    {
+      "id": "figure-out",
+      "headword": "figure out",
+      "kind": "phrasal",
+      "zh": "弄明白;想出办法解决",
+      "en": "to work out the answer to something, or to come to understand it",
+      "usageScore": 10,
+      "example": "It took the pharmacist ten minutes to figure out why the two prescriptions kept cancelling each other out.",
+      "note": "\"搞懂/搞定\"的默认说法;determine、ascertain 在口语里几乎不出现。"
+    },
+    {
+      "id": "flesh-out",
+      "headword": "flesh out",
+      "kind": "phrasal",
+      "zh": "充实细节,把粗略的东西做具体",
+      "en": "to add detail to an outline or rough idea so that it becomes complete",
+      "usageScore": 7,
+      "example": "The pitch was two slides and a slogan; they spent the weekend fleshing out the numbers behind it.",
+      "note": "flesh 是\"肉\":骨架已有,往上添肉。注意别写成 flash out,那是另一回事。"
+    },
+    {
+      "id": "follow-through",
+      "headword": "follow through",
+      "kind": "phrasal",
+      "zh": "把事情做到底,把承诺落实",
+      "en": "to complete something you started or promised, all the way to the end",
+      "usageScore": 8,
+      "example": "Plenty of departments announce a recycling policy; far fewer follow through once the bins need emptying.",
+      "note": "常接 on。follow through 是有始有终,follow up 只是后续跟进一次。"
+    },
+    {
+      "id": "front-load",
+      "headword": "front-load",
+      "kind": "phrasal",
+      "zh": "把成本或工作量集中安排在前期",
+      "en": "to concentrate cost, effort, or benefit at the beginning of a period rather than spreading it evenly",
+      "usageScore": 5,
+      "example": "They front-loaded the course with grammar, so the first month felt brutal and the last one felt like a holiday.",
+      "note": "项目管理与财务的常用词,反义是 back-load。中文没有对应的单个词,所以学习者几乎不会主动说出来。"
+    },
+    {
+      "id": "get-around",
+      "headword": "get around",
+      "kind": "phrasal",
+      "zh": "绕过(规定、障碍);四处走动出行",
+      "en": "to find a way past an obstacle or rule; also, to move from place to place",
+      "usageScore": 8,
+      "example": "Firms get around the cap by splitting one contract into three, and the current wording allows it.",
+      "note": "第三义 get around to sth 是\"总算抽空去做\",与前两义完全不同。"
+    },
+    {
+      "id": "get-at",
+      "headword": "get at",
+      "kind": "phrasal",
+      "zh": "想说的是…,言下之意是",
+      "en": "to be trying to say or imply something, often indirectly",
+      "usageScore": 7,
+      "example": "After twenty minutes I finally understood what he was getting at: the whole department was being moved.",
+      "note": "高频形式 what are you getting at?(你到底想说什么?)语气偏不耐烦。英式口语里还有\"针对、找茬\"一义。"
+    },
+    {
+      "id": "get-away-with",
+      "headword": "get away with",
+      "kind": "phrasal",
+      "zh": "做了坏事却未受惩罚,蒙混过关",
+      "en": "to do something wrong and escape punishment or criticism for it",
+      "usageScore": 9,
+      "example": "For six years the firm managed to get away with billing hours that nobody had actually worked.",
+      "note": "中文\"逃过一劫、没被追究\";英语里没有更简洁的单词能替代。"
+    },
+    {
+      "id": "get-over",
+      "headword": "get over",
+      "kind": "phrasal",
+      "zh": "(从疾病、打击中)恢复过来",
+      "en": "to recover from an illness, a shock, or a disappointment",
+      "usageScore": 9,
+      "example": "It took him a full term to get over the flu and another to get back onto the team.",
+      "note": "用于病痛、失恋、打击;\"克服困难\"更常说 overcome,别混。"
+    },
+    {
+      "id": "give-in",
+      "headword": "give in",
+      "kind": "phrasal",
+      "zh": "让步,屈服(停止抵抗)",
+      "en": "to stop resisting and accept what someone else wants",
+      "usageScore": 9,
+      "example": "After three nights of the dog howling next door, the neighbours give in and let it sleep indoors.",
+      "note": "give in 是向压力让步,give up 是放弃某事,学习者最常混这一对。"
+    },
+    {
+      "id": "gloss-over",
+      "headword": "gloss over",
+      "kind": "phrasal",
+      "zh": "一笔带过,含糊掩饰(尴尬的事实)",
+      "en": "to deal with an awkward fact so quickly that it attracts little attention",
+      "usageScore": 7,
+      "example": "The annual report tends to gloss over the two quarters when the warehouse stood almost completely empty.",
+      "note": "不是撒谎,而是\"轻轻带过\";几乎总是批评性用法。"
+    },
+    {
+      "id": "hash-out",
+      "headword": "hash out",
+      "kind": "phrasal",
+      "zh": "反复讨论直到谈拢(细节、条款)",
+      "en": "to discuss something at length until the details are agreed",
+      "usageScore": 7,
+      "example": "The two teams hashed out the handover schedule over four hours and a whiteboard covered in arrows.",
+      "note": "强调过程冗长费劲,但最后有结论。与 iron out 的分工:hash out 是从零谈出细节,iron out 是抹平剩下的分歧。"
+    },
+    {
+      "id": "head-off",
+      "headword": "head off",
+      "kind": "phrasal",
+      "zh": "抢先阻止(坏事发生),拦截",
+      "en": "to prevent something bad from happening by acting before it does",
+      "usageScore": 7,
+      "example": "A quick apology on Friday headed off a complaint that would have reached the regulator by Monday.",
+      "note": "不是\"出发前往\" —— 那个义项后面必须跟地点(head off to Rome)。带宾语时一律是\"抢先拦住\"。"
+    },
+    {
+      "id": "hinge-on",
+      "headword": "hinge on",
+      "kind": "phrasal",
+      "zh": "完全取决于(某一决定性因素)",
+      "en": "to depend entirely on one decisive factor",
+      "usageScore": 8,
+      "example": "The whole prosecution hinges on a single receipt, and the defence has spent three days attacking it.",
+      "note": "比 depend on 重得多:是\"成败全系于此\",不是一般意义的依赖。"
+    },
+    {
+      "id": "hold-back",
+      "headword": "hold back",
+      "kind": "phrasal",
+      "zh": "忍住;隐瞒(信息);拖后腿",
+      "en": "to restrain something or someone, or to keep information to yourself",
+      "usageScore": 8,
+      "example": "The witness chose to hold back one detail, and the whole timeline collapsed at the second hearing.",
+      "note": "三义常见:忍住眼泪 / 瞒着不说 / 妨碍某人发展。"
+    },
+    {
+      "id": "hold-up",
+      "headword": "hold up",
+      "kind": "phrasal",
+      "zh": "经得起检验,站得住脚",
+      "en": "to remain valid or convincing when examined closely",
+      "usageScore": 7,
+      "example": "The alibi did not hold up: the café had CCTV, and he was not in any frame that evening.",
+      "note": "学习者一般只学到\"举起、耽搁、抢劫\"。\"经得起推敲\"这一义在法律与学术语境极常见:hold up in court / under scrutiny。"
+    },
+    {
+      "id": "iron-out",
+      "headword": "iron out",
+      "kind": "phrasal",
+      "zh": "解决(剩下的分歧、小问题)",
+      "en": "to resolve the remaining difficulties or disagreements in something",
+      "usageScore": 7,
+      "example": "The two sides met on Sunday to iron out the last three clauses before the deadline at noon.",
+      "note": "只用于\"最后那点小疙瘩\",不用于根本性冲突。"
+    },
+    {
+      "id": "lay-off",
+      "headword": "lay off",
+      "kind": "phrasal",
+      "zh": "裁员(因业务收缩,非因过失)",
+      "en": "to dismiss workers because there is not enough work, not because of their performance",
+      "usageScore": 9,
+      "example": "The plant will lay off ninety people in March, and the town's only diner is already bracing for it.",
+      "note": "与 fire(因过失开除)严格区分,混用会得罪人;名词是 layoff。"
+    },
+    {
+      "id": "look-into",
+      "headword": "look into",
+      "kind": "phrasal",
+      "zh": "调查,了解一下(某件事)",
+      "en": "to investigate a matter in order to find out the facts",
+      "usageScore": 9,
+      "example": "The regulator promised to look into the billing errors, and three months later nothing had been published.",
+      "note": "investigate 的日常版,语气更轻,不一定是正式立案。"
+    },
+    {
+      "id": "make-for",
+      "headword": "make for",
+      "kind": "phrasal",
+      "zh": "造就,导致(某种效果或局面)",
+      "en": "to result in or contribute to a particular outcome",
+      "usageScore": 7,
+      "example": "Two strong personalities on one small team make for lively meetings and painfully slow decisions.",
+      "note": "评论文章里的常见句式:makes for a good story / makes for uncomfortable reading。另一义\"朝…走去\"后面必须跟地点。"
+    },
+    {
+      "id": "make-of",
+      "headword": "make of",
+      "kind": "phrasal",
+      "zh": "对…作何理解,怎么看待",
+      "en": "to form a particular opinion or interpretation of something",
+      "usageScore": 7,
+      "example": "I still don't know what to make of her email; it was four lines long and signed with her full name.",
+      "note": "几乎固定在 what to make of / what do you make of 之中。不是\"用…做成\" —— 那是 be made of。"
+    },
+    {
+      "id": "make-out",
+      "headword": "make out",
+      "kind": "phrasal",
+      "zh": "勉强辨认出(看清、听清、认出)",
+      "en": "to manage to see, hear, or understand something with difficulty",
+      "usageScore": 8,
+      "example": "Through the rain I could just make out the number on the bus, and it was the wrong one.",
+      "note": "教材几乎不教这个\"勉强辨认\"的义项,而它在日常叙述里最常用。另有美式俚语义\"亲热\",别用错场合。"
+    },
+    {
+      "id": "muddle-through",
+      "headword": "muddle through",
+      "kind": "phrasal",
+      "zh": "磕磕绊绊地对付过去(没章法但最终勉强完成)",
+      "en": "to manage to get through something despite having no clear plan or proper preparation",
+      "usageScore": 6,
+      "example": "Neither of us spoke Portuguese, so we muddled through the market with hand gestures and a screenshot of the address.",
+      "note": "说自己 muddle through 是自嘲和谦虚;说别人则是在指其毫无章法。语气差别全看主语是谁。"
+    },
+    {
+      "id": "mull-over",
+      "headword": "mull over",
+      "kind": "phrasal",
+      "zh": "反复琢磨,慢慢考虑",
+      "en": "to think about something carefully over a period of time",
+      "usageScore": 6,
+      "example": "He asked for the weekend to mull over the transfer before giving the school a final answer.",
+      "note": "比 consider 多一层\"慢慢想\"的时间感,常配 for a few days。"
+    },
+    {
+      "id": "own-up",
+      "headword": "own up",
+      "kind": "phrasal",
+      "zh": "承认(自己犯的错)",
+      "en": "to admit that you were the one who did something wrong",
+      "usageScore": 7,
+      "example": "Two weeks passed before the intern would own up to deleting the entire shared drive folder.",
+      "note": "常接 to:own up to doing sth。语气比 confess 轻,适合小过失。"
+    },
+    {
+      "id": "paper-over",
+      "headword": "paper over",
+      "kind": "phrasal",
+      "zh": "粉饰,掩盖(矛盾或裂痕),而非真正解决",
+      "en": "to hide a disagreement or flaw superficially instead of dealing with it",
+      "usageScore": 6,
+      "example": "The joint statement papered over a split that everyone in the room had watched widen all afternoon.",
+      "note": "常搭 paper over the cracks。重点在\"只贴了层纸\",问题还在下面 —— 用它就是在暗示这种掩盖迟早要破。"
+    },
+    {
+      "id": "peter-out",
+      "headword": "peter out",
+      "kind": "phrasal",
+      "zh": "渐渐减弱直至消失",
+      "en": "to dwindle gradually until nothing is left",
+      "usageScore": 7,
+      "example": "The protest filled the square for a fortnight, then petered out once the rain came and the cameras left.",
+      "note": "强调\"慢慢没了声息\"而非戛然而止;主语多为势头、谈判、线索。"
+    },
+    {
+      "id": "phase-out",
+      "headword": "phase out",
+      "kind": "phrasal",
+      "zh": "分阶段淘汰,逐步停用",
+      "en": "to stop using or providing something gradually, in planned stages",
+      "usageScore": 8,
+      "example": "The city is phasing out diesel buses, replacing about forty a year until the last one retires in 2031.",
+      "note": "关键在\"分阶段\";一刀切叫 scrap 或 ban。反义 phase in(逐步引入)同样常用。"
+    },
+    {
+      "id": "play-down",
+      "headword": "play down",
+      "kind": "phrasal",
+      "zh": "淡化,把事情说得没那么严重",
+      "en": "to make something seem less important or serious than it really is",
+      "usageScore": 8,
+      "example": "Officials tried to play down the leak until a second village reported the same taste in its water.",
+      "note": "新闻里高频;反义是 play up(渲染)。单词形式 downplay 同义。"
+    },
+    {
+      "id": "point-out",
+      "headword": "point out",
+      "kind": "phrasal",
+      "zh": "指出(别人没注意到的事实)",
+      "en": "to draw attention to a fact, especially one that others have missed",
+      "usageScore": 10,
+      "example": "Someone in the back row had to point out that the chart's two axes were labelled the same.",
+      "note": "书面里 note/indicate 更正式;口头指出别人的疏漏基本都用 point out。"
+    },
+    {
+      "id": "price-out",
+      "headword": "price out",
+      "kind": "phrasal",
+      "zh": "因价格过高而把…挤出(市场、地段)",
+      "en": "to make something so expensive that a group of people can no longer afford it",
+      "usageScore": 6,
+      "example": "Two new towers priced out the families who had rented on that street for a generation.",
+      "note": "常用被动 be priced out of。注意同形的另一义:price something out 是\"报价、算成本\",靠上下文区分。"
+    },
+    {
+      "id": "pull-off",
+      "headword": "pull off",
+      "kind": "phrasal",
+      "zh": "成功做成(本来很难的事)",
+      "en": "to succeed at something difficult, against expectations",
+      "usageScore": 8,
+      "example": "Nobody thought a two-person team could pull off a launch in six weeks, but the demo ran clean.",
+      "note": "自带\"本来悬,居然成了\"的语气;achieve 完全没有这层意思。"
+    },
+    {
+      "id": "push-back",
+      "headword": "push back",
+      "kind": "phrasal",
+      "zh": "顶回去,提出反对;把日期往后推",
+      "en": "to resist or object to a plan or instruction; also, to move a date later",
+      "usageScore": 8,
+      "example": "Expect the ward staff to push back on any rota written without asking a single one of them first.",
+      "note": "近十年职场英语里的高频词;名词 pushback 指来自内部的阻力。"
+    },
+    {
+      "id": "put-off",
+      "headword": "put off",
+      "kind": "phrasal",
+      "zh": "推迟,拖延(尤指因为不想面对)",
+      "en": "to postpone something, especially because you would rather not face it",
+      "usageScore": 9,
+      "example": "They put off the safety audit twice, and by the third delay the inspector stopped answering emails.",
+      "note": "母语者日常说 put off;postpone 其实偏正式书面,口语里很少听到。"
+    },
+    {
+      "id": "put-up-with",
+      "headword": "put up with",
+      "kind": "phrasal",
+      "zh": "忍受,容忍(不愉快的人或事)",
+      "en": "to tolerate something unpleasant without trying to stop it",
+      "usageScore": 9,
+      "example": "She put up with the landlord's excuses for a year before finally filing a complaint with the housing board.",
+      "note": "tolerate/endure 太书面;抱怨语气的\"忍\"几乎都是 put up with。"
+    },
+    {
+      "id": "put-upon",
+      "headword": "put upon",
+      "kind": "phrasal",
+      "zh": "被使唤、被占便宜(而自己又不好意思拒绝)",
+      "en": "to be taken advantage of by someone who keeps asking you for favours",
+      "usageScore": 4,
+      "example": "She started to feel put upon: every weekend shift somehow became hers, and nobody ever asked twice.",
+      "note": "几乎只以被动出现:feel put upon / be put upon。upon 不能换成 on —— put on 是完全另一个词。"
+    },
+    {
+      "id": "rein-in",
+      "headword": "rein in",
+      "kind": "phrasal",
+      "zh": "勒住,收紧,加以约束(开支、权力、脾气)",
+      "en": "to bring something under control by limiting it",
+      "usageScore": 7,
+      "example": "The new chief reined in travel spending, and suddenly nobody was flying to Frankfurt for a ninety-minute meeting.",
+      "note": "rein 是缰绳,不是 reign(统治) —— 这个拼写错母语者也常犯。搭配:rein in spending / costs / ambition。"
+    },
+    {
+      "id": "ride-out",
+      "headword": "ride out",
+      "kind": "phrasal",
+      "zh": "挺过,熬过(风暴、危机、低谷)",
+      "en": "to survive a difficult period without being destroyed by it",
+      "usageScore": 7,
+      "example": "The bakery rode out two lockdowns on savings, then reopened with half the staff and twice the queue.",
+      "note": "源自航海:骑着浪头挺过风暴。重点不是解决问题,而是不做大动作、撑到它自己过去。"
+    },
+    {
+      "id": "roll-back",
+      "headword": "roll back",
+      "kind": "phrasal",
+      "zh": "撤销,回退(政策、涨价、已生效的改动)",
+      "en": "to reverse or reduce something that was previously introduced",
+      "usageScore": 7,
+      "example": "The airline rolled back the baggage fee within a week, once the screenshots started trending.",
+      "note": "与 walk back 的分工:roll back 撤的是已经生效的政策或价格,walk back 撤的只是说过的话。"
+    },
+    {
+      "id": "rule-out",
+      "headword": "rule out",
+      "kind": "phrasal",
+      "zh": "排除(某种可能性或嫌疑)",
+      "en": "to eliminate something as a possibility",
+      "usageScore": 9,
+      "example": "Doctors could not rule out an infection until the second culture came back forty-eight hours later.",
+      "note": "不同于泛指的 exclude,rule out 专指排除可能性,医学与新闻里极常见。"
+    },
+    {
+      "id": "run-to",
+      "headword": "run to",
+      "kind": "phrasal",
+      "zh": "达到,总计(某数量、篇幅、金额)",
+      "en": "to amount to or extend to a particular quantity, length, or cost",
+      "usageScore": 5,
+      "example": "The judgment runs to four hundred pages, and the part everyone quotes is a footnote on page three.",
+      "note": "不是\"跑向\"。书面英语里这个\"总计达到\"的义项很常见:the bill ran to、the report runs to。"
+    },
+    {
+      "id": "see-through",
+      "headword": "see through",
+      "kind": "phrasal",
+      "zh": "看穿(谎言、伪装);坚持到底",
+      "en": "to recognize that someone or something is deceptive; also, to continue with something until it is finished",
+      "usageScore": 7,
+      "example": "Any decent auditor would see through invoices dated on a Sunday for a warehouse that shuts at noon.",
+      "note": "两义都常见;\"坚持到底\"义中间要插代词:see it through。"
+    },
+    {
+      "id": "set-out",
+      "headword": "set out",
+      "kind": "phrasal",
+      "zh": "(书面)阐明,载明;着手去做",
+      "en": "to state or explain something formally in writing",
+      "usageScore": 7,
+      "example": "The terms are set out in clause nine, which nobody reads until the relationship has already gone wrong.",
+      "note": "合同与报告的固定说法 as set out in / set out below。学习者通常只知道\"出发\",而书面语里\"载明\"这一义更常遇到。"
+    },
+    {
+      "id": "shore-up",
+      "headword": "shore up",
+      "kind": "phrasal",
+      "zh": "支撑,加固(摇摇欲坠的信心、财务、联盟)",
+      "en": "to support or strengthen something that is at risk of failing",
+      "usageScore": 7,
+      "example": "The central bank cut rates again to shore up confidence, but the currency slid another two percent by Friday.",
+      "note": "shore 在这里是\"支撑柱\",不是\"海岸\"。财经新闻高频:shore up support / confidence / finances。"
+    },
+    {
+      "id": "show-up",
+      "headword": "show up",
+      "kind": "phrasal",
+      "zh": "出现,到场(尤指本来不确定会不会来)",
+      "en": "to arrive or appear somewhere, especially when attendance was uncertain",
+      "usageScore": 10,
+      "example": "Only four of the twelve volunteers show up on rainy Saturdays, so the coordinator now over-recruits every week.",
+      "note": "比 appear/attend 口语得多;\"人没来\"日常就说 didn't show up。"
+    },
+    {
+      "id": "shrug-off",
+      "headword": "shrug off",
+      "kind": "phrasal",
+      "zh": "对……不以为然;轻松扛过",
+      "en": "to dismiss something as unimportant, or to recover from it easily",
+      "usageScore": 8,
+      "example": "The chairman shrugged off the resignation letters as routine turnover, then cancelled every meeting for the rest of the week.",
+      "note": "既指\"不当回事\",也指经济、伤病\"轻松挺过\";用在人身上常暗含作者的怀疑。"
+    },
+    {
+      "id": "sign-off-on",
+      "headword": "sign off on",
+      "kind": "phrasal",
+      "zh": "正式批准,签字认可",
+      "en": "to give formal approval to something",
+      "usageScore": 7,
+      "example": "Nobody would sign off on the budget until the legal team had read the indemnity clause twice.",
+      "note": "三个词缺一不可:sign off(不带 on)是\"收尾、下班、结束通话\";加了 on 才是\"批准\"。"
+    },
+    {
+      "id": "single-out",
+      "headword": "single out",
+      "kind": "phrasal",
+      "zh": "单独挑出(点名批评或特别表扬)",
+      "en": "to select one person or thing from a group for special attention",
+      "usageScore": 7,
+      "example": "The report did not single out any one department, but everyone knew which floor it meant.",
+      "note": "不是中性的 choose,而是从一群人里\"拎出来说事\"。"
+    },
+    {
+      "id": "sit-on",
+      "headword": "sit on",
+      "kind": "phrasal",
+      "zh": "压着不办;故意扣住(报告、消息、申请)",
+      "en": "to deliberately delay acting on something, or to keep information from being released",
+      "usageScore": 6,
+      "example": "Legal sat on the report for three weeks, and by the time it surfaced the deadline for appeal had passed.",
+      "note": "字面\"坐在上面\"就是形象来源:不是忘了,是有意压着。指责意味很强,写正式邮件时慎用。"
+    },
+    {
+      "id": "speak-to",
+      "headword": "speak to",
+      "kind": "phrasal",
+      "zh": "说明、印证(某一点);针对某议题发言",
+      "en": "to be evidence of something, or to address a particular point",
+      "usageScore": 7,
+      "example": "The fact that three of her former interns now run their own labs speaks to how she trained people.",
+      "note": "这里主语是事实或证据,不是人,所以跟\"和某人说话\"完全不同:speaks to his character / speaks to the wider problem。"
+    },
+    {
+      "id": "spell-out",
+      "headword": "spell out",
+      "kind": "phrasal",
+      "zh": "讲清楚,明确写明(不留推测空间)",
+      "en": "to explain something in explicit detail, leaving nothing to inference",
+      "usageScore": 8,
+      "example": "The contract does not spell out who pays for shipping, which is exactly where the argument started.",
+      "note": "常隐含\"条文没写明\"或\"对方还没听懂\",带一点不耐烦。"
+    },
+    {
+      "id": "spin-off",
+      "headword": "spin off",
+      "kind": "phrasal",
+      "zh": "分拆(业务)使其独立;衍生出",
+      "en": "to separate part of a company or project so that it becomes independent",
+      "usageScore": 7,
+      "example": "They spun off the payments unit last spring, and it is now worth more than the parent company.",
+      "note": "名词 spin-off 中文多译\"衍生剧\",但动词形式绝大多数出现在企业分拆的财经语境。"
+    },
+    {
+      "id": "square-away",
+      "headword": "square away",
+      "kind": "phrasal",
+      "zh": "把…办妥,安排停当",
+      "en": "to finish or settle something so that it no longer needs attention",
+      "usageScore": 6,
+      "example": "Once we square away the visa paperwork, the whole team can fly out on the Sunday flight.",
+      "note": "美式口语,最常见的是被动 get something squared away。square 在这里是动词\"摆正\",与\"平方、广场\"无关。"
+    },
+    {
+      "id": "stand-for",
+      "headword": "stand for",
+      "kind": "phrasal",
+      "zh": "容忍(多用于否定);代表,象征",
+      "en": "to tolerate something, usually in the negative; also to represent",
+      "usageScore": 7,
+      "example": "The head teacher made it clear she would not stand for phones in the exam hall, ever.",
+      "note": "\"代表\"那一义人人都会;I won't stand for it(我绝不容忍)这一义几乎没人教,而口语里很常听到。"
+    },
+    {
+      "id": "stem-from",
+      "headword": "stem from",
+      "kind": "phrasal",
+      "zh": "源于;由……引起",
+      "en": "to have something as its origin or underlying cause",
+      "usageScore": 9,
+      "example": "Most of the delays stem from a single unstaffed customs desk at the border, not from the weather.",
+      "note": "严肃写作里比 be caused by 更常见;主语通常是问题、分歧这类抽象名词。"
+    },
+    {
+      "id": "take-on",
+      "headword": "take on",
+      "kind": "phrasal",
+      "zh": "承担(工作);雇用;对抗(强敌)",
+      "en": "to accept a responsibility, to hire someone, or to confront a stronger opponent",
+      "usageScore": 9,
+      "example": "A firm of eleven people agreed to take on a case against a hospital trust and its insurers.",
+      "note": "三义都高频:接活儿 / 招人 / 硬碰硬,全靠宾语判断。"
+    },
+    {
+      "id": "take-over",
+      "headword": "take over",
+      "kind": "phrasal",
+      "zh": "接管,接手(职位、控制权)",
+      "en": "to assume control of something from someone else",
+      "usageScore": 9,
+      "example": "Her deputy will take over the ward on Monday, three days before the inspection team arrives.",
+      "note": "名词 takeover 专指收购;动词短语泛指各种\"接手\"。"
+    },
+    {
+      "id": "take-up",
+      "headword": "take up",
+      "kind": "phrasal",
+      "zh": "占用(时间、空间);开始从事(爱好)",
+      "en": "to occupy time or space, or to start doing a new activity",
+      "usageScore": 8,
+      "example": "The new filing cabinets take up half the corridor, so the fire marshal wants them gone by Friday.",
+      "note": "另一常义是 take up pottery/running,\"开始学某项活动\",两义都高频。"
+    },
+    {
+      "id": "talk-down-to",
+      "headword": "talk down to",
+      "kind": "phrasal",
+      "zh": "用居高临下的口气对…说话",
+      "en": "to speak to someone as if they were less intelligent than you",
+      "usageScore": 7,
+      "example": "The consultant talked down to the nurses all morning, explaining their own ward to them in a slow, patient voice.",
+      "note": "不是\"把话说简单点\",也不是压价。它指的纯是姿态:内容对不对无所谓,难听的是那副俯视的口吻。"
+    },
+    {
+      "id": "tap-into",
+      "headword": "tap into",
+      "kind": "phrasal",
+      "zh": "利用,挖掘(市场、情绪、资源)",
+      "en": "to make use of an existing resource, market, or feeling",
+      "usageScore": 7,
+      "example": "The campaign managed to tap into a resentment about parking that had been simmering for a decade.",
+      "note": "宾语多是尚未被开发的东西:市场、情绪、人才库、资金池。"
+    },
+    {
+      "id": "taper-off",
+      "headword": "taper off",
+      "kind": "phrasal",
+      "zh": "逐渐减少,慢慢停下来",
+      "en": "to become gradually less in amount or intensity until it stops",
+      "usageScore": 6,
+      "example": "Applications tapered off after the fee went up, from ninety a week to barely a dozen by autumn.",
+      "note": "强调曲线是慢慢变细,不是断崖式下跌。停药、降雨、需求、热度都常用它。"
+    },
+    {
+      "id": "tee-up",
+      "headword": "tee up",
+      "kind": "phrasal",
+      "zh": "为…做好铺垫,把事情摆到位只待启动",
+      "en": "to prepare something so that it is ready to happen or to be dealt with",
+      "usageScore": 6,
+      "example": "Her opening question teed up the whole debate, and the minister never recovered from it.",
+      "note": "来自高尔夫\"把球放上球座\"。重点是\"摆好、只差最后一击\",不等于\"开始做\"。"
+    },
+    {
+      "id": "trot-out",
+      "headword": "trot out",
+      "kind": "phrasal",
+      "zh": "老调重弹地搬出(用滥了的理由、说法)",
+      "en": "to produce the same tired argument or excuse yet again",
+      "usageScore": 5,
+      "example": "Every budget season they trot out the same chart, and every year somebody points out the axis starts at forty.",
+      "note": "一定是贬义,暗示这套说辞早听腻了。形象来自把马牵出来遛一圈给人看。"
+    },
+    {
+      "id": "turn-down",
+      "headword": "turn down",
+      "kind": "phrasal",
+      "zh": "拒绝(邀请、申请);调低(音量、温度)",
+      "en": "to reject an offer or request, or to reduce the level of something",
+      "usageScore": 9,
+      "example": "She had to turn down the fellowship because it started three weeks before her visa cleared.",
+      "note": "拒绝提议的默认词;decline 更正式,reject 更硬更伤人。"
+    },
+    {
+      "id": "walk-back",
+      "headword": "walk back",
+      "kind": "phrasal",
+      "zh": "收回,淡化(自己先前的公开表态)",
+      "en": "to retract or soften a public statement you made earlier, usually without admitting you were wrong",
+      "usageScore": 7,
+      "example": "By Thursday the minister was walking back the tax remark, calling it a personal view rather than policy.",
+      "note": "不是\"往回走\"。政治与商业新闻的固定用法:话说出去了,再悄悄降调收回,但又不肯认错。"
+    },
+    {
+      "id": "water-down",
+      "headword": "water down",
+      "kind": "phrasal",
+      "zh": "冲淡,削弱(法案、措辞、批评)",
+      "en": "to weaken a proposal, rule, or statement by removing its strongest parts",
+      "usageScore": 7,
+      "example": "Three rounds of amendments water down the bill until the emissions target reads like a polite suggestion.",
+      "note": "字面是兑水;比喻义在政治与商业报道里比字面义更常见。"
+    },
+    {
+      "id": "wind-down",
+      "headword": "wind down",
+      "kind": "phrasal",
+      "zh": "逐步收尾、结束(业务、活动);(人)松弛下来",
+      "en": "to gradually bring an activity or business to an end, or to relax after effort",
+      "usageScore": 7,
+      "example": "The charity is winding down after thirty years, and the last shop closes when the lease expires.",
+      "note": "wind 读 /waɪnd/,与\"风\"无关。两个义项都高频:关掉一门生意,和下班后放松。"
+    },
+    {
+      "id": "write-off",
+      "headword": "write off",
+      "kind": "phrasal",
+      "zh": "核销(坏账);看衰,认定没戏",
+      "en": "to cancel a debt in the accounts, or to dismiss someone or something as hopeless",
+      "usageScore": 8,
+      "example": "Critics were quick to write off the film after its first weekend, and then it ran for eight months.",
+      "note": "会计义(注销)和口语义(判死刑、看扁)同样高频。"
+    }
+  ]
+}
