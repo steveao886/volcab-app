@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildLapseQueue, buildQueue } from './queue'
+import { buildLapseQueue, buildQueue, MATURE_INTERVAL_DAYS, rankLapsedWords } from './queue'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
 
@@ -87,9 +87,10 @@ describe('buildQueue — prioritized by encounter probability', () => {
 })
 
 describe('buildLapseQueue', () => {
-  const entry = (lapses: number) => ({
+  const TODAY = '2026-07-24'
+  const entry = (lapses: number, over: Partial<{ ease: number; intervalDays: number; lastReviewedAt: string }> = {}) => ({
     state: 'review' as const, ease: 2.5, intervalDays: 5, due: '2099-01-01',
-    stepIndex: 0, reps: 9, lapses, lastReviewedAt: '2026-07-15T00:00:00Z',
+    stepIndex: 0, reps: 9, lapses, lastReviewedAt: '2026-07-15T00:00:00Z', ...over,
   })
   const withLapses = (spec: Record<string, number>): Progress => {
     const p = emptyProgress()
@@ -99,39 +100,93 @@ describe('buildLapseQueue', () => {
 
   it('sorted by lapse count from most to least', () => {
     const ws = [word('a'), word('b'), word('c')]
-    expect(buildLapseQueue(ws, withLapses({ a: 1, b: 5, c: 3 }))).toEqual(['b', 'c', 'a'])
+    expect(buildLapseQueue(ws, withLapses({ a: 1, b: 5, c: 3 }), TODAY)).toEqual(['b', 'c', 'a'])
   })
 
   it('zero lapses does not count as a stubborn word', () => {
     const ws = [word('a'), word('b')]
-    expect(buildLapseQueue(ws, withLapses({ a: 0, b: 2 }))).toEqual(['b'])
+    expect(buildLapseQueue(ws, withLapses({ a: 0, b: 2 }), TODAY)).toEqual(['b'])
   })
 
   it('words never reviewed are excluded (no record in progress)', () => {
     const ws = [word('a'), word('b')]
-    expect(buildLapseQueue(ws, withLapses({ b: 2 }))).toEqual(['b'])
+    expect(buildLapseQueue(ws, withLapses({ b: 2 }), TODAY)).toEqual(['b'])
   })
 
-  it('when lapse counts tie, break by encounter probability, common words come first', () => {
+  it('when lapse counts tie, the lower ease comes first — it is the word still costing you', () => {
+    const p = emptyProgress()
+    p.words['settled'] = entry(3, { ease: 2.6 })
+    p.words['struggling'] = entry(3, { ease: 1.85 })
+    expect(buildLapseQueue([word('settled'), word('struggling')], p, TODAY)).toEqual(['struggling', 'settled'])
+  })
+
+  it('when lapses and ease both tie, break by encounter probability, common words come first', () => {
     const ws = [word('rare', 2), word('common', 9)]
-    expect(buildLapseQueue(ws, withLapses({ rare: 3, common: 3 }))).toEqual(['common', 'rare'])
+    expect(buildLapseQueue(ws, withLapses({ rare: 3, common: 3 }), TODAY)).toEqual(['common', 'rare'])
   })
 
   it('ignores the due date — stubborn words are actively cleared, not waited on until due', () => {
     // entry() above always gives due: 2099, so the normal queue would pick none of them
     const ws = [word('a')]
-    expect(buildQueue(ws, withLapses({ a: 4 }), '2026-07-24').due).toEqual([])
-    expect(buildLapseQueue(ws, withLapses({ a: 4 }))).toEqual(['a'])
+    expect(buildQueue(ws, withLapses({ a: 4 }), TODAY).due).toEqual([])
+    expect(buildLapseQueue(ws, withLapses({ a: 4 }), TODAY)).toEqual(['a'])
   })
 
   it('capped count', () => {
     const ws = Array.from({ length: 30 }, (_, i) => word(`w${i}`))
     const spec = Object.fromEntries(ws.map((w, i) => [w.id, i + 1]))
-    expect(buildLapseQueue(ws, withLapses(spec))).toHaveLength(20)
-    expect(buildLapseQueue(ws, withLapses(spec), 5)).toHaveLength(5)
+    expect(buildLapseQueue(ws, withLapses(spec), TODAY)).toHaveLength(20)
+    expect(buildLapseQueue(ws, withLapses(spec), TODAY, 5)).toHaveLength(5)
   })
 
   it('returns empty when there are no stubborn words at all', () => {
-    expect(buildLapseQueue([word('a')], emptyProgress())).toEqual([])
+    expect(buildLapseQueue([word('a')], emptyProgress(), TODAY)).toEqual([])
+  })
+
+  // --- The two filters that give the list an exit -------------------------
+
+  it('a word whose interval has grown past maturity leaves the list — lapses alone never lets go', () => {
+    const p = emptyProgress()
+    p.words['relearned'] = entry(1, { intervalDays: MATURE_INTERVAL_DAYS })
+    p.words['stillHard'] = entry(1, { intervalDays: MATURE_INTERVAL_DAYS - 1 })
+    expect(buildLapseQueue([word('relearned'), word('stillHard')], p, TODAY)).toEqual(['stillHard'])
+  })
+
+  it('a word already reviewed today drops out until tomorrow, so one pass empties the list', () => {
+    const p = emptyProgress()
+    p.words['a'] = entry(2, { lastReviewedAt: '2026-07-24T09:00:00Z' })
+    expect(buildLapseQueue([word('a')], p, TODAY)).toEqual([])
+    expect(buildLapseQueue([word('a')], p, '2026-07-25')).toEqual(['a'])
+  })
+
+  it('"today" is the local day, not the UTC prefix of lastReviewedAt', () => {
+    // 2026-07-25T02:00Z is still the evening of the 24th anywhere west of
+    // Greenwich; slicing the ISO string would wrongly call it a new day.
+    const p = emptyProgress()
+    p.words['a'] = entry(2, { lastReviewedAt: new Date(2026, 6, 24, 19, 0).toISOString() })
+    expect(buildLapseQueue([word('a')], p, TODAY)).toEqual([])
+  })
+})
+
+describe('rankLapsedWords', () => {
+  const entry = (lapses: number, over: Partial<{ intervalDays: number; lastReviewedAt: string }> = {}) => ({
+    state: 'review' as const, ease: 2.5, intervalDays: 5, due: '2099-01-01',
+    stepIndex: 0, reps: 9, lapses, lastReviewedAt: '2026-07-15T00:00:00Z', ...over,
+  })
+
+  it('keeps every word that has ever lapsed, including ones the drill session filters out', () => {
+    const p = emptyProgress()
+    p.words['matured'] = entry(1, { intervalDays: 300 })
+    p.words['drilledToday'] = entry(1, { lastReviewedAt: '2026-07-24T09:00:00Z' })
+    const ws = [word('matured'), word('drilledToday')]
+    expect(rankLapsedWords(ws, p).map(w => w.id).sort()).toEqual(['drilledToday', 'matured'])
+    expect(buildLapseQueue(ws, p, '2026-07-24')).toEqual([])
+  })
+
+  it('is uncapped — the stats leaderboard slices it itself', () => {
+    const ws = Array.from({ length: 30 }, (_, i) => word(`w${i}`))
+    const p = emptyProgress()
+    ws.forEach((w, i) => { p.words[w.id] = entry(i + 1) })
+    expect(rankLapsedWords(ws, p)).toHaveLength(30)
   })
 })

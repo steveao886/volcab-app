@@ -14,6 +14,15 @@
   text-align: end;
 }
 
+/* Disclosure that the drill's grades don't reschedule. Sits above the card
+   rather than next to the buttons: it has to be read before you grade, not
+   discovered after. */
+.review-drill-note {
+  margin-bottom: var(--sp-3);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-snug);
+}
+
 /* --- Card ------------------------------------------------------------------
    The front only has the headword + pronunciation, centered with room to
    breathe, so it reads as an actual card rather than a single line of

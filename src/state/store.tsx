@@ -62,6 +62,8 @@ export interface AppActions {
   login(token: string): Promise<void>
   logout(): void
   grade(wordId: string, g: Grade): void
+  /** Stubborn-word drill, graded one card at a time: practice only, so a miss pulls the due date forward and nothing else moves */
+  recordLapseDrill(wordId: string, g: Grade): void
   recordQuiz(correct: number, total: number, wrongIds: string[]): void
   /** Sprint settlement: like recordQuiz, only pulls forward the due date of missed words, plus refreshes the personal best score */
   recordSprint(score: number, wrongIds: string[]): void
@@ -565,6 +567,52 @@ export function AppProvider({ children }: { children: ReactNode }) {
     schedulePush()
   }, [commitProgress, schedulePush])
 
+  /**
+   * Grading inside a stubborn-word drill. **Practice, not review.**
+   *
+   * Same contract as recordQuiz — a missed word only gets its due date
+   * pulled forward, ease/intervalDays/state are never touched — but graded
+   * one card at a time, because the drill uses the review card UI.
+   *
+   * Why this can't just call grade(): the drill deliberately ignores due
+   * dates, so the same word can be graded again and again on one day, and
+   * every pass through gradeWord multiplies the interval by ease. Measured
+   * on the live library before this change: the seven drilled words had
+   * reps 11-15 against a library median of 4, and "embroil" had been
+   * pushed out to a 273-day interval due 2027-04-28 — the longest in the
+   * whole library. Drilling the hardest words had scheduled them furthest
+   * away, which is precisely backwards.
+   *
+   * A miss still increments `lapses`: forgetting a word is a fact about
+   * the word, not about which screen you were on, and it is the signal
+   * that keeps a genuinely stubborn word at the top of tomorrow's list.
+   * That counter feeds ranking only — it is not part of the schedule.
+   */
+  const recordLapseDrill = useCallback((wordId: string, g: Grade) => {
+    const now = new Date()
+    const day = todayStr(now)
+    const cur = stateRef.current.progress
+    const prev = cur.words[wordId]
+    if (!prev) return   // Nothing to drill against; the word was deleted from another device mid-session
+    const correct = g !== 'again'
+    const stat = { ...(cur.dailyStats[day] ?? emptyStat()) }
+    // Counted as a review, not as a quiz: this is a card you looked at and
+    // graded, so it has to keep the streak alive and show up in the 30-day
+    // chart. newLearned is untouched — a drill only ever contains words
+    // that graduated long ago.
+    stat.reviewed += 1
+    if (correct) stat.correct += 1
+    const entry = correct
+      ? { ...prev, lastReviewedAt: now.toISOString() }
+      : { ...prev, due: day, lapses: prev.lapses + 1, lastReviewedAt: now.toISOString() }
+    commitProgress({
+      ...cur,
+      words: { ...cur.words, [wordId]: entry },
+      dailyStats: { ...cur.dailyStats, [day]: stat },
+    })
+    schedulePush()
+  }, [commitProgress, schedulePush])
+
   // The score itself isn't stored: missed words are already reflected in the review schedule by having their due date pulled forward; dailyStats just records "took a quiz today"
   const recordQuiz = useCallback((_correct: number, _total: number, wrongIds: string[]) => {
     const now = new Date()
@@ -691,11 +739,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AppContextValue>(() => ({
     ...state,
-    login, logout, grade, recordQuiz, recordSprint, saveWord, deleteWords, addStaging,
+    login, logout, grade, recordLapseDrill, recordQuiz, recordSprint, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll,
     ...(import.meta.env.DEV ? { enterDemoMode } : {}),
   }), [
-    state, login, logout, grade, recordQuiz, recordSprint, saveWord, deleteWords, addStaging,
+    state, login, logout, grade, recordLapseDrill, recordQuiz, recordSprint, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll, enterDemoMode,
   ])
 

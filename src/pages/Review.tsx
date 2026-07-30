@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Badge } from '../components/Badge'
@@ -8,7 +8,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { isEditableTarget } from '../lib/keys'
-import { buildLapseQueue, buildQueue } from '../lib/queue'
+import { buildLapseQueue, buildQueue, rankLapsedWords } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { todayStr } from '../lib/srs'
 import { speak } from '../lib/tts'
@@ -46,7 +46,7 @@ const PENDING_STUCK_TIMEOUT_MS = 2000
  * needed.
  */
 export function Review() {
-  const { words, progress, grade, deleteWords } = useApp()
+  const { words, progress, grade, recordLapseDrill, deleteWords } = useApp()
   const [today] = useState(() => todayStr(new Date()))
   // ?mode=lapses means "focus on lapsed words": the same card and grading
   // logic, just with the queue swapped to the batch sorted by lapse count,
@@ -60,8 +60,9 @@ export function Review() {
   // eyes. To switch modes, leave and re-enter.
   const [searchParams] = useSearchParams()
   const [mode] = useState(() => (searchParams.get('mode') === 'lapses' ? 'lapses' : 'due'))
+  const lapseMode = mode === 'lapses'
   const [queue, setQueue] = useState<SessionQueue>(() => {
-    if (mode === 'lapses') return buildSessionQueue(buildLapseQueue(words, progress), [])
+    if (lapseMode) return buildSessionQueue(buildLapseQueue(words, progress, today), [])
     const q = buildQueue(words, progress, today)
     return buildSessionQueue(q.due, q.fresh)
   })
@@ -122,9 +123,14 @@ export function Review() {
           pendingRef.current = undefined
         }
       }, PENDING_STUCK_TIMEOUT_MS)
-      grade(curId, g)
+      // Lapse mode is a drill, not a review: it deliberately ignores due
+      // dates, so putting it through grade() would let one afternoon of
+      // practice multiply a word's interval several times over and push
+      // the hardest words furthest into the future. See recordLapseDrill.
+      if (lapseMode) recordLapseDrill(curId, g)
+      else grade(curId, g)
     },
-    [curId, flipped, grade, soundEnabled],
+    [curId, flipped, grade, recordLapseDrill, lapseMode, soundEnabled],
   )
 
   // Review session complete sound: fires exactly once, at the moment
@@ -251,19 +257,30 @@ export function Review() {
   }, [curId, flipped, toggleFlip, handleGrade])
 
   const reviewedToday = progress.dailyStats[today]?.reviewed ?? 0
+  // Only asked when the drill comes up empty, but the hook can't be
+  // conditional; the filter is cheap next to the card render either way.
+  const hasLapsedWords = useMemo(
+    () => (lapseMode ? rankLapsedWords(words, progress).length > 0 : false),
+    [lapseMode, words, progress],
+  )
 
-  const lapseMode = mode === 'lapses'
   const eyebrow = lapseMode ? 'Lapses' : 'Review'
   const title = lapseMode ? '顽固词' : '复习'
 
   if (finished) {
     const empty = queue.total === 0
+    // An empty drill has two completely different causes now that the
+    // queue filters itself, and telling them apart matters: "you have no
+    // stubborn words" is congratulations, while "you already did them
+    // today" is a schedule. Saying the first when the second is true would
+    // quietly claim the list had been cleared for good.
+    const clearedForToday = empty && lapseMode && hasLapsedWords
     return (
       <Page eyebrow={eyebrow} title={title} back="/">
         <div className="review-done">
           <p className="review-done__label">
             {lapseMode
-              ? empty ? '暂无顽固词' : '顽固词已清完'
+              ? empty ? (clearedForToday ? '今天已练完' : '暂无顽固词') : '顽固词已清完'
               : empty ? '暂无待复习' : '复习完成'}
           </p>
           <p className="review-done__count">
@@ -272,7 +289,9 @@ export function Review() {
           <p className="muted">
             {lapseMode
               ? empty
-                ? '还没有反复记错的词 —— 这是好事。'
+                ? clearedForToday
+                  ? '顽固词每天练一遍就够了,明天再来。'
+                  : '还没有反复记错的词 —— 这是好事。'
                 : '这一批错得最多的词都过了一遍。'
               : empty
                 ? '暂时没有到期或新词需要复习。'
@@ -315,6 +334,14 @@ export function Review() {
         </div>
         <p className="num muted review-progress__count">还剩 {remaining(queue)} 张</p>
       </div>
+
+      {/* The drill reuses the four-way grade UI but no longer schedules
+          with it, and a control that silently does less than it looks
+          like it does is worse than no control. Say so once, on the page
+          where it's true. */}
+      {lapseMode && (
+        <p className="faint review-drill-note">这是练习:答错会把词提前到今天重新排队,答对不改变复习间隔。</p>
+      )}
 
       <Card
         className={`review-card card--interactive ${flipped ? 'review-card--back' : 'review-card--front'} ${isNewCard ? 'review-card--badge' : ''}`}

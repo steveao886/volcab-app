@@ -1,4 +1,4 @@
-import { buildLapseQueue } from '../lib/queue'
+import { rankLapsedWords } from '../lib/queue'
 import { addDays } from '../lib/srs'
 import type { Progress, Word } from '../types'
 
@@ -149,17 +149,22 @@ export interface LapseSummary {
 /**
  * The words that keep being forgotten.
  *
- * Ordering is delegated to buildLapseQueue so this list is literally the
- * head of the queue "专攻顽固词" would hand you — a leaderboard that
- * disagreed with the session it links to would be worse than no leaderboard.
+ * Ordering is delegated to rankLapsedWords, the same comparator the drill
+ * session uses, so the leaderboard and the session it links to never
+ * disagree about which word is worst.
+ *
+ * It deliberately ranks over **everything that has ever lapsed**, while
+ * the session additionally drops words that have since matured or were
+ * already reviewed today. The two are meant to differ: this is the
+ * stats page, and a record of what a word has cost you shouldn't blink out
+ * because you happened to drill it an hour ago.
  */
 export function lapseSummary(words: Word[], progress: Progress, topN: number): LapseSummary {
-  const total = words.filter(w => (progress.words[w.id]?.lapses ?? 0) > 0).length
-  const top = buildLapseQueue(words, progress, topN).map(id => {
-    const word = words.find(w => w.id === id)!
-    return { word, lapses: progress.words[id].lapses }
-  })
-  return { total, top }
+  const ranked = rankLapsedWords(words, progress)
+  return {
+    total: ranked.length,
+    top: ranked.slice(0, topN).map(word => ({ word, lapses: progress.words[word.id].lapses })),
+  }
 }
 
 const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']

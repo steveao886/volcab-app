@@ -38,7 +38,7 @@ export function Today() {
       total: rp.total,
       ratio: rp.ratio,
       queueEmpty: queue.due.length === 0 && queue.fresh.length === 0,
-      lapseCount: buildLapseQueue(words, progress).length,
+      lapseCount: buildLapseQueue(words, progress, today).length,
     }
   }, [words, progress, today])
 

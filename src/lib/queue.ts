@@ -1,3 +1,4 @@
+import { todayStr } from './srs'
 import type { Progress, Word } from '../types'
 
 export interface DailyQueue { due: string[]; fresh: string[] }
@@ -55,24 +56,76 @@ export function buildQueue(words: Word[], progress: Progress, today: string): Da
 export const LAPSE_SESSION_SIZE = 20
 
 /**
- * Lapse words: the ones with the most failures, **ignoring due date**.
+ * The interval at which a word counts as known and stops being "stubborn".
  *
- * progress has always tracked lapses, and the stats page charts it too, but there was no
- * way to directly work through this batch of words — SRS naturally brings frequently-missed
- * words back around more often, but there was no tool for a user who wants to tackle them
- * head-on.
- *
- * Words with 0 lapses don't count (that's not "stubborn"); when lapse counts tie, encounter
- * likelihood breaks the tie, with more common words coming first.
+ * 21 days is the conventional young/mature boundary in spaced repetition
+ * (it is Anki's default), not a number picked here. The point is that it
+ * has to be *some* threshold: `lapses` is a lifetime counter that is only
+ * ever incremented (srs.ts is the only writer, and it has no decrement),
+ * so without an exit rule a single slip in July puts a word on the
+ * stubborn list forever, however well it is known by September.
  */
-export function buildLapseQueue(words: Word[], progress: Progress, limit = LAPSE_SESSION_SIZE): string[] {
+export const MATURE_INTERVAL_DAYS = 21
+
+/**
+ * Every word that has ever been forgotten, hardest first.
+ *
+ * Ranking, in order: lapse count, then **ease ascending**, then encounter
+ * likelihood, then id for determinism.
+ *
+ * Ease is the tiebreaker that earns its place. Lapse counts bunch up hard
+ * at the low end — over the live library, all 7 lapsed words sat at
+ * exactly 1 lapse, so the raw count separated nothing and the order was
+ * decided entirely by usageScore. Ease is the scheduler's own running
+ * estimate of how much trouble a word gives you (it drops 0.2 on a lapse,
+ * 0.15 on "hard", and only recovers on "easy"), so among words that have
+ * each been forgotten once, the one with the lower ease is the one still
+ * costing you.
+ */
+export function rankLapsedWords(words: Word[], progress: Progress): Word[] {
   return words
     .filter(w => (progress.words[w.id]?.lapses ?? 0) > 0)
     .sort((a, b) => {
-      const la = progress.words[a.id].lapses, lb = progress.words[b.id].lapses
-      if (la !== lb) return lb - la
+      const ea = progress.words[a.id], eb = progress.words[b.id]
+      if (ea.lapses !== eb.lapses) return eb.lapses - ea.lapses
+      if (ea.ease !== eb.ease) return ea.ease - eb.ease
       const d = score(b) - score(a)
       return d !== 0 ? d : a.id.localeCompare(b.id)
+    })
+}
+
+/**
+ * The drill session for stubborn words: the ranking above, minus the two
+ * categories that made the old queue feel frozen.
+ *
+ * 1. **Words that have since matured are dropped.** See
+ *    MATURE_INTERVAL_DAYS — a list with no exit condition can only grow.
+ * 2. **Words already reviewed today are dropped.** The session ignores due
+ *    dates by design, so without this the same handful of words came back
+ *    every single time the page was opened, in an order that was fully
+ *    deterministic down to the tiebreakers. Now a pass through the list
+ *    empties it for the day and the entry point on the Today page
+ *    disappears, which is the feedback the mode never gave.
+ *
+ * Both filters read fields that already exist; neither needs a new synced
+ * field, and neither can be wrong in a way that loses data — the worst
+ * case is that a word waits until tomorrow.
+ */
+export function buildLapseQueue(
+  words: Word[],
+  progress: Progress,
+  today: string,
+  limit = LAPSE_SESSION_SIZE,
+): string[] {
+  return rankLapsedWords(words, progress)
+    .filter(w => {
+      const e = progress.words[w.id]
+      if (e.intervalDays >= MATURE_INTERVAL_DAYS) return false
+      // lastReviewedAt is an ISO instant; the day it belongs to is the
+      // user's local day, which is what `today` is. Comparing the raw UTC
+      // prefix would drop a word a few hours early or late depending on
+      // the offset.
+      return todayStr(new Date(e.lastReviewedAt)) !== today
     })
     .slice(0, limit)
     .map(w => w.id)
