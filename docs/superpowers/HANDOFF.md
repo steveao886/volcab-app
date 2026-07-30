@@ -126,6 +126,59 @@ src/
 
 ---
 
+## ⏳ Open follow-up: re-measure retention on or after 2026-08-20
+
+**Set 2026-07-30. Nothing else in this file is pending; this is.**
+
+`settings.intervalModifier` was set to **1.3** on 2026-07-30 because measured
+retention was far above the 90% that SM-2's defaults aim for. That decision
+was made on **six days of data and seven lapses**, which is thin. It has to be
+checked against real data before it is either trusted or pushed further.
+
+Baseline at the time of the change:
+
+| | |
+|---|---|
+| Retention on scheduled reviews | **97.8%** (7 lapses / ~317 real reviews) |
+| 95% CI on that | 95.5% – 98.9% |
+| Headline "accuracy" (the misleading one) | 90.8% |
+| Words tracked | 113 |
+| Median interval | 4d |
+| `intervalModifier` before → after | unset (1.0) → 1.3 |
+
+**Why the two percentages differ, and why it matters:** `reviewed`/`correct`
+count every card view, including the two learning-step grades each new word
+costs before graduating. That number ran 7 points *below* true retention.
+Tuning intervals against it would have moved them the wrong way — it nearly
+did. `reviewPhase`/`reviewPhaseCorrect` were added in the same change to
+measure the real thing; the stats page prints it as 真实留存率.
+
+**How to re-measure** (needs `gh` as steveao886):
+
+```bash
+gh api repos/steveao886/volcab-data/contents/progress.json --jq '.content' | base64 -d > /tmp/p.json
+node -e "const p=require('/tmp/p.json');let r=0,c=0;for(const s of Object.values(p.dailyStats)){r+=s.reviewPhase??0;c+=s.reviewPhaseCorrect??0}console.log(c+'/'+r,'=',(c/r*100).toFixed(1)+'%')"
+```
+
+Only days recorded after 2026-07-30 carry those fields, so this is a clean
+post-change measurement — no need to exclude anything by hand.
+
+**What to do with the answer.** The target is 90%.
+
+- **Still ≥ 95%** — 1.3 wasn't enough. Raise toward 1.5 and check again. Say
+  the new number out loud rather than nudging silently; the knob compounds
+  (1.3 is ≈3.7× after five reviews, not 30%).
+- **90–94%** — working as intended. Leave it alone.
+- **< 88%** — overshot. Drop back toward 1.15. Expect this to show up as more
+  words in the lapse list before it shows up in the percentage.
+- **Fewer than ~150 scheduled reviews recorded** — the sample is still too
+  small to act on, exactly as it was on 2026-07-30. Wait longer; do not
+  split the difference on noise.
+
+Delete this section once the check has been made and the outcome recorded.
+
+---
+
 ## How this project got built (methodology, worth reusing)
 
 **Parallelism + isolation**: the eight pages were built by eight agents working simultaneously, each in its own git worktree, with `node_modules` shared via a junction. The rule was that **page agents were never allowed to touch `src/styles/` or `src/components/`** — if a page needed styling that didn't exist yet, it wrote its own page-level CSS and listed it in its report, to be consolidated in one pass after merging. Eight parallel tracks, zero merge conflicts.
