@@ -21260,6 +21260,826 @@
       "etymology": "拉丁 corpus(身体) → 文字的「全身」 → 文集、语料库",
       "sourceNote": "manual",
       "addedAt": "2026-07-29"
+    },
+    {
+      "id": "atomic",
+      "headword": "atomic",
+      "phonetic": "/əˈtɑːmɪk/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "of an operation: either completing in full or having no effect at all, never leaving a half-finished state",
+          "zh": "(计算机)原子性的,不可分割的(操作要么完整完成,要么完全不发生)",
+          "share": 40
+        },
+        {
+          "pos": "adj.",
+          "en": "relating to atoms, or to nuclear energy and nuclear weapons",
+          "zh": "原子的;原子能的,核武器的",
+          "share": 40
+        },
+        {
+          "pos": "adj.",
+          "en": "so small or basic that it is treated as a single unit and never broken down further",
+          "zh": "小到不可再分的,最小单元的",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "Wrap the two database writes in a transaction so the whole thing is atomic — either both land or neither does.",
+        "The payment service retried the charge twice because the refund step was not atomic, and one customer got billed three times.",
+        "Her grandfather spent thirty years at the atomic weapons plant and would not say the word plutonium at the dinner table.",
+        "The lab's atomic clock drifts by less than a second every hundred million years, which the tour guide repeated three times.",
+        "Her note-taking system breaks every book into atomic ideas, one thought per card, filed by theme rather than by author."
+      ],
+      "synonyms": [
+        "indivisible",
+        "all-or-nothing",
+        "nuclear",
+        "elementary"
+      ],
+      "antonyms": [
+        "divisible",
+        "partial"
+      ],
+      "collocations": [
+        "atomic operation",
+        "atomic commit",
+        "atomic bomb",
+        "atomic clock"
+      ],
+      "relatedForms": [
+        {
+          "form": "atom",
+          "pos": "n.",
+          "zh": "原子"
+        },
+        {
+          "form": "atomically",
+          "pos": "adv.",
+          "zh": "以原子方式地,不可分割地"
+        },
+        {
+          "form": "atomicity",
+          "pos": "n.",
+          "zh": "原子性,不可分割性"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "a-(不) + tomos(切开) → 不可再分 → 原子的、原子性的",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-29"
+    },
+    {
+      "id": "canonical",
+      "headword": "canonical",
+      "phonetic": "/kəˈnɑːnɪkl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "accepted as the standard, official, or definitive form of something",
+          "zh": "标准的,规范的;公认权威的",
+          "share": 60
+        },
+        {
+          "pos": "adj.",
+          "en": "belonging to the body of works accepted as major, or to the official version of a story",
+          "zh": "属于经典之列的;(情节)属于官方设定的",
+          "share": 30
+        },
+        {
+          "pos": "adj.",
+          "en": "relating to church law, or to the books officially accepted as part of the Bible",
+          "zh": "教会法规的;(圣经)正典的",
+          "share": 10
+        }
+      ],
+      "examples": [
+        "Every product page ships a canonical URL, or Google will pick one of the six duplicates itself and pick wrong.",
+        "Store every phone number in one canonical format before you compare them, or the same customer shows up as four accounts.",
+        "Grandma's recipe card counts as the canonical version of the stew; every other cousin's attempt is a variation and everyone knows it.",
+        "Her reading project skips the canonical novels entirely and works through prize lists from countries she has never visited.",
+        "The seminar spent a whole week on why four gospels became canonical and dozens of other early texts did not."
+      ],
+      "synonyms": [
+        "standard",
+        "authoritative",
+        "definitive",
+        "orthodox",
+        "official"
+      ],
+      "antonyms": [
+        "nonstandard",
+        "apocryphal",
+        "unofficial"
+      ],
+      "collocations": [
+        "canonical form",
+        "canonical URL",
+        "canonical text",
+        "canonical example"
+      ],
+      "relatedForms": [
+        {
+          "form": "canon",
+          "pos": "n.",
+          "zh": "经典,正典;准则"
+        },
+        {
+          "form": "canonically",
+          "pos": "adv.",
+          "zh": "按标准形式地;依正典地"
+        },
+        {
+          "form": "canonize",
+          "pos": "v.",
+          "zh": "将...列为正典;封为圣徒"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "希腊 kanōn(量尺、准绳) → 标准 → 公认为标准的",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-29"
+    },
+    {
+      "id": "footnote",
+      "headword": "footnote",
+      "phonetic": "/ˈfʊtnoʊt/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "a note printed at the bottom of a page that gives a source or an extra remark",
+          "zh": "脚注,页下注",
+          "share": 60
+        },
+        {
+          "pos": "n.",
+          "en": "a small detail or minor figure that the main story quickly leaves behind and forgets",
+          "zh": "(比喻)无足轻重的小插曲,很快被遗忘的细节",
+          "share": 30
+        },
+        {
+          "pos": "v.",
+          "en": "to add footnotes to a text, or to back a statement up with a note giving its source",
+          "zh": "给...加脚注;为(说法)加注出处",
+          "share": 10
+        }
+      ],
+      "examples": [
+        "The claim looked solid until you chased the footnote and found it pointed at a blog post from 2009.",
+        "Half the fun of that biography is in the footnotes, where the author quietly demolishes three rival historians.",
+        "The contract's real terms hide in a footnote on page fourteen, printed in grey type nobody was meant to read.",
+        "The startup raised ninety million and folded within a year, now just a footnote in every talk about the bubble.",
+        "She footnotes every claim in her memos, which makes them twice as long and almost impossible to argue with."
+      ],
+      "synonyms": [
+        "annotation",
+        "endnote",
+        "aside",
+        "afterthought"
+      ],
+      "antonyms": [
+        "headline",
+        "main text"
+      ],
+      "collocations": [
+        "a footnote in history",
+        "buried in a footnote",
+        "add a footnote",
+        "footnote the source"
+      ],
+      "relatedForms": [
+        {
+          "form": "footnoted",
+          "pos": "adj.",
+          "zh": "加了(大量)脚注的"
+        }
+      ],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "inert",
+      "headword": "inert",
+      "phonetic": "/ɪˈnɜːrt/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "not moving at all, or showing no energy and no willingness to act",
+          "zh": "一动不动的;死气沉沉的,无所作为的",
+          "share": 60
+        },
+        {
+          "pos": "adj.",
+          "en": "chemically inactive; not reacting with other substances",
+          "zh": "(化学)惰性的,不活泼的;不起反应的",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "The cat lay inert on the warm radiator all afternoon, ignoring the doorbell, the vacuum, and finally the can opener.",
+        "The ethics committee has been inert for two years, meeting quarterly to postpone the same three items.",
+        "Three months after launch the app sat inert on ten thousand phones, opened once and never opened again.",
+        "The display case is flooded with an inert gas so the four-hundred-year-old manuscript cannot oxidize while tourists photograph it.",
+        "Ninety percent of the spray is inert ingredients; the label names none of them, which is exactly what the lawsuit is about."
+      ],
+      "synonyms": [
+        "motionless",
+        "sluggish",
+        "inactive",
+        "unreactive",
+        "torpid"
+      ],
+      "antonyms": [
+        "active",
+        "reactive",
+        "energetic"
+      ],
+      "collocations": [
+        "inert gas",
+        "inert ingredients",
+        "lie inert",
+        "an inert bureaucracy"
+      ],
+      "relatedForms": [
+        {
+          "form": "inertia",
+          "pos": "n.",
+          "zh": "惯性;惰性,不作为"
+        },
+        {
+          "form": "inertly",
+          "pos": "adv.",
+          "zh": "无生气地,呆滞地"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "in-(无) + ars(技艺、能力) → 无所施为 → 呆滞的、惰性的",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "smoking-gun",
+      "headword": "smoking gun",
+      "phonetic": "/smoʊkɪŋ ˈɡʌn/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "a single piece of evidence that settles who is responsible, leaving nothing left to argue about",
+          "zh": "铁证;确凿的直接证据"
+        }
+      ],
+      "examples": [
+        "The leaked pricing memo was the smoking gun: it logged the recall six months before anyone told the regulator.",
+        "Investigators spent eleven months on the case and never found a smoking gun, so the prosecutor quietly dropped two charges.",
+        "No smoking gun turned up in the audit, but a pattern of round-number invoices convinced the board to change accountants.",
+        "Her lawyer held up the timestamped badge scan like a smoking gun, and the courtroom went quiet for a full ten seconds.",
+        "Every fresh leak was billed as another smoking gun, and by the fourth one readers had stopped believing the phrase meant anything."
+      ],
+      "synonyms": [
+        "hard evidence",
+        "damning proof",
+        "clincher"
+      ],
+      "antonyms": [
+        "circumstantial evidence",
+        "hearsay"
+      ],
+      "collocations": [
+        "no smoking gun",
+        "smoking gun evidence",
+        "find a smoking gun"
+      ],
+      "relatedForms": [],
+      "usageScore": 7,
+      "etymology": "枪口还在冒烟 → 刚开过枪的人就是凶手 → 铁证",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "level-playing-field",
+      "headword": "level playing field",
+      "phonetic": "/levəl pleɪɪŋ ˈfiːld/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "conditions under which everyone competes by the same rules, with no one starting from a built-in advantage",
+          "zh": "公平竞争的环境;各方条件对等的局面"
+        }
+      ],
+      "examples": [
+        "European carriers lobbied for two years for a level playing field on state aid before the Gulf routes were reopened.",
+        "Blind auditions were meant to create a level playing field, and within a decade the orchestra's intake looked nothing like before.",
+        "Anyone calling the internship market a level playing field has never watched a partner's daughter skip the entire application process.",
+        "There is no level playing field in app-store search: the platform's own apps sit above the fold before anyone bids.",
+        "The ministry still invokes the level playing field it promised in 2019, though rural schools are sharing one laptop per class."
+      ],
+      "synonyms": [
+        "equal footing",
+        "fair competition",
+        "parity"
+      ],
+      "antonyms": [
+        "tilted playing field",
+        "rigged game",
+        "head start"
+      ],
+      "collocations": [
+        "create a level playing field",
+        "hardly a level playing field",
+        "no level playing field"
+      ],
+      "relatedForms": [
+        {
+          "form": "level the playing field",
+          "pos": "v.",
+          "zh": "拉平差距,创造公平竞争的条件"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "球场不倾斜 → 谁都不占坡度之利 → 公平竞争",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "race-to-the-bottom",
+      "headword": "race to the bottom",
+      "phonetic": "/reɪs tə ðə ˈbɑːtəm/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "competition in which rivals keep undercutting each other on wages, prices, or standards until everyone involved is worse off",
+          "zh": "逐底竞争;竞相压低工资、价格或标准以压过对手"
+        }
+      ],
+      "examples": [
+        "Once one platform waived its commission, the others followed within a month, and courier pay entered a race to the bottom.",
+        "Corporate tax rates have slid for a decade, and finance ministers privately admit the race to the bottom is now unstoppable.",
+        "Editors paying a cent a word are starting another race to the bottom, and the freelancers who can afford to quit already have.",
+        "Every airline shaved another inch off seat pitch, and passengers watched a decade-long race to the bottom play out in their knees.",
+        "The two supermarkets kept undercutting each other on milk until dairy farmers called it a race to the bottom and stopped supplying both."
+      ],
+      "synonyms": [
+        "undercutting",
+        "cutthroat competition",
+        "downward spiral"
+      ],
+      "antonyms": [
+        "race to the top",
+        "upward convergence"
+      ],
+      "collocations": [
+        "start a race to the bottom",
+        "a race to the bottom in wages",
+        "regulatory race to the bottom"
+      ],
+      "relatedForms": [],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "slippery-slope",
+      "headword": "slippery slope",
+      "phonetic": "/slɪpəri ˈsloʊp/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "a course of action that is hard to stop once begun and leads step by step to something far worse",
+          "zh": "滑坡;一开头就收不住、步步走向更坏结果的做法",
+          "share": 70
+        },
+        {
+          "pos": "n.",
+          "en": "the fallacy of arguing that one small concession must inevitably end in an extreme outcome",
+          "zh": "(逻辑)滑坡谬误;断言小小一步必然导致极端后果的论证错误",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "Letting the ministry vet a single broadcast licence is a slippery slope, and the next application will be judged by the same people.",
+        "Paying one supplier late to smooth cash flow is a slippery slope; by March you are choosing which invoices to ignore each week.",
+        "She started answering email at dinner and slid down the slippery slope her therapist had warned about; now she works every Sunday.",
+        "The coach called skipping one recovery day a slippery slope for a runner six weeks out from her first marathon.",
+        "Her opponent leapt from a parking fee to the collapse of small business, a textbook slippery slope the moderator named on the spot."
+      ],
+      "synonyms": [
+        "thin end of the wedge",
+        "downward spiral",
+        "point of no return"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "start down a slippery slope",
+        "slippery slope argument",
+        "slippery slope fallacy"
+      ],
+      "relatedForms": [],
+      "usageScore": 7,
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "zero-sum-game",
+      "headword": "zero-sum game",
+      "phonetic": "/zɪroʊ ˈsʌm ɡeɪm/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "a situation in which whatever one side gains the other side loses exactly, so the total never changes",
+          "zh": "零和博弈;一方所得恰等于另一方所失,总量不变"
+        }
+      ],
+      "examples": [
+        "Treating trade as a zero-sum game ignores the decade when both economies grew fastest and tariffs sat at their lowest.",
+        "Promotions here are a genuine zero-sum game: four senior slots exist, and one of you will take the one that opens.",
+        "The negotiation coach spent an hour proving that a supply contract is no zero-sum game, whatever the sales team wanted to believe.",
+        "He treats every conversation with his brother as a zero-sum game, as though agreeing on one thing would cost him something.",
+        "Screen time is the one zero-sum game in streaming: every minute a rival's video holds is a minute yours does not."
+      ],
+      "synonyms": [
+        "win-lose situation",
+        "fixed pie"
+      ],
+      "antonyms": [
+        "positive-sum game",
+        "win-win"
+      ],
+      "collocations": [
+        "not a zero-sum game",
+        "play a zero-sum game",
+        "treat trade as a zero-sum game"
+      ],
+      "relatedForms": [
+        {
+          "form": "zero-sum",
+          "pos": "adj.",
+          "zh": "零和的(一方所得即另一方所失)"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "zero(零) + sum(总和) → 博弈论中各方得失相加恒为零",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "bite-the-bullet",
+      "headword": "bite the bullet",
+      "phonetic": "/baɪt ðə ˈbʊlɪt/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to force yourself to do or accept something unpleasant that you have been avoiding",
+          "zh": "咬紧牙关面对;硬着头皮去做(躲不掉的难事)"
+        }
+      ],
+      "examples": [
+        "After three winters of patching the roof, my parents finally bit the bullet and paid for a full replacement.",
+        "The startup bit the bullet and rewrote its billing system from scratch, losing two months of features to stop the nightly outages.",
+        "She kept postponing the dentist for a year, then bit the bullet and booked the root canal for a Monday morning.",
+        "I'm going to bite the bullet and tell my manager the deadline is impossible before the client hears it from someone else.",
+        "Every February she bites the bullet, opens the shoebox of receipts, and does her own taxes at the kitchen table."
+      ],
+      "synonyms": [
+        "grin and bear it",
+        "grit one's teeth",
+        "take the plunge"
+      ],
+      "antonyms": [
+        "procrastinate",
+        "drag one's feet"
+      ],
+      "collocations": [
+        "finally bite the bullet",
+        "decide to bite the bullet",
+        "bite the bullet and pay"
+      ],
+      "relatedForms": [],
+      "usageScore": 8,
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "red-tape",
+      "headword": "red tape",
+      "phonetic": "/rɛd ˈteɪp/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "official rules and paperwork so excessive that they delay or block getting anything done",
+          "zh": "繁文缛节;官僚手续"
+        }
+      ],
+      "examples": [
+        "Opening the bakery took four months of red tape: three inspections, two permits, and a licence that arrived after the ovens did.",
+        "The grant itself was generous, but the red tape around reporting ate an entire staff position for the first year.",
+        "Getting my transcript recognized abroad meant six weeks of red tape, from notarized copies to a translator the ministry had approved.",
+        "Volunteers wanted to hand out surplus meals, but red tape over food-safety liability kept the trays in the freezer until they spoiled.",
+        "The mayor promised less red tape for small builders, then added a second review board six months later."
+      ],
+      "synonyms": [
+        "bureaucracy",
+        "officialdom",
+        "formalities"
+      ],
+      "antonyms": [
+        "streamlining",
+        "deregulation"
+      ],
+      "collocations": [
+        "cut through red tape",
+        "a mountain of red tape",
+        "bogged down in red tape"
+      ],
+      "relatedForms": [],
+      "usageScore": 8,
+      "etymology": "旧时英国公文用红布带捆扎 → 繁琐的官僚手续",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "case-in-point",
+      "headword": "case in point",
+      "phonetic": "/ˌkeɪs ɪn ˈpɔɪnt/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "an example that directly illustrates the general claim just made",
+          "zh": "恰好说明这一点的例子;绝佳的例证"
+        }
+      ],
+      "examples": [
+        "Companies love to say they value long-term thinking; the layoffs three weeks after that memo are a case in point.",
+        "Cheap flights hide their real cost, and the seat-selection fee that doubled my ticket price is a case in point.",
+        "Old buildings often outlast their replacements: the 1890s market hall, still standing beside a crumbling 2005 annex, is one case in point.",
+        "She listed three cases in point before the committee had even finished defending the policy, and the room went quiet.",
+        "Apps demand far more data than they need. A case in point: the menu reader that wants your location to open a PDF."
+      ],
+      "synonyms": [
+        "illustration",
+        "instance",
+        "prime example"
+      ],
+      "antonyms": [
+        "counterexample"
+      ],
+      "collocations": [
+        "is a case in point",
+        "a recent case in point",
+        "cite a case in point"
+      ],
+      "relatedForms": [],
+      "usageScore": 7,
+      "etymology": "in point(旧义:切题的) → 正好切题的那个例子",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "caveat",
+      "headword": "caveat",
+      "phonetic": "/ˈkæviæt/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "a warning or condition attached to a statement, limiting how far it holds",
+          "zh": "附带的告诫;限定条件;但书"
+        }
+      ],
+      "examples": [
+        "The doctor cleared him to start running again, with the caveat that he stop the moment his knee begins clicking.",
+        "Our landlord agreed to the dog, with one caveat: any scratched floorboard comes out of the deposit when we leave.",
+        "The benchmark looks impressive until you read the caveats buried in the footnotes about test hardware and warm-up runs.",
+        "Every glowing review of the restaurant carries the same caveat: book six weeks ahead or don't bother turning up.",
+        "The forecast comes with one large caveat: it assumes the port reopens in April, which nobody in shipping expects."
+      ],
+      "synonyms": [
+        "proviso",
+        "stipulation",
+        "qualification"
+      ],
+      "antonyms": [
+        "guarantee",
+        "carte blanche"
+      ],
+      "collocations": [
+        "with the caveat that",
+        "one important caveat",
+        "the usual caveats"
+      ],
+      "relatedForms": [],
+      "usageScore": 7,
+      "etymology": "拉丁 cavēre(警惕) → caveat(让他当心) → 附加的告诫",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "de-facto",
+      "headword": "de facto",
+      "phonetic": "/deɪ ˈfæktoʊ/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "existing or holding power in reality, though not officially or legally recognized",
+          "zh": "事实上的;实际存在的(虽无法律地位)",
+          "share": 70
+        },
+        {
+          "pos": "adv.",
+          "en": "in reality, whatever the official or legal position says",
+          "zh": "事实上;实际上(而非法律上)",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "With the capital under siege, the port city has served as the de facto seat of government for eighteen months.",
+        "Her job title still says assistant, but she has been the de facto head of the department since March.",
+        "The spreadsheet nobody owns has become the de facto standard for tracking inventory, and two teams now refuse to use anything else.",
+        "The rule was never repealed, but with no inspectors left to enforce it, the ban is de facto over.",
+        "Nobody voted on it, but my flatmate is de facto in charge of the household budget, and the rest of us just transfer money."
+      ],
+      "synonyms": [
+        "effective",
+        "actual",
+        "in practice"
+      ],
+      "antonyms": [
+        "de jure",
+        "nominal",
+        "official"
+      ],
+      "collocations": [
+        "de facto standard",
+        "de facto leader",
+        "de facto control"
+      ],
+      "relatedForms": [],
+      "usageScore": 7,
+      "etymology": "拉丁 de(出自) + facto(事实) → 事实上的(对 de jure)",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "in-the-wake-of",
+      "headword": "in the wake of",
+      "phonetic": "/ɪn ðə ˈweɪk əv/",
+      "meanings": [
+        {
+          "pos": "prep.",
+          "en": "following something disruptive, and as a result of it; takes a noun phrase, never a clause",
+          "zh": "紧随(重大或负面事件)之后,并因之而起;后接名词,不是中性的 after"
+        }
+      ],
+      "examples": [
+        "In the wake of the data breach, the company spent six months rebuilding a trust its ads had taken a decade to buy.",
+        "Three senior engineers quit in the wake of the reorg, and the on-call rota has been held together with volunteers ever since.",
+        "In the wake of a single viral complaint, the restaurant's booking page emptied out and the owner started answering the phone himself.",
+        "Insurance premiums across the valley tripled in the wake of last summer's fires, and half the older residents simply let their policies lapse.",
+        "Nobody at the ministry wanted the job in the wake of two resignations, so it went to the only deputy who hadn't testified."
+      ],
+      "synonyms": [
+        "following",
+        "in the aftermath of",
+        "on the heels of",
+        "as a consequence of"
+      ],
+      "antonyms": [
+        "in the run-up to",
+        "ahead of",
+        "in anticipation of"
+      ],
+      "collocations": [
+        "in the wake of the scandal",
+        "in the wake of a crisis",
+        "in the wake of the pandemic",
+        "resign in the wake of"
+      ],
+      "relatedForms": [],
+      "usageScore": 9,
+      "etymology": "wake(船驶过后的尾流) → 重大事件过后的波及",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "that-said",
+      "headword": "that said",
+      "phonetic": "/ðæt ˈsɛd/",
+      "meanings": [
+        {
+          "pos": "adv.",
+          "en": "sentence-initial connective that concedes the point just made and then turns against it",
+          "zh": "话虽如此;先认可上一句,再转向相反的一面(置于句首,后加逗号)"
+        }
+      ],
+      "examples": [
+        "The rollout slipped two weeks and the docs are still half-written. That said, nobody has filed a single bug since Friday.",
+        "Her portfolio is the strongest we've seen this year; that said, she has never shipped anything with more than four people on it.",
+        "The gym is overpriced and the showers are cold. That said, it is the only one open at five in the morning.",
+        "I still think we picked the wrong database. That said, the migration is done, and reopening the argument now would cost us a quarter.",
+        "Reviews called the new season slow and self-indulgent. That said, eleven million people watched the finale within a day of it dropping."
+      ],
+      "synonyms": [
+        "having said that",
+        "even so",
+        "all the same",
+        "still"
+      ],
+      "antonyms": [
+        "moreover",
+        "what is more",
+        "furthermore"
+      ],
+      "collocations": [
+        "that said, it is worth noting",
+        "that said, none of this changes",
+        "that said, I would still argue"
+      ],
+      "relatedForms": [],
+      "usageScore": 9,
+      "etymology": "that having been said 的省略 → 话既已说过 → 话虽如此",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "by-no-means",
+      "headword": "by no means",
+      "phonetic": "/baɪ noʊ ˈminz/",
+      "meanings": [
+        {
+          "pos": "adv.",
+          "en": "not at all; emphatic negation — when it opens a clause the subject and verb invert",
+          "zh": "绝不是;远非如此(强调性否定,置于句首时主谓要倒装)"
+        }
+      ],
+      "examples": [
+        "By no means is the funding secure — the second tranche depends on a review nobody has scheduled yet.",
+        "By no means should you sign the lease before someone who has actually read clause 12 explains what the exit fee covers.",
+        "The prototype works, but it is by no means ready for anyone outside the team to touch without a walkthrough.",
+        "The new law by no means guarantees a refund; it only forces the airline to tell you within thirty days.",
+        "Only two of us objected, so the vote was by no means unanimous, whatever the minutes ended up recording."
+      ],
+      "synonyms": [
+        "not at all",
+        "in no way",
+        "far from it",
+        "nowhere near"
+      ],
+      "antonyms": [
+        "undoubtedly",
+        "without question",
+        "certainly"
+      ],
+      "collocations": [
+        "by no means certain",
+        "by no means exhaustive",
+        "by no means all",
+        "by no means the only"
+      ],
+      "relatedForms": [],
+      "usageScore": 8,
+      "etymology": "means(手段、方法) → 用任何手段都不 → 绝不",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "more-often-than-not",
+      "headword": "more often than not",
+      "phonetic": "/mɔr ˈɔfən ðən nɑt/",
+      "meanings": [
+        {
+          "pos": "adv.",
+          "en": "in most cases but not all; 'usually', with the exceptions conceded rather than ignored",
+          "zh": "多半;十有八九(留有例外余地的 usually,可置句首或句中)"
+        }
+      ],
+      "examples": [
+        "More often than not, the bug turns out to be a stale cache, but the twenty minutes spent proving that still hurt.",
+        "Appeals against the parking fine succeed more often than not, which tells you how carefully the tickets were issued in the first place.",
+        "The senior nurses more often than not know the diagnosis before the scan comes back, though nobody writes that in the chart.",
+        "More often than not the cheaper flight wins, though anyone who has slept in Terminal 3 will argue the savings are imaginary.",
+        "Ask him for a deadline and more often than not you will get a question about scope instead of a date."
+      ],
+      "synonyms": [
+        "usually",
+        "nine times out of ten",
+        "as a rule",
+        "generally"
+      ],
+      "antonyms": [
+        "rarely",
+        "seldom",
+        "hardly ever"
+      ],
+      "collocations": [
+        "succeed more often than not",
+        "more often than not, the opposite is true",
+        "guess right more often than not"
+      ],
+      "relatedForms": [],
+      "usageScore": 8,
+      "etymology": "not 后省略了 often → 发生的次数多于不发生 → 多半",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
     }
   ]
 }
