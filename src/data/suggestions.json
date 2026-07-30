@@ -2,8 +2,8 @@
   "version": 1,
   "items": [
     {
-      "id": "a-case-in-point",
-      "headword": "a case in point",
+      "id": "case-in-point",
+      "headword": "case in point",
       "kind": "expression",
       "zh": "一个恰当的例证;正是一例",
       "en": "an example that illustrates the general claim just made",
@@ -12,8 +12,8 @@
       "note": "紧接在一般性论断之后引出印证它的实例;比 for example 更强调\"正好说明这一点\"。"
     },
     {
-      "id": "a-moot-point",
-      "headword": "a moot point",
+      "id": "moot-point",
+      "headword": "moot point",
       "kind": "expression",
       "zh": "已无实际意义的问题(美);尚有争议的问题(英)",
       "en": "a question that no longer matters in practice (US), or one that remains open to debate (UK)",
@@ -492,8 +492,8 @@
       "note": "writ 是 write 的古过去分词,只活在这个词组里。语序特殊:后置修饰名词(X writ large),不能写成 largely written。"
     },
     {
-      "id": "a-double-edged-sword",
-      "headword": "a double-edged sword",
+      "id": "double-edged-sword",
+      "headword": "double-edged sword",
       "kind": "idiom",
       "zh": "双刃剑;利弊并存的事物",
       "en": "something that has both a clear benefit and a comparable drawback",
@@ -502,8 +502,8 @@
       "note": "与中文\"双刃剑\"完全对应,写作时可直接替换掉冗长的 has both advantages and disadvantages。"
     },
     {
-      "id": "a-fig-leaf",
-      "headword": "a fig leaf",
+      "id": "fig-leaf",
+      "headword": "fig leaf",
       "kind": "idiom",
       "zh": "遮羞布:用来掩饰难堪真相的表面说法或象征性举措",
       "en": "a token gesture used to cover something embarrassing without changing it",
@@ -512,8 +512,8 @@
       "note": "常见搭配 a fig leaf for / of。贬义,且暗示这块布谁都看得穿。"
     },
     {
-      "id": "a-level-playing-field",
-      "headword": "a level playing field",
+      "id": "level-playing-field",
+      "headword": "level playing field",
       "kind": "idiom",
       "zh": "公平竞争的环境",
       "en": "conditions in which every competitor is subject to the same rules and advantages",
@@ -522,8 +522,8 @@
       "note": "贸易与监管报道的固定表达;把\"公平竞争环境\"直译成 fair competition environment 会很生硬。"
     },
     {
-      "id": "a-pyrrhic-victory",
-      "headword": "a Pyrrhic victory",
+      "id": "pyrrhic-victory",
+      "headword": "Pyrrhic victory",
       "kind": "idiom",
       "zh": "惨胜:代价大到得不偿失的胜利",
       "en": "a win achieved at so high a cost that it is scarcely better than a defeat",
@@ -532,8 +532,8 @@
       "note": "源自古希腊国王 Pyrrhus,故首字母大写;读 /ˈpɪrɪk/,与 psychic 无关。"
     },
     {
-      "id": "a-race-to-the-bottom",
-      "headword": "a race to the bottom",
+      "id": "race-to-the-bottom",
+      "headword": "race to the bottom",
       "kind": "idiom",
       "zh": "逐底竞争;竞相压低标准",
       "en": "competition in which rivals keep cutting standards, prices, or wages to undercut each other",
@@ -552,8 +552,8 @@
       "note": "政策辩论里的固定引语。注意语用:今天引用它的人多半是为了紧接着反驳它,直接当自己的主张说会显得天真。"
     },
     {
-      "id": "a-shot-in-the-arm",
-      "headword": "a shot in the arm",
+      "id": "shot-in-the-arm",
+      "headword": "shot in the arm",
       "kind": "idiom",
       "zh": "一剂强心针;及时的提振",
       "en": "a sudden boost that revives something that was flagging",
@@ -562,8 +562,8 @@
       "note": "指提振而非治本;后面常接 for + 受益的一方。"
     },
     {
-      "id": "a-slap-on-the-wrist",
-      "headword": "a slap on the wrist",
+      "id": "slap-on-the-wrist",
+      "headword": "slap on the wrist",
       "kind": "idiom",
       "zh": "不痛不痒的惩罚",
       "en": "a punishment far milder than the offence deserved",
@@ -572,8 +572,8 @@
       "note": "重点在\"轻得离谱\",自带批评意味;不是描述真的打手。"
     },
     {
-      "id": "a-slippery-slope",
-      "headword": "a slippery slope",
+      "id": "slippery-slope",
+      "headword": "slippery slope",
       "kind": "idiom",
       "zh": "滑坡;开了头就收不住的危险先例",
       "en": "a course of action likely to lead, step by step, to something much worse",
@@ -582,8 +582,8 @@
       "note": "同时也是逻辑谬误 slippery slope argument 的名称,写议论文时常遇到。"
     },
     {
-      "id": "a-smoking-gun",
-      "headword": "a smoking gun",
+      "id": "smoking-gun",
+      "headword": "smoking gun",
       "kind": "idiom",
       "zh": "铁证;确凿的直接证据",
       "en": "a single piece of evidence that proves guilt or responsibility beyond argument",
@@ -592,8 +592,8 @@
       "note": "调查报道常用;否定式 no smoking gun 表示\"没有找到决定性证据\"。"
     },
     {
-      "id": "a-zero-sum-game",
-      "headword": "a zero-sum game",
+      "id": "zero-sum-game",
+      "headword": "zero-sum game",
       "kind": "idiom",
       "zh": "零和博弈;一方所得即另一方所失",
       "en": "a situation in which one side can gain only as much as the other side loses",
@@ -882,8 +882,8 @@
       "note": "金融与管理写作高频,固定搭配 have / no skin in the game。核心是「输了自己也疼」,不只是「关心」。"
     },
     {
-      "id": "the-acid-test",
-      "headword": "the acid test",
+      "id": "acid-test",
+      "headword": "acid test",
       "kind": "idiom",
       "zh": "真正的检验;试金石",
       "en": "the decisive trial that shows whether something really works",
@@ -892,8 +892,8 @@
       "note": "源自验金,含义是\"过了这关才算数\";比 the real test 更有分量。"
     },
     {
-      "id": "the-canary-in-the-coal-mine",
-      "headword": "the canary in the coal mine",
+      "id": "canary-in-the-coal-mine",
+      "headword": "canary in the coal mine",
       "kind": "idiom",
       "zh": "预警信号:最先出问题、预示更大危机的那一环",
       "en": "an early indicator whose failure warns that a wider crisis is coming",
@@ -902,8 +902,8 @@
       "note": "矿工带金丝雀下井探毒气。重点是「预警」而非「牺牲品」——用错成后者是常见误用。"
     },
     {
-      "id": "the-elephant-in-the-room",
-      "headword": "the elephant in the room",
+      "id": "elephant-in-the-room",
+      "headword": "elephant in the room",
       "kind": "idiom",
       "zh": "房间里的大象;人人都看得见却都不愿提的问题",
       "en": "an obvious, serious problem that everyone present avoids mentioning",
@@ -932,8 +932,8 @@
       "note": "后接 on;比 it is not clear yet 地道得多,常用于科学与政策评估。"
     },
     {
-      "id": "the-lions-share",
-      "headword": "the lion's share",
+      "id": "lions-share",
+      "headword": "lion's share",
       "kind": "idiom",
       "zh": "最大的那一份;绝大部分",
       "en": "much the largest part of something being divided",
@@ -952,8 +952,8 @@
       "note": "最接近「本末倒置」,但英文强调的是「小的那个在操控大的那个」。常用完整句式 a case of the tail wagging the dog。"
     },
     {
-      "id": "the-thin-end-of-the-wedge",
-      "headword": "the thin end of the wedge",
+      "id": "thin-end-of-the-wedge",
+      "headword": "thin end of the wedge",
       "kind": "idiom",
       "zh": "开口子;看似轻微的第一步,却会引出严重得多的后果",
       "en": "a small change that seems harmless but opens the way to much larger and unwelcome ones",
@@ -962,8 +962,8 @@
       "note": "英式为主;美式同义常说 slippery slope。楔子是「薄的一头先进去」,不是「结局很薄弱」。"
     },
     {
-      "id": "the-tip-of-the-iceberg",
-      "headword": "the tip of the iceberg",
+      "id": "tip-of-the-iceberg",
+      "headword": "tip of the iceberg",
       "kind": "idiom",
       "zh": "冰山一角",
       "en": "the small visible part of a much larger hidden problem",
@@ -972,8 +972,8 @@
       "note": "冠词 the 不能省;常写作 only / just the tip of the iceberg。"
     },
     {
-      "id": "the-writing-on-the-wall",
-      "headword": "the writing on the wall",
+      "id": "writing-on-the-wall",
+      "headword": "writing on the wall",
       "kind": "idiom",
       "zh": "不祥之兆;败局已定的征兆",
       "en": "clear signs that something is about to fail or end",
