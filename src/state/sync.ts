@@ -93,6 +93,18 @@ const isDailyStat = (v: unknown) =>
   isRecord(v) && typeof v.reviewed === 'number' && typeof v.newLearned === 'number'
   && typeof v.correct === 'number' && typeof v.quizTaken === 'number'
 
+/**
+ * The optional top-level fields — bestSprint, and now `dismissed` — are
+ * deliberately **not** checked here, matching how isMeaning ignores `share`
+ * and isDailyStat ignores the retention counters.
+ *
+ * Failing this guard is not a small penalty: parseProgress throws, boot
+ * refuses to overwrite the remote, and the user is sent to the login page
+ * told to export a backup. Paying that for a malformed list of words they
+ * said "no" to would trade the entire review history for the least valuable
+ * field in the file. mergeProgress skips the junk members instead, so a
+ * hand-edited `dismissed` costs nothing.
+ */
 export function isProgress(v: unknown): v is Progress {
   return isRecord(v) && v.version === 1
     && isRecord(v.settings) && typeof v.settings.newPerDay === 'number'

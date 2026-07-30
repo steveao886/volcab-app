@@ -962,6 +962,76 @@ describe('recordConsolidation: same contract, but a fumble is not a lapse', () =
   })
 })
 
+// === Dismissed suggestions ======================================================
+// Rejecting a suggested word is the one action whose whole value is that it
+// is remembered forever: the list is append-only, lives in synced progress,
+// and merges as a union so a rejection made on one device can't be undone by
+// the other.
+
+describe('dismissSuggestion', () => {
+  it('records the rejection in progress, so a later suggestion batch can skip the word', async () => {
+    await bootAsAlice()
+    await step(() => { app().dismissSuggestion('abrogate') })
+    expect(app().progress.dismissed).toEqual(['abrogate'])
+  })
+
+  it('accumulates distinct rejections in the order they were made', async () => {
+    await bootAsAlice()
+    await step(() => { app().dismissSuggestion('abrogate') })
+    await step(() => { app().dismissSuggestion('corpus') })
+    expect(app().progress.dismissed).toEqual(['abrogate', 'corpus'])
+  })
+
+  it('is idempotent -- a re-offered word dismissed twice doesn\'t duplicate, and doesn\'t rebuild progress at all', async () => {
+    // A batch is built from a snapshot, so the same word can come back
+    // around after a reload. Appending again would grow the array and mark
+    // progress dirty for a change that isn't one -- a push per no-op.
+    await bootAsAlice()
+    await step(() => { app().dismissSuggestion('abrogate') })
+    const before = app().progress
+
+    await step(() => { app().dismissSuggestion('abrogate') })
+
+    expect(app().progress).toBe(before)                     // the same object, never rebuilt
+    expect(app().progress.dismissed).toEqual(['abrogate'])
+  })
+
+  it('leaves progress without the key until the first rejection -- an empty list is not written eagerly', async () => {
+    await bootAsAlice()
+    expect(Object.hasOwn(app().progress, 'dismissed')).toBe(false)
+  })
+
+  it('goes through the normal debounced progress path: persisted and owed, not pushed on the spot', async () => {
+    await bootAsAlice()
+    await step(() => { app().dismissSuggestion('abrogate') })
+
+    expect(storage.get<Progress>('progress')?.dismissed).toEqual(['abrogate'])
+    expect(storage.get('dirty')).toBe(true)
+    expect(app().syncStatus).toBe('pending')
+    expect(remote.putsTo('progress.json')).toHaveLength(0)  // 30s debounce, nothing immediate
+  })
+
+  it('reaches the remote payload once a push runs', async () => {
+    await bootAsAlice()
+    await step(() => { app().dismissSuggestion('abrogate') })
+    await step(() => { void app().syncNow() })
+
+    const puts = remote.putsTo('progress.json')
+    expect(puts).toHaveLength(1)
+    expect((JSON.parse(puts[0].content) as Progress).dismissed).toEqual(['abrogate'])
+    expect(app().syncStatus).toBe('synced')
+  })
+
+  it('a rejection made on the other device is merged in, not overwritten', async () => {
+    // The union lives in merge.ts; this pins down that the store actually
+    // routes through it, rather than pushing its own list over the remote's.
+    const remoteProgress: Progress = { ...emptyProgress(), dismissed: ['corpus'] }
+    await bootAsAlice({ progress: remoteProgress })
+    await step(() => { app().dismissSuggestion('abrogate') })
+    expect(app().progress.dismissed?.slice().sort()).toEqual(['abrogate', 'corpus'])
+  })
+})
+
 describe('recordSprint: best score', () => {
   it('the first score is automatically the record, and pulls the missed word\'s due date to today without touching ease or interval', async () => {
     await bootAsAlice()

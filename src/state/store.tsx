@@ -66,6 +66,8 @@ export interface AppActions {
   recordLapseDrill(wordId: string, g: Grade): void
   /** Same-day consolidation pass over today's new words. Practice, like recordLapseDrill, but a miss is not counted as a lapse */
   recordConsolidation(wordId: string, g: Grade): void
+  /** Reject a suggested word, permanently: the id is remembered in synced progress so later suggestion batches skip it */
+  dismissSuggestion(id: string): void
   recordQuiz(correct: number, total: number, wrongIds: string[]): void
   /** Sprint settlement: like recordQuiz, only pulls forward the due date of missed words, plus refreshes the personal best score */
   recordSprint(score: number, wrongIds: string[]): void
@@ -663,6 +665,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [practiceGrade],
   )
 
+  /**
+   * Rejecting a suggested word. Append-only, and nothing in the scheduler
+   * ever reads it — the list exists so a word the user has already said no
+   * to never comes back in a later batch.
+   *
+   * **Returns without committing when the id is already on the list.** Not
+   * an optimisation: a suggestion batch is built from a snapshot, so the
+   * same word can be offered again after a reload or on a second device,
+   * and without this guard each pass would append a duplicate and mark
+   * progress dirty for a change that isn't one — a push per no-op.
+   *
+   * Debounced like grading rather than pushed immediately (recordQuiz's
+   * flushProgress): a dismissal is worth far less than a review, and a
+   * discovery session produces a run of them.
+   */
+  const dismissSuggestion = useCallback((id: string) => {
+    const cur = stateRef.current.progress
+    const prev = cur.dismissed ?? []
+    if (prev.includes(id)) return
+    commitProgress({ ...cur, dismissed: [...prev, id] })
+    schedulePush()
+  }, [commitProgress, schedulePush])
+
   // The score itself isn't stored: missed words are already reflected in the review schedule by having their due date pulled forward; dailyStats just records "took a quiz today"
   const recordQuiz = useCallback((_correct: number, _total: number, wrongIds: string[]) => {
     const now = new Date()
@@ -789,11 +814,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AppContextValue>(() => ({
     ...state,
-    login, logout, grade, recordLapseDrill, recordConsolidation, recordQuiz, recordSprint, saveWord, deleteWords, addStaging,
+    login, logout, grade, recordLapseDrill, recordConsolidation, dismissSuggestion, recordQuiz, recordSprint, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll,
     ...(import.meta.env.DEV ? { enterDemoMode } : {}),
   }), [
-    state, login, logout, grade, recordLapseDrill, recordConsolidation, recordQuiz, recordSprint, saveWord, deleteWords, addStaging,
+    state, login, logout, grade, recordLapseDrill, recordConsolidation, dismissSuggestion, recordQuiz, recordSprint, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll, enterDemoMode,
   ])
 

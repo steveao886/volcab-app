@@ -130,6 +130,73 @@ describe("mergeProgress's bestSprint", () => {
   })
 })
 
+describe("mergeProgress's dismissed suggestions", () => {
+  const withDismissed = (...ids: string[]): Progress => ({ ...emptyProgress(), dismissed: ids })
+
+  it('takes the union — a rejection made on one device must survive a merge with the other', () => {
+    // Not "the longer list", not "local wins": both devices' rejections are
+    // real user intent, and losing either one puts that word back into the
+    // next suggestion batch.
+    expect(mergeProgress(withDismissed('abrogate'), withDismissed('corpus')).dismissed)
+      .toEqual(['abrogate', 'corpus'])
+  })
+
+  it('deduplicates a word both devices rejected', () => {
+    expect(mergeProgress(withDismissed('abrogate', 'corpus'), withDismissed('corpus')).dismissed)
+      .toEqual(['abrogate', 'corpus'])
+  })
+
+  it('sorts, so merging twice with nothing new produces no diff', () => {
+    // Concatenating in merge order would make a∪b and b∪a differ only in
+    // ordering, and progress.json would get a spurious push every sync.
+    const once = mergeProgress(withDismissed('corpus', 'abrogate'), withDismissed('elide'))
+    expect(once.dismissed).toEqual(['abrogate', 'corpus', 'elide'])
+    expect(mergeProgress(once, withDismissed('elide', 'corpus')).dismissed).toEqual(once.dismissed)
+  })
+
+  it('gives the same result in either direction', () => {
+    const a = withDismissed('corpus', 'abrogate'), b = withDismissed('elide', 'abrogate')
+    expect(mergeProgress(a, b).dismissed).toEqual(mergeProgress(b, a).dismissed)
+  })
+
+  it('one side missing the field defers to the side that has it — an older build pushes progress without it', () => {
+    expect(mergeProgress(emptyProgress(), withDismissed('corpus')).dismissed).toEqual(['corpus'])
+    expect(mergeProgress(withDismissed('corpus'), emptyProgress()).dismissed).toEqual(['corpus'])
+  })
+
+  it('a missing field never reads as "un-dismissed everything"', () => {
+    // The failure this guards: treating absent as an empty list and
+    // intersecting, or letting the side without the key win outright, would
+    // let one sync from an older device wipe every rejection.
+    const older = emptyProgress()
+    expect(mergeProgress(withDismissed('corpus', 'abrogate'), older).dismissed).toHaveLength(2)
+  })
+
+  it('when neither side has it, the key is omitted entirely, not written as []', () => {
+    const m = mergeProgress(emptyProgress(), emptyProgress())
+    expect(m.dismissed).toBeUndefined()
+    expect(Object.hasOwn(m, 'dismissed')).toBe(false)
+  })
+
+  it('survives alongside bestSprint — both optional keys have to be carried, not just the last one added', () => {
+    const local = withDismissed('corpus')
+    local.bestSprint = { score: 42, date: '2026-07-20' }
+    const m = mergeProgress(local, emptyProgress())
+    expect(m.dismissed).toEqual(['corpus'])
+    expect(m.bestSprint).toEqual({ score: 42, date: '2026-07-20' })
+  })
+
+  it('skips junk members instead of throwing — isProgress deliberately does not gate this field', () => {
+    const dirty = { ...emptyProgress(), dismissed: ['corpus', 3, null] as unknown as string[] }
+    expect(mergeProgress(dirty, withDismissed('abrogate')).dismissed).toEqual(['abrogate', 'corpus'])
+  })
+
+  it('a hand-edited non-array is skipped rather than spread — spreading a number throws inside boot', () => {
+    const dirty = { ...emptyProgress(), dismissed: 7 as unknown as string[] }
+    expect(mergeProgress(dirty, withDismissed('corpus')).dismissed).toEqual(['corpus'])
+  })
+})
+
 describe('mergeProgress: optional dailyStat counters', () => {
   const day = (over: Partial<DailyStat> = {}): DailyStat =>
     ({ reviewed: 0, newLearned: 0, correct: 0, quizTaken: 0, ...over })

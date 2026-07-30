@@ -144,6 +144,26 @@ export interface Progress {
    * Merge rule is in lib/merge.ts — the higher score wins, ties go to the earlier date.
    */
   bestSprint?: SprintRecord
+  /**
+   * Ids of suggested words the user rejected, so a later suggestion batch
+   * never offers them again. Accepted suggestions leave no trace here —
+   * they go through staging and end up in the vocabulary, which is already
+   * enough to keep them from being suggested twice.
+   *
+   * **Optional**, like bestSprint and settings.updatedAt: a device on an
+   * older build pushes progress without the key, and that has to read as
+   * "this build doesn't know about dismissals," never as "the user
+   * un-dismissed everything." mergeProgress takes the **union** of the two
+   * sides for the same reason — a rejection made on one device is real
+   * user intent that the other device has no basis to overturn.
+   *
+   * Unbounded in principle: nothing ever removes an id. At the scale this
+   * app runs at that is not a concern — a few hundred lemmas is a couple of
+   * kilobytes against progress.json's 1 MB ceiling (above that the GitHub
+   * Contents API stops returning file content inline and sync breaks). It
+   * would become one only if suggestions were ever rejected by the thousand.
+   */
+  dismissed?: string[]
 }
 
 export const emptyProgress = (): Progress => ({

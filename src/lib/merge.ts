@@ -30,6 +30,34 @@ function pickBestSprint(a: SprintRecord | undefined, b: SprintRecord | undefined
   return a.date <= b.date ? a : b
 }
 
+/**
+ * Dismissed suggestions merge as a **union**, not "the longer list" and not
+ * "one side wins": two devices can reject different suggestions between two
+ * syncs, and every rejection is a deliberate "no" from the user. Dropping
+ * either side's would resurrect those words in the next batch, which is the
+ * one thing dismissing is supposed to prevent.
+ *
+ * Sorted, so the result is a function of the *set* alone. Concatenating in
+ * merge order instead would make a∪b and b∪a differ only in ordering, and
+ * every merge that changed nothing would still write a reshuffled array and
+ * push a diff for it.
+ *
+ * Non-array input and non-string members are skipped rather than trusted:
+ * isProgress deliberately doesn't gate this field (see the comment there),
+ * so a hand-edited `"dismissed": [1, null]` reaches here intact, and
+ * spreading a hand-edited `"dismissed": 7` would throw inside the boot path.
+ * Same reasoning as mergeStaging skipping the empty key.
+ */
+function unionDismissed(a: Progress['dismissed'], b: Progress['dismissed']): string[] | undefined {
+  if (a === undefined && b === undefined) return undefined
+  const ids = new Set<string>()
+  for (const list of [a, b]) {
+    if (!Array.isArray(list)) continue
+    for (const id of list) if (typeof id === 'string') ids.add(id)
+  }
+  return [...ids].sort()
+}
+
 export function mergeProgress(local: Progress, remote: Progress): Progress {
   const words: Progress['words'] = { ...remote.words }
   for (const [id, le] of Object.entries(local.words)) {
@@ -68,12 +96,18 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
   const settings = rt > lt ? remote.settings : local.settings
 
   const bestSprint = pickBestSprint(local.bestSprint, remote.bestSprint)
+  const dismissed = unionDismissed(local.dismissed, remote.dismissed)
 
-  // When neither side has a record, **omit the key entirely** rather than writing
+  // When neither side has one of these, **omit the key entirely** rather than writing
   // `bestSprint: undefined`: the latter would make `Object.hasOwn(p, 'bestSprint')` true,
   // and would also cause a structural-equality assertion to judge it unequal to a progress
   // object that genuinely lacks the key.
-  return bestSprint === undefined
-    ? { version: 1, settings, words, dailyStats }
-    : { version: 1, settings, words, dailyStats, bestSprint }
+  // Like the dailyStats entry above, this result is rebuilt from named fields, so **every
+  // optional top-level field has to be listed here** or it is silently dropped the first
+  // time two devices sync.
+  return {
+    version: 1, settings, words, dailyStats,
+    ...(bestSprint === undefined ? {} : { bestSprint }),
+    ...(dismissed === undefined ? {} : { dismissed }),
+  }
 }
