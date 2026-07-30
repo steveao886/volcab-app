@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
-import { accuracySeries, cumulativeTotals, dailySeries, masteryBreakdown, usageCoverage } from './statsDerive'
+import {
+  accuracySeries, accuracyStats, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
+  lapseSummary, masteryBreakdown, shortDate, usageCoverage, windowSummary,
+} from './statsDerive'
+import type { DayPoint } from './statsDerive'
 
 const w = (id: string): Word => ({
   id, headword: id, phonetic: '/x/', meanings: [{ pos: 'v.', en: 'x', zh: 'x' }],
@@ -39,6 +43,137 @@ describe('accuracySeries', () => {
   })
 })
 
+describe('windowSummary', () => {
+  const day = (date: string, reviewed: number, newLearned = 0): DayPoint =>
+    ({ date, reviewed, newLearned, correct: reviewed })
+
+  it('totals the window and names the busiest day', () => {
+    const s = windowSummary([day('2026-07-23', 4, 1), day('2026-07-24', 0), day('2026-07-25', 9, 3)])
+    expect(s).toMatchObject({ reviewed: 13, newLearned: 4, activeDays: 2 })
+    expect(s.peak?.date).toBe('2026-07-25')
+  })
+
+  it('a tie keeps the earlier day — the peak names when it first happened', () => {
+    expect(windowSummary([day('2026-07-23', 7), day('2026-07-24', 7)]).peak?.date).toBe('2026-07-23')
+  })
+
+  it('an all-zero window has no peak at all, rather than a 0-review "busiest day"', () => {
+    expect(windowSummary([day('2026-07-24', 0), day('2026-07-25', 0)]).peak).toBeNull()
+  })
+})
+
+describe('accuracyStats', () => {
+  const day = (date: string, reviewed: number, correct: number): DayPoint =>
+    ({ date, reviewed, correct, newLearned: 0 })
+
+  it('the average is weighted by review count, not the mean of the daily rates', () => {
+    // Unweighted this would be (100% + 50%) / 2 = 75%; weighted it is 51/100.
+    const s = accuracyStats([day('2026-07-24', 2, 2), day('2026-07-25', 98, 49)])
+    expect(s.average).toBeCloseTo(0.51)
+  })
+
+  it('best / worst / latest ignore days with no review', () => {
+    const s = accuracyStats([day('2026-07-23', 10, 9), day('2026-07-24', 0, 0), day('2026-07-25', 10, 5)])
+    expect(s.best?.date).toBe('2026-07-23')
+    expect(s.worst?.date).toBe('2026-07-25')
+    expect(s.latest?.date).toBe('2026-07-25')
+    expect(s.ratedDays).toBe(2)
+  })
+
+  it('ties go to the later day, so the number quoted is the recent one', () => {
+    const s = accuracyStats([day('2026-07-24', 4, 4), day('2026-07-25', 8, 8)])
+    expect(s.best?.date).toBe('2026-07-25')
+  })
+
+  it('a window with no reviews gives null, not NaN or 0%', () => {
+    const s = accuracyStats([day('2026-07-25', 0, 0)])
+    expect(s).toMatchObject({ average: null, best: null, worst: null, latest: null, ratedDays: 0 })
+  })
+})
+
+describe('dueForecast', () => {
+  const scheduled = (due: string, state: 'learning' | 'review' = 'review') => ({
+    state, ease: 2.5, intervalDays: 3, due, stepIndex: 0, reps: 2, lapses: 0, lastReviewedAt: '2026-07-20T00:00:00Z',
+  })
+
+  it('the first bucket absorbs overdue words — that is the pile you face today', () => {
+    const words = [w('a'), w('b'), w('c')]
+    const p = emptyProgress()
+    p.words['a'] = scheduled('2026-07-20')   // overdue
+    p.words['b'] = scheduled('2026-07-25')   // today
+    p.words['c'] = scheduled('2026-07-26')   // tomorrow
+    const f = dueForecast(words, p, '2026-07-25', 3)
+    expect(f.days).toEqual([
+      { date: '2026-07-25', count: 2 },
+      { date: '2026-07-26', count: 1 },
+      { date: '2026-07-27', count: 0 },
+    ])
+  })
+
+  it('words scheduled past the window are counted as beyond, not folded into the last day', () => {
+    const p = emptyProgress()
+    p.words['a'] = scheduled('2026-09-01')
+    const f = dueForecast([w('a')], p, '2026-07-25', 3)
+    expect(f.days.every(d => d.count === 0)).toBe(true)
+    expect(f).toMatchObject({ beyond: 1, total: 1 })
+  })
+
+  it('new and unlearned words are not scheduled, matching buildQueue', () => {
+    const p = emptyProgress()
+    p.words['a'] = { ...scheduled('2026-07-25'), state: 'new' as const }
+    const f = dueForecast([w('a'), w('b')], p, '2026-07-25', 3)   // b has no record at all
+    expect(f.total).toBe(0)
+  })
+
+  it('a word in progress whose id is gone from the library is not counted', () => {
+    const p = emptyProgress()
+    p.words['deleted'] = scheduled('2026-07-25')
+    expect(dueForecast([w('a')], p, '2026-07-25', 3).total).toBe(0)
+  })
+})
+
+describe('lapseSummary', () => {
+  const lapsed = (lapses: number) => ({
+    state: 'review' as const, ease: 2.5, intervalDays: 3, due: '2026-07-30',
+    stepIndex: 0, reps: 5, lapses, lastReviewedAt: '2026-07-20T00:00:00Z',
+  })
+
+  it('ranks by lapse count and reports the full total behind the top slice', () => {
+    const words = [w('a'), w('b'), w('c')]
+    const p = emptyProgress()
+    p.words['a'] = lapsed(1)
+    p.words['b'] = lapsed(5)
+    p.words['c'] = lapsed(3)
+    const s = lapseSummary(words, p, 2)
+    expect(s.top.map(t => t.word.id)).toEqual(['b', 'c'])
+    expect(s.top.map(t => t.lapses)).toEqual([5, 3])
+    expect(s.total).toBe(3)
+  })
+
+  it('words that have never lapsed are not "stubborn"', () => {
+    const p = emptyProgress()
+    p.words['a'] = lapsed(0)
+    expect(lapseSummary([w('a')], p, 5)).toEqual({ total: 0, top: [] })
+  })
+})
+
+describe('forecastLabel / shortDate', () => {
+  it('names the two days that have names, weekday for the rest', () => {
+    expect(forecastLabel('2026-07-25', '2026-07-25')).toBe('今天')
+    expect(forecastLabel('2026-07-26', '2026-07-25')).toBe('明天')
+    // 2026-07-27 is a Monday
+    expect(forecastLabel('2026-07-27', '2026-07-25')).toBe('周一')
+  })
+
+  it('the weekday is read in local time — UTC parsing would shift every label by a day', () => {
+    expect(forecastLabel('2026-08-02', '2026-07-25')).toBe('周日')
+  })
+
+  it('shortDate drops the year', () => {
+    expect(shortDate('2026-07-05')).toBe('7/5')
+  })
+})
+
 describe('masteryBreakdown', () => {
   it('counts the three bands new/learning/review, with no record treated as new', () => {
     const words = [w('a'), w('b'), w('c')]
@@ -62,6 +197,12 @@ describe('cumulativeTotals', () => {
     expect(t.totalReviewed).toBe(16)
     expect(t.activeDays).toBe(2)
     expect(t.avgNewPerActiveDay).toBeCloseTo(3)
+    expect(t.totalQuizzes).toBe(1)
+  })
+
+  it('quizzes taken on a day with no review still count', () => {
+    const t = cumulativeTotals(prog({ '2026-07-25': { reviewed: 0, newLearned: 0, correct: 0, quizTaken: 2 } }))
+    expect(t).toMatchObject({ totalReviewed: 0, activeDays: 0, totalQuizzes: 2 })
   })
   it('the average is 0, not NaN, when there\'s no data', () => {
     expect(cumulativeTotals(emptyProgress()).avgNewPerActiveDay).toBe(0)

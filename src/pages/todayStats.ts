@@ -28,6 +28,28 @@ export function computeStreak(
   return count
 }
 
+/**
+ * The longest run of consecutive study days ever recorded.
+ *
+ * The current streak alone gives a broken run nothing to be measured
+ * against — "5 days" reads very differently when the record is 6 than when
+ * it's 40. Unlike computeStreak this makes no allowance for today: a record
+ * is a record whether or not it's still running, and the in-progress streak
+ * is already reported next to it.
+ */
+export function longestStreak(dailyStats: Record<string, DailyStat>): number {
+  const active = Object.keys(dailyStats)
+    .filter(d => (dailyStats[d]?.reviewed ?? 0) > 0)
+    .sort()
+  let best = 0, run = 0, prev: string | null = null
+  for (const date of active) {
+    run = prev !== null && addDays(prev, 1) === date ? run + 1 : 1
+    if (run > best) best = run
+    prev = date
+  }
+  return best
+}
+
 export interface ReviewProgress {
   /** Count of words that have entered the review stage (mastered) */
   count: number

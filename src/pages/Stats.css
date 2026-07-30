@@ -1,7 +1,13 @@
-/* Stats (/stats, learning data) page-specific styles. Five cards: reviews
-   over the last 30 days, accuracy trend, streak days with a missed-day
-   calendar, library mastery breakdown, cumulative totals. The empty state
-   uses the shared .empty-state (components.css). */
+/* Stats (/stats, learning data) page-specific styles.
+   Cards: 30-day review volume, accuracy trend, streak tiles, upcoming
+   review load, library mastery, high-frequency coverage, stubborn words,
+   cumulative totals. The empty state uses the shared .empty-state
+   (components.css).
+
+   The organising rule for this page: **no shape without its number**. Every
+   chart carries a labelled axis, a headline figure, or a per-row count, so
+   a reader can check a trend against a value instead of estimating it off a
+   silhouette. */
 
 /* Only spacing is left here; font size/weight/color come from
    components.css's .section-title, the same convention as the WordDetail
@@ -10,24 +16,127 @@
   margin-bottom: var(--sp-3);
 }
 
-/* --- Reviews over the last 30 days: a hand-rolled SVG bar chart (see ReviewBars in Stats.tsx) ---------- */
+/* --- Card headline: one big figure with a sentence of context -------------
+   Reused by four cards, so the eye finds the same "what does this card say
+   in one number" spot in each. The value stays ink, not vermilion:
+   components.css reserves the tinted .stat__value--accent for at most one
+   eye-catcher per screen, and on this page that one is the streak. */
+
+.stats-headline {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-4);
+}
+
+.stats-headline__value {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.stats-headline__note {
+  font-size: var(--fs-sm);
+  flex: 1 1 12ch;
+}
+
+/* --- Chart frame: y-axis gutter + plot + x-axis ends ----------------------
+   Axis text lives here in HTML rather than inside the SVG on purpose — both
+   charts use preserveAspectRatio="none", which would squash any <text>
+   horizontally by a factor that changes with the viewport (see the header
+   of statsCharts.tsx).
+
+   The y column is a fixed-height flex column with space-between, so its
+   labels have to be centred on the gridlines by hand: the box is grown by
+   one line (half above the first label, half below the last) and pulled up
+   by half a line. Without that correction the bottom label hangs a full
+   line under the baseline it names — measured before the fix, "0" sat 12px
+   below its own gridline.
+
+   --chart-inset comes in from ChartFrame and is the gridline inset the
+   accuracy chart needs; it is 0 for the bar chart. */
+
+.stats-chart {
+  --chart-h: 64px;
+  --chart-inset: 0px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'y plot'
+    '. x';
+  column-gap: var(--sp-2);
+  row-gap: var(--sp-1);
+}
+
+.stats-chart__y {
+  grid-area: y;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: calc(var(--chart-h) - 2 * var(--chart-inset) + 1em);
+  margin-top: calc(var(--chart-inset) - 0.5em);
+  min-width: 2.4em;
+  font-size: var(--fs-xs);
+  line-height: 1;
+  color: var(--text-faint);
+}
+
+.stats-chart__plot {
+  grid-area: plot;
+  min-width: 0;
+}
+
+.stats-chart__x {
+  grid-area: x;
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+}
+
+/* Hairline rules behind both charts. Non-scaling stroke (set on the element)
+   keeps them 1px however the viewBox is stretched. */
+.stats-grid line {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+
+/* --- Review volume: stacked SVG bars (see ReviewBars in statsCharts.tsx) --- */
 
 .stats-bars {
   display: block;
   width: 100%;
-  height: 64px;
+  height: var(--chart-h);
 }
 
 .stats-bars__bar {
   fill: var(--accent);
 }
 
-/* --- Accuracy trend: a hand-rolled SVG line chart, broken at null days (see AccuracyTrend) -------- */
+/* New words sit at the base of the bar in the "learning" state color — the
+   same semantic token the mastery bar uses for a word in that state, so the
+   two cards agree on what amber means. */
+.stats-bars__bar--new {
+  fill: var(--state-learning);
+}
+
+/* A day with no study is a muted baseline tick, never a short accent bar:
+   the difference between "nothing" and "a little" is the whole point of
+   looking at this chart. */
+.stats-bars__zero {
+  fill: var(--rule-strong);
+}
+
+/* --- Accuracy trend: SVG line, broken at null days (see AccuracyTrend) ---- */
 
 .stats-accuracy {
   display: block;
   width: 100%;
-  height: 64px;
+  height: var(--chart-h);
 }
 
 .stats-accuracy__line {
@@ -42,58 +151,141 @@
   fill: var(--accent);
 }
 
+/* The window average, as a reference to read the wobble against. Dashed and
+   muted so it never competes with the series itself. */
+.stats-accuracy__avg {
+  stroke: var(--text-faint);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+
 .stats-accuracy-empty {
   padding-block: var(--sp-4);
   font-size: var(--fs-sm);
   text-align: center;
 }
 
-/* --- Streak days + missed-day calendar ---------------------------------------------------
-   The number reuses .num's tabular-numeral token, but the layout (centered,
-   large, a touch of vermilion) is specific to this page — not the .stat
-   primitive. .stat is "a single tile"; this is its own standalone block at
-   the top of the card. */
+/* --- Chart legend / footnotes -------------------------------------------- */
 
-.stats-streak {
-  display: grid;
-  justify-items: center;
+.stats-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-4);
+  margin-top: var(--sp-3);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.stats-legend li {
+  display: flex;
+  align-items: center;
   gap: var(--sp-1);
-  margin-bottom: var(--sp-4);
+}
+
+.stats-legend__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--r-xs);
+  flex: none;
+}
+
+.stats-legend__swatch--review {
+  background: var(--accent);
+}
+
+.stats-legend__swatch--new {
+  background: var(--state-learning);
+}
+
+/* Matches the baseline tick's shape as well as its color, otherwise the
+   legend claims a square where the chart draws a line. */
+.stats-legend__swatch--zero {
+  height: 3px;
+  background: var(--rule-strong);
+}
+
+.stats-note {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-xs);
+}
+
+/* --- Tile rows: streak card and cumulative totals -------------------------
+   auto-fit rather than a fixed three columns: the totals card carries four
+   tiles, or five once a sprint record exists, and a fixed grid would either
+   overflow 375px or leave a hole. */
+
+.stats-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
+  gap: var(--sp-4) var(--sp-3);
   text-align: center;
 }
 
-.stats-streak__value {
-  font-size: var(--fs-2xl);
-  font-weight: 600;
-  line-height: var(--lh-tight);
-  color: var(--accent);
-}
-
-.stats-streak__label {
+/* The unit rides small and muted next to the figure, so "5 天" still scans
+   as one number rather than two. */
+.stats-unit {
+  margin-left: 0.15em;
   font-size: var(--fs-xs);
+  font-weight: 400;
   color: var(--text-faint);
 }
 
-/* 10 columns x 3 rows = 30 days; a fixed column count rather than a pixel bar width naturally avoids overflow at 375px. */
-.stats-calendar {
+/* --- Labelled rows: due forecast and high-frequency coverage --------------
+   One row primitive for both, because they ask the same shape of question
+   ("a name, a magnitude, a count") and looked gratuitously different when
+   they each had their own. */
+
+.stats-rows {
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
+  gap: var(--sp-3);
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: 6.5em 1fr auto;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.stats-row__label {
+  display: flex;
+  align-items: baseline;
   gap: var(--sp-1);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
 }
 
-.stats-calendar__cell {
-  aspect-ratio: 1;
-  border-radius: var(--r-xs);
+.stats-row__sub {
+  font-size: var(--fs-xs);
+}
+
+.stats-row__track {
+  height: 6px;
+  min-width: 24px;
+  border-radius: var(--r-full);
   background: var(--surface-sunken);
-  border: 1px solid var(--rule);
+  overflow: hidden;
 }
 
-.stats-calendar__cell--filled {
+.stats-row__fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--r-full);
   background: var(--accent);
-  border-color: var(--accent);
 }
 
-/* --- Library mastery breakdown: a stacked bar + three Chip counts ---------------------------------
+.stats-row__count {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: var(--sp-1);
+  flex-wrap: wrap;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* --- Library mastery breakdown: a stacked bar + three Chip counts ---------
    Segment colors reuse tokens.css's --state-* (the same semantic colors as
    StateDot); no new colors are invented. When the total is 0 (empty
    library), all three segments are 0 width and the bar is left showing
@@ -132,80 +324,55 @@
   gap: var(--sp-2);
 }
 
-/* --- Cumulative: total reviews / mastered word count / average new words per day, three columns sharing the .stat primitive --------- */
+/* --- Stubborn words ------------------------------------------------------
+   A card title with an action on the right; the same "title left, escape
+   hatch right" arrangement as the Today page's "recent" block. */
 
-.stats-totals {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--sp-3);
-  text-align: center;
-}
-
-/* --- High-frequency word mastery rate ---------------------------------------------------------
-   Sits alongside "library mastery breakdown" above but answers a different
-   question: that one counts the total, this one only asks "how far along
-   are you on the most commonly used words". The headline is one big
-   percentage, with three rows of banded detail below it. */
-
-.stats-coverage-headline {
+.stats-card-head {
   display: flex;
   align-items: baseline;
+  justify-content: space-between;
   gap: var(--sp-3);
-  flex-wrap: wrap;
-  margin-bottom: var(--sp-4);
 }
 
-.stats-coverage-headline__value {
-  font-size: var(--fs-xl);
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1;
-}
-
-.stats-coverage-headline__note {
+.stats-card-head__link {
   font-size: var(--fs-sm);
-  flex: 1 1 12ch;
+  white-space: nowrap;
 }
 
-.stats-coverage {
+.stats-lapses {
   display: grid;
-  gap: var(--sp-3);
-}
-
-.stats-coverage__row {
-  display: grid;
-  grid-template-columns: 6.5em 1fr auto;
-  align-items: center;
-  gap: var(--sp-3);
-}
-
-.stats-coverage__label {
-  display: flex;
-  align-items: baseline;
   gap: var(--sp-1);
-  font-size: var(--fs-sm);
-  color: var(--text-muted);
 }
 
-.stats-coverage__range {
-  font-size: var(--fs-xs);
+/* The headword is allowed to take the space it needs and the count is
+   pinned right; the gloss in between is what gets truncated, because at
+   375px something has to and it's the only part you can reconstruct from
+   the other two. */
+.stats-lapse {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: var(--sp-2);
+  padding-block: var(--sp-2);
+  min-height: var(--tap);
+  color: inherit;
+  text-decoration: none;
 }
 
-.stats-coverage__track {
-  height: 6px;
-  border-radius: var(--r-full);
-  background: var(--surface-sunken);
+.stats-lapse__word {
+  font-size: var(--fs-base);
+}
+
+.stats-lapse__zh {
   overflow: hidden;
-}
-
-.stats-coverage__fill {
-  display: block;
-  height: 100%;
-  border-radius: var(--r-full);
-  background: var(--accent);
-}
-
-.stats-coverage__count {
   font-size: var(--fs-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stats-lapse__count {
+  font-size: var(--fs-xs);
+  color: var(--accent);
   white-space: nowrap;
 }

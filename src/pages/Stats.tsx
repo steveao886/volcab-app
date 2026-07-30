@@ -5,19 +5,24 @@ import { Chip } from '../components/Chip'
 import { Page } from '../components/Page'
 import { todayStr } from '../lib/srs'
 import { useApp } from '../state/store'
-import type { AccuracyPoint, DayPoint } from './statsDerive'
-import { accuracySeries, cumulativeTotals, dailySeries, masteryBreakdown, usageCoverage } from './statsDerive'
-import { computeStreak } from './todayStats'
+import { AccuracyTrend, ReviewBars } from './statsCharts'
+import {
+  accuracySeries, accuracyStats, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
+  lapseSummary, masteryBreakdown, shortDate, usageCoverage, windowSummary,
+} from './statsDerive'
+import { computeStreak, longestStreak } from './todayStats'
 import './Stats.css'
 
 const WINDOW_DAYS = 30
-/** Even in an all-zero window, bars still get a "shortest but still visible" height, for the same reason as the Today page's "recent" block. */
-const MIN_BAR_FRACTION = 0.04
+const FORECAST_DAYS = 7
+/** Five is enough to recognise the pattern; the full list is one tap away in the lapse session. */
+const TOP_LAPSES = 5
+
+const pct = (ratio: number) => Math.round(ratio * 100)
 
 /**
- * Task 9 implementation: reviews over the last 30 days, accuracy trend,
- * streak days with a missed-day calendar, library mastery breakdown,
- * cumulative totals.
+ * Reviews over the last 30 days, accuracy trend, streak, upcoming review
+ * load, library mastery, stubborn words, cumulative totals.
  *
  * Every metric is derived purely from progress.dailyStats and each word's
  * state — no review log is stored, per v1.1 spec §5.1: progress.json goes
@@ -25,6 +30,13 @@ const MIN_BAR_FRACTION = 0.04
  * hit that ceiling in roughly 9 months, at which point new devices
  * couldn't sign in. So this can chart "volume" and "rate" trends, but not
  * word-level history or time-of-day analysis.
+ *
+ * **Every chart is annotated with the numbers it is drawn from.** The page
+ * used to be shapes only — an unlabelled bar chart, an unlabelled line, and
+ * a calendar of filled squares — which meant it could show that a month was
+ * busier than another but never how much, and a reader had no way to check
+ * a trend against a figure. Axis labels, headline totals and per-row counts
+ * are not decoration here; they are the content.
  */
 export function Stats() {
   const { words, progress } = useApp()
@@ -34,13 +46,19 @@ export function Stats() {
   // (background sync heartbeats count too), and deriving this requires
   // iterating every entry — it shouldn't recompute when nothing actually
   // changed, the same precedent as Today.tsx.
-  const { days, acc, streak, mastery, totals, coverage, hasHistory } = useMemo(() => {
+  const derived = useMemo(() => {
+    const days = dailySeries(progress, today, WINDOW_DAYS)
     return {
-      days: dailySeries(progress, today, WINDOW_DAYS),
+      days,
       acc: accuracySeries(progress, today, WINDOW_DAYS),
+      summary: windowSummary(days),
+      accStats: accuracyStats(days),
       streak: computeStreak(progress.dailyStats, today),
+      best: longestStreak(progress.dailyStats),
       mastery: masteryBreakdown(words, progress),
       coverage: usageCoverage(words, progress),
+      forecast: dueForecast(words, progress, today, FORECAST_DAYS),
+      lapses: lapseSummary(words, progress, TOP_LAPSES),
       totals: cumulativeTotals(progress),
       // Only a complete absence of dailyStats counts as a "never studied"
       // new user — that gets the full-page empty state instead of a
@@ -48,6 +66,7 @@ export function Stats() {
       hasHistory: Object.keys(progress.dailyStats).length > 0,
     }
   }, [words, progress, today])
+  const { days, acc, summary, accStats, streak, best, mastery, totals, coverage, forecast, lapses, hasHistory } = derived
 
   if (!hasHistory) {
     return (
@@ -65,33 +84,135 @@ export function Stats() {
 
   const masteryTotal = mastery.total
   const masteryPct = (n: number) => (masteryTotal === 0 ? 0 : (n / masteryTotal) * 100)
+  const xLeft = shortDate(days[0].date)
+  const peak = summary.peak
+  const forecastWeek = forecast.days.reduce((n, d) => n + d.count, 0)
+  // The bars are scaled against the busiest day rather than the total, so a
+  // quiet week next to one heavy day still reads as quiet.
+  const forecastMax = Math.max(1, ...forecast.days.map(d => d.count))
 
   return (
     <Page eyebrow="Stats" title="学习数据" back="/">
       <Card>
-        <p className="section-title stats-section-title">近 30 天复习量</p>
-        <ReviewBars days={days} />
+        <p className="section-title stats-section-title">近 {WINDOW_DAYS} 天复习量</p>
+        <div className="stats-headline">
+          <p className="num stats-headline__value">{summary.reviewed}</p>
+          <p className="muted stats-headline__note">
+            次复习,覆盖 <span className="num">{summary.activeDays}</span> / {WINDOW_DAYS} 天
+            {peak !== null && (
+              <>
+                {' · '}最多的一天 <span className="num">{peak.reviewed}</span> 次({shortDate(peak.date)})
+              </>
+            )}
+          </p>
+        </div>
+        <ReviewBars days={days} max={peak?.reviewed ?? 0} xLeft={xLeft} xRight="今天" />
+        <ul className="stats-legend">
+          <li>
+            <span className="stats-legend__swatch stats-legend__swatch--review" />
+            复习旧词 <span className="num">{summary.reviewed - summary.newLearned}</span>
+          </li>
+          <li>
+            <span className="stats-legend__swatch stats-legend__swatch--new" />
+            学习新词 <span className="num">{summary.newLearned}</span>
+          </li>
+          <li>
+            <span className="stats-legend__swatch stats-legend__swatch--zero" />
+            没有学习
+          </li>
+        </ul>
       </Card>
 
       <Card>
         <p className="section-title stats-section-title">正确率趋势</p>
-        <AccuracyTrend points={acc} />
+        {accStats.average === null ? (
+          <p className="stats-accuracy-empty muted">这段时间还没有复习记录。</p>
+        ) : (
+          <>
+            <div className="stats-headline">
+              <p className="num stats-headline__value">{pct(accStats.average)}%</p>
+              <p className="muted stats-headline__note">
+                近 {WINDOW_DAYS} 天平均,按复习次数加权 · <span className="num">{accStats.ratedDays}</span> 天有记录
+              </p>
+            </div>
+            <AccuracyTrend points={acc} average={accStats.average} xLeft={xLeft} xRight="今天" />
+            <ul className="stats-legend">
+              {accStats.best !== null && (
+                <li>
+                  最高 <span className="num">{pct(accStats.best.accuracy)}%</span>
+                  <span className="num faint">{shortDate(accStats.best.date)}</span>
+                </li>
+              )}
+              {accStats.worst !== null && (
+                <li>
+                  最低 <span className="num">{pct(accStats.worst.accuracy)}%</span>
+                  <span className="num faint">{shortDate(accStats.worst.date)}</span>
+                </li>
+              )}
+              {accStats.latest !== null && (
+                <li>
+                  最近 <span className="num">{pct(accStats.latest.accuracy)}%</span>
+                  <span className="num faint">{shortDate(accStats.latest.date)}</span>
+                </li>
+              )}
+            </ul>
+          </>
+        )}
       </Card>
 
+      <Card className="stats-tiles">
+        <div className="stat">
+          <p className="num stat__value stat__value--accent">
+            {streak}
+            <span className="stats-unit">天</span>
+          </p>
+          <p className="stat__label">当前连续</p>
+        </div>
+        <div className="stat">
+          <p className="num stat__value">
+            {best}
+            <span className="stats-unit">天</span>
+          </p>
+          <p className="stat__label">最长连续</p>
+        </div>
+        <div className="stat">
+          <p className="num stat__value">
+            {totals.activeDays}
+            <span className="stats-unit">天</span>
+          </p>
+          <p className="stat__label">累计学习</p>
+        </div>
+      </Card>
+
+      {/* The only forward-looking card on the page. Everything else scores
+          what already happened; this one answers "what does the coming week
+          cost me", which is the question that can still change a decision.
+          The counts come from the same due rule as buildQueue, so today's
+          row always matches the Today page's "due today". */}
       <Card>
-        <div className="stats-streak">
-          <p className="num stats-streak__value">{streak}</p>
-          <p className="stats-streak__label">连续天数</p>
+        <p className="section-title stats-section-title">未来 {FORECAST_DAYS} 天待复习</p>
+        <div className="stats-headline">
+          <p className="num stats-headline__value">{forecastWeek}</p>
+          <p className="muted stats-headline__note">
+            个词将在 {FORECAST_DAYS} 天内到期 · 更远的还有 <span className="num">{forecast.beyond}</span> 个,
+            已排期共 <span className="num">{forecast.total}</span> 个
+          </p>
         </div>
-        <div className="stats-calendar" role="img" aria-label="近 30 天复习日历,填色表示当天有复习">
-          {days.map(d => (
-            <span
-              key={d.date}
-              className={`stats-calendar__cell${d.reviewed > 0 ? ' stats-calendar__cell--filled' : ''}`}
-              title={`${d.date} · 复习 ${d.reviewed} 次`}
-            />
+        <ul className="stats-rows">
+          {forecast.days.map(d => (
+            <li className="stats-row" key={d.date}>
+              <span className="stats-row__label">
+                {forecastLabel(d.date, today)}
+                <span className="num faint stats-row__sub">{shortDate(d.date)}</span>
+              </span>
+              <span className="stats-row__track">
+                <span className="stats-row__fill" style={{ width: `${(d.count / forecastMax) * 100}%` }} />
+              </span>
+              <span className="num stats-row__count">{d.count}</span>
+            </li>
           ))}
-        </div>
+        </ul>
+        <p className="faint stats-note">“今天”一栏含已经过期的词。</p>
       </Card>
 
       <Card>
@@ -111,11 +232,29 @@ export function Stats() {
             style={{ width: `${masteryPct(mastery.new)}%` }}
           />
         </div>
+        {/* The percentage rides on the chip label rather than replacing the
+            count: the count is what you compare against the library size,
+            the percentage is what you compare against the bar above. */}
         <div className="stats-mastery-chips">
-          <Chip label="已掌握" count={mastery.review} interactive={false} />
-          <Chip label="学习中" count={mastery.learning} interactive={false} />
-          <Chip label="未学" count={mastery.new} interactive={false} />
+          <Chip
+            label={<>已掌握 <span className="num faint">{pct(masteryPct(mastery.review) / 100)}%</span></>}
+            count={mastery.review}
+            interactive={false}
+          />
+          <Chip
+            label={<>学习中 <span className="num faint">{pct(masteryPct(mastery.learning) / 100)}%</span></>}
+            count={mastery.learning}
+            interactive={false}
+          />
+          <Chip
+            label={<>未学 <span className="num faint">{pct(masteryPct(mastery.new) / 100)}%</span></>}
+            count={mastery.new}
+            interactive={false}
+          />
         </div>
+        <p className="faint stats-note">
+          词库共 <span className="num">{mastery.total}</span> 个词。
+        </p>
       </Card>
 
       {/* High-frequency word coverage. The "library mastery breakdown"
@@ -125,35 +264,69 @@ export function Stats() {
           words"; see statsDerive.usageCoverage for the banding logic. */}
       <Card>
         <p className="section-title stats-section-title">高频词掌握率</p>
-        <div className="stats-coverage-headline">
-          <p className="num stats-coverage-headline__value">{Math.round(coverage.headline.ratio * 100)}%</p>
-          <p className="muted stats-coverage-headline__note">
+        <div className="stats-headline">
+          <p className="num stats-headline__value">{pct(coverage.headline.ratio)}%</p>
+          <p className="muted stats-headline__note">
             遇见概率 7 分以上的 <span className="num">{coverage.headline.total}</span> 个词里,
             已掌握 <span className="num">{coverage.headline.mastered}</span> 个
           </p>
         </div>
-        <ul className="stats-coverage">
+        <ul className="stats-rows">
           {coverage.bands.map(b => (
-            <li className="stats-coverage__row" key={b.label}>
-              <span className="stats-coverage__label">
+            <li className="stats-row" key={b.label}>
+              <span className="stats-row__label">
                 {b.label}
-                <span className="num faint stats-coverage__range">{b.range}</span>
+                <span className="num faint stats-row__sub">{b.range}</span>
               </span>
-              <span className="stats-coverage__track">
+              <span className="stats-row__track">
                 <span
-                  className="stats-coverage__fill"
+                  className="stats-row__fill"
                   style={{ width: `${b.total === 0 ? 0 : (b.mastered / b.total) * 100}%` }}
                 />
               </span>
-              <span className="num muted stats-coverage__count">
-                {b.mastered} / {b.total}
+              <span className="stats-row__count">
+                <span className="num">{b.total === 0 ? 0 : pct(b.mastered / b.total)}%</span>
+                <span className="num faint stats-row__sub">
+                  {b.mastered}/{b.total}
+                </span>
               </span>
             </li>
           ))}
         </ul>
       </Card>
 
-      <Card className="stats-totals">
+      {/* Lapses have been recorded since v1 and drive the "专攻顽固词"
+          session, but nothing ever showed you the list. Naming the five
+          words costing you the most is the whole point — a count alone
+          ("you have 23 stubborn words") isn't actionable. */}
+      {lapses.total > 0 && (
+        <Card>
+          <div className="stats-card-head">
+            <p className="section-title stats-section-title">最容易忘的词</p>
+            <Link to="/review?mode=lapses" className="stats-card-head__link">
+              专攻 →
+            </Link>
+          </div>
+          <ul className="stats-lapses">
+            {lapses.top.map(({ word, lapses: n }) => (
+              <li key={word.id}>
+                <Link to={`/word/${word.id}`} className="stats-lapse">
+                  <span className="word stats-lapse__word" lang="en">
+                    {word.headword}
+                  </span>
+                  <span className="muted stats-lapse__zh">{word.meanings[0]?.zh ?? ''}</span>
+                  <span className="num stats-lapse__count">忘 {n} 次</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className="faint stats-note">
+            共 <span className="num">{lapses.total}</span> 个词至少忘过一次。
+          </p>
+        </Card>
+      )}
+
+      <Card className="stats-tiles">
         <div className="stat">
           <p className="num stat__value">{totals.totalReviewed}</p>
           <p className="stat__label">总复习次数</p>
@@ -166,106 +339,19 @@ export function Stats() {
           <p className="num stat__value">{totals.avgNewPerActiveDay.toFixed(1)}</p>
           <p className="stat__label">日均新词</p>
         </div>
+        <div className="stat">
+          <p className="num stat__value">{totals.totalQuizzes}</p>
+          <p className="stat__label">测验次数</p>
+        </div>
+        {/* Only shown once a sprint has actually been run: a personal best
+            of 0 isn't a record, it's a reminder that you haven't played. */}
+        {progress.bestSprint !== undefined && (
+          <div className="stat">
+            <p className="num stat__value">{progress.bestSprint.score}</p>
+            <p className="stat__label">冲刺纪录</p>
+          </div>
+        )}
       </Card>
     </Page>
-  )
-}
-
-/**
- * Bar chart of reviews over the last 30 days. Hand-rolled SVG (viewBox
- * fixes the width/height + preserveAspectRatio="none"), using vector
- * scaling instead of pixel bar widths — if 30 bars in a 375px card were
- * allocated by pixels, rounding error would accumulate into overflow on
- * narrow screens; viewBox scaling always fills the container width
- * exactly.
- */
-function ReviewBars({ days }: { days: DayPoint[] }) {
-  const W = 300
-  const H = 90
-  const n = days.length
-  const colW = W / n
-  const gap = colW * 0.22
-  const barW = colW - gap
-  const max = Math.max(0, ...days.map(d => d.reviewed))
-
-  return (
-    <svg
-      className="stats-bars"
-      viewBox={`0 0 ${W} ${H}`}
-      preserveAspectRatio="none"
-      role="img"
-      aria-label="近 30 天每日复习量柱状图"
-    >
-      {days.map((d, i) => {
-        const fraction = max > 0 ? Math.max(MIN_BAR_FRACTION, d.reviewed / max) : MIN_BAR_FRACTION
-        const barH = fraction * H
-        return (
-          <rect
-            key={d.date}
-            className="stats-bars__bar"
-            x={i * colW + gap / 2}
-            y={H - barH}
-            width={barW}
-            height={barH}
-          >
-            <title>{`${d.date} · 复习 ${d.reviewed} 次`}</title>
-          </rect>
-        )
-      })}
-    </svg>
-  )
-}
-
-/**
- * Accuracy-trend line chart. Days with null (no review that day) must
- * break the line rather than be plotted at 0 — for the same reason as
- * accuracySeries itself: 0% would falsely claim "everything was wrong that
- * day". Approach: split consecutive non-null points into segments and draw
- * each segment as its own polyline; an isolated point (broken on both
- * sides) is drawn as a lone dot, since a single point can't form a line.
- */
-function AccuracyTrend({ points }: { points: AccuracyPoint[] }) {
-  const W = 300
-  const H = 90
-  const PAD_Y = 8
-  const n = points.length
-  const stepX = n > 1 ? W / (n - 1) : 0
-  const yAt = (a: number) => PAD_Y + (1 - a) * (H - 2 * PAD_Y)
-
-  const segments: { x: number; y: number }[][] = []
-  let current: { x: number; y: number }[] = []
-  points.forEach((p, i) => {
-    if (p.accuracy === null) {
-      if (current.length > 0) segments.push(current)
-      current = []
-      return
-    }
-    current.push({ x: i * stepX, y: yAt(p.accuracy) })
-  })
-  if (current.length > 0) segments.push(current)
-
-  if (segments.length === 0) {
-    return <p className="stats-accuracy-empty muted">这段时间还没有复习记录。</p>
-  }
-
-  return (
-    <svg
-      className="stats-accuracy"
-      viewBox={`0 0 ${W} ${H}`}
-      preserveAspectRatio="none"
-      role="img"
-      aria-label="近 30 天正确率趋势,没有复习的日子不连线"
-    >
-      {segments.map((seg, i) => (
-        <g key={i}>
-          {seg.length > 1 && (
-            <polyline className="stats-accuracy__line" points={seg.map(p => `${p.x},${p.y}`).join(' ')} />
-          )}
-          {seg.map((p, j) => (
-            <circle key={j} className="stats-accuracy__dot" cx={p.x} cy={p.y} r={2.5} />
-          ))}
-        </g>
-      ))}
-    </svg>
   )
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { computeStreak, reviewProgress } from './todayStats'
+import { computeStreak, longestStreak, reviewProgress } from './todayStats'
 import { emptyProgress, emptyStat } from '../types'
 import type { DailyStat, Progress, Word } from '../types'
 
@@ -8,6 +8,32 @@ const stat = (reviewed: number): DailyStat => ({ ...emptyStat(), reviewed })
 const word = (id: string): Word => ({
   id, headword: id, phonetic: '/x/', meanings: [{ pos: 'n.', en: 'x', zh: 'x' }],
   examples: ['a', 'b'], synonyms: [], antonyms: [], collocations: [], relatedForms: [], sourceNote: 't', addedAt: '2026-07-01',
+})
+
+describe('longestStreak', () => {
+  it('empty dailyStats → 0', () => {
+    expect(longestStreak({})).toBe(0)
+  })
+
+  it('takes the longest run, not the most recent one', () => {
+    expect(longestStreak({
+      '2026-07-01': stat(1), '2026-07-02': stat(1), '2026-07-03': stat(1), '2026-07-04': stat(1),
+      // gap
+      '2026-07-20': stat(1), '2026-07-21': stat(1),
+    })).toBe(4)
+  })
+
+  it('a day with reviewed=0 breaks the run instead of being skipped over', () => {
+    expect(longestStreak({
+      '2026-07-01': stat(1), '2026-07-02': stat(0), '2026-07-03': stat(1),
+    })).toBe(1)
+  })
+
+  it('counts across a month boundary rather than resetting on the 1st', () => {
+    expect(longestStreak({
+      '2026-07-30': stat(1), '2026-07-31': stat(1), '2026-08-01': stat(1),
+    })).toBe(3)
+  })
 })
 
 describe('computeStreak', () => {
