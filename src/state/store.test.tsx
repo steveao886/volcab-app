@@ -887,6 +887,47 @@ describe('recordLapseDrill: drilling never moves the schedule outward', () => {
   })
 })
 
+describe('grade: the retention measurement', () => {
+  it('a new word being learned is not counted as a scheduled review', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'good') })   // first ever grade: still in learning
+    const stat = app().progress.dailyStats[today]
+    expect(stat.reviewed).toBe(1)
+    expect(stat.reviewPhase).toBeUndefined()
+  })
+
+  it('once the word has graduated, its reviews count — and an "again" counts as a miss, not as nothing', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })   // graduates straight to the review state
+    await step(() => { app().grade('alpha', 'good') })
+    await step(() => { app().grade('alpha', 'again') })
+
+    const stat = app().progress.dailyStats[today]
+    expect(stat.reviewPhase).toBe(2)          // the two grades given after it graduated
+    expect(stat.reviewPhaseCorrect).toBe(1)
+    expect(stat.reviewed).toBe(3)             // total card views, learning step included
+  })
+
+  it('reads the state the card was shown in, not the state grading left it in', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    // 'again' demotes a review word back to learning. If the counter read
+    // the result instead of the previous state, every lapse would vanish
+    // from the denominator and retention would read as 100% forever.
+    await step(() => { app().grade('alpha', 'again') })
+    expect(app().progress.dailyStats[today]).toMatchObject({ reviewPhase: 1, reviewPhaseCorrect: 0 })
+  })
+
+  it('practice drills stay out of it — they re-test the words you already struggle with', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.dailyStats[today].reviewPhase
+    await step(() => { app().recordLapseDrill('alpha', 'again') })
+    await step(() => { app().recordConsolidation('alpha', 'again') })
+    expect(app().progress.dailyStats[today].reviewPhase).toBe(before)
+  })
+})
+
 describe('recordConsolidation: same contract, but a fumble is not a lapse', () => {
   it('a miss pulls due forward without counting a lapse — day-one shakiness is not forgetting', async () => {
     await bootAsAlice()

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addDays, gradeWord, todayStr } from './srs'
+import { addDays, clampIntervalModifier, gradeWord, MAX_INTERVAL_DAYS, todayStr } from './srs'
 import type { ProgressEntry } from '../types'
 
 const now = new Date(2026, 6, 24, 10, 0, 0) // 2026-07-24 local time
@@ -76,5 +76,57 @@ describe('review phase', () => {
   it('interval advances by at least 1 day', () => {
     const e = gradeWord(reviewEntry({ intervalDays: 1, ease: 1.3 }), 'hard', now, noFuzz)
     expect(e.intervalDays).toBeGreaterThanOrEqual(2)
+  })
+})
+
+describe('intervalModifier', () => {
+  it('defaults to no change at all, so an unset setting behaves exactly as before', () => {
+    const base = gradeWord(reviewEntry(), 'good', now, noFuzz)
+    expect(gradeWord(reviewEntry(), 'good', now, noFuzz, 1).intervalDays).toBe(base.intervalDays)
+    expect(gradeWord(reviewEntry(), 'good', now, noFuzz, undefined as unknown as number).intervalDays)
+      .toBe(base.intervalDays)
+  })
+
+  it('stretches the review interval', () => {
+    const plain = gradeWord(reviewEntry(), 'good', now, noFuzz).intervalDays
+    const stretched = gradeWord(reviewEntry(), 'good', now, noFuzz, 1.3).intervalDays
+    expect(stretched).toBeGreaterThan(plain)
+    expect(stretched).toBe(Math.round(plain * 1.3))
+  })
+
+  it('compounds across reviews — five at 1.3 is far more than 30% longer', () => {
+    // Started from a one-day interval on purpose: from a longer one both
+    // sides run into MAX_INTERVAL_DAYS within five reviews and the ratio
+    // collapses back to 1, which would make this assertion meaningless.
+    let plain = reviewEntry({ intervalDays: 1 }), stretched = reviewEntry({ intervalDays: 1 })
+    for (let i = 0; i < 5; i++) {
+      plain = gradeWord(plain, 'good', now, noFuzz)
+      stretched = gradeWord(stretched, 'good', now, noFuzz, 1.3)
+    }
+    expect(plain.intervalDays).toBeLessThan(MAX_INTERVAL_DAYS)
+    expect(stretched.intervalDays).toBeLessThan(MAX_INTERVAL_DAYS)
+    expect(stretched.intervalDays / plain.intervalDays).toBeGreaterThan(2.5)
+  })
+
+  it('never lets an interval stand still, even below 1', () => {
+    const e = gradeWord(reviewEntry({ intervalDays: 10 }), 'good', now, noFuzz, 0.5)
+    expect(e.intervalDays).toBeGreaterThan(10)
+  })
+
+  it('leaves ease alone — it is a schedule knob, not a difficulty estimate', () => {
+    expect(gradeWord(reviewEntry(), 'good', now, noFuzz, 2).ease).toBe(reviewEntry().ease)
+  })
+
+  it('does not touch the graduating intervals, which belong to the learning steps', () => {
+    expect(gradeWord(undefined, 'easy', now, noFuzz, 3).intervalDays)
+      .toBe(gradeWord(undefined, 'easy', now, noFuzz).intervalDays)
+  })
+
+  it('clamps garbage instead of throwing — it arrives from a synced settings blob', () => {
+    expect(clampIntervalModifier(undefined)).toBe(1)
+    expect(clampIntervalModifier(Number.NaN)).toBe(1)
+    expect(clampIntervalModifier(99)).toBe(3)
+    expect(clampIntervalModifier(0)).toBe(0.5)
+    expect(clampIntervalModifier(1.3)).toBe(1.3)
   })
 })

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { mergeProgress } from './merge'
 import { emptyProgress } from '../types'
-import type { ProgressEntry } from '../types'
+import type { DailyStat, Progress, ProgressEntry } from '../types'
 
 const entry = (lastReviewedAt: string, reps: number): ProgressEntry => ({
   state: 'review', ease: 2.5, intervalDays: 3, due: '2026-07-30',
@@ -127,5 +127,39 @@ describe("mergeProgress's bestSprint", () => {
     // result.
     expect(mergeProgress(withBest(0, '2026-07-20'), emptyProgress()).bestSprint)
       .toEqual({ score: 0, date: '2026-07-20' })
+  })
+})
+
+describe('mergeProgress: optional dailyStat counters', () => {
+  const day = (over: Partial<DailyStat> = {}): DailyStat =>
+    ({ reviewed: 0, newLearned: 0, correct: 0, quizTaken: 0, ...over })
+  const withDay = (d: DailyStat): Progress => ({ ...emptyProgress(), dailyStats: { '2026-07-25': d } })
+
+  it('carries reviewPhase across a merge instead of dropping it', () => {
+    // The whole point: this function rebuilds each entry from named fields,
+    // so an unlisted one is lost the first time two devices sync.
+    const m = mergeProgress(
+      withDay(day({ reviewed: 5, reviewPhase: 4, reviewPhaseCorrect: 4 })),
+      withDay(day({ reviewed: 3, reviewPhase: 2, reviewPhaseCorrect: 1 })),
+    )
+    expect(m.dailyStats['2026-07-25']).toMatchObject({ reviewPhase: 4, reviewPhaseCorrect: 4 })
+  })
+
+  it('takes the higher count, like every other counter', () => {
+    const m = mergeProgress(
+      withDay(day({ reviewPhase: 2, reviewPhaseCorrect: 1 })),
+      withDay(day({ reviewPhase: 9, reviewPhaseCorrect: 7 })),
+    )
+    expect(m.dailyStats['2026-07-25']).toMatchObject({ reviewPhase: 9, reviewPhaseCorrect: 7 })
+  })
+
+  it('one side missing the field defers to the side that has it', () => {
+    const m = mergeProgress(withDay(day({ reviewPhase: 6 })), withDay(day()))
+    expect(m.dailyStats['2026-07-25'].reviewPhase).toBe(6)
+  })
+
+  it('neither side has it: the key stays absent, not 0 — a day recorded by an older build did not measure "zero reviews"', () => {
+    const m = mergeProgress(withDay(day({ reviewed: 4 })), withDay(day({ reviewed: 2 })))
+    expect('reviewPhase' in m.dailyStats['2026-07-25']).toBe(false)
   })
 })

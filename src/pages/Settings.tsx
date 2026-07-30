@@ -5,7 +5,7 @@ import { Field } from '../components/Field'
 import { Page } from '../components/Page'
 import { TextInput } from '../components/TextInput'
 import { isSoundEnabled } from '../lib/sound'
-import { todayStr } from '../lib/srs'
+import { clampIntervalModifier, MAX_INTERVAL_MODIFIER, MIN_INTERVAL_MODIFIER, todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
 import { pendingOps, pendingStaging } from '../state/session'
 import { useApp } from '../state/store'
@@ -32,6 +32,20 @@ function clampNewPerDay(raw: string, fallback: number): number {
 }
 
 /**
+ * Parses the interval-modifier box. Unparseable input falls back to the
+ * previous value rather than to 1: silently resetting a scheduling knob to
+ * its default because someone selected the text and typed a letter would
+ * quietly reshape every future interval.
+ */
+function parseModifier(raw: string, fallback: number): number {
+  const n = Number.parseFloat(raw)
+  if (!Number.isFinite(n)) return fallback
+  // One decimal place. The knob compounds — 1.3 means 3.7x after five
+  // reviews — so there is no meaning to be had in the second digit.
+  return clampIntervalModifier(Math.round(n * 10) / 10)
+}
+
+/**
  * Whether the local machine has anything owed to the remote that hasn't
  * been pushed yet — reads the cached flag directly rather than relying on
  * syncStatus (which masks this while offline). For the library half, this
@@ -52,6 +66,9 @@ export function Settings() {
   const { owner, progress, updateSettings, logout, exportAll } = useApp()
 
   const [newPerDayInput, setNewPerDayInput] = useState(String(progress.settings.newPerDay))
+  const currentModifier = clampIntervalModifier(progress.settings.intervalModifier)
+  const [modifierInput, setModifierInput] = useState(currentModifier.toFixed(1))
+  const modifierRef = useRef<HTMLInputElement>(null)
   const [confirmingLogout, setConfirmingLogout] = useState(false)
   const newPerDayRef = useRef<HTMLInputElement>(null)
   // Right now, newPerDay can only ever change because of this component's
@@ -65,6 +82,20 @@ export function Settings() {
     if (document.activeElement === newPerDayRef.current) return
     setNewPerDayInput(String(progress.settings.newPerDay))
   }, [progress.settings.newPerDay])
+
+  // Same focus guard as newPerDay above, for the same reason.
+  useEffect(() => {
+    if (document.activeElement === modifierRef.current) return
+    setModifierInput(clampIntervalModifier(progress.settings.intervalModifier).toFixed(1))
+  }, [progress.settings.intervalModifier])
+
+  const commitModifier = useCallback(() => {
+    const clamped = parseModifier(modifierInput, currentModifier)
+    setModifierInput(clamped.toFixed(1))
+    if (clamped !== currentModifier) {
+      updateSettings({ ...progress.settings, intervalModifier: clamped })
+    }
+  }, [modifierInput, currentModifier, progress.settings, updateSettings])
 
   const commitNewPerDay = useCallback(() => {
     const clamped = clampNewPerDay(newPerDayInput, progress.settings.newPerDay)
@@ -142,6 +173,33 @@ export function Settings() {
             value={newPerDayInput}
             onChange={(e) => setNewPerDayInput(e.target.value)}
             onBlur={commitNewPerDay}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') e.currentTarget.blur()
+            }}
+          />
+        </Field>
+
+        {/* Sits with the new-word count because both decide how much work
+            tomorrow holds. The hint carries the target number, because
+            "1.3" means nothing without knowing what you are aiming at —
+            the stats page prints the retention this is meant to move. */}
+        <Field
+          label="间隔系数"
+          htmlFor="settings-interval-modifier"
+          hint={`复习间隔的整体倍率,${MIN_INTERVAL_MODIFIER}–${MAX_INTERVAL_MODIFIER}。留存率明显高于 90% 时调大它,间隔会变长、每天要复习的词会变少。它是复利的:1.3 在五次复习后就是约 3.7 倍。`}
+        >
+          <TextInput
+            id="settings-interval-modifier"
+            ref={modifierRef}
+            className="num"
+            type="number"
+            inputMode="decimal"
+            min={MIN_INTERVAL_MODIFIER}
+            max={MAX_INTERVAL_MODIFIER}
+            step={0.1}
+            value={modifierInput}
+            onChange={(e) => setModifierInput(e.target.value)}
+            onBlur={commitModifier}
             onKeyDown={(e) => {
               if (e.key === 'Enter') e.currentTarget.blur()
             }}

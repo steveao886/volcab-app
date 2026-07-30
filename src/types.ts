@@ -71,7 +71,37 @@ export interface ProgressEntry {
   lastReviewedAt: string // ISO timestamp, the basis for conflict-merge resolution
 }
 
-export interface DailyStat { reviewed: number; newLearned: number; correct: number; quizTaken: number }
+export interface DailyStat {
+  reviewed: number
+  newLearned: number
+  correct: number
+  quizTaken: number
+  /**
+   * Grades given to words that were **already in the review state**, and
+   * how many of those were remembered.
+   *
+   * `reviewed`/`correct` count every card that crossed the screen, which
+   * makes them useless for judging the schedule: getting a new word right
+   * thirty seconds after first meeting it is counted the same as
+   * remembering one from nine days ago, and each new word costs two
+   * learning-step grades before it graduates. Measured over the real
+   * library, 226 of 543 lifetime grades were learning steps — so the
+   * headline "accuracy" sat at 90.8% while true retention on scheduled
+   * reviews was 97.8%. Tuning intervals off the first number would move
+   * them the wrong way.
+   *
+   * Written only by grade(). The practice drills are deliberately excluded:
+   * they re-test the words you already struggle with, so folding them in
+   * would drag the measurement down for reasons that have nothing to do
+   * with how well the schedule is working.
+   *
+   * Optional, like every other added field — an older build on another
+   * device pushes days without them, and mergeProgress keeps them absent
+   * rather than inventing a zero.
+   */
+  reviewPhase?: number
+  reviewPhaseCorrect?: number
+}
 
 /** Personal best score in the 60-second sprint. date is the day it was set (YYYY-MM-DD). */
 export interface SprintRecord { score: number; date: string }
@@ -96,7 +126,13 @@ export interface Progress {
    * whichever side has changed it. The entire settings object is carried as
    * one unit, not picked apart field by field.
    */
-  settings: { newPerDay: number; soundEnabled?: boolean; updatedAt?: string }
+  /**
+   * intervalModifier multiplies every review-phase interval; see gradeWord.
+   * Optional for the same reason as soundEnabled — undefined means 1, i.e.
+   * exactly the behaviour from before the setting existed, so a device on
+   * an older build pushing settings without it changes nothing.
+   */
+  settings: { newPerDay: number; soundEnabled?: boolean; intervalModifier?: number; updatedAt?: string }
   words: Record<string, ProgressEntry>
   dailyStats: Record<string, DailyStat>
   /**

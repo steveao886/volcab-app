@@ -561,9 +561,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // No record, or still sitting at new, both count as one new word learned today — consistent with how buildQueue determines new words
     if (!prev || prev.state === 'new') stat.newLearned += 1
     if (g !== 'again') stat.correct += 1
+    // The retention measurement, kept separate from the counters above: only
+    // a word that had already graduated is a real test of the schedule. See
+    // the comment on DailyStat.reviewPhase for why the two can't be the same
+    // number. Read `prev`, not the graded result — grading an 'again' demotes
+    // the word back to learning, and that card was still a review when it
+    // was shown.
+    if (prev?.state === 'review') {
+      // Written as a pair, so "the field is absent" always means "this day
+      // predates the measurement" and never "the only review that day was a
+      // miss". mergeProgress leans on that: it omits a counter only when
+      // neither side has it.
+      stat.reviewPhase = (stat.reviewPhase ?? 0) + 1
+      stat.reviewPhaseCorrect = (stat.reviewPhaseCorrect ?? 0) + (g === 'again' ? 0 : 1)
+    }
     commitProgress({
       ...cur,
-      words: { ...cur.words, [wordId]: gradeWord(prev, g, now) },
+      words: { ...cur.words, [wordId]: gradeWord(prev, g, now, undefined, cur.settings.intervalModifier) },
       dailyStats: { ...cur.dailyStats, [day]: stat },
     })
     schedulePush()

@@ -8,7 +8,7 @@ import { useApp } from '../state/store'
 import { AccuracyTrend, ReviewBars } from './statsCharts'
 import {
   accuracySeries, accuracyStats, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
-  lapseSummary, masteryBreakdown, shortDate, usageCoverage, windowSummary,
+  lapseSummary, masteryBreakdown, retentionStats, shortDate, usageCoverage, windowSummary,
 } from './statsDerive'
 import { computeStreak, longestStreak } from './todayStats'
 import './Stats.css'
@@ -53,6 +53,7 @@ export function Stats() {
       acc: accuracySeries(progress, today, WINDOW_DAYS),
       summary: windowSummary(days),
       accStats: accuracyStats(days),
+      retention: retentionStats(progress, today, WINDOW_DAYS),
       streak: computeStreak(progress.dailyStats, today),
       best: longestStreak(progress.dailyStats),
       mastery: masteryBreakdown(words, progress),
@@ -66,7 +67,10 @@ export function Stats() {
       hasHistory: Object.keys(progress.dailyStats).length > 0,
     }
   }, [words, progress, today])
-  const { days, acc, summary, accStats, streak, best, mastery, totals, coverage, forecast, lapses, hasHistory } = derived
+  const {
+    days, acc, summary, accStats, retention, streak, best, mastery,
+    totals, coverage, forecast, lapses, hasHistory,
+  } = derived
 
   if (!hasHistory) {
     return (
@@ -123,8 +127,30 @@ export function Stats() {
         </ul>
       </Card>
 
+      {/* Retention is the number that says whether the schedule is right,
+          and it is not the accuracy below it. Kept on its own card, above
+          the chart, because putting two percentages side by side without
+          explaining the difference is how the wrong one gets acted on —
+          the accuracy figure runs several points lower purely because
+          every new word costs two learning-step grades. */}
+      {retention.rate !== null && (
+        <Card>
+          <p className="section-title stats-section-title">真实留存率</p>
+          <div className="stats-headline">
+            <p className="num stats-headline__value">{pct(retention.rate)}%</p>
+            <p className="muted stats-headline__note">
+              到期复习的词里记住的比例 · 近 {WINDOW_DAYS} 天 <span className="num">{retention.correct}</span> /{' '}
+              <span className="num">{retention.reviewed}</span> 次
+            </p>
+          </div>
+          <p className="faint stats-note">
+            只统计已毕业的词,不含新词的学习步骤,也不含练习。间隔重复通常以 90% 为目标 —— 明显高于它,说明可以把间隔放长。
+          </p>
+        </Card>
+      )}
+
       <Card>
-        <p className="section-title stats-section-title">正确率趋势</p>
+        <p className="section-title stats-section-title">答题正确率趋势</p>
         {accStats.average === null ? (
           <p className="stats-accuracy-empty muted">这段时间还没有复习记录。</p>
         ) : (
@@ -132,7 +158,7 @@ export function Stats() {
             <div className="stats-headline">
               <p className="num stats-headline__value">{pct(accStats.average)}%</p>
               <p className="muted stats-headline__note">
-                近 {WINDOW_DAYS} 天平均,按复习次数加权 · <span className="num">{accStats.ratedDays}</span> 天有记录
+                近 {WINDOW_DAYS} 天平均,含新词的学习步骤 · <span className="num">{accStats.ratedDays}</span> 天有记录
               </p>
             </div>
             <AccuracyTrend points={acc} average={accStats.average} xLeft={xLeft} xRight="今天" />

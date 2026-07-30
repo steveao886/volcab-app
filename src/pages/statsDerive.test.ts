@@ -3,7 +3,7 @@ import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
 import {
   accuracySeries, accuracyStats, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
-  lapseSummary, masteryBreakdown, shortDate, usageCoverage, windowSummary,
+  lapseSummary, masteryBreakdown, retentionStats, shortDate, usageCoverage, windowSummary,
 } from './statsDerive'
 import type { DayPoint } from './statsDerive'
 
@@ -255,5 +255,28 @@ describe('usageCoverage', () => {
 
   it('an empty library doesn\'t blow up', () => {
     expect(usageCoverage([], emptyProgress()).headline.ratio).toBe(0)
+  })
+})
+
+describe('retentionStats', () => {
+  it('sums only the scheduled-review counters, ignoring total card views', () => {
+    const p = prog({
+      '2026-07-24': { reviewed: 40, newLearned: 8, correct: 36, quizTaken: 0, reviewPhase: 10, reviewPhaseCorrect: 10 },
+      '2026-07-25': { reviewed: 30, newLearned: 6, correct: 25, quizTaken: 0, reviewPhase: 10, reviewPhaseCorrect: 9 },
+    })
+    const r = retentionStats(p, '2026-07-25', 2)
+    expect(r).toMatchObject({ reviewed: 20, correct: 19 })
+    expect(r.rate).toBeCloseTo(0.95)
+    // The headline accuracy over the same days is 61/70 = 87%; retention is
+    // 95%. Conflating them is what sent the interval tuning the wrong way.
+  })
+
+  it('days recorded before the measurement existed contribute nothing, rather than counting as zero', () => {
+    const p = prog({ '2026-07-25': { reviewed: 20, newLearned: 4, correct: 18, quizTaken: 0 } })
+    expect(retentionStats(p, '2026-07-25', 1)).toEqual({ reviewed: 0, correct: 0, rate: null })
+  })
+
+  it('a window with no scheduled reviews gives null, not 0%', () => {
+    expect(retentionStats(emptyProgress(), '2026-07-25', 30).rate).toBeNull()
   })
 })

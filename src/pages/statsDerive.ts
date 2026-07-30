@@ -101,6 +101,37 @@ export function accuracyStats(days: DayPoint[]): AccuracyStats {
   return { average: reviewed === 0 ? null : correct / reviewed, best, worst, latest, ratedDays }
 }
 
+export interface Retention {
+  /** Grades on words that had already graduated — the only ones that test the schedule. */
+  reviewed: number
+  correct: number
+  /** null when the window predates the measurement, or contains no scheduled reviews at all. */
+  rate: number | null
+}
+
+/**
+ * True retention: of the scheduled reviews that came due, how many were
+ * remembered.
+ *
+ * This is the number that says whether the intervals are right, and it is
+ * deliberately **not** the same as the accuracy chart. That one plots every
+ * card including new words being learned, which on the real library ran
+ * 7 points lower than retention (90.8% against 97.8%) purely because each
+ * new word costs two learning-step grades on the way to graduating.
+ *
+ * Days recorded before reviewPhase existed contribute nothing rather than
+ * counting as zero — see maxOptional in lib/merge.ts.
+ */
+export function retentionStats(progress: Progress, today: string, days: number): Retention {
+  let reviewed = 0, correct = 0
+  for (let i = days - 1; i >= 0; i--) {
+    const s = progress.dailyStats[addDays(today, -i)]
+    reviewed += s?.reviewPhase ?? 0
+    correct += s?.reviewPhaseCorrect ?? 0
+  }
+  return { reviewed, correct, rate: reviewed === 0 ? null : correct / reviewed }
+}
+
 export interface ForecastDay { date: string; count: number }
 export interface DueForecast {
   /** days[0] is today and also absorbs everything overdue — that is the pile you actually face today. */

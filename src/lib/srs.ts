@@ -30,11 +30,38 @@ function fuzz(days: number, rng: () => number): number {
   return Math.min(MAX_INTERVAL_DAYS, Math.max(1, Math.round(days * factor)))
 }
 
+export const MIN_INTERVAL_MODIFIER = 0.5
+export const MAX_INTERVAL_MODIFIER = 3
+
+/** Undefined means "never configured", which must behave exactly as it did before the setting existed. Out-of-range values are clamped rather than rejected — this comes off a synced settings blob, and the read side never throws. */
+export function clampIntervalModifier(v: number | undefined): number {
+  if (typeof v !== 'number' || !Number.isFinite(v)) return 1
+  return Math.min(MAX_INTERVAL_MODIFIER, Math.max(MIN_INTERVAL_MODIFIER, v))
+}
+
+/**
+ * @param intervalModifier Multiplies every **review-phase** interval, the
+ * one knob SM-2 doesn't have. Ease only ever rises when you press "easy"
+ * (+0.15), so a word answered "good" every time stays at ×2.5 forever no
+ * matter how easy it actually is for you — the algorithm can punish but it
+ * can't learn that you are beating its target. Measured retention on the
+ * real library was 97.8% against the 90% that SM-2's defaults aim for,
+ * which is what this exists to close.
+ *
+ * Deliberately **not** applied to the graduating intervals: those are the
+ * output of the learning steps, and stretching a word's very first review
+ * out is a different decision from stretching the ones after it.
+ *
+ * Note that it compounds. At 1.3 the effective multiplier per review goes
+ * from 2.5 to 3.25, so five reviews in the interval is 1.3^5 ≈ 3.7 times
+ * longer, not 30%. Small numbers here move fast.
+ */
 export function gradeWord(
   prev: ProgressEntry | undefined,
   grade: Grade,
   now: Date,
   rng: () => number = Math.random,
+  intervalModifier = 1,
 ): ProgressEntry {
   const e = prev && prev.state !== 'new' ? { ...prev } : freshEntry(now)
   e.reps += 1
@@ -70,7 +97,10 @@ export function gradeWord(
     e.ease += 0.15
     next = e.intervalDays * e.ease * 1.3
   }
-  e.intervalDays = fuzz(Math.max(e.intervalDays + 1, Math.round(next)), rng)
+  // The modifier lands here, before the "must grow by at least a day" floor
+  // and the fuzz, so a modifier below 1 can still shorten an interval while
+  // never letting one stand still.
+  e.intervalDays = fuzz(Math.max(e.intervalDays + 1, Math.round(next * clampIntervalModifier(intervalModifier))), rng)
   e.due = addDays(today, e.intervalDays)
   return e
 }

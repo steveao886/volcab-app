@@ -1,4 +1,21 @@
-import type { Progress, SprintRecord } from '../types'
+import type { DailyStat, Progress, SprintRecord } from '../types'
+
+/**
+ * Merges one optional counter the same way as the required ones (higher
+ * wins), but **omits the key entirely when neither side has it**.
+ *
+ * Writing 0 instead would assert "no scheduled reviews happened that day"
+ * about a day recorded by a build that couldn't measure it — a claim the
+ * data doesn't support, and one the retention chart would then draw.
+ */
+function maxOptional(
+  key: 'reviewPhase' | 'reviewPhaseCorrect',
+  a: DailyStat,
+  b: DailyStat,
+): Partial<DailyStat> {
+  if (a[key] === undefined && b[key] === undefined) return {}
+  return { [key]: Math.max(a[key] ?? 0, b[key] ?? 0) }
+}
 
 /**
  * The sprint record with the higher score wins; **on a tie, the earlier date wins** — the
@@ -30,6 +47,13 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
       newLearned: Math.max(a.newLearned, b.newLearned),
       correct: Math.max(a.correct, b.correct),
       quizTaken: Math.max(a.quizTaken, b.quizTaken),
+      // **Every field of DailyStat has to be listed here.** This function
+      // rebuilds the entry from named fields rather than spreading, so
+      // anything it doesn't know about is silently dropped on every merge —
+      // a field could be written correctly all day and then vanish the
+      // first time two devices sync.
+      ...maxOptional('reviewPhase', a, b),
+      ...maxOptional('reviewPhaseCorrect', a, b),
     }
   }
 
