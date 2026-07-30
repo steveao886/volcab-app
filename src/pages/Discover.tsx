@@ -10,9 +10,6 @@ import { useApp } from '../state/store'
 import pool from '../data/suggestions.json'
 import './Discover.css'
 
-/** How many cards are on screen at once. A wall of two hundred is a chore, not a choice; ten is a sitting. */
-const BATCH = 10
-
 const FILTERS: { key: SuggestionKind | 'all'; label: string }[] = [
   { key: 'all', label: '全部' },
   { key: 'phrasal', label: KIND_LABEL.phrasal },
@@ -56,7 +53,13 @@ export function Discover() {
     return rankSuggestions(items).filter(s => !settled.has(s.id))
   }, [words, staging, progress.dismissed, settled])
 
-  const shown = (kind === 'all' ? remaining : remaining.filter(s => s.kind === kind)).slice(0, BATCH)
+  // Everything in the current filter, uncapped. This was briefly limited to
+  // ten cards on the theory that a long list is a chore — but the filter
+  // chips report the true count, so the page said 196 and drew 10, which
+  // reads as broken data rather than as a deliberate batch. A skimmable list
+  // is the whole point of the page; if it feels long, that is what the kind
+  // filter is for. 200 text cards cost nothing to render.
+  const shown = kind === 'all' ? remaining : remaining.filter(s => s.kind === kind)
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: remaining.length }
     for (const s of remaining) c[s.kind] = (c[s.kind] ?? 0) + 1
@@ -139,7 +142,7 @@ export function Discover() {
       )}
 
       <p className="faint discover-note">
-        还剩 <span className="num">{remaining.length}</span> 条待筛选。
+        以上是全部 <span className="num">{shown.length}</span> 条。
       </p>
     </Page>
   )
