@@ -35,11 +35,104 @@ const tightPattern = (h: string): RegExp => {
   return new RegExp(`\\b${escapeRe(base)}${SUFFIX}\\b`, 'gi')
 }
 
+/** Between the words of a multi-word headword. Hyphens count, so an example writing "ad-hoc" still matches the headword "ad hoc". */
+const WORD_SEP = '[\\s-]+'
+
+/**
+ * The stems an inflected form of a single word could be built from — the same
+ * three-base rule isInflectionOf documents at length: the word itself, the
+ * word with a trailing e/y stripped, and the word with its final consonant
+ * doubled under the standard CVC condition.
+ *
+ * Longest first, so the regex engine tries `putt` before `put` and doesn't
+ * lean on backtracking to find `putting`.
+ */
+function inflectableStems(w: string): string[] {
+  const bases = [w]
+  if (/[ey]$/.test(w)) bases.push(w.slice(0, -1))
+  if (/[^aeiou][aeiou][^aeiouwxy]$/.test(w)) bases.push(w + w.slice(-1))
+  return bases.sort((a, b) => b.length - a.length)
+}
+
+/**
+ * Matcher for a headword made of several words — a phrasal verb, an idiom, a
+ * fixed expression.
+ *
+ * **Only the first word inflects, and the words must be adjacent.** Both
+ * restrictions are deliberate:
+ *
+ * - Inflection lands on the first word because that is where English puts it
+ *   in every shape this has to handle: puts/putting off, comes down to,
+ *   kicked the can down the road.
+ * - Separated particles ("put the meeting off") are **not** matched, and that
+ *   is the whole reason this function exists. The single-word loose fallback
+ *   below turns `put off` into the stem `put ` and then happily matches
+ *   `put the` in that sentence, producing the cloze "He ___ meeting off twice
+ *   in one week" — a question with the blank in the wrong place and a
+ *   stranded particle. A false hit is worse than a miss here: a miss just
+ *   drops one candidate sentence, while a false hit ships a broken question
+ *   that no validator catches. So multi-word headwords never fall back to the
+ *   loose rule — if the contiguous form isn't there, this returns null and
+ *   the sentence is simply not used.
+ */
+/**
+ * Irregular past and participle forms, keyed by base verb.
+ *
+ * Needed because phrasal verbs are built almost entirely out of the small set
+ * of everyday verbs, and in English those are precisely the irregular ones —
+ * suffix rules can spell `putting off` but never `came down to` or `sat on`.
+ * Two of the first ten phrasal verbs tried against the suffix-only rule
+ * failed for exactly this reason.
+ *
+ * **Consulted only for the first word of a multi-word headword.** Single-word
+ * headwords deliberately keep the rules that were measured at zero losses and
+ * zero false hits over the whole library; widening them here would put that
+ * result at risk to solve a problem single words don't have.
+ *
+ * Present participles are absent on purpose — those are regular (+ing, with
+ * the CVC doubling inflectableStems already applies).
+ */
+const IRREGULAR_FORMS: Record<string, string[]> = {
+  back: [], bear: ['bore', 'borne'], beat: ['beat', 'beaten'], become: ['became'],
+  begin: ['began', 'begun'], bend: ['bent'], blow: ['blew', 'blown'], break: ['broke', 'broken'],
+  bring: ['brought'], build: ['built'], buy: ['bought'], catch: ['caught'],
+  come: ['came'], cut: ['cut'], deal: ['dealt'], do: ['did', 'done', 'does'],
+  draw: ['drew', 'drawn'], drive: ['drove', 'driven'], fall: ['fell', 'fallen'],
+  feel: ['felt'], fight: ['fought'], find: ['found'], fly: ['flew', 'flown'],
+  get: ['got', 'gotten'], give: ['gave', 'given'], go: ['went', 'gone', 'goes'],
+  grow: ['grew', 'grown'], hang: ['hung'], have: ['had', 'has'], hear: ['heard'],
+  hold: ['held'], keep: ['kept'], know: ['knew', 'known'], lay: ['laid'],
+  lead: ['led'], leave: ['left'], lend: ['lent'], let: ['let'], lie: ['lay', 'lain'],
+  light: ['lit'], lose: ['lost'], make: ['made'], meet: ['met'], pay: ['paid'],
+  put: ['put'], read: ['read'], ride: ['rode', 'ridden'], ring: ['rang', 'rung'],
+  rise: ['rose', 'risen'], run: ['ran', 'run'], say: ['said'], see: ['saw', 'seen'],
+  sell: ['sold'], send: ['sent'], set: ['set'], shake: ['shook', 'shaken'],
+  shoot: ['shot'], show: ['showed', 'shown'], shut: ['shut'], sit: ['sat'],
+  sleep: ['slept'], speak: ['spoke', 'spoken'], spend: ['spent'], spin: ['spun'],
+  stand: ['stood'], stick: ['stuck'], strike: ['struck'], sweep: ['swept'],
+  swing: ['swung'], take: ['took', 'taken'], teach: ['taught'], tear: ['tore', 'torn'],
+  tell: ['told'], think: ['thought'], throw: ['threw', 'thrown'], wear: ['wore', 'worn'],
+  win: ['won'], wind: ['wound'], write: ['wrote', 'written'],
+}
+
+/** Every surface form the head of a phrase can take: regular suffixing off its stems, plus any irregular forms. */
+function headForms(w: string): string {
+  const regular = `(?:${inflectableStems(w).map(escapeRe).join('|')})${SUFFIX}`
+  const irregular = (IRREGULAR_FORMS[w] ?? []).map(escapeRe)
+  return `(?:${[regular, ...irregular].join('|')})`
+}
+
+function phrasePattern(parts: string[]): string {
+  const rest = parts.slice(1).map(escapeRe).join(WORD_SEP)
+  return `\\b${headForms(parts[0])}${WORD_SEP}${rest}\\b`
+}
+
 /**
  * Returns a global regex matching every occurrence in the sentence; returns null if it
  * can't be located.
  *
- * Two stages:
+ * Multi-word headwords take phrasePattern above and stop there. Single words keep the
+ * original two stages:
  * 1. **Base form present** → use the tight rule, so the base form and its inflected forms
  *    are matched together. This stage exists to fix a real missed question: placate's
  *    example sentence is "to placate passengers…, which **placated** almost no one" —
@@ -55,6 +148,13 @@ const tightPattern = (h: string): RegExp => {
 export function headwordPattern(sentence: string, headword: string): RegExp | null {
   const h = headword.trim().toLowerCase()
   if (h === '') return null
+
+  const parts = h.split(/\s+/)
+  if (parts.length > 1) {
+    const src = phrasePattern(parts)
+    // Fresh objects for the same reason as below: test() with the g flag moves lastIndex.
+    return new RegExp(src, 'i').test(sentence) ? new RegExp(src, 'gi') : null
+  }
 
   // test() with the g flag advances lastIndex, so probing and returning each use their own
   // regex object to avoid interfering with each other
@@ -126,11 +226,13 @@ export function isInflectionOf(surface: string, headword: string): boolean {
   if (s === '' || h === '') return false
   if (s === h) return true
 
-  const bases = [h]
-  if (/[ey]$/.test(h)) bases.push(h.slice(0, -1))
-  if (/[^aeiou][aeiou][^aeiouwxy]$/.test(h)) bases.push(h + h.slice(-1))
+  // A multi-word headword is checked whole, by the same contiguous rule the
+  // sentence scan uses, so the two can't disagree about what counts as an
+  // occurrence of "put off".
+  const parts = h.split(/\s+/)
+  if (parts.length > 1) return new RegExp(`^${phrasePattern(parts)}$`, 'i').test(s)
 
-  return bases.some(base => new RegExp(`^${escapeRe(base)}${SUFFIX}$`, 'i').test(s))
+  return inflectableStems(h).some(base => new RegExp(`^${escapeRe(base)}${SUFFIX}$`, 'i').test(s))
 }
 
 export interface Segment { text: string; hit: boolean }

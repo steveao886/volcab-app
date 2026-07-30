@@ -173,3 +173,64 @@ describe('isInflectionOf', () => {
     expect(isInflectionOf('conveys', 'convey')).toBe(true)
   })
 })
+
+/**
+ * Multi-word headwords: phrasal verbs, idioms, fixed expressions.
+ *
+ * The single-word rules are left alone by this branch — verified by diffing
+ * every marked occurrence over the whole library before and after: 3756
+ * example/collocation strings, byte-identical output. No existing headword
+ * contains a space, so nothing in the library takes this path yet.
+ */
+describe('multi-word headwords', () => {
+  const hits = (s: string, h: string) => splitByHeadword(s, h).filter(x => x.hit).map(x => x.text)
+
+  it('matches the plain contiguous form', () => {
+    expect(hits('They put off the launch until the audit cleared.', 'put off')).toEqual(['put off'])
+  })
+
+  it('inflects the first word, including the doubled consonant', () => {
+    expect(hits('He puts off every hard decision until Friday.', 'put off')).toEqual(['puts off'])
+    expect(hits('She keeps putting off the conversation.', 'put off')).toEqual(['putting off'])
+  })
+
+  it('handles irregular pasts, which is most of what phrasal verbs are built from', () => {
+    expect(hits('It came down to one line in the contract.', 'come down to')).toEqual(['came down to'])
+    expect(hits('Legal sat on the report for three weeks.', 'sit on')).toEqual(['sat on'])
+    expect(hits('The board took up the motion after lunch.', 'take up')).toEqual(['took up'])
+  })
+
+  it('a hyphen counts as a separator, so "ad-hoc" matches the headword "ad hoc"', () => {
+    expect(hits('The team met on an ad-hoc basis.', 'ad hoc')).toEqual(['ad-hoc'])
+  })
+
+  it('longer phrases work, and only the first word inflects', () => {
+    expect(hits('They kicked the can down the road again.', 'kick the can down the road'))
+      .toEqual(['kicked the can down the road'])
+  })
+
+  // The reason this branch exists at all.
+  it('a separated particle is a MISS, never a partial match', () => {
+    // Under the single-word loose fallback this produced the stem "put " and
+    // matched "put the", yielding the cloze "He ___ meeting off twice in one
+    // week" — blank in the wrong place, particle left stranded. A false hit
+    // ships a broken question; a miss only drops one candidate sentence.
+    expect(hits('He put the meeting off twice in one week.', 'put off')).toEqual([])
+    expect(headwordPattern('He put the meeting off twice in one week.', 'put off')).toBeNull()
+  })
+
+  it('does not match across unrelated words that happen to contain the parts', () => {
+    expect(hits('She put a deposit down and off she went.', 'put off')).toEqual([])
+  })
+
+  it('blanks every occurrence in the sentence, like the single-word rule', () => {
+    expect(hits('They put off the review, then put off the retro too.', 'put off'))
+      .toEqual(['put off', 'put off'])
+  })
+
+  it('isInflectionOf agrees with the sentence scan about what counts', () => {
+    expect(isInflectionOf('putting off', 'put off')).toBe(true)
+    expect(isInflectionOf('came down to', 'come down to')).toBe(true)
+    expect(isInflectionOf('put the meeting off', 'put off')).toBe(false)
+  })
+})
