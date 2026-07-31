@@ -26,6 +26,12 @@ const KEYS = {
   // done on another device.
   consolidatedOn: 'volcab.consolidatedOn',
   lapseDrilledOn: 'volcab.lapseDrilledOn',
+  // The day the interval modifier was last changed. Retention measured
+  // before that describes the old setting, so the tuning advice reads only
+  // the days after it — see retentionWindowDays. Local for the same reason
+  // as the two above: a second device re-offering the advice costs far less
+  // than a synced field, and being wrong here only delays a suggestion.
+  intervalTunedOn: 'volcab.intervalTunedOn',
 } as const
 
 export type StorageKey = keyof typeof KEYS

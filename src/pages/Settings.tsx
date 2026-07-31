@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Field } from '../components/Field'
@@ -6,6 +7,8 @@ import { Page } from '../components/Page'
 import { TextInput } from '../components/TextInput'
 import { isSoundEnabled } from '../lib/sound'
 import { clampIntervalModifier, MAX_INTERVAL_MODIFIER, MIN_INTERVAL_MODIFIER, todayStr } from '../lib/srs'
+import { loadInputs, recommendIntervalModifier, recommendNewPerDay, retentionWindowDays } from '../lib/tuning'
+import { dailySeries, dueForecast, retentionStats } from './statsDerive'
 import { storage } from '../lib/storage'
 import { pendingOps, pendingStaging } from '../state/session'
 import { useApp } from '../state/store'
@@ -20,6 +23,13 @@ import './Settings.css'
  * number.
  */
 const APP_VERSION = '开发预览版'
+
+/** Windows the advice is computed over. Retention needs a long one to gather
+ *  enough scheduled reviews; daily load needs a short one, because the point
+ *  is what the user is doing *now*, not what they managed a month ago. */
+const RETENTION_WINDOW_DAYS = 30
+const LOAD_WINDOW_DAYS = 14
+const FORECAST_DAYS = 7
 
 const NEW_PER_DAY_MIN = 1
 const NEW_PER_DAY_MAX = 50
@@ -61,9 +71,40 @@ function hasUnsyncedChanges(): boolean {
     || pendingStaging().length > 0   // Same reasoning for staged words awaiting completion: logout() counts these too, and the two must stay consistent
 }
 
+const pct = (r: number) => Math.round(r * 100)
+const round1 = (n: number) => Math.round(n * 10) / 10
+
+interface AdviceProps {
+  /** The sentence explaining what the numbers say. */
+  children: ReactNode
+  /** Present only when there is a concrete value to take; absent advice is still worth showing. */
+  onApply?: () => void
+}
+
+/**
+ * The advice line under a setting.
+ *
+ * Always states the numbers it reasoned from, never just a verdict. The
+ * recommendation is an estimate off a few weeks of history and the user is
+ * the one who has to live with the schedule — "retention 97% over 317
+ * reviews, try 1.3" can be argued with; "set it to 1.3" cannot.
+ */
+function Advice({ children, onApply }: AdviceProps) {
+  return (
+    <p className="settings-advice">
+      <span className="settings-advice__text">{children}</span>
+      {onApply && (
+        <Button variant="ghost" size="sm" onClick={onApply}>
+          采用
+        </Button>
+      )}
+    </p>
+  )
+}
+
 /** Task 21 implementation: daily new-word count, account info & sign out, export backup, app version. */
 export function Settings() {
-  const { owner, progress, updateSettings, logout, exportAll } = useApp()
+  const { owner, words, progress, updateSettings, logout, exportAll } = useApp()
 
   const [newPerDayInput, setNewPerDayInput] = useState(String(progress.settings.newPerDay))
   const currentModifier = clampIntervalModifier(progress.settings.intervalModifier)
@@ -89,13 +130,42 @@ export function Settings() {
     setModifierInput(clampIntervalModifier(progress.settings.intervalModifier).toFixed(1))
   }, [progress.settings.intervalModifier])
 
+  // Both settings are argued from data the app already keeps, so the page can
+  // say what it thinks rather than leaving the user to guess. Recomputed only
+  // when the underlying data moves — useApp()'s value is a new object on every
+  // provider render.
+  const { modifierAdvice, newPerDayAdvice } = useMemo(() => {
+    const today = todayStr(new Date())
+    // Only days since the modifier last moved count as evidence about it.
+    const window = retentionWindowDays(storage.get<string>('intervalTunedOn'), today, RETENTION_WINDOW_DAYS)
+    const retention = retentionStats(progress, today, window)
+    const forecast = dueForecast(words, progress, today, FORECAST_DAYS)
+    return {
+      modifierAdvice: recommendIntervalModifier(retention.correct, retention.reviewed, progress.settings.intervalModifier),
+      newPerDayAdvice: recommendNewPerDay(
+        progress.settings.newPerDay,
+        loadInputs(words, progress, dailySeries(progress, today, LOAD_WINDOW_DAYS), forecast.days.map(d => d.count)),
+      ),
+    }
+  }, [words, progress])
+
+  /** Every path that changes the modifier goes through here, so the evidence window is always reset with it. */
+  const setModifier = useCallback((v: number) => {
+    setModifierInput(v.toFixed(1))
+    storage.set('intervalTunedOn', todayStr(new Date()))
+    updateSettings({ ...progress.settings, intervalModifier: v })
+  }, [progress.settings, updateSettings])
+
   const commitModifier = useCallback(() => {
     const clamped = parseModifier(modifierInput, currentModifier)
     setModifierInput(clamped.toFixed(1))
-    if (clamped !== currentModifier) {
-      updateSettings({ ...progress.settings, intervalModifier: clamped })
-    }
-  }, [modifierInput, currentModifier, progress.settings, updateSettings])
+    if (clamped !== currentModifier) setModifier(clamped)
+  }, [modifierInput, currentModifier, setModifier])
+
+  const applyNewPerDay = useCallback((v: number) => {
+    setNewPerDayInput(String(v))
+    updateSettings({ ...progress.settings, newPerDay: v })
+  }, [progress.settings, updateSettings])
 
   const commitNewPerDay = useCallback(() => {
     const clamped = clampNewPerDay(newPerDayInput, progress.settings.newPerDay)
@@ -179,6 +249,28 @@ export function Settings() {
           />
         </Field>
 
+        {newPerDayAdvice.kind === 'insufficient' && (
+          <Advice>
+            学满 <span className="num">{newPerDayAdvice.needed}</span> 天后给出建议(目前{' '}
+            <span className="num">{newPerDayAdvice.activeDays}</span> 天)。
+          </Advice>
+        )}
+        {newPerDayAdvice.kind === 'exhausted' && <Advice>词库里已经没有没学过的词了。</Advice>}
+        {newPerDayAdvice.kind === 'ok' && (
+          <Advice>
+            按这个设置每天约 <span className="num">{Math.round(newPerDayAdvice.projected)}</span> 张卡,和你近期实际每天{' '}
+            <span className="num">{Math.round(newPerDayAdvice.sustained)}</span> 张接近,不用调。
+          </Advice>
+        )}
+        {newPerDayAdvice.kind === 'adjust' && (
+          <Advice onApply={() => applyNewPerDay(newPerDayAdvice.to)}>
+            按这个设置每天约 <span className="num">{Math.round(newPerDayAdvice.projected)}</span> 张卡,而你近期实际每天{' '}
+            <span className="num">{Math.round(newPerDayAdvice.sustained)}</span> 张 ——{' '}
+            {newPerDayAdvice.to < newPerDayAdvice.from ? '有点吃不下' : '还有余力'},建议改成{' '}
+            <span className="num">{newPerDayAdvice.to}</span>。
+          </Advice>
+        )}
+
         {/* Sits with the new-word count because both decide how much work
             tomorrow holds. The hint carries the target number, because
             "1.3" means nothing without knowing what you are aiming at —
@@ -205,6 +297,27 @@ export function Settings() {
             }}
           />
         </Field>
+
+        {modifierAdvice.kind === 'insufficient' && (
+          <Advice>
+            到期复习满 <span className="num">{modifierAdvice.needed}</span> 次后给出建议(目前{' '}
+            <span className="num">{modifierAdvice.reviewed}</span> 次)。只统计已毕业词的复习,新词的学习步骤不算。
+          </Advice>
+        )}
+        {modifierAdvice.kind === 'ok' && (
+          <Advice>
+            近 {RETENTION_WINDOW_DAYS} 天留存率 <span className="num">{pct(modifierAdvice.retention)}%</span>(
+            <span className="num">{modifierAdvice.reviewed}</span> 次到期复习),已经贴着 90% 的目标,不用调。
+          </Advice>
+        )}
+        {modifierAdvice.kind === 'adjust' && (
+          <Advice onApply={() => setModifier(modifierAdvice.to)}>
+            近 {RETENTION_WINDOW_DAYS} 天留存率 <span className="num">{pct(modifierAdvice.retention)}%</span>(
+            <span className="num">{modifierAdvice.reviewed}</span> 次到期复习),
+            {modifierAdvice.retention > 0.9 ? '高于 90% 的目标,间隔可以再放长' : '低于 90% 的目标,间隔该收紧'} ——
+            建议 <span className="num">{round1(modifierAdvice.to)}</span>。
+          </Advice>
+        )}
       </Card>
 
       <Card>

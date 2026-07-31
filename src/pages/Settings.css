@@ -87,3 +87,25 @@
   color: var(--text-faint);
   text-align: center;
 }
+
+/* --- Advice under a setting ------------------------------------------------
+   Reads as a footnote to the field it belongs to, not as a second control:
+   the numbers matter more than the verdict, so the text carries the weight
+   and the "采用" button stays a ghost. Wraps under the text on a narrow
+   screen rather than squeezing the sentence. */
+
+.settings-advice {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: calc(var(--sp-2) * -1);
+  margin-bottom: var(--sp-4);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-snug);
+  color: var(--text-muted);
+}
+
+.settings-advice__text {
+  flex: 1 1 16ch;
+}

@@ -74,7 +74,7 @@ export function Stats() {
 
   if (!hasHistory) {
     return (
-      <Page eyebrow="Stats" title="学习数据" back="/">
+      <Page eyebrow="Stats" title="学习数据">
         <div className="empty-state">
           <p className="empty-state__title">还没有学习记录</p>
           <p className="empty-state__hint">复习几个词之后,这里就会有数据。</p>
@@ -96,7 +96,7 @@ export function Stats() {
   const forecastMax = Math.max(1, ...forecast.days.map(d => d.count))
 
   return (
-    <Page eyebrow="Stats" title="学习数据" back="/">
+    <Page eyebrow="Stats" title="学习数据">
       <Card>
         <p className="section-title stats-section-title">近 {WINDOW_DAYS} 天复习量</p>
         <div className="stats-headline">

@@ -25,6 +25,15 @@ const PATHS = {
       <path d="M9 3v14" />
     </>
   ),
+  /* Stats: three bars of different heights on a baseline */
+  stats: (
+    <>
+      <path d="M3.5 20.5h17" />
+      <path d="M7 20.5V13" />
+      <path d="M12 20.5V6.5" />
+      <path d="M17 20.5v-4.5" />
+    </>
+  ),
   /* Quiz: two rows of multiple choice, first row checked */
   quiz: (
     <>
