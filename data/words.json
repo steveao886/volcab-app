@@ -21805,43 +21805,6 @@
       "addedAt": "2026-07-30"
     },
     {
-      "id": "case-in-point",
-      "headword": "case in point",
-      "phonetic": "/ˌkeɪs ɪn ˈpɔɪnt/",
-      "meanings": [
-        {
-          "pos": "n.",
-          "en": "an example that directly illustrates the general claim just made",
-          "zh": "恰好说明这一点的例子;绝佳的例证"
-        }
-      ],
-      "examples": [
-        "Companies love to say they value long-term thinking; the layoffs three weeks after that memo are a case in point.",
-        "Cheap flights hide their real cost, and the seat-selection fee that doubled my ticket price is a case in point.",
-        "Old buildings often outlast their replacements: the 1890s market hall, still standing beside a crumbling 2005 annex, is one case in point.",
-        "She listed three cases in point before the committee had even finished defending the policy, and the room went quiet.",
-        "Apps demand far more data than they need. A case in point: the menu reader that wants your location to open a PDF."
-      ],
-      "synonyms": [
-        "illustration",
-        "instance",
-        "prime example"
-      ],
-      "antonyms": [
-        "counterexample"
-      ],
-      "collocations": [
-        "is a case in point",
-        "a recent case in point",
-        "cite a case in point"
-      ],
-      "relatedForms": [],
-      "usageScore": 7,
-      "etymology": "in point(旧义:切题的) → 正好切题的那个例子",
-      "sourceNote": "manual",
-      "addedAt": "2026-07-30"
-    },
-    {
       "id": "caveat",
       "headword": "caveat",
       "phonetic": "/ˈkæviæt/",
