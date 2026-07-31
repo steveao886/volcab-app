@@ -74,13 +74,6 @@ function hasUnsyncedChanges(): boolean {
 const pct = (r: number) => Math.round(r * 100)
 const round1 = (n: number) => Math.round(n * 10) / 10
 
-interface AdviceProps {
-  /** The sentence explaining what the numbers say. */
-  children: ReactNode
-  /** Present only when there is a concrete value to take; absent advice is still worth showing. */
-  onApply?: () => void
-}
-
 /**
  * The advice line under a setting.
  *
@@ -88,18 +81,15 @@ interface AdviceProps {
  * recommendation is an estimate off a few weeks of history and the user is
  * the one who has to live with the schedule — "retention 97% over 317
  * reviews, try 1.3" can be argued with; "set it to 1.3" cannot.
+ *
+ * **No apply button.** There was one, and it only appeared when there
+ * happened to be a value to take — so one field had it and the other
+ * didn't, which reads as a bug rather than as a state. The input it would
+ * have filled is directly above, and typing 1.3 is not the hard part of
+ * this decision.
  */
-function Advice({ children, onApply }: AdviceProps) {
-  return (
-    <p className="settings-advice">
-      <span className="settings-advice__text">{children}</span>
-      {onApply && (
-        <Button variant="ghost" size="sm" onClick={onApply}>
-          采用
-        </Button>
-      )}
-    </p>
-  )
+function Advice({ children }: { children: ReactNode }) {
+  return <p className="settings-advice">{children}</p>
 }
 
 /** Task 21 implementation: daily new-word count, account info & sign out, export backup, app version. */
@@ -161,11 +151,6 @@ export function Settings() {
     setModifierInput(clamped.toFixed(1))
     if (clamped !== currentModifier) setModifier(clamped)
   }, [modifierInput, currentModifier, setModifier])
-
-  const applyNewPerDay = useCallback((v: number) => {
-    setNewPerDayInput(String(v))
-    updateSettings({ ...progress.settings, newPerDay: v })
-  }, [progress.settings, updateSettings])
 
   const commitNewPerDay = useCallback(() => {
     const clamped = clampNewPerDay(newPerDayInput, progress.settings.newPerDay)
@@ -263,7 +248,7 @@ export function Settings() {
           </Advice>
         )}
         {newPerDayAdvice.kind === 'adjust' && (
-          <Advice onApply={() => applyNewPerDay(newPerDayAdvice.to)}>
+          <Advice>
             按这个设置每天约 <span className="num">{Math.round(newPerDayAdvice.projected)}</span> 张卡,而你近期实际每天{' '}
             <span className="num">{Math.round(newPerDayAdvice.sustained)}</span> 张 ——{' '}
             {newPerDayAdvice.to < newPerDayAdvice.from ? '有点吃不下' : '还有余力'},建议改成{' '}
@@ -311,7 +296,7 @@ export function Settings() {
           </Advice>
         )}
         {modifierAdvice.kind === 'adjust' && (
-          <Advice onApply={() => setModifier(modifierAdvice.to)}>
+          <Advice>
             近 {RETENTION_WINDOW_DAYS} 天留存率 <span className="num">{pct(modifierAdvice.retention)}%</span>(
             <span className="num">{modifierAdvice.reviewed}</span> 次到期复习),
             {modifierAdvice.retention > 0.9 ? '高于 90% 的目标,间隔可以再放长' : '低于 90% 的目标,间隔该收紧'} ——

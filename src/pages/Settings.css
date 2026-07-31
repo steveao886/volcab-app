@@ -89,23 +89,19 @@
 }
 
 /* --- Advice under a setting ------------------------------------------------
-   Reads as a footnote to the field it belongs to, not as a second control:
-   the numbers matter more than the verdict, so the text carries the weight
-   and the "采用" button stays a ghost. Wraps under the text on a narrow
-   screen rather than squeezing the sentence. */
+   Reads as a footnote to the field it belongs to, not as a second control.
+
+   The top margin matches .field's own grid gap so the advice sits the same
+   distance below the hint as the hint sits below the input — it belongs to
+   that field, and should look like it. It was briefly a *negative* margin,
+   meant to snug the two together; .field__hint carries no bottom margin, so
+   that pulled the advice 8px up into the hint's last line and the two
+   overlapped outright. */
 
 .settings-advice {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: var(--sp-2);
-  margin-top: calc(var(--sp-2) * -1);
-  margin-bottom: var(--sp-4);
+  margin-top: var(--sp-2);
+  margin-bottom: var(--sp-5);
   font-size: var(--fs-xs);
   line-height: var(--lh-snug);
   color: var(--text-muted);
-}
-
-.settings-advice__text {
-  flex: 1 1 16ch;
 }
