@@ -52,6 +52,13 @@ export function ReviewCardBack({ word }: { word: Word }) {
             <p className="review-meaning__head">
               {showIndex && <span className="review-meaning__idx num faint">{i + 1}</span>}
               <span className="pos">{m.pos}</span>
+              {/* Only present on a heteronym: the phonetic above the meanings
+                  is the word-level one and cannot be true of both senses. */}
+              {m.phonetic !== undefined && (
+                <span className="ipa" lang="en">
+                  {m.phonetic}
+                </span>
+              )}
               {/* The share value uses .faint, a marginal note rather than
                   the protagonist: the first thing seen after flipping
                   should be the English meaning. The data layer already

@@ -139,6 +139,14 @@ export function WordDetail() {
                   {/* Part of speech and meaning share share a row, presented consistently with the back of the review card */}
                   <p className="worddetail-meaning__head">
                     <span className="pos">{m.pos}</span>
+                  {/* Only present on a heteronym, where the word-level
+                      phonetic cannot be true of both senses — presage is
+                      /prɪˈseɪdʒ/ as a verb and /ˈprɛsɪdʒ/ as a noun. */}
+                  {m.phonetic !== undefined && (
+                    <span className="ipa" lang="en">
+                      {m.phonetic}
+                    </span>
+                  )}
                     {m.share !== undefined && (
                       <span className="num faint worddetail-meaning__share">{m.share}%</span>
                     )}

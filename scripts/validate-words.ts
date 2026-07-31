@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { ETYMOLOGY_MAX } from '../src/lib/etymology.ts'
+import { heteronymRisk } from '../src/lib/heteronym.ts'
 import { isShareOrdered, validateShares } from '../src/lib/senseShare.ts'
 
 const file = process.argv[2] ?? 'data/words.json'
@@ -26,6 +27,29 @@ for (const w of data.words) {
   if (!Array.isArray(w.meanings) || w.meanings.length === 0) errors.push(`${ctx}: meanings is empty`)
   for (const m of w.meanings ?? []) {
     if (!m.pos || !m.en || !m.zh) errors.push(`${ctx}: meaning missing pos/en/zh`)
+    // Same shape rule as the word-level field. Absent is the normal case.
+    if (m.phonetic !== undefined && !/^\/.+\/$/.test(m.phonetic)) {
+      errors.push(`${ctx}: meaning phonetic must look like /.../, got ${JSON.stringify(m.phonetic)}`)
+    }
+  }
+
+  // A heteronym cannot be described by one pronunciation, and the omission is
+  // invisible on inspection: `record` with /rɪˈkɔːrd/ looks like a finished
+  // entry whether or not the noun sense is also in it. So the write side asks,
+  // rather than letting the wrong half get recorded silently. See
+  // lib/heteronym.ts for why this is a curated list plus one systematic rule
+  // and not a guess from part of speech.
+  if (Array.isArray(w.meanings)) {
+    const reason = heteronymRisk(w.headword ?? '', w.meanings.map((m: { pos: string }) => m.pos))
+    if (reason !== null && !w.meanings.some((m: { phonetic?: string }) => m.phonetic !== undefined)) {
+      const why = reason === 'ate-alternation'
+        ? 'an -ate word used as both a verb and something else takes /-eɪt/ as the verb and /-ət/ otherwise'
+        : 'this headword is pronounced differently depending on the sense'
+      errors.push(
+        `${ctx}: ${why}, but every meaning shares the single word-level phonetic ${JSON.stringify(w.phonetic)}. `
+        + 'Give the sense that differs its own `phonetic`. If the two senses really do sound alike, take the word off KNOWN in src/lib/heteronym.ts and say why.',
+      )
+    }
   }
   // Sense share: the rule shares one implementation (src/lib/senseShare.ts)
   // with both entry forms, so the script and the App don't each write their

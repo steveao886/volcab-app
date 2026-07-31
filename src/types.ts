@@ -21,6 +21,18 @@ export interface Meaning {
    * judged bad data and rejected from the merge. See isMeaning in sync.ts.
    */
   share?: number
+  /**
+   * Pronunciation for this sense specifically, when the word is a heteronym
+   * and `Word.phonetic` cannot cover it — `presage` is /prɪˈseɪdʒ/ as a verb
+   * and /ˈpresɪdʒ/ as a noun.
+   *
+   * Absent on almost every meaning, and that absence is the normal case, not
+   * missing data: one pronunciation is the truth for all but a handful of
+   * words. The write side decides when it is required (see heteronymRisk in
+   * lib/heteronym.ts, enforced by validate-words); the read side simply
+   * falls back to the word-level phonetic.
+   */
+  phonetic?: string
 }
 
 /** Related forms sharing the same root: not entered as separate words, but shown on the word detail page to aid remembering them as a family. */

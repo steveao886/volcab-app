@@ -2538,13 +2538,15 @@
           "pos": "v.",
           "en": "to be a sign or warning that something, especially something bad, will happen",
           "zh": "预示;预兆(尤指不好的事)",
-          "share": 70
+          "share": 70,
+          "phonetic": "/prɪˈseɪdʒ/"
         },
         {
           "pos": "n.",
           "en": "an omen or portent",
           "zh": "预兆;征兆",
-          "share": 30
+          "share": 30,
+          "phonetic": "/ˈprɛsɪdʒ/"
         }
       ],
       "examples": [
@@ -9159,13 +9161,15 @@
           "pos": "v.",
           "en": "(typesetting) to start a line of text further from the margin than the rest of the paragraph",
           "zh": "(排版)缩进;使缩排",
-          "share": 90
+          "share": 90,
+          "phonetic": "/ɪnˈdɛnt/"
         },
         {
           "pos": "n.",
           "en": "(chiefly British/business) an official order for goods, especially placed with a foreign supplier",
           "zh": "(贸易/采购)订货单;订购单",
-          "share": 10
+          "share": 10,
+          "phonetic": "/ˈɪndɛnt/"
         }
       ],
       "examples": [
@@ -10006,13 +10010,15 @@
           "pos": "v.",
           "en": "to make physically hard, or to make emotionally hardened and unfeeling through repeated exposure",
           "zh": "使变硬;使冷酷无情",
-          "share": 70
+          "share": 70,
+          "phonetic": "/ˈɪndʊreɪt/"
         },
         {
           "pos": "adj.",
           "en": "physically hardened, or emotionally hardened and unfeeling",
           "zh": "(身体或情感上)变硬的;麻木不仁的",
-          "share": 30
+          "share": 30,
+          "phonetic": "/ˈɪndʊrət/"
         }
       ],
       "examples": [
