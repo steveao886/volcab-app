@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildPassageQuestion, DUE_WEIGHT, LEARNED_WEIGHT, MAX_BLANKS, parsePassage, parseSentence, pickDistractors, pickPassage, pushRecent, RECENT_LIMIT, RECENT_PENALTY, scoreQuestion, selectBlanks } from './passage'
+import { buildPassageQuestion, DUE_WEIGHT, LEARNED_WEIGHT, MAX_BLANKS, parsePassage, parseSentence, pickDistractors, pickPassage, pushRecent, RECENT_LIMIT, recentWindow, scoreQuestion, selectBlanks } from './passage'
 import type { Passage } from './passage'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
@@ -383,6 +383,39 @@ describe('pickPassage', () => {
     expect(pickPassage([p1, p2], words, progress, TODAY, ['p1'], rng)?.passage.id).toBe('p2')
   })
 
+  it('a low-coverage passage still gets its turn — the old flat penalty could never outrun the score spread', () => {
+    // p1 has three due blanks (9 points), p2 one due and two learned (5).
+    // Under the penalty this gap was unbridgeable whenever it exceeded 5, so
+    // the high-coverage passage repeated forever. Excluding it forces the turn.
+    const progress = progressWith({
+      a: TODAY, b: TODAY, c: TODAY,
+      d: TODAY, e: '2099-01-01', f: '2099-01-01',
+    })
+    expect(pickPassage([p1, p2], words, progress, TODAY, ['p1'], rng)?.passage.id).toBe('p2')
+  })
+
+  it('rotates through every buildable passage instead of cycling a favoured few', () => {
+    const progress = progressWith({
+      a: TODAY, b: TODAY, c: TODAY,
+      d: '2099-01-01', e: '2099-01-01', f: '2099-01-01',   // p2 scores far lower, permanently
+    })
+    const seen: string[] = []
+    let recent: string[] = []
+    for (let i = 0; i < 4; i++) {
+      const id = pickPassage([p1, p2], words, progress, TODAY, recent, rng)!.passage.id
+      seen.push(id)
+      recent = pushRecent(recent, id)
+    }
+    expect(seen).toEqual(['p1', 'p2', 'p1', 'p2'])
+  })
+
+  it('repeats rather than showing nothing when every fresh passage is unbuildable', () => {
+    // p2's words are all unlearned, so it cannot be built; p1 is recent. A
+    // repeat is still better than the empty state.
+    const progress = progressWith({ a: TODAY, b: TODAY, c: TODAY })
+    expect(pickPassage([p1, p2], words, progress, TODAY, ['p1'], rng)?.passage.id).toBe('p1')
+  })
+
   it('returns null when no passage can produce a question', () => {
     const progress = progressWith({ a: TODAY })  // each passage has at most one blank available
     expect(pickPassage([p1, p2], words, progress, TODAY, [], rng)).toBeNull()
@@ -424,22 +457,16 @@ describe('scoreQuestion', () => {
   const twoDue = progressWith({ a: TODAY, b: TODAY, c: '2099-01-01' })
 
   it('due words are weighted higher than learned-but-not-due words — this is a review tool first, reading material second', () => {
-    expect(scoreQuestion(build(threeDue), threeDue, TODAY, [])).toBe(DUE_WEIGHT * 3)
-    expect(scoreQuestion(build(twoDue), twoDue, TODAY, [])).toBe(DUE_WEIGHT * 2 + LEARNED_WEIGHT)
+    expect(scoreQuestion(build(threeDue), threeDue, TODAY)).toBe(DUE_WEIGHT * 3)
+    expect(scoreQuestion(build(twoDue), twoDue, TODAY)).toBe(DUE_WEIGHT * 2 + LEARNED_WEIGHT)
     expect(DUE_WEIGHT).toBeGreaterThan(LEARNED_WEIGHT)
   })
 
-  it('the recently-done penalty outweighs "one more due word" — better to switch to a passage with slightly worse coverage', () => {
-    // one extra due word is only worth DUE_WEIGHT - LEARNED_WEIGHT points, the penalty must outweigh it
-    expect(RECENT_PENALTY).toBeGreaterThan(DUE_WEIGHT - LEARNED_WEIGHT)
-    const recent = scoreQuestion(build(threeDue), threeDue, TODAY, ['p1'])
-    const fresh = scoreQuestion(build(twoDue), twoDue, TODAY, [])
-    expect(recent).toBeLessThan(fresh)
-  })
-
-  it('no penalty when a passage is not in the recent list', () => {
-    expect(scoreQuestion(build(threeDue), threeDue, TODAY, ['other']))
-      .toBe(scoreQuestion(build(threeDue), threeDue, TODAY, []))
+  it('recency is not part of the score — pickPassage filters on it instead', () => {
+    // It used to be a flat penalty here, and a constant could never outrun the
+    // score's own spread: seven due blanks is 21 points against three learned
+    // blanks at 3. The high-coverage passages simply always won.
+    expect(scoreQuestion.length).toBe(3)
   })
 })
 
@@ -458,5 +485,26 @@ describe('pushRecent', () => {
     expect(out).toHaveLength(RECENT_LIMIT)
     expect(out[0]).toBe('new')
     expect(out).not.toContain(`p${RECENT_LIMIT - 1}`)
+  })
+})
+
+describe('recentWindow', () => {
+  it('scales with the corpus instead of being a fixed count', () => {
+    // A fixed window fails once the corpus holds more high scorers than the
+    // window has slots. With 26 passages and 11 that scored far above the
+    // rest, a window of 10 left exactly one high scorer free every time, so
+    // those eleven cycled forever.
+    expect(recentWindow(26)).toBe(17)
+    expect(recentWindow(60)).toBe(40)
+  })
+
+  it('always leaves at least one passage eligible', () => {
+    for (const n of [1, 2, 3, 4, 5, 10]) {
+      expect(recentWindow(n)).toBeLessThanOrEqual(n - 1)
+    }
+  })
+
+  it('an empty corpus does not produce a negative window', () => {
+    expect(recentWindow(0)).toBe(0)
   })
 })

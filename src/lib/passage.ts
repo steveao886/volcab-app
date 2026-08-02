@@ -364,27 +364,46 @@ export function buildPassageQuestion(
 /** Due words are weighted higher than learned-but-not-due — this feature is a review tool first, reading material second. */
 export const DUE_WEIGHT = 3
 export const LEARNED_WEIGHT = 1
-/**
- * The penalty for having been done recently. **Deliberately outweighs "one extra due word"
- * (+3)**: better to switch to a fresh passage with slightly worse coverage than to do the
- * same passage back to back — the second time through, what you remember is last time's
- * answers, not the words.
- */
-export const RECENT_PENALTY = 5
-/** How many passages "recently done" tracks. Stored in localStorage, not in progress.json. */
-export const RECENT_LIMIT = 10
+/** How many ids the "recently done" list keeps. Just a storage cap now — the window that actually matters is derived per corpus by recentWindow. Stored in localStorage, not in progress.json. */
+export const RECENT_LIMIT = 60
 
+/**
+ * How many of the most recent passages to rule out, given the corpus size.
+ *
+ * Two thirds, and the fraction is what makes it work. A fixed window fails
+ * whenever the corpus has more high-scoring passages than the window has
+ * slots: with 26 passages, 11 of which score far above the rest, a window of
+ * 10 always left exactly one high scorer free to win, so those eleven cycled
+ * forever and eleven usable passages were never drawn once in 40 sessions.
+ * Off by one, and permanently.
+ *
+ * Scaling with the corpus keeps the guarantee as it grows. Two thirds rather
+ * than everything, because the remaining third is where the score still gets
+ * to choose the most useful of the eligible passages — a full round-robin
+ * would rotate mechanically and stop favouring due words at all.
+ */
+export function recentWindow(corpusSize: number): number {
+  return Math.max(0, Math.min(corpusSize - 1, Math.floor((corpusSize * 2) / 3)))
+}
+
+/**
+ * How much this passage is worth doing today, counting only what it would
+ * actually make you recall.
+ *
+ * Recency is **not** part of the score. It used to be, as a flat penalty,
+ * and it could not do the job — see pickPassage for why and for the
+ * measurement. It is a filter there instead.
+ */
 export function scoreQuestion(
   q: PassageQuestion,
   progress: Progress,
   today: string,
-  recentIds: string[],
 ): number {
   let s = 0
   for (const b of q.blanks) {
     s += progress.words[b.wordId].due <= today ? DUE_WEIGHT : LEARNED_WEIGHT
   }
-  return recentIds.includes(q.passage.id) ? s - RECENT_PENALTY : s
+  return s
 }
 
 /**
@@ -412,20 +431,42 @@ export function pickPassage(
   rng: () => number = Math.random,
 ): PassageQuestion | null {
   const pairs = buildContrastPairs(words)
-  let best: PassageQuestion | null = null
-  let bestScore = -Infinity
-  // Shuffle first: on a tie, whichever is encountered first wins; without shuffling it
-  // would always be one of the same few passages near the front of the array
-  for (const p of shuffle(passages, rng)) {
-    const q = buildPassageQuestion(p, words, progress, today, pairs, rng)
-    if (q === null) continue
-    const s = scoreQuestion(q, progress, today, recentIds)
-    if (s > bestScore) {
-      bestScore = s
-      best = q
+
+  const bestOf = (candidates: Passage[]): PassageQuestion | null => {
+    let best: PassageQuestion | null = null
+    let bestScore = -Infinity
+    // Shuffle first: on a tie, whichever is encountered first wins; without shuffling it
+    // would always be one of the same few passages near the front of the array
+    for (const p of shuffle(candidates, rng)) {
+      const q = buildPassageQuestion(p, words, progress, today, pairs, rng)
+      if (q === null) continue
+      const s = scoreQuestion(q, progress, today)
+      if (s > bestScore) {
+        bestScore = s
+        best = q
+      }
     }
+    return best
   }
-  return best
+
+  // Recently-done passages are **excluded, not penalised**. They used to cost
+  // a flat RECENT_PENALTY, which could never bridge the gap the score itself
+  // opens up: a passage with seven due blanks scores 21, one with three
+  // learned blanks scores 3, and no constant of 5 closes that. Measured over
+  // the live library, 22 of 26 passages were buildable and 40 consecutive
+  // sessions drew only 11 of them — the same eleven, in the same order,
+  // forever, while eleven perfectly usable passages never appeared once.
+  //
+  // Falling back to the full set matters for two cases: fewer passages exist
+  // than the recent list remembers, and every fresh passage turns out not to
+  // be buildable. Either way, repeating a passage beats the empty state.
+  //
+  // recentWindow caps at one short of the corpus, so something is always left
+  // to choose from; without that, a small corpus would exclude everything and
+  // the fallback would go back to picking purely on score.
+  const window = recentIds.slice(0, recentWindow(passages.length))
+  const fresh = passages.filter(p => !window.includes(p.id))
+  return bestOf(fresh) ?? bestOf(passages)
 }
 
 /** Pushes an id to the front of "recently done," dropping the oldest once past the limit. */
