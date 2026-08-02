@@ -559,6 +559,227 @@
         "所有人都记得那一晚,急救人员把一名从谷仓筒仓里救出的农场工人抢救过来,当时都不确定他是否还有知觉,更别说开口说话了。",
         "尽管如此,诊所的三名护士对这场表决依然乐观,挂出了一块手绘的牌子,上面只写着“留住阿尔瓦雷斯医生”。"
       ]
+    },
+    {
+      "id": "robotics-league-gearbox",
+      "title": "机器人联赛翻出的那张发票",
+      "en": [
+        "Northfield's robotics team had won three regionals in a row with a gearbox no other school could buy, machined for free by the sponsor whose mark was printed on their shirts.",
+        "Coaches had complained for two seasons that the {{level-playing-field|level playing field}} promised in the league charter existed only on paper, but the appeals process was so thick with {{red-tape|red tape}} — four forms, two of them notarised, and a filing window of eleven days — that not one complaint had ever reached a hearing.",
+        "What finally moved the board was the {{smoking-gun|smoking gun}} a parent turned up in a public grant filing: an invoice from the sponsor's machine shop, billed to the team, for a part the rules class as commercially unavailable.",
+        "By then the sponsor's parts catalogue had become the {{de-facto|de facto}} rulebook — three of the five judges drew a salary somewhere in its supply chain, and no committee had ever voted them that authority.",
+        "In March the board {{bite-the-bullet|bit the bullet}} and banned every custom-machined component, knowing the ruling would cost the league its largest sponsor and about a third of its budget.",
+        "The ban carried one {{caveat}}: teams that had already built to the old rules could finish the spring season, provided they declared each part on the floor.",
+        "{{in-the-wake-of|In the wake of}} the decision, entries for next year fell by a fifth, and two of the coaches who signed the original complaint now say the league they got is fairer and smaller than the one they wanted."
+      ],
+      "zh": [
+        "北田中学的机器人队连拿三届区域赛冠军,靠的是一台别的学校根本买不到的变速箱——那是队服上印着标志的那家赞助商免费给他们加工的。",
+        "两个赛季以来,教练们一直抱怨联盟章程里承诺的公平竞争环境只存在于纸面上,可申诉流程的繁文缛节多到离谱——四张表格,其中两张要公证,申报窗口只有十一天——以至于没有一份投诉真正走到过听证那一步。",
+        "最终让理事会动起来的,是一位家长在公开的拨款申报材料里翻出的铁证:赞助商机械加工厂开给该队的一张发票,而那个零件按规则属于\"市面上买不到\"的类别。",
+        "到那时,赞助商的零件目录早已成了事实上的规则手册——五名裁判里有三人的工资出自它供应链上的某一环,而从来没有哪个委员会投票赋予过他们这种权力。",
+        "三月,理事会咬紧牙关,禁用了一切定制加工的部件,他们心里清楚,这项裁决会让联盟失去最大的赞助商,以及大约三分之一的预算。",
+        "禁令附带一条但书:已经按旧规则造好机器的队伍可以打完春季赛,前提是把上场的每一个零件都申报清楚。",
+        "这项决定之后,来年的报名数量掉了五分之一,当初在投诉书上签过字的教练里,有两位如今说,他们换来的联盟确实更公平了,却也比他们想要的那个更小。"
+      ]
+    },
+    {
+      "id": "payments-post-mortem",
+      "title": "复盘会上那半笔转账",
+      "en": [
+        "The post-mortem opened with the line everyone had already read in the incident channel: the debit from the customer's balance and the credit to the merchant's were never {{atomic}}, so a crash between the two left the money in neither account.",
+        "Sameer, on call the night it started, had repaired the first eleven stranded transfers by hand, and he was the one who called that habit the {{slippery-slope|slippery slope}} it turned out to be — by the third week nobody could say which rows the system had written and which a person had typed.",
+        "{{more-often-than-not|More often than not}}, a merchant noticed the missing payout before the monitoring did: of the nineteen incidents last quarter, fifteen arrived as support tickets and four as alerts.",
+        "The billing service was {{by-no-means|by no means}} the only code path that could strand money this way — refunds and payouts run the same debit-then-credit sequence, written by the same two people in the same week.",
+        "The fix had sat on the backlog since the first incident, blocked by the {{zero-sum-game|zero-sum game}} the two teams played every quarter: an hour engineering spent on reliability was an hour sales counted as taken from the feature list.",
+        "Nobody in the room defended the change that introduced it: three approvals inside four minutes, and both engineers who signed off said as much out loud.",
+        "{{that-said|That said}}, a review of any length would still have missed a failure the architecture permitted, and every action item that came out of the hour was aimed at the architecture rather than at the reviewers."
+      ],
+      "zh": [
+        "复盘会一开场,念的就是事故频道里所有人都已经看过的那句话:从客户余额扣款、给商户入账,这两步从来都不是原子性的,中间一旦崩溃,这笔钱就哪个账户里都不在了。",
+        "事发那晚值班的萨米尔,曾一笔一笔手工补好了最初十一笔卡住的转账,而正是他自己把这种做法称作后来果然收不住的滑坡——到第三周,已经没人说得清哪些记录是系统写的,哪些是人手敲进去的。",
+        "多半情况下,是商户先发现钱没到账,监控反倒慢了一步:上个季度的十九起事故里,十五起是以客服工单的形式冒出来的,只有四起来自告警。",
+        "会把钱卡在半路的代码路径,绝不止计费服务这一条——退款和打款走的是同一套\"先扣款再入账\"的流程,而且是同两个人在同一周里写出来的。",
+        "这个修复方案从第一起事故起就一直躺在待办列表里,卡住它的,是两个团队每个季度都要重演一遍的零和博弈:工程团队花在稳定性上的每一个小时,在销售那边都算成是从功能清单里抠走的一个小时。",
+        "会议室里没有人替那次引入问题的改动辩护:四分钟内三个人点了通过,两位签字的工程师自己也当场这么说了。",
+        "话虽如此,再仔细的评审也仍然会漏掉一个架构本身就允许发生的故障,因此这一小时里定下的每一项待办,针对的都是架构,而不是评审的人。"
+      ],
+      "exclude": [
+        "irreducible"
+      ]
+    },
+    {
+      "id": "museum-mammal-hall",
+      "title": "被封起来的哺乳动物展厅",
+      "en": [
+        "Nobody under sixty had been inside the museum's mammal hall since the roof leaked in 1998, and the padlocked doors only deepened its {{mystique}}.",
+        "Behind them stood forty cases of Victorian {{taxidermy}} — a moose, three wolves, and an elk whose antlers had been re-pinned twice since the war.",
+        "In March the new director settled the hall's future by {{fiat}}: a Monday memo, no curator consulted, every case to be dismantled before autumn.",
+        "Hoyt, who had run the preparation workshop for thirty years, took the news with {{imperious}} calm and began deciding on his own which mounts were worth saving, telling nobody what the criteria were.",
+        "Two students arrived in June to help, both {{neophyte|neophytes}} who had never held a scalpel, and when one of them mislabeled a tray of glass eyes he {{harangue|harangued}} them both for ten full minutes about what separates a museum from a gift shop.",
+        "What none of them disputed was the work itself: Hoyt's own mounts were {{meticulous}}, every whisker set by hand against a field photograph he had taken himself."
+      ],
+      "zh": [
+        "自 1998 年屋顶漏水以来,六十岁以下的人没有一个进过博物馆的哺乳动物展厅,那两扇上了挂锁的门只让它更添几分神秘。",
+        "门后立着四十座维多利亚时代的动物标本柜——一头驼鹿、三匹狼,还有一只麋鹿,它的角自战后已经重新固定过两次。",
+        "三月,新上任的馆长一纸命令就定下了展厅的去向:周一一份备忘录,没问过任何一位策展人,入秋前所有展柜一律拆除。",
+        "在标本制作车间干了三十年的霍伊特,听到消息时表现得傲慢而平静,自顾自地开始决定哪些标本值得留下,却不肯把标准告诉任何人。",
+        "六月来了两名学生帮忙,两人都是从没拿过解剖刀的新手;其中一个把一盘玻璃眼珠的标签贴错了,他当场就冲两人训斥了整整十分钟,讲什么叫博物馆、什么叫纪念品商店。",
+        "但没人质疑他的手艺本身:霍伊特亲手做的标本一丝不苟,每一根须毛都是对照着他自己拍的野外照片一根根摆上去的。"
+      ],
+      "exclude": [
+        "domineering",
+        "overbearing",
+        "painstaking",
+        "rebuke",
+        "reprimand",
+        "reprove"
+      ]
+    },
+    {
+      "id": "larkspur-kitchen",
+      "title": "疗养院厨房里的那锅汤",
+      "en": [
+        "For nine years Nadia had cooked for the twenty {{convalescent}} residents of Larkspur House, and she knew which of them could still taste salt and which could not.",
+        "Every morning she {{concoct|concocted}} a broth out of whatever the kitchen garden had given up overnight, so no two batches were ever quite the same.",
+        "In March the state health board {{promulgate|promulgated}} a nutrition rule requiring that every dish served in a care facility be logged, gram by gram, against an approved recipe.",
+        "The new forms wanted sodium and protein, plus a dozen {{extraneous}} figures that had nothing to do with whether anyone finished lunch.",
+        "What the approved list actually produced was {{austere}} — boiled, portioned, and the same colour on every tray by Wednesday.",
+        "So Nadia kept a pot going anyway, and the {{tantalizing}} smell of it reached the corridor hours before the trolley did, on a floor where half the residents were on restricted diets.",
+        "When the inspector finally came, she found the logbook half empty and the dining room full — roses from the south beds on every table, the long room {{ravishing}} in the late light in a way no form had a column for."
+      ],
+      "zh": [
+        "九年来,娜迪娅一直给拉克斯珀之家二十位康复期住客做饭,谁还尝得出咸味、谁已经尝不出来,她心里一清二楚。",
+        "每天早上,她都用菜园里一夜之间冒出来的东西熬一锅汤,所以没有哪两锅的味道是一样的。",
+        "三月,州卫生委员会颁布了一项营养法规,要求护理机构供应的每一道菜都必须按克对照核准食谱逐项登记。",
+        "新表格要填钠,要填蛋白质,还要填十几项多余的数字,而这些数字跟有没有人把午饭吃完毫无关系。",
+        "那份核准清单实际做出来的东西朴素得近乎寡淡——一律水煮、一律定量,到周三,整层楼的餐盘都是同一个颜色。",
+        "娜迪娅还是照旧在灶上煨着一锅汤,那股诱人的香味比送餐车早几个小时就飘到了走廊上——而这层楼有一半住客都在忌口。",
+        "检查员终于上门那天,看到的是半本空着的登记簿,和一间坐满了人的餐厅:南窗外的玫瑰摆上了每一张桌子,傍晚的光里,整个长厅美得让人挪不开眼——而这一栏,表格上并没有。"
+      ],
+      "exclude": [
+        "ascetic",
+        "gratuitous",
+        "ratify",
+        "sumptuous",
+        "superfluous"
+      ]
+    },
+    {
+      "id": "oncology-ward-third-week",
+      "title": "肿瘤科病房的第三周",
+      "en": [
+        "Mr. Okonkwo had been on the oncology ward for three weeks when the second scan came back and showed the tumour had {{metastasize|metastasized}} to his liver and spine.",
+        "His daughter Ada {{entreat|entreated}} the consultant three times that week — twice in the corridor, once in a letter she rewrote at two in the morning — to try one more round of treatment.",
+        "The registrar sent to answer her sounded almost {{insouciant}} about the whole thing, offering a shrug and a \"we'll see how he does,\" and Ada walked out of that corridor angrier than she had walked into it.",
+        "Her father, meanwhile, {{grumble|grumbled}} steadily about the porridge, the pillows and the radio in the next bed, and never once about the pain.",
+        "On the same night that one {{hapless}} student nurse knocked over the drip stand and then dropped the replacement bag on the floor, the ward sister three beds away read a temperature chart twice, called what she saw {{incipient}} sepsis, and had antibiotics running before anyone else would have called it anything at all.",
+        "Ada took what {{solace}} she could from that: whatever the scan said, somebody on that ward was still reading every chart twice."
+      ],
+      "zh": [
+        "奥孔科沃先生已经在肿瘤科病房住了三个星期,第二次扫描的结果出来,显示肿瘤已经转移到了肝脏和脊椎。",
+        "他女儿阿达那一周三次恳求主治医生再试一个疗程——两次是在走廊里堵着说的,还有一次写成了信,凌晨两点改了又改。",
+        "被派来答复她的住院医师语气近乎满不在乎,只耸了耸肩,来了句\"再看看他的情况\",阿达走出那条走廊时,比进去的时候更生气。",
+        "她父亲那边倒是一直在嘀咕:粥太稀,枕头太硬,隔壁床的收音机太吵——唯独从没提过一句疼。",
+        "同一个夜里,一名倒霉的实习护士先是撞倒了输液架,又把换上的药袋掉在了地上;而隔着三张床,护士长把一张体温单看了两遍,认定那是初期的脓毒症,在别人还看不出任何名堂之前就把抗生素挂了上去。",
+        "阿达从这件事里找回了她所能找回的那一点慰藉:不管扫描结果怎么说,这间病房里至少还有人会把每一张单子看两遍。"
+      ],
+      "exclude": [
+        "grouse",
+        "apathetic",
+        "importune"
+      ]
+    },
+    {
+      "id": "amateur-theatre-last-season",
+      "title": "剧社散架的那个春天",
+      "en": [
+        "The Havenport Players had put on one show a year in the same {{dilapidated}} church hall since 1961, and this spring the whole society came apart.",
+        "In January the committee voted to {{abrogate}} its oldest rule — that anyone who paid the annual dues was guaranteed a part — and eleven members tore up their cards before they left the room.",
+        "Those who stayed {{grouse|groused}} about the new audition system at every rehearsal, loudly and at length, until the director began saving her notes for after they had gone home.",
+        "The set collapsed twice in one week, which was less bad luck than plain {{ineptitude}} — nobody on the crew had ever held a drill — and the rehearsal calendar never {{dovetail|dovetailed}} with the hall's booking book, so the cast twice arrived to find a toddler music class already using the room.",
+        "Cutting the entire second act was {{expedient}}, since it saved a fortnight of rehearsal, and it also removed the only scene that explained why anyone in the play did anything.",
+        "What emptied the hall for good was the {{leniency}} the director showed her lead, who missed four rehearsals for a work trip and opened the show anyway, while everyone else had been turning up since October."
+      ],
+      "zh": [
+        "自 1961 年起,黑文港剧社每年都在同一间破旧的教堂礼堂里排演一出戏,而今年春天,整个剧社散了架。",
+        "一月里,委员会表决废除了剧社最老的一条规矩——只要交了年费,就保证有角色演——十一名成员还没走出会议室就撕掉了会员卡。",
+        "留下来的人在每一次排练上都对新的试镜制度发牢骚,嗓门大、话又长,到后来导演干脆等他们回家之后再讲戏。",
+        "布景一周之内塌了两次,与其说是运气不好,不如说纯粹是无能——道具组没有一个人碰过电钻;而排练日程表和礼堂的租借登记本从来就对不上,剧组两次赶到,发现屋里已经坐着一群上亲子音乐课的小孩。",
+        "把整个第二幕砍掉是个省事的权宜之计,毕竟能省下两周排练,可它同时也删掉了全剧唯一一场交代人物动机的戏。",
+        "真正让礼堂彻底空掉的,是导演对女主角的宽容:那人为了出差缺了四次排练,照样如期登台,而其余的人从十月起就一直在跑排练。"
+      ],
+      "exclude": [
+        "grumble",
+        "opportune",
+        "rickety",
+        "repudiate",
+        "countermand",
+        "concur"
+      ]
+    },
+    {
+      "id": "guest-conductor",
+      "title": "客席指挥的闭幕音乐会",
+      "en": [
+        "The civic orchestra hired a guest conductor for its closing concert, and the first rehearsal made plain how {{ostentatious}} an ending he had in mind: a podium built taller than the one in storage, a white jacket, a bow held until the last cough in the hall had died away.",
+        "The schedule he imposed was {{onerous}} beyond anything the players had agreed to — five three-hour evenings a week, from people who all had day jobs.",
+        "At the third rehearsal the principal cellist had the {{temerity}} to ask, in front of eighty colleagues, whether he had ever conducted an amateur ensemble before.",
+        "His answer was {{petulant}} rather than angry: a flick of the baton, and then two full rehearsals in which he spoke to every section except hers.",
+        "Someone in the second violins filmed the exchange {{surreptitious|surreptitiously}}, a phone propped inside a music stand, and it was on the orchestra's group chat before midnight.",
+        "None of it showed on the night, except for eight bars in the finale where his tempo {{veer|veered}} — dragging, then rushing — and eighty players had to feel their way back to the beat.",
+        "The audience, who heard only the music, gave him an ovation so {{rapturous}} that he came back out three times."
+      ],
+      "zh": [
+        "市民乐团为闭幕音乐会请来一位客席指挥,而第一次排练就把他想要的收场有多招摇讲得明明白白:一座特意加高的指挥台,一身白色礼服,还有一个要等全场最后一声咳嗽落定才肯直起身的鞠躬。",
+        "他排定的日程繁重得远超乐手们当初答应的程度——每周五个晚上,每次三小时,而这些人白天都有自己的工作。",
+        "第三次排练时,首席大提琴手竟有这个胆子,当着八十位同事的面发问:他此前究竟有没有指挥过业余乐团。",
+        "他的回应算不上愤怒,更像是在赌气使性子:指挥棒一甩,接下来整整两次排练,他跟每个声部都讲话,唯独跳过她那一组。",
+        "第二小提琴里有人把这一幕偷偷拍了下来——手机就支在谱架内侧——不到午夜,视频已经传遍了乐团的群聊。",
+        "演出当晚,这些都没有露出痕迹,只有终乐章有八个小节,他的速度陡然偏了向——先是拖沓,继而抢拍——八十名乐手只能各自摸索着找回拍点。",
+        "而只听见音乐的观众,给了他一阵狂热到近乎失控的喝彩,热烈得他三度返场谢幕。"
+      ],
+      "exclude": [
+        "ardent",
+        "arduous",
+        "exacting",
+        "effrontery",
+        "fervent",
+        "fractious",
+        "grandiose",
+        "querulous",
+        "sumptuous",
+        "testy"
+      ]
+    },
+    {
+      "id": "lake-house-estate",
+      "title": "湖边那栋房子分不下去",
+      "en": [
+        "Grandma Lin left the lake house to her four children in equal shares, which she believed would prevent a fight and turned out to be the surest way of starting one.",
+        "The {{wrangle}} over whether to sell ran three years and produced two lawyers, one appraisal nobody trusted, and a Thanksgiving that was over by seven o'clock.",
+        "Wes, the youngest, kept saying he only wanted the house to stay in the family, but his sisters were certain his real reasons were {{ulterior}}, since he had been living there rent-free since March.",
+        "Word that he had met a developer {{percolate|percolated}} through the cousins for weeks before anyone would say it out loud across the table.",
+        "His position turned {{untenable}} the month the tax bill arrived addressed to him alone and he could not explain who had changed the mailing address; he looked {{abashed}} for about a minute, then blamed the accountant.",
+        "It was Aunt Mei — so {{unobtrusive}} at those meetings that half the family forgot she attended them, filing every letter nobody had asked her to keep — who produced the folder that {{vindicate|vindicated}} him: the accountant's note about the address change, and Wes's own reply to the developer, dated in March, turning the offer down flat."
+      ],
+      "zh": [
+        "林奶奶把湖边那栋房子平分给了四个子女,她以为这样就能免掉一场争执,结果这恰恰是挑起争执最稳妥的办法。",
+        "围绕卖还是不卖的那场拉锯,前后耗了三年,耗出了两位律师、一份谁都不信的估价报告,还有一顿七点就散场的感恩节晚饭。",
+        "老幺韦斯反复说,他只是想让房子留在家里,可几个姐姐一口咬定他另有所图——毕竟从三月起,他就一直白住在那儿。",
+        "他见过开发商的风声在表亲们中间一点点传开,传了好几个星期,才终于有人肯在饭桌上把它挑明。",
+        "等到那张房产税单只写着他一个人的名字寄来、而他又说不清是谁改了邮寄地址,他的说法就再也站不住脚了;他窘迫了大约一分钟,转头就把责任推给了会计。",
+        "最后是梅姨——那些会上她低调得几乎让半个家族忘了她也在场,却把没人拜托她保存的每一封信都归了档——拿出了那只替他洗清嫌疑的文件夹:会计关于改地址的留言,还有韦斯自己在三月写给开发商、干脆利落回绝对方的那封回信。"
+      ],
+      "exclude": [
+        "diffident",
+        "impasse",
+        "metastasize",
+        "permeate",
+        "pervade",
+        "precarious",
+        "reticent",
+        "unpretentious"
+      ]
     }
   ]
 }

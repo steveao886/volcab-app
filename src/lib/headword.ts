@@ -141,9 +141,18 @@ function phrasePattern(parts: string[]): string {
  *    scenario the "blank out every occurrence in the same sentence" comment in quiz.ts was
  *    meant to guard against, except it never covered inflected forms.
  * 2. **Only an inflected form present** (measured at 14%, e.g. concocted / concocting) →
- *    fall back to a loose stem match, to preserve 100% locate coverage. The loose rule can
- *    cause false hits, but it only runs when the base form is absent, and measured across
- *    the full library it has never produced an actual false hit.
+ *    fall back to a loose stem match, to preserve 100% locate coverage.
+ *
+ * **The loose rule does produce false hits, and the scope of the old claim here was too
+ * wide.** It used to say one had never occurred; that held for words.json's own example
+ * sentences, and still does — the full-library regression test asserts it. It does not hold
+ * for prose in general. A concrete case, hit while writing the passage corpus: headword
+ * `grouse` appears only as `groused`, so the stem is `gro`, and
+ * "She groused about the rota, then went back to her music group" marks both `groused` and
+ * `group`. The blast radius is bounded — the fallback only runs when the base form is
+ * absent, and validate-passages catches the resulting mess as "the answer appears as plain
+ * text" — but when marking an inflected-only word whose first three letters are a common
+ * prefix, check the surrounding text rather than trusting this.
  */
 export function headwordPattern(sentence: string, headword: string): RegExp | null {
   const h = headword.trim().toLowerCase()
