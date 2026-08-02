@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { QUIZ_TYPES, clozeCollocation, clozeExample, generateAudioQuiz, generateContrastQuiz, generateQuiz, pickCloze, pickMeaning, sharedSynonyms } from './quiz'
+import { QUIZ_TYPES, clozeCollocation, clozeExample, generateAudioQuiz, generateContrastQuiz, generateQuiz, pickCloze, pickMeaning, sharedSynonyms, difficultyWeight, weightedShuffle} from './quiz'
 import { emptyProgress } from '../types'
 import type { Meaning, Progress, Word } from '../types'
 
@@ -526,5 +526,95 @@ describe('generateContrastQuiz only tests learned words', () => {
     expect(a[0].answer).toBe('alpha')
     expect(b[0].answer).toBe('alpha')   // answer side is consistent, confirming that what varies is indeed the sentence
     expect(a[0].prompt).not.toBe(b[0].prompt)
+  })
+})
+
+/** Deterministic PRNG for the distribution checks below — `seq` above cycles through 13 values, which is too coarse to sample a distribution with. */
+const mulberry = (seed: number) => () => {
+  seed = (seed + 0x6d2b79f5) | 0
+  let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+}
+
+describe('difficultyWeight', () => {
+  const entry = (over: Partial<{ ease: number; lapses: number }> = {}) => ({
+    state: 'review' as const, ease: 2.5, intervalDays: 10, due: '2026-08-10',
+    stepIndex: 0, reps: 5, lapses: 0, lastReviewedAt: '2026-07-31T00:00:00Z', ...over,
+  })
+  const withEntry = (id: string, over = {}) => {
+    const p = emptyProgress()
+    p.words[id] = entry(over)
+    return p
+  }
+
+  it('a word at the starting ease with no lapses is the baseline', () => {
+    expect(difficultyWeight(word('a', '甲'), withEntry('a'))).toBe(1)
+  })
+
+  it('a word never reviewed is also baseline, not zero — it must stay reachable', () => {
+    expect(difficultyWeight(word('a', '甲'), emptyProgress())).toBe(1)
+  })
+
+  it('lower ease weighs more', () => {
+    const hard = difficultyWeight(word('a', '甲'), withEntry('a', { ease: 1.3 }))
+    const mid = difficultyWeight(word('a', '甲'), withEntry('a', { ease: 2.0 }))
+    expect(hard).toBeGreaterThan(mid)
+    expect(mid).toBeGreaterThan(1)
+  })
+
+  it('ease above the starting value does not weigh less than baseline', () => {
+    // Burying words the user has demonstrably learned buys nothing, and the
+    // floor keeps every word reachable.
+    expect(difficultyWeight(word('a', '甲'), withEntry('a', { ease: 3.0 }))).toBe(1)
+  })
+
+  it('lapses add on top of ease', () => {
+    const withLapses = difficultyWeight(word('a', '甲'), withEntry('a', { ease: 2.0, lapses: 2 }))
+    const without = difficultyWeight(word('a', '甲'), withEntry('a', { ease: 2.0 }))
+    expect(withLapses).toBeGreaterThan(without)
+  })
+
+  it('lapses stop counting past the cap, so one disastrous word cannot swamp the draw', () => {
+    const three = difficultyWeight(word('a', '甲'), withEntry('a', { lapses: 3 }))
+    const twenty = difficultyWeight(word('a', '甲'), withEntry('a', { lapses: 20 }))
+    expect(twenty).toBe(three)
+  })
+})
+
+describe('weightedShuffle', () => {
+  it('returns every item exactly once — it reorders, it does not filter', () => {
+    const items = ['a', 'b', 'c', 'd']
+    const out = weightedShuffle(items, () => 1, mulberry(7))
+    expect([...out].sort()).toEqual([...items].sort())
+  })
+
+  it('heavier items come first more often, but the light one still appears', () => {
+    // 2000 draws of the head position: with weight 4 against 1, the heavy
+    // item should dominate without ever excluding the other.
+    const rng = mulberry(3)
+    let heavyFirst = 0
+    for (let i = 0; i < 2000; i++) {
+      const out = weightedShuffle(['heavy', 'light'], t => (t === 'heavy' ? 4 : 1), rng)
+      if (out[0] === 'heavy') heavyFirst++
+    }
+    expect(heavyFirst).toBeGreaterThan(1200)
+    expect(heavyFirst).toBeLessThan(2000)
+  })
+
+  it('equal weights behave like an ordinary shuffle — no item is pinned to a position', () => {
+    const rng = mulberry(11)
+    const seen = new Set<string>()
+    for (let i = 0; i < 200; i++) seen.add(weightedShuffle(['a', 'b', 'c'], () => 1, rng)[0])
+    expect(seen.size).toBe(3)
+  })
+
+  it('a zero weight is tolerated rather than producing NaN', () => {
+    const out = weightedShuffle(['a', 'b'], t => (t === 'a' ? 0 : 1), mulberry(5))
+    expect([...out].sort()).toEqual(['a', 'b'])
+  })
+
+  it('an empty list is not an error', () => {
+    expect(weightedShuffle([], () => 1, mulberry(1))).toEqual([])
   })
 })

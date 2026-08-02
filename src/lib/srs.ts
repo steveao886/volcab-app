@@ -2,6 +2,8 @@ import type { Grade, ProgressEntry } from '../types'
 
 export const LEARNING_STEPS = 2      // Learning steps: reappears at 1 minute and 10 minutes within the same session
 export const MIN_EASE = 1.3
+/** Ease a word starts on. Only "easy" ever raises it, so a word answered "good" every time sits here forever — which is what makes distance below it a usable difficulty signal. */
+export const INITIAL_EASE = 2.5
 export const MAX_INTERVAL_DAYS = 365
 const GRADUATE_DAYS = 1
 const EASY_GRADUATE_DAYS = 4
@@ -19,7 +21,7 @@ export function addDays(dateStr: string, days: number): string {
 }
 
 const freshEntry = (now: Date): ProgressEntry => ({
-  state: 'learning', ease: 2.5, intervalDays: 0, due: todayStr(now),
+  state: 'learning', ease: INITIAL_EASE, intervalDays: 0, due: todayStr(now),
   stepIndex: 0, reps: 0, lapses: 0, lastReviewedAt: now.toISOString(),
 })
 
