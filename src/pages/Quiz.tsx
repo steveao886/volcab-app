@@ -247,7 +247,16 @@ export function Quiz() {
     // backward through the four modes one by one (avoiding a repeat of the
     // Library page's old mistake of a history stack that only ever grows).
     setParams(next === 'mixed' ? {} : { mode: next }, { replace: true })
-    setSession(s => s + 1)
+    // **No session bump here.** `mode` is already part of the key below, so
+    // changing it remounts on its own; bumping the counter as well was not
+    // just redundant but actively wrong. The two updates are not applied in
+    // the same render — the router's params land a beat after the plain
+    // useState — so there was an intermediate render carrying the *old* mode
+    // with the *new* session, whose key was `audio-<n+1>`. That is a
+    // different key from `audio-<n>`, so QuizSession remounted, generated a
+    // fresh audio round, and its AudioPrompt spoke the first word of a quiz
+    // being discarded in the same tick. One phantom word per switch, every
+    // time you left listening mode.
   }
 
   return (
