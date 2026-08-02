@@ -22006,6 +22006,494 @@
       "etymology": "not 后省略了 often → 发生的次数多于不发生 → 多半",
       "sourceNote": "manual",
       "addedAt": "2026-07-30"
+    },
+    {
+      "id": "interpolation",
+      "headword": "interpolation",
+      "phonetic": "/ɪnˌtɜːrpəˈleɪʃən/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "the estimating of an unknown value that lies between two known ones, so that a gap in a series is filled in",
+          "zh": "插值;内插(用已知点之间的推算值填补空缺)",
+          "share": 70
+        },
+        {
+          "pos": "n.",
+          "en": "a passage inserted into a text that was not in the original, typically added later by someone other than the author",
+          "zh": "(文本中)插入的段落,窜入的文字",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "The animation looked jerky until she turned on interpolation, and suddenly the ball arced between keyframes like it had weight.",
+        "Their dashboard fills gaps in the sensor feed by interpolation, which is fine until the gap is six hours wide.",
+        "Zooming past 400% exposes the interpolation: the software is inventing pixels that were never in the original photograph.",
+        "Most scholars treat the closing paragraph as a later interpolation, added by a copyist centuries after the author died.",
+        "He replaced the clumsy string concatenation with interpolation, and the log line finally became readable at three in the morning."
+      ],
+      "synonyms": [
+        "insertion",
+        "estimation",
+        "gap-filling"
+      ],
+      "antonyms": [
+        "extrapolation",
+        "omission"
+      ],
+      "collocations": [
+        "linear interpolation",
+        "string interpolation",
+        "a later interpolation"
+      ],
+      "relatedForms": [
+        {
+          "form": "interpolate",
+          "pos": "v.",
+          "zh": "插值、内插;(在文本中)插入、窜改"
+        },
+        {
+          "form": "interpolated",
+          "pos": "adj.",
+          "zh": "内插得出的;后人插入的"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "inter-(之间) + polire(打磨、修饰) → 中间插入改动 → 插值;窜入",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "recency",
+      "headword": "recency",
+      "phonetic": "/ˈriːsənsi/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "the fact of having happened only a short time ago, especially when that alone makes something feel more important than it is",
+          "zh": "新近性,近期性(尤指仅因发生得近而被高估的分量)"
+        }
+      ],
+      "examples": [
+        "The hiring panel's recency bias was obvious: everyone raved about the last candidate and forgot the strong one from Tuesday morning.",
+        "Retrospectives suffer from the recency effect — the team dissects last week's outage and never mentions the two quiet months before it.",
+        "The recommender overweights recency, so one late-night documentary binge buried six months of carefully cultivated taste.",
+        "Ranking search results by recency alone put a typo-ridden blog post above the specification it was misquoting.",
+        "Investors fall for recency bias every cycle, extrapolating three good quarters into a decade and calling the result a thesis."
+      ],
+      "synonyms": [
+        "newness",
+        "freshness"
+      ],
+      "antonyms": [
+        "primacy",
+        "antiquity"
+      ],
+      "collocations": [
+        "recency bias",
+        "recency effect",
+        "recency weighting"
+      ],
+      "relatedForms": [
+        {
+          "form": "recent",
+          "pos": "adj.",
+          "zh": "最近的,新近的"
+        },
+        {
+          "form": "recently",
+          "pos": "adv.",
+          "zh": "最近,近来"
+        }
+      ],
+      "usageScore": 5,
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
+    },
+    {
+      "id": "primitive",
+      "headword": "primitive",
+      "phonetic": "/ˈprɪmətɪv/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "of a data type or operation: supplied directly by the language or system and not built out of anything smaller",
+          "zh": "(计算机)原生的,基本的(语言直接提供、无法再拆解的类型或操作)",
+          "share": 40
+        },
+        {
+          "pos": "adj.",
+          "en": "belonging to an early stage of development, or crude and lacking the refinements now taken for granted",
+          "zh": "原始的,早期的;简陋的,粗糙的",
+          "share": 40
+        },
+        {
+          "pos": "n.",
+          "en": "a basic type or operation that a language or system provides as a building block for everything else",
+          "zh": "(计算机)原语,基本类型;最小构件",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "In JavaScript a string is a primitive value, so passing it around never gives two variables a handle on the same object.",
+        "Rewriting the parser around primitive types instead of wrapper classes cut the memory footprint of a single request nearly in half.",
+        "The lock is the only synchronization primitive the runtime exposes, so every queue in the codebase is built on top of it.",
+        "Their deployment process is still primitive — someone SSHes into the box at midnight and copies the files by hand.",
+        "The cabin was gloriously primitive: no wiring, no signal, and a wood stove that took three attempts to light."
+      ],
+      "synonyms": [
+        "rudimentary",
+        "crude",
+        "elementary",
+        "basic"
+      ],
+      "antonyms": [
+        "advanced",
+        "sophisticated",
+        "composite",
+        "derived"
+      ],
+      "collocations": [
+        "primitive type",
+        "cryptographic primitive",
+        "synchronization primitive",
+        "primitive conditions"
+      ],
+      "relatedForms": [
+        {
+          "form": "primitively",
+          "pos": "adv.",
+          "zh": "原始地;简陋地"
+        },
+        {
+          "form": "primitiveness",
+          "pos": "n.",
+          "zh": "原始性;简陋"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "primus(第一、最初) + -ive → 最初阶段的 → 原始的;最基本的",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-31"
+    },
+    {
+      "id": "verbatim",
+      "headword": "verbatim",
+      "phonetic": "/vərˈbeɪtɪm/",
+      "meanings": [
+        {
+          "pos": "adv.",
+          "en": "using exactly the same words as the original, with nothing changed, added, or left out",
+          "zh": "逐字地,一字不差地",
+          "share": 60
+        },
+        {
+          "pos": "adj.",
+          "en": "reproducing the original word for word, as a record or quotation does",
+          "zh": "逐字的,原文照录的",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "She repeated his apology verbatim in the group chat, and the tone that worked in person landed like a threat.",
+        "The intern copied the error message verbatim into the ticket, which is why the fix took twenty minutes instead of two days.",
+        "Reciting the terms of service verbatim did not impress the support agent, who had heard clause 14 quoted all morning.",
+        "The researcher insisted on a verbatim transcript, including every stray um, because the pauses were half of what she was studying.",
+        "His resignation email included a verbatim quote from the handbook, which made the whole thing feel drafted by a lawyer."
+      ],
+      "synonyms": [
+        "word-for-word",
+        "literal",
+        "exact"
+      ],
+      "antonyms": [
+        "paraphrased",
+        "approximate"
+      ],
+      "collocations": [
+        "quote verbatim",
+        "verbatim transcript",
+        "repeat verbatim",
+        "verbatim quote"
+      ],
+      "relatedForms": [],
+      "usageScore": 6,
+      "etymology": "verbum(词) + -atim(逐一) → 逐字逐句 → 一字不差地",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-31"
+    },
+    {
+      "id": "fixation",
+      "headword": "fixation",
+      "phonetic": "/fɪkˈseɪʃən/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "an obsessive preoccupation with someone or something that a person cannot let go of",
+          "zh": "执念;病态的迷恋;(心理学)固恋",
+          "share": 80
+        },
+        {
+          "pos": "n.",
+          "en": "the process of making something firm or permanent, as when a specimen is preserved for the microscope or nitrogen is locked into a compound",
+          "zh": "固定(作用);(标本的)固定处理;(氮的)固定",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "Her fixation on the one-star review lasted three days, while the ninety-seven positive ones went completely unread.",
+        "The team's fixation on shipping by Friday meant nobody questioned whether the feature was something users had actually asked for.",
+        "After the breakup he developed a fixation with her Instagram stories, checking them at two in the morning like clockwork.",
+        "My therapist called it a childhood fixation: every argument with my boss somehow replays a dinner-table fight from 1998.",
+        "The lab ruined the sample because fixation ran twenty minutes too long and the cell membranes came out shredded under the microscope."
+      ],
+      "synonyms": [
+        "obsession",
+        "preoccupation",
+        "compulsion",
+        "mania"
+      ],
+      "antonyms": [
+        "indifference",
+        "detachment"
+      ],
+      "collocations": [
+        "fixation on",
+        "unhealthy fixation",
+        "childhood fixation",
+        "nitrogen fixation"
+      ],
+      "relatedForms": [
+        {
+          "form": "fixate",
+          "pos": "v.",
+          "zh": "使专注;对…念念不忘"
+        },
+        {
+          "form": "fixated",
+          "pos": "adj.",
+          "zh": "过度专注的;着魔般执着的"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "拉丁 figere(钉住) → 固定 → 心理上钉住不放的执念",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-01"
+    },
+    {
+      "id": "foothold",
+      "headword": "foothold",
+      "phonetic": "/ˈfʊthoʊld/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "a small but secure position from which further progress can be made",
+          "zh": "立足点;(可据以发展的)稳固基础",
+          "share": 70
+        },
+        {
+          "pos": "n.",
+          "en": "a place on a rock or slope where a foot can be securely planted while climbing",
+          "zh": "(攀登时的)落脚处;踏脚点",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "Three years after launching in Jakarta, the startup finally has a real foothold in Southeast Asia and is hiring locally.",
+        "Open-source drivers gave Linux its first foothold in the data center, and twenty years later it runs almost everything there.",
+        "She took the unpaid internship purely as a foothold, and within a year she was the one interviewing candidates.",
+        "Cheap prepaid plans let the carrier gain a foothold in rural markets that the big three had written off entirely.",
+        "Halfway up the wet granite she groped for a foothold, found nothing but moss, and shouted down for the rope."
+      ],
+      "synonyms": [
+        "toehold",
+        "bridgehead",
+        "beachhead",
+        "purchase"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "gain a foothold",
+        "establish a foothold",
+        "a foothold in the market",
+        "lose one's foothold"
+      ],
+      "relatedForms": [],
+      "usageScore": 7,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-01"
+    },
+    {
+      "id": "regressive",
+      "headword": "regressive",
+      "phonetic": "/rɪˈɡrɛsɪv/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "returning to an earlier, less developed or less desirable state; moving backward rather than forward",
+          "zh": "倒退的;退步的;退化的",
+          "share": 50
+        },
+        {
+          "pos": "adj.",
+          "en": "of a tax or charge: taking a larger share of income from those who earn less, so the burden falls hardest at the bottom",
+          "zh": "累退的(收入越低实际负担越重,与 progressive 累进的相反)",
+          "share": 40
+        },
+        {
+          "pos": "adj.",
+          "en": "relating to statistical regression, in which one variable is modelled as depending on others",
+          "zh": "回归的;回归分析的",
+          "share": 10
+        }
+      ],
+      "examples": [
+        "A flat sales tax on groceries is deeply regressive: the cashier ringing it up pays a bigger share than the owner.",
+        "Economists called the new toll regressive, since a nurse commuting from the suburbs pays the same five pounds as a banker.",
+        "Rolling back remote work felt regressive to everyone who had spent two years proving the office was never the point.",
+        "Under stress the four-year-old turned regressive overnight: back to the bottle, back to the crib, back to nobody sleeping.",
+        "Their regressive model predicts delivery dates from ticket counts, which works fine until someone files a hundred junk tickets."
+      ],
+      "synonyms": [
+        "backward",
+        "retrograde",
+        "reactionary",
+        "degenerative"
+      ],
+      "antonyms": [
+        "progressive",
+        "forward-looking"
+      ],
+      "collocations": [
+        "a regressive tax",
+        "regressive policies",
+        "a regressive step"
+      ],
+      "relatedForms": [
+        {
+          "form": "regress",
+          "pos": "v.",
+          "zh": "倒退;退化;(统计)做回归"
+        },
+        {
+          "form": "regression",
+          "pos": "n.",
+          "zh": "倒退;退化;(统计)回归分析"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "re-(向后) + gradi(行走) → 往回走 → 倒退的",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-02"
+    },
+    {
+      "id": "underhand",
+      "headword": "underhand",
+      "phonetic": "/ˈʌndərhænd/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "secret and dishonest; done in a way meant to escape notice",
+          "zh": "暗中的;不正当的;偷偷摸摸的",
+          "share": 60
+        },
+        {
+          "pos": "adj. & adv.",
+          "en": "in sport, thrown or served with the hand kept below shoulder level",
+          "zh": "(投球、发球)下手的;下手地",
+          "share": 30
+        },
+        {
+          "pos": "adv.",
+          "en": "in a secret and dishonest manner",
+          "zh": "暗中地;不正当地",
+          "share": 10
+        }
+      ],
+      "examples": [
+        "Poaching the client list on his way out was an underhand move, and the whole industry heard about it within a week.",
+        "The landlord's underhand tactics, cutting the hot water and losing the paperwork, were designed to make tenants leave without a fight.",
+        "Nothing in the contract was illegal, but burying the auto-renewal in clause 34 struck the regulator as thoroughly underhand.",
+        "She serves underhand on purpose, and half the opposing team is still arguing about whether that counts as unsporting.",
+        "He got the promotion underhand, briefing against two colleagues in private meetings he later swore had never happened."
+      ],
+      "synonyms": [
+        "devious",
+        "surreptitious",
+        "furtive",
+        "duplicitous"
+      ],
+      "antonyms": [
+        "aboveboard",
+        "straightforward",
+        "overhand"
+      ],
+      "collocations": [
+        "underhand tactics",
+        "an underhand deal",
+        "serve underhand"
+      ],
+      "relatedForms": [
+        {
+          "form": "underhanded",
+          "pos": "adj.",
+          "zh": "暗中的;不正当的(美式英语更常用,英式多用 underhand)"
+        },
+        {
+          "form": "underhandedly",
+          "pos": "adv.",
+          "zh": "暗中地;不正当地"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "under(在下面) + hand(手) → 手压低不让人看见 → 暗中的",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-02"
+    },
+    {
+      "id": "inflict",
+      "headword": "inflict",
+      "phonetic": "/ɪnˈflɪkt/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to make someone suffer something unpleasant — damage, pain, a penalty, or merely your own company",
+          "zh": "使遭受;把(痛苦、损害、惩罚)强加于"
+        }
+      ],
+      "examples": [
+        "The storm inflicted more damage on the pier in one night than a decade of budget meetings had managed to repair.",
+        "He seemed to enjoy inflicting the seating chart on people who had told him exactly who they could not sit beside.",
+        "The fine the regulator inflicted was small enough that the company wrote it off as a cost of doing business.",
+        "The coach inflicted a punishing set of sprints on anyone who arrived late, and word got round within a week.",
+        "Nobody counts the damage a rewrite inflicts on the people left keeping the old system alive in the meantime."
+      ],
+      "synonyms": [
+        "impose",
+        "administer",
+        "wreak"
+      ],
+      "antonyms": [
+        "spare",
+        "shield"
+      ],
+      "collocations": [
+        "inflict damage",
+        "inflict pain on someone",
+        "inflict a heavy defeat",
+        "inflict casualties"
+      ],
+      "relatedForms": [
+        {
+          "form": "infliction",
+          "pos": "n.",
+          "zh": "施加;强加"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "in-(在…上) + fligere(打击) → 把打击加在某人身上 → 使遭受",
+      "sourceNote": "manual",
+      "addedAt": "2026-07-30"
     }
   ]
 }
