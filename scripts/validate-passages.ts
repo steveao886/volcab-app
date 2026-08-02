@@ -35,7 +35,10 @@ const ARTICLE_LEAK = /\b(a|an)\s+\{\{/i
 
 // Consistent with validate-words.ts: no types wrapped around data in these scripts, since the object being validated may well not match the shape
 const words = JSON.parse(readFileSync('data/words.json', 'utf8'))
-const file = JSON.parse(readFileSync('src/data/passages.json', 'utf8'))
+// Path is overridable so a draft corpus can be checked before it is merged in,
+// matching validate-words and validate-suggestions.
+const passagesPath = process.argv[2] ?? 'src/data/passages.json'
+const file = JSON.parse(readFileSync(passagesPath, 'utf8'))
 
 if (file.version !== 1) { console.error('version must be 1'); process.exit(1) }
 if (!Array.isArray(file.passages)) { console.error('passages must be an array'); process.exit(1) }
