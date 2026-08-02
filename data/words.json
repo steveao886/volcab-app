@@ -21687,49 +21687,6 @@
       "addedAt": "2026-07-30"
     },
     {
-      "id": "zero-sum-game",
-      "headword": "zero-sum game",
-      "phonetic": "/zɪroʊ ˈsʌm ɡeɪm/",
-      "meanings": [
-        {
-          "pos": "n.",
-          "en": "a situation in which whatever one side gains the other side loses exactly, so the total never changes",
-          "zh": "零和博弈;一方所得恰等于另一方所失,总量不变"
-        }
-      ],
-      "examples": [
-        "Treating trade as a zero-sum game ignores the decade when both economies grew fastest and tariffs sat at their lowest.",
-        "Promotions here are a genuine zero-sum game: four senior slots exist, and one of you will take the one that opens.",
-        "The negotiation coach spent an hour proving that a supply contract is no zero-sum game, whatever the sales team wanted to believe.",
-        "He treats every conversation with his brother as a zero-sum game, as though agreeing on one thing would cost him something.",
-        "Screen time is the one zero-sum game in streaming: every minute a rival's video holds is a minute yours does not."
-      ],
-      "synonyms": [
-        "win-lose situation",
-        "fixed pie"
-      ],
-      "antonyms": [
-        "positive-sum game",
-        "win-win"
-      ],
-      "collocations": [
-        "not a zero-sum game",
-        "play a zero-sum game",
-        "treat trade as a zero-sum game"
-      ],
-      "relatedForms": [
-        {
-          "form": "zero-sum",
-          "pos": "adj.",
-          "zh": "零和的(一方所得即另一方所失)"
-        }
-      ],
-      "usageScore": 7,
-      "etymology": "zero(零) + sum(总和) → 博弈论中各方得失相加恒为零",
-      "sourceNote": "manual",
-      "addedAt": "2026-07-30"
-    },
-    {
       "id": "bite-the-bullet",
       "headword": "bite the bullet",
       "phonetic": "/baɪt ðə ˈbʊlɪt/",

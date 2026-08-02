@@ -590,7 +590,7 @@
         "Sameer, on call the night it started, had repaired the first eleven stranded transfers by hand, and he was the one who called that habit the {{slippery-slope|slippery slope}} it turned out to be — by the third week nobody could say which rows the system had written and which a person had typed.",
         "{{more-often-than-not|More often than not}}, a merchant noticed the missing payout before the monitoring did: of the nineteen incidents last quarter, fifteen arrived as support tickets and four as alerts.",
         "The billing service was {{by-no-means|by no means}} the only code path that could strand money this way — refunds and payouts run the same debit-then-credit sequence, written by the same two people in the same week.",
-        "The fix had sat on the backlog since the first incident, blocked by the {{zero-sum-game|zero-sum game}} the two teams played every quarter: an hour engineering spent on reliability was an hour sales counted as taken from the feature list.",
+        "The fix had sat on the backlog since the first incident, blocked by the {{impasse}} the two teams reached every quarter: an hour engineering spent on reliability was an hour sales counted as taken from the feature list.",
         "Nobody in the room defended the change that introduced it: three approvals inside four minutes, and both engineers who signed off said as much out loud.",
         "{{that-said|That said}}, a review of any length would still have missed a failure the architecture permitted, and every action item that came out of the hour was aimed at the architecture rather than at the reviewers."
       ],
