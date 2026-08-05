@@ -8,7 +8,7 @@ import { useApp } from '../state/store'
 import { AccuracyTrend, ReviewBars } from './statsCharts'
 import {
   accuracySeries, accuracyStats, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
-  lapseSummary, masteryBreakdown, retentionStats, shortDate, usageCoverage, windowSummary,
+  masteryBreakdown, retentionStats, shortDate, strugglingSummary, usageCoverage, windowSummary,
 } from './statsDerive'
 import { computeStreak, longestStreak } from './todayStats'
 import './Stats.css'
@@ -16,7 +16,7 @@ import './Stats.css'
 const WINDOW_DAYS = 30
 const FORECAST_DAYS = 7
 /** Five is enough to recognise the pattern; the full list is one tap away in the lapse session. */
-const TOP_LAPSES = 5
+const TOP_STRUGGLING = 5
 
 const pct = (ratio: number) => Math.round(ratio * 100)
 
@@ -59,7 +59,7 @@ export function Stats() {
       mastery: masteryBreakdown(words, progress),
       coverage: usageCoverage(words, progress),
       forecast: dueForecast(words, progress, today, FORECAST_DAYS),
-      lapses: lapseSummary(words, progress, TOP_LAPSES),
+      struggling: strugglingSummary(words, progress, TOP_STRUGGLING),
       totals: cumulativeTotals(progress),
       // Only a complete absence of dailyStats counts as a "never studied"
       // new user — that gets the full-page empty state instead of a
@@ -69,7 +69,7 @@ export function Stats() {
   }, [words, progress, today])
   const {
     days, acc, summary, accStats, retention, streak, best, mastery,
-    totals, coverage, forecast, lapses, hasHistory,
+    totals, coverage, forecast, struggling, hasHistory,
   } = derived
 
   if (!hasHistory) {
@@ -321,33 +321,36 @@ export function Stats() {
         </ul>
       </Card>
 
-      {/* Lapses have been recorded since v1 and drive the "专攻顽固词"
-          session, but nothing ever showed you the list. Naming the five
-          words costing you the most is the whole point — a count alone
-          ("you have 23 stubborn words") isn't actionable. */}
-      {lapses.total > 0 && (
+      {/* Names the words that aren't sticking *right now*, ranked by the
+          scheduler's own difficulty estimate — not the lifetime lapse
+          ledger this card used to be, which visibly never changed (see the
+          2026-08-05 struggling-words spec). An absent card honestly means
+          nothing is currently shaky. The row tag stays in lapse counts
+          because "忘 3 次" is self-explanatory where an ease number is
+          jargon; "偏难" marks the words that were only ever graded hard. */}
+      {struggling.total > 0 && (
         <Card>
           <div className="stats-card-head">
-            <p className="section-title stats-section-title">最容易忘的词</p>
+            <p className="section-title stats-section-title">还没记牢的词</p>
             <Link to="/review?mode=lapses" className="stats-card-head__link">
               专攻 →
             </Link>
           </div>
           <ul className="stats-lapses">
-            {lapses.top.map(({ word, lapses: n }) => (
+            {struggling.top.map(({ word, lapses: n }) => (
               <li key={word.id}>
                 <Link to={`/word/${word.id}`} className="stats-lapse">
                   <span className="word stats-lapse__word" lang="en">
                     {word.headword}
                   </span>
                   <span className="muted stats-lapse__zh">{word.meanings[0]?.zh ?? ''}</span>
-                  <span className="num stats-lapse__count">忘 {n} 次</span>
+                  <span className="num stats-lapse__count">{n > 0 ? `忘 ${n} 次` : '偏难'}</span>
                 </Link>
               </li>
             ))}
           </ul>
           <p className="faint stats-note">
-            共 <span className="num">{lapses.total}</span> 个词至少忘过一次。
+            共 <span className="num">{struggling.total}</span> 个词还没记牢。
           </p>
         </Card>
       )}

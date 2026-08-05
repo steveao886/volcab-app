@@ -1,4 +1,4 @@
-import { rankLapsedWords } from '../lib/queue'
+import { rankStrugglingWords } from '../lib/queue'
 import { addDays } from '../lib/srs'
 import type { Progress, Word } from '../types'
 
@@ -170,28 +170,30 @@ export function dueForecast(words: Word[], progress: Progress, today: string, sp
   return { days: dates.map(date => ({ date, count: counts.get(date)! })), beyond, total }
 }
 
-export interface LapseWord { word: Word; lapses: number }
-export interface LapseSummary {
-  /** Every word with at least one lapse, not just the ones listed below. */
+export interface StrugglingWord { word: Word; lapses: number }
+export interface StrugglingSummary {
+  /** Every word currently struggling, not just the ones listed below. */
   total: number
-  top: LapseWord[]
+  top: StrugglingWord[]
 }
 
 /**
- * The words that keep being forgotten.
+ * The words that aren't sticking right now.
  *
- * Ordering is delegated to rankLapsedWords, the same comparator the drill
- * session uses, so the leaderboard and the session it links to never
- * disagree about which word is worst.
+ * Selection and ordering are delegated to rankStrugglingWords, the same
+ * ranking the drill session uses, so the leaderboard and the session it
+ * links to never disagree about which word is worst. (The session
+ * additionally drops words already reviewed today; the card keeps them —
+ * a word shouldn't blink off it an hour after you drilled it.)
  *
- * It deliberately ranks over **everything that has ever lapsed**, while
- * the session additionally drops words that have since matured or were
- * already reviewed today. The two are meant to differ: this is the
- * stats page, and a record of what a word has cost you shouldn't blink out
- * because you happened to drill it an hour ago.
+ * This used to rank over everything that had ever lapsed, as a lifetime
+ * record. It was rebuilt on the current-difficulty ranking because the
+ * record never visibly changed — see the 2026-08-05 struggling-words spec.
+ * `lapses` still rides along per row: "忘 3 次" explains a word's presence
+ * better than an ease number would, and 0 marks the graded-hard-only words.
  */
-export function lapseSummary(words: Word[], progress: Progress, topN: number): LapseSummary {
-  const ranked = rankLapsedWords(words, progress)
+export function strugglingSummary(words: Word[], progress: Progress, topN: number): StrugglingSummary {
+  const ranked = rankStrugglingWords(words, progress)
   return {
     total: ranked.length,
     top: ranked.slice(0, topN).map(word => ({ word, lapses: progress.words[word.id].lapses })),

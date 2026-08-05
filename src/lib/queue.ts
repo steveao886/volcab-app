@@ -1,4 +1,4 @@
-import { todayStr } from './srs'
+import { INITIAL_EASE, todayStr } from './srs'
 import type { Progress, Word } from '../types'
 
 export interface DailyQueue { due: string[]; fresh: string[] }
@@ -60,10 +60,11 @@ export const LAPSE_SESSION_SIZE = 20
  *
  * 21 days is the conventional young/mature boundary in spaced repetition
  * (it is Anki's default), not a number picked here. The point is that it
- * has to be *some* threshold: `lapses` is a lifetime counter that is only
- * ever incremented (srs.ts is the only writer, and it has no decrement),
- * so without an exit rule a single slip in July puts a word on the
- * stubborn list forever, however well it is known by September.
+ * has to be *some* threshold: ease only ever recovers on "easy" (srs.ts),
+ * so a word carried out to long intervals on "good" grades alone keeps its
+ * dented ease forever — without this second exit, a single slip in July
+ * keeps a word on the struggling list in September, however well it is
+ * held by then.
  */
 export const MATURE_INTERVAL_DAYS = 21
 
@@ -125,48 +126,56 @@ export function buildConsolidateQueue(words: Word[], progress: Progress, now: Da
 }
 
 /**
- * Every word that has ever been forgotten, hardest first.
+ * The words currently costing you, hardest first — not the ones that cost
+ * you the most, ever. This ranking used to select on `lapses > 0` and sort
+ * by lapse count, and the leaderboard built on it looked frozen: lapses is
+ * a lifetime counter with a single writer (pressing "again" on a
+ * review-phase card) and no decrement, and the counts bunch at the low end
+ * anyway — over the live library, all 7 lapsed words sat at exactly 1
+ * lapse, so the raw count separated nothing.
  *
- * Ranking, in order: lapse count, then **ease ascending**, then encounter
- * likelihood, then id for determinism.
+ * A word is struggling while **ease sits below initial**. Ease is the
+ * scheduler's own running difficulty estimate (−0.2 on a lapse, −0.15 on
+ * "hard", recovers only on "easy"; see the comment on INITIAL_EASE for why
+ * a word never in trouble sits exactly at initial), and it is already the
+ * app's difficulty signal — difficultyWeight in quiz.ts weights quiz slots
+ * by the same distance. That gives the list both entries the old one
+ * lacked: a word graded "hard" counts without ever being outright
+ * forgotten, and both exits are earned — ease climbing back to initial, or
+ * the interval reaching maturity (a word can be carried to 21 days on
+ * "good" grades alone, and holding it three weeks is proof enough; see
+ * MATURE_INTERVAL_DAYS).
  *
- * Ease is the tiebreaker that earns its place. Lapse counts bunch up hard
- * at the low end — over the live library, all 7 lapsed words sat at
- * exactly 1 lapse, so the raw count separated nothing and the order was
- * decided entirely by usageScore. Ease is the scheduler's own running
- * estimate of how much trouble a word gives you (it drops 0.2 on a lapse,
- * 0.15 on "hard", and only recovers on "easy"), so among words that have
- * each been forgotten once, the one with the lower ease is the one still
- * costing you.
+ * Ranking: ease ascending, then lapse count, then encounter likelihood,
+ * then id for determinism.
  */
-export function rankLapsedWords(words: Word[], progress: Progress): Word[] {
+export function rankStrugglingWords(words: Word[], progress: Progress): Word[] {
   return words
-    .filter(w => (progress.words[w.id]?.lapses ?? 0) > 0)
+    .filter(w => {
+      const e = progress.words[w.id]
+      return e && e.state !== 'new' && e.ease < INITIAL_EASE && e.intervalDays < MATURE_INTERVAL_DAYS
+    })
     .sort((a, b) => {
       const ea = progress.words[a.id], eb = progress.words[b.id]
-      if (ea.lapses !== eb.lapses) return eb.lapses - ea.lapses
       if (ea.ease !== eb.ease) return ea.ease - eb.ease
+      if (ea.lapses !== eb.lapses) return eb.lapses - ea.lapses
       const d = score(b) - score(a)
       return d !== 0 ? d : a.id.localeCompare(b.id)
     })
 }
 
 /**
- * The drill session for stubborn words: the ranking above, minus the two
- * categories that made the old queue feel frozen.
+ * The drill session for struggling words: the ranking above, minus words
+ * already reviewed today. The session ignores due dates by design, so
+ * without this the same handful of words came back every single time the
+ * page was opened, in an order that was fully deterministic down to the
+ * tiebreakers. A pass through the list empties it for the day and the
+ * entry point on the Today page disappears, which is the feedback the mode
+ * never gave.
  *
- * 1. **Words that have since matured are dropped.** See
- *    MATURE_INTERVAL_DAYS — a list with no exit condition can only grow.
- * 2. **Words already reviewed today are dropped.** The session ignores due
- *    dates by design, so without this the same handful of words came back
- *    every single time the page was opened, in an order that was fully
- *    deterministic down to the tiebreakers. Now a pass through the list
- *    empties it for the day and the entry point on the Today page
- *    disappears, which is the feedback the mode never gave.
- *
- * Both filters read fields that already exist; neither needs a new synced
- * field, and neither can be wrong in a way that loses data — the worst
- * case is that a word waits until tomorrow.
+ * The filter stays here rather than in the ranking because the stats
+ * leaderboard deliberately keeps today's drilled words visible — a word
+ * shouldn't blink off that card an hour after you practiced it.
  */
 export function buildLapseQueue(
   words: Word[],
@@ -174,16 +183,12 @@ export function buildLapseQueue(
   today: string,
   limit = LAPSE_SESSION_SIZE,
 ): string[] {
-  return rankLapsedWords(words, progress)
-    .filter(w => {
-      const e = progress.words[w.id]
-      if (e.intervalDays >= MATURE_INTERVAL_DAYS) return false
-      // lastReviewedAt is an ISO instant; the day it belongs to is the
-      // user's local day, which is what `today` is. Comparing the raw UTC
-      // prefix would drop a word a few hours early or late depending on
-      // the offset.
-      return todayStr(new Date(e.lastReviewedAt)) !== today
-    })
+  return rankStrugglingWords(words, progress)
+    // lastReviewedAt is an ISO instant; the day it belongs to is the
+    // user's local day, which is what `today` is. Comparing the raw UTC
+    // prefix would drop a word a few hours early or late depending on
+    // the offset.
+    .filter(w => todayStr(new Date(progress.words[w.id].lastReviewedAt)) !== today)
     .slice(0, limit)
     .map(w => w.id)
 }

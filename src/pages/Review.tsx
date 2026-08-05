@@ -8,7 +8,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { isEditableTarget } from '../lib/keys'
-import { buildConsolidateQueue, buildLapseQueue, buildQueue, CONSOLIDATE_DELAY_HOURS, rankLapsedWords } from '../lib/queue'
+import { buildConsolidateQueue, buildLapseQueue, buildQueue, CONSOLIDATE_DELAY_HOURS, rankStrugglingWords } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { storage } from '../lib/storage'
 import { todayStr } from '../lib/srs'
@@ -297,8 +297,8 @@ export function Review() {
   const reviewedToday = progress.dailyStats[today]?.reviewed ?? 0
   // Only asked when the drill comes up empty, but the hook can't be
   // conditional; the filter is cheap next to the card render either way.
-  const hasLapsedWords = useMemo(
-    () => (lapseMode ? rankLapsedWords(words, progress).length > 0 : false),
+  const hasStrugglingWords = useMemo(
+    () => (lapseMode ? rankStrugglingWords(words, progress).length > 0 : false),
     [lapseMode, words, progress],
   )
 
@@ -313,7 +313,7 @@ export function Review() {
     // when the second is true would quietly claim the list had been
     // cleared for good. `alreadyDone` is read once on mount, so it still
     // reports the state the session *started* in.
-    const clearedForToday = empty && (alreadyDone || (lapseMode && hasLapsedWords))
+    const clearedForToday = empty && (alreadyDone || (lapseMode && hasStrugglingWords))
     return (
       <Page eyebrow={eyebrow} title={title} back="/">
         <div className="review-done">
@@ -338,7 +338,7 @@ export function Review() {
                 ? empty
                   ? clearedForToday
                     ? '顽固词每天练一遍就够了,明天再来。'
-                    : '还没有反复记错的词 —— 这是好事。'
+                    : '眼下没有记不牢的词 —— 这是好事。'
                   : '这一批错得最多的词都过了一遍。'
                 : empty
                   ? '暂时没有到期或新词需要复习。'

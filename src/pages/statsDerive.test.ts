@@ -3,7 +3,7 @@ import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
 import {
   accuracySeries, accuracyStats, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
-  lapseSummary, masteryBreakdown, retentionStats, shortDate, usageCoverage, windowSummary,
+  masteryBreakdown, retentionStats, shortDate, strugglingSummary, usageCoverage, windowSummary,
 } from './statsDerive'
 import type { DayPoint } from './statsDerive'
 
@@ -132,28 +132,35 @@ describe('dueForecast', () => {
   })
 })
 
-describe('lapseSummary', () => {
-  const lapsed = (lapses: number) => ({
-    state: 'review' as const, ease: 2.5, intervalDays: 3, due: '2026-07-30',
+describe('strugglingSummary', () => {
+  const struggling = (ease: number, lapses = 1) => ({
+    state: 'review' as const, ease, intervalDays: 3, due: '2026-07-30',
     stepIndex: 0, reps: 5, lapses, lastReviewedAt: '2026-07-20T00:00:00Z',
   })
 
-  it('ranks by lapse count and reports the full total behind the top slice', () => {
+  it('ranks by ease ascending and reports the full total behind the top slice', () => {
     const words = [w('a'), w('b'), w('c')]
     const p = emptyProgress()
-    p.words['a'] = lapsed(1)
-    p.words['b'] = lapsed(5)
-    p.words['c'] = lapsed(3)
-    const s = lapseSummary(words, p, 2)
+    p.words['a'] = struggling(2.35)
+    p.words['b'] = struggling(1.5)
+    p.words['c'] = struggling(1.9)
+    const s = strugglingSummary(words, p, 2)
     expect(s.top.map(t => t.word.id)).toEqual(['b', 'c'])
-    expect(s.top.map(t => t.lapses)).toEqual([5, 3])
     expect(s.total).toBe(3)
   })
 
-  it('words that have never lapsed are not "stubborn"', () => {
+  it('carries the lapse count through for the row label — 0 for words that were only ever "hard"', () => {
     const p = emptyProgress()
-    p.words['a'] = lapsed(0)
-    expect(lapseSummary([w('a')], p, 5)).toEqual({ total: 0, top: [] })
+    p.words['a'] = struggling(2.35, 0)
+    p.words['b'] = struggling(1.5, 4)
+    const s = strugglingSummary([w('a'), w('b')], p, 5)
+    expect(s.top.map(t => t.lapses)).toEqual([4, 0])
+  })
+
+  it('a word at initial ease is not struggling, whatever it once cost', () => {
+    const p = emptyProgress()
+    p.words['a'] = struggling(2.5, 6)
+    expect(strugglingSummary([w('a')], p, 5)).toEqual({ total: 0, top: [] })
   })
 })
 
