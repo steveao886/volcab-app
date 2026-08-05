@@ -390,6 +390,32 @@ export function Review() {
         <p className="faint review-drill-note">这是练习:答错会把词提前到今天重新排队,答对不改变复习间隔。</p>
       )}
 
+      {/* Above the card, not below it. It was a sticky bar under the card,
+          and with a long back the user still reported scrolling to grade —
+          and the bar sat overlaying the tail of the card's own content. Up
+          here it is always in the same place, visible from the moment the
+          card flips, and covers nothing. The 1-4 keys are unchanged. */}
+      <div className="review-actions">
+        {flipped ? (
+          <div className="review-grades">
+            <Button variant="grade-again" onClick={() => handleGrade('again')}>
+              重来<span className="review-grade__key">1</span>
+            </Button>
+            <Button variant="grade-hard" onClick={() => handleGrade('hard')}>
+              困难<span className="review-grade__key">2</span>
+            </Button>
+            <Button variant="grade-good" onClick={() => handleGrade('good')}>
+              良好<span className="review-grade__key">3</span>
+            </Button>
+            <Button variant="grade-easy" onClick={() => handleGrade('easy')}>
+              简单<span className="review-grade__key">4</span>
+            </Button>
+          </div>
+        ) : (
+          <p className="muted review-hint">点击卡片或按空格键翻面</p>
+        )}
+      </div>
+
       <Card
         className={`review-card card--interactive ${flipped ? 'review-card--back' : 'review-card--front'} ${isNewCard ? 'review-card--badge' : ''}`}
         onClick={toggleFlip}
@@ -422,27 +448,6 @@ export function Review() {
         </div>
         {flipped && <ReviewCardBack word={curWord} />}
       </Card>
-
-      <div className="review-actions">
-        {flipped ? (
-          <div className="review-grades">
-            <Button variant="grade-again" onClick={() => handleGrade('again')}>
-              重来<span className="review-grade__key">1</span>
-            </Button>
-            <Button variant="grade-hard" onClick={() => handleGrade('hard')}>
-              困难<span className="review-grade__key">2</span>
-            </Button>
-            <Button variant="grade-good" onClick={() => handleGrade('good')}>
-              良好<span className="review-grade__key">3</span>
-            </Button>
-            <Button variant="grade-easy" onClick={() => handleGrade('easy')}>
-              简单<span className="review-grade__key">4</span>
-            </Button>
-          </div>
-        ) : (
-          <p className="muted review-hint">点击卡片或按空格键翻面</p>
-        )}
-      </div>
 
       {flipped && (
         <div className="review-cull">

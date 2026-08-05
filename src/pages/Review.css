@@ -219,29 +219,22 @@
 }
 
 /* --- Flip hint / grade buttons ----------------------------------------------------
-   Pinned above the mobile bottom tab bar: this is the single most-clicked
-   action on the whole site, and after flipping, a long entry (3 meanings +
-   examples + every tag row) could easily push it below the fold — having
-   to scroll just to grade is unacceptable. Same technique as .page__head
-   sticking to the top and .tabbar sticking to the bottom (see layout.css),
-   just sticking to "the bottom of the page content area" instead of "the
-   bottom of the viewport" this time — position:sticky never covers the
-   content ahead of it (before the card scrolls up to this position, it
-   just sits in normal document flow and never becomes an overlay pressing
-   down on anything), so no extra "is the card tall enough" check is
-   needed. */
+   Above the card, in plain flow. This was a sticky bar below the card —
+   the claim was that sticky "never covers the content ahead of it", which
+   is exactly backwards for bottom-stuck elements: while the element's flow
+   position is still below the viewport it gets pulled up INTO view, laid
+   over whatever the card is showing at the fold. In practice it sat on top
+   of the tail of long entries, and the user still reported scrolling to
+   grade. Up here it is visible from the moment the page renders, always in
+   the same spot, and overlays nothing. min-height keeps the hint and the
+   four buttons the same height, so the card doesn't jump when flipping. */
 
 .review-actions {
-  position: sticky;
-  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
-  z-index: var(--z-bar);
   min-height: var(--tap);
   display: grid;
   align-items: center;
-  margin-top: var(--sp-2);
-  padding-block: var(--sp-3);
-  background: var(--bg);
-  border-top: 1px solid var(--rule);
+  margin-bottom: var(--sp-2);
+  padding-block: var(--sp-2);
 }
 
 .review-hint {
@@ -273,18 +266,12 @@
   opacity: 0.75;
 }
 
-/* On wider desktop screens, the grade buttons don't need to crowd
-   together; on desktop the tab bar becomes a side rail (see layout.css),
-   so there's no more fixed tab bar taking up space at the bottom, and the
-   bottom offset can just be zeroed out. */
+/* On wider desktop screens, the grade buttons don't need to stretch the
+   whole content width. */
 @media (min-width: 900px) {
   .review-grades {
     max-width: 480px;
     margin-inline: auto;
-  }
-
-  .review-actions {
-    bottom: 0;
   }
 }
 
