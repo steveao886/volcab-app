@@ -4,6 +4,7 @@ import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Chip } from '../components/Chip'
 import { Page } from '../components/Page'
+import { preparePronunciation } from '../lib/pronounce'
 import { generateAudioQuiz, generateContrastQuiz, generateQuiz } from '../lib/quiz'
 import type { QuizQuestion } from '../lib/quiz'
 import type { Passage } from '../lib/passage'
@@ -74,6 +75,17 @@ function QuizSession({
   const [index, setIndex] = useState(0)
   const [score, setScore] = useState(0)
   const [wrongIds, setWrongIds] = useState<string[]>([])
+
+  // Warm every audio question's recording at session start rather than per
+  // card. The per-card prepare only begins the moment that card mounts —
+  // which is the same moment its auto-play fires, so it can never win that
+  // race. Warming the whole set here means questions after the first play
+  // the human recording, not the server voice. (`questions` is fixed for
+  // the session — see the lazy initializer above — so this runs once.)
+  useEffect(() => {
+    if (mode !== 'audio') return
+    for (const q of questions) preparePronunciation(q.prompt)
+  }, [mode, questions])
   // recordQuiz should only ever fire once, at the moment the results page
   // is reached; no subsequent re-render (e.g. a global state update
   // triggered by recordQuiz itself) may fire it a second time.
@@ -89,9 +101,15 @@ function QuizSession({
   const total = questions.length
   const done = index >= total && total > 0
 
-  const handleAnswered = useCallback((correct: boolean, wordId: string) => {
-    if (correct) setScore(s => s + 1)
-    else setWrongIds(ids => [...ids, wordId])
+  const handleAnswered = useCallback((correct: boolean, q: QuizQuestion) => {
+    if (correct) { setScore(s => s + 1); return }
+    // A missed contrast question marks **both** words wrong. Picking the
+    // wrong twin is not a fact about one word — the confusion lives in the
+    // pair, and pulling only the answer's due date forward would leave the
+    // word actually chosen (the misunderstood one) unreinforced. Deduped
+    // because the same word can sit in several pairs within one round.
+    const ids = q.contrastId !== undefined ? [q.wordId, q.contrastId] : [q.wordId]
+    setWrongIds(prev => [...new Set([...prev, ...ids])])
   }, [])
 
   const handleNext = useCallback(() => {
@@ -196,7 +214,7 @@ function QuizSession({
         <QuizQuestionView
           key={index}
           question={q}
-          onAnswered={correct => handleAnswered(correct, q.wordId)}
+          onAnswered={correct => handleAnswered(correct, q)}
           onNext={handleNext}
           nextLabel={isLast ? '查看成绩' : '下一题'}
         />
