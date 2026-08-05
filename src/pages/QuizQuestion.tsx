@@ -8,7 +8,7 @@ import { TextInput } from '../components/TextInput'
 import { optionIndexFromKey } from '../lib/keys'
 import type { QuizQuestion, QuizType } from '../lib/quiz'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
-import { speak } from '../lib/tts'
+import { preparePronunciation, pronounce } from '../lib/pronounce'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
 
@@ -88,12 +88,18 @@ export function QuizQuestionView({ question, onAnswered, onNext, nextLabel }: Qu
  */
 function AudioPrompt({ text }: { text: string }) {
   useEffect(() => {
-    speak(text)
+    // The recording is usually not warmed yet on the first question (this
+    // component IS the first sight of the word), so auto-play may fall back
+    // to TTS while the fetch runs; the replay button then gets the real
+    // recording. That ordering is acceptable — the fallback is what the
+    // whole feature degrades to anyway.
+    preparePronunciation(text)
+    pronounce(text)
   }, [text])
 
   return (
     <div className="quiz-audio">
-      <Button type="button" variant="secondary" onClick={() => speak(text)} aria-label="再播放一次读音">
+      <Button type="button" variant="secondary" onClick={() => pronounce(text)} aria-label="再播放一次读音">
         <Icon name="speak" />
         再听一遍
       </Button>

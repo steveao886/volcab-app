@@ -12,7 +12,7 @@ import { buildConsolidateQueue, buildLapseQueue, buildQueue, CONSOLIDATE_DELAY_H
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { storage } from '../lib/storage'
 import { todayStr } from '../lib/srs'
-import { speak } from '../lib/tts'
+import { preparePronunciation, pronounce } from '../lib/pronounce'
 import { ReviewCardBack } from './ReviewCard'
 import { advance, buildSessionQueue, currentId, dropCurrent, isDone, remaining } from './reviewQueue'
 import type { SessionQueue } from './reviewQueue'
@@ -117,6 +117,13 @@ export function Review() {
   const isNewCard = curId !== undefined && (!curEntry || curEntry.state === 'new')
   const flipped = curId !== undefined && manualFlip?.id === curId ? manualFlip.value : isNewCard
   const finished = isDone(queue)
+
+  // Warm the recording as soon as the card is on screen, so the speak tap
+  // plays a prepared file synchronously — the iOS gesture rule in
+  // lib/pronounce.ts is the reason this can't wait until the tap itself.
+  useEffect(() => {
+    if (curWord !== undefined) preparePronunciation(curWord.headword)
+  }, [curWord])
 
   const toggleFlip = useCallback(() => {
     if (curId === undefined) return
@@ -407,7 +414,7 @@ export function Review() {
             aria-label="发音"
             onClick={(e) => {
               e.stopPropagation() // Stops clicking to speak from also flipping the card
-              speak(curWord.headword)
+              pronounce(curWord.headword)
             }}
           >
             <Icon name="speak" />

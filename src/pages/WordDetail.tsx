@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
@@ -9,7 +9,7 @@ import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { StateDot } from '../components/StateDot'
 import { SyncStatus } from '../components/SyncStatus'
-import { speak } from '../lib/tts'
+import { preparePronunciation, pronounce } from '../lib/pronounce'
 import { useApp } from '../state/store'
 import type { Word, WordState } from '../types'
 import { wordState } from './libraryFilter'
@@ -46,6 +46,11 @@ export function WordDetail() {
   const lastWordRef = useRef<Word | undefined>(undefined)
   if (liveWord !== undefined) lastWordRef.current = liveWord
   const word = liveWord ?? (deleting ? lastWordRef.current : undefined)
+  // Warm the recording while the page is read, so the speak tap plays it
+  // synchronously — see lib/pronounce.ts for the iOS gesture rule.
+  useEffect(() => {
+    if (word !== undefined) preparePronunciation(word.headword)
+  }, [word])
 
   async function handleSave(updated: Word) {
     setSaving(true)
@@ -117,7 +122,7 @@ export function WordDetail() {
         <p className="ipa" lang="en" aria-hidden="true">
           {word.phonetic}
         </p>
-        <Button variant="ghost" size="sm" onClick={() => speak(word.headword)} aria-label={`朗读 ${word.headword}`}>
+        <Button variant="ghost" size="sm" onClick={() => pronounce(word.headword)} aria-label={`朗读 ${word.headword}`}>
           <Icon name="speak" size={18} />
           发音
         </Button>

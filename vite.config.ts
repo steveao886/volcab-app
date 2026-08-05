@@ -48,6 +48,24 @@ export default defineConfig({
           },
         ],
       },
+      workbox: {
+        // Pronunciation recordings (see src/lib/pronounce.ts). CacheFirst
+        // against the same bucket preparePronunciation() fills with
+        // cache.add(): workbox matches by URL, so a body warmed at prepare
+        // time is served from cache at playback time — which is what lets
+        // `new Audio(url)` replay a once-heard word offline. An mp3 never
+        // changes under its URL, so revalidation would be pure waste.
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/api\.dictionaryapi\.dev\/media\//,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'volcab-pronunciations',
+              expiration: { maxEntries: 600 },
+            },
+          },
+        ],
+      },
     }),
   ],
   test: {
