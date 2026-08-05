@@ -7,10 +7,13 @@ import { Icon } from '../components/Icon'
 import { TextInput } from '../components/TextInput'
 import { optionIndexFromKey } from '../lib/keys'
 import type { QuizQuestion, QuizType } from '../lib/quiz'
+import { contrastNoteKey } from '../lib/contrastNotes'
+import type { ContrastNotesFile } from '../lib/contrastNotes'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
+import contrastNotesFile from '../data/contrastNotes.json'
 
 /** Instructions for each question type. */
 const TYPE_LABEL: Record<QuizType, string> = {
@@ -88,11 +91,10 @@ export function QuizQuestionView({ question, onAnswered, onNext, nextLabel }: Qu
  */
 function AudioPrompt({ text }: { text: string }) {
   useEffect(() => {
-    // The recording is usually not warmed yet on the first question (this
-    // component IS the first sight of the word), so auto-play may fall back
-    // to TTS while the fetch runs; the replay button then gets the real
-    // recording. That ordering is acceptable — the fallback is what the
-    // whole feature degrades to anyway.
+    // Even on the word's very first sighting this now plays a *correct*
+    // voice: pronounce() falls back to the server voice, not the local
+    // engine, when no human recording is resolved yet. The prepare warms
+    // the human recording for the replay button and later rounds.
     preparePronunciation(text)
     pronounce(text)
   }, [text])
@@ -131,9 +133,15 @@ function ContrastCard({ answerId, otherId }: { answerId: string; otherId: string
   const b = words.find(w => w.id === otherId)
   if (a === undefined || b === undefined) return null
 
+  // Authored explanation of what separates the pair — the question the raw
+  // fields below can't answer. Bundled content; a pair without one shows
+  // nothing extra (see lib/contrastNotes.ts).
+  const note = (contrastNotesFile as ContrastNotesFile).notes[contrastNoteKey(answerId, otherId)]
+
   return (
     <div className="quiz-contrast">
       <p className="quiz-q__label">两个词的差别</p>
+      {note !== undefined && <p className="quiz-contrast__note">{note}</p>}
       <ContrastSide word={a} isAnswer />
       <ContrastSide word={b} isAnswer={false} />
     </div>

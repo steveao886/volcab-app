@@ -207,6 +207,18 @@
   border-top: 1px solid var(--rule);
 }
 
+/* The authored "what separates these two" line. Vermilion rule on the left
+   — the annotation language the site uses for etymology and example
+   emphasis — because this is the one sentence on the card written *about*
+   the pair rather than copied from either entry. */
+.quiz-contrast__note {
+  padding-left: var(--sp-3);
+  border-left: 2px solid var(--accent);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text);
+}
+
 .quiz-contrast__side {
   display: grid;
   gap: var(--sp-1);
