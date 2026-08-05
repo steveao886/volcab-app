@@ -64,6 +64,21 @@ export default defineConfig({
               expiration: { maxEntries: 600 },
             },
           },
+          // The server-voice tier (see youdaoUrl in src/lib/pronounce.ts).
+          // Youdao sends no CORS headers, so these arrive as opaque
+          // responses — cacheable and playable by an <audio> element, but
+          // only if cacheableResponse admits status 0; CacheFirst's default
+          // (200 only) would silently never cache them and every replay
+          // would go back to the network.
+          {
+            urlPattern: /^https:\/\/dict\.youdao\.com\/dictvoice/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'volcab-pronunciations',
+              expiration: { maxEntries: 600 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
         ],
       },
     }),
