@@ -8,7 +8,7 @@ import { TextInput } from '../components/TextInput'
 import { isSoundEnabled } from '../lib/sound'
 import { clampIntervalModifier, MAX_INTERVAL_MODIFIER, MIN_INTERVAL_MODIFIER, todayStr } from '../lib/srs'
 import { loadInputs, recommendIntervalModifier, recommendNewPerDay, retentionWindowDays } from '../lib/tuning'
-import { dailySeries, dueForecast, retentionStats } from './statsDerive'
+import { dailySeries, retentionStats } from './statsDerive'
 import { storage } from '../lib/storage'
 import { pendingOps, pendingStaging } from '../state/session'
 import { useApp } from '../state/store'
@@ -29,7 +29,6 @@ const APP_VERSION = '开发预览版'
  *  is what the user is doing *now*, not what they managed a month ago. */
 const RETENTION_WINDOW_DAYS = 30
 const LOAD_WINDOW_DAYS = 14
-const FORECAST_DAYS = 7
 
 const NEW_PER_DAY_MIN = 1
 const NEW_PER_DAY_MAX = 50
@@ -129,12 +128,14 @@ export function Settings() {
     // Only days since the modifier last moved count as evidence about it.
     const window = retentionWindowDays(storage.get<string>('intervalTunedOn'), today, RETENTION_WINDOW_DAYS)
     const retention = retentionStats(progress, today, window)
-    const forecast = dueForecast(words, progress, today, FORECAST_DAYS)
     return {
       modifierAdvice: recommendIntervalModifier(retention.correct, retention.reviewed, progress.settings.intervalModifier),
       newPerDayAdvice: recommendNewPerDay(
         progress.settings.newPerDay,
-        loadInputs(words, progress, dailySeries(progress, today, LOAD_WINDOW_DAYS), forecast.days.map(d => d.count)),
+        // No forecast horizon: loadInputs reads the daily load straight off
+        // the intervals now, so this advice no longer changes with how far
+        // ahead the stats chart happens to look.
+        loadInputs(words, progress, dailySeries(progress, today, LOAD_WINDOW_DAYS)),
       ),
     }
   }, [words, progress])

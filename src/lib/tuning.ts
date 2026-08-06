@@ -1,3 +1,4 @@
+import { LAPSE_SESSION_SIZE, rankStrugglingWords } from './queue'
 import { clampIntervalModifier, LEARNING_STEPS } from './srs'
 import type { Progress, Word } from '../types'
 
@@ -119,38 +120,63 @@ export interface LoadInputs {
   /** Mean cards actually graded per active day — what the user has demonstrably sustained. */
   sustained: number
   activeDays: number
-  /** Mean words per day coming due over the forecast horizon. */
+  /** Steady-state cards a day from the schedule alone: the sum of 1/interval over every started word. */
   duePerDay: number
+  /** Cards the lapse drill costs on a day it is taken — the struggling words, capped at the session size. */
+  lapseDrill: number
   /** Words never started; when this hits zero, newPerDay stops meaning anything. */
   unlearned: number
 }
 
 /**
+ * What a new word costs on the day it is learned.
+ *
+ * LEARNING_STEPS grades to graduate, **plus one**: graduating on "good"
+ * lands the word at an interval of GRADUATE_DAYS = 1, which is exactly the
+ * consolidation drill's ceiling (CONSOLIDATE_MAX_INTERVAL_DAYS), so it is
+ * seen a third time the same evening. Charging only the learning steps was
+ * a third of the error that produced "126 cards a day means you have room
+ * for 50 new words".
+ */
+const GRADES_PER_NEW_WORD = LEARNING_STEPS + 1
+
+/**
  * Whether the daily new-word count fits the review load it creates.
  *
- * The comparison is between two card counts per day: what the schedule is
- * about to ask for, and what the user has actually been doing. Projected
- * load is the words coming due plus the cost of the day's new words, which
- * is LEARNING_STEPS grades each — that is the count from srs.ts, not an
- * estimate, since a new word answered "good" is graded once per step before
- * it graduates.
+ * The comparison is between two card counts per day: what a day at this
+ * setting actually costs, and what the user has been doing. **Both sides
+ * must count the same cards.** dailyStats.reviewed — the source of
+ * `sustained` — is written by practiceGrade as well as grade (see
+ * store.tsx; the drills are deliberately counted so they keep the streak
+ * alive), so the projection has to include the drills too, or the drill
+ * work reads as spare capacity for new words. It did, and the advice was
+ * to more than double an intake that was already full.
+ *
+ * The lapse drill is a fixed daily cost that does not move with the
+ * intake, so it comes off the top on both sides.
+ *
+ * Not modelled, on purpose: "again" re-shows, which are a property of the
+ * day rather than of the setting; and the future reviews today's new words
+ * will generate, which enter duePerDay as soon as they exist. See
+ * docs/superpowers/specs/2026-08-06-daily-load-design.md.
  *
  * Recommending *upward* additionally requires unlearned words to exist.
  * There is no point advising a bigger daily intake against an empty pool.
  */
 export function recommendNewPerDay(current: number, load: LoadInputs): NewPerDayAdvice {
-  const { sustained, activeDays, duePerDay, unlearned } = load
+  const { sustained, activeDays, duePerDay, lapseDrill, unlearned } = load
   if (activeDays < MIN_LOAD_DAYS || sustained <= 0) {
     return { kind: 'insufficient', activeDays, needed: MIN_LOAD_DAYS }
   }
   if (unlearned === 0) return { kind: 'exhausted' }
 
-  const projected = duePerDay + current * LEARNING_STEPS
+  const fixed = duePerDay + lapseDrill
+  const projected = fixed + current * GRADES_PER_NEW_WORD
   const ratio = projected / sustained
   if (Math.abs(ratio - 1) <= LOAD_TOLERANCE) return { kind: 'ok', projected, sustained }
 
   // Solve for the intake that makes the projection match what is sustainable.
-  const fitted = Math.round((sustained - duePerDay) / LEARNING_STEPS)
+  const fitted = Math.round((sustained - fixed) / GRADES_PER_NEW_WORD)
   const to = Math.min(50, Math.max(1, fitted))
   // Never advise adding words that don't exist, and never advise a change the
   // clamp just undid.
@@ -165,15 +191,45 @@ export function loadInputs(
   words: Word[],
   progress: Progress,
   recentDays: { reviewed: number }[],
-  dueNext: number[],
 ): LoadInputs {
+  // Per **calendar** day, from the first day of study in the window onward.
+  //
+  // This used to divide by the active days alone, on the reasoning that a
+  // day off isn't evidence of a smaller appetite. But the projection it gets
+  // compared against is per calendar day, and the schedule doesn't take the
+  // day off — the words come due anyway and land on the next session. Two
+  // rest days a week inflated the measured capacity by 40% and the advice
+  // read the difference as room for more new words.
+  //
+  // Days *before* the first review in the window are still excluded: they
+  // are days the habit didn't exist yet, and counting them would tell
+  // someone a week into the app that they can't sustain what they are
+  // visibly sustaining.
+  const firstActive = recentDays.findIndex(d => d.reviewed > 0)
+  const span = firstActive === -1 ? 0 : recentDays.length - firstActive
   const active = recentDays.filter(d => d.reviewed > 0)
-  const sustained = active.length === 0 ? 0 : active.reduce((n, d) => n + d.reviewed, 0) / active.length
-  const duePerDay = dueNext.length === 0 ? 0 : dueNext.reduce((n, c) => n + c, 0) / dueNext.length
+  const sustained = span === 0 ? 0 : recentDays.reduce((n, d) => n + d.reviewed, 0) / span
+
+  // Steady state, not a forecast window. A word on a five-day interval is a
+  // fifth of a card a day, forever; a word still in the learning phase
+  // (intervalDays 0) is one a day. This replaced a mean over the next seven
+  // days of `due` dates, which counted each word at most once however often
+  // it was really going to come round — undercounting exactly the short
+  // intervals that fill the day, and by an amount that depended on how far
+  // ahead the chart happened to look.
+  let duePerDay = 0
   let unlearned = 0
   for (const w of words) {
     const e = progress.words[w.id]
-    if (!e || e.state === 'new') unlearned++
+    if (!e || e.state === 'new') { unlearned++; continue }
+    duePerDay += 1 / Math.max(1, e.intervalDays)
   }
-  return { sustained, activeDays: active.length, duePerDay, unlearned }
+
+  return {
+    sustained,
+    activeDays: active.length,
+    duePerDay,
+    lapseDrill: Math.min(LAPSE_SESSION_SIZE, rankStrugglingWords(words, progress).length),
+    unlearned,
+  }
 }
