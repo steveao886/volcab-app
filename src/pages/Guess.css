@@ -1,0 +1,142 @@
+/* --- 猜词 --------------------------------------------------------------------
+   The prompt is the whole question, so it gets the weight a headword gets
+   on other pages: this is the one screen where the Chinese leads, because
+   the English is the thing being withheld. */
+
+.guess-progress {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+  font-size: var(--fs-sm);
+}
+
+.guess-progress__points {
+  margin-inline-start: auto;
+  color: var(--text-muted);
+}
+
+.guess-prompt {
+  font-size: var(--fs-md);
+  line-height: var(--lh-body);
+  margin-bottom: var(--sp-4);
+}
+
+.guess-actions {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+/* A wrong guess costs nothing, so it must not read as a penalty. Muted
+   body text, not vermilion — vermilion is for annotation and destructive
+   actions, and being wrong here is neither. */
+.guess-miss {
+  margin-top: var(--sp-3);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+.guess-answer {
+  font-size: var(--fs-word);
+  line-height: 1.1;
+  margin-bottom: var(--sp-2);
+}
+
+.guess-verdict {
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  margin-bottom: var(--sp-4);
+}
+
+/* --- The clue shop ---------------------------------------------------------
+   Wraps rather than sitting on a grid: a word can offer anywhere from three
+   to six clues (40% have no 要点, and any clue whose text can't be masked is
+   withheld), so a fixed column count would leave holes on most words. */
+
+.guess-shop__title {
+  margin-bottom: var(--sp-3);
+}
+
+.guess-shop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+/* An unbought clue is a button sized to its label; a bought one becomes a
+   full-width line, because its text is a sentence and must not be squeezed
+   into a chip. */
+.guess-clue {
+  flex: 0 1 auto;
+}
+
+.guess-clue:has(.guess-clue__text) {
+  flex: 1 0 100%;
+}
+
+.guess-clue__price {
+  color: var(--text-faint);
+}
+
+.guess-clue__text {
+  display: flex;
+  gap: var(--sp-3);
+  padding-left: var(--sp-3);
+  border-left: 1px solid var(--rule);
+  line-height: 1.7;
+}
+
+.guess-clue__label {
+  flex: 0 0 auto;
+  color: var(--text-faint);
+  font-size: var(--fs-sm);
+}
+
+/* --- Settlement ------------------------------------------------------------- */
+
+.guess-summary {
+  text-align: center;
+}
+
+.guess-summary__score {
+  font-size: var(--fs-2xl);
+  line-height: 1.1;
+}
+
+.guess-summary__unaided {
+  margin-top: var(--sp-2);
+  color: var(--text-muted);
+}
+
+.guess-summary__record {
+  margin-top: var(--sp-2);
+  color: var(--accent);
+  font-size: var(--fs-sm);
+}
+
+.guess-recap {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.guess-recap__row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+}
+
+.guess-recap__word {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.guess-recap__tag {
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+}
+
+.guess-recap__score {
+  margin-inline-start: auto;
+  color: var(--text-muted);
+}

@@ -94,7 +94,7 @@ const isDailyStat = (v: unknown) =>
   && typeof v.correct === 'number' && typeof v.quizTaken === 'number'
 
 /**
- * The optional top-level fields — bestSprint, and now `dismissed` — are
+ * The optional top-level fields — bestSprint, bestGuess, `dismissed` — are
  * deliberately **not** checked here, matching how isMeaning ignores `share`
  * and isDailyStat ignores the retention counters.
  *

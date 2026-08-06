@@ -130,6 +130,41 @@ describe("mergeProgress's bestSprint", () => {
   })
 })
 
+describe("mergeProgress's bestGuess", () => {
+  const withGuess = (score: number, date: string) => {
+    const p = emptyProgress()
+    p.bestGuess = { score, date }
+    return p
+  }
+
+  it('takes the higher count of no-clue solves, ties going to the earlier date', () => {
+    expect(mergeProgress(withGuess(3, '2026-08-01'), withGuess(6, '2026-08-05')).bestGuess)
+      .toEqual({ score: 6, date: '2026-08-05' })
+    expect(mergeProgress(withGuess(6, '2026-08-05'), withGuess(6, '2026-08-01')).bestGuess)
+      .toEqual({ score: 6, date: '2026-08-01' })
+  })
+
+  it('survives a device on an older build that has never heard of it', () => {
+    expect(mergeProgress(emptyProgress(), withGuess(4, '2026-08-02')).bestGuess)
+      .toEqual({ score: 4, date: '2026-08-02' })
+    expect(mergeProgress(withGuess(4, '2026-08-02'), emptyProgress()).bestGuess)
+      .toEqual({ score: 4, date: '2026-08-02' })
+  })
+
+  it('is omitted rather than written as undefined when neither side has one', () => {
+    // mergeProgress rebuilds the result from named fields, so a new optional
+    // field that isn't listed there is silently dropped the first time two
+    // devices sync. This is the test that catches that.
+    const m = mergeProgress(emptyProgress(), emptyProgress())
+    expect(Object.hasOwn(m, 'bestGuess')).toBe(false)
+  })
+
+  it('keeps a zero — a session where nothing came unaided is still a session', () => {
+    expect(mergeProgress(withGuess(0, '2026-08-01'), emptyProgress()).bestGuess)
+      .toEqual({ score: 0, date: '2026-08-01' })
+  })
+})
+
 describe("mergeProgress's dismissed suggestions", () => {
   const withDismissed = (...ids: string[]): Progress => ({ ...emptyProgress(), dismissed: ids })
 

@@ -71,6 +71,8 @@ export interface AppActions {
   recordQuiz(correct: number, total: number, wrongIds: string[]): void
   /** Sprint settlement: like recordQuiz, only pulls forward the due date of missed words, plus refreshes the personal best score */
   recordSprint(score: number, wrongIds: string[]): void
+  /** 猜词 settlement: same due-date-only contract, plus the best count of no-clue solves */
+  recordGuess(wrongIds: string[], unaided: number): void
   /** Add or edit an entry (upsert by id), pushes words.json immediately */
   saveWord(word: Word): Promise<void>
   /** Delete entries, also clearing their progress records */
@@ -730,6 +732,37 @@ export function AppProvider({ children }: { children: ReactNode }) {
     void flushProgress()
   }, [commitProgress, flushProgress])
 
+  /**
+   * 猜词 settlement. Same contract as recordQuiz — a missed word only gets
+   * its due date pulled forward, ease and interval untouched — plus the
+   * personal best, which for this mode is **how many words were solved with
+   * no clue bought**, not the session score. The score moves with which
+   * words came up and how freely the clue shop was used; the unaided count
+   * only goes up when the words are genuinely in your head.
+   *
+   * Strict greater-than, like recordSprint: a tie must not rewrite the
+   * record date to today, or it would disagree with merge.ts's "equal score
+   * keeps the earlier date" and the two would fight across a sync.
+   */
+  const recordGuess = useCallback((wrongIds: string[], unaided: number) => {
+    const now = new Date()
+    const day = todayStr(now)
+    const cur = stateRef.current.progress
+    const stat = { ...(cur.dailyStats[day] ?? emptyStat()) }
+    stat.quizTaken += 1
+    const words = { ...cur.words }
+    for (const id of wrongIds) {
+      const e = words[id]
+      if (e) words[id] = { ...e, due: day, lastReviewedAt: now.toISOString() }
+    }
+    const next: Progress = { ...cur, words, dailyStats: { ...cur.dailyStats, [day]: stat } }
+    if (cur.bestGuess === undefined || unaided > cur.bestGuess.score) {
+      next.bestGuess = { score: unaided, date: day }
+    }
+    commitProgress(next)
+    void flushProgress()
+  }, [commitProgress, flushProgress])
+
   const saveWord = useCallback(async (word: Word): Promise<void> => {
     const words = applyWordOps(stateRef.current.words, [{ kind: 'upsert', word }])
     cacheWords(words)
@@ -814,11 +847,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AppContextValue>(() => ({
     ...state,
-    login, logout, grade, recordLapseDrill, recordConsolidation, dismissSuggestion, recordQuiz, recordSprint, saveWord, deleteWords, addStaging,
+    login, logout, grade, recordLapseDrill, recordConsolidation, dismissSuggestion, recordQuiz, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll,
     ...(import.meta.env.DEV ? { enterDemoMode } : {}),
   }), [
-    state, login, logout, grade, recordLapseDrill, recordConsolidation, dismissSuggestion, recordQuiz, recordSprint, saveWord, deleteWords, addStaging,
+    state, login, logout, grade, recordLapseDrill, recordConsolidation, dismissSuggestion, recordQuiz, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll, enterDemoMode,
   ])
 

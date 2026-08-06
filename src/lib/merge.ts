@@ -1,4 +1,4 @@
-import type { DailyStat, Progress, SprintRecord } from '../types'
+import type { BestRecord, DailyStat, Progress } from '../types'
 
 /**
  * Merges one optional counter the same way as the required ones (higher
@@ -18,12 +18,16 @@ function maxOptional(
 }
 
 /**
- * The sprint record with the higher score wins; **on a tie, the earlier date wins** — the
+ * The record with the higher score wins; **on a tie, the earlier date wins** — the
  * first time it was achieved is the record, and matching it later shouldn't overwrite the
  * date to today. If one side is missing (progress pushed up from an older App version
  * lacks this field), the other side wins; if both are missing, returns undefined.
+ *
+ * Used for both personal bests — the sprint's and 猜词's. They are the same
+ * shape and want the same tie-break, so they share the rule rather than
+ * growing a second copy of it that could drift.
  */
-function pickBestSprint(a: SprintRecord | undefined, b: SprintRecord | undefined): SprintRecord | undefined {
+function pickBest(a: BestRecord | undefined, b: BestRecord | undefined): BestRecord | undefined {
   if (a === undefined) return b
   if (b === undefined) return a
   if (a.score !== b.score) return a.score > b.score ? a : b
@@ -95,7 +99,8 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
   const rt = remote.settings.updatedAt ?? ''
   const settings = rt > lt ? remote.settings : local.settings
 
-  const bestSprint = pickBestSprint(local.bestSprint, remote.bestSprint)
+  const bestSprint = pickBest(local.bestSprint, remote.bestSprint)
+  const bestGuess = pickBest(local.bestGuess, remote.bestGuess)
   const dismissed = unionDismissed(local.dismissed, remote.dismissed)
 
   // When neither side has one of these, **omit the key entirely** rather than writing
@@ -108,6 +113,7 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
   return {
     version: 1, settings, words, dailyStats,
     ...(bestSprint === undefined ? {} : { bestSprint }),
+    ...(bestGuess === undefined ? {} : { bestGuess }),
     ...(dismissed === undefined ? {} : { dismissed }),
   }
 }

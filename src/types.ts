@@ -115,8 +115,13 @@ export interface DailyStat {
   reviewPhaseCorrect?: number
 }
 
-/** Personal best score in the 60-second sprint. date is the day it was set (YYYY-MM-DD). */
-export interface SprintRecord { score: number; date: string }
+/**
+ * A personal best: the number reached, and the day it was reached
+ * (YYYY-MM-DD). Shared by the two modes that keep one — the 60-second
+ * sprint and 猜词 — because a single-user app has no other scoreboard than
+ * the previous you, and both of them are that same shape.
+ */
+export interface BestRecord { score: number; date: string }
 
 export interface Progress {
   version: 1
@@ -155,7 +160,18 @@ export interface Progress {
    * data by isProgress and rejected from the merge.
    * Merge rule is in lib/merge.ts — the higher score wins, ties go to the earlier date.
    */
-  bestSprint?: SprintRecord
+  bestSprint?: BestRecord
+  /**
+   * Best 猜词 session: **how many words were solved with no clue bought**,
+   * not the session score. The score moves with which words happened to
+   * come up and how generous you felt with the clue shop; the unaided count
+   * is the thing that only goes up when the words are actually in your head.
+   *
+   * Optional and merged by the higher value, exactly like bestSprint — a
+   * device on an older build pushes progress without the key, and that has
+   * to read as "no record yet", never as "the record was reset".
+   */
+  bestGuess?: BestRecord
   /**
    * Ids of suggested words the user rejected, so a later suggestion batch
    * never offers them again. Accepted suggestions leave no trace here —
