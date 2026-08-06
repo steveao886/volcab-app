@@ -9,7 +9,10 @@ import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { StateDot } from '../components/StateDot'
 import { SyncStatus } from '../components/SyncStatus'
+import wordNotesFile from '../data/wordNotes.json'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
+import { wordNote } from '../lib/wordNotes'
+import type { WordNotesFile } from '../lib/wordNotes'
 import { useApp } from '../state/store'
 import type { Word, WordState } from '../types'
 import { wordState } from './libraryFilter'
@@ -98,6 +101,7 @@ export function WordDetail() {
   }
 
   const entry = progress.words[word.id]
+  const note = wordNote(wordNotesFile as WordNotesFile, word.id)
   const state = wordState(word, progress)
   const hasTags = word.synonyms.length > 0 || word.antonyms.length > 0 || word.collocations.length > 0
 
@@ -163,6 +167,18 @@ export function WordDetail() {
                 </li>
               ))}
             </ol>
+            {/* Inside the meanings card rather than a card of its own: the
+                note qualifies the definitions directly above it (which
+                senses are live, what can take the word as a verb, whether
+                it praises or blames), and a separate card would present it
+                as an unrelated section. Most words have none and this
+                renders nothing at all. */}
+            {note !== undefined && (
+              <div className="worddetail-note">
+                <p className="section-title worddetail-note__label">要点</p>
+                <p>{note}</p>
+              </div>
+            )}
           </Card>
 
           {word.examples.length > 0 && (

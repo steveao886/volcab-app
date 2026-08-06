@@ -106,6 +106,20 @@
   color: var(--text-muted);
 }
 
+/* The usage note closes the meanings card, so it needs a rule above it as
+   well as the leading hairline the etymology uses — without the top border
+   it reads as a fourth meaning that lost its part-of-speech tag. */
+.worddetail-note {
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--rule);
+  line-height: 1.7;
+}
+
+.worddetail-note__label {
+  margin-bottom: var(--sp-1);
+}
+
 /* Etymology: the same treatment as the back of the review card (see
    .review-etymology in Review.css) — a sentence, set apart from the
    surrounding sections by a hairline vertical rule on the left. */

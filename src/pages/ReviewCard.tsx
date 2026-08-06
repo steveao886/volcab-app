@@ -1,5 +1,8 @@
 import { Chip } from '../components/Chip'
 import { ExampleSentence } from '../components/ExampleSentence'
+import wordNotesFile from '../data/wordNotes.json'
+import { wordNote } from '../lib/wordNotes'
+import type { WordNotesFile } from '../lib/wordNotes'
 import type { Word } from '../types'
 
 /**
@@ -26,6 +29,7 @@ function TagRow({ label, items }: { label: string; items: string[] }) {
 
 export function ReviewCardBack({ word }: { word: Word }) {
   const showIndex = word.meanings.length > 1
+  const note = wordNote(wordNotesFile as WordNotesFile, word.id)
 
   return (
     <div className="review-back">
@@ -89,6 +93,21 @@ export function ReviewCardBack({ word }: { word: Word }) {
           </li>
         ))}
       </ol>
+
+      {/* The usage note sits directly under the meanings and above the
+          examples, because it is a qualification *of* the meaning: "减弱"
+          is true of abate, and useless until you also know only bad things
+          can do the abating and nothing can be abated. Reading it after the
+          examples would be reading it after already having built the wrong
+          mental model from them.
+          Most words have no note (see lib/wordNotes.ts) and render nothing
+          here at all, the same rule the etymology block follows. */}
+      {note !== undefined && (
+        <div className="review-tags">
+          <p className="review-tags__label section-title">要点</p>
+          <p className="review-note">{note}</p>
+        </div>
+      )}
 
       {word.examples.length > 0 && (
         <div className="review-tags">

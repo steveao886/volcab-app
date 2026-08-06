@@ -84,13 +84,17 @@ Types and the lookup live in `src/lib/wordNotes.ts`, alongside
 ### Why not a field on `Word`
 
 It was the obvious alternative and it was measured: `data/words.json` is
-803 KB today, and one ~40-character Chinese line per word adds about 64 KB,
-landing at ~849 KB. The GitHub Contents API stops returning file content
-inline above 1 MB, at which point sync breaks outright. Spending 8% of the
-remaining headroom — on a file CLAUDE.md already says not to add bulk to —
-buys the ability to edit a note in `WordEditForm` and sync it between
-devices. The user does not edit contrast notes, passages, or suggestions
-either; the same authoring loop (a session tops the file up) covers this.
+785 KB today, and one ~40-character Chinese line per word adds about 64 KB,
+landing near 849 KB — roughly 175 KB short of the 1 MB ceiling above which
+the GitHub Contents API stops returning file content inline and sync breaks
+outright. Spending a quarter of the remaining headroom — on a file CLAUDE.md
+already says not to add bulk to — buys the ability to edit a note in
+`WordEditForm` and sync it between devices. The user does not edit contrast
+notes, passages, or suggestions either; the same authoring loop (a session
+tops the file up) covers this.
+
+As shipped, `wordNotes.json` is 34.6 KB in the bundle and `data/words.json`
+is byte-for-byte unchanged.
 
 Accepted consequences, both already true of `contrastNotes.json`:
 
@@ -133,7 +137,14 @@ before being adopted: across the 325 existing pair notes, only 2 mention a
 third library headword (`obdurate|refractory` → recalcitrant,
 `pious|reverent` → platitude). A rule that fires on 0.6% of comparable
 authored text is catching real drift, not generating noise. Matching is
-case-insensitive on whole English tokens, excluding the note's own word.
+case-insensitive on whole English tokens, excluding the note's own word;
+the 12 multi-word headwords (`smoking gun`, `de facto`) are matched as
+phrases, since their individual tokens are ordinary English.
+
+It earned itself on the first authoring pass: the note drafted for `pious`
+used `a pious platitude` as its example, and `platitude` is in the library.
+The gate rejected it, and the rewritten note is better for not leaning on a
+second word.
 
 Coverage is **reported, not enforced** — how many of the words that take part
 in a contrast pair have a note — for the same reason the pair-note validator

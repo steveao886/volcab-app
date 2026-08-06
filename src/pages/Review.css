@@ -212,6 +212,17 @@
   line-height: 1.7;
 }
 
+/* The usage note gets the same treatment as the etymology below — both are
+   a sentence sitting among rows of chips, and the hairline rule is what
+   keeps either from reading as one more meaning. Full-weight text rather
+   than .review-etymology's muted, though: the note is the answer to the
+   question the learner just got wrong, not a footnote. */
+.review-note {
+  padding-left: var(--sp-3);
+  border-left: 1px solid var(--rule);
+  line-height: 1.7;
+}
+
 /* The POS abbreviation (v. / adj. …) sandwiched between the word form and the Chinese meaning in a related-form chip, dialed down one notch */
 .review-tags__pos {
   color: var(--text-faint);

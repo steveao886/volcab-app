@@ -72,6 +72,10 @@ for (const [id, note] of Object.entries(data.notes as Record<string, unknown>)) 
   // pious|reverent → platitude). A rule that fires on 0.6% of that corpus
   // is catching real drift, not manufacturing noise. English collocation
   // fragments are otherwise wanted: all 325 carry one.
+  //
+  // It earned itself immediately: the first draft of the note for `pious`
+  // used "a pious platitude" as its example, and platitude is in the
+  // library. Rejected, rewritten, better for it.
   const lower = note.toLowerCase()
   const named = new Set<string>()
   for (const token of new Set(lower.match(/[a-z]+/g) ?? [])) {
