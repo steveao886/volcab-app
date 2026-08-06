@@ -14,6 +14,12 @@ name: deploy
 on:
   push:
     branches: [master]
+  # 手动触发。2026-08-06 出过一次:四个提交推上 master,GitHub 一个 run 都没
+  # 创建(Actions 是 enabled、工作流是 active、仓库 public 没归档、代码确实到了
+  # 远端),线上就一直停在上一个构建 —— 功能明明合进去了,打开 app 却看不到。
+  # push 触发一旦不灵,没有手动口子就只能靠推空提交去撞运气;这个触发器是从
+  # 默认分支读的,不依赖 push 事件,所以那种时候它照样能跑。
+  workflow_dispatch:
 
 permissions:
   contents: read
