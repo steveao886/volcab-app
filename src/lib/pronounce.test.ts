@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
-import { pickAudioUrl, preparePronunciation, youdaoUrl } from './pronounce'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { pickAudioUrl, preparePronunciation, pronounce, youdaoUrl } from './pronounce'
 
 /** Shaped like api.dictionaryapi.dev's response: an array of entries, each with a phonetics list. */
 const entry = (...audio: string[]) => ({ phonetics: audio.map(a => ({ text: '/x/', audio: a })) })
@@ -67,5 +67,143 @@ describe('preparePronunciation for phrases', () => {
     preparePronunciation('Bite the Bullet')
     const map = JSON.parse(localStorage.getItem('volcab.audioUrls') ?? '{}')
     expect(map['bite the bullet']).toBe(youdaoUrl('bite the bullet'))
+  })
+})
+
+// --- The ladder, exercised end to end ------------------------------------
+//
+// These stub the two playback channels rather than the network, because the
+// bug they pin down is entirely about *which channel gets used*: measured
+// against the live services on 2026-08-05, every api.dictionaryapi.dev
+// media mp3 returns 502 (conflate, inflate, abrogate, ubiquitous, cat — the
+// whole host), while its JSON API keeps advertising those same URLs and
+// youdao keeps serving real audio. So a recording that resolves fine can
+// still be unplayable, and what happens next is the whole question.
+
+const MEDIA = 'https://api.dictionaryapi.dev/media/pronunciations/en/conflate-us.mp3'
+const AUDIO_URLS = 'volcab.audioUrls'
+
+interface Played { url: string }
+let played: Played[] = []
+let spoken: string[] = []
+/** Stands in for the 502: the element refuses the source, rejecting play(). */
+let unplayable: (url: string) => boolean
+
+class FakeAudio {
+  onerror: (() => void) | null = null
+  src: string
+  constructor(src: string) {
+    this.src = src
+    played.push({ url: src })
+  }
+  pause(): void { /* no-op */ }
+  play(): Promise<void> {
+    return unplayable(this.src)
+      ? Promise.reject(new Error('NotSupportedError'))
+      : Promise.resolve()
+  }
+}
+
+/** Lets the rejected play() promise and its .catch run. */
+const flush = () => new Promise(resolve => setTimeout(resolve, 0))
+
+function installChannels(): void {
+  played = []
+  spoken = []
+  unplayable = () => false
+  localStorage.removeItem(AUDIO_URLS)
+  vi.stubGlobal('Audio', FakeAudio)
+  vi.stubGlobal('speechSynthesis', { cancel: () => {}, getVoices: () => [], speak: (u: { text: string }) => spoken.push(u.text) })
+  vi.stubGlobal('SpeechSynthesisUtterance', class {
+    text: string
+    constructor(text: string) { this.text = text }
+  })
+  // prepare() must not reach the real network from a test; a rejected fetch
+  // is the "offline" path it already tolerates.
+  vi.stubGlobal('fetch', vi.fn(() => Promise.reject(new Error('no network in tests'))))
+}
+
+describe('pronounce — a dead recording must not land on the local engine', () => {
+  beforeEach(installChannels)
+  afterEach(() => vi.unstubAllGlobals())
+
+  it('falls to the server voice, not local synthesis — local synthesis is what says "con f late"', async () => {
+    localStorage.setItem(AUDIO_URLS, JSON.stringify({ conflate: MEDIA }))
+    unplayable = url => url === MEDIA
+
+    pronounce('conflate')
+    await flush()
+
+    expect(played.map(p => p.url)).toEqual([MEDIA, youdaoUrl('conflate')])
+    expect(spoken).toEqual([])
+  })
+
+  it('forgets the dead recording, so the next tap goes straight to the server voice', async () => {
+    localStorage.setItem(AUDIO_URLS, JSON.stringify({ conflate: MEDIA }))
+    unplayable = url => url === MEDIA
+
+    pronounce('conflate')
+    await flush()
+    // Without this the entry is sticky in localStorage: prepare() early-returns
+    // on `key in map`, so nothing re-checks it and every future tap repeats
+    // the same dead request. That stickiness is why shipping a fix appeared
+    // to change nothing.
+    expect(JSON.parse(localStorage.getItem(AUDIO_URLS) ?? '{}')['conflate']).toBeUndefined()
+
+    played = []
+    pronounce('conflate')
+    await flush()
+    expect(played.map(p => p.url)).toEqual([youdaoUrl('conflate')])
+  })
+
+  it('reaches local synthesis only when the server voice fails too — that is the offline case', async () => {
+    localStorage.setItem(AUDIO_URLS, JSON.stringify({ conflate: MEDIA }))
+    unplayable = () => true
+
+    pronounce('conflate')
+    await flush()
+
+    expect(played.map(p => p.url)).toEqual([MEDIA, youdaoUrl('conflate')])
+    expect(spoken).toEqual(['conflate'])
+  })
+
+  it('an unprepared word plays the server voice and never the local engine', async () => {
+    pronounce('conflate')
+    await flush()
+
+    expect(played.map(p => p.url)).toEqual([youdaoUrl('conflate')])
+    expect(spoken).toEqual([])
+  })
+})
+
+describe('preparePronunciation — a recording is only recorded once its body arrives', () => {
+  beforeEach(installChannels)
+  afterEach(() => vi.unstubAllGlobals())
+
+  const res = (over: Partial<{ ok: boolean; status: number; json: () => Promise<unknown> }>) =>
+    ({ ok: true, status: 200, clone: () => ({}), json: () => Promise.resolve([]), ...over }) as unknown as Response
+
+  it('a dictionary URL whose body 502s is never recorded — the server voice takes its place', async () => {
+    vi.stubGlobal('fetch', vi.fn((url: string) =>
+      Promise.resolve(url.includes('/api/v2/entries/')
+        ? res({ json: () => Promise.resolve([{ phonetics: [{ audio: MEDIA }] }]) })
+        : res({ ok: false, status: 502 }))))
+
+    preparePronunciation('conflate')
+    await flush()
+
+    expect(JSON.parse(localStorage.getItem(AUDIO_URLS) ?? '{}')['conflate']).toBe(youdaoUrl('conflate'))
+  })
+
+  it('a recording whose body does arrive is recorded and preferred', async () => {
+    vi.stubGlobal('fetch', vi.fn((url: string) =>
+      Promise.resolve(url.includes('/api/v2/entries/')
+        ? res({ json: () => Promise.resolve([{ phonetics: [{ audio: MEDIA }] }]) })
+        : res({}))))
+
+    preparePronunciation('conflate')
+    await flush()
+
+    expect(JSON.parse(localStorage.getItem(AUDIO_URLS) ?? '{}')['conflate']).toBe(MEDIA)
   })
 })

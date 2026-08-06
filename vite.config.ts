@@ -51,7 +51,7 @@ export default defineConfig({
       workbox: {
         // Pronunciation recordings (see src/lib/pronounce.ts). CacheFirst
         // against the same bucket preparePronunciation() fills with
-        // cache.add(): workbox matches by URL, so a body warmed at prepare
+        // cache.put(): workbox matches by URL, so a body warmed at prepare
         // time is served from cache at playback time — which is what lets
         // `new Audio(url)` replay a once-heard word offline. An mp3 never
         // changes under its URL, so revalidation would be pure waste.

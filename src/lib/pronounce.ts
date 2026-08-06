@@ -24,6 +24,25 @@ import { speak } from './tts'
  *    offline on a never-cached word. A wrong-sounding word beats a silent
  *    button, and offline is the one place nothing better exists.
  *
+ * **A resolved recording is not a playable one**, and conflating the two
+ * kept this bug alive through three fixes. Measured against the live
+ * services on 2026-08-05: every api.dictionaryapi.dev media mp3 returns 502
+ * (conflate, inflate, abrogate, ubiquitous, cat — the entire host), while
+ * its JSON API still advertises those URLs and youdao still serves real
+ * audio. Tier 1 therefore resolves and then fails at the `<audio>` element
+ * (MEDIA_ERR_SRC_NOT_SUPPORTED, confirmed in-browser). Two rules follow,
+ * and both are load-bearing:
+ *
+ * - **A failure at any rung falls to the next rung, never to the bottom.**
+ *   The error path used to call speak() directly, so a dead tier 1 skipped
+ *   the working tier 2 and landed on the one engine that says "con f late".
+ * - **Nothing is remembered until its body has actually arrived**, and a
+ *   URL that fails at playback is forgotten. The map lives in localStorage
+ *   and prepare() early-returns on `key in map`, so a URL recorded once is
+ *   never re-examined — a dead entry written in June survives every later
+ *   code fix, which is precisely why shipping one appeared to change
+ *   nothing.
+ *
  * iOS shapes the design: audio must start inside a user gesture, so
  * `pronounce()` is synchronous and never awaits — every URL it might play
  * is either already in the map or derivable from the headword alone.
@@ -75,6 +94,44 @@ function writeUrlMap(map: UrlMap): void {
 }
 
 /**
+ * Drops a remembered URL that turned out not to play.
+ *
+ * Deleting rather than overwriting with the server voice is deliberate: an
+ * absent key is the one state prepare() will look at again, so if the media
+ * host comes back the human recording returns on its own.
+ */
+function forgetUrl(key: string): void {
+  const map = readUrlMap()
+  if (!(key in map)) return
+  delete map[key]
+  writeUrlMap(map)
+}
+
+/**
+ * Whether the body is really there, warming the cache with it on the way.
+ *
+ * The verdict comes from the fetch alone; cache warming is best-effort on
+ * top. Deciding reachability inside the same try as the Cache API would let
+ * a storage hiccup condemn a perfectly good recording.
+ */
+async function bodyArrives(url: string): Promise<boolean> {
+  let res: Response
+  try {
+    res = await fetch(url)
+  } catch {
+    return false
+  }
+  if (!res.ok) return false
+  try {
+    if ('caches' in window) {
+      const cache = await caches.open(AUDIO_CACHE)
+      if ((await cache.match(url)) === undefined) await cache.put(url, res.clone())
+    }
+  } catch { /* the recording is still good; only the offline copy is missing */ }
+  return true
+}
+
+/**
  * Picks the recording to use from a dictionaryapi.dev response.
  *
  * Prefers `-us` audio because every phonetic in this library is American;
@@ -110,10 +167,11 @@ const norm = (s: string): string => s.trim().toLowerCase()
  * and youdao fills every gap (404, or an entry with no audio), so the map
  * never records "nothing to play" any more.
  *
- * Only dictionaryapi bodies are pre-pulled into the cache here: that host
- * sends CORS headers, so cache.add works. Youdao doesn't, and a cors-mode
- * fetch of it would reject — its bodies enter the same cache via the
- * service worker's runtime rule the first time one is played instead.
+ * A dictionaryapi URL is only recorded once its body has actually been
+ * fetched — see bodyArrives. That host sends CORS headers, so the check is
+ * readable; youdao does not, which is why its bodies are never fetched here
+ * and instead enter the cache through the service worker's runtime rule the
+ * first time one is played.
  */
 export function preparePronunciation(headword: string): void {
   const key = norm(headword)
@@ -133,58 +191,79 @@ export function preparePronunciation(headword: string): void {
       // server voice so it isn't asked again. Other failures stay
       // unrecorded and retry on a later mount.
       if (!res.ok && res.status !== 404) return
-      const url = (res.ok ? pickAudioUrl(await res.json()) : null) ?? youdaoUrl(key)
+      const found = res.ok ? pickAudioUrl(await res.json()) : null
+      // Verified before it is trusted, and the fetch doubles as the warm-up
+      // that makes the recording replayable offline. An advertised URL whose
+      // body 502s must never reach the map: prepare() never looks at a key
+      // twice, so recording one is permanent.
+      const url = found !== null && await bodyArrives(found) ? found : youdaoUrl(key)
       const m = readUrlMap()
       m[key] = url
       writeUrlMap(m)
-      // Pull the body into the cache now, while we're certainly online —
-      // this is what makes the recording replayable offline later.
-      if (url.startsWith('https://api.dictionaryapi.dev/') && 'caches' in window) {
-        const cache = await caches.open(AUDIO_CACHE)
-        if ((await cache.match(url)) === undefined) await cache.add(url)
-      }
     } catch { /* offline or blocked — retry on a future mount */ }
   })().finally(() => pending.delete(key))
   pending.set(key, job)
 }
 
-/**
- * Says the word: the known human recording if there is one, the server
- * voice otherwise. Local TTS only through the playback-error fallback.
- *
- * Synchronous by contract — see the module comment. The `onerror` fallback
- * covers the gap where a URL exists but the body isn't reachable (cache
- * evicted, offline, CDN down): a wrong-sounding word is still better than
- * a silent button.
- */
 /** The recording currently playing, so a re-tap restarts instead of overlapping — the same job speechSynthesis.cancel() does for TTS. */
 let playing: HTMLAudioElement | null = null
 
+/**
+ * Plays one URL, calling `onFail` if it doesn't start.
+ *
+ * One flag guards both handlers: a failed load can reject play() AND fire
+ * onerror, and without the guard the fallback ran twice. Measured in the
+ * browser — a blocked mp3 produced two TTS utterances.
+ */
+function play(url: string, onFail: () => void): void {
+  playing?.pause()
+  const audio = new Audio(url)
+  playing = audio
+  let failed = false
+  const fail = () => {
+    if (failed) return
+    failed = true
+    onFail()
+  }
+  audio.onerror = fail
+  void audio.play().catch(fail)
+}
+
+/**
+ * Says the word, descending the ladder one rung at a time.
+ *
+ * Synchronous by contract — see the module comment; every URL it might
+ * reach is either already in the map or derivable from the headword.
+ *
+ * The rung that matters is the middle one. A remembered recording that
+ * won't play is not a reason to drop to local synthesis — that engine is
+ * the whole problem this file exists to route around — so the server voice
+ * is tried first, and the dead URL is forgotten on the way past so the next
+ * tap doesn't repeat the failed request.
+ */
 export function pronounce(headword: string): void {
-  const known = readUrlMap()[norm(headword)]
+  const key = norm(headword)
+  const known = readUrlMap()[key]
+  const server = youdaoUrl(headword)
   // An unknown word is not a reason to fall back to the broken local
   // engine: the server-voice URL needs no lookup, so play that now and let
   // the prepare (kicked below) upgrade the map to a human recording for
   // next time. A legacy `null` (recorded back when "no dictionary audio"
   // meant "use TTS") takes the same path.
-  const url = typeof known === 'string' ? known : youdaoUrl(headword)
+  const url = typeof known === 'string' ? known : server
   if (typeof known !== 'string') preparePronunciation(headword)
 
   // Silence both channels before starting: a replay tapped mid-playback
   // must restart the word, not layer a second copy over the first.
   if ('speechSynthesis' in window) window.speechSynthesis.cancel()
-  playing?.pause()
-  const audio = new Audio(url)
-  playing = audio
-  // One flag guarding both handlers: a failed load can reject play() AND
-  // fire onerror, and without the guard the word was spoken twice.
-  // Measured in the browser — a blocked mp3 produced two TTS utterances.
-  let fellBack = false
-  const fallBack = () => {
-    if (fellBack) return
-    fellBack = true
-    speak(headword)
+
+  const lastResort = () => speak(headword)
+  if (url === server) {
+    play(server, lastResort)
+    return
   }
-  audio.onerror = fallBack
-  void audio.play().catch(fallBack)
+  play(url, () => {
+    forgetUrl(key)
+    play(server, lastResort)
+  })
 }
