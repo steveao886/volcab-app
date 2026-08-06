@@ -87,6 +87,12 @@ export interface GuessQuestion {
   prompt: string
   /** Cheapest first, so the shop reads as a ladder even though it is not one. */
   clues: Clue[]
+  /**
+   * The word's own synonyms and antonyms, lowercased. Not shown anywhere —
+   * they exist so a near-miss can tell "you mistyped it" apart from "you
+   * reached for a different word". See classifyGuess.
+   */
+  related: string[]
 }
 
 /** First maskable entry, or none. A word can carry a collocation the masker can't locate. */
@@ -140,7 +146,74 @@ export function buildGuessQuestion(w: Word, note: string | undefined): GuessQues
     headword,
     prompt,
     clues: clues.sort((a, b) => a.price - b.price || a.kind.localeCompare(b.kind)),
+    related: [...w.synonyms, ...w.antonyms].map(s => s.trim().toLowerCase()).filter(s => s !== ''),
   }
+}
+
+/** Levenshtein distance. Two rows rather than a full matrix; the strings here are single words. */
+export function editDistance(a: string, b: string): number {
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j)
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i]
+    for (let j = 1; j <= b.length; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1))
+    }
+    prev = cur
+  }
+  return prev[b.length]
+}
+
+/**
+ * How much of a word may be wrong before "you mistyped it" stops being true.
+ *
+ * A quarter of the longer string, floored, minimum one edit: raze allows one,
+ * abrogate two, circumlocution three. Measured over the 498 headwords, this
+ * threshold puts **21 pairs of genuinely distinct words** inside each other's
+ * allowance out of 117,855 pairs (0.018%) — at 0.34 it is 97 pairs and
+ * includes arduous/garrulous, which is plainly a different word rather than a
+ * slip. Those 21 are why classifyGuess has the two guards below rather than
+ * trusting the distance alone.
+ */
+const NEAR_RATIO = 0.25
+
+const nearBudget = (a: string, b: string): number =>
+  Math.max(1, Math.floor(Math.max(a.length, b.length) * NEAR_RATIO))
+
+export type GuessVerdict = 'correct' | 'near' | 'wrong'
+
+/**
+ * What a typed answer actually was: right, a slip of the fingers, or a
+ * different word.
+ *
+ * "Near" exists so the app can say *which kind* of miss it was — being one
+ * letter out and being wrong are different problems, and lumping them
+ * together makes the feedback useless. It costs nothing, and it does not end
+ * the question: you are told, you fix it.
+ *
+ * Two things are **never** near, however close they measure:
+ *
+ * - **Another word in the library.** 21 pairs of distinct headwords sit
+ *   inside the allowance (imperious/impetuous, contentious/conscientious,
+ *   gratify/ratify, disparate/disparage). Reaching for the wrong word is a
+ *   different failure from mistyping the right one, and telling someone
+ *   their spelling was close would hide it.
+ * - **This word's own synonyms and antonyms.** raze's gloss warns "注意与
+ *   raise 反义", and raise is one edit away. Answering with the antonym is
+ *   the exact mistake the entry is trying to prevent.
+ */
+export function classifyGuess(
+  input: string,
+  q: GuessQuestion,
+  libraryWords: ReadonlySet<string>,
+): GuessVerdict {
+  const typed = input.trim().toLowerCase()
+  if (typed === '') return 'wrong'
+  if (checkGuess(typed, q.headword)) return 'correct'
+  if (q.related.includes(typed)) return 'wrong'
+  if (libraryWords.has(typed)) return 'wrong'
+
+  const d = editDistance(typed, q.headword.trim().toLowerCase())
+  return d <= nearBudget(typed, q.headword) ? 'near' : 'wrong'
 }
 
 /**

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  buildGuessQuestion, checkGuess, CLUE_PRICES, generateGuessSession,
+  buildGuessQuestion, checkGuess, classifyGuess, CLUE_PRICES, generateGuessSession,
   maskHeadword, scoreWord, WORD_START_SCORE,
 } from './guess'
 import { emptyProgress } from '../types'
@@ -201,6 +201,65 @@ describe('generateGuessSession', () => {
     const session = generateGuessSession(words, learned(words), notes, 10, () => 0.5)
     expect(session.find(q => q.id === 'w0')?.clues.some(c => c.kind === 'note')).toBe(true)
     expect(session.find(q => q.id === 'w1')?.clues.some(c => c.kind === 'note')).toBe(false)
+  })
+})
+
+describe('classifyGuess', () => {
+  const q = (over: Partial<Word> = {}) => buildGuessQuestion(word(over), undefined)!
+  const library = (...ids: string[]) => new Set(ids)
+
+  it('calls an exact answer correct', () => {
+    expect(classifyGuess('abrogate', q(), library())).toBe('correct')
+    expect(classifyGuess('Abrogated ', q(), library())).toBe('correct')
+  })
+
+  it('calls a slip of the fingers near, not wrong', () => {
+    expect(classifyGuess('abrogatte', q(), library())).toBe('near')   // doubled letter
+    expect(classifyGuess('abrogaet', q(), library())).toBe('near')    // transposition
+  })
+
+  it('leaves a real inflection alone — that was already correct, not near', () => {
+    // isInflectionOf accepts the bare stem and a plural s, so these never
+    // reach the distance check at all. Worth pinning: the near-miss rule
+    // must not quietly demote something the lenient matcher already passed.
+    expect(classifyGuess('abrogat', q(), library())).toBe('correct')
+  })
+
+  it('scales the allowance with length — a short word has no room to be sloppy', () => {
+    // 0.25 of the length, floored, minimum 1. raze(4) allows one edit;
+    // circumlocution(14) allows three.
+    const short = q({ id: 'raze', headword: 'raze' })
+    expect(classifyGuess('rase', short, library())).toBe('near')
+    expect(classifyGuess('rope', short, library())).toBe('wrong')
+  })
+
+  it('calls an unrelated word wrong', () => {
+    expect(classifyGuess('elephant', q(), library())).toBe('wrong')
+  })
+
+  it('will not call another library word a typo — that is a different memory failure', () => {
+    // Measured over the 498 headwords: at this threshold 21 pairs of
+    // genuinely distinct words sit inside each other's allowance —
+    // imperious/impetuous, contentious/conscientious, gratify/ratify,
+    // disparate/disparage. Telling someone they nearly spelled it, when
+    // what they actually did was recall a different word, is the one
+    // wrong thing this feature could say.
+    const imperious = q({ id: 'imperious', headword: 'imperious' })
+    expect(classifyGuess('impetuous', imperious, library('impetuous'))).toBe('wrong')
+    expect(classifyGuess('impreious', imperious, library('impetuous'))).toBe('near')
+  })
+
+  it('will not call the word\'s own synonym or antonym a typo either', () => {
+    // raze's gloss literally warns "注意与 raise 反义". One edit apart, and
+    // the last thing to tell someone who typed it is "close on spelling".
+    const raze = q({ id: 'raze', headword: 'raze', antonyms: ['raise'], synonyms: ['ruin'] })
+    expect(classifyGuess('raise', raze, library())).toBe('wrong')
+    expect(classifyGuess('ruin', raze, library())).toBe('wrong')
+  })
+
+  it('treats an empty answer as wrong rather than near', () => {
+    expect(classifyGuess('', q(), library())).toBe('wrong')
+    expect(classifyGuess('  ', q(), library())).toBe('wrong')
   })
 })
 

@@ -1,12 +1,13 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Page } from '../components/Page'
 import { TextInput } from '../components/TextInput'
 import wordNotesFile from '../data/wordNotes.json'
-import { checkGuess, generateGuessSession, scoreWord, WORD_START_SCORE } from '../lib/guess'
-import type { ClueKind, GuessQuestion } from '../lib/guess'
+import { classifyGuess, generateGuessSession, scoreWord, WORD_START_SCORE } from '../lib/guess'
+import type { ClueKind, GuessQuestion, GuessVerdict } from '../lib/guess'
+import { isSoundEnabled, playQuizResult, playSessionDone } from '../lib/sound'
 import type { WordNotesFile } from '../lib/wordNotes'
 import { useApp } from '../state/store'
 import './Guess.css'
@@ -37,7 +38,8 @@ const CLUE_LABEL: Record<ClueKind, string> = {
 interface Result { id: string; headword: string; score: number; unaided: boolean; solved: boolean }
 
 function GuessSession({ questions, onRestart }: { questions: GuessQuestion[]; onRestart: () => void }) {
-  const { recordGuess, progress } = useApp()
+  const { recordGuess, progress, words } = useApp()
+  const soundEnabled = isSoundEnabled(progress.settings)
 
   // Snapshot before settlement: recordGuess updates progress.bestGuess in
   // place, so comparing afterwards would always read as a tie.
@@ -46,16 +48,33 @@ function GuessSession({ questions, onRestart }: { questions: GuessQuestion[]; on
   const [index, setIndex] = useState(0)
   const [input, setInput] = useState('')
   const [bought, setBought] = useState<ClueKind[]>([])
-  const [missed, setMissed] = useState(false)
+  const [verdict, setVerdict] = useState<GuessVerdict | null>(null)
   const [settled, setSettled] = useState<'solved' | 'revealed' | null>(null)
   const [results, setResults] = useState<Result[]>([])
+  /**
+   * Whether the round is over, as its own flag rather than "index has run
+   * past the end". It used to be the latter, and reading questions[index]
+   * with index === questions.length gave undefined — which the very next
+   * line dereferenced, so pressing 结算 after buying a clue on the last
+   * question took the whole page down. tsconfig.app.json leaves
+   * noUncheckedIndexedAccess off, so the type said the element was always
+   * there and nothing caught it.
+   */
+  const [finished, setFinished] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const nextRef = useRef<HTMLButtonElement>(null)
 
-  const q = questions[index]
-  const spent = bought.reduce((n, k) => n + (q.clues.find(c => c.kind === k)?.price ?? 0), 0)
-  const done = results.length === questions.length
+  // Every headword in the library, for telling a typo apart from a different
+  // word (see classifyGuess). Built once per session, not per keystroke.
+  const libraryWords = useMemo(
+    () => new Set(words.map(w => w.headword.trim().toLowerCase())),
+    [words],
+  )
 
-  const finish = useCallback((outcome: 'solved' | 'revealed') => {
+  const finish = useCallback((outcome: 'solved' | 'revealed', q: GuessQuestion) => {
+    // Played inside the click's own call stack — iOS only unlocks the
+    // AudioContext within a user gesture, the same rule QuizQuestion follows.
+    playQuizResult(outcome === 'solved', soundEnabled)
     setSettled(outcome)
     setResults(rs => [...rs, {
       id: q.id,
@@ -64,33 +83,18 @@ function GuessSession({ questions, onRestart }: { questions: GuessQuestion[]; on
       unaided: outcome === 'solved' && bought.length === 0,
       solved: outcome === 'solved',
     }])
-  }, [bought, q])
+  }, [bought, soundEnabled])
 
-  function submit() {
-    if (settled !== null) return
-    if (checkGuess(input, q.headword)) finish('solved')
-    else setMissed(true)
-  }
+  // Hands focus to 下一题 the moment a question settles, so Space and Enter
+  // advance without this page defining a shortcut of its own — the same
+  // thing AnswerFeedback does on the quiz page. A key that a focused button
+  // already handles natively must not also be grabbed from window, or it
+  // fires twice.
+  useEffect(() => {
+    if (settled !== null) nextRef.current?.focus()
+  }, [settled])
 
-  function next() {
-    const rs = results
-    if (index + 1 >= questions.length) {
-      // Settle once, at the end: a word whose answer was revealed counts as
-      // wrong and gets its due date pulled forward; one solved with clues
-      // still counts as retrieved. recordGuess never touches ease/interval.
-      recordGuess(rs.filter(r => !r.solved).map(r => r.id), rs.filter(r => r.unaided).length)
-      setIndex(questions.length)   // renders the summary below
-      return
-    }
-    setIndex(i => i + 1)
-    setInput('')
-    setBought([])
-    setMissed(false)
-    setSettled(null)
-    inputRef.current?.focus()
-  }
-
-  if (done && index >= questions.length) {
+  if (finished) {
     const total = results.reduce((n, r) => n + r.score, 0)
     const unaided = results.filter(r => r.unaided).length
     const beaten = prevBest === undefined || unaided > prevBest.score
@@ -136,6 +140,42 @@ function GuessSession({ questions, onRestart }: { questions: GuessQuestion[]; on
     )
   }
 
+  // Only reached while a question is still on screen, so this index is
+  // always in range — see the comment on `finished`.
+  const q = questions[index]
+  const spent = bought.reduce((n, k) => n + (q.clues.find(c => c.kind === k)?.price ?? 0), 0)
+  const isLast = index + 1 >= questions.length
+
+  function submit() {
+    if (settled !== null) return
+    const v = classifyGuess(input, q, libraryWords)
+    if (v === 'correct') finish('solved', q)
+    else {
+      // A near miss and a wrong word both cost nothing, but they are
+      // different problems and the message has to say which.
+      playQuizResult(false, soundEnabled)
+      setVerdict(v)
+    }
+  }
+
+  function next() {
+    if (isLast) {
+      // Settle once, at the end: a word whose answer was revealed counts as
+      // wrong and gets its due date pulled forward; one solved with clues
+      // still counts as retrieved. recordGuess never touches ease/interval.
+      playSessionDone(soundEnabled)
+      recordGuess(results.filter(r => !r.solved).map(r => r.id), results.filter(r => r.unaided).length)
+      setFinished(true)
+      return
+    }
+    setIndex(i => i + 1)
+    setInput('')
+    setBought([])
+    setVerdict(null)
+    setSettled(null)
+    inputRef.current?.focus()
+  }
+
   return (
     <Page eyebrow="Guess" title="猜词">
       <p className="guess-progress faint">
@@ -151,7 +191,7 @@ function GuessSession({ questions, onRestart }: { questions: GuessQuestion[]; on
             <TextInput
               ref={inputRef}
               value={input}
-              onChange={e => { setInput(e.target.value); setMissed(false) }}
+              onChange={e => { setInput(e.target.value); setVerdict(null) }}
               onKeyDown={e => { if (e.key === 'Enter') submit() }}
               placeholder="把这个词打出来"
               aria-label="你的答案"
@@ -165,11 +205,20 @@ function GuessSession({ questions, onRestart }: { questions: GuessQuestion[]; on
             />
             <div className="guess-actions">
               <Button variant="primary" onClick={submit} disabled={input.trim() === ''}>
-                提交 ⏎
+                提交 <span className="faint">回车</span>
               </Button>
-              <Button variant="ghost" onClick={() => finish('revealed')}>看答案(0 分)</Button>
+              <Button variant="ghost" onClick={() => finish('revealed', q)}>看答案(0 分)</Button>
             </div>
-            {missed && <p className="guess-miss">不是这个词,再想想。答错不扣分。</p>}
+            {/* Near and wrong are separate messages on purpose. Being one
+                letter out and reaching for the wrong word are different
+                failures, and a single "不对" would hide which one happened.
+                Neither costs anything, so neither is styled as a penalty. */}
+            {verdict === 'near' && (
+              <p className="guess-miss">就差一两个字母,拼写再看一眼。答错不扣分。</p>
+            )}
+            {verdict === 'wrong' && (
+              <p className="guess-miss">不是这个词,再想想。答错不扣分。</p>
+            )}
           </>
         ) : (
           <>
@@ -179,8 +228,8 @@ function GuessSession({ questions, onRestart }: { questions: GuessQuestion[]; on
                 ? `答对 · 这题 ${scoreWord(bought, 'solved')} 分`
                 : '看了答案 · 这题 0 分'}
             </p>
-            <Button variant="primary" block onClick={next}>
-              {index + 1 >= questions.length ? '结算' : '下一题'}
+            <Button ref={nextRef} variant="primary" block onClick={next}>
+              {isLast ? '结算' : '下一题'} <span className="faint">空格</span>
             </Button>
           </>
         )}

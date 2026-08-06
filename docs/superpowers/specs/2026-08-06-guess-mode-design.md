@@ -107,6 +107,33 @@ The input must set `autocapitalize="off"`, `autocorrect="off"`,
 `spellcheck="false"`. A phone keyboard that capitalises and rewrites C1
 vocabulary would fight the user on every question.
 
+### A near miss says so
+
+Being one letter out and reaching for the wrong word are different failures,
+and a single "不对" hides which one happened. A guess within a quarter of the
+word's length in edit distance — one edit for `raze`, two for `abrogate`,
+three for `circumlocution` — is reported as 就差一两个字母 rather than as a
+wrong answer. It costs nothing and does not end the question: you are told,
+you fix it.
+
+Two things are never called a near miss, however close they measure:
+
+- **Another headword in the library.** At this threshold, 21 pairs of
+  genuinely distinct words sit inside each other's allowance out of 117,855 —
+  imperious/impetuous, contentious/conscientious, gratify/ratify,
+  disparate/disparage, mire/mime. Telling someone their spelling was close,
+  when what they did was recall a different word, is the one actively
+  misleading thing this feature could say. (At a 0.34 ratio it is 97 pairs
+  and includes arduous/garrulous, which is why the threshold is 0.25.)
+- **The word's own synonyms and antonyms.** `raze`'s gloss warns 注意与
+  'raise' 反义, and `raise` is one edit away.
+
+**A near miss is not accepted as correct.** Spelling is part of producing a
+word, and this is the only mode that tests production at all; auto-accepting
+two edits would also swallow the 21 pairs above whenever one of them is
+outside the library. The hint removes the unfairness without removing the
+task.
+
 ### The schedule is not touched
 
 Settlement goes through the existing `recordQuiz(score, total, wrongIds)`,
