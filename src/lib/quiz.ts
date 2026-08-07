@@ -313,17 +313,27 @@ export function generateQuiz(
 
     if (type === 'synonymHint') {
       const shared = sharedSynonymsCache
-      const syn = w.synonyms.find(s => !shared.has(s.trim().toLowerCase()))
-      const ant = w.antonyms.find(s => !shared.has(s.trim().toLowerCase()))
-      const hint = syn ?? ant
-      if (hint === undefined) continue // This word's synonyms and antonyms are all shared with other entries — move to the next candidate word
+      const notShared = (s: string) => !shared.has(s.trim().toLowerCase())
+      // Drawn across every non-shared hint, not `.find()`'s first one. The
+      // find version pinned each word to a single hint forever: measured
+      // over the library (2026-08-07 repetition audit), 1,765 non-shared
+      // hints exist but only 481 could ever be shown — 1,284 strings were
+      // unreachable, and the same word always asked with the same hint.
+      // The shared-synonym exclusion stays: a hint shared by two entries
+      // makes two options correct.
+      const syns = w.synonyms.filter(notShared)
+      const hints = [...syns, ...w.antonyms.filter(notShared)]
+      if (hints.length === 0) continue // This word's synonyms and antonyms are all shared with other entries — move to the next candidate word
+      const hint = hints[Math.floor(rng() * hints.length)]
       const distractors = pickDistractorLabels(w, w.headword, headwordLabel, pool, words, rng)
       if (!distractors) continue
       questions.push({
         type, wordId: w.id, prompt: hint,
         options: shuffle([w.headword, ...distractors], rng),
         answer: w.headword,
-        hintKind: syn !== undefined ? 'synonym' : 'antonym',
+        // Labeled by which list the drawn hint came from — the UI must say
+        // whether to pick the matching or the opposite meaning.
+        hintKind: syns.includes(hint) ? 'synonym' : 'antonym',
       })
       continue
     }

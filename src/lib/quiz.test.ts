@@ -280,6 +280,31 @@ describe('new question types', () => {
     expect(q.hintKind === 'synonym' || q.hintKind === 'antonym').toBe(true)
     expect(sharedSynonyms(words).has(q.prompt.toLowerCase())).toBe(false)
   })
+  it('the hint rotates across the word\'s whole non-shared list, and hintKind tracks the drawn hint', () => {
+    // `.find()` used to pin each word to its first synonym forever — measured
+    // over the library, 1,284 of 1,765 non-shared hints could never be shown.
+    // Each fixture word carries 3 synonyms + 2 antonyms, so across seeds the
+    // same word must surface more than one distinct hint, including at least
+    // one antonym correctly labeled as such.
+    const lcg = (seed: number) => () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff), seed / 0x7fffffff)
+    const hintsByWord = new Map<string, Set<string>>()
+    let antonymSeen = false
+    for (let s = 1; s <= 40; s++) {
+      for (const q of generateQuiz(words, studied(), 12, lcg(s)).filter(q => q.type === 'synonymHint')) {
+        const w = words.find(x => x.id === q.wordId)!
+        // Whatever is drawn, it is one of this word's own hints, labeled by its source list
+        const fromSyn = w.synonyms.includes(q.prompt)
+        expect(fromSyn || w.antonyms.includes(q.prompt)).toBe(true)
+        expect(q.hintKind).toBe(fromSyn ? 'synonym' : 'antonym')
+        if (q.hintKind === 'antonym') antonymSeen = true
+        const set = hintsByWord.get(q.wordId) ?? new Set()
+        set.add(q.prompt)
+        hintsByWord.set(q.wordId, set)
+      }
+    }
+    expect([...hintsByWord.values()].some(set => set.size > 1)).toBe(true)
+    expect(antonymSeen).toBe(true)
+  })
 })
 
 // --- Bonus-practice modes ------------------------------------------------------
