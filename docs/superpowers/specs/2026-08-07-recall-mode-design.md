@@ -142,10 +142,31 @@ own real example sentence — never an invented context.
 
 ## Word pool and eligibility
 
-A group is playable only when **every member is learned** (`state !==
-'new'`), the same rule contrast mode follows — asking which of three words
-fits best when one has never been met is not discrimination practice. The
-empty state gets its own `EMPTY_HINT` line explaining that.
+**唤词 needs only the answer learned; 排序 needs all three.** The first
+version required all three for both, and it strangled the mode: measured
+over the library with learned words taken in review-queue order
+(`usageScore` descending, per queue.ts), the all-learned rule leaves
+
+| learned words | all-members | answer-only |
+|---:|---:|---:|
+| 150 | 1 | 19 |
+| 250 | **11** | 34 |
+| 300 | 13 | 38 |
+| 400 | 26 | 52 |
+
+— under a 10-question round at the realistic operating point, so every
+round drew the same set and the recency rotation could only reorder it.
+Reported as 做了好几轮 10 道题都没过呀,一直都是这 10 道题.
+
+Answer-only is not a loosening of standards: the other members are
+distractors, and "can you produce this word from this meaning" is a fair
+question whether or not you know the words sitting next to it. 排序 keeps
+the strict bar, because there all three *are* the answer and ranking a
+stranger is meaningless. A group that can't be ranked is asked as 唤词
+instead of being dropped.
+
+Every member must still exist in the library, learned or not — a group
+with a missing id is skipped whole rather than played with a hole in it.
 
 Group selection weights by the *maximum* `difficultyWeight` among members:
 a group containing one struggling word is worth surfacing even if its other

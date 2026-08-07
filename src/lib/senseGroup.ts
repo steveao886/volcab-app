@@ -56,15 +56,28 @@ export interface RecallQuestion {
   answer: string[]
 }
 
+const isLearned = (id: string, progress: Progress): boolean => {
+  const e = progress.words[id]
+  return e !== undefined && e.state !== 'new'
+}
+
 /**
- * Groups that can actually be played right now.
+ * Groups that can be asked at all — i.e. as 唤词.
  *
- * Every member must exist in the library **and** be learned — the same rule
- * contrast mode enforces. Asking which of three words fits best when one
- * has never been met is not discrimination practice, it is a guessing game
- * about a stranger. A group with a missing id (the live library and the
- * repo copy have diverged before, see CLAUDE.md) is skipped whole rather
- * than played with a hole in it: fail closed.
+ * **Only the answer has to be learned.** The other members are distractors;
+ * "can you produce this word from this meaning" is a fair question whether
+ * or not you happen to know the words sitting next to it. Requiring all
+ * three was the original rule and it strangled the mode: measured over the
+ * library with learned words taken in review-queue order (usageScore
+ * descending, per queue.ts), the all-learned rule leaves **11 playable
+ * groups at 250 learned words and 13 at 300** — under a 10-question round,
+ * so every round drew the same set and the recency rotation could only
+ * reorder it. Answer-only leaves **34 and 38**. Reported as "做了好几轮
+ * 10 道题都没过呀,一直都是这 10 道题".
+ *
+ * Every member must still **exist in the library** — a group with a missing
+ * id (the live library and the repo copy have diverged before, see
+ * CLAUDE.md) is skipped whole rather than played with a hole in it.
  */
 export function eligibleGroups(
   groups: SenseGroup[],
@@ -73,12 +86,20 @@ export function eligibleGroups(
 ): SenseGroup[] {
   return groups.filter(g =>
     g.order.length >= 2 &&
-    g.order.every(id => {
-      if (!words.has(id)) return false
-      const e = progress.words[id]
-      return e !== undefined && e.state !== 'new'
-    }),
+    g.order.every(id => words.has(id)) &&
+    isLearned(g.order[0], progress),
   )
+}
+
+/**
+ * The extra bar 排序 has to clear: **every** member learned.
+ *
+ * Ranking three words by fit when one of them has never been met is not
+ * discrimination practice — you would be ordering a stranger. Unlike 唤词
+ * there is no way to route around it, because all three are the answer.
+ */
+export function isRankable(g: SenseGroup, progress: Progress): boolean {
+  return g.order.every(id => isLearned(id, progress))
 }
 
 /**
@@ -262,12 +283,14 @@ export function generateRecallSession(
   for (const g of ordered) {
     if (out.length >= count) break
     // Alternate the two kinds; fall back to the other when a group can't
-    // carry the preferred one (a pair can't be ordered, a sparse library
-    // can't fill four options) rather than dropping the group.
-    const wantOrder = out.length % 2 === 1
-    const q = wantOrder
+    // carry the preferred one (a pair can't be ordered, a member is unlearned
+    // so ranking is off the table, a sparse library can't fill four options)
+    // rather than dropping the group.
+    const rankable = isRankable(g, progress)
+    const q = rankable && out.length % 2 === 1
       ? buildOrderQuestion(g, words, rng) ?? buildRecallQuestion(g, words, fillerPool, rng)
-      : buildRecallQuestion(g, words, fillerPool, rng) ?? buildOrderQuestion(g, words, rng)
+      : buildRecallQuestion(g, words, fillerPool, rng)
+        ?? (rankable ? buildOrderQuestion(g, words, rng) : null)
     if (q !== null) out.push(q)
   }
   return out

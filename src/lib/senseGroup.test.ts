@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   buildOrderQuestion, buildRecallQuestion, eligibleGroups, generateRecallSession,
-  orderCorrect, wrongIdsFor,
+  isRankable, orderCorrect, wrongIdsFor,
 } from './senseGroup'
 import type { RecallQuestion, SenseGroup } from './senseGroup'
 import { emptyProgress } from '../types'
@@ -50,25 +50,38 @@ const seqRng = (seq: number[]) => {
 }
 
 describe('eligibleGroups', () => {
-  it('keeps a group only when every member exists and is learned', () => {
-    const words = wordsMap(LIB)
-    const all = learned(LIB.map(w => w.id))
+  const words = wordsMap(LIB)
+  const all = learned(LIB.map(w => w.id))
+
+  it('needs only the answer learned — requiring all three strangled the pool to 11 groups', () => {
     expect(eligibleGroups([G], words, all)).toHaveLength(1)
+    // Answer learned, the two distractors never met: still a fair question,
+    // because "produce this word from this meaning" does not depend on
+    // knowing what sits next to it.
+    expect(eligibleGroups([G], words, learned(['pervade']))).toHaveLength(1)
+  })
 
-    // One member never met → the whole group is out, not played with a hole.
-    const partial = learned(['pervade', 'permeate'])
-    expect(eligibleGroups([G], words, partial)).toHaveLength(0)
+  it('drops the group when the answer itself is unlearned', () => {
+    expect(eligibleGroups([G], words, learned(['permeate', 'suffuse']))).toHaveLength(0)
+  })
 
-    // One member missing from the library (repo copy and live library have
-    // diverged before) → out as well.
+  it('drops the group when any member is missing from the library, learned or not', () => {
+    // The repo copy and the live library have diverged before; a hole in the
+    // options is not something to paper over.
     const missing = wordsMap(LIB.filter(w => w.id !== 'suffuse'))
     expect(eligibleGroups([G], missing, all)).toHaveLength(0)
   })
 
   it('rejects groups smaller than a pair', () => {
-    const words = wordsMap(LIB)
-    const all = learned(LIB.map(w => w.id))
     expect(eligibleGroups([{ ...G, order: ['pervade'] }], words, all)).toHaveLength(0)
+  })
+})
+
+describe('isRankable', () => {
+  it('demands every member learned — ordering a stranger is not discrimination practice', () => {
+    expect(isRankable(G, learned(['pervade', 'permeate', 'suffuse']))).toBe(true)
+    expect(isRankable(G, learned(['pervade', 'permeate']))).toBe(false)
+    expect(isRankable(G, learned(['pervade']))).toBe(false)
   })
 })
 
@@ -199,11 +212,23 @@ describe('generateRecallSession', () => {
   const words = wordsMap(lib)
   const all = learned(lib.map(w => w.id))
 
-  it('draws only eligible groups and never exceeds count', () => {
-    const partial = learned(lib.filter(w => w.id !== 'succumb').map(w => w.id))
+  it('drops a group whose answer is unlearned, and never exceeds count', () => {
+    // capitulate is order[0] of group 2 — without it that group cannot be asked at all.
+    const partial = learned(lib.filter(w => w.id !== 'capitulate').map(w => w.id))
     const qs = generateRecallSession(groups, words, partial, new Set(), new Set(), 10, seqRng([0.3, 0.7, 0.1, 0.9, 0.5]))
     expect(qs.length).toBe(2)
-    for (const q of qs) expect(q.orderIds).not.toContain('succumb')
+    for (const q of qs) expect(q.orderIds[0]).not.toBe('capitulate')
+  })
+
+  it('an unlearned distractor still yields a 唤词 question, never a 排序 one', () => {
+    // succumb is a distractor in group 2. The group stays playable — you can
+    // be asked to produce capitulate without knowing what sits beside it —
+    // but it must never be handed over for ranking.
+    const partial = learned(lib.filter(w => w.id !== 'succumb').map(w => w.id))
+    const qs = generateRecallSession(groups, words, partial, new Set(), new Set(), 10, seqRng([0.3, 0.7, 0.1, 0.9, 0.5]))
+    const g2 = qs.filter(q => q.orderIds.includes('succumb'))
+    expect(g2.length).toBe(1)
+    expect(g2[0].kind).toBe('recall')
   })
 
   it('surfaces unseen prompts before recently seen ones', () => {
