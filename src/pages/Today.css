@@ -1,115 +1,146 @@
-/* Today (home) page-specific styles. Three cards (overview stats / overall
-   progress / actions). The sync badge in the header is the shared
-   SyncStatus / .sync-badge (components.css). */
+/* Today (home) page-specific styles — sketch 001 winner A. Three blocks:
+   hero (the one action), day plan (auto-derived states), footer stat line.
+   The sync badge in the header is the shared SyncStatus (components.css). */
 
-/* --- Overview stats: due / new / streak days, split evenly into three columns --------------------------
-   Each tile is the shared .stat primitive (components.css); this only
-   decides the column count. Streak days uses .stat__value--accent — the
-   only "annotation" color on this page. */
+/* --- Hero: the one "do this now" card ----------------------------------- */
 
-.today-stats {
+.today-hero {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--sp-3);
-  text-align: center;
-}
-
-/* --- Overall progress --------------------------------------------------------------- */
-
-.today-progress {
-  display: grid;
-  gap: var(--sp-2);
-}
-
-.today-progress__head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
   gap: var(--sp-3);
 }
 
-.today-progress__label {
+/* Same visual role as the page eyebrow — one of vermilion's permitted uses. */
+.today-hero__eyebrow {
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--accent);
+}
+
+.today-hero__count {
+  font-size: 3.5rem; /* one-off display size; the type scale tops out at --fs-word-xl, which is a headword size, not a stat size */
+  font-weight: 600;
+  line-height: 1;
+}
+
+.today-hero__unit {
+  margin-left: var(--sp-2);
+  font-family: var(--font-ui);
   font-size: var(--fs-sm);
   font-weight: 600;
+  letter-spacing: 0;
   color: var(--text-muted);
 }
 
-/* --- Primary action area -------------------------------------------------------------- */
+.today-hero__meta {
+  font-size: var(--fs-sm);
+}
 
-.today-actions {
+.today-hero__done {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+}
+
+/* --- Day plan ------------------------------------------------------------- */
+
+.today-plan {
+  padding-block: var(--sp-2);
+}
+
+.today-plan__title {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  padding-block: var(--sp-2);
+}
+
+.today-plan__list {
   display: grid;
+}
+
+.today-plan__row {
+  display: flex;
+  align-items: center;
   gap: var(--sp-3);
+  min-height: var(--tap);
+  padding-block: var(--sp-2);
+  border-top: 1px solid var(--rule);
+  color: inherit;
+  text-decoration: none;
 }
 
-/* Lapsed words is the third-priority action: a ghost variant, so it
-   doesn't compete for attention with "Start review" and "Quick quiz". The
-   number uses vermilion — an annotation-style count, consistent with how
-   vermilion is used across the design language. */
-.today-lapse {
-  gap: var(--sp-2);
+.today-plan__row--todo:hover {
+  background: var(--surface-sunken);
 }
 
-.today-lapse__count {
+.today-plan__box {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border: 1.5px solid var(--rule-control);
+  border-radius: var(--r-sm);
+  font-size: 14px;
+  font-weight: 700;
+  color: transparent;
+}
+
+.today-plan__row--done .today-plan__box {
+  background: var(--success);
+  border-color: var(--success);
+  color: var(--on-tone);
+}
+
+.today-plan__row--pending .today-plan__box {
+  border-style: dashed;
+}
+
+.today-plan__name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.today-plan__row--done .today-plan__name {
+  color: var(--text-faint);
+  text-decoration: line-through;
+}
+
+.today-plan__row--pending .today-plan__name {
+  color: var(--text-faint);
+}
+
+/* Count as a vermilion annotation, consistent with the old lapse count. */
+.today-plan__count {
   color: var(--accent);
   font-weight: 700;
 }
 
-/* --- "Recent" block: entry point to the stats page -------------------------------------------------
-   The whole block is a <Link to="/stats"> wrapped in .card.card--interactive
-   (components.css). The bar chart is entirely hand-rolled: a fixed-height
-   row, one bar per day sized by reviewed/max; vermilion (--accent) is one
-   of the progress-indicator uses explicitly permitted by tokens.css. */
-
-.today-recent {
-  display: grid;
-  gap: var(--sp-3);
+.today-plan__row--done .today-plan__count {
+  color: var(--text-faint);
 }
 
-.today-recent__head {
+.today-plan__hint {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+}
+
+/* --- Footer stat line: the /stats entry point ----------------------------- */
+
+.today-footer {
   display: flex;
-  align-items: baseline;
   justify-content: space-between;
   gap: var(--sp-3);
-}
-
-.today-recent__title {
+  flex-wrap: wrap; /* three phrases must never overflow 375px */
   font-size: var(--fs-sm);
-  font-weight: 600;
   color: var(--text-muted);
 }
 
-.today-recent__more {
-  font-size: var(--fs-xs);
+.today-footer .num {
+  color: var(--text);
+  font-weight: 600;
 }
 
-/* Split evenly into 7 columns; within each column, flex pushes the bar to bottom-align, and the bar height is set by inline style. */
-.today-recent__bars {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--sp-2);
-  height: 56px;
-}
-
-.today-recent__bar-col {
-  display: flex;
-  flex: 1;
-  align-items: flex-end;
-  height: 100%;
-}
-
-.today-recent__bar {
-  width: 100%;
-  border-radius: var(--r-xs) var(--r-xs) 0 0;
-  background: var(--accent);
-  transition: height var(--dur-3) var(--ease);
-}
-
-.today-recent__accuracy {
-  font-size: var(--fs-sm);
-}
-
-.today-recent__empty {
-  font-size: var(--fs-sm);
-  text-align: center;
-  padding-block: var(--sp-3);
+.today-footer .num.today-footer__accent {
+  color: var(--accent);
 }
