@@ -182,15 +182,35 @@ export function selectBlanks(
     })
   })
 
-  if (eligible.length <= MAX_BLANKS) return eligible
+  const isDue = (b: Blank) => progress.words[b.wordId].due <= today
+  const dueCount = eligible.filter(isDue).length
+
+  // The cap sits one below the eligible count, not at MAX_BLANKS alone. The
+  // spec bet on "which blanks are available changes as you learn" for
+  // repeat variety — but once the library is fully learned that premise
+  // dies: measured (2026-08-07 repetition audit), 32 of 34 passages mark
+  // ≤MAX_BLANKS words, so every one of them blanked the identical set on
+  // every repeat. Rotating one word out per assembly is the cheapest fix,
+  // and it costs nothing that matters:
+  //
+  // - **Never below MIN_BLANKS** — the mutual-clue inference is the mode's
+  //   whole point, and buildPassageQuestion rejects anything under it.
+  // - **Never at a due word's expense** (the Math.max(dueCount, ...)): the
+  //   passage is a review tool first. When everything is due, review wins
+  //   and nothing rotates; when nothing is due — the replay-for-fun case
+  //   the "眼熟" complaint actually came from — rotation is maximal.
+  // - The rotated-out word is printed as-is and buildPassageQuestion's
+  //   exclude set already bars every marked word from distractor duty, so
+  //   it cannot leak back in as a give-away option.
+  const cap = Math.max(MIN_BLANKS, Math.min(MAX_BLANKS, Math.max(dueCount, eligible.length - 1)))
+  if (eligible.length <= cap) return eligible
 
   // Due words claim slots first, then the original passage order is restored — rendering
   // must follow appearance order; what gets cut is "which words," not "what order"
-  const isDue = (b: Blank) => progress.words[b.wordId].due <= today
   const picked = new Set([
     ...shuffle(eligible.filter(isDue), rng),
     ...shuffle(eligible.filter(b => !isDue(b)), rng),
-  ].slice(0, MAX_BLANKS))
+  ].slice(0, cap))
   return eligible.filter(b => picked.has(b))
 }
 

@@ -232,6 +232,49 @@ describe('selectBlanks', () => {
     // every marked word must have a chance of being blanked; none can be permanently excluded
     expect([...everChosen].sort()).toEqual([...ids].sort())
   })
+
+  it('a fully caught-up passage rotates one blank out per assembly — the identical-blanks repeat was measured on 32 of 34 passages', () => {
+    // Five marked words, all learned, none due: the spec's bet that "which
+    // blanks are available changes as you learn" is dead once everything is
+    // learned, so without the cap this passage blanked the same five words
+    // on every single repeat.
+    const ids = ['a', 'b', 'c', 'd', 'e']
+    const sentences = parsePassage(passage({
+      en: [ids.map(i => `{{${i}}}`).join(' ')], zh: ['甲'],
+    }))!
+    const words = ids.map(i => word(i))
+    const progress = progressWith(Object.fromEntries(ids.map(i => [i, '2099-01-01'])))
+
+    const everLeftOut = new Set<string>()
+    for (let seed = 1; seed <= 60; seed++) {
+      const blanks = selectBlanks(sentences, byId(words), progress, TODAY, mulberry32(seed))
+      expect(blanks).toHaveLength(4) // one below the eligible count
+      const chosen = new Set(blanks.map(b => b.wordId))
+      for (const id of ids) if (!chosen.has(id)) everLeftOut.add(id)
+    }
+    // the rotated-out slot moves — each word sits out sometimes, none always
+    expect(everLeftOut.size).toBeGreaterThan(1)
+  })
+
+  it('rotation never costs a due word and never digs below the floor', () => {
+    // All five due: review wins, nothing rotates out.
+    const ids = ['a', 'b', 'c', 'd', 'e']
+    const sentences = parsePassage(passage({
+      en: [ids.map(i => `{{${i}}}`).join(' ')], zh: ['甲'],
+    }))!
+    const words = ids.map(i => word(i))
+    const allDue = progressWith(Object.fromEntries(ids.map(i => [i, TODAY])))
+    expect(selectBlanks(sentences, byId(words), allDue, TODAY, mulberry32(7))).toHaveLength(5)
+
+    // Exactly MIN_BLANKS eligible, none due: cutting would sink the passage
+    // below the mutual-clue floor, so all three stay.
+    const three = ['a', 'b', 'c']
+    const sentences3 = parsePassage(passage({
+      en: [three.map(i => `{{${i}}}`).join(' ')], zh: ['甲'],
+    }))!
+    const none = progressWith(Object.fromEntries(three.map(i => [i, '2099-01-01'])))
+    expect(selectBlanks(sentences3, byId(words), none, TODAY, mulberry32(7))).toHaveLength(3)
+  })
 })
 
 describe('pickDistractors', () => {
