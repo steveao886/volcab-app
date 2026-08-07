@@ -57,6 +57,17 @@ library. Tap the one you had in mind. Right means the retrieval was real;
 wrong means the word in your head was one of its confusables — which is
 exactly the finding worth having.
 
+A fifth control, set apart from the options, says **我想的不是这几个**.
+Added on user report the day after launch: a word often *does* come to
+mind, just a simpler one that covers the meaning and isn't in the library
+at all. Without this the only honest-looking exit was 想不起来, which is
+false — the meaning was available, the word was not, and that is a
+different diagnosis. It scores as a miss (the word is not in productive
+vocabulary either way) but reports as 意思到了,词还没到, and the results
+list tags it so the two kinds of miss stay distinguishable. 排序 has no
+equivalent: ranking the three shown words stays answerable whatever you
+happened to think of.
+
 ### 排序 — all three fit; which fits *best*?
 
 The group's members appear unordered. Tap them in order, 最贴切 first; each
@@ -155,26 +166,44 @@ marks both words): the confusion lives *between* words, so
   second and third marks those two and leaves the correctly-placed first
   alone.
 
-## 巩固 — the deliberate exit into the drill loop
+## 巩固 — re-practise the direction, not just the word
 
-On the results page, each wrong word carries a **巩固** button. Pressing it
-declares "count this as a real forget": a new store action
-`consolidateWord(id)` sets `due` to today, increments `lapses`, stamps
-`lastReviewedAt` — and touches nothing else.
+**巩固 sits on the question, not on the results page.** It first shipped on
+the results page and the user's verdict was immediate: 每道题直接选择比较好.
+The moment you want it is the moment you just missed it, not ten questions
+later when you're reconstructing which was which.
 
-Why not reuse `recordLapseDrill(id, 'again')`: `practiceGrade` counts a
-`reviewed` card in dailyStats, because in the drills you actually looked at
-a card and graded it. A settlement-page button press is not a card viewed;
+The harder correction was what it *does*. The first version only pulled the
+word's `due` date forward — and `/review`'s card is headword on the front,
+meanings on the back. **A meaning→headword failure was being answered with
+headword→meaning practice**, which is the one direction the app was already
+drowning in. Reported plainly: 那我也得是巩固从中到英的这个思维对吧？
+
+So 巩固 now means "ask me this again, this way round", with three
+consistent consequences:
+
+1. **Immediately** — the question is appended after the scored round as a
+   re-drill (`巩固 · 第 n / m 题`). Deliberately **not scored**: the score is
+   out of the ten questions the round asked, and a re-drill that could raise
+   it would make 巩固 a way to buy points. Settlement therefore fires when
+   the scored ten end, not when the drill does — walking away mid-drill must
+   not lose the round.
+2. **Next session** — the prompt goes into a device-local `recallDebt` list,
+   and `generateRecallSession` draws debt ahead of both unseen and seen
+   prompts. Answering it right is the only thing that clears it.
+3. **Bookkeeping** — `consolidateWord(id)` sets `due` to today, increments
+   `lapses`, stamps `lastReviewedAt`, nothing else.
+
+Why `consolidateWord` isn't `recordLapseDrill(id, 'again')`: `practiceGrade`
+counts a `reviewed` card in dailyStats, because in the drills you actually
+looked at a card and graded it. A button press is not a card viewed;
 counting it would quietly drag the accuracy statistics down.
 
 Why it does not force the word into 还没记牢: that list is defined by the
 scheduler's own signals (`ease < 2.5`, interval < 21 days), and a button
 that faked those signals would corrupt the definition the stats card and
-drill queue both rely on. What 巩固 actually does is honest and sufficient:
-the word enters **today's review queue** immediately, and if the recall
-failure was real, the review grade the user gives it there will move `ease`
-through the front door. The incremented `lapses` feeds ranking and the
-忘 n 次 label, which is exactly what that counter is for.
+drill queue both rely on. The word enters today's review queue, and if the
+failure was real the review grade moves `ease` through the front door.
 
 ## Anti-repeat rotation
 
@@ -224,7 +253,7 @@ skill's other face; it is documented once, in the skill, not twice.
 |---|---|
 | `src/lib/senseGroup.ts` (new) | Types, eligibility, question building for both types, verdicts, wrongIds — all pure |
 | `src/lib/senseGroup.test.ts` (new) | Tests for the above |
-| `src/lib/storage.ts` | One key: `recentRecall` (reuses `pushRecent`/`recentWindow` from passage.ts) |
+| `src/lib/storage.ts` | Two keys: `recentRecall`, `recallDebt` (both reuse `pushRecent`/`recentWindow` from passage.ts) |
 | `src/data/senseGroups.json` (new) | The authored groups |
 | `scripts/validate-sense-groups.ts` (new) | Write-side gate, `npm run validate-sense-groups` |
 | `src/pages/QuizRecall.tsx` (new) | Commit gate, both question views, settlement with 巩固 |
@@ -250,6 +279,7 @@ skill's other face; it is documented once, in the skill, not twice.
 `senseGroup.test.ts`: eligibility excludes groups with any unlearned or
 missing member; 唤词 building picks `order[0]` as answer and never leaks it
 in fillers; 排序 verdict is exact-match; wrongIds marks pick+answer /
-answer-only / misplaced-only per the three cases; unseen-before-seen
-ordering; a fully seen pool still yields questions; rng injected
-throughout. UI untested per repo policy.
+answer-only / misplaced-only per the three cases; debt-before-unseen-before-seen
+ordering; a fully seen pool still yields questions; target carried through
+and dropped when unlocatable; rng injected throughout. UI untested per repo
+policy.

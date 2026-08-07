@@ -201,7 +201,7 @@ describe('generateRecallSession', () => {
 
   it('draws only eligible groups and never exceeds count', () => {
     const partial = learned(lib.filter(w => w.id !== 'succumb').map(w => w.id))
-    const qs = generateRecallSession(groups, words, partial, new Set(), 10, seqRng([0.3, 0.7, 0.1, 0.9, 0.5]))
+    const qs = generateRecallSession(groups, words, partial, new Set(), new Set(), 10, seqRng([0.3, 0.7, 0.1, 0.9, 0.5]))
     expect(qs.length).toBe(2)
     for (const q of qs) expect(q.orderIds).not.toContain('succumb')
   })
@@ -209,18 +209,30 @@ describe('generateRecallSession', () => {
   it('surfaces unseen prompts before recently seen ones', () => {
     const seen = new Set([groups[0].zh, groups[2].zh])
     // Whatever the rng does, the single unseen prompt must come first.
-    const qs = generateRecallSession(groups, words, all, seen, 3, seqRng([0.42, 0.17, 0.88, 0.61]))
+    const qs = generateRecallSession(groups, words, all, seen, new Set(), 3, seqRng([0.42, 0.17, 0.88, 0.61]))
     expect(qs[0].prompt).toBe(groups[1].zh)
   })
 
   it('a fully seen pool still yields questions — degraded, not empty', () => {
     const seen = new Set(groups.map(g => g.zh))
-    const qs = generateRecallSession(groups, words, all, seen, 3, seqRng([0.5, 0.2, 0.8]))
+    const qs = generateRecallSession(groups, words, all, seen, new Set(), 3, seqRng([0.5, 0.2, 0.8]))
     expect(qs.length).toBe(3)
   })
 
+  it('a 巩固-marked prompt opens the next session, ahead of even the unseen ones', () => {
+    // 巩固 is the only mechanism that re-practises the *direction* that
+    // failed — pulling the word's due date forward sends it to /review,
+    // which asks headword→meaning, the opposite way round.
+    const debt = new Set([groups[2].zh])
+    const seen = new Set([groups[2].zh])   // seen AND owed: the debt must win
+    for (const r of [seqRng([0.3, 0.9, 0.1]), seqRng([0.8, 0.2, 0.6])]) {
+      const qs = generateRecallSession(groups, words, all, seen, debt, 3, r)
+      expect(qs[0].prompt).toBe(groups[2].zh)
+    }
+  })
+
   it('alternates the two kinds when groups qualify for both', () => {
-    const qs = generateRecallSession(groups, words, all, new Set(), 3, seqRng([0.3, 0.6, 0.1, 0.8, 0.4]))
+    const qs = generateRecallSession(groups, words, all, new Set(), new Set(), 3, seqRng([0.3, 0.6, 0.1, 0.8, 0.4]))
     expect(qs.map(q => q.kind)).toEqual(['recall', 'order', 'recall'])
   })
 })

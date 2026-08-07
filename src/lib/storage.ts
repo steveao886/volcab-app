@@ -12,6 +12,13 @@ const KEYS = {
   stagingOps: 'volcab.stagingOps', // Word collections not yet confirmed pushed to the remote, same mechanism as wordOps
   recentPassages: 'volcab.recentPassages', // Ids of recently done passages. Only guards against repeats — not worth adding a sync field in progress.json for this
   recentRecall: 'volcab.recentRecall',     // Prompts (zh) of recently answered 回想 questions, same contract and same reasoning as recentPassages
+  // Prompts the user pressed 巩固 on: they jump the queue next 回想 session
+  // and are cleared once answered right. Local, like the two above — but
+  // note this one is *not* interchangeable with pulling the word's due date
+  // forward. That sends the word to /review, which tests headword→meaning;
+  // a 回想 failure is meaning→headword and has to come back in that
+  // direction to have been practised at all.
+  recallDebt: 'volcab.recallDebt',
   recentContrast: 'volcab.recentContrast', // Pair keys (id|id, sorted) of recently answered 辨析 questions — the surface the repetition audit found going stale first
 
   // The day (YYYY-MM-DD) each practice drill was last completed, so it

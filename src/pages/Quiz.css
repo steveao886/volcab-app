@@ -451,3 +451,12 @@
   -webkit-text-emphasis-position: under right;
   text-emphasis-position: under right;
 }
+
+/* The "none of these" escape. Deliberately NOT styled like a fifth option:
+   auto width, centred, with a gap above, so a thumb travelling down the
+   four full-width answers never lands on it by momentum. */
+.recall-escape {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--sp-4);
+}

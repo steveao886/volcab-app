@@ -15,26 +15,47 @@ const QUESTION_COUNT = 10
 
 /**
  * 回想 — the Chinese-to-English direction. A scenario sentence appears
- * alone; the user retrieves in their head, commits (我想好了 / 想不起来),
- * and only then does the card reveal what it wants. The commit gate is the
- * whole mechanism: it replaces typing without turning production back into
- * recognition. See docs/superpowers/specs/2026-08-07-recall-mode-design.md.
+ * alone with the asked-for chunk marked; the user retrieves in their head,
+ * commits (我想好了 / 想不起来), and only then does the card reveal what it
+ * wants. The commit gate is the whole mechanism: it replaces typing without
+ * turning production back into recognition. See
+ * docs/superpowers/specs/2026-08-07-recall-mode-design.md.
  */
 
 type Stage = 'commit' | 'answer' | 'revealed'
 
+/**
+ * How a question was missed. The two are scored identically — the word is
+ * not in productive vocabulary either way — but they are different findings
+ * and must not be reported as one:
+ *
+ * - `blank`: nothing came. 想不起来 at the commit gate.
+ * - `other`: something came, but it was none of the options — the learner
+ *   reached for a simpler word that says roughly the same thing. This is
+ *   the state the mode exists to find, and until it had its own button the
+ *   only way to report it was 想不起来, which is simply false: the meaning
+ *   *was* available, the word was not.
+ */
+type Miss = 'blank' | 'other'
+
 interface RecallQuestionViewProps {
   question: RecallQuestion
-  onAnswered: (correct: boolean, wrongIds: string[]) => void
+  onAnswered: (correct: boolean, wrongIds: string[], miss: Miss | null) => void
   onNext: () => void
   nextLabel: string
+  /** Fires when 巩固 is pressed. Absent during the re-drill itself — a question already being re-drilled has nothing left to queue. */
+  onReinforce?: (q: RecallQuestion) => void
+  reinforced: boolean
 }
 
-function RecallQuestionView({ question, onAnswered, onNext, nextLabel }: RecallQuestionViewProps) {
+function RecallQuestionView({
+  question, onAnswered, onNext, nextLabel, onReinforce, reinforced,
+}: RecallQuestionViewProps) {
   const { progress } = useApp()
   const soundEnabled = isSoundEnabled(progress.settings)
   const [stage, setStage] = useState<Stage>('commit')
   const [correct, setCorrect] = useState(false)
+  const [miss, setMiss] = useState<Miss | null>(null)
   /** 唤词: the one option picked. 排序: the tap sequence so far. */
   const [picked, setPicked] = useState<string[]>([])
   const answeredRef = useRef(false)
@@ -50,24 +71,28 @@ function RecallQuestionView({ question, onAnswered, onNext, nextLabel }: RecallQ
     if (stage === 'revealed') nextRef.current?.focus()
   }, [stage])
 
-  const settle = useCallback((isCorrect: boolean, pick: string[] | null) => {
+  const settle = useCallback((isCorrect: boolean, pick: string[] | null, kind: Miss | null) => {
     if (answeredRef.current) return
     answeredRef.current = true
     // Synchronously inside the tap's call stack — iOS unlocks audio only inside a user gesture.
     playQuizResult(isCorrect, soundEnabled)
     setCorrect(isCorrect)
+    setMiss(kind)
     setStage('revealed')
-    onAnswered(isCorrect, isCorrect ? [] : wrongIdsFor(question, pick))
+    onAnswered(isCorrect, isCorrect ? [] : wrongIdsFor(question, pick), kind)
   }, [question, soundEnabled, onAnswered])
 
-  const giveUp = useCallback(() => settle(false, null), [settle])
+  const giveUp = useCallback(() => settle(false, null, 'blank'), [settle])
+  // Scored exactly like 想不起来 — wrongIdsFor marks the answer and nothing
+  // else, because whatever was reached for is not among this card's options
+  // and cannot be identified without typing.
+  const notMine = useCallback(() => settle(false, null, 'other'), [settle])
 
   const chooseRecall = useCallback((opt: string) => {
     // The pick lands in state as well as in settle(): the reveal reads
-    // `picked` for the 你的选择 tag and to tell a wrong pick apart from
-    // 想不起来 (which leaves it empty).
+    // `picked` for the 你的选择 tag.
     setPicked([opt])
-    settle(opt === question.answer[0], [opt])
+    settle(opt === question.answer[0], [opt], null)
   }, [question, settle])
 
   const tapOrder = useCallback((opt: string) => {
@@ -76,24 +101,29 @@ function RecallQuestionView({ question, onAnswered, onNext, nextLabel }: RecallQ
 
   const confirmOrder = useCallback(() => {
     if (picked.length !== question.answer.length) return
-    settle(orderCorrect(picked, question.answer), picked)
+    settle(orderCorrect(picked, question.answer), picked, null)
   }, [picked, question, settle])
 
   // Number keys tap options in both kinds, the same muscle memory as every
-  // other choice question; silenced once revealed so Enter belongs to 下一题.
+  // other choice question; in 唤词 the key one past the last option is the
+  // "none of these" escape, which is why the count is +1. Silenced once
+  // revealed so Enter belongs to 下一题.
+  const escapeKey = question.options.length + 1
   useEffect(() => {
     if (stage !== 'answer') return
     function onKeyDown(e: KeyboardEvent) {
-      const i = optionIndexFromKey(e, question.options.length)
+      const isRecall = question.kind === 'recall'
+      const i = optionIndexFromKey(e, question.options.length + (isRecall ? 1 : 0))
       if (i < 0) return
       e.preventDefault()
+      if (i === question.options.length) { notMine(); return }
       const opt = question.options[i]
-      if (question.kind === 'recall') chooseRecall(opt)
+      if (isRecall) chooseRecall(opt)
       else tapOrder(opt)
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [stage, question, chooseRecall, tapOrder])
+  }, [stage, question, chooseRecall, tapOrder, notMine])
 
   const revealed = stage === 'revealed'
 
@@ -110,6 +140,12 @@ function RecallQuestionView({ question, onAnswered, onNext, nextLabel }: RecallQ
       {question.prompt.slice(at + t.length)}
     </>
   ) : question.prompt
+
+  const feedback =
+    correct ? '回答正确'
+      : miss === 'blank' ? '想不起来 —— 那就在这儿把它记住'
+        : miss === 'other' ? '意思到了,词还没到 —— 这正是要练的'
+          : '回答错误'
 
   return (
     <div className="quiz-q">
@@ -145,8 +181,8 @@ function RecallQuestionView({ question, onAnswered, onNext, nextLabel }: RecallQ
                 if (opt === question.answer[0]) variant = 'correct'
                 else if (opt === picked[0]) variant = 'incorrect'
               } else if (revealed && question.kind === 'order') {
-                const at = question.answer.indexOf(opt)
-                if (at !== -1 && picked[at] === opt) variant = 'correct'
+                const idx = question.answer.indexOf(opt)
+                if (idx !== -1 && picked[idx] === opt) variant = 'correct'
                 else variant = 'incorrect'
               }
               return (
@@ -186,6 +222,22 @@ function RecallQuestionView({ question, onAnswered, onNext, nextLabel }: RecallQ
             })}
           </div>
 
+          {/* The third outcome, and the one the four options cannot express:
+              a word did come to mind, it just wasn't any of these — usually a
+              simpler one that covers the meaning. Deliberately set apart from
+              the options (lighter, centred, gapped) so a thumb reaching for
+              an answer never lands on it. 排序 has no equivalent: there you
+              are asked to rank the three shown, which stays answerable
+              whatever you happened to think of. */}
+          {question.kind === 'recall' && !revealed ? (
+            <div className="recall-escape">
+              <Button type="button" variant="secondary" size="sm" onClick={notMine}>
+                <span className="quiz-option__key">{escapeKey}</span>
+                我想的不是这几个
+              </Button>
+            </div>
+          ) : null}
+
           {question.kind === 'order' && !revealed ? (
             <Button
               className="quiz-q__next"
@@ -202,10 +254,8 @@ function RecallQuestionView({ question, onAnswered, onNext, nextLabel }: RecallQ
 
       {revealed ? (
         <>
-          <p className="quiz-feedback" role="status">
-            {correct ? '回答正确' : picked.length === 0 ? '想不起来 —— 那就在这儿把它记住' : '回答错误'}
-          </p>
-          {question.kind === 'order' || picked.length === 0 ? (
+          <p className="quiz-feedback" role="status">{feedback}</p>
+          {question.kind === 'order' || miss !== null ? (
             <p className="recall-key" lang="en">
               {question.answer.length > 1 ? question.answer.join(' → ') : question.answer[0]}
             </p>
@@ -214,6 +264,18 @@ function RecallQuestionView({ question, onAnswered, onNext, nextLabel }: RecallQ
               names the dimension that decides (object, register,
               connotation, grammar). Same job as the contrast card's note. */}
           <p className="recall-why">{question.why}</p>
+          {/* 巩固 sits on the question, not on the results page: the moment
+              you want it is the moment you just missed it. */}
+          {!correct && onReinforce !== undefined ? (
+            <Button
+              variant="secondary"
+              block
+              disabled={reinforced}
+              onClick={() => onReinforce(question)}
+            >
+              {reinforced ? '本轮结束后再想一遍' : '巩固 · 再想一遍'}
+            </Button>
+          ) : null}
           <Button ref={nextRef} className="quiz-q__next" variant="primary" block onClick={onNext}>
             {nextLabel}
           </Button>
@@ -225,9 +287,9 @@ function RecallQuestionView({ question, onAnswered, onNext, nextLabel }: RecallQ
 
 /**
  * One round of 回想. Same session skeleton as QuizSession (lazy question
- * set, remount-to-restart, recordQuiz exactly once at the results page) —
- * kept separate because the commit gate, the two question kinds and the
- * 巩固 exit share almost no markup with the four-choice flow.
+ * set, remount-to-restart, recordQuiz exactly once) — kept separate because
+ * the commit gate, the two question kinds and the re-drill share almost no
+ * markup with the four-choice flow.
  */
 export function RecallSession({
   words,
@@ -246,45 +308,86 @@ export function RecallSession({
     // Recently seen prompts are demoted behind unseen ones — the same
     // windowing the passage picker uses (the one surface the repetition
     // audit measured at 0% repeats). The window scales with the eligible
-    // pool so something always stays fresh to draw.
+    // pool so something always stays fresh to draw. Anything marked 巩固
+    // last time jumps ahead of both.
     const recent = storage.get<string[]>('recentRecall') ?? []
     const seen = new Set(recent.slice(0, recentWindow(eligible.length)))
-    return generateRecallSession(groups, byId, progress, seen, QUESTION_COUNT, Math.random)
+    const debt = new Set(storage.get<string[]>('recallDebt') ?? [])
+    return generateRecallSession(groups, byId, progress, seen, debt, QUESTION_COUNT, Math.random)
   })
   const [index, setIndex] = useState(0)
   const [score, setScore] = useState(0)
   const [wrongIds, setWrongIds] = useState<string[]>([])
-  const [consolidated, setConsolidated] = useState<Set<string>>(new Set())
+  const [misses, setMisses] = useState<Record<string, Miss>>({})
+  const [reinforced, setReinforced] = useState<Set<string>>(new Set())
+  /**
+   * Questions to re-ask once the scored round is over. **Not scored** — the
+   * score is out of the ten questions the round actually asked, and a
+   * re-drill that could raise it would make 巩固 a way to buy points.
+   */
+  const [encore, setEncore] = useState<RecallQuestion[]>([])
+  const [encoreIndex, setEncoreIndex] = useState(0)
   const recordedRef = useRef(false)
   const nextGuardRef = useRef(false)
 
   const total = questions.length
-  const done = index >= total && total > 0
+  const scoredDone = index >= total && total > 0
+  const inEncore = scoredDone && encoreIndex < encore.length
+  const done = scoredDone && !inEncore
 
-  const handleAnswered = useCallback((correct: boolean, ids: string[], q: RecallQuestion) => {
+  const handleAnswered = useCallback((correct: boolean, ids: string[], miss: Miss | null, q: RecallQuestion) => {
     // Seen means answered, not generated: quitting a session halfway must
     // not mark the unreached prompts as stale.
     storage.set('recentRecall', pushRecent(storage.get<string[]>('recentRecall') ?? [], q.prompt))
-    if (correct) { setScore(s => s + 1); return }
+    if (correct) {
+      // Answering it right is the only thing that clears the debt — that is
+      // what "巩固" was asking for in the first place.
+      const debt = storage.get<string[]>('recallDebt') ?? []
+      if (debt.includes(q.prompt)) storage.set('recallDebt', debt.filter(p => p !== q.prompt))
+      setScore(s => s + 1)
+      return
+    }
     setWrongIds(prev => [...new Set([...prev, ...ids])])
+    if (miss !== null) setMisses(prev => ({ ...prev, [q.orderIds[0]]: miss }))
   }, [])
+
+  /**
+   * 巩固: practise this **direction** again, which is the one thing pulling
+   * the due date forward cannot do — /review's card is headword-front, so a
+   * meaning→headword miss would come back as headword→meaning. So it does
+   * three things at once, all one intent:
+   *   1. re-asks the same question after the scored round (immediate),
+   *   2. remembers the prompt so the next 回想 session opens on it (spaced),
+   *   3. counts the lapse via consolidateWord (bookkeeping — it was a real miss).
+   */
+  const reinforce = useCallback((q: RecallQuestion) => {
+    consolidateWord(q.orderIds[0])
+    setReinforced(prev => new Set(prev).add(q.prompt))
+    setEncore(prev => prev.some(e => e.prompt === q.prompt) ? prev : [...prev, q])
+    storage.set('recallDebt', pushRecent(storage.get<string[]>('recallDebt') ?? [], q.prompt))
+  }, [consolidateWord])
 
   const handleNext = useCallback(() => {
     if (nextGuardRef.current) return
     nextGuardRef.current = true
-    setIndex(i => i + 1)
-  }, [])
+    if (index >= total) setEncoreIndex(i => i + 1)
+    else setIndex(i => i + 1)
+  }, [index, total])
 
   useEffect(() => {
     nextGuardRef.current = false
-  }, [index])
+  }, [index, encoreIndex])
 
+  // Settlement fires when the **scored** round ends, not when the re-drill
+  // does: the re-drill is practice appended after the fact, and holding the
+  // write back until it finished would lose the round if the user walked
+  // away mid-drill.
   useEffect(() => {
-    if (done && !recordedRef.current) {
+    if (scoredDone && !recordedRef.current) {
       recordedRef.current = true
       recordQuiz(score, total, wrongIds)
     }
-  }, [done, score, total, wrongIds, recordQuiz])
+  }, [scoredDone, score, total, wrongIds, recordQuiz])
 
   const wordsById = useMemo(() => new Map(words.map(w => [w.id, w])), [words])
 
@@ -325,29 +428,21 @@ export function RecallSession({
             <ul className="quiz-wrong-list">
               {wrongWords.map(w => (
                 <li key={w.id}>
-                  <div className="recall-wrong-row">
-                    <Link className="quiz-wrong-list__item" to={`/word/${w.id}`}>
-                      <span className="word" lang="en">
-                        {w.headword}
-                      </span>
-                      <span className="muted">{w.meanings[0]?.zh}</span>
-                    </Link>
-                    {/* 巩固: the deliberate exit into the drill loop — due
-                        today, lapse counted, and the word earns its place in
-                        还没记牢 through the review grade it now gets, not
-                        through this button faking the scheduler's signals. */}
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      disabled={consolidated.has(w.id)}
-                      onClick={() => {
-                        consolidateWord(w.id)
-                        setConsolidated(prev => new Set(prev).add(w.id))
-                      }}
-                    >
-                      {consolidated.has(w.id) ? '已进今日复习' : '巩固'}
-                    </Button>
-                  </div>
+                  <Link className="quiz-wrong-list__item" to={`/word/${w.id}`}>
+                    <span className="word" lang="en">
+                      {w.headword}
+                    </span>
+                    <span className="muted">{w.meanings[0]?.zh}</span>
+                    {/* Which kind of miss it was, carried through to the
+                        summary: "the meaning was there, the word wasn't" is
+                        a different diagnosis from "nothing came", and the
+                        list is where you decide what to do about it. */}
+                    {misses[w.id] === 'other' ? (
+                      <span className="quiz-option__tag">意思到了</span>
+                    ) : misses[w.id] === 'blank' ? (
+                      <span className="quiz-option__tag">没想起来</span>
+                    ) : null}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -366,8 +461,10 @@ export function RecallSession({
     )
   }
 
-  const q = questions[index]
-  const isLast = index === total - 1
+  const q = inEncore ? encore[encoreIndex] : questions[index]
+  const isLast = inEncore
+    ? encoreIndex === encore.length - 1
+    : index === total - 1 && encore.length === 0
 
   return (
     <>
@@ -375,25 +472,36 @@ export function RecallSession({
         <div
           className="progress"
           role="progressbar"
-          aria-label="测试进度"
+          aria-label={inEncore ? '巩固进度' : '测试进度'}
           aria-valuemin={0}
-          aria-valuemax={total}
-          aria-valuenow={index}
-          aria-valuetext={`第 ${index + 1} / ${total} 题`}
+          aria-valuemax={inEncore ? encore.length : total}
+          aria-valuenow={inEncore ? encoreIndex : index}
+          aria-valuetext={
+            inEncore
+              ? `巩固 第 ${encoreIndex + 1} / ${encore.length} 题`
+              : `第 ${index + 1} / ${total} 题`
+          }
         >
-          <div className="progress__fill" style={{ width: `${(index / total) * 100}%` }} />
+          <div
+            className="progress__fill"
+            style={{ width: `${((inEncore ? encoreIndex : index) / (inEncore ? encore.length : total)) * 100}%` }}
+          />
         </div>
         <p className="muted num quiz-progress__count">
-          第 {index + 1} / {total} 题
+          {inEncore
+            ? `巩固 · 第 ${encoreIndex + 1} / ${encore.length} 题`
+            : `第 ${index + 1} / ${total} 题`}
         </p>
       </div>
       <Card>
         <RecallQuestionView
-          key={index}
+          key={inEncore ? `encore-${encoreIndex}` : index}
           question={q}
-          onAnswered={(correct, ids) => handleAnswered(correct, ids, q)}
+          onAnswered={(correct, ids, miss) => handleAnswered(correct, ids, miss, q)}
           onNext={handleNext}
           nextLabel={isLast ? '查看成绩' : '下一题'}
+          onReinforce={inEncore ? undefined : reinforce}
+          reinforced={reinforced.has(q.prompt)}
         />
       </Card>
     </>

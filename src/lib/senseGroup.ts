@@ -217,15 +217,24 @@ export function wrongIdsFor(q: RecallQuestion, pick: string[] | null): string[] 
  * draws with, so "trouble comes up more often" means one thing across the
  * app and no group is ever excluded outright.
  *
- * `seen` demotes, never excludes: groups whose prompt was recently shown go
- * to the back of the draw, so the unseen surface first and an exhausted
- * pool degrades to today's behaviour instead of an empty quiz.
+ * Three buckets, in order:
+ *
+ * 1. **`debt`** — groups the user pressed 巩固 on. This is the only
+ *    mechanism that practises the *direction* they failed in: pulling the
+ *    word's due date forward sends it to `/review`, whose card is headword
+ *    on the front and meanings on the back — English→Chinese, the opposite
+ *    of what was just missed. A zh→en failure has to come back as a zh→en
+ *    question or it has not been reinforced at all.
+ * 2. **unseen** — prompts the recency record has never shown.
+ * 3. **`seen`** — demoted, never excluded, so an exhausted pool degrades to
+ *    today's behaviour instead of an empty quiz.
  */
 export function generateRecallSession(
   groups: SenseGroup[],
   words: Map<string, Word>,
   progress: Progress,
   seen: ReadonlySet<string>,
+  debt: ReadonlySet<string>,
   count: number,
   rng: () => number,
 ): RecallQuestion[] {
@@ -236,9 +245,13 @@ export function generateRecallSession(
       return w === undefined ? 1 : difficultyWeight(w, progress)
     }))
   const drawn = weightedShuffle(eligible, weight, rng)
-  // Stable partition: unseen prompts keep their weighted order in front,
-  // seen ones keep theirs behind. This is the whole anti-repeat mechanism.
-  const ordered = [...drawn.filter(g => !seen.has(g.zh)), ...drawn.filter(g => seen.has(g.zh))]
+  // Stable partition into the three buckets above; each keeps its weighted
+  // order within the bucket.
+  const ordered = [
+    ...drawn.filter(g => debt.has(g.zh)),
+    ...drawn.filter(g => !debt.has(g.zh) && !seen.has(g.zh)),
+    ...drawn.filter(g => !debt.has(g.zh) && seen.has(g.zh)),
+  ]
 
   const fillerPool = [...words.values()].filter(w => {
     const e = progress.words[w.id]
