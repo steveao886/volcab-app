@@ -11,6 +11,8 @@ const KEYS = {
   stagingSha: 'volcab.stagingSha',
   stagingOps: 'volcab.stagingOps', // Word collections not yet confirmed pushed to the remote, same mechanism as wordOps
   recentPassages: 'volcab.recentPassages', // Ids of recently done passages. Only guards against repeats — not worth adding a sync field in progress.json for this
+  recentRecall: 'volcab.recentRecall',     // Prompts (zh) of recently answered 回想 questions, same contract and same reasoning as recentPassages
+
   // The day (YYYY-MM-DD) each practice drill was last completed, so it
   // isn't offered twice over. Same call as recentPassages: a second device
   // offering the session again is a much smaller cost than a new synced

@@ -69,6 +69,8 @@ export interface AppActions {
   /** Reject a suggested word, permanently: the id is remembered in synced progress so later suggestion batches skip it */
   dismissSuggestion(id: string): void
   recordQuiz(correct: number, total: number, wrongIds: string[]): void
+  /** 回想's 巩固 button: declare a quiz miss a real forget — due today, lapses counted, nothing else moves */
+  consolidateWord(id: string): void
   /** Sprint settlement: like recordQuiz, only pulls forward the due date of missed words, plus refreshes the personal best score */
   recordSprint(score: number, wrongIds: string[]): void
   /** 猜词 settlement: same due-date-only contract, plus the best count of no-clue solves */
@@ -706,6 +708,44 @@ export function AppProvider({ children }: { children: ReactNode }) {
     void flushProgress()
   }, [commitProgress, flushProgress])
 
+  /**
+   * The 巩固 button on 回想's results page: the user declaring "count this
+   * miss as a real forget". Due today, lapses incremented, lastReviewedAt
+   * stamped — nothing else.
+   *
+   * Not practiceGrade, deliberately: practiceGrade counts a `reviewed` card
+   * in dailyStats because in the drills you actually looked at a card and
+   * graded it. A settlement-page button press is not a card viewed;
+   * counting it would quietly drag the accuracy statistics down.
+   *
+   * Not a forced entry into 还没记牢 either: that list is defined by the
+   * scheduler's own signals (ease, interval), and faking them from a button
+   * would corrupt the definition the stats card and drill queue share. The
+   * word enters today's review queue; if the failure was real, the review
+   * grade moves ease through the front door.
+   *
+   * Idempotent per settlement in effect (due is already today after
+   * recordQuiz), except lapses — so a double-tap would double-count. The
+   * page disables the button after one press; this guard is for the id
+   * that vanished mid-session (deleted on another device), same as
+   * practiceGrade's.
+   */
+  const consolidateWord = useCallback((id: string) => {
+    const now = new Date()
+    const day = todayStr(now)
+    const cur = stateRef.current.progress
+    const prev = cur.words[id]
+    if (!prev) return
+    commitProgress({
+      ...cur,
+      words: {
+        ...cur.words,
+        [id]: { ...prev, due: day, lapses: prev.lapses + 1, lastReviewedAt: now.toISOString() },
+      },
+    })
+    schedulePush()
+  }, [commitProgress, schedulePush])
+
   // Sprint shares the same contract as recordQuiz (missed words only get
   // their due date pulled forward, ease/interval untouched); the one extra
   // thing it does is refresh the best score.
@@ -847,11 +887,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AppContextValue>(() => ({
     ...state,
-    login, logout, grade, recordLapseDrill, recordConsolidation, dismissSuggestion, recordQuiz, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
+    login, logout, grade, recordLapseDrill, recordConsolidation, dismissSuggestion, recordQuiz, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll,
     ...(import.meta.env.DEV ? { enterDemoMode } : {}),
   }), [
-    state, login, logout, grade, recordLapseDrill, recordConsolidation, dismissSuggestion, recordQuiz, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
+    state, login, logout, grade, recordLapseDrill, recordConsolidation, dismissSuggestion, recordQuiz, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll, enterDemoMode,
   ])
 

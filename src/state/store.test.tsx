@@ -887,6 +887,44 @@ describe('recordLapseDrill: drilling never moves the schedule outward', () => {
   })
 })
 
+describe('consolidateWord: 巩固 declares a miss a real forget, and nothing more', () => {
+  it('pulls due to today and counts the lapse, leaving ease/interval/state alone', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.words['alpha']
+    expect(before.due > today).toBe(true)
+
+    await step(() => { app().consolidateWord('alpha') })
+
+    const after = app().progress.words['alpha']
+    expect(after.due).toBe(today)
+    expect(after.lapses).toBe(before.lapses + 1)
+    expect(after.ease).toBe(before.ease)
+    expect(after.intervalDays).toBe(before.intervalDays)
+    expect(after.state).toBe(before.state)
+  })
+
+  it('writes no dailyStats — a button press is not a card viewed', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.dailyStats[today]
+
+    await step(() => { app().consolidateWord('alpha') })
+
+    const after = app().progress.dailyStats[today]
+    expect(after.reviewed).toBe(before.reviewed)
+    expect(after.correct).toBe(before.correct)
+    expect(after.quizTaken).toBe(before.quizTaken)
+  })
+
+  it('a word deleted from another device mid-session is a no-op, not a crash', async () => {
+    await bootAsAlice()
+    const before = app().progress.words
+    await step(() => { app().consolidateWord('does-not-exist') })
+    expect(app().progress.words).toBe(before)
+  })
+})
+
 describe('grade: the retention measurement', () => {
   it('a new word being learned is not counted as a scheduled review', async () => {
     await bootAsAlice()
