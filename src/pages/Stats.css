@@ -376,3 +376,46 @@
   color: var(--accent);
   white-space: nowrap;
 }
+
+/* Per-mode accuracy rows. Grid rather than flex so the label column, the
+   bar, and the two numbers line up across rows regardless of label width —
+   at 375px a ragged right edge on the percentages is the thing that reads
+   as broken. */
+.stats-modes {
+  display: grid;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+}
+
+.stats-mode {
+  display: grid;
+  grid-template-columns: 3em 1fr auto auto;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.stats-mode__bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--rule);
+  overflow: hidden;
+}
+
+.stats-mode__fill {
+  display: block;
+  height: 100%;
+  background: var(--slab);
+}
+
+/* Fixed width so the percentages form a column; 题量不足 is wider than any
+   percentage, and that is the width the column is cut to. */
+.stats-mode__rate {
+  min-width: 4.5em;
+  text-align: right;
+}
+
+.stats-mode__count {
+  min-width: 4em;
+  text-align: right;
+  font-size: var(--fs-sm);
+}

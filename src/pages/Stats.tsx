@@ -8,7 +8,8 @@ import { useApp } from '../state/store'
 import { AccuracyTrend, ReviewBars } from './statsCharts'
 import {
   accuracySeries, accuracyStats, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
-  masteryBreakdown, retentionStats, shortDate, strugglingSummary, usageCoverage, windowSummary,
+  masteryBreakdown, MODE_ACCURACY_MIN, modeAccuracy, retentionStats, shortDate,
+  strugglingSummary, usageCoverage, windowSummary,
 } from './statsDerive'
 import { computeStreak, longestStreak } from './todayStats'
 import './Stats.css'
@@ -61,6 +62,7 @@ export function Stats() {
       forecast: dueForecast(words, progress, today, FORECAST_DAYS),
       struggling: strugglingSummary(words, progress, TOP_STRUGGLING),
       totals: cumulativeTotals(progress),
+      modes: modeAccuracy(progress),
       // Only a complete absence of dailyStats counts as a "never studied"
       // new user — that gets the full-page empty state instead of a
       // bunch of empty charts.
@@ -69,7 +71,7 @@ export function Stats() {
   }, [words, progress, today])
   const {
     days, acc, summary, accStats, retention, streak, best, mastery,
-    totals, coverage, forecast, struggling, hasHistory,
+    totals, modes, coverage, forecast, struggling, hasHistory,
   } = derived
 
   if (!hasHistory) {
@@ -352,6 +354,37 @@ export function Stats() {
           <p className="faint stats-note">
             共 <span className="num">{struggling.total}</span> 个词还没记牢。
           </p>
+        </Card>
+      )}
+
+      {/* Per-mode, never blended: the seven surfaces test different things
+          at different difficulties, so one combined figure moves more when
+          you switch modes than when your recall changes. Absent entirely
+          until a mode has been played — no data is a different claim from
+          no success. */}
+      {modes.length > 0 && (
+        <Card>
+          <p className="section-title stats-section-title">各模式正确率</p>
+          <ul className="stats-modes">
+            {modes.map(m => (
+              <li key={m.mode} className="stats-mode">
+                <span className="stats-mode__label">{m.label}</span>
+                <span className="stats-mode__bar" aria-hidden="true">
+                  <span
+                    className="stats-mode__fill"
+                    style={{ width: m.asked >= MODE_ACCURACY_MIN ? `${m.rate * 100}%` : '0%' }}
+                  />
+                </span>
+                {/* Under the floor the percentage is suppressed rather than
+                    the row: one miss out of five swings it 20 points, which
+                    reads as a skill change and isn't one. */}
+                <span className="num stats-mode__rate">
+                  {m.asked >= MODE_ACCURACY_MIN ? `${Math.round(m.rate * 100)}%` : '题量不足'}
+                </span>
+                <span className="muted num stats-mode__count">{m.correct}/{m.asked}</span>
+              </li>
+            ))}
+          </ul>
         </Card>
       )}
 

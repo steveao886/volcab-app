@@ -129,7 +129,7 @@ export function PassageSession({
     if (!submitted || recordedRef.current || question === null) return
     recordedRef.current = true
     const wrongIds = question.blanks.filter((b, i) => filled[i] !== b.wordId).map(b => b.wordId)
-    recordQuiz(score, question.blanks.length, wrongIds)
+    recordQuiz(score, question.blanks.length, wrongIds, 'passage')
   }, [submitted, question, filled, score, recordQuiz])
 
   if (question === null) {

@@ -55,6 +55,13 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
   const [score, setScore] = useState(0)
   const [wrongIds, setWrongIds] = useState<string[]>([])
   const [chosen, setChosen] = useState<string | null>(null)
+  /**
+   * Questions actually answered. **Not `index`**: the round can end on the
+   * clock mid-question, and `index` would then count a card that was only
+   * looked at. Accuracy has to divide by what was answered, or a round that
+   * timed out reads as one wrong answer it never gave.
+   */
+  const [asked, setAsked] = useState(0)
   const [left, setLeft] = useState(SPRINT_SECONDS)
   const [done, setDone] = useState(false)
 
@@ -87,9 +94,9 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
   useEffect(() => {
     if (done && !recordedRef.current) {
       recordedRef.current = true
-      recordSprint(score, wrongIds)
+      recordSprint(score, wrongIds, asked)
     }
-  }, [done, score, wrongIds, recordSprint])
+  }, [done, score, wrongIds, asked, recordSprint])
 
   // Clears the pending-advance timer on unmount, so setState never fires on an already-unmounted component
   useEffect(() => () => {
@@ -106,6 +113,7 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
     // Played synchronously within the click's call stack — iOS requires the AudioContext unlock to happen inside a user gesture
     playQuizResult(correct, soundEnabled)
     setChosen(opt)
+    setAsked(n => n + 1)
     if (correct) setScore(s => s + 1)
     else setWrongIds(ids => [...ids, q.wordId])
 

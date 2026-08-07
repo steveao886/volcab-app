@@ -3,7 +3,8 @@ import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
 import {
   accuracySeries, accuracyStats, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
-  masteryBreakdown, retentionStats, shortDate, strugglingSummary, usageCoverage, windowSummary,
+  masteryBreakdown, modeAccuracy, retentionStats, shortDate, strugglingSummary,
+  usageCoverage, windowSummary,
 } from './statsDerive'
 import type { DayPoint } from './statsDerive'
 
@@ -191,6 +192,37 @@ describe('masteryBreakdown', () => {
   })
   it('an empty library doesn\'t cause division by zero', () => {
     expect(masteryBreakdown([], emptyProgress())).toEqual({ new: 0, learning: 0, review: 0, total: 0 })
+  })
+})
+
+describe('modeAccuracy', () => {
+  const stat = (quizModes: NonNullable<Progress['dailyStats'][string]['quizModes']>) =>
+    ({ reviewed: 0, newLearned: 0, correct: 0, quizTaken: 1, quizModes })
+
+  it('sums each mode across days and never blends them together', () => {
+    const p = prog({
+      '2026-07-24': stat({ recall: { asked: 10, correct: 4 }, contrast: { asked: 10, correct: 9 } }),
+      '2026-07-25': stat({ recall: { asked: 10, correct: 6 } }),
+    })
+    const rows = modeAccuracy(p)
+    expect(rows.map(r => r.mode)).toEqual(['recall', 'contrast'])   // most-asked first
+    expect(rows[0]).toMatchObject({ label: '回想', asked: 20, correct: 10, rate: 0.5 })
+    expect(rows[1]).toMatchObject({ label: '辨析', asked: 10, correct: 9, rate: 0.9 })
+  })
+
+  it('omits a mode never played — no data is a different claim from no success', () => {
+    const rows = modeAccuracy(prog({ '2026-07-25': stat({ recall: { asked: 4, correct: 2 } }) }))
+    expect(rows.map(r => r.mode)).toEqual(['recall'])
+  })
+
+  it('days recorded before the field existed contribute nothing, and are not back-filled into mixed', () => {
+    const p = prog({ '2026-07-24': { reviewed: 8, newLearned: 0, correct: 7, quizTaken: 3 } })
+    expect(modeAccuracy(p)).toEqual([])
+  })
+
+  it('an unknown mode key from a newer build is skipped, not rendered as a blank row', () => {
+    const p = prog({ '2026-07-25': stat({ recall: { asked: 5, correct: 5 }, telepathy: { asked: 9, correct: 9 } }) })
+    expect(modeAccuracy(p).map(r => r.mode)).toEqual(['recall'])
   })
 })
 

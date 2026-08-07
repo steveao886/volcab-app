@@ -250,7 +250,7 @@ describe('flushProgress: mutex and catch-up flag', () => {
     expect(remote.putsTo('progress.json')).toHaveLength(1)  // the first one is in flight
 
     // finished a quiz while mid-flight: marks dirty + requests an immediate push -- this can only set the catch-up flag
-    await step(() => { app().recordQuiz(1, 1, []) })
+    await step(() => { app().recordQuiz(1, 1, [], 'mixed') })
     expect(remote.putsTo('progress.json')).toHaveLength(1)  // mutex: no second concurrent request
 
     await release({ sha: 'p-1' })
@@ -606,7 +606,7 @@ describe('settleStatus', () => {
     expect(pendingStaging()).toHaveLength(1)                // the queue stays put, awaiting the next retry
 
     // afterward the progress push succeeds -- it clears the previous failure notice
-    await step(() => { app().recordQuiz(1, 1, []) })
+    await step(() => { app().recordQuiz(1, 1, [], 'mixed') })
     expect(remote.putsTo('progress.json')).toHaveLength(1)
     expect(app().syncError).toBeNull()
 
@@ -620,7 +620,7 @@ describe('settleStatus', () => {
     await step(() => { void app().saveWord(word('gamma')) })
     expect(pendingOps()).toHaveLength(1)
 
-    await step(() => { app().recordQuiz(1, 1, []) })
+    await step(() => { app().recordQuiz(1, 1, [], 'mixed') })
     expect(app().syncStatus).toBe('pending')
   })
 })
@@ -1081,7 +1081,7 @@ describe('recordSprint: best score', () => {
     const before = app().progress.words['alpha']
     expect(before.due > today).toBe(true)
 
-    await step(() => { app().recordSprint(12, ['alpha']) })
+    await step(() => { app().recordSprint(12, ['alpha'], 10) })
 
     expect(app().progress.bestSprint).toEqual({ score: 12, date: today })
     expect(app().progress.dailyStats[today].quizTaken).toBe(1)
@@ -1094,29 +1094,29 @@ describe('recordSprint: best score', () => {
 
   it('only a higher score refreshes the record', async () => {
     await bootAsAlice()
-    await step(() => { app().recordSprint(12, []) })
-    await step(() => { app().recordSprint(20, []) })
+    await step(() => { app().recordSprint(12, [], 10) })
+    await step(() => { app().recordSprint(20, [], 10) })
     expect(app().progress.bestSprint).toEqual({ score: 20, date: today })
   })
 
   it('a lower score leaves the record untouched', async () => {
     await bootAsAlice()
-    await step(() => { app().recordSprint(20, []) })
-    await step(() => { app().recordSprint(5, []) })
+    await step(() => { app().recordSprint(20, [], 10) })
+    await step(() => { app().recordSprint(5, [], 10) })
     expect(app().progress.bestSprint).toEqual({ score: 20, date: today })
   })
 
   it('a tie doesn\'t refresh -- otherwise the record date would get rewritten by a later tie, fighting merge\'s "equal score keeps the earlier one"', async () => {
     await bootAsAlice()
-    await step(() => { app().recordSprint(20, []) })
+    await step(() => { app().recordSprint(20, [], 10) })
     const first = app().progress.bestSprint
-    await step(() => { app().recordSprint(20, []) })
+    await step(() => { app().recordSprint(20, [], 10) })
     expect(app().progress.bestSprint).toBe(first)      // the same object, never rebuilt at all
   })
 
   it('settlement pushes immediately, doesn\'t wait for the 30-second debounce', async () => {
     await bootAsAlice()
-    await step(() => { app().recordSprint(7, []) })
+    await step(() => { app().recordSprint(7, [], 10) })
     const puts = remote.putsTo('progress.json')
     expect(puts.length).toBeGreaterThan(0)
     const sent = JSON.parse(puts[puts.length - 1].content) as Progress

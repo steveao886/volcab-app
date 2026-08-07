@@ -385,7 +385,7 @@ export function RecallSession({
   useEffect(() => {
     if (scoredDone && !recordedRef.current) {
       recordedRef.current = true
-      recordQuiz(score, total, wrongIds)
+      recordQuiz(score, total, wrongIds, 'recall')
     }
   }, [scoredDone, score, total, wrongIds, recordQuiz])
 

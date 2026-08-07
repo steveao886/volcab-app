@@ -9,6 +9,25 @@ export type QuizType =
   | 'contrast' | 'audio2meaning' | 'audio2spelling'
 
 /**
+ * The seven practice surfaces, as recorded in `DailyStat.quizModes`.
+ *
+ * A stable wire key per surface, deliberately **not** the Chinese label
+ * (which can be reworded) and not the `?mode=` param (which `mixed` reaches
+ * by being absent). Renaming one of these orphans that surface's history,
+ * so treat them as append-only.
+ */
+export const QUIZ_METRIC_KEYS = [
+  'mixed', 'recall', 'contrast', 'audio', 'sprint', 'passage', 'guess',
+] as const
+export type QuizMetricKey = (typeof QUIZ_METRIC_KEYS)[number]
+
+/** The label each surface shows on the stats page. Kept beside the keys so a new mode can't be added to one and forgotten in the other. */
+export const QUIZ_METRIC_LABELS: Record<QuizMetricKey, string> = {
+  mixed: '综合', recall: '回想', contrast: '辨析', audio: '听音',
+  sprint: '极速', passage: '短文', guess: '猜词',
+}
+
+/**
  * The rotating question types for "mixed" mode.
  *
  * **The newer contrast / audio2* are deliberately excluded here** — they each have their

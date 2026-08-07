@@ -146,9 +146,9 @@ function QuizSession({
   useEffect(() => {
     if (done && !recordedRef.current) {
       recordedRef.current = true
-      recordQuiz(score, total, wrongIds)
+      recordQuiz(score, total, wrongIds, mode)
     }
-  }, [done, score, total, wrongIds, recordQuiz])
+  }, [done, score, total, wrongIds, recordQuiz, mode])
 
   const wordsById = useMemo(() => new Map(words.map(w => [w.id, w])), [words])
 

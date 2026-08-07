@@ -1,4 +1,6 @@
 import { rankStrugglingWords } from '../lib/queue'
+import { QUIZ_METRIC_KEYS, QUIZ_METRIC_LABELS } from '../lib/quiz'
+import type { QuizMetricKey } from '../lib/quiz'
 import { addDays } from '../lib/srs'
 import type { Progress, Word } from '../types'
 
@@ -285,6 +287,64 @@ export function usageCoverage(words: Word[], progress: Progress): UsageCoverage 
     bands,
     headline: { mastered: top.mastered, total: top.total, ratio: top.total === 0 ? 0 : top.mastered / top.total },
   }
+}
+
+export interface ModeAccuracy {
+  mode: QuizMetricKey
+  label: string
+  asked: number
+  correct: number
+  /** 0–1. Only meaningful once `asked` clears MODE_ACCURACY_MIN. */
+  rate: number
+}
+
+/**
+ * How few questions a mode may have before its accuracy is worth printing.
+ *
+ * At five questions one miss swings the figure 20 points, which reads as a
+ * skill change and isn't one. Modes below the floor are still listed — with
+ * their count and no percentage — because "you have barely touched 听音" is
+ * itself the useful thing to see; hiding the row would just make the mode
+ * disappear from the page.
+ */
+export const MODE_ACCURACY_MIN = 10
+
+/**
+ * Per-mode accuracy over all recorded history, most-asked first.
+ *
+ * Deliberately not one blended figure across the seven surfaces: they test
+ * different things at different difficulties, so an aggregate moves more
+ * when you change which mode you play than when your recall changes. Modes
+ * never played are omitted entirely rather than shown at 0% — no data is
+ * not the same claim as no success.
+ *
+ * Days recorded before `quizModes` existed contribute nothing; they are not
+ * back-filled into `mixed`, because at that time 回想 didn't exist and the
+ * other five were already in use, so any attribution would be invented.
+ */
+export function modeAccuracy(progress: Progress): ModeAccuracy[] {
+  const tally = new Map<QuizMetricKey, { asked: number; correct: number }>()
+  for (const day of Object.values(progress.dailyStats)) {
+    for (const [mode, v] of Object.entries(day.quizModes ?? {})) {
+      if (!(QUIZ_METRIC_KEYS as readonly string[]).includes(mode)) continue
+      const key = mode as QuizMetricKey
+      const prev = tally.get(key) ?? { asked: 0, correct: 0 }
+      tally.set(key, { asked: prev.asked + v.asked, correct: prev.correct + v.correct })
+    }
+  }
+  return [...tally.entries()]
+    .filter(([, v]) => v.asked > 0)
+    .map(([mode, v]): ModeAccuracy => ({
+      mode,
+      label: QUIZ_METRIC_LABELS[mode],
+      asked: v.asked,
+      correct: v.correct,
+      rate: v.correct / v.asked,
+    }))
+    // Most-practised first, then by the fixed mode order so the list can't
+    // reshuffle between two renders on a tie.
+    .sort((a, b) => b.asked - a.asked
+      || QUIZ_METRIC_KEYS.indexOf(a.mode) - QUIZ_METRIC_KEYS.indexOf(b.mode))
 }
 
 /** Cumulative totals. The average only counts "days with a review" — including days the app was never opened in the denominator would understate intensity. */

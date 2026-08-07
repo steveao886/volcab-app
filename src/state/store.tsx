@@ -2,10 +2,11 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { ReactNode } from 'react'
 import { GitHubClient } from '../lib/github'
 import { mergeProgress } from '../lib/merge'
+import type { QuizMetricKey } from '../lib/quiz'
 import { gradeWord, todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
 import { emptyProgress, emptyStat } from '../types'
-import type { Grade, Progress, StagingItem, Word } from '../types'
+import type { DailyStat, Grade, Progress, StagingItem, Word } from '../types'
 import { classifySyncFailure, friendlyError, httpStatus, logoutDiscarded, ownerSwitched } from './errors'
 import {
   appendPendingOp, appendPendingStaging, bootSnapshot, cachedProgress, carryOverFor,
@@ -68,13 +69,13 @@ export interface AppActions {
   recordConsolidation(wordId: string, g: Grade): void
   /** Reject a suggested word, permanently: the id is remembered in synced progress so later suggestion batches skip it */
   dismissSuggestion(id: string): void
-  recordQuiz(correct: number, total: number, wrongIds: string[]): void
+  recordQuiz(correct: number, total: number, wrongIds: string[], mode: QuizMetricKey): void
   /** 回想's 巩固 button: declare a quiz miss a real forget — due today, lapses counted, nothing else moves */
   consolidateWord(id: string): void
   /** Sprint settlement: like recordQuiz, only pulls forward the due date of missed words, plus refreshes the personal best score */
-  recordSprint(score: number, wrongIds: string[]): void
+  recordSprint(score: number, wrongIds: string[], asked: number): void
   /** 猜词 settlement: same due-date-only contract, plus the best count of no-clue solves */
-  recordGuess(wrongIds: string[], unaided: number): void
+  recordGuess(wrongIds: string[], unaided: number, asked: number, solved: number): void
   /** Add or edit an entry (upsert by id), pushes words.json immediately */
   saveWord(word: Word): Promise<void>
   /** Delete entries, also clearing their progress records */
@@ -692,13 +693,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
     schedulePush()
   }, [commitProgress, schedulePush])
 
-  // The score itself isn't stored: missed words are already reflected in the review schedule by having their due date pulled forward; dailyStats just records "took a quiz today"
-  const recordQuiz = useCallback((_correct: number, _total: number, wrongIds: string[]) => {
+  /**
+   * Adds one session's questions to the day's per-mode tally, in place on a
+   * stat object the caller has already copied.
+   *
+   * Per mode rather than one aggregate because the seven surfaces test
+   * different things at different difficulties: a single accuracy figure
+   * moves more when you switch which mode you play than when your recall
+   * actually changes, so it cannot answer "am I getting better at 回想".
+   *
+   * The key is only created when a mode is actually played — the record is
+   * sparse, which is what keeps it to tens of bytes a day against
+   * progress.json's 1 MB ceiling.
+   */
+  const bumpMode = (stat: DailyStat, mode: QuizMetricKey, asked: number, correct: number) => {
+    const prev = stat.quizModes?.[mode]
+    stat.quizModes = {
+      ...stat.quizModes,
+      [mode]: { asked: (prev?.asked ?? 0) + asked, correct: (prev?.correct ?? 0) + correct },
+    }
+  }
+
+  // The session count itself is quizTaken; the score lands in quizModes, and missed words are already reflected in the review schedule by having their due date pulled forward
+  const recordQuiz = useCallback((correct: number, total: number, wrongIds: string[], mode: QuizMetricKey) => {
     const now = new Date()
     const day = todayStr(now)
     const cur = stateRef.current.progress
     const stat = { ...(cur.dailyStats[day] ?? emptyStat()) }
     stat.quizTaken += 1
+    bumpMode(stat, mode, total, correct)
     const words = { ...cur.words }
     for (const id of wrongIds) {
       const e = words[id]
@@ -749,12 +772,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // Sprint shares the same contract as recordQuiz (missed words only get
   // their due date pulled forward, ease/interval untouched); the one extra
   // thing it does is refresh the best score.
-  const recordSprint = useCallback((score: number, wrongIds: string[]) => {
+  const recordSprint = useCallback((score: number, wrongIds: string[], asked: number) => {
     const now = new Date()
     const day = todayStr(now)
     const cur = stateRef.current.progress
     const stat = { ...(cur.dailyStats[day] ?? emptyStat()) }
     stat.quizTaken += 1
+    bumpMode(stat, 'sprint', asked, score)
     const words = { ...cur.words }
     for (const id of wrongIds) {
       const e = words[id]
@@ -784,12 +808,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
    * record date to today, or it would disagree with merge.ts's "equal score
    * keeps the earlier date" and the two would fight across a sync.
    */
-  const recordGuess = useCallback((wrongIds: string[], unaided: number) => {
+  const recordGuess = useCallback((wrongIds: string[], unaided: number, asked: number, solved: number) => {
     const now = new Date()
     const day = todayStr(now)
     const cur = stateRef.current.progress
     const stat = { ...(cur.dailyStats[day] ?? emptyStat()) }
     stat.quizTaken += 1
+    bumpMode(stat, 'guess', asked, solved)
     const words = { ...cur.words }
     for (const id of wrongIds) {
       const e = words[id]

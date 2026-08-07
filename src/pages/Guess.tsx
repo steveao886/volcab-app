@@ -174,7 +174,12 @@ function GuessSession({ questions, onRestart }: { questions: GuessQuestion[]; on
       // wrong and gets its due date pulled forward; one solved with clues
       // still counts as retrieved. recordGuess never touches ease/interval.
       playSessionDone(soundEnabled)
-      recordGuess(results.filter(r => !r.solved).map(r => r.id), results.filter(r => r.unaided).length)
+      recordGuess(
+        results.filter(r => !r.solved).map(r => r.id),
+        results.filter(r => r.unaided).length,
+        results.length,
+        results.filter(r => r.solved).length,
+      )
       setFinished(true)
       return
     }

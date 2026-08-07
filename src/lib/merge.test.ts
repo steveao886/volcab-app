@@ -264,4 +264,46 @@ describe('mergeProgress: optional dailyStat counters', () => {
     const m = mergeProgress(withDay(day({ reviewed: 4 })), withDay(day({ reviewed: 2 })))
     expect('reviewPhase' in m.dailyStats['2026-07-25']).toBe(false)
   })
+
+  it('quizModes survives the merge — an unlisted field is dropped the first time two devices sync', () => {
+    const m = mergeProgress(
+      withDay(day({ quizModes: { recall: { asked: 10, correct: 6 } } })),
+      withDay(day({ quizModes: { recall: { asked: 10, correct: 6 } } })),
+    )
+    expect(m.dailyStats['2026-07-25'].quizModes).toEqual({ recall: { asked: 10, correct: 6 } })
+  })
+
+  it('unions the modes, so a mode played only on the other device is not thrown away', () => {
+    // The real shape of the problem: 回想 on the phone, 短文 on the laptop,
+    // same day. "The side with more modes wins" would lose one of them.
+    const m = mergeProgress(
+      withDay(day({ quizModes: { recall: { asked: 10, correct: 7 } } })),
+      withDay(day({ quizModes: { passage: { asked: 6, correct: 5 } } })),
+    )
+    expect(m.dailyStats['2026-07-25'].quizModes).toEqual({
+      recall: { asked: 10, correct: 7 },
+      passage: { asked: 6, correct: 5 },
+    })
+  })
+
+  it('takes the higher count per mode', () => {
+    const m = mergeProgress(
+      withDay(day({ quizModes: { recall: { asked: 20, correct: 11 } } })),
+      withDay(day({ quizModes: { recall: { asked: 10, correct: 14 } } })),
+    )
+    expect(m.dailyStats['2026-07-25'].quizModes).toEqual({ recall: { asked: 20, correct: 14 } })
+  })
+
+  it('neither side has quizModes: the key stays absent, not {}', () => {
+    const m = mergeProgress(withDay(day({ reviewed: 4 })), withDay(day()))
+    expect('quizModes' in m.dailyStats['2026-07-25']).toBe(false)
+  })
+
+  it('junk from a hand-edited file is skipped, not spread', () => {
+    // isDailyStat deliberately does not gate this field, so anything can
+    // arrive here — the same reasoning as unionDismissed.
+    const junk = { recall: null, passage: 7, audio: { asked: 3 } } as unknown as DailyStat['quizModes']
+    const m = mergeProgress(withDay(day({ quizModes: junk })), withDay(day()))
+    expect(m.dailyStats['2026-07-25'].quizModes).toEqual({ audio: { asked: 3, correct: 0 } })
+  })
 })

@@ -18,6 +18,39 @@ function maxOptional(
 }
 
 /**
+ * Per-mode tallies, merged key by key with the higher count winning on each
+ * side of each mode — the same "higher wins" rule the flat counters use,
+ * applied one level down.
+ *
+ * Not `Math.max` over a whole entry, and not "the side with more modes":
+ * two devices can each play a different mode between syncs (回想 on the
+ * phone, 短文 on the laptop), and either of those rules would throw one
+ * away. Omitted entirely when neither side recorded any, for the same
+ * reason as maxOptional — writing `{}` would assert "no quizzes that day"
+ * about a day a build recorded before this field existed.
+ */
+function mergeQuizModes(a: DailyStat, b: DailyStat): Partial<DailyStat> {
+  if (a.quizModes === undefined && b.quizModes === undefined) return {}
+  const out: NonNullable<DailyStat['quizModes']> = {}
+  for (const src of [a.quizModes, b.quizModes]) {
+    if (src === null || typeof src !== 'object') continue
+    for (const [mode, v] of Object.entries(src)) {
+      // Hand-edited or older-build junk is skipped rather than trusted:
+      // isDailyStat deliberately doesn't gate this field, so anything can
+      // arrive here. Same reasoning as unionDismissed below.
+      if (v === null || typeof v !== 'object') continue
+      const asked = typeof v.asked === 'number' ? v.asked : 0
+      const correct = typeof v.correct === 'number' ? v.correct : 0
+      const prev = out[mode]
+      out[mode] = prev === undefined
+        ? { asked, correct }
+        : { asked: Math.max(prev.asked, asked), correct: Math.max(prev.correct, correct) }
+    }
+  }
+  return { quizModes: out }
+}
+
+/**
  * The record with the higher score wins; **on a tie, the earlier date wins** — the
  * first time it was achieved is the record, and matching it later shouldn't overwrite the
  * date to today. If one side is missing (progress pushed up from an older App version
@@ -86,6 +119,7 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
       // first time two devices sync.
       ...maxOptional('reviewPhase', a, b),
       ...maxOptional('reviewPhaseCorrect', a, b),
+      ...mergeQuizModes(a, b),
     }
   }
 

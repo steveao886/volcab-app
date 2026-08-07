@@ -113,6 +113,27 @@ export interface DailyStat {
    */
   reviewPhase?: number
   reviewPhaseCorrect?: number
+  /**
+   * Per-mode quiz tallies, keyed by QuizMetricKey: `{ asked, correct }`.
+   *
+   * `quizTaken` counts sessions and says nothing about which mode or how it
+   * went, so "am I actually getting better at 回想 / 辨析 / 听音" had no
+   * answer anywhere in the app. One aggregate accuracy across all seven
+   * surfaces would answer it wrongly — they test different things and sit
+   * at different difficulties, so a shift in which mode you played moves
+   * the number more than any change in skill does.
+   *
+   * **Sparse on purpose**: only modes actually played that day get a key.
+   * A day is one or two modes, so this costs tens of bytes, not the ~44 KB
+   * a year that a dense seven-mode record would add to progress.json's
+   * 1 MB ceiling.
+   *
+   * Optional like every added field — an older build on another device
+   * pushes days without it, and mergeProgress keeps it absent rather than
+   * inventing zeroes. **It is listed by name in mergeProgress**; a field
+   * that isn't gets silently dropped the first time two devices sync.
+   */
+  quizModes?: Record<string, { asked: number; correct: number }>
 }
 
 /**
