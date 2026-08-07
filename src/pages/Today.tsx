@@ -63,7 +63,7 @@ export function Today() {
       )}
 
       <section className="card today-hero">
-        <p className="today-hero__eyebrow" lang="en">现在该做</p>
+        <p className="today-hero__eyebrow">现在该做</p>
         {hero.kind === 'complete' ? (
           <>
             <p className="today-hero__done">今日完成 🎉</p>
