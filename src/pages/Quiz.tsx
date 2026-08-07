@@ -2,17 +2,19 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
-import { Chip } from '../components/Chip'
 import { Page } from '../components/Page'
 import { pushRecent } from '../lib/passage'
 import { preparePronunciation } from '../lib/pronounce'
 import { contrastPairKey, generateAudioQuiz, generateContrastQuiz, generateQuiz } from '../lib/quiz'
+import { todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
-import type { QuizQuestion } from '../lib/quiz'
+import type { QuizMetricKey, QuizQuestion } from '../lib/quiz'
 import type { Passage } from '../lib/passage'
 import type { SenseGroup } from '../lib/senseGroup'
 import { useApp } from '../state/store'
-import type { Word } from '../types'
+import type { Progress, Word } from '../types'
+import { agoLabel, modeOverview, recommendMode } from './statsDerive'
+import type { ModeOverviewRow } from './statsDerive'
 import { QuizQuestionView } from './QuizQuestion'
 import { GuessMode } from './Guess'
 import { PassageSession } from './QuizPassage'
@@ -23,24 +25,31 @@ import './Quiz.css'
 const QUESTION_COUNT = 10
 
 /**
- * Extra practice modes. Driven by the `?mode=` query param, consistent
- * with the existing precedent set by `/review?mode=lapses`.
+ * The seven practice surfaces. `?mode=` drives which one renders,
+ * consistent with `/review?mode=lapses`; `/quiz` with no (or an unknown)
+ * mode renders the hub.
  *
- * **Defaults to "mixed", exactly matching pre-modes behavior** — this is
- * the path taken every single day, and it shouldn't cost an extra click or
- * an extra page just because three more modes were added.
+ * **This reverses the old "defaults to mixed, zero extra clicks" rule.**
+ * That comment was written at four modes; at seven, the chip row had
+ * stopped carrying information — no descriptions, no per-mode stats,
+ * nothing marking a neglected mode. Sketch 002 (winner B) trades exactly
+ * one tap for making the seven modes comparable at a glance; the mixed
+ * card spans full width at the top so the every-day default stays the
+ * largest, first target.
  */
 const MODES = [
-  { key: 'mixed', label: '综合' },
-  { key: 'recall', label: '回想' },
-  { key: 'contrast', label: '辨析' },
-  { key: 'audio', label: '听音' },
-  { key: 'sprint', label: '极速' },
-  { key: 'passage', label: '短文' },
-  { key: 'guess', label: '猜词' },
+  { key: 'mixed', label: '综合', desc: '中英互认 + 例句填空,日常主力' },
+  { key: 'recall', label: '回想', desc: '只看中文,回想英文词' },
+  { key: 'contrast', label: '辨析', desc: '易混词对二选一' },
+  { key: 'audio', label: '听音', desc: '听发音,选词义' },
+  { key: 'sprint', label: '极速', desc: '60 秒,能答多少答多少' },
+  { key: 'passage', label: '短文', desc: '整段文章挖空填词' },
+  { key: 'guess', label: '猜词', desc: '按释义逐步猜出单词' },
 ] as const
 
 type QuizMode = (typeof MODES)[number]['key']
+
+const MODE_LABEL: Record<QuizMode, string> = Object.fromEntries(MODES.map(m => [m.key, m.label])) as Record<QuizMode, string>
 
 const isMode = (v: string | null): v is QuizMode => MODES.some(m => m.key === v)
 
@@ -247,23 +256,75 @@ function QuizSession({
 }
 
 /**
+ * Router: the mode param decides hub or session. Two separate components
+ * rather than one branching render — hub and session own different hook
+ * sets (the session loads passages/sense-groups), and a single component
+ * switching between them would change its hook count between renders.
+ */
+export function Quiz() {
+  const [params] = useSearchParams()
+  const raw = params.get('mode')
+  return isMode(raw) ? <QuizSessionPage mode={raw} /> : <QuizHub />
+}
+
+/** Card line: sprint and guess chase a personal best, the rest show accuracy once it clears the floor. */
+function statLabel(key: QuizMetricKey, row: ModeOverviewRow | undefined, progress: Progress): string {
+  if (key === 'sprint' && progress.bestSprint !== undefined) return `最高 ${progress.bestSprint.score} 题`
+  if (key === 'guess' && progress.bestGuess !== undefined) return `最佳 ${progress.bestGuess.score} 词`
+  if (row === undefined || row.asked === 0) return '—'
+  if (row.rate === null) return `练过 ${row.asked} 题`
+  return `${Math.round(row.rate * 100)}%`
+}
+
+function QuizHub() {
+  const { progress } = useApp()
+  const today = todayStr(new Date())
+  const rows = useMemo(() => modeOverview(progress), [progress])
+  const rec = useMemo(() => recommendMode(rows), [rows])
+  const byKey = useMemo(() => new Map(rows.map(r => [r.mode, r])), [rows])
+
+  return (
+    <Page eyebrow="Quiz" title="测试" back="/">
+      <div className="quiz-hub">
+        {MODES.map(m => {
+          const row = byKey.get(m.key)
+          return (
+            <Link
+              key={m.key}
+              to={`/quiz?mode=${m.key}`}
+              className={`card card--interactive quiz-mode-card${m.key === 'mixed' ? ' quiz-mode-card--wide' : ''}`}
+            >
+              {rec === m.key && <span className="quiz-mode-card__badge">推荐</span>}
+              <p className="quiz-mode-card__name">{m.label}</p>
+              <p className="quiz-mode-card__desc">{m.desc}</p>
+              <p className="quiz-mode-card__meta">
+                <span className={`num quiz-mode-card__stat${rec === m.key ? ' quiz-mode-card__stat--low' : ''}`}>
+                  {statLabel(m.key, row, progress)}
+                </span>
+                <span className="quiz-mode-card__ago">{agoLabel(row?.lastPlayed ?? null, today)}</span>
+              </p>
+            </Link>
+          )
+        })}
+      </div>
+    </Page>
+  )
+}
+
+/**
  * Task 18 implementation: 10 multiple-choice/spelling questions, instant
  * right/wrong feedback, a results page.
  *
  * Handling of leaving the page: an incomplete quiz is never persisted —
- * navigating away just unmounts QuizSession, and re-entering /quiz counts
- * as starting a fresh round. recordQuiz only ever fires once, at the
- * moment all questions are actually answered and the results page is
+ * navigating away just unmounts QuizSession, and re-entering the mode
+ * counts as starting a fresh round. recordQuiz only ever fires once, at
+ * the moment all questions are actually answered and the results page is
  * reached; leaving partway through leaves no trace and never counts a
  * "half-finished" attempt as today's quiz.
  */
-export function Quiz() {
+function QuizSessionPage({ mode }: { mode: QuizMode }) {
   const { words } = useApp()
-  const [params, setParams] = useSearchParams()
   const [session, setSession] = useState(0)
-
-  const raw = params.get('mode')
-  const mode: QuizMode = isMode(raw) ? raw : 'mixed'
 
   // The content is only fetched once you actually enter passage mode. It's
   // static content shipped with the app, split into a separate chunk via
@@ -292,38 +353,8 @@ export function Quiz() {
 
   const restart = useCallback(() => setSession(s => s + 1), [])
 
-  const switchMode = (next: QuizMode) => {
-    if (next === mode) return
-    // replace instead of push: switching modes isn't "a place you visited",
-    // so the system back gesture should return to the Today page, not walk
-    // backward through the four modes one by one (avoiding a repeat of the
-    // Library page's old mistake of a history stack that only ever grows).
-    setParams(next === 'mixed' ? {} : { mode: next }, { replace: true })
-    // **No session bump here.** `mode` is already part of the key below, so
-    // changing it remounts on its own; bumping the counter as well was not
-    // just redundant but actively wrong. The two updates are not applied in
-    // the same render — the router's params land a beat after the plain
-    // useState — so there was an intermediate render carrying the *old* mode
-    // with the *new* session, whose key was `audio-<n+1>`. That is a
-    // different key from `audio-<n>`, so QuizSession remounted, generated a
-    // fresh audio round, and its AudioPrompt spoke the first word of a quiz
-    // being discarded in the same tick. One phantom word per switch, every
-    // time you left listening mode.
-  }
-
   return (
-    <Page eyebrow="Quiz" title="测试" back="/">
-      <div className="quiz-modes" role="group" aria-label="测试模式">
-        {MODES.map(m => (
-          <Chip
-            key={m.key}
-            label={m.label}
-            selected={mode === m.key}
-            onClick={() => switchMode(m.key)}
-          />
-        ))}
-      </div>
-
+    <Page eyebrow="Quiz" title={MODE_LABEL[mode]} back="/quiz">
       {/* mode is folded into the key: switching modes must swap in a whole
           new round of questions, rather than stuffing new questions into
           the old session's question numbering. This is the same technique
