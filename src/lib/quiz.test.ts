@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { QUIZ_TYPES, clozeCollocation, clozeExample, generateAudioQuiz, generateContrastQuiz, generateQuiz, pickCloze, pickMeaning, sharedSynonyms, difficultyWeight, weightedShuffle} from './quiz'
+import { QUIZ_TYPES, clozeCollocation, clozeExample, contrastPairKey, generateAudioQuiz, generateContrastQuiz, generateQuiz, pickCloze, pickMeaning, sharedSynonyms, difficultyWeight, weightedShuffle} from './quiz'
 import { emptyProgress } from '../types'
 import type { Meaning, Progress, Word } from '../types'
 
@@ -362,6 +362,23 @@ describe('generateContrastQuiz', () => {
       expect(qs).toHaveLength(1)
       expect(qs[0].answer).toBe('bravo')
     }
+  })
+
+  it('a recently asked pair yields to an unseen one when the round cannot hold both', () => {
+    // Two disjoint pairs, one-question round: whichever the shuffle favours,
+    // the pair on the recency list must lose to the one that is not.
+    const recentKey = contrastPairKey('alpha', 'bravo')
+    for (const r of [() => 0.1, () => 0.45, () => 0.8]) {
+      const qs = generateContrastQuiz(pairWords, studiedOf(pairWords), 1, r, [recentKey])
+      expect(qs).toHaveLength(1)
+      expect(contrastPairKey(qs[0].wordId, qs[0].contrastId as string)).toBe(contrastPairKey('carol', 'delta'))
+    }
+  })
+
+  it('a fully seen pool still fills the round — demotion, never exclusion', () => {
+    const allKeys = [contrastPairKey('alpha', 'bravo'), contrastPairKey('carol', 'delta')]
+    const qs = generateContrastQuiz(pairWords, studiedOf(pairWords), 2, seq(), allKeys)
+    expect(qs).toHaveLength(2)
   })
 
   it('returns an empty array without throwing when no pair can be formed', () => {

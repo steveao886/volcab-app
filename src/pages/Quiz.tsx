@@ -4,8 +4,10 @@ import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Chip } from '../components/Chip'
 import { Page } from '../components/Page'
+import { pushRecent } from '../lib/passage'
 import { preparePronunciation } from '../lib/pronounce'
-import { generateAudioQuiz, generateContrastQuiz, generateQuiz } from '../lib/quiz'
+import { contrastPairKey, generateAudioQuiz, generateContrastQuiz, generateQuiz } from '../lib/quiz'
+import { storage } from '../lib/storage'
 import type { QuizQuestion } from '../lib/quiz'
 import type { Passage } from '../lib/passage'
 import type { SenseGroup } from '../lib/senseGroup'
@@ -71,7 +73,15 @@ function QuizSession({
   // with no dependency on any state guarantees this round uses the same
   // question set start to finish.
   const [questions] = useState<QuizQuestion[]>(() => {
-    if (mode === 'contrast') return generateContrastQuiz(words, progress, QUESTION_COUNT)
+    if (mode === 'contrast') {
+      // The recency list demotes recently asked pairs behind unseen ones —
+      // see the window comment in generateContrastQuiz. Stored locally like
+      // recentPassages; never synced.
+      return generateContrastQuiz(
+        words, progress, QUESTION_COUNT, Math.random,
+        storage.get<string[]>('recentContrast') ?? [],
+      )
+    }
     if (mode === 'audio') return generateAudioQuiz(words, progress, QUESTION_COUNT)
     return generateQuiz(words, progress, QUESTION_COUNT)
   })
@@ -105,6 +115,14 @@ function QuizSession({
   const done = index >= total && total > 0
 
   const handleAnswered = useCallback((correct: boolean, q: QuizQuestion) => {
+    // Answered means seen: the pair joins the recency list whichever way it
+    // went, so tomorrow's round reaches for pairs this one never showed.
+    if (q.contrastId !== undefined) {
+      storage.set('recentContrast', pushRecent(
+        storage.get<string[]>('recentContrast') ?? [],
+        contrastPairKey(q.wordId, q.contrastId),
+      ))
+    }
     if (correct) { setScore(s => s + 1); return }
     // A missed contrast question marks **both** words wrong. Picking the
     // wrong twin is not a fact about one word — the confusion lives in the

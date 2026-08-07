@@ -403,11 +403,15 @@ function contrastQuestion(answer: Word, other: Word, rng: () => number): QuizQue
  * which one to use" — a gap the existing six question types don't cover at all, even though
  * the data (synonym overlap) has been sitting in the word library the whole time.
  */
+/** The canonical recency key for a contrast pair: both ids, sorted — the same unordered-pair shape contrastNoteKey uses. */
+export const contrastPairKey = (a: string, b: string): string => [a, b].sort().join('|')
+
 export function generateContrastQuiz(
   words: Word[],
   progress: Progress,
   count: number,
   rng: () => number = Math.random,
+  recentPairs: readonly string[] = [],
 ): QuizQuestion[] {
   const all = buildContrastPairs(words)
   if (all.length === 0) return []
@@ -443,8 +447,28 @@ export function generateContrastQuiz(
 
   const byId = new Map(words.map(w => [w.id, w]))
 
+  // Recently asked pairs go behind unseen ones — a stable partition after
+  // the shuffle, not an exclusion, so a pool smaller than the window still
+  // fills the round. The repetition audit put contrast as the surface that
+  // goes stale first: 142 usable pairs at the all-learned bound, and with
+  // no cross-session memory the first repeat lands within ~1.5 days at 10
+  // questions a day.
+  //
+  // The window is two thirds of the pool, capped at pool−1 — the same
+  // fraction recentWindow in passage.ts measured its way to (a fixed window
+  // left the same eleven passages cycling forever). Restated here rather
+  // than imported because passage.ts already imports from this module, and
+  // a cycle is worse than three lines of arithmetic.
+  const window = Math.max(0, Math.min(pool.length - 1, Math.floor((pool.length * 2) / 3)))
+  const seen = new Set(recentPairs.slice(0, window))
+  const drawn = shuffle(pool, rng)
+  const ordered = [
+    ...drawn.filter(p => !seen.has(contrastPairKey(p.a, p.b))),
+    ...drawn.filter(p => seen.has(contrastPairKey(p.a, p.b))),
+  ]
+
   const questions: QuizQuestion[] = []
-  for (const pair of shuffle(pool, rng)) {
+  for (const pair of ordered) {
     if (questions.length >= count) break
     const wa = byId.get(pair.a)
     const wb = byId.get(pair.b)
