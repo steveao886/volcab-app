@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sketch 002 — 测试中心:七种模式怎么摆</title>
+<link rel="stylesheet" href="../themes/default.css">
+<link rel="stylesheet" href="../themes/sketch-base.css">
+<style>
+/* ============ Variant A: smart pick + chips (refined current) ============ */
+.qa-reco { display: grid; gap: var(--sp-3); border-left: 3px solid var(--accent); }
+.qa-reco__title { font-size: var(--fs-md); font-weight: 700; }
+.qa-reco__why { font-size: var(--fs-sm); line-height: var(--lh-body); color: var(--text-muted); }
+.qa-reco__why .num { color: var(--accent); font-weight: 700; }
+
+.qa-chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.qa-chip {
+  min-height: 36px;
+  padding: var(--sp-1) var(--sp-4);
+  border: 1px solid var(--rule-control);
+  border-radius: var(--r-full);
+  background: var(--surface);
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--dur-1) var(--ease);
+}
+.qa-chip:hover { background: var(--surface-sunken); color: var(--text); }
+.qa-chip.active {
+  background: var(--slab);
+  border-color: var(--slab);
+  color: var(--slab-text);
+}
+.qa-detail { display: grid; gap: var(--sp-3); }
+.qa-detail__head { display: flex; align-items: baseline; justify-content: space-between; }
+.qa-detail__name { font-size: var(--fs-md); font-weight: 700; }
+.qa-detail__stat { font-size: var(--fs-sm); color: var(--text-muted); }
+.qa-detail__desc { font-size: var(--fs-sm); line-height: var(--lh-body); color: var(--text-muted); }
+
+/* ============ Variant B: card grid ============ */
+.qb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); }
+.qb-card {
+  display: grid;
+  gap: var(--sp-2);
+  padding: var(--sp-4);
+  cursor: pointer;
+  position: relative;
+  transition: border-color var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+}
+.qb-card:hover { border-color: var(--rule-strong); }
+.qb-card:active { transform: translateY(1px); }
+.qb-card--wide { grid-column: 1 / -1; }
+.qb-card__name { font-size: var(--fs-base); font-weight: 700; }
+.qb-card__desc { font-size: var(--fs-xs); line-height: var(--lh-snug); color: var(--text-faint); }
+.qb-card__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  padding-top: var(--sp-1);
+  border-top: 1px solid var(--rule);
+}
+.qb-card__acc { font-weight: 700; }
+.qb-card__acc.low { color: var(--accent); }
+.qb-badge {
+  position: absolute;
+  top: -1px;
+  right: var(--sp-3);
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--on-tone);
+  background: var(--accent);
+  padding: 2px 8px 3px;
+  border-radius: 0 0 var(--r-sm) var(--r-sm);
+}
+
+/* ============ Variant C: index list ============ */
+.qc-smart { display: grid; gap: var(--sp-3); }
+.qc-smart__sub { font-size: var(--fs-sm); color: var(--text-muted); line-height: var(--lh-body); }
+.qc-list { display: grid; }
+.qc-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  padding: var(--sp-3) 0;
+  border-top: 1px solid var(--rule);
+  cursor: pointer;
+}
+.qc-row:first-child { border-top: none; }
+.qc-row:hover .qc-row__name { color: var(--accent); }
+.qc-row__name { font-weight: 700; transition: color var(--dur-1) var(--ease); }
+.qc-row__name .kbd { margin-left: var(--sp-1); }
+.qc-row__desc { display: block; font-size: var(--fs-xs); font-weight: 400; color: var(--text-faint); margin-top: 2px; }
+.qc-row__leader { flex: 1; border-bottom: 1.5px dotted var(--rule-strong); transform: translateY(-4px); }
+.qc-row__val { font-size: var(--fs-sm); font-weight: 700; }
+.qc-row__val small { display: block; font-size: var(--fs-eyebrow); font-weight: 400; color: var(--text-faint); text-align: right; }
+.qc-row__val.low { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div id="variant-nav">
+  <span class="sketch-title">002 测试中心</span>
+  <button class="variant-tab active" onclick="showVariant('a', this)">A: 智能推荐 + 胶囊</button>
+  <button class="variant-tab" onclick="showVariant('b', this)">B: 模式卡片 ★ 已选</button>
+  <button class="variant-tab" onclick="showVariant('c', this)">C: 索引清单</button>
+</div>
+
+<!-- ================= Variant A ================= -->
+<div id="variant-a" class="variant active">
+  <p class="variant-note"><strong>A · 智能推荐 + 胶囊</strong> — 最小改动。保留现有的胶囊切换,但在最上面加一张「今日推荐」:用各模式的正确率数据替你挑一个短板,一键开始。胶囊下方补一行当前模式的说明和成绩,七个名字不再全靠记。</p>
+  <div class="phone"><div class="phone__screen">
+    <div class="phone__body"><div class="page">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Quiz</p>
+          <h1 class="page-title">测试</h1>
+        </div>
+      </div>
+
+      <div class="card qa-reco">
+        <p class="eyebrow">今日推荐</p>
+        <p class="qa-reco__title">练一轮「听音」</p>
+        <p class="qa-reco__why">最近正确率 <span class="num">62%</span>,是七种模式里最低的,而且已经 5 天没练了。</p>
+        <button class="btn btn--primary btn--lg btn--block" onclick="toast(this, '示意:直接开始一轮听音测试')">开始 · 10 题</button>
+      </div>
+
+      <div class="qa-chips" id="qa-chips"></div>
+
+      <div class="card qa-detail">
+        <div class="qa-detail__head">
+          <span class="qa-detail__name" id="qa-name">综合</span>
+          <span class="qa-detail__stat num" id="qa-stat">正确率 87% · 昨天练过</span>
+        </div>
+        <p class="qa-detail__desc" id="qa-desc">中英互认加例句填空,日常主力。四选一,答错的词会被排进当天稍后重现。</p>
+        <button class="btn btn--secondary btn--block" onclick="toast(this, '示意:开始所选模式')" id="qa-go">开始「综合」</button>
+      </div>
+    </div></div>
+    <nav class="tabbar" data-active="测试"></nav>
+    <div class="toast"></div>
+  </div></div>
+</div>
+
+<!-- ================= Variant B ================= -->
+<div id="variant-b" class="variant">
+  <p class="variant-note"><strong>B · 模式卡片</strong> — 每个模式一张卡:名字、一句话说明、各自的正确率和上次练习时间。短板模式挂「推荐」角标。占最大面积,但七个模式第一次变得"可比较"——一眼看出哪个疏于练习。</p>
+  <div class="phone"><div class="phone__screen">
+    <div class="phone__body"><div class="page">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Quiz</p>
+          <h1 class="page-title">测试</h1>
+        </div>
+      </div>
+
+      <div class="qb-grid">
+        <div class="card qb-card qb-card--wide" onclick="toast(this, '示意:开始「综合」')">
+          <p class="qb-card__name">综合</p>
+          <p class="qb-card__desc">中英互认 + 例句填空,日常主力,每天从这里开始</p>
+          <div class="qb-card__meta"><span class="num qb-card__acc">87%</span><span>昨天练过</span></div>
+        </div>
+        <div class="card qb-card" onclick="toast(this, '示意:开始「回想」')">
+          <p class="qb-card__name">回想</p>
+          <p class="qb-card__desc">只看中文,回想英文词</p>
+          <div class="qb-card__meta"><span class="num qb-card__acc">74%</span><span>3 天前</span></div>
+        </div>
+        <div class="card qb-card" onclick="toast(this, '示意:开始「辨析」')">
+          <p class="qb-card__name">辨析</p>
+          <p class="qb-card__desc">易混词对二选一</p>
+          <div class="qb-card__meta"><span class="num qb-card__acc">81%</span><span>昨天</span></div>
+        </div>
+        <div class="card qb-card" onclick="toast(this, '示意:开始「听音」')">
+          <span class="qb-badge">推荐</span>
+          <p class="qb-card__name">听音</p>
+          <p class="qb-card__desc">听发音,选词义</p>
+          <div class="qb-card__meta"><span class="num qb-card__acc low">62%</span><span>5 天前</span></div>
+        </div>
+        <div class="card qb-card" onclick="toast(this, '示意:开始「极速」')">
+          <p class="qb-card__name">极速</p>
+          <p class="qb-card__desc">60 秒,能答多少答多少</p>
+          <div class="qb-card__meta"><span class="num qb-card__acc">最高 28</span><span>前天</span></div>
+        </div>
+        <div class="card qb-card" onclick="toast(this, '示意:开始「短文」')">
+          <p class="qb-card__name">短文</p>
+          <p class="qb-card__desc">整段文章挖空填词</p>
+          <div class="qb-card__meta"><span class="num qb-card__acc">92%</span><span>4 天前</span></div>
+        </div>
+        <div class="card qb-card" onclick="toast(this, '示意:开始「猜词」')">
+          <p class="qb-card__name">猜词</p>
+          <p class="qb-card__desc">按释义逐步猜出单词</p>
+          <div class="qb-card__meta"><span class="num qb-card__acc">平均 3.2 猜</span><span>今天</span></div>
+        </div>
+      </div>
+    </div></div>
+    <nav class="tabbar" data-active="测试"></nav>
+    <div class="toast"></div>
+  </div></div>
+</div>
+
+<!-- ================= Variant C ================= -->
+<div id="variant-c" class="variant">
+  <p class="variant-note"><strong>C · 索引清单</strong> — 词典目录式:顶部一颗「交给 Volcab」的智能开始(自动选最该练的模式),下面是七行带点线引导的索引,右侧对齐各自的成绩,最弱的一行用朱红标注。信息密度最高,视觉最安静,和词典气质最贴。</p>
+  <div class="phone"><div class="phone__screen">
+    <div class="phone__body"><div class="page">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Quiz</p>
+          <h1 class="page-title">测试</h1>
+        </div>
+      </div>
+
+      <div class="card qc-smart">
+        <p class="qc-smart__sub">不想选?交给 Volcab —— 根据各模式的正确率和间隔,自动挑最该练的一种。今天会选「<strong style="color:var(--accent)">听音</strong>」。</p>
+        <button class="btn btn--primary btn--lg btn--block" onclick="toast(this, '示意:自动开始「听音」10 题')">智能开始</button>
+      </div>
+
+      <div class="card qc-list">
+        <div class="qc-row" onclick="toast(this, '示意:开始「综合」')">
+          <span class="qc-row__name">综合<span class="qc-row__desc">中英互认 + 例句填空,日常主力</span></span>
+          <span class="qc-row__leader"></span>
+          <span class="num qc-row__val">87%<small>昨天</small></span>
+        </div>
+        <div class="qc-row" onclick="toast(this, '示意:开始「回想」')">
+          <span class="qc-row__name">回想<span class="qc-row__desc">只看中文,回想英文词</span></span>
+          <span class="qc-row__leader"></span>
+          <span class="num qc-row__val">74%<small>3 天前</small></span>
+        </div>
+        <div class="qc-row" onclick="toast(this, '示意:开始「辨析」')">
+          <span class="qc-row__name">辨析<span class="qc-row__desc">易混词对二选一</span></span>
+          <span class="qc-row__leader"></span>
+          <span class="num qc-row__val">81%<small>昨天</small></span>
+        </div>
+        <div class="qc-row" onclick="toast(this, '示意:开始「听音」')">
+          <span class="qc-row__name">听音<span class="qc-row__desc">听发音,选词义 · 最近偏弱</span></span>
+          <span class="qc-row__leader"></span>
+          <span class="num qc-row__val low">62%<small>5 天前</small></span>
+        </div>
+        <div class="qc-row" onclick="toast(this, '示意:开始「极速」')">
+          <span class="qc-row__name">极速<span class="qc-row__desc">60 秒冲刺</span></span>
+          <span class="qc-row__leader"></span>
+          <span class="num qc-row__val">28 题<small>前天</small></span>
+        </div>
+        <div class="qc-row" onclick="toast(this, '示意:开始「短文」')">
+          <span class="qc-row__name">短文<span class="qc-row__desc">整段文章挖空填词</span></span>
+          <span class="qc-row__leader"></span>
+          <span class="num qc-row__val">92%<small>4 天前</small></span>
+        </div>
+        <div class="qc-row" onclick="toast(this, '示意:开始「猜词」')">
+          <span class="qc-row__name">猜词<span class="qc-row__desc">按释义逐步猜出单词</span></span>
+          <span class="qc-row__leader"></span>
+          <span class="num qc-row__val">3.2 猜<small>今天</small></span>
+        </div>
+      </div>
+    </div></div>
+    <nav class="tabbar" data-active="测试"></nav>
+    <div class="toast"></div>
+  </div></div>
+</div>
+
+<div id="sketch-tools">
+  <span>sketch 002</span>
+  <button onclick="toggleTheme()">亮 / 暗</button>
+</div>
+
+<script>
+function showVariant(id, tab) {
+  document.querySelectorAll('.variant').forEach(v => v.classList.remove('active'))
+  document.querySelectorAll('.variant-tab').forEach(t => t.classList.remove('active'))
+  document.getElementById('variant-' + id).classList.add('active')
+  tab.classList.add('active')
+}
+
+function toggleTheme() {
+  const html = document.documentElement
+  const cur = html.dataset.theme
+  html.dataset.theme = cur === 'dark' ? 'light' : cur === 'light' ? '' : 'dark'
+  if (html.dataset.theme === '') delete html.dataset.theme
+}
+
+function toast(el, msg) {
+  const t = el.closest('.phone__screen').querySelector('.toast')
+  t.textContent = msg
+  t.classList.add('show')
+  clearTimeout(t._timer)
+  t._timer = setTimeout(() => t.classList.remove('show'), 1600)
+}
+
+const TAB_ICONS = {
+  '今日': '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  '词库': '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>',
+  '测试': '<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg>',
+  '数据': '<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+  '设置': '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.09a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>',
+}
+document.querySelectorAll('.tabbar').forEach(bar => {
+  const active = bar.dataset.active
+  bar.innerHTML = Object.entries(TAB_ICONS).map(([label, icon]) =>
+    `<span class="tabbar__item${label === active ? ' active' : ''}" onclick="toast(this, '示意:切换到「${label}」')">${icon}<span>${label}</span></span>`
+  ).join('')
+})
+
+/* Variant A: chip switcher drives the detail card */
+const QA_MODES = [
+  { key: 'mixed', label: '综合', stat: '正确率 87% · 昨天练过', desc: '中英互认加例句填空,日常主力。四选一,答错的词会被排进当天稍后重现。' },
+  { key: 'recall', label: '回想', stat: '正确率 74% · 3 天前', desc: '只看中文释义,在脑子里回想英文词再翻面对答案 —— 逆向检索,比认读难一档。' },
+  { key: 'contrast', label: '辨析', stat: '正确率 81% · 昨天', desc: '易混词对二选一(assure/ensure 这类),只考已经学过的词。' },
+  { key: 'audio', label: '听音', stat: '正确率 62% · 5 天前', desc: '先听发音再选词义,不看拼写。近期最弱的一项。' },
+  { key: 'sprint', label: '极速', stat: '最高 28 题 · 前天', desc: '60 秒限时,答对越多越好,节奏最快的一种。' },
+  { key: 'passage', label: '短文', stat: '正确率 92% · 4 天前', desc: '一整段文章挖空,把词放回语境里。' },
+  { key: 'guess', label: '猜词', stat: '平均 3.2 猜 · 今天', desc: '只给释义,逐步给提示,拼出这个词 —— 唯一要求"产出"的模式。' },
+]
+const qaChips = document.getElementById('qa-chips')
+qaChips.innerHTML = QA_MODES.map((m, i) =>
+  `<button class="qa-chip${i === 0 ? ' active' : ''}" onclick="qaPick(${i}, this)">${m.label}</button>`
+).join('')
+function qaPick(i, chip) {
+  document.querySelectorAll('.qa-chip').forEach(c => c.classList.remove('active'))
+  chip.classList.add('active')
+  const m = QA_MODES[i]
+  document.getElementById('qa-name').textContent = m.label
+  document.getElementById('qa-stat').textContent = m.stat
+  document.getElementById('qa-desc').textContent = m.desc
+  document.getElementById('qa-go').textContent = '开始「' + m.label + '」'
+}
+</script>
+</body>
+</html>
