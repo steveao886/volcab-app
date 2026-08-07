@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sketch 003 — 复习卡:评分的手感与依据</title>
+<link rel="stylesheet" href="../themes/default.css">
+<link rel="stylesheet" href="../themes/sketch-base.css">
+<style>
+.rv-top {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+.rv-top .progress { flex: 1; }
+
+.rv-card {
+  min-height: 380px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--sp-3);
+  text-align: center;
+  padding: var(--sp-6) var(--sp-5);
+  cursor: pointer;
+  transition: transform var(--dur-2) var(--ease), opacity var(--dur-2) var(--ease);
+  position: relative;
+  user-select: none;
+}
+.rv-card.leaving { transform: translateX(-40px); opacity: 0; }
+.rv-card .word { font-size: clamp(2rem, 9vw, var(--fs-word-xl)); }
+.rv-card__hint { font-size: var(--fs-xs); color: var(--text-faint); }
+.rv-back { display: none; width: 100%; text-align: left; gap: var(--sp-3); }
+.rv-card.flipped .rv-back { display: grid; }
+.rv-card.flipped .rv-card__hint { display: none; }
+.rv-sense { font-size: var(--fs-base); line-height: var(--lh-body); }
+.rv-sense .pos { margin-right: var(--sp-2); }
+.rv-example {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  font-style: italic;
+  border-left: 2px solid var(--rule-strong);
+  padding-left: var(--sp-3);
+}
+.rv-example em { color: var(--accent); font-weight: 600; }
+.rv-done {
+  min-height: 380px;
+  display: none;
+  align-content: center;
+  justify-items: center;
+  gap: var(--sp-3);
+  text-align: center;
+}
+.rv-done p:first-child { font-size: var(--fs-xl); font-weight: 700; }
+
+/* ============ Variant A: 4 grades + interval preview ============ */
+.ga-grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-2); }
+.ga-grades .btn {
+  flex-direction: column;
+  gap: 2px;
+  min-height: 60px;
+  padding-inline: var(--sp-2);
+  font-size: var(--fs-sm);
+}
+.ga-grades .btn small {
+  font-family: var(--font-num);
+  font-size: var(--fs-eyebrow);
+  font-weight: 400;
+  opacity: 0.85;
+  letter-spacing: 0;
+}
+.ga-keys {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-4);
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+}
+
+/* ============ Variant B: two-key grading ============ */
+.gb-grades { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); }
+.gb-grades .btn { min-height: 64px; font-size: var(--fs-md); flex-direction: column; gap: 2px; }
+.gb-grades .btn small { font-size: var(--fs-eyebrow); font-family: var(--font-num); font-weight: 400; opacity: 0.85; letter-spacing: 0; }
+.gb-easy {
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: var(--sp-2);
+}
+.gb-easy:hover { color: var(--info); }
+.gb-easy .num { font-weight: 700; }
+
+/* ============ Variant C: swipe ============ */
+.gc-stage { position: relative; }
+.gc-under {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--sp-6);
+  pointer-events: none;
+}
+.gc-under span {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity var(--dur-1) var(--ease);
+}
+.gc-under .no { color: var(--grade-again); }
+.gc-under .yes { color: var(--grade-good); }
+.gc-card { touch-action: none; cursor: grab; position: relative; z-index: 2; }
+.gc-card.dragging { transition: none; cursor: grabbing; }
+.gc-card.fly-left { transform: translateX(-420px) rotate(-10deg); opacity: 0; }
+.gc-card.fly-right { transform: translateX(420px) rotate(10deg); opacity: 0; }
+.gc-swipe-hint {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+  padding: 0 var(--sp-2);
+}
+.gc-fallback { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); }
+.gc-fallback .btn { min-height: 52px; }
+</style>
+</head>
+<body>
+
+<div id="variant-nav">
+  <span class="sketch-title">003 复习评分</span>
+  <button class="variant-tab active" onclick="showVariant('a', this)">A: 间隔预览 ★ 已选</button>
+  <button class="variant-tab" onclick="showVariant('b', this)">B: 两键评分</button>
+  <button class="variant-tab" onclick="showVariant('c', this)">C: 滑动评分</button>
+</div>
+
+<!-- ================= Variant A ================= -->
+<div id="variant-a" class="variant active">
+  <p class="variant-note"><strong>A · 间隔预览</strong> — 保留四档评分,但每个按钮下标出这一按之后「多久再见到这个词」(Anki 的做法)。四档从"凭感觉选"变成"选一个后果"。点卡片翻面,再选评分。</p>
+  <div class="phone"><div class="phone__screen">
+    <div class="phone__body"><div class="page">
+      <div class="rv-top">
+        <span class="num" id="ga-count">12/23</span>
+        <div class="progress"><div class="progress__fill" id="ga-fill" style="width:52%"></div></div>
+        <span>🔊</span>
+      </div>
+      <div class="card rv-card" id="ga-card" onclick="rvFlip('ga')"></div>
+      <div class="rv-done" id="ga-done"><p>今日复习完成 🎉</p><p class="muted">23 张卡 · 正确率 91%</p></div>
+      <div class="ga-grades" id="ga-grades">
+        <button class="btn btn--grade btn--grade-again" onclick="rvGrade('ga', event, '再来')">再来<small>10 分钟</small></button>
+        <button class="btn btn--grade btn--grade-hard" onclick="rvGrade('ga', event, '困难')">困难<small>2 天</small></button>
+        <button class="btn btn--grade btn--grade-good" onclick="rvGrade('ga', event, '记得')">记得<small>5 天</small></button>
+        <button class="btn btn--grade btn--grade-easy" onclick="rvGrade('ga', event, '轻松')">轻松<small>9 天</small></button>
+      </div>
+      <div class="ga-keys"><span><span class="kbd">空格</span> 翻面</span><span><span class="kbd">1</span><span class="kbd">2</span><span class="kbd">3</span><span class="kbd">4</span> 评分</span></div>
+    </div></div>
+    <nav class="tabbar" data-active="今日"></nav>
+    <div class="toast"></div>
+  </div></div>
+</div>
+
+<!-- ================= Variant B ================= -->
+<div id="variant-b" class="variant">
+  <p class="variant-note"><strong>B · 两键评分</strong> — 每张卡只做一次二选一:忘了 / 记得。「轻松」退化成记得按钮下方的一行小字链接,只在确实太简单时才去点。决策成本最低,牺牲的是「困难」这一档的信息。</p>
+  <div class="phone"><div class="phone__screen">
+    <div class="phone__body"><div class="page">
+      <div class="rv-top">
+        <span class="num" id="gb-count">12/23</span>
+        <div class="progress"><div class="progress__fill" id="gb-fill" style="width:52%"></div></div>
+        <span>🔊</span>
+      </div>
+      <div class="card rv-card" id="gb-card" onclick="rvFlip('gb')"></div>
+      <div class="rv-done" id="gb-done"><p>今日复习完成 🎉</p><p class="muted">23 张卡 · 正确率 91%</p></div>
+      <div class="gb-grades" id="gb-grades">
+        <button class="btn btn--grade btn--grade-again" onclick="rvGrade('gb', event, '忘了')">忘了<small>10 分钟后再来</small></button>
+        <button class="btn btn--grade btn--grade-good" onclick="rvGrade('gb', event, '记得')">记得<small>5 天后再见</small></button>
+      </div>
+      <p class="gb-easy" onclick="rvGrade('gb', event, '太简单')">这个词太简单了,<span class="num">9 天</span>后再见 →</p>
+    </div></div>
+    <nav class="tabbar" data-active="今日"></nav>
+    <div class="toast"></div>
+  </div></div>
+</div>
+
+<!-- ================= Variant C ================= -->
+<div id="variant-c" class="variant">
+  <p class="variant-note"><strong>C · 滑动评分</strong> — 翻面后,把卡片<strong>拖</strong>向左(忘了)或右(记得)。方向感 + 动量让长队列刷起来最快;下面保留两个按钮作为兜底,也是给桌面键盘用户的。<em>试试按住卡片拖动。</em></p>
+  <div class="phone"><div class="phone__screen">
+    <div class="phone__body"><div class="page">
+      <div class="rv-top">
+        <span class="num" id="gc-count">12/23</span>
+        <div class="progress"><div class="progress__fill" id="gc-fill" style="width:52%"></div></div>
+        <span>🔊</span>
+      </div>
+      <div class="gc-stage">
+        <div class="gc-under"><span class="no" id="gc-no">← 忘了</span><span class="yes" id="gc-yes">记得 →</span></div>
+        <div class="card rv-card gc-card" id="gc-card"></div>
+      </div>
+      <div class="rv-done" id="gc-done"><p>今日复习完成 🎉</p><p class="muted">23 张卡 · 正确率 91%</p></div>
+      <div class="gc-swipe-hint"><span>◀ 拖向左:忘了 · 10 分钟</span><span>拖向右:记得 · 5 天 ▶</span></div>
+      <div class="gc-fallback" id="gc-grades">
+        <button class="btn btn--grade btn--grade-again" onclick="rvGrade('gc', event, '忘了')">忘了</button>
+        <button class="btn btn--grade btn--grade-good" onclick="rvGrade('gc', event, '记得')">记得</button>
+      </div>
+    </div></div>
+    <nav class="tabbar" data-active="今日"></nav>
+    <div class="toast"></div>
+  </div></div>
+</div>
+
+<div id="sketch-tools">
+  <span>sketch 003</span>
+  <button onclick="toggleTheme()">亮 / 暗</button>
+</div>
+
+<script>
+function showVariant(id, tab) {
+  document.querySelectorAll('.variant').forEach(v => v.classList.remove('active'))
+  document.querySelectorAll('.variant-tab').forEach(t => t.classList.remove('active'))
+  document.getElementById('variant-' + id).classList.add('active')
+  tab.classList.add('active')
+}
+
+function toggleTheme() {
+  const html = document.documentElement
+  const cur = html.dataset.theme
+  html.dataset.theme = cur === 'dark' ? 'light' : cur === 'light' ? '' : 'dark'
+  if (html.dataset.theme === '') delete html.dataset.theme
+}
+
+function toast(el, msg) {
+  const t = el.closest('.phone__screen').querySelector('.toast')
+  t.textContent = msg
+  t.classList.add('show')
+  clearTimeout(t._timer)
+  t._timer = setTimeout(() => t.classList.remove('show'), 1600)
+}
+
+const TAB_ICONS = {
+  '今日': '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  '词库': '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>',
+  '测试': '<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg>',
+  '数据': '<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+  '设置': '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.09a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>',
+}
+document.querySelectorAll('.tabbar').forEach(bar => {
+  const active = bar.dataset.active
+  bar.innerHTML = Object.entries(TAB_ICONS).map(([label, icon]) =>
+    `<span class="tabbar__item${label === active ? ' active' : ''}" onclick="toast(this, '示意:切换到「${label}」')">${icon}<span>${label}</span></span>`
+  ).join('')
+})
+
+/* --- shared deck: real library entries -------------------------------- */
+const DECK = [
+  { w: 'surreptitious', ipa: '/ˌsɜːrəpˈtɪʃəs/', pos: 'adj.', zh: '偷偷摸摸的;秘密的', ex: 'She took a <em>surreptitious</em> glance at her phone under the conference table.' },
+  { w: 'perfunctory', ipa: '/pərˈfʌŋktəri/', pos: 'adj.', zh: '敷衍了事的;例行公事的;草率的', ex: "The manager's <em>perfunctory</em> 'great job, team' stopped meaning anything months ago." },
+  { w: 'succumb', ipa: '/səˈkʌm/', pos: 'v.', zh: '屈服于;抵挡不住(压力、诱惑等)', ex: 'He finally <em>succumbed</em> to the leftover birthday cake in the break room.' },
+  { w: 'ulterior', ipa: '/ʌlˈtɪriər/', pos: 'adj.', zh: '隐藏的;别有用心的', ex: 'Everyone suspected an <em>ulterior</em> motive — he wanted to borrow the truck.' },
+  { w: 'abridge', ipa: '/əˈbrɪdʒ/', pos: 'v.', zh: '删节,节略(书籍、文章等)', ex: 'The audiobook is an <em>abridged</em> version — the entire middle act got cut.' },
+]
+
+/* per-variant session state: prefix → { idx, done: 12 already "reviewed" } */
+const sessions = {}
+function rvRender(p) {
+  const s = sessions[p] || (sessions[p] = { idx: 0, base: 12 })
+  const card = document.getElementById(p + '-card')
+  if (s.base + s.idx >= 23 || s.idx >= DECK.length) {
+    card.style.display = 'none'
+    const grades = document.getElementById(p + '-grades')
+    if (grades) grades.style.display = 'none'
+    document.getElementById(p + '-done').style.display = 'grid'
+    document.getElementById(p + '-fill').style.width = '100%'
+    document.getElementById(p + '-count').textContent = '23/23'
+    return
+  }
+  const w = DECK[s.idx]
+  card.classList.remove('flipped', 'leaving', 'fly-left', 'fly-right')
+  card.style.transform = ''
+  card.style.opacity = ''
+  card.innerHTML = `
+    <p class="word" lang="en">${w.w}</p>
+    <p class="ipa" lang="en" aria-hidden="true">${w.ipa}</p>
+    <p class="rv-card__hint">点一下,看释义</p>
+    <div class="rv-back">
+      <hr class="rule" style="width:100%">
+      <p class="rv-sense"><span class="pos">${w.pos}</span>${w.zh}</p>
+      <p class="rv-example" lang="en">${w.ex}</p>
+    </div>`
+  const n = s.base + s.idx
+  document.getElementById(p + '-count').textContent = n + '/23'
+  document.getElementById(p + '-fill').style.width = (n / 23) * 100 + '%'
+}
+function rvFlip(p) {
+  document.getElementById(p + '-card').classList.add('flipped')
+}
+function rvGrade(p, evt, label) {
+  const s = sessions[p]
+  const card = document.getElementById(p + '-card')
+  if (!card.classList.contains('flipped')) { rvFlip(p); return }
+  toast(evt.target, '「' + DECK[s.idx].w + '」→ ' + label)
+  card.classList.add('leaving')
+  setTimeout(() => { s.idx += 1; rvRender(p) }, 200)
+}
+rvRender('ga'); rvRender('gb'); rvRender('gc')
+
+/* --- Variant C: pointer drag ------------------------------------------- */
+const gcCard = document.getElementById('gc-card')
+let drag = null
+gcCard.addEventListener('pointerdown', e => {
+  if (!gcCard.classList.contains('flipped')) return // flip first, then swipe
+  drag = { x0: e.clientX, dx: 0 }
+  gcCard.classList.add('dragging')
+  gcCard.setPointerCapture(e.pointerId)
+})
+gcCard.addEventListener('pointermove', e => {
+  if (!drag) return
+  drag.dx = e.clientX - drag.x0
+  gcCard.style.transform = `translateX(${drag.dx}px) rotate(${drag.dx / 30}deg)`
+  document.getElementById('gc-no').style.opacity = drag.dx < -30 ? Math.min(1, -drag.dx / 100) : 0
+  document.getElementById('gc-yes').style.opacity = drag.dx > 30 ? Math.min(1, drag.dx / 100) : 0
+})
+function gcRelease() {
+  if (!drag) return
+  const dx = drag.dx
+  drag = null
+  gcCard.classList.remove('dragging')
+  document.getElementById('gc-no').style.opacity = 0
+  document.getElementById('gc-yes').style.opacity = 0
+  if (Math.abs(dx) > 110) {
+    const s = sessions.gc
+    toast(gcCard, '「' + DECK[s.idx].w + '」→ ' + (dx > 0 ? '记得' : '忘了'))
+    gcCard.style.transform = ''
+    gcCard.classList.add(dx > 0 ? 'fly-right' : 'fly-left')
+    setTimeout(() => { s.idx += 1; rvRender('gc') }, 240)
+  } else {
+    gcCard.style.transform = ''
+  }
+}
+gcCard.addEventListener('pointerup', gcRelease)
+gcCard.addEventListener('pointercancel', gcRelease)
+gcCard.addEventListener('click', e => {
+  // a click that wasn't a drag flips the card
+  if (!gcCard.classList.contains('flipped')) rvFlip('gc')
+})
+</script>
+</body>
+</html>
