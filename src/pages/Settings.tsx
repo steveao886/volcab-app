@@ -5,6 +5,8 @@ import { Card } from '../components/Card'
 import { Field } from '../components/Field'
 import { Page } from '../components/Page'
 import { TextInput } from '../components/TextInput'
+import { checkForUpdate, isUpdateReady } from '../lib/appUpdate'
+import type { UpdateStatus } from '../lib/appUpdate'
 import { isSoundEnabled } from '../lib/sound'
 import { clampIntervalModifier, MAX_INTERVAL_MODIFIER, MIN_INTERVAL_MODIFIER, todayStr } from '../lib/srs'
 import { loadInputs, recommendIntervalModifier, recommendNewPerDay, retentionWindowDays } from '../lib/tuning'
@@ -100,6 +102,8 @@ export function Settings() {
   const [modifierInput, setModifierInput] = useState(currentModifier.toFixed(1))
   const modifierRef = useRef<HTMLInputElement>(null)
   const [confirmingLogout, setConfirmingLogout] = useState(false)
+  const [checking, setChecking] = useState(false)
+  const [updateStatus, setUpdateStatus] = useState<UpdateStatus | null>(null)
   const newPerDayRef = useRef<HTMLInputElement>(null)
   // Right now, newPerDay can only ever change because of this component's
   // own commitNewPerDay — mergeProgress (lib/merge.ts:23) preserves
@@ -139,6 +143,31 @@ export function Settings() {
       ),
     }
   }, [words, progress])
+
+  /**
+   * "Am I running the latest build?"
+   *
+   * Reloading is what actually moves the page onto a new version — the
+   * worker has already installed and claimed by the time anyone hears about
+   * it (registerType: 'autoUpdate'). So on `ready` this reloads, and that is
+   * the whole update. The alternative was telling people to force-quit a
+   * home-screen PWA, which is the only other way to get a real reload out of
+   * one.
+   */
+  const handleCheckUpdate = useCallback(() => {
+    setChecking(true)
+    setUpdateStatus(null)
+    void (async () => {
+      const reg = await navigator.serviceWorker?.getRegistration().catch(() => undefined)
+      const status = await checkForUpdate(reg, isUpdateReady())
+      if (status === 'ready') {
+        window.location.reload()
+        return   // deliberately leaves `checking` true: the page is on its way out
+      }
+      setUpdateStatus(status)
+      setChecking(false)
+    })()
+  }, [])
 
   /** Every path that changes the modifier goes through here, so the evidence window is always reset with it. */
   const setModifier = useCallback((v: number) => {
@@ -374,6 +403,23 @@ export function Settings() {
         <p className="settings-hint">导出词库与学习进度为一份 JSON 文件,保存到本机。</p>
         <Button variant="secondary" block onClick={handleExport}>
           导出备份
+        </Button>
+      </Card>
+
+      {/* Sits with the version rather than in a card of its own: it answers
+          "what am I running", which is the same question the line below
+          answers. */}
+      <Card>
+        <p className="section-title">版本</p>
+        <p className="settings-hint">
+          {updateStatus === 'current'
+            ? '已是最新版本。'
+            : updateStatus === 'unsupported'
+              ? '查不到更新 —— 可能是离线,或者这个环境没有安装 Service Worker。'
+              : '向服务器确认一次。有新版本就会装好并重新加载 —— 之前点过「稍后」的更新也在这时生效。'}
+        </p>
+        <Button variant="secondary" block onClick={handleCheckUpdate} disabled={checking}>
+          {checking ? '检查中…' : '检查更新'}
         </Button>
       </Card>
 

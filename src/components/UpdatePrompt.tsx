@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react'
 // directive is written directly at the top of this file instead — TypeScript
 // allows it at the very top of any source file, it doesn't have to be a .d.ts.
 import { useRegisterSW } from 'virtual:pwa-register/react'
+import { markUpdateReady } from '../lib/appUpdate'
 import { Button } from './Button'
 
 /**
@@ -44,7 +45,16 @@ export function UpdatePrompt() {
   const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null)
 
   const { updateServiceWorker } = useRegisterSW({
-    onNeedReload: () => setVisible(true),
+    onNeedReload: () => {
+      // Recorded as well as shown. This event fires once per worker, and
+      // dismissing the banner is plain component state, so without the flag
+      // there is nothing left in the session that knows a newer version is
+      // installed — the settings page would probe the server, find sw.js
+      // unchanged, and cheerfully report "已是最新" to someone still looking
+      // at the old build. See lib/appUpdate.ts.
+      markUpdateReady()
+      setVisible(true)
+    },
     onRegisteredSW(_swUrl, reg) {
       setRegistration(reg ?? null)
     },
