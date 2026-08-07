@@ -165,23 +165,76 @@
    The three extra practice modes (contrast / audio / sprint).
    ========================================================================== */
 
-/* Mode switcher: a single row of chips, horizontally scrollable. The four
-   mode labels fit at 375px, but bumping the font size or adding another
-   mode down the line would overflow — allowing horizontal scroll looks
-   better than letting them wrap into a cramped second row. */
-.quiz-modes {
-  display: flex;
-  gap: var(--sp-2);
-  margin-bottom: var(--sp-4);
-  overflow-x: auto;
-  /* Keeps a chip's focus ring from being clipped by the container while scrolling */
-  padding: 2px;
-  margin-left: -2px;
-  scrollbar-width: none;
+/* --- Mode hub: one card per practice surface (sketch 002 winner B) --------
+   2-col grid at 375px; the mixed card spans full width so the every-day
+   default stays the largest, first target. Cards are <Link>s. */
+
+.quiz-hub {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
 }
 
-.quiz-modes::-webkit-scrollbar {
-  display: none;
+.quiz-mode-card {
+  position: relative;
+  display: grid;
+  gap: var(--sp-1);
+  align-content: start;
+  text-decoration: none;
+  color: inherit;
+}
+
+.quiz-mode-card--wide {
+  grid-column: 1 / -1;
+}
+
+.quiz-mode-card__name {
+  font-size: var(--fs-base);
+  font-weight: 700;
+}
+
+.quiz-mode-card__desc {
+  font-size: var(--fs-xs);
+  line-height: var(--lh-snug);
+  color: var(--text-faint);
+}
+
+.quiz-mode-card__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--rule);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.quiz-mode-card__stat {
+  font-weight: 700;
+}
+
+/* The weak spot gets vermilion — annotation, one of its permitted uses. */
+.quiz-mode-card__stat--low {
+  color: var(--accent);
+}
+
+/* 推荐 badge: hangs off the card's top edge. Solid vermilion is otherwise
+   reserved for destructive actions; this is the annotation exception the
+   tokens header carves out for marks/eyebrows — it annotates the card, it
+   isn't a button. Text tag + color, never color alone. */
+.quiz-mode-card__badge {
+  position: absolute;
+  top: -1px;
+  right: var(--sp-3);
+  padding: 2px 8px 3px;
+  border-radius: 0 0 var(--r-sm) var(--r-sm);
+  background: var(--accent);
+  color: var(--on-tone);
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: var(--tracking-eyebrow);
 }
 
 /* --- Audio question --------------------------------------------------------------- */

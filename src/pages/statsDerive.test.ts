@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { emptyProgress } from '../types'
+import { emptyProgress, emptyStat } from '../types'
 import type { Progress, Word } from '../types'
 import {
-  accuracySeries, accuracyStats, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
-  masteryBreakdown, modeAccuracy, retentionStats, shortDate, strugglingSummary,
-  usageCoverage, windowSummary,
+  accuracySeries, accuracyStats, agoLabel, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
+  masteryBreakdown, modeAccuracy, modeOverview, recommendMode, retentionStats, shortDate,
+  strugglingSummary, usageCoverage, windowSummary,
 } from './statsDerive'
 import type { DayPoint } from './statsDerive'
 
@@ -317,5 +317,74 @@ describe('retentionStats', () => {
 
   it('a window with no scheduled reviews gives null, not 0%', () => {
     expect(retentionStats(emptyProgress(), '2026-07-25', 30).rate).toBeNull()
+  })
+})
+
+/** Progress whose dailyStats carry only quizModes tallies. */
+const progWithModes = (
+  days: Record<string, Record<string, { asked: number; correct: number }>>,
+): Progress => {
+  const p = emptyProgress()
+  for (const [date, quizModes] of Object.entries(days)) {
+    p.dailyStats[date] = { ...emptyStat(), quizModes }
+  }
+  return p
+}
+
+describe('modeOverview', () => {
+  it('returns all seven modes in fixed key order, played or not', () => {
+    const rows = modeOverview(emptyProgress())
+    expect(rows.map(r => r.mode)).toEqual(['mixed', 'recall', 'contrast', 'audio', 'sprint', 'passage', 'guess'])
+    expect(rows[0]).toMatchObject({ asked: 0, correct: 0, rate: null, lastPlayed: null })
+  })
+
+  it('aggregates across days and keeps the most recent date as lastPlayed', () => {
+    const rows = modeOverview(progWithModes({
+      '2026-08-01': { audio: { asked: 10, correct: 6 } },
+      '2026-08-05': { audio: { asked: 10, correct: 7 } },
+    }))
+    const audio = rows.find(r => r.mode === 'audio')
+    expect(audio).toMatchObject({ asked: 20, correct: 13, lastPlayed: '2026-08-05' })
+    expect(audio?.rate).toBeCloseTo(0.65)
+  })
+
+  it('rate stays null below the accuracy floor', () => {
+    const rows = modeOverview(progWithModes({ '2026-08-01': { recall: { asked: 9, correct: 9 } } }))
+    expect(rows.find(r => r.mode === 'recall')).toMatchObject({ asked: 9, rate: null })
+  })
+
+  it('ignores unknown metric keys from newer builds', () => {
+    const rows = modeOverview(progWithModes({ '2026-08-01': { newfangled: { asked: 50, correct: 50 } } }))
+    expect(rows.every(r => r.asked === 0)).toBe(true)
+  })
+})
+
+describe('recommendMode', () => {
+  it('picks the lowest printable accuracy', () => {
+    const rows = modeOverview(progWithModes({
+      '2026-08-01': { mixed: { asked: 20, correct: 18 }, audio: { asked: 20, correct: 12 } },
+    }))
+    expect(recommendMode(rows)).toBe('audio')
+  })
+
+  it('needs evidence: null when no mode clears the floor', () => {
+    const rows = modeOverview(progWithModes({ '2026-08-01': { audio: { asked: 5, correct: 0 } } }))
+    expect(recommendMode(rows)).toBeNull()
+  })
+
+  it('ties keep the earlier fixed-order mode so the badge cannot flicker', () => {
+    const rows = modeOverview(progWithModes({
+      '2026-08-01': { recall: { asked: 10, correct: 6 }, audio: { asked: 10, correct: 6 } },
+    }))
+    expect(recommendMode(rows)).toBe('recall')
+  })
+})
+
+describe('agoLabel', () => {
+  it('names the near days and counts the rest', () => {
+    expect(agoLabel(null, '2026-08-07')).toBe('未练过')
+    expect(agoLabel('2026-08-07', '2026-08-07')).toBe('今天')
+    expect(agoLabel('2026-08-06', '2026-08-07')).toBe('昨天')
+    expect(agoLabel('2026-08-02', '2026-08-07')).toBe('5 天前')
   })
 })

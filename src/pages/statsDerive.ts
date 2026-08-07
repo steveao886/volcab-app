@@ -347,6 +347,76 @@ export function modeAccuracy(progress: Progress): ModeAccuracy[] {
       || QUIZ_METRIC_KEYS.indexOf(a.mode) - QUIZ_METRIC_KEYS.indexOf(b.mode))
 }
 
+export interface ModeOverviewRow {
+  mode: QuizMetricKey
+  label: string
+  asked: number
+  correct: number
+  /** 0–1, or null until `asked` clears MODE_ACCURACY_MIN — below the floor one miss swings the figure 20 points, which reads as a skill change and isn't one. */
+  rate: number | null
+  /** YYYY-MM-DD this mode was last played; null if never. */
+  lastPlayed: string | null
+}
+
+/**
+ * One row per mode, all seven, fixed key order. Unlike modeAccuracy —
+ * which serves a stats list where an unplayed mode is noise — the quiz
+ * hub renders every mode as a card, and "never played" is a state the
+ * card must show, not a reason to vanish.
+ */
+export function modeOverview(progress: Progress): ModeOverviewRow[] {
+  const tally = new Map<QuizMetricKey, { asked: number; correct: number; last: string }>()
+  for (const [date, day] of Object.entries(progress.dailyStats)) {
+    for (const [mode, v] of Object.entries(day.quizModes ?? {})) {
+      if (!(QUIZ_METRIC_KEYS as readonly string[]).includes(mode)) continue
+      const key = mode as QuizMetricKey
+      const prev = tally.get(key)
+      tally.set(key, {
+        asked: (prev?.asked ?? 0) + v.asked,
+        correct: (prev?.correct ?? 0) + v.correct,
+        last: prev === undefined || date > prev.last ? date : prev.last,
+      })
+    }
+  }
+  return QUIZ_METRIC_KEYS.map(mode => {
+    const t = tally.get(mode)
+    return {
+      mode,
+      label: QUIZ_METRIC_LABELS[mode],
+      asked: t?.asked ?? 0,
+      correct: t?.correct ?? 0,
+      rate: t !== undefined && t.asked >= MODE_ACCURACY_MIN ? t.correct / t.asked : null,
+      lastPlayed: t?.last ?? null,
+    }
+  })
+}
+
+/**
+ * The mode most worth practising: lowest printable accuracy. Null when no
+ * mode clears MODE_ACCURACY_MIN — a recommendation with no evidence
+ * behind it would just be a random badge. Strict less-than keeps the
+ * earlier fixed-order mode on a tie, so the badge cannot flicker between
+ * renders.
+ */
+export function recommendMode(rows: ModeOverviewRow[]): QuizMetricKey | null {
+  let bestMode: QuizMetricKey | null = null
+  let bestRate = Infinity
+  for (const r of rows) {
+    if (r.rate === null) continue
+    if (r.rate < bestRate) { bestMode = r.mode; bestRate = r.rate }
+  }
+  return bestMode
+}
+
+/** Relative age for "last practised": 今天 / 昨天 / N 天前 / 未练过. */
+export function agoLabel(date: string | null, today: string): string {
+  if (date === null) return '未练过'
+  if (date === today) return '今天'
+  const days = Math.round((parseLocal(today).getTime() - parseLocal(date).getTime()) / 86400_000)
+  if (days === 1) return '昨天'
+  return `${days} 天前`
+}
+
 /** Cumulative totals. The average only counts "days with a review" — including days the app was never opened in the denominator would understate intensity. */
 export function cumulativeTotals(progress: Progress): Totals {
   const days = Object.values(progress.dailyStats)
