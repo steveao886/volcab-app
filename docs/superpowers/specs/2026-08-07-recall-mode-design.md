@@ -109,6 +109,15 @@ own real example sentence — never an invented context.
 - `zh` non-empty, ≤40 characters, **contains no Latin letters at all** — it
   is on screen before the options, so any English is a leak. This is the
   masking rule from `/guess` in its strictest form.
+- **`target`**: the chunk of `zh` being asked, required, ≤16 chars, no
+  Latin, and locating in `zh` exactly once. Added the day the mode shipped,
+  from user feedback: a scenario sentence carries half a dozen content
+  words, and without a mark on the asked-for part the question was
+  unanswerable ("我怎么知道表达用哪个词?"). Rendered as 着重号 (emphasis
+  dots) — the traditional way to point at a run of characters, and unlike
+  color it cannot be confused with the vermilion "wrong" annotation. Read
+  leniently: a group whose target can't be located renders the plain
+  sentence rather than being dropped.
 - `why` non-empty. Distinct `zh` across groups (it doubles as the prompt
   key for rotation).
 - Same-POS members only, per the contrast-mode finding: words with

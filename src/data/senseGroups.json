@@ -3,6 +3,7 @@
   "groups": [
     {
       "zh": "撑了一整场会议，他最后还是没抵住茶水间剩下的蛋糕。",
+      "target": "没抵住",
       "order": [
         "succumb",
         "capitulate",
@@ -12,6 +13,7 @@
     },
     {
       "zh": "做完三轮化疗后，医生判定这是难治性肿瘤，转入了临床试验。",
+      "target": "难治性",
       "order": [
         "refractory",
         "intractable",
@@ -21,6 +23,7 @@
     },
     {
       "zh": "编辑几条批注直接切中要害，把两千字的稿子砍到八百字。",
+      "target": "切中要害",
       "order": [
         "incisive",
         "astute",
@@ -30,6 +33,7 @@
     },
     {
       "zh": "她升职之后，他立刻变成了她无法化解的死对头。",
+      "target": "无法化解",
       "order": [
         "implacable",
         "obdurate",
@@ -39,6 +43,7 @@
     },
     {
       "zh": "大陪审团决定以十一项电汇欺诈罪起诉那名前高管。",
+      "target": "起诉",
       "order": [
         "indict",
         "incriminate",
@@ -48,6 +53,7 @@
     },
     {
       "zh": "他本想置身事外，在家族群里回了一句就被卷进了遗产纠纷。",
+      "target": "卷进",
       "order": [
         "embroil",
         "implicate",
@@ -57,6 +63,7 @@
     },
     {
       "zh": "要不要每周回办公室五天，成了全员大会上最有争议的话题。",
+      "target": "有争议",
       "order": [
         "contentious",
         "acrimonious",
@@ -66,6 +73,7 @@
     },
     {
       "zh": "开业第一天就签下最大的客户，这个新财年的开局很吉利。",
+      "target": "吉利",
       "order": [
         "auspicious",
         "felicitous",
@@ -75,6 +83,7 @@
     },
     {
       "zh": "房东始终无法证明所谓的过度损耗，押金最后全额退了回来。",
+      "target": "证明",
       "order": [
         "substantiate",
         "corroborate",
@@ -84,6 +93,7 @@
     },
     {
       "zh": "开会时她假装在记笔记，在桌子底下偷偷瞄了一眼手机。",
+      "target": "偷偷",
       "order": [
         "surreptitious",
         "devious",
@@ -93,6 +103,7 @@
     },
     {
       "zh": "取消一个你从没想订的服务还要付取消费，这规定实在说不通。",
+      "target": "说不通",
       "order": [
         "perverse",
         "obstinate",
@@ -102,6 +113,7 @@
     },
     {
       "zh": "把静音键用得恰到好处，两小时的全员会她还能顺手回邮件。",
+      "target": "恰到好处",
       "order": [
         "judicious",
         "sagacious",
@@ -111,6 +123,7 @@
     },
     {
       "zh": "确诊之后他过上了近乎苦行的生活，戒糖戒酒不碰加工食品。",
+      "target": "苦行",
       "order": [
         "ascetic",
         "austere",
@@ -120,6 +133,7 @@
     },
     {
       "zh": "四十页的合同他只草草扫了一眼就签了字。",
+      "target": "草草",
       "order": [
         "cursory",
         "perfunctory",
@@ -129,6 +143,7 @@
     },
     {
       "zh": "招聘启事发出一小时，负责人的邮箱就被两千多份简历淹没。",
+      "target": "淹没",
       "order": [
         "inundate",
         "mire",
@@ -138,6 +153,7 @@
     },
     {
       "zh": "客户第四次要求改稿，他赌气地叹口气合上了电脑。",
+      "target": "赌气",
       "order": [
         "petulant",
         "testy",
@@ -147,6 +163,7 @@
     },
     {
       "zh": "新地铁线通车后，这一带的房租一路上涨，谁也拦不住。",
+      "target": "拦不住",
       "order": [
         "inexorable",
         "implacable",
@@ -156,6 +173,7 @@
     },
     {
       "zh": "他主动说要帮忙搬家，但大家都觉得他另有所图。",
+      "target": "另有所图",
       "order": [
         "ulterior",
         "underhand",
@@ -165,6 +183,7 @@
     },
     {
       "zh": "他那口英国腔纯属做作，其实他在俄亥俄长大。",
+      "target": "做作",
       "order": [
         "affectation",
         "pretense",
@@ -174,6 +193,7 @@
     },
     {
       "zh": "夕阳的金光洒满了整间办公室。",
+      "target": "洒满",
       "order": [
         "suffuse",
         "pervade",
@@ -183,6 +203,7 @@
     },
     {
       "zh": "作为尽责的房客，水龙头一漏水她当天就报修。",
+      "target": "尽责",
       "order": [
         "conscientious",
         "assiduous",
@@ -192,6 +213,7 @@
     },
     {
       "zh": "那名机敏的实习生比资深同事先发现了演示里的定价错误。",
+      "target": "机敏",
       "order": [
         "astute",
         "sagacious",
@@ -201,6 +223,7 @@
     },
     {
       "zh": "自从新地铁开通，这一带的房租就一路不可阻挡地上涨。",
+      "target": "不可阻挡",
       "order": [
         "inexorable",
         "implacable",
@@ -210,6 +233,7 @@
     },
     {
       "zh": "他对那份泄露备忘录的强烈否认，反而让大家更确信它是真的。",
+      "target": "强烈",
       "order": [
         "vehement",
         "fervent",
@@ -219,6 +243,7 @@
     },
     {
       "zh": "她听歌口味极杂，韩流、死亡金属和轻音乐都在年度前十。",
+      "target": "极杂",
       "order": [
         "eclectic",
         "heterogeneous",
@@ -228,6 +253,7 @@
     },
     {
       "zh": "市中心的交通拥堵已棘手到无解，只好把两条车道改成公交道。",
+      "target": "棘手到无解",
       "order": [
         "intractable",
         "obstinate",
@@ -237,6 +263,7 @@
     },
     {
       "zh": "一提到没交的电费，室友群里的对话立刻变得尖刻而充满怨气。",
+      "target": "尖刻而充满怨气",
       "order": [
         "acrimonious",
         "inimical",
@@ -246,6 +273,7 @@
     },
     {
       "zh": "她输得很大度，结果还没正式公布就去向对手道贺。",
+      "target": "大度",
       "order": [
         "magnanimous",
         "benevolent",
@@ -255,6 +283,7 @@
     },
     {
       "zh": "毕业生代表的致辞变成了一场十分钟的慷慨陈词。",
+      "target": "慷慨陈词",
       "order": [
         "declamation",
         "grandiloquence",
@@ -264,6 +293,7 @@
     },
     {
       "zh": "她辞职的理由是多方面的：工资、通勤、上司、深夜的工作消息。",
+      "target": "多方面",
       "order": [
         "manifold",
         "multifarious",
@@ -273,6 +303,7 @@
     },
     {
       "zh": "他屡次无视强制培训通知，人事部说他是个不服管教的员工。",
+      "target": "不服管教",
       "order": [
         "recalcitrant",
         "obstinate",
@@ -282,6 +313,7 @@
     },
     {
       "zh": "她举报他之后，他变得怀恨在心，把她从所有会议邀请里剔除。",
+      "target": "怀恨在心",
       "order": [
         "vindictive",
         "malevolent",
@@ -291,6 +323,7 @@
     },
     {
       "zh": "房东那封邮件想安抚我们对涨租的担忧，但数字还是对不上。",
+      "target": "安抚",
       "order": [
         "assuage",
         "placate",
@@ -300,6 +333,7 @@
     },
     {
       "zh": "新经理得把两个作风迥异的团队合并起来。",
+      "target": "迥异",
       "order": [
         "disparate",
         "heterogeneous",
@@ -309,6 +343,7 @@
     },
     {
       "zh": "球队零比三落后时，教练仍力劝队员继续压上进攻。",
+      "target": "力劝",
       "order": [
         "exhort",
         "entreat",
@@ -318,6 +353,7 @@
     },
     {
       "zh": "他开着一辆招摇的亮绿色跑车去面试，结果并没有加分。",
+      "target": "招摇",
       "order": [
         "ostentatious",
         "grandiose",
@@ -327,6 +363,7 @@
     },
     {
       "zh": "医生发现肿瘤时，癌细胞已经扩散到淋巴结了。",
+      "target": "扩散",
       "order": [
         "metastasize",
         "permeate",
@@ -336,6 +373,7 @@
     },
     {
       "zh": "演唱会散场后，打车的动态加价终于慢慢降了下来。",
+      "target": "降了下来",
       "order": [
         "abate",
         "alleviate",
@@ -345,6 +383,7 @@
     },
     {
       "zh": "基因检测显示她对高胆固醇有遗传上的易感倾向。",
+      "target": "易感倾向",
       "order": [
         "predisposition",
         "affinity",
@@ -354,6 +393,7 @@
     },
     {
       "zh": "数据出错后，对账过程极其细致费力，花了整整三周。",
+      "target": "细致费力",
       "order": [
         "painstaking",
         "assiduous",
@@ -363,6 +403,7 @@
     },
     {
       "zh": "他做面包近乎苛求，每样材料都精确称到克。",
+      "target": "苛求",
       "order": [
         "meticulous",
         "assiduous",
@@ -372,6 +413,7 @@
     },
     {
       "zh": "那位审计员很有责任心，明知会推迟休假也照样上报了问题。",
+      "target": "有责任心",
       "order": [
         "conscientious",
         "meticulous",
@@ -381,6 +423,7 @@
     },
     {
       "zh": "研究结果把参与者的记忆力下降归咎于睡眠不足。",
+      "target": "归咎",
       "order": [
         "implicate",
         "incriminate",
@@ -390,6 +433,7 @@
     },
     {
       "zh": "葬礼上，弟弟致辞追忆祖父，讲了许多家人没听过的往事。",
+      "target": "致辞追忆",
       "order": [
         "eulogize",
         "extol",
@@ -399,6 +443,7 @@
     },
     {
       "zh": "那桩并购陷在监管审查里，整整十八个月动不了。",
+      "target": "陷在",
       "order": [
         "mire",
         "embroil",
@@ -408,6 +453,7 @@
     },
     {
       "zh": "因为那封邮件，人事部给了他一份正式的书面训诫。",
+      "target": "训诫",
       "order": [
         "reprimand",
         "rebuke",
@@ -417,6 +463,7 @@
     },
     {
       "zh": "两次写入放进同一个事务，要么都成功，要么都不生效。",
+      "target": "要么都成功，要么都不生效",
       "order": [
         "atomic",
         "primitive",
@@ -426,6 +473,7 @@
     },
     {
       "zh": "法官说，五年刑期对这起养老金诈骗来说是罪有应得的惩罚。",
+      "target": "罪有应得",
       "order": [
         "condign",
         "felicitous",
@@ -435,6 +483,7 @@
     },
     {
       "zh": "活检结果是恶性的，她下周开始化疗。",
+      "target": "恶性",
       "order": [
         "malignant",
         "detrimental",
@@ -444,6 +493,7 @@
     },
     {
       "zh": "她那枚招摇的钻戒在同学会上比升职还惹人议论。",
+      "target": "招摇",
       "order": [
         "ostentatious",
         "grandiose",
@@ -453,6 +503,7 @@
     },
     {
       "zh": "她还没点头答应，你就把蜜月都订了，是不是太自作主张了？",
+      "target": "自作主张",
       "order": [
         "presumptuous",
         "impertinent",
@@ -462,6 +513,7 @@
     },
     {
       "zh": "那位网红因为公开贬损竞争对手的护肤品而被骂上热搜。",
+      "target": "贬损",
       "order": [
         "disparage",
         "belittle",
@@ -471,6 +523,7 @@
     },
     {
       "zh": "主管审批全凭心情，周一被驳回的申请周三就过了。",
+      "target": "全凭心情",
       "order": [
         "capricious",
         "erratic",
@@ -480,6 +533,7 @@
     },
     {
       "zh": "她辞职的原因是多方面的：薪水、通勤、上司、深夜的消息。",
+      "target": "多方面",
       "order": [
         "manifold",
         "multifarious",
@@ -489,6 +543,7 @@
     },
     {
       "zh": "律师反对说，那些照片与本案无关，和合同纠纷扯不上边。",
+      "target": "无关",
       "order": [
         "extraneous",
         "superfluous",
@@ -498,6 +553,7 @@
     },
     {
       "zh": "我们提出换配料时，服务员翻了个白眼，一脸傲慢无礼。",
+      "target": "傲慢无礼",
       "order": [
         "insolent",
         "impertinent",
@@ -507,6 +563,7 @@
     },
     {
       "zh": "舅舅临时在网上取得资格，在后院为他们主持了婚礼。",
+      "target": "主持",
       "order": [
         "officiate",
         "preside",
@@ -516,6 +573,7 @@
     },
     {
       "zh": "要不要每周五天回办公室，成了全员会上最有争议的话题。",
+      "target": "有争议",
       "order": [
         "contentious",
         "acrimonious",
@@ -525,6 +583,7 @@
     },
     {
       "zh": "他离职时把客户名单顺走了，这种手段很见不得光。",
+      "target": "见不得光",
       "order": [
         "underhand",
         "devious",

@@ -97,16 +97,30 @@ function RecallQuestionView({ question, onAnswered, onNext, nextLabel }: RecallQ
 
   const revealed = stage === 'revealed'
 
+  // The emphasized chunk is the question: without it a sentence carries half
+  // a dozen content words and nothing says which one is wanted. Lenient like
+  // every bundled-content lookup — a group without a locatable target shows
+  // the plain sentence.
+  const t = question.target
+  const at = t === undefined ? -1 : question.prompt.indexOf(t)
+  const prompt = t !== undefined && at !== -1 ? (
+    <>
+      {question.prompt.slice(0, at)}
+      <em className="recall-target">{t}</em>
+      {question.prompt.slice(at + t.length)}
+    </>
+  ) : question.prompt
+
   return (
     <div className="quiz-q">
       <p className="quiz-q__label">
         {stage === 'commit'
-          ? '想表达下面这句话,你会用哪个词?'
+          ? t !== undefined ? '标出的意思,你会用哪个英文词?' : '想表达下面这句话,你会用哪个词?'
           : question.kind === 'recall'
             ? '你刚才想到的是哪个?'
             : '三个都沾边 —— 按贴切程度排序,最贴切的先点'}
       </p>
-      <p className="quiz-q__prompt">{question.prompt}</p>
+      <p className="quiz-q__prompt">{prompt}</p>
 
       {stage === 'commit' ? (
         <div className="recall-gate">

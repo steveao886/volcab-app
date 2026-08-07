@@ -43,7 +43,7 @@ const seenSet = new Set<string>()
 data.groups.forEach((g: unknown, i: number) => {
   const at = `groups[${i}]`
   if (typeof g !== 'object' || g === null) { errors.push(`${at}: not an object`); return }
-  const { zh, order, why } = g as { zh?: unknown; order?: unknown; why?: unknown }
+  const { zh, target, order, why } = g as { zh?: unknown; target?: unknown; order?: unknown; why?: unknown }
 
   if (typeof zh !== 'string' || zh.trim() === '') { errors.push(`${at}: zh must be a non-empty string`); return }
   if (zh.length > MAX_ZH) errors.push(`${at} (${zh.slice(0, 10)}…): zh is ${zh.length} chars (max ${MAX_ZH})`)
@@ -55,6 +55,23 @@ data.groups.forEach((g: unknown, i: number) => {
 
   if (seenZh.has(zh)) errors.push(`${at}: duplicate zh — it doubles as the rotation key, so a repeat makes two groups one`)
   seenZh.add(zh)
+
+  // The target is which chunk of the scenario the learner is asked to
+  // produce. Without it the question is unanswerable — a sentence carries
+  // half a dozen content words and nothing said which one was wanted
+  // (user-reported on the first day the mode shipped). Must locate exactly
+  // once: zero means the highlight can't render, twice means it points at
+  // two places.
+  if (typeof target !== 'string' || target.trim() === '') {
+    errors.push(`${at}: target must be a non-empty string — the prompt needs to say which part to express`)
+  } else {
+    if (/[a-zA-Z]/.test(target)) errors.push(`${at}: target contains Latin letters`)
+    if (target.length > 16) errors.push(`${at}: target is ${target.length} chars (max 16) — it is an emphasis, not a second sentence`)
+    if (typeof zh === 'string') {
+      const n = zh.split(target).length - 1
+      if (n !== 1) errors.push(`${at}: target "${target}" appears ${n}x in zh — must appear exactly once`)
+    }
+  }
 
   if (!Array.isArray(order) || order.some(id => typeof id !== 'string')) {
     errors.push(`${at}: order must be an array of word ids`); return

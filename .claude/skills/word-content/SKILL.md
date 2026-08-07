@@ -42,10 +42,13 @@ codes — read them.
    another library headword**). Run both validators; coverage must read X/X.
 5. **Sense groups**, if the new word has ≥2 same-POS confusable partners:
    one scenario sentence (Chinese only — a single Latin letter is a leak,
-   the validator rejects it), the ranked `order`, a `why` naming the
-   deciding dimension. Adapt the scenario from a member's real example
-   sentence; **if no sentence makes one member clearly best, skip the
-   group** — an arguable key is worse than no question.
+   the validator rejects it), a `target` (the chunk of the sentence being
+   asked — must appear in `zh` exactly once, ≤16 chars, no Latin; without
+   it the learner cannot tell which part of the sentence to express), the
+   ranked `order`, a `why` naming the deciding dimension. Adapt the
+   scenario from a member's real example sentence; **if no sentence makes
+   one member clearly best, skip the group** — an arguable key is worse
+   than no question.
 6. **Live library**: pull `volcab-data/words.json` fresh, apply additions on
    top (never overwrite — resurrecting deleted words is a real recorded
    failure, commit `f53adb9`), trim promoted entries from `staging.json` by

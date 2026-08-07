@@ -18,6 +18,17 @@ import type { Progress, Word } from '../types'
 export interface SenseGroup {
   /** The scenario sentence, Chinese only — it is on screen before any option, so a single Latin letter is a leak. */
   zh: string
+  /**
+   * The chunk of `zh` the learner is asked to express — rendered with an
+   * emphasis mark. Required on the write side (validate-sense-groups:
+   * present, no Latin, appears in zh exactly once); optional here because
+   * the read side stays lenient — a group whose target is missing or can't
+   * be located renders the plain sentence rather than being dropped.
+   * Without the mark the question was unanswerable in practice: a sentence
+   * carries half a dozen content words and nothing said which one was
+   * wanted (user-reported on day one).
+   */
+  target?: string
   /** Word ids, best fit first. The whole answer key for 排序; order[0] is the answer for 唤词. */
   order: string[]
   /** One or two sentences naming the dimension that decides the ranking. */
@@ -32,6 +43,8 @@ export interface RecallQuestion {
   kind: RecallKind
   /** The scenario sentence. Doubles as the prompt key for recency rotation. */
   prompt: string
+  /** The chunk of prompt to emphasize — the part being asked. Absent when the group carries none or it can't be located; the page then shows the plain sentence. */
+  target?: string
   why: string
   /** Every group member's word id, in answer-key order (best first). */
   orderIds: string[]
@@ -66,6 +79,18 @@ export function eligibleGroups(
       return e !== undefined && e.state !== 'new'
     }),
   )
+}
+
+/**
+ * The group's target, when it can actually be rendered: non-blank and
+ * locating exactly once in the sentence. Anything else returns undefined
+ * and the page shows the plain prompt — a wrong highlight (or one on two
+ * places at once) is worse than none.
+ */
+const usableTarget = (g: SenseGroup): string | undefined => {
+  const t = g.target?.trim()
+  if (t === undefined || t === '') return undefined
+  return g.zh.split(t).length - 1 === 1 ? t : undefined
 }
 
 /**
@@ -104,6 +129,7 @@ export function buildRecallQuestion(
   return {
     kind: 'recall',
     prompt: g.zh,
+    target: usableTarget(g),
     why: g.why,
     orderIds: [...g.order],
     memberHeadwords: headwords,
@@ -130,6 +156,7 @@ export function buildOrderQuestion(
   return {
     kind: 'order',
     prompt: g.zh,
+    target: usableTarget(g),
     why: g.why,
     orderIds: [...g.order],
     memberHeadwords: headwords,

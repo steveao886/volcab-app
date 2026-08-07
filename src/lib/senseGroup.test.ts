@@ -36,6 +36,7 @@ const wordsMap = (ws: Word[]) => new Map(ws.map(w => [w.id, w]))
 
 const G: SenseGroup = {
   zh: '烧焦的爆米花味弥漫了整个办公室',
+  target: '弥漫',
   order: ['pervade', 'permeate', 'suffuse'],
   why: 'pervade 指充满整个空间。',
 }
@@ -99,6 +100,18 @@ describe('buildRecallQuestion', () => {
   it('returns null when a member is missing from the library', () => {
     const missing = wordsMap(LIB.filter(w => w.id !== 'permeate'))
     expect(buildRecallQuestion(G, missing, LIB, seqRng([0.4]))).toBeNull()
+  })
+
+  it('carries the target through, and drops one that cannot be located — a wrong highlight is worse than none', () => {
+    const q = buildRecallQuestion(G, words, LIB, seqRng([0.1, 0.5, 0.9]))
+    expect(q!.target).toBe('弥漫')
+    // Missing, blank, absent-from-zh, and appearing-twice all degrade to
+    // "no highlight", never to a thrown error or a mislocated mark.
+    for (const target of [undefined, ' ', '厨房', '办']) {
+      const g = { ...G, zh: '办公室里的办事处', target }
+      const built = buildRecallQuestion(g, words, LIB, seqRng([0.2, 0.6]))
+      expect(built!.target).toBeUndefined()
+    }
   })
 })
 
