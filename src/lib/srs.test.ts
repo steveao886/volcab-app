@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addDays, clampIntervalModifier, gradeWord, MAX_INTERVAL_DAYS, todayStr } from './srs'
+import { addDays, clampIntervalModifier, gradeWord, MAX_INTERVAL_DAYS, previewIntervals, todayStr } from './srs'
 import type { ProgressEntry } from '../types'
 
 const now = new Date(2026, 6, 24, 10, 0, 0) // 2026-07-24 local time
@@ -128,5 +128,51 @@ describe('intervalModifier', () => {
     expect(clampIntervalModifier(99)).toBe(3)
     expect(clampIntervalModifier(0)).toBe(0.5)
     expect(clampIntervalModifier(1.3)).toBe(1.3)
+  })
+})
+
+describe('previewIntervals', () => {
+  // Local 2026-08-07 09:00. todayStr(NOW) === '2026-08-07'.
+  const NOW = new Date(2026, 7, 7, 9, 0, 0)
+
+  const reviewEntry = (over: Partial<ProgressEntry> = {}): ProgressEntry => ({
+    state: 'review', ease: 2.5, intervalDays: 10, due: '2026-08-07', stepIndex: 0,
+    reps: 5, lapses: 0, lastReviewedAt: '2026-08-01T08:00:00.000Z', ...over,
+  })
+
+  it('new card: everything same-day reads 稍后, easy graduates at 4 days', () => {
+    expect(previewIntervals(undefined, NOW)).toEqual({
+      again: '稍后', hard: '稍后', good: '稍后', easy: '4 天',
+    })
+  })
+
+  it('last learning step: good graduates at 1 day', () => {
+    const e = reviewEntry({ state: 'learning', stepIndex: 1, intervalDays: 0 })
+    expect(previewIntervals(e, NOW).good).toBe('1 天')
+  })
+
+  it('review card at interval 10, ease 2.5: hand-computed SM-2 results', () => {
+    // hard: 10×1.2=12 → 12 天; good: 10×2.5=25 → 25 天;
+    // easy: ease→2.65, 10×2.65×1.3=34.45 → round 34 → 34 天; again relearns today.
+    expect(previewIntervals(reviewEntry(), NOW)).toEqual({
+      again: '稍后', hard: '12 天', good: '25 天', easy: '34 天',
+    })
+  })
+
+  it('applies the interval modifier the same way the real grade does', () => {
+    // good: round(25 × 1.3) = 33 → 33 天
+    expect(previewIntervals(reviewEntry(), NOW, 1.3).good).toBe('33 天')
+  })
+
+  it('caps at MAX_INTERVAL_DAYS', () => {
+    // good: 300×2.5=750 → capped 365
+    expect(previewIntervals(reviewEntry({ intervalDays: 300 }), NOW).good).toBe('365 天')
+  })
+
+  it('never mutates the entry it previews', () => {
+    const e = reviewEntry()
+    const before = { ...e }
+    previewIntervals(e, NOW)
+    expect(e).toEqual(before)
   })
 })

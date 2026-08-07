@@ -260,13 +260,33 @@
 
 .review-grades .btn {
   padding-inline: var(--sp-2);
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Label + number key stay on one line inside the stacked button. */
+.review-grade__label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-1);
 }
 
 .review-grade__key {
-  margin-inline-start: var(--sp-1);
   color: var(--text-faint);
   font-family: var(--font-num);
   font-size: var(--fs-xs);
+}
+
+/* The consequence line. Inherits the grade's tone color (and the hover
+   inversion) instead of the faint gray of the key hint — it's information
+   about the action, not chrome. In drill modes it's absent and the
+   buttons render exactly as before. */
+.review-grade__interval {
+  font-size: var(--fs-eyebrow);
+  font-weight: 400;
+  letter-spacing: 0;
+  color: inherit;
+  opacity: 0.8;
 }
 
 .btn--grade-again:hover .review-grade__key,

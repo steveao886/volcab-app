@@ -113,3 +113,44 @@ function graduate(e: ProgressEntry, days: number, today: string, rng: () => numb
   e.intervalDays = fuzz(days, rng)
   e.due = addDays(today, e.intervalDays)
 }
+
+/** Calendar-day difference between two YYYY-MM-DD strings, parsed as local dates (same convention as addDays). */
+function diffDays(from: string, to: string): number {
+  const [fy, fm, fd] = from.split('-').map(Number)
+  const [ty, tm, td] = to.split('-').map(Number)
+  return Math.round((new Date(ty, tm - 1, td).getTime() - new Date(fy, fm - 1, fd).getTime()) / 86400_000)
+}
+
+/**
+ * What each grade would do to this card's schedule, as printable labels,
+ * for the review page to show under the four grade buttons — grading
+ * stops being a feeling and becomes choosing a consequence.
+ *
+ * Runs the real scheduler per grade: hardcoded numbers would print
+ * intervals gradeWord never produces, and a wrong preview is worse than
+ * none. The fixed rng of 0.5 makes fuzz's factor exactly 1, so the
+ * preview shows the unfuzzed interval while the actual write still
+ * fuzzes ±5% — off by at most ±5% beyond 3 days, deterministic enough
+ * to test.
+ *
+ * Every same-day outcome reads 稍后: learning steps and lapses requeue
+ * within the session by queue position, not by clock (see
+ * LEARNING_STEPS), so a minutes figure would be an invention.
+ *
+ * Labels stay in days all the way to 365 天 — converting to 月/年 would
+ * round away exactly the magnitude this exists to show.
+ */
+export function previewIntervals(
+  prev: ProgressEntry | undefined,
+  now: Date,
+  intervalModifier = 1,
+): Record<Grade, string> {
+  const today = todayStr(now)
+  const out = {} as Record<Grade, string>
+  for (const g of ['again', 'hard', 'good', 'easy'] as const) {
+    // gradeWord copies before mutating, so prev itself is never touched.
+    const next = gradeWord(prev, g, now, () => 0.5, intervalModifier)
+    out[g] = next.due <= today ? '稍后' : `${diffDays(today, next.due)} 天`
+  }
+  return out
+}
