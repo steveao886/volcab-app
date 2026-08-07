@@ -13,7 +13,8 @@
     "validate-passages": "tsx scripts/validate-passages.ts",
     "validate-suggestions": "tsx scripts/validate-suggestions.ts",
     "validate-contrast-notes": "tsx scripts/validate-contrast-notes.ts",
-    "validate-word-notes": "tsx scripts/validate-word-notes.ts"
+    "validate-word-notes": "tsx scripts/validate-word-notes.ts",
+    "validate-sense-groups": "tsx scripts/validate-sense-groups.ts"
   },
   "dependencies": {
     "react": "^19.2.7",

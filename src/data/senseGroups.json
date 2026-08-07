@@ -1,0 +1,536 @@
+{
+  "version": 1,
+  "groups": [
+    {
+      "zh": "撑了一整场会议，他最后还是没抵住茶水间剩下的蛋糕。",
+      "order": [
+        "succumb",
+        "capitulate",
+        "acquiesce"
+      ],
+      "why": "succumb 的宾语是诱惑、压力、疾病这类自身抵挡不住的东西；capitulate 是在对方持续施压后放弃自己的立场；acquiesce 只能用于勉强同意对方提出的要求或安排，必须有另一方在场。"
+    },
+    {
+      "zh": "做完三轮化疗后，医生判定这是难治性肿瘤，转入了临床试验。",
+      "order": [
+        "refractory",
+        "intractable",
+        "obstinate"
+      ],
+      "why": "refractory 是医学上对治疗无反应的固定说法，修饰肿瘤、癫痫、抑郁症；intractable 多修饰缓解不了的疼痛或解不开的难题；obstinate 只形容人或拟人化的东西脾气顽固。"
+    },
+    {
+      "zh": "编辑几条批注直接切中要害，把两千字的稿子砍到八百字。",
+      "order": [
+        "incisive",
+        "astute",
+        "sagacious"
+      ],
+      "why": "incisive 像刀一样切开问题，修饰评论、分析、批注这类输出；astute 强调看出别人没看出的门道，多配观察和买卖判断；sagacious 是长者式的通盘智慧，修饰人和忠告，不修饰一句批注。"
+    },
+    {
+      "zh": "她升职之后，他立刻变成了她无法化解的死对头。",
+      "order": [
+        "implacable",
+        "obdurate",
+        "intransigent"
+      ],
+      "why": "implacable 的核心是安抚不了的敌意，能直接修饰对手、仇敌；obdurate 形容人本身冷硬、不为所动，可以单独修饰人；intransigent 必须挂靠一个具体立场或议题，不能用来描述一个人的敌意。"
+    },
+    {
+      "zh": "大陪审团决定以十一项电汇欺诈罪起诉那名前高管。",
+      "order": [
+        "indict",
+        "incriminate",
+        "inculpate"
+      ],
+      "why": "indict 是检方或大陪审团启动正式指控，宾语是人并带上罪名；incriminate 和 inculpate 说的是证据让人显得有罪，不是法律程序，其中 inculpate 更书面、日常几乎不用。"
+    },
+    {
+      "zh": "他本想置身事外，在家族群里回了一句就被卷进了遗产纠纷。",
+      "order": [
+        "embroil",
+        "implicate",
+        "inculpate"
+      ],
+      "why": "embroil 只是被卷进纠纷或麻烦，不含有罪的意思；implicate 指证据显示某人涉入了不法行为；inculpate 意思相近但属法律书面语，还带明确的归罪意味。"
+    },
+    {
+      "zh": "要不要每周回办公室五天，成了全员大会上最有争议的话题。",
+      "order": [
+        "contentious",
+        "acrimonious",
+        "disputatious"
+      ],
+      "why": "contentious 说的是议题本身会引发对立，直接修饰话题、提案；acrimonious 描写争吵过程中的怨气和火药味；disputatious 只形容人爱抬杠的性格。"
+    },
+    {
+      "zh": "开业第一天就签下最大的客户，这个新财年的开局很吉利。",
+      "order": [
+        "auspicious",
+        "felicitous",
+        "opportune"
+      ],
+      "why": "auspicious 指开端或征兆预示后面会顺，固定修饰开局、场合；felicitous 说的是措辞或安排恰好合适、凑巧圆满；opportune 只能修饰时机本身，不能修饰一个开端。"
+    },
+    {
+      "zh": "房东始终无法证明所谓的过度损耗，押金最后全额退了回来。",
+      "order": [
+        "substantiate",
+        "corroborate",
+        "ratify"
+      ],
+      "why": "substantiate 是自己拿出证据支撑自己的主张，常用于否定式；corroborate 是用独立的第三方证据去印证别人已有的说法；ratify 是表决通过协议，与举证无关。"
+    },
+    {
+      "zh": "开会时她假装在记笔记，在桌子底下偷偷瞄了一眼手机。",
+      "order": [
+        "surreptitious",
+        "devious",
+        "underhand"
+      ],
+      "why": "surreptitious 描写动作做得隐蔽、怕被看见，配的是瞄一眼、改一处这类小动作；devious 强调心思绕、有算计的计划；underhand 必须涉及损害他人的不正当手段。"
+    },
+    {
+      "zh": "取消一个你从没想订的服务还要付取消费，这规定实在说不通。",
+      "order": [
+        "perverse",
+        "obstinate",
+        "headstrong"
+      ],
+      "why": "perverse 说的是道理上讲不通、结果与初衷相反的制度或逻辑；obstinate 形容顽固不肯改变，主体是人，也能用于拟人化的机器；headstrong 只用于人一意孤行按自己的意思来。"
+    },
+    {
+      "zh": "把静音键用得恰到好处，两小时的全员会她还能顺手回邮件。",
+      "order": [
+        "judicious",
+        "sagacious",
+        "sapient"
+      ],
+      "why": "judicious 强调分寸和用量拿捏得当，固定搭配是有节制地使用某样东西；sagacious 形容人有长远眼光的智慧，修饰人或忠告；sapient 是物种层面的有智慧，只出现在科幻和人类学语境。"
+    },
+    {
+      "zh": "确诊之后他过上了近乎苦行的生活，戒糖戒酒不碰加工食品。",
+      "order": [
+        "ascetic",
+        "austere",
+        "chaste"
+      ],
+      "why": "ascetic 是主动放弃享乐、以自我克制为目的的生活方式；austere 说的是外在朴素无装饰或神情冷峻，不含修行意味；chaste 只指性方面的贞洁。"
+    },
+    {
+      "zh": "四十页的合同他只草草扫了一眼就签了字。",
+      "order": [
+        "cursory",
+        "perfunctory",
+        "impetuous"
+      ],
+      "why": "cursory 侧重看得快、只过一遍表面，典型搭配就是扫一眼、粗看；perfunctory 侧重态度上敷衍走过场，修饰道歉、表扬、例行审核；impetuous 说的是一时冲动，与看得细不细无关。"
+    },
+    {
+      "zh": "招聘启事发出一小时，负责人的邮箱就被两千多份简历淹没。",
+      "order": [
+        "inundate",
+        "mire",
+        "embroil"
+      ],
+      "why": "inundate 的核心是被大量涌来的东西淹没，主语是水、邮件、申请这类量；mire 是陷进去动弹不得的停滞，如债务、审批；embroil 只用于被卷进纠纷。"
+    },
+    {
+      "zh": "客户第四次要求改稿，他赌气地叹口气合上了电脑。",
+      "order": [
+        "petulant",
+        "testy",
+        "fractious"
+      ],
+      "why": "petulant 是像小孩闹脾气那样使性子、带表演性的不满，常修饰叹气、耸肩、语气；testy 是被惹烦后不耐烦地呛人；fractious 多形容整个群体吵闹难管。"
+    },
+    {
+      "zh": "新地铁线通车后，这一带的房租一路上涨，谁也拦不住。",
+      "order": [
+        "inexorable",
+        "implacable",
+        "tenacious"
+      ],
+      "why": "inexorable 形容拦不住、只能眼看着继续的趋势或进程，主体不是人；implacable 强调对方的敌意或态度安抚不了，主体必须是人；tenacious 是褒义的锲而不舍，说的是主动死咬不放。"
+    },
+    {
+      "zh": "他主动说要帮忙搬家，但大家都觉得他另有所图。",
+      "order": [
+        "ulterior",
+        "underhand",
+        "surreptitious"
+      ],
+      "why": "ulterior 只说动机藏在表面理由背后，几乎只跟动机、目的连用；underhand 指手段本身不光彩、占别人便宜；surreptitious 描写动作做得偷偷摸摸，不涉及动机。"
+    },
+    {
+      "zh": "他那口英国腔纯属做作，其实他在俄亥俄长大。",
+      "order": [
+        "affectation",
+        "pretense",
+        "pantomime"
+      ],
+      "why": "affectation 指为了显得高级而刻意养成的做派、口音或习惯，是长期的姿态；pretense 是假装处于某种状态或有某种理由，常用于以某某为借口；pantomime 只指不出声的手势表演。"
+    },
+    {
+      "zh": "夕阳的金光洒满了整间办公室。",
+      "order": [
+        "suffuse",
+        "pervade",
+        "permeate"
+      ],
+      "why": "主语是光线、色彩、情绪这类无形之物弥漫开来时用 suffuse；pervade 多指气味或气氛遍布整个空间；permeate 强调穿透实体、渗进材料里去。"
+    },
+    {
+      "zh": "作为尽责的房客，水龙头一漏水她当天就报修。",
+      "order": [
+        "conscientious",
+        "assiduous",
+        "painstaking"
+      ],
+      "why": "conscientious 说的是人有责任心、分内的事一丝不苟；assiduous 强调长期坚持不懈地重复做一件事；painstaking 修饰的是工作或过程本身耗时费神，不用来说人的责任感。"
+    },
+    {
+      "zh": "那名机敏的实习生比资深同事先发现了演示里的定价错误。",
+      "order": [
+        "astute",
+        "sagacious",
+        "sapient"
+      ],
+      "why": "astute 指对利害和细节反应敏锐，能看出别人漏掉的门道，与资历无关；sagacious 是阅历深、判断老到的睿智，多用于长者或领袖；sapient 几乎只用来说物种或生命体具备智慧。"
+    },
+    {
+      "zh": "自从新地铁开通，这一带的房租就一路不可阻挡地上涨。",
+      "order": [
+        "inexorable",
+        "implacable",
+        "intransigent"
+      ],
+      "why": "inexorable 修饰无法阻止的进程或趋势，如上涨、蔓延、衰退；implacable 强调无法被安抚的敌意或反对，主语通常是人或敌对力量；intransigent 只说人在谈判中拒不让步的立场。"
+    },
+    {
+      "zh": "他对那份泄露备忘录的强烈否认，反而让大家更确信它是真的。",
+      "order": [
+        "vehement",
+        "fervent",
+        "ardent"
+      ],
+      "why": "vehement 用于反对、否认这类带攻击性的强硬表态；fervent 是发自内心的热切信念或希望，热而不硬；ardent 形容对人或事物的痴迷拥护，几乎不与否认搭配。"
+    },
+    {
+      "zh": "她听歌口味极杂，韩流、死亡金属和轻音乐都在年度前十。",
+      "order": [
+        "eclectic",
+        "heterogeneous",
+        "multifarious"
+      ],
+      "why": "eclectic 指品味或收藏博采众家、什么风格都要一点，带欣赏意味；heterogeneous 是中性地描述一个整体由不同种类混杂而成，多用于人群、样本、数据；multifarious 侧重事务和职责数量多而杂。"
+    },
+    {
+      "zh": "市中心的交通拥堵已棘手到无解，只好把两条车道改成公交道。",
+      "order": [
+        "intractable",
+        "obstinate",
+        "headstrong"
+      ],
+      "why": "intractable 说的是问题、冲突、病痛难以解决或控制；obstinate 主要形容人固执，也可说机器、污渍死活不听话；headstrong 只用于有意志的人或动物，指一意孤行、不听劝。"
+    },
+    {
+      "zh": "一提到没交的电费，室友群里的对话立刻变得尖刻而充满怨气。",
+      "order": [
+        "acrimonious",
+        "inimical",
+        "detrimental"
+      ],
+      "why": "acrimonious 专门形容争吵、谈判、离婚过程中言辞尖刻、彼此结怨；inimical 保留了敌对意味，但通常说某种条件对某事不利；detrimental 只表示造成损害，不带情绪。"
+    },
+    {
+      "zh": "她输得很大度，结果还没正式公布就去向对手道贺。",
+      "order": [
+        "magnanimous",
+        "benevolent",
+        "philanthropic"
+      ],
+      "why": "magnanimous 专指对竞争对手不计前嫌、胜不骄败不怨的气度；benevolent 是泛泛的心地善良、乐于施惠；philanthropic 只用于捐钱办公益这类慈善行为。"
+    },
+    {
+      "zh": "毕业生代表的致辞变成了一场十分钟的慷慨陈词。",
+      "order": [
+        "declamation",
+        "grandiloquence",
+        "rhetoric"
+      ],
+      "why": "declamation 是一次可数的、当众发表的激昂演说，可以用一场来计量；grandiloquence 是不可数的语言风格，指辞藻浮夸空洞；rhetoric 指整套修辞手法或政客口中的空话。"
+    },
+    {
+      "zh": "她辞职的理由是多方面的：工资、通勤、上司、深夜的工作消息。",
+      "order": [
+        "manifold",
+        "multifarious",
+        "eclectic"
+      ],
+      "why": "manifold 多用于原因、好处这类抽象事物，常作表语，说数量多且涉及多个方面；multifarious 偏重职责、事务的种类繁杂；eclectic 必须是从不同来源博采而成的品味或风格。"
+    },
+    {
+      "zh": "他屡次无视强制培训通知，人事部说他是个不服管教的员工。",
+      "order": [
+        "recalcitrant",
+        "obstinate",
+        "headstrong"
+      ],
+      "why": "recalcitrant 强调抗拒管理和权威、屡教不改，常搭配员工、学生，也可说不听使唤的机器；obstinate 是单纯的固执、拒不改变；headstrong 指凭一己意愿一意孤行，多形容孩子或年轻人。"
+    },
+    {
+      "zh": "她举报他之后，他变得怀恨在心，把她从所有会议邀请里剔除。",
+      "order": [
+        "vindictive",
+        "malevolent",
+        "malignant"
+      ],
+      "why": "vindictive 必须有前因，是因为被得罪而蓄意报复；malevolent 是无缘无故的恶意，纯粹希望别人倒霉；malignant 首义是医学上的恶性，引申时指长期侵蚀性的有害影响。"
+    },
+    {
+      "zh": "房东那封邮件想安抚我们对涨租的担忧，但数字还是对不上。",
+      "order": [
+        "assuage",
+        "placate",
+        "conciliate"
+      ],
+      "why": "assuage 的宾语是恐惧、愧疚、饥饿这类不快的感受；placate 的宾语是动了怒的人，靠让步换对方消气；conciliate 用于调解双方矛盾或争取对立者的好感。"
+    },
+    {
+      "zh": "新经理得把两个作风迥异的团队合并起来。",
+      "order": [
+        "disparate",
+        "heterogeneous",
+        "eclectic"
+      ],
+      "why": "disparate 强调两者之间性质截然不同、难以相容；heterogeneous 描述同一个群体或混合物内部成分杂多，是中性的客观描述；eclectic 说的是有意博采各家之长的品味或风格。"
+    },
+    {
+      "zh": "球队零比三落后时，教练仍力劝队员继续压上进攻。",
+      "order": [
+        "exhort",
+        "entreat",
+        "importune"
+      ],
+      "why": "exhort 是站在鼓励或权威的一方，敦促对方去行动；entreat 是低姿态的恳求，请对方开恩或答应；importune 含贬义，指为一己之利反复纠缠不放。"
+    },
+    {
+      "zh": "他开着一辆招摇的亮绿色跑车去面试，结果并没有加分。",
+      "order": [
+        "ostentatious",
+        "grandiose",
+        "prodigal"
+      ],
+      "why": "ostentatious 修饰刻意向别人炫耀的物品或排场；grandiose 多修饰计划、构想、建筑规模上的好大喜功；prodigal 说的是花钱大手大脚的行为或人，不用来形容一件东西。"
+    },
+    {
+      "zh": "医生发现肿瘤时，癌细胞已经扩散到淋巴结了。",
+      "order": [
+        "metastasize",
+        "permeate",
+        "percolate"
+      ],
+      "why": "metastasize 是癌细胞转移的医学专用词，引申指小问题恶化蔓延成大祸；permeate 指弥漫、渗入到每一处；percolate 强调液体逐层过滤下渗，或消息在人群中慢慢流传。"
+    },
+    {
+      "zh": "演唱会散场后，打车的动态加价终于慢慢降了下来。",
+      "order": [
+        "abate",
+        "alleviate",
+        "assuage"
+      ],
+      "why": "abate 是不及物的，主语就是自行减弱下去的那个东西，如风暴、疼痛、抗议；alleviate 及物，指人为地缓解某个问题或痛苦；assuage 的宾语只能是恐惧、愧疚这类情绪。"
+    },
+    {
+      "zh": "基因检测显示她对高胆固醇有遗传上的易感倾向。",
+      "order": [
+        "predisposition",
+        "affinity",
+        "penchant"
+      ],
+      "why": "predisposition 指与生俱来、体质或性格上的易感倾向，常与遗传、疾病搭配；affinity 是天然的亲近与喜爱，也用于物质之间的亲和力；penchant 是后天养成、带点玩味的个人癖好。"
+    },
+    {
+      "zh": "数据出错后，对账过程极其细致费力，花了整整三周。",
+      "order": [
+        "painstaking",
+        "assiduous",
+        "sedulous"
+      ],
+      "why": "painstaking 修饰的是活儿和过程本身，重点在耗时费工、一点点抠；assiduous 和 sedulous 都只形容人长期不懈，管不到过程有多繁琐。后两个词意思几乎重合，只差在常用度，sedulous 属生僻书面语。"
+    },
+    {
+      "zh": "他做面包近乎苛求，每样材料都精确称到克。",
+      "order": [
+        "meticulous",
+        "assiduous",
+        "conscientious"
+      ],
+      "why": "meticulous 落在细节的精确度上，常搭配记录、计划这类成果；assiduous 强调长期反复地做，不管做得精不精细；conscientious 带着对他人负责的意味，个人爱好谈不上这层责任。"
+    },
+    {
+      "zh": "那位审计员很有责任心，明知会推迟休假也照样上报了问题。",
+      "order": [
+        "conscientious",
+        "meticulous",
+        "painstaking"
+      ],
+      "why": "conscientious 说的是出于职责把该做的做到位，哪怕对自己不利；meticulous 只讲细节抠得细，不涉及操守；painstaking 形容的是活儿费工，不用来评价一个人的责任心。"
+    },
+    {
+      "zh": "研究结果把参与者的记忆力下降归咎于睡眠不足。",
+      "order": [
+        "implicate",
+        "incriminate",
+        "inculpate"
+      ],
+      "why": "implicate 的宾语既可以是人，也可以是原因或事物，指出它与某个后果有牵连；incriminate 和 inculpate 都必须指向有罪责的人，其中 inculpate 只出现在正式法律语境，日常几乎不用。"
+    },
+    {
+      "zh": "葬礼上，弟弟致辞追忆祖父，讲了许多家人没听过的往事。",
+      "order": [
+        "eulogize",
+        "extol",
+        "deify"
+      ],
+      "why": "eulogize 专用于葬礼、告别这类场合对某个人的追颂；extol 是泛指的称扬，宾语常是优点、好处；deify 是把人捧成神，含盲目崇拜的贬义。"
+    },
+    {
+      "zh": "那桩并购陷在监管审查里，整整十八个月动不了。",
+      "order": [
+        "mire",
+        "embroil",
+        "implicate"
+      ],
+      "why": "mire 的重点是陷进去动弹不得、进度停摆，常说陷在债务、审批、拖延里；embroil 一定牵涉一场争执或风波，必有对立方；implicate 必须涉及罪责或过错。"
+    },
+    {
+      "zh": "因为那封邮件，人事部给了他一份正式的书面训诫。",
+      "order": [
+        "reprimand",
+        "rebuke",
+        "reprove"
+      ],
+      "why": "reprimand 是机构或上级正式作出、可以记入档案的处分，常搭配书面的、正式的；rebuke 是当场严厉斥责，重在语气而非程序；reprove 语气最轻，是温和的规劝。"
+    },
+    {
+      "zh": "两次写入放进同一个事务，要么都成功，要么都不生效。",
+      "order": [
+        "atomic",
+        "primitive",
+        "rudimentary"
+      ],
+      "why": "atomic 说的是一组操作不可分割，要么全做要么全不做；primitive 也含不可再拆的意思，但指语言或运行时直接提供的基本单元；rudimentary 只是说东西简陋初级，与不可分割无关。"
+    },
+    {
+      "zh": "法官说，五年刑期对这起养老金诈骗来说是罪有应得的惩罚。",
+      "order": [
+        "condign",
+        "felicitous",
+        "opportune"
+      ],
+      "why": "condign 只用于惩罚，强调与罪过相称、罪有应得；felicitous 说的是措辞或安排贴切巧妙，多用于言语和巧合；opportune 只评价时机赶得巧，不涉及该不该。"
+    },
+    {
+      "zh": "活检结果是恶性的，她下周开始化疗。",
+      "order": [
+        "malignant",
+        "detrimental",
+        "inimical"
+      ],
+      "why": "malignant 是判定肿瘤性质的医学用词，也可比喻恶毒的用心；detrimental 泛指对健康或利益有害；inimical 强调与某个目标或活动相抵触，后面通常要带出所妨碍的对象。"
+    },
+    {
+      "zh": "她那枚招摇的钻戒在同学会上比升职还惹人议论。",
+      "order": [
+        "ostentatious",
+        "grandiose",
+        "pompous"
+      ],
+      "why": "ostentatious 说的是刻意摆给人看的财物和排场；grandiose 形容构想或规模上的夸大，宾语多是计划；pompous 只能形容人的口气和做派，不能用来修饰一件东西。"
+    },
+    {
+      "zh": "她还没点头答应，你就把蜜月都订了，是不是太自作主张了？",
+      "order": [
+        "presumptuous",
+        "impertinent",
+        "insolent"
+      ],
+      "why": "presumptuous 说的是没这个资格就擅自替别人做主、越了界；impertinent 多指问了不该问的话，冒犯在言语内容上；insolent 强调当面摆出的傲慢轻蔑，落在语气和表情上。"
+    },
+    {
+      "zh": "那位网红因为公开贬损竞争对手的护肤品而被骂上热搜。",
+      "order": [
+        "disparage",
+        "belittle",
+        "abate"
+      ],
+      "why": "disparage 的宾语常是对手、产品或别人的作品，含公开诋毁、拉低评价的意味；belittle 针对的是人和他的努力、成就，把它说得不值一提；abate 根本不是贬低，指疼痛、风波等自行减弱。"
+    },
+    {
+      "zh": "主管审批全凭心情，周一被驳回的申请周三就过了。",
+      "order": [
+        "capricious",
+        "erratic",
+        "spasmodic"
+      ],
+      "why": "capricious 的核心是全凭一时兴致、说变就变、毫无道理，多形容人的决定和脾气；erratic 只说前后不一致、没有规律，不追究原因；spasmodic 指一阵一阵、中间长时间停摆，说的是节奏。"
+    },
+    {
+      "zh": "她辞职的原因是多方面的：薪水、通勤、上司、深夜的消息。",
+      "order": [
+        "manifold",
+        "multifarious",
+        "disparate"
+      ],
+      "why": "manifold 常用来说原因、好处不止一端，多作表语；multifarious 修饰的是杂七杂八的事务和职责；disparate 的重点不在多，而在彼此性质迥异、凑不到一起。"
+    },
+    {
+      "zh": "律师反对说，那些照片与本案无关，和合同纠纷扯不上边。",
+      "order": [
+        "extraneous",
+        "superfluous",
+        "obscene"
+      ],
+      "why": "extraneous 说的是这东西根本不属于这里、与主题无关；superfluous 说的是东西本身相干，只是多出来、没必要；obscene 是另一路，指淫秽下流，或数额大得离谱。"
+    },
+    {
+      "zh": "我们提出换配料时，服务员翻了个白眼，一脸傲慢无礼。",
+      "order": [
+        "insolent",
+        "impertinent",
+        "pompous"
+      ],
+      "why": "insolent 是明摆着的轻蔑，落在表情和口气上；impertinent 侧重说了越界、不该问的话；pompous 是自我抬高、端着架子，并不针对谁表示不敬。"
+    },
+    {
+      "zh": "舅舅临时在网上取得资格，在后院为他们主持了婚礼。",
+      "order": [
+        "officiate",
+        "preside",
+        "superintend"
+      ],
+      "why": "officiate 是以主婚人、司仪或裁判的身份履行仪式和比赛中的职务；preside 是坐主位主持会议、掌控流程；superintend 是监督工程或日常运作，与仪式无关。"
+    },
+    {
+      "zh": "要不要每周五天回办公室，成了全员会上最有争议的话题。",
+      "order": [
+        "contentious",
+        "acrimonious",
+        "acrid"
+      ],
+      "why": "contentious 说的是这件事本身会引来对立意见，修饰话题、议题；acrimonious 形容争论的气氛充满敌意和怨气，落在过程和语气上；acrid 本义是气味刺鼻，比喻时只用来说话尖酸。"
+    },
+    {
+      "zh": "他离职时把客户名单顺走了，这种手段很见不得光。",
+      "order": [
+        "underhand",
+        "devious",
+        "artful"
+      ],
+      "why": "underhand 强调事情是背着人做的、见不得光；devious 强调手段绕弯子、心思狡猾，未必是偷偷进行；artful 说的是手法高明巧妙，本身不带道德指责。"
+    }
+  ]
+}
