@@ -177,10 +177,13 @@ sit unseen.
 The fix is a device-local record, **not synced data**: "which prompts these
 eyes have seen" is per-device by nature, costs nothing to lose, and
 progress.json sits under a 1 MB API ceiling that word-keyed timestamps
-would erode for no benefit. `src/lib/recency.ts` keeps a capped list of
-prompt keys in localStorage; generators demote — never exclude — recently
-seen prompts, so the unseen ones surface first and a fully-exhausted pool
-degrades to today's behaviour instead of an empty quiz.
+would erode for no benefit. The machinery already exists and is already
+measured: passage mode's `recentPassages` key plus `pushRecent` /
+`recentWindow` in `passage.ts` — the one surface the repetition audit
+found at 0% repeats is the one surface that remembers. 回想 reuses those
+exports under its own storage key rather than growing a parallel copy;
+recently seen prompts are demoted behind unseen ones, so an exhausted
+pool degrades to today's behaviour instead of an empty quiz.
 
 回想 wires it from day one (prompt key = the group's `zh`). Wiring the
 other modes happens against the repetition audit's numbers, as its own
@@ -212,8 +215,7 @@ skill's other face; it is documented once, in the skill, not twice.
 |---|---|
 | `src/lib/senseGroup.ts` (new) | Types, eligibility, question building for both types, verdicts, wrongIds — all pure |
 | `src/lib/senseGroup.test.ts` (new) | Tests for the above |
-| `src/lib/recency.ts` (new) | Device-local seen-prompt record; demote-not-exclude ordering helper |
-| `src/lib/recency.test.ts` (new) | Tests (storage injected) |
+| `src/lib/storage.ts` | One key: `recentRecall` (reuses `pushRecent`/`recentWindow` from passage.ts) |
 | `src/data/senseGroups.json` (new) | The authored groups |
 | `scripts/validate-sense-groups.ts` (new) | Write-side gate, `npm run validate-sense-groups` |
 | `src/pages/QuizRecall.tsx` (new) | Commit gate, both question views, settlement with 巩固 |
@@ -239,6 +241,6 @@ skill's other face; it is documented once, in the skill, not twice.
 `senseGroup.test.ts`: eligibility excludes groups with any unlearned or
 missing member; 唤词 building picks `order[0]` as answer and never leaks it
 in fillers; 排序 verdict is exact-match; wrongIds marks pick+answer /
-answer-only / misplaced-only per the three cases; prompt uniqueness; rng
-injected throughout. `recency.test.ts`: demotion ordering, cap, corrupt
-storage read as empty. UI untested per repo policy.
+answer-only / misplaced-only per the three cases; unseen-before-seen
+ordering; a fully seen pool still yields questions; rng injected
+throughout. UI untested per repo policy.

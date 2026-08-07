@@ -388,3 +388,54 @@
   padding-left: var(--sp-3);
   border-left: 2px solid var(--accent);
 }
+
+/* --- 回想 --------------------------------------------------------------- */
+
+/* The commit gate: two full-width buttons, 我想好了 on top. Vertical rather
+   than side-by-side so neither answer is the "small" one — 想不起来 is a
+   first-class exit, and a cramped half-width button would say otherwise. */
+.recall-gate {
+  display: grid;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+}
+
+/* The ①②③ stamp on a tapped 排序 option. It rides the same tag slot as
+   正确答案/你的选择, so no new layout is introduced. */
+.recall-stamp {
+  font-weight: 600;
+}
+
+/* The revealed answer key (排序: a → b → c). English word styling, but not
+   the dictionary serif headline — three words share this line, and the
+   large serif is reserved for a single protagonist headword. */
+.recall-key {
+  margin-top: var(--sp-3);
+  font-weight: 600;
+}
+
+/* The authored why — same visual role as the contrast card's note. */
+.recall-why {
+  margin-top: var(--sp-2);
+  color: var(--text-muted);
+  line-height: var(--lh-body);
+}
+
+/* Wrong-word row with the 巩固 button beside the word link. min-width: 0
+   lets the link's text truncate instead of pushing the button off the
+   375px canvas. */
+.recall-wrong-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.recall-wrong-row .quiz-wrong-list__item {
+  flex: 1;
+  min-width: 0;
+}
+
+.recall-wrong-row .btn {
+  margin-right: var(--sp-4);
+  flex-shrink: 0;
+}
