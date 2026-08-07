@@ -385,6 +385,15 @@ export function Stats() {
               </li>
             ))}
           </ul>
+          {/* 猜词 counts a clue-assisted solve as correct — that is the
+              mode's own definition (see its spec: solved with clues still
+              counts as retrieved) and keeping it makes the column
+              comparable across modes. But it does mean the figure runs
+              high, so the sharper number is named here rather than left to
+              be inferred. */}
+          {modes.some(m => m.mode === 'guess') && (
+            <p className="faint stats-note">猜词按「答出来了」计,买了线索也算 —— 零线索的成绩见下方纪录。</p>
+          )}
         </Card>
       )}
 
@@ -405,12 +414,30 @@ export function Stats() {
           <p className="num stat__value">{totals.totalQuizzes}</p>
           <p className="stat__label">测验次数</p>
         </div>
-        {/* Only shown once a sprint has actually been run: a personal best
-            of 0 isn't a record, it's a reminder that you haven't played. */}
-        {progress.bestSprint !== undefined && (
+        {/* "A personal best of 0 isn't a record, it's a reminder that you
+            haven't played" — which is what this comment always said, while
+            the condition only checked for the field's absence. Both
+            settlements write a record on the first session whatever the
+            score (`bestX === undefined || score > bestX.score`), so a
+            first round scoring nothing produced a proud 0. Guess made it
+            visible: zero unaided solves is an ordinary beginner's round,
+            not a rarity like scoring nothing in a 60-second sprint. */}
+        {progress.bestSprint !== undefined && progress.bestSprint.score > 0 && (
           <div className="stat">
             <p className="num stat__value">{progress.bestSprint.score}</p>
             <p className="stat__label">冲刺纪录</p>
+          </div>
+        )}
+        {/* The unaided count, on the same terms as the sprint record. Its
+            own spec calls this the only honest scoreboard a single-player
+            app has — and it had been stored and merged since the mode
+            shipped without ever being displayed anywhere. It is also the
+            number the accuracy row above cannot give: solving with every
+            clue bought still counts as solved there. */}
+        {progress.bestGuess !== undefined && progress.bestGuess.score > 0 && (
+          <div className="stat">
+            <p className="num stat__value">{progress.bestGuess.score}</p>
+            <p className="stat__label">猜词零线索</p>
           </div>
         )}
       </Card>
