@@ -399,12 +399,13 @@ export function modeOverview(progress: Progress): ModeOverviewRow[] {
  * renders.
  */
 export function recommendMode(rows: ModeOverviewRow[]): QuizMetricKey | null {
-  let best: ModeOverviewRow | null = null
+  let bestMode: QuizMetricKey | null = null
+  let bestRate = Infinity
   for (const r of rows) {
     if (r.rate === null) continue
-    if (best === null || r.rate < best.rate) best = r
+    if (r.rate < bestRate) { bestMode = r.mode; bestRate = r.rate }
   }
-  return best === null ? null : best.mode
+  return bestMode
 }
 
 /** Relative age for "last practised": 今天 / 昨天 / N 天前 / 未练过. */
