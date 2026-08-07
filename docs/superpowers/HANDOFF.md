@@ -202,3 +202,25 @@ Delete this section once the check has been made and the outcome recorded.
 - UI in Chinese, definitions bilingual (Chinese/English)
 - Example sentences must have a concrete scene and vividness, no textbook-flat filler
 - The user pauses between phases; don't push ahead to the next phase on your own initiative
+
+## Parallel worktree subagents (2026-08-07 UI round)
+
+Three independent page rebuilds (Today hero / Quiz hub / Review interval
+preview) ran as three parallel subagents, each in its own git worktree
+under `.claude/worktrees/`, then merged back — zero conflicts, because
+the plans were scoped to disjoint files up front. Lessons that outlived
+the round:
+
+- **A worktree may be checked out from a stale base.** All three agents
+  found the just-committed spec/plan docs missing from their checkout and
+  had to read them from the main repo path. Point agents at absolute
+  paths in the main checkout for any doc committed in the same session.
+- **Worktrees inside the repo can run the root's toolchain.** No
+  `npm install` needed: `npx vitest/oxlint/tsc` resolve by walking up to
+  the root `node_modules`. This is also why `vite.config.ts` excludes
+  `.claude/worktrees/` from vitest.
+- **Plans that hand agents complete code still get compile-checked by
+  reality.** One plan snippet failed `tsc` (TS18047 null-narrowing) and
+  one carried a wrong `lang` attribute; both were caught because agents
+  were told to run the full gate and report deviations rather than
+  silently patch. Keep that reporting clause in every dispatch prompt.
