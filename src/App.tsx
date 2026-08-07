@@ -4,7 +4,6 @@ import { GuestOnly, RequireAuth } from './components/RequireAuth'
 import { AddWord } from './pages/AddWord'
 import { DevGallery } from './pages/DevGallery'
 import { Discover } from './pages/Discover'
-import { Guess } from './pages/Guess'
 import { Library } from './pages/Library'
 import { Login } from './pages/Login'
 import { Quiz } from './pages/Quiz'
@@ -45,7 +44,8 @@ function App() {
           <Route path="/" element={<Today />} />
           <Route path="/review" element={<Review />} />
           <Route path="/quiz" element={<Quiz />} />
-          <Route path="/guess" element={<Guess />} />
+          {/* 猜词 moved into /quiz; the old bookmarkable route redirects rather than 404s. */}
+          <Route path="/guess" element={<Navigate to="/quiz?mode=guess" replace />} />
           <Route path="/library" element={<Library />} />
           <Route path="/discover" element={<Discover />} />
           <Route path="/word/:id" element={<WordDetail />} />

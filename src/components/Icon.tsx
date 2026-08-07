@@ -42,15 +42,6 @@ const PATHS = {
       <path d="m6.5 7.8 1.3 1.3 2.4-2.6" />
     </>
   ),
-  /* Guess: a nib writing on a ruled line — the one mode where you produce
-     the word instead of picking it */
-  guess: (
-    <>
-      <path d="M4 19.5h16" />
-      <path d="m14.5 4.7 3.3 3.3" />
-      <path d="M15.8 3.4a1.9 1.9 0 0 1 2.7 2.7l-8.4 8.4-3.5.8.8-3.5Z" />
-    </>
-  ),
   /* Settings: sliders */
   settings: (
     <>

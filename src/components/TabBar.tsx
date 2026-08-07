@@ -5,7 +5,6 @@ const TABS = [
   { to: '/', label: '今日', icon: 'today', end: true },
   { to: '/library', label: '词库', icon: 'library', end: false },
   { to: '/quiz', label: '测试', icon: 'quiz', end: false },
-  { to: '/guess', label: '猜词', icon: 'guess', end: false },
   { to: '/stats', label: '数据', icon: 'stats', end: false },
   { to: '/settings', label: '设置', icon: 'settings', end: false },
 ] as const
@@ -19,12 +18,12 @@ const TABS = [
  * hardest to reach, and it is the screen the interval and new-word settings
  * are now argued from.
  *
- * Six, since 猜词. It earns a slot rather than a place inside /quiz because
- * it is the only mode that asks you to produce the word instead of
- * recognising it, and something buried two taps deep in a mode switcher
- * does not get played. Six is the ceiling: the bar is a grid of equal
- * columns, and at 375px a seventh would put the labels below the size the
- * type scale goes down to.
+ * 猜词 briefly had a sixth slot, on the reasoning that the only mode asking
+ * you to *produce* a word shouldn't be buried in a mode switcher. It went
+ * back into /quiz on the user's call: seven practice surfaces in one
+ * switcher beats one of them living somewhere else, and the bar is a grid
+ * of equal columns where a seventh item would push the labels below the
+ * smallest size the type scale goes down to.
  */
 export function TabBar() {
   return (

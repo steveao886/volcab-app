@@ -28,6 +28,18 @@ sixth mode inside `/quiz`. The interaction is a text field and a shop of
 clues, which has nothing in common with the tap-one-of-four rhythm the quiz
 page is built around.
 
+> **Reversed 2026-08-07.** 猜词 is now `/quiz?mode=guess`, and the tab bar is
+> back to five items. The argument above was about the *interaction*, and it
+> still holds — but by then `/quiz` had grown to six modes of which two
+> (极速, 短文) already broke the four-choice rhythm too, so "different rhythm"
+> had stopped distinguishing anything. What decided it: seven practice
+> surfaces belong in one switcher, and the tab bar's own comment had already
+> called six the ceiling at 375px, so growing that way had nowhere left to
+> go. The clue shop, the scoring and `recordGuess` are untouched; only the
+> chrome moved, and `/guess` redirects rather than 404s so old bookmarks
+> still land. The mode chip row scrolls horizontally — measured at 375px,
+> 430px of chips in a 345px rail, with no page-level overflow.
+
 One question is a Chinese gloss and an empty box. Six clues sit underneath
 with prices on them; the learner buys whichever ones they want.
 

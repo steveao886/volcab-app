@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
-import { Page } from '../components/Page'
 import { TextInput } from '../components/TextInput'
 import wordNotesFile from '../data/wordNotes.json'
 import { classifyGuess, generateGuessSession, scoreWord, WORD_START_SCORE } from '../lib/guess'
@@ -109,7 +108,7 @@ function GuessSession({ questions, onRestart }: { questions: GuessQuestion[]; on
     const unaided = results.filter(r => r.unaided).length
     const beaten = prevBest === undefined || unaided > prevBest.score
     return (
-      <Page eyebrow="Guess" title="这一轮结束">
+      <>
         <Card className="guess-summary">
           <p className="guess-summary__score">
             <span className="num">{total}</span>
@@ -146,7 +145,7 @@ function GuessSession({ questions, onRestart }: { questions: GuessQuestion[]; on
         </Card>
 
         <Button variant="primary" block onClick={onRestart}>再来一轮</Button>
-      </Page>
+      </>
     )
   }
 
@@ -193,7 +192,7 @@ function GuessSession({ questions, onRestart }: { questions: GuessQuestion[]; on
   }
 
   return (
-    <Page eyebrow="Guess" title="猜词">
+    <>
       <p className="guess-progress faint">
         <span className="num">{index + 1}</span> / {questions.length}
         <span className="guess-progress__points num">{WORD_START_SCORE - spent} 分</span>
@@ -275,11 +274,22 @@ function GuessSession({ questions, onRestart }: { questions: GuessQuestion[]; on
           })}
         </div>
       </Card>
-    </Page>
+    </>
   )
 }
 
-export function Guess() {
+/**
+ * 猜词 as a `/quiz` mode.
+ *
+ * The original spec put this on its own page and its own tab, arguing the
+ * text field and clue shop had nothing in common with the tap-one-of-four
+ * rhythm; the tab bar comment called six items the ceiling. Reversed on the
+ * user's call — the seven practice surfaces belong in one switcher, and a
+ * seventh tab was never going to fit. The interaction is unchanged; only
+ * the chrome around it moved, so `Page` now belongs to Quiz.tsx and this
+ * renders a fragment.
+ */
+export function GuessMode() {
   const { words, progress } = useApp()
   const [round, setRound] = useState(0)
 
@@ -293,17 +303,12 @@ export function Guess() {
 
   if (questions.length === 0) {
     return (
-      <Page eyebrow="Guess" title="猜词">
-        <div className="empty-state">
-          <p className="empty-state__title">还没有可以猜的词</p>
-          <p className="empty-state__hint">
-            猜词只考已经学过的词 —— 让你默写一个从没见过的词没有意义。先去复习几个,这里的题会自己多起来。
-          </p>
-          <Link className="btn btn--primary" to="/">
-            去今日
-          </Link>
-        </div>
-      </Page>
+      <Card className="quiz-empty">
+        <p>猜词只考已经学过的词 —— 让你默写一个从没见过的词没有意义。先去复习几个,这里的题会自己多起来。</p>
+        <Link className="btn btn--primary" to="/library">
+          去词库看看
+        </Link>
+      </Card>
     )
   }
 
