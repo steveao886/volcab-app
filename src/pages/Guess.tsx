@@ -85,14 +85,24 @@ function GuessSession({ questions, onRestart }: { questions: GuessQuestion[]; on
     }])
   }, [bought, soundEnabled])
 
-  // Hands focus to 下一题 the moment a question settles, so Space and Enter
-  // advance without this page defining a shortcut of its own — the same
-  // thing AnswerFeedback does on the quiz page. A key that a focused button
-  // already handles natively must not also be grabbed from window, or it
-  // fires twice.
+  /**
+   * Focus follows the question: the box while you are answering, 下一题 once
+   * you are not.
+   *
+   * Both halves have to happen in an effect, after the render that mounts
+   * the control. next() used to call inputRef.current.focus() directly, but
+   * at that moment the settled branch is still on screen and the input is
+   * unmounted, so the ref was null and the call did nothing — every question
+   * after the first landed with the caret nowhere and had to be clicked into.
+   *
+   * Giving 下一题 the focus is also what makes Space and Enter advance,
+   * natively, without this page grabbing either key from window — a global
+   * listener would fire a second time against the already-focused button.
+   */
   useEffect(() => {
-    if (settled !== null) nextRef.current?.focus()
-  }, [settled])
+    if (settled === null) inputRef.current?.focus()
+    else nextRef.current?.focus()
+  }, [settled, index])
 
   if (finished) {
     const total = results.reduce((n, r) => n + r.score, 0)
@@ -173,7 +183,8 @@ function GuessSession({ questions, onRestart }: { questions: GuessQuestion[]; on
     setBought([])
     setVerdict(null)
     setSettled(null)
-    inputRef.current?.focus()
+    // Focus is not set here on purpose — the input does not exist yet at
+    // this point in the render. The effect above owns it.
   }
 
   return (
