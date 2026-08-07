@@ -11,7 +11,7 @@ import { isEditableTarget } from '../lib/keys'
 import { buildConsolidateQueue, buildLapseQueue, buildQueue, CONSOLIDATE_DELAY_HOURS, rankStrugglingWords } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { storage } from '../lib/storage'
-import { todayStr } from '../lib/srs'
+import { previewIntervals, todayStr } from '../lib/srs'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
 import { ReviewCardBack } from './ReviewCard'
 import { advance, buildSessionQueue, currentId, dropCurrent, isDone, remaining } from './reviewQueue'
@@ -117,6 +117,18 @@ export function Review() {
   const isNewCard = curId !== undefined && (!curEntry || curEntry.state === 'new')
   const flipped = curId !== undefined && manualFlip?.id === curId ? manualFlip.value : isNewCard
   const finished = isDone(queue)
+
+  // Only the scheduled review shows interval previews. Drill grades
+  // deliberately don't reschedule (recordLapseDrill / recordConsolidation),
+  // so printing an interval there would lie about what the button does —
+  // the drill note above the card already explains the difference.
+  const previews = useMemo(
+    () =>
+      mode === 'due' && curId !== undefined
+        ? previewIntervals(curEntry, new Date(), progress.settings.intervalModifier)
+        : null,
+    [mode, curId, curEntry, progress.settings.intervalModifier],
+  )
 
   // Warm the recording as soon as the card is on screen, so the speak tap
   // plays a prepared file synchronously — the iOS gesture rule in
@@ -399,16 +411,28 @@ export function Review() {
         {flipped ? (
           <div className="review-grades">
             <Button variant="grade-again" onClick={() => handleGrade('again')}>
-              重来<span className="review-grade__key">1</span>
+              <span className="review-grade__label">
+                重来<span className="review-grade__key">1</span>
+              </span>
+              {previews !== null && <span className="num review-grade__interval">{previews.again}</span>}
             </Button>
             <Button variant="grade-hard" onClick={() => handleGrade('hard')}>
-              困难<span className="review-grade__key">2</span>
+              <span className="review-grade__label">
+                困难<span className="review-grade__key">2</span>
+              </span>
+              {previews !== null && <span className="num review-grade__interval">{previews.hard}</span>}
             </Button>
             <Button variant="grade-good" onClick={() => handleGrade('good')}>
-              良好<span className="review-grade__key">3</span>
+              <span className="review-grade__label">
+                良好<span className="review-grade__key">3</span>
+              </span>
+              {previews !== null && <span className="num review-grade__interval">{previews.good}</span>}
             </Button>
             <Button variant="grade-easy" onClick={() => handleGrade('easy')}>
-              简单<span className="review-grade__key">4</span>
+              <span className="review-grade__label">
+                简单<span className="review-grade__key">4</span>
+              </span>
+              {previews !== null && <span className="num review-grade__interval">{previews.easy}</span>}
             </Button>
           </div>
         ) : (
