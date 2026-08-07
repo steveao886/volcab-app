@@ -1,0 +1,177 @@
+/* ==========================================================================
+   Sketch theme — mirrors the app's real "Ink and Paper" tokens
+   (src/styles/tokens.css) so mockups are judged in the product's actual
+   visual language, not a lookalike. Dark mode follows the system by
+   default; the sketch toolbar can force either side via
+   html[data-theme="light" | "dark"].
+   ========================================================================== */
+
+:root {
+  color-scheme: light dark;
+
+  --font-ui:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Source Han Sans SC',
+    'Noto Sans CJK SC', sans-serif;
+  --font-word:
+    'Iowan Old Style', 'Palatino Linotype', Palatino, Charter, Cambria,
+    Georgia, 'Times New Roman', serif;
+  --font-ipa:
+    Cambria, 'Charis SIL', 'Doulos SIL', 'Gentium Plus', 'Lucida Grande',
+    'Lucida Sans Unicode', 'Palatino Linotype', -apple-system, serif;
+  --font-mono:
+    ui-monospace, 'SF Mono', 'Cascadia Mono', 'Segoe UI Mono', Menlo,
+    Consolas, monospace;
+  --font-num: var(--font-mono);
+
+  --fs-eyebrow: 0.6875rem;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-md: 1.125rem;
+  --fs-xl: 1.5rem;
+  --fs-2xl: 1.875rem;
+  --fs-word: 2.125rem;
+  --fs-word-xl: 2.75rem;
+
+  --lh-word: 1.05;
+  --lh-tight: 1.2;
+  --lh-snug: 1.4;
+  --lh-body: 1.7;
+
+  --tracking-eyebrow: 0.18em;
+  --tracking-tight: -0.015em;
+
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+
+  --r-xs: 2px;
+  --r-sm: 3px;
+  --r-md: 6px;
+  --r-full: 999px;
+
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 320ms;
+
+  --tap: 44px;
+  --tick-w: 28px;
+  --tabbar-h: 58px;
+
+  /* light (paper) */
+  --bg: #f4f1ea;
+  --surface: #fdfbf7;
+  --surface-sunken: #eae5da;
+  --text: #1a1814;
+  --text-muted: #56504a;
+  --text-faint: #6e655c;
+  --rule: rgba(26, 24, 20, 0.13);
+  --rule-strong: rgba(26, 24, 20, 0.26);
+  --rule-control: #8a8175;
+
+  --accent: #be3c24;
+  --accent-soft: rgba(190, 60, 36, 0.1);
+  --on-tone: #fdfbf7;
+
+  --slab: #1a1814;
+  --slab-text: #f4f1ea;
+  --slab-hover: #332e28;
+
+  --success: #446d34;
+  --warning: #8a6108;
+  --info: #276b69;
+  --danger: #be3c24;
+  --success-soft: rgba(68, 109, 52, 0.1);
+  --warning-soft: rgba(138, 97, 8, 0.1);
+  --info-soft: rgba(39, 107, 105, 0.1);
+  --danger-soft: rgba(190, 60, 36, 0.1);
+
+  --grade-again: var(--danger);
+  --grade-hard: var(--warning);
+  --grade-good: var(--success);
+  --grade-easy: var(--info);
+  --grade-again-soft: var(--danger-soft);
+  --grade-hard-soft: var(--warning-soft);
+  --grade-good-soft: var(--success-soft);
+  --grade-easy-soft: var(--info-soft);
+
+  --scrim: rgb(0 0 0 / 45%);
+  --shadow-1: 0 1px 1px rgba(26, 24, 20, 0.04), 0 1px 3px rgba(26, 24, 20, 0.05);
+  --shadow-2: 0 2px 4px rgba(26, 24, 20, 0.06), 0 8px 20px rgba(26, 24, 20, 0.08);
+}
+
+/* dark (ink) — one shared rule-set, applied either by system preference
+   (when no forced theme) or by the toolbar toggle */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme='light']) {
+    --bg: #141210;
+    --surface: #1c1917;
+    --surface-sunken: #100e0c;
+    --text: #f0ebe2;
+    --text-muted: #ada396;
+    --text-faint: #968c7f;
+    --rule: rgba(240, 235, 226, 0.14);
+    --rule-strong: rgba(240, 235, 226, 0.3);
+    --rule-control: #736b5e;
+
+    --accent: #e97457;
+    --accent-soft: rgba(233, 116, 87, 0.13);
+    --on-tone: #1a1108;
+
+    --slab: #f0ebe2;
+    --slab-text: #141210;
+    --slab-hover: #ffffff;
+
+    --success: #88b06a;
+    --warning: #d9a942;
+    --info: #5bafac;
+    --danger: #e97457;
+    --success-soft: rgba(136, 176, 106, 0.13);
+    --warning-soft: rgba(217, 169, 66, 0.13);
+    --info-soft: rgba(91, 175, 172, 0.13);
+    --danger-soft: rgba(233, 116, 87, 0.13);
+
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.45), 0 10px 24px rgba(0, 0, 0, 0.35);
+  }
+}
+
+html[data-theme='dark'] {
+  --bg: #141210;
+  --surface: #1c1917;
+  --surface-sunken: #100e0c;
+  --text: #f0ebe2;
+  --text-muted: #ada396;
+  --text-faint: #968c7f;
+  --rule: rgba(240, 235, 226, 0.14);
+  --rule-strong: rgba(240, 235, 226, 0.3);
+  --rule-control: #736b5e;
+
+  --accent: #e97457;
+  --accent-soft: rgba(233, 116, 87, 0.13);
+  --on-tone: #1a1108;
+
+  --slab: #f0ebe2;
+  --slab-text: #141210;
+  --slab-hover: #ffffff;
+
+  --success: #88b06a;
+  --warning: #d9a942;
+  --info: #5bafac;
+  --danger: #e97457;
+  --success-soft: rgba(136, 176, 106, 0.13);
+  --warning-soft: rgba(217, 169, 66, 0.13);
+  --info-soft: rgba(91, 175, 172, 0.13);
+  --danger-soft: rgba(233, 116, 87, 0.13);
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.45), 0 10px 24px rgba(0, 0, 0, 0.35);
+}

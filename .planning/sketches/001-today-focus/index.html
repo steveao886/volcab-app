@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sketch 001 — 今日页:焦点与节奏</title>
+<link rel="stylesheet" href="../themes/default.css">
+<link rel="stylesheet" href="../themes/sketch-base.css">
+<style>
+/* ============ Variant A: focus hero ============ */
+.va-hero { display: grid; gap: var(--sp-3); }
+.va-hero__count {
+  font-size: 56px;
+  font-weight: 600;
+  line-height: 1;
+}
+.va-hero__count small {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-left: var(--sp-2);
+  letter-spacing: 0;
+}
+.va-hero__meta { font-size: var(--fs-sm); color: var(--text-muted); }
+.va-statline {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+.va-statline .num { color: var(--text); font-weight: 600; }
+.va-statline .num.acc { color: var(--accent); }
+
+.va-plan { display: grid; gap: 0; padding: var(--sp-2) var(--sp-4); }
+.va-plan__title {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: var(--sp-2) 0;
+}
+.va-task {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+  border-top: 1px solid var(--rule);
+  cursor: pointer;
+  transition: opacity var(--dur-2) var(--ease);
+}
+.va-task__box {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--rule-control);
+  border-radius: var(--r-sm);
+  display: grid;
+  place-items: center;
+  color: transparent;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all var(--dur-2) var(--ease);
+}
+.va-task.done .va-task__box {
+  background: var(--success);
+  border-color: var(--success);
+  color: var(--on-tone);
+}
+.va-task__name { flex: 1; font-size: var(--fs-base); font-weight: 600; }
+.va-task.done .va-task__name { text-decoration: line-through; color: var(--text-faint); }
+.va-task__count { color: var(--accent); font-weight: 700; }
+.va-task__hint { font-size: var(--fs-xs); color: var(--text-faint); }
+
+/* ============ Variant B: day plan timeline ============ */
+.vb-date { display: grid; gap: var(--sp-1); }
+.vb-date__line { font-size: var(--fs-sm); color: var(--text-muted); }
+.vb-date__line .num { color: var(--accent); font-weight: 700; }
+.vb-dayprog {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+.vb-dayprog .progress { flex: 1; }
+
+.vb-steps { display: grid; }
+.vb-step {
+  position: relative;
+  display: flex;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0 var(--sp-3) var(--sp-6);
+}
+/* timeline rail */
+.vb-step::before {
+  content: '';
+  position: absolute;
+  left: 9px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--rule-strong);
+}
+.vb-step:first-child::before { top: 22px; }
+.vb-step:last-child::before { bottom: calc(100% - 22px); }
+.vb-step__dot {
+  position: absolute;
+  left: 3px;
+  top: 15px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1.5px solid var(--rule-control);
+  background: var(--bg);
+  display: grid;
+  place-items: center;
+  font-size: 9px;
+  color: transparent;
+  transition: all var(--dur-2) var(--ease);
+}
+.vb-step.done .vb-step__dot {
+  background: var(--success);
+  border-color: var(--success);
+  color: var(--on-tone);
+}
+.vb-step.now .vb-step__dot { border-color: var(--accent); background: var(--accent-soft); }
+.vb-step__card {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+}
+.vb-step.now .vb-step__card { border-color: var(--rule-strong); }
+.vb-step__name { flex: 1; font-weight: 600; }
+.vb-step.done .vb-step__name { color: var(--text-faint); text-decoration: line-through; }
+.vb-step__sub { display: block; font-size: var(--fs-xs); font-weight: 400; color: var(--text-faint); margin-top: 2px; text-decoration: none; }
+.vb-step__count { color: var(--accent); font-weight: 700; }
+.vb-step.done .vb-step__count { color: var(--text-faint); }
+.vb-step .btn { min-height: 36px; padding-inline: var(--sp-4); font-size: var(--fs-sm); }
+
+.vb-heat { display: grid; gap: var(--sp-3); }
+.vb-heat__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.vb-heat__grid {
+  display: grid;
+  grid-template-rows: repeat(7, 1fr);
+  grid-auto-flow: column;
+  gap: 3px;
+}
+.vb-heat__cell {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--r-xs);
+  background: var(--surface-sunken);
+}
+.vb-heat__cell.l1 { background: var(--accent-soft); }
+.vb-heat__cell.l2 { background: color-mix(in srgb, var(--accent) 45%, var(--surface)); }
+.vb-heat__cell.l3 { background: var(--accent); }
+.vb-heat__legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+}
+.vb-heat__legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--r-xs);
+  background: var(--surface-sunken);
+}
+.vb-heat__legend i.l1 { background: var(--accent-soft); }
+.vb-heat__legend i.l2 { background: color-mix(in srgb, var(--accent) 45%, var(--surface)); }
+.vb-heat__legend i.l3 { background: var(--accent); }
+
+/* ============ Variant C: dictionary masthead ============ */
+.vc-page { padding-top: var(--sp-6); }
+.vc-masthead { text-align: center; display: grid; gap: var(--sp-2); }
+.vc-masthead__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+}
+.vc-masthead__seal {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-xs);
+  background: var(--accent);
+  color: var(--on-tone);
+  font-size: 15px;
+  font-weight: 600;
+}
+.vc-masthead__wordmark { font-family: var(--font-word); font-size: var(--fs-md); font-weight: 600; }
+.vc-masthead__date {
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.vc-doubles {
+  height: 4px;
+  border-top: 1px solid var(--rule-strong);
+  border-bottom: 1px solid var(--rule-strong);
+}
+.vc-entry { display: grid; gap: var(--sp-3); padding-block: var(--sp-2); }
+.vc-entry__label { text-align: left; }
+.vc-entry .word { font-size: var(--fs-word); }
+.vc-entry__sense { font-size: var(--fs-base); line-height: var(--lh-body); }
+.vc-entry__sense .pos { margin-right: var(--sp-2); }
+.vc-entry__example {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  border-left: 2px solid var(--rule-strong);
+  padding-left: var(--sp-3);
+  font-style: italic;
+}
+.vc-entry__example em { font-style: italic; color: var(--accent); font-weight: 600; }
+.vc-entry__actions { display: flex; gap: var(--sp-2); }
+.vc-entry__actions .btn { min-height: 36px; font-size: var(--fs-sm); padding-inline: var(--sp-4); }
+
+.vc-index { display: grid; }
+.vc-index__title {
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-bottom: var(--sp-2);
+}
+.vc-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  padding: var(--sp-3) 0;
+  border-top: 1px solid var(--rule);
+  cursor: pointer;
+  font-size: var(--fs-base);
+}
+.vc-row:hover .vc-row__name { color: var(--accent); }
+.vc-row__name { font-weight: 600; transition: color var(--dur-1) var(--ease); }
+.vc-row__sub { font-size: var(--fs-xs); color: var(--text-faint); }
+.vc-row__leader {
+  flex: 1;
+  border-bottom: 1.5px dotted var(--rule-strong);
+  transform: translateY(-4px);
+}
+.vc-row__val { font-weight: 700; }
+.vc-row__val.acc { color: var(--accent); }
+.vc-footer {
+  text-align: center;
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+  padding-top: var(--sp-2);
+}
+</style>
+</head>
+<body>
+
+<div id="variant-nav">
+  <span class="sketch-title">001 今日页</span>
+  <button class="variant-tab active" onclick="showVariant('a', this)">A: 焦点任务 ★ 已选</button>
+  <button class="variant-tab" onclick="showVariant('b', this)">B: 今日节奏</button>
+  <button class="variant-tab" onclick="showVariant('c', this)">C: 词典头版</button>
+</div>
+
+<!-- ================= Variant A ================= -->
+<div id="variant-a" class="variant active">
+  <p class="variant-note"><strong>A · 焦点任务</strong> — 保守改良。现状的三张卡都在回答「今天什么状态」,没有一张回答「现在该做什么」。这一版把"下一个动作"提成唯一的大卡,其余任务收进一张可勾选的清单,数字退到一行小字。</p>
+  <div class="phone"><div class="phone__screen">
+    <div class="phone__body"><div class="page">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Today</p>
+          <h1 class="page-title">今日</h1>
+        </div>
+        <span class="muted" style="font-size:var(--fs-xs)">已同步</span>
+      </div>
+
+      <div class="card va-hero">
+        <p class="eyebrow">现在该做</p>
+        <p class="num va-hero__count"><span id="va-count">23</span><small>个到期待复习</small></p>
+        <p class="va-hero__meta">预计 12 分钟 · 其中 8 个是最近答错的</p>
+        <button class="btn btn--primary btn--lg btn--block" id="va-start" onclick="vaStart()">开始复习</button>
+      </div>
+
+      <div class="card va-plan">
+        <p class="va-plan__title">今日安排</p>
+        <div class="va-task" onclick="vaToggle(this)">
+          <span class="va-task__box">✓</span>
+          <span class="va-task__name">复习到期</span>
+          <span class="num va-task__count">23</span>
+        </div>
+        <div class="va-task" onclick="vaToggle(this)">
+          <span class="va-task__box">✓</span>
+          <span class="va-task__name">学习新词</span>
+          <span class="num va-task__count">12</span>
+        </div>
+        <div class="va-task" onclick="vaToggle(this)">
+          <span class="va-task__box">✓</span>
+          <span class="va-task__name">巩固今天的新词</span>
+          <span class="va-task__hint">18:00 后出现</span>
+        </div>
+        <div class="va-task" onclick="vaToggle(this)">
+          <span class="va-task__box">✓</span>
+          <span class="va-task__name">快速测试一轮</span>
+          <span class="va-task__hint">可选</span>
+        </div>
+      </div>
+
+      <div class="card va-statline">
+        <span>连续 <span class="num acc">46</span> 天</span>
+        <span>总进度 <span class="num">341/498</span></span>
+        <span>近 7 天正确率 <span class="num">87%</span></span>
+      </div>
+    </div></div>
+    <nav class="tabbar" data-active="今日"></nav>
+    <div class="toast"></div>
+  </div></div>
+</div>
+
+<!-- ================= Variant B ================= -->
+<div id="variant-b" class="variant">
+  <p class="variant-note"><strong>B · 今日节奏</strong> — 把一天的学习编排成一条有先后顺序的时间线:复习 → 新词 → 傍晚巩固 → 自测。当前步骤带「开始」按钮,完成的步骤划掉。底部用近 12 周热力图替换 7 天柱状图,让"连续天数"有画面感。</p>
+  <div class="phone"><div class="phone__screen">
+    <div class="phone__body"><div class="page">
+      <div class="page-head">
+        <div class="vb-date">
+          <p class="eyebrow">Today</p>
+          <h1 class="page-title">8 月 7 日 · 周五</h1>
+          <p class="vb-date__line">连续第 <span class="num">46</span> 天</p>
+        </div>
+        <span class="muted" style="font-size:var(--fs-xs)">已同步</span>
+      </div>
+
+      <div class="vb-dayprog">
+        <span id="vb-prog-label" class="num">1/4</span>
+        <div class="progress"><div class="progress__fill" id="vb-prog-fill" style="width:25%"></div></div>
+      </div>
+
+      <div class="vb-steps" id="vb-steps">
+        <div class="vb-step done">
+          <span class="vb-step__dot">✓</span>
+          <div class="card vb-step__card">
+            <span class="vb-step__name">复习到期<span class="vb-step__sub">今早已完成 · 正确率 91%</span></span>
+            <span class="num vb-step__count">23</span>
+          </div>
+        </div>
+        <div class="vb-step now">
+          <span class="vb-step__dot"></span>
+          <div class="card vb-step__card">
+            <span class="vb-step__name">学习新词<span class="vb-step__sub">预计 8 分钟</span></span>
+            <span class="num vb-step__count">12</span>
+            <button class="btn btn--primary" onclick="vbAdvance()">开始</button>
+          </div>
+        </div>
+        <div class="vb-step">
+          <span class="vb-step__dot"></span>
+          <div class="card vb-step__card">
+            <span class="vb-step__name">巩固今天的新词<span class="vb-step__sub">18:00 后解锁,趁遗忘前再取一次</span></span>
+            <span class="num vb-step__count">—</span>
+          </div>
+        </div>
+        <div class="vb-step">
+          <span class="vb-step__dot"></span>
+          <div class="card vb-step__card">
+            <span class="vb-step__name">快速测试<span class="vb-step__sub">可选 · 推荐练「听音」</span></span>
+            <span class="num vb-step__count">10 题</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card vb-heat">
+        <div class="vb-heat__head"><span>最近 12 周</span><span class="num">共 1,846 次复习</span></div>
+        <div class="vb-heat__grid" id="vb-heatmap"></div>
+        <div class="vb-heat__legend">少 <i></i><i class="l1"></i><i class="l2"></i><i class="l3"></i> 多</div>
+      </div>
+    </div></div>
+    <nav class="tabbar" data-active="今日"></nav>
+    <div class="toast"></div>
+  </div></div>
+</div>
+
+<!-- ================= Variant C ================= -->
+<div id="variant-c" class="variant">
+  <p class="variant-note"><strong>C · 词典头版</strong> — 最大胆的一版:把首页排成一页词典/报纸头版。「每日一词」做成真正的词条(衬线大词头、音标、例句),任务入口排成带点线引导的目录。把"打开 app"这件事变成"翻开今天这一页"。</p>
+  <div class="phone"><div class="phone__screen">
+    <div class="phone__body"><div class="page vc-page">
+      <div class="vc-masthead">
+        <div class="vc-masthead__brand">
+          <span class="vc-masthead__seal">词</span>
+          <span class="vc-masthead__wordmark" lang="en">Volcab</span>
+        </div>
+        <p class="vc-masthead__date">2026 年 8 月 7 日 · 第 46 期</p>
+      </div>
+      <div class="vc-doubles"></div>
+
+      <div class="vc-entry">
+        <p class="eyebrow vc-entry__label">每日一词</p>
+        <p class="word" lang="en" id="vc-word">concoct</p>
+        <p class="ipa" lang="en" aria-hidden="true" id="vc-ipa">/kənˈkɑːkt/</p>
+        <p class="vc-entry__sense"><span class="pos" id="vc-pos">v.</span><span id="vc-zh">编造,捏造(借口、故事、计划)</span></p>
+        <p class="vc-entry__example" lang="en" id="vc-ex">She <em>concocted</em> an elaborate excuse about a dead phone battery to explain missing the 9 a.m. standup.</p>
+        <div class="vc-entry__actions">
+          <button class="btn btn--secondary" onclick="toast(this, '播放发音(示意)')">🔊 发音</button>
+          <button class="btn btn--ghost" onclick="vcNextWord()">换一个 ↻</button>
+        </div>
+      </div>
+
+      <div class="vc-index">
+        <p class="vc-index__title">今日目录</p>
+        <div class="vc-row" onclick="toast(this, '进入复习(示意)')">
+          <span class="vc-row__name">复习到期</span>
+          <span class="vc-row__leader"></span>
+          <span class="num vc-row__val acc">23</span>
+        </div>
+        <div class="vc-row" onclick="toast(this, '学习新词(示意)')">
+          <span class="vc-row__name">学习新词</span>
+          <span class="vc-row__leader"></span>
+          <span class="num vc-row__val">12</span>
+        </div>
+        <div class="vc-row" onclick="toast(this, '专攻顽固词(示意)')">
+          <span class="vc-row__name">专攻顽固词</span>
+          <span class="vc-row__leader"></span>
+          <span class="num vc-row__val">8</span>
+        </div>
+        <div class="vc-row" onclick="toast(this, '快速测试(示意)')">
+          <span class="vc-row__name">快速测试 <span class="vc-row__sub">七种模式</span></span>
+          <span class="vc-row__leader"></span>
+          <span class="vc-row__val">→</span>
+        </div>
+        <div class="vc-row" onclick="toast(this, '打开词库(示意)')">
+          <span class="vc-row__name">词库</span>
+          <span class="vc-row__leader"></span>
+          <span class="num vc-row__val">498</span>
+        </div>
+      </div>
+
+      <div class="vc-doubles"></div>
+      <p class="vc-footer">连续 46 天 · 总进度 68% · 近 7 天正确率 87%</p>
+    </div></div>
+    <nav class="tabbar" data-active="今日"></nav>
+    <div class="toast"></div>
+  </div></div>
+</div>
+
+<div id="sketch-tools">
+  <span>sketch 001</span>
+  <button onclick="toggleTheme()">亮 / 暗</button>
+</div>
+
+<script>
+function showVariant(id, tab) {
+  document.querySelectorAll('.variant').forEach(v => v.classList.remove('active'))
+  document.querySelectorAll('.variant-tab').forEach(t => t.classList.remove('active'))
+  document.getElementById('variant-' + id).classList.add('active')
+  tab.classList.add('active')
+}
+
+function toggleTheme() {
+  const html = document.documentElement
+  const cur = html.dataset.theme
+  // three-state cycle: system → dark → light
+  html.dataset.theme = cur === 'dark' ? 'light' : cur === 'light' ? '' : 'dark'
+  if (html.dataset.theme === '') delete html.dataset.theme
+}
+
+function toast(el, msg) {
+  const t = el.closest('.phone__screen').querySelector('.toast')
+  t.textContent = msg
+  t.classList.add('show')
+  clearTimeout(t._timer)
+  t._timer = setTimeout(() => t.classList.remove('show'), 1600)
+}
+
+/* mock tab bar: identical across all frames */
+const TAB_ICONS = {
+  '今日': '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  '词库': '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>',
+  '测试': '<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg>',
+  '数据': '<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+  '设置': '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.09a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>',
+}
+document.querySelectorAll('.tabbar').forEach(bar => {
+  const active = bar.dataset.active
+  bar.innerHTML = Object.entries(TAB_ICONS).map(([label, icon]) =>
+    `<span class="tabbar__item${label === active ? ' active' : ''}" onclick="toast(this, '示意:切换到「${label}」')">${icon}<span>${label}</span></span>`
+  ).join('')
+})
+
+/* --- Variant A --- */
+function vaStart() {
+  const el = document.getElementById('va-count')
+  let n = parseInt(el.textContent, 10)
+  if (n <= 0) return
+  const timer = setInterval(() => {
+    n -= 1
+    el.textContent = n
+    if (n <= 0) {
+      clearInterval(timer)
+      const btn = document.getElementById('va-start')
+      btn.textContent = '今日完成 🎉'
+      btn.disabled = true
+      btn.style.opacity = '0.45'
+      document.querySelector('#variant-a .va-task').classList.add('done')
+    }
+  }, 60)
+  toast(el, '示意:进入复习,做完 23 张卡')
+}
+function vaToggle(row) { row.classList.toggle('done') }
+
+/* --- Variant B --- */
+function vbAdvance() {
+  const steps = [...document.querySelectorAll('#vb-steps .vb-step')]
+  const now = steps.findIndex(s => s.classList.contains('now'))
+  if (now === -1) return
+  steps[now].classList.remove('now')
+  steps[now].classList.add('done')
+  steps[now].querySelector('.vb-step__dot').textContent = '✓'
+  const btn = steps[now].querySelector('.btn')
+  if (btn) btn.remove()
+  const done = steps.filter(s => s.classList.contains('done')).length
+  document.getElementById('vb-prog-label').textContent = done + '/4'
+  document.getElementById('vb-prog-fill').style.width = (done / 4) * 100 + '%'
+  if (now + 1 < steps.length) {
+    steps[now + 1].classList.add('now')
+    const card = steps[now + 1].querySelector('.vb-step__card')
+    const b = document.createElement('button')
+    b.className = 'btn btn--primary'
+    b.textContent = '开始'
+    b.onclick = vbAdvance
+    card.appendChild(b)
+  }
+  toast(steps[now], done >= 4 ? '今天的安排全部完成 🎉' : '示意:完成一步,进入下一步')
+}
+
+/* deterministic 12-week heatmap (no Math.random: sketches stay stable) */
+const heat = document.getElementById('vb-heatmap')
+if (heat) {
+  let cells = ''
+  for (let w = 0; w < 12; w++) {
+    for (let d = 0; d < 7; d++) {
+      const v = (Math.sin(w * 7 + d * 1.7) + 1) * 1.9 // 0..3.8
+      const lvl = w === 11 && d > 4 ? 0 : v < 0.9 ? 0 : v < 1.9 ? 1 : v < 2.9 ? 2 : 3
+      cells += `<span class="vb-heat__cell${lvl ? ' l' + lvl : ''}"></span>`
+    }
+  }
+  heat.innerHTML = cells
+}
+
+/* --- Variant C: daily word carousel, real library entries --- */
+const VC_WORDS = [
+  { w: 'concoct', ipa: '/kənˈkɑːkt/', pos: 'v.', zh: '编造,捏造(借口、故事、计划)', ex: 'She <em>concocted</em> an elaborate excuse about a dead phone battery to explain missing the 9 a.m. standup.' },
+  { w: 'surreptitious', ipa: '/ˌsɜːrəpˈtɪʃəs/', pos: 'adj.', zh: '偷偷摸摸的;秘密的', ex: 'She took a <em>surreptitious</em> glance at her phone under the conference table.' },
+  { w: 'perfunctory', ipa: '/pərˈfʌŋktəri/', pos: 'adj.', zh: '敷衍了事的;例行公事的', ex: "The manager's <em>perfunctory</em> 'great job, team' stopped meaning anything months ago." },
+  { w: 'lucid', ipa: '/ˈluːsɪd/', pos: 'adj.', zh: '明白易懂的;清晰的', ex: 'Her resignation email was refreshingly <em>lucid</em> — three sentences, no corporate softening.' },
+  { w: 'permeate', ipa: '/ˈpɜːrmieɪt/', pos: 'v.', zh: '渗透;弥漫,遍布', ex: "The smell of the neighbor's cooking <em>permeated</em> the whole hallway." },
+]
+let vcIdx = 0
+function vcNextWord() {
+  vcIdx = (vcIdx + 1) % VC_WORDS.length
+  const w = VC_WORDS[vcIdx]
+  document.getElementById('vc-word').textContent = w.w
+  document.getElementById('vc-ipa').textContent = w.ipa
+  document.getElementById('vc-pos').textContent = w.pos
+  document.getElementById('vc-zh').textContent = w.zh
+  document.getElementById('vc-ex').innerHTML = w.ex
+}
+</script>
+</body>
+</html>
