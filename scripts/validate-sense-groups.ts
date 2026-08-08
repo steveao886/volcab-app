@@ -1,4 +1,18 @@
 import { readFileSync } from 'node:fs'
+import { isInflectionOf, splitByHeadword } from '../src/lib/headword.ts'
+
+/**
+ * Whether the sentence genuinely contains the word.
+ *
+ * splitByHeadword alone is not enough: for a word whose base form is
+ * absent it falls back to a 3-4 letter stem, and that stem collides. The
+ * first run of this check reported that `reprimand` contained `reprove`,
+ * because `repr` matches both. Confirming each span with isInflectionOf —
+ * which deliberately does not use that fallback — is the same pairing the
+ * full-library regression in headword.test.ts settled on.
+ */
+const contains = (sentence: string, headword: string): boolean =>
+  splitByHeadword(sentence, headword).some(seg => seg.hit && isInflectionOf(seg.text, headword))
 
 /**
  * Gate for src/data/senseGroups.json — bundled content, so a bad entry
@@ -18,9 +32,11 @@ const file = process.argv[2] ?? 'src/data/senseGroups.json'
 const data = JSON.parse(readFileSync(file, 'utf8'))
 const words = JSON.parse(readFileSync('data/words.json', 'utf8')).words as {
   id: string
+  headword: string
   meanings: { pos: string }[]
 }[]
 const posOf = new Map(words.map(w => [w.id, w.meanings[0]?.pos ?? '']))
+const headwordOf = new Map(words.map(w => [w.id, w.headword]))
 const errors: string[] = []
 
 /**
@@ -30,6 +46,13 @@ const errors: string[] = []
  * without letting a paragraph in.
  */
 const MAX_ZH = 40
+
+/**
+ * The English reveal is a sentence, not a paragraph — it sits under the
+ * answer on a 375px card, above the why. The 59 in the first batch measure
+ * 48–107 characters; 160 leaves room without admitting an essay.
+ */
+const MAX_EN = 160
 
 if (data.version !== 1) errors.push('version must be 1')
 if (!Array.isArray(data.groups)) {
@@ -43,7 +66,9 @@ const seenSet = new Set<string>()
 data.groups.forEach((g: unknown, i: number) => {
   const at = `groups[${i}]`
   if (typeof g !== 'object' || g === null) { errors.push(`${at}: not an object`); return }
-  const { zh, target, order, why } = g as { zh?: unknown; target?: unknown; order?: unknown; why?: unknown }
+  const { zh, target, en, order, why } = g as {
+    zh?: unknown; target?: unknown; en?: unknown; order?: unknown; why?: unknown
+  }
 
   if (typeof zh !== 'string' || zh.trim() === '') { errors.push(`${at}: zh must be a non-empty string`); return }
   if (zh.length > MAX_ZH) errors.push(`${at} (${zh.slice(0, 10)}…): zh is ${zh.length} chars (max ${MAX_ZH})`)
@@ -92,6 +117,35 @@ data.groups.forEach((g: unknown, i: number) => {
 
   if (typeof why !== 'string' || why.trim() === '') errors.push(`${at}: why must be a non-empty string — the answer without the why is just an assertion`)
   else if (!/[一-鿿]/.test(why)) errors.push(`${at}: why must be Chinese — it is study content`)
+
+  // The English reveal. Unlike zh this one is *allowed* to name the answer
+  // — that is the whole point of it — but it is only ever rendered after
+  // the question is graded, so the leak rule does not apply here.
+  if (typeof en !== 'string' || en.trim() === '') {
+    errors.push(`${at}: en must be a non-empty string — the reveal names the word and must also show it working`)
+  } else {
+    if (en.length > MAX_EN) errors.push(`${at}: en is ${en.length} chars (max ${MAX_EN})`)
+    if (/[一-鿿]/.test(en)) errors.push(`${at}: en contains Chinese — it is the English rendering of zh, not a gloss`)
+    if (Array.isArray(order) && order.length > 0) {
+      // Must actually contain the answer, in the form the app can locate —
+      // the same matcher the review card highlights with, so "mired" counts
+      // for `mire` and a merely cognate form does not. A sentence that
+      // doesn't contain the word teaches nothing the why hasn't said.
+      const answer = headwordOf.get(order[0] as string)
+      if (answer !== undefined && !contains(en, answer)) {
+        errors.push(`${at}: en does not contain "${answer}" — the reveal has to show the answer doing the job`)
+      }
+      // And must not contain the losing members. The 排序 question asks the
+      // learner to rank them; a sentence handing one of them over next to
+      // the winner is the answer key printed on the card.
+      for (const id of (order as string[]).slice(1)) {
+        const other = headwordOf.get(id)
+        if (other !== undefined && contains(en, other)) {
+          errors.push(`${at}: en also contains "${other}", another member — that gives the ranking away`)
+        }
+      }
+    }
+  }
 })
 
 if (errors.length > 0) {

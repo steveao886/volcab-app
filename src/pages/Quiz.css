@@ -467,6 +467,17 @@
   font-weight: 600;
 }
 
+/* The scenario said in English, using the answer. Sits between the answer
+   word and the why: the word, the word working, then what separates it
+   from the others. Left rule like the review card's example sentences,
+   because that is what it is. */
+.recall-en {
+  margin-top: var(--sp-3);
+  padding-inline-start: var(--sp-4);
+  border-inline-start: 2px solid var(--rule-strong);
+  line-height: var(--lh-body);
+}
+
 /* The authored why — same visual role as the contrast card's note. */
 .recall-why {
   margin-top: var(--sp-2);

@@ -29,6 +29,22 @@ export interface SenseGroup {
    * wanted (user-reported on day one).
    */
   target?: string
+  /**
+   * The scenario said in English, using the answer word — what you were
+   * being asked to produce, finally spelled out.
+   *
+   * Shown **only after answering**, which is why it can exist at all: the
+   * same string above the options would be the answer in plain sight, the
+   * exact leak `zh`'s no-Latin rule exists to prevent. Before this the
+   * reveal named the word and explained the distinction, and never once
+   * showed the word doing the job — you learned that `implicate` beats
+   * `incriminate` here without seeing the sentence either would go into.
+   *
+   * Optional here and required by validate-sense-groups, the same split as
+   * `target`: the read side skips a missing one rather than dropping the
+   * question.
+   */
+  en?: string
   /** Word ids, best fit first. The whole answer key for 排序; order[0] is the answer for 唤词. */
   order: string[]
   /** One or two sentences naming the dimension that decides the ranking. */
@@ -45,6 +61,8 @@ export interface RecallQuestion {
   prompt: string
   /** The chunk of prompt to emphasize — the part being asked. Absent when the group carries none or it can't be located; the page then shows the plain sentence. */
   target?: string
+  /** The scenario in English, using the answer. Revealed with the answer, never before it. */
+  en?: string
   why: string
   /** Every group member's word id, in answer-key order (best first). */
   orderIds: string[]
@@ -151,6 +169,7 @@ export function buildRecallQuestion(
     kind: 'recall',
     prompt: g.zh,
     target: usableTarget(g),
+    en: g.en,
     why: g.why,
     orderIds: [...g.order],
     memberHeadwords: headwords,
@@ -178,6 +197,7 @@ export function buildOrderQuestion(
     kind: 'order',
     prompt: g.zh,
     target: usableTarget(g),
+    en: g.en,
     why: g.why,
     orderIds: [...g.order],
     memberHeadwords: headwords,

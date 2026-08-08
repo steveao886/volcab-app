@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
+import { ExampleSentence } from '../components/ExampleSentence'
 import { Card } from '../components/Card'
 import { optionIndexFromKey } from '../lib/keys'
 import { pushRecent, recentWindow } from '../lib/passage'
@@ -260,6 +261,17 @@ function RecallQuestionView({
               {question.answer.length > 1 ? question.answer.join(' → ') : question.answer[0]}
             </p>
           ) : null}
+          {/* The scenario in English, above the why. Naming the winner and
+              explaining the distinction still never showed the word doing
+              the job — you could learn that implicate beats incriminate
+              here without once seeing the sentence either would go into.
+              It renders only inside this revealed branch; the same string
+              above the options would be the answer in plain sight. */}
+          {question.en !== undefined && (
+            <p className="recall-en" lang="en">
+              <ExampleSentence sentence={question.en} headword={question.answer[0]} />
+            </p>
+          )}
           {/* The why is what stops the reveal being a bare assertion: it
               names the dimension that decides (object, register,
               connotation, grammar). Same job as the contrast card's note. */}
