@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
-import { Chip } from '../components/Chip'
+import { CaptureChips } from '../components/CaptureChips'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ExampleSentence } from '../components/ExampleSentence'
 import { Icon } from '../components/Icon'
@@ -199,31 +199,19 @@ export function WordDetail() {
               {word.synonyms.length > 0 && (
                 <div className="worddetail-tag-group">
                   <p className="section-title worddetail-section-title">近义词</p>
-                  <div className="worddetail-chiprow">
-                    {word.synonyms.map(s => (
-                      <Chip key={s} label={s} interactive={false} />
-                    ))}
-                  </div>
+                  <CaptureChips className="worddetail-chiprow" items={word.synonyms.map(s => ({ word: s }))} />
                 </div>
               )}
               {word.antonyms.length > 0 && (
                 <div className="worddetail-tag-group">
                   <p className="section-title worddetail-section-title">反义词</p>
-                  <div className="worddetail-chiprow">
-                    {word.antonyms.map(s => (
-                      <Chip key={s} label={s} interactive={false} />
-                    ))}
-                  </div>
+                  <CaptureChips className="worddetail-chiprow" items={word.antonyms.map(s => ({ word: s }))} />
                 </div>
               )}
               {word.collocations.length > 0 && (
                 <div className="worddetail-tag-group">
                   <p className="section-title worddetail-section-title">常见搭配</p>
-                  <div className="worddetail-chiprow">
-                    {word.collocations.map(s => (
-                      <Chip key={s} label={s} interactive={false} />
-                    ))}
-                  </div>
+                  <CaptureChips className="worddetail-chiprow" items={word.collocations.map(s => ({ word: s }))} />
                 </div>
               )}
             </Card>
@@ -238,18 +226,23 @@ export function WordDetail() {
 
           {word.relatedForms.length > 0 && (
             <Card>
-              <p className="section-title worddetail-section-title">同根变形</p>
-              <ul className="worddetail-related">
-                {word.relatedForms.map(rf => (
-                  <li key={rf.form}>
-                    <span className="worddetail-related__form" lang="en">
-                      {rf.form}
-                    </span>
-                    <span className="pos">{rf.pos}</span>
-                    <span className="worddetail-related__zh">{rf.zh}</span>
-                  </li>
-                ))}
-              </ul>
+              <p className="section-title worddetail-section-title">同根词</p>
+              {/* A chip row rather than the vertical list this used to be, so
+                  a related form is staged the same way and reads the same way
+                  as a synonym — on this page and on the review card. */}
+              <CaptureChips
+                className="worddetail-chiprow"
+                items={word.relatedForms.map(rf => ({
+                  word: rf.form,
+                  label: (
+                    <>
+                      <span lang="en">{rf.form}</span>
+                      <span className="chip__pos">{rf.pos}</span>
+                      {rf.zh}
+                    </>
+                  ),
+                }))}
+              />
             </Card>
           )}
 

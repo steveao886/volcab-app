@@ -198,7 +198,10 @@
 .review-tags__row {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--sp-2);
+  /* 12px, not --sp-2: these chips are tappable and .chip::after expands
+     their hit area 6px each way, so an 8px gap leaves the two wrapped
+     lines overlapping by 4px. See the comment on .chip::after. */
+  gap: var(--sp-3);
 }
 
 /* Etymology is a sentence, not a row of chips. A hairline vertical rule on
@@ -224,11 +227,6 @@
 }
 
 /* The POS abbreviation (v. / adj. …) sandwiched between the word form and the Chinese meaning in a related-form chip, dialed down one notch */
-.review-tags__pos {
-  color: var(--text-faint);
-  font-size: var(--fs-xs);
-}
-
 /* --- Flip hint / grade buttons ----------------------------------------------------
    Above the card, in plain flow. This was a sticky bar below the card —
    the claim was that sticky "never covers the content ahead of it", which

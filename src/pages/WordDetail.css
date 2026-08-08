@@ -79,31 +79,9 @@
 .worddetail-chiprow {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--sp-2);
-}
-
-/* --- Related forms -------------------------------------------------------------- */
-
-.worddetail-related {
-  display: grid;
-  gap: var(--sp-2);
-}
-
-.worddetail-related li {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--sp-2);
-}
-
-.worddetail-related__form {
-  font-family: var(--font-word);
-  font-weight: 600;
-  color: var(--text);
-}
-
-.worddetail-related__zh {
-  color: var(--text-muted);
+  /* 12px for the same reason as .review-tags__row: tappable chips expand
+     their hit area 6px each way, and 8px lets two wrapped lines overlap. */
+  gap: var(--sp-3);
 }
 
 /* The usage note closes the meanings card, so it needs a rule above it as

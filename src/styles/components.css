@@ -372,16 +372,24 @@
     color var(--dur-1) var(--ease);
 }
 
-/* Keeps a visually dense 32px, hit area padded vertically to --tap. Filter
-   rows lay out horizontally, so vertical expansion won't overlap adjacent chips. */
-.chip:not(.chip--static)::after {
+/* Keeps a visually dense 32px, hit area padded vertically to --tap.
+   This expansion is 6px each way, so any row that can WRAP needs a gap of
+   at least 12px or two lines of chips overlap: measured from the lower edge
+   of the upper line, its hit area reaches +6px while the lower line's
+   reaches back to +2px — a 4px band where a tap lands on whichever chip is
+   later in the DOM. The library filter row is single-line and was the only
+   case when this was written; the synonym rows added later do wrap, which
+   is why .review-tags__row / .worddetail-chiprow use --sp-3, not --sp-2.
+   A spent capture chip is excluded: it no longer does anything, so a
+   larger-than-visual hit area on it would only steal taps from neighbours. */
+.chip:not(.chip--static):not([aria-disabled='true'])::after {
   content: '';
   position: absolute;
   inset-block: -6px;
   inset-inline: 0;
 }
 
-.chip:not(.chip--static):hover {
+.chip:not(.chip--static):not([aria-disabled='true']):hover {
   color: var(--text);
   border-color: var(--text-faint);
 }
@@ -392,12 +400,30 @@
   color: var(--slab-text);
 }
 
-/* Static label: synonyms/antonyms/collocations/related forms. Not focusable, no hover, lighter outline. */
-.chip--static {
+/* Settled: a plain label, or a capture chip whose word is already yours.
+   Not focusable (or, for the spent button, not actionable), no hover,
+   lighter outline. The recessive look is what tells the two apart at a
+   glance: a crisp chip is a word you can still take. */
+.chip--static,
+.chip[aria-disabled='true'] {
   border-color: var(--rule);
   background: var(--surface-sunken);
   color: var(--text-muted);
   cursor: default;
+}
+
+/* 已有 / 已加入. A text marker, not a color: correctness and state must
+   never be carried by color alone. */
+.chip__mark {
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+  font-weight: 400;
+}
+
+/* Part of speech inside a related-form chip. */
+.chip__pos {
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
 }
 
 .chip__count {

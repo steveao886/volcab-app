@@ -1,6 +1,10 @@
 import { cleanHeadword, normalizeHeadword } from '../state/sync'
 import type { StagingItem, Word } from '../types'
 
+/* Lives in lib/ rather than beside the page that first needed it: two
+   different surfaces now ask this question — the /add capture box, and
+   every synonym chip on a word card. */
+
 /**
  * Deduplication check for quick capture (design doc §6.3: "once case and
  * leading/trailing whitespace are normalized, a word already in
@@ -36,4 +40,29 @@ export function checkCapture(raw: string, words: Word[], staging: StagingItem[])
   if (staged) return { kind: 'in-staging', headword: staged.headword }
 
   return { kind: 'ok', headword }
+}
+
+/**
+ * The same question, reshaped for a chip on a word card: what can a tap on
+ * this text do?
+ *
+ * `inert` is the one case checkCapture's four outcomes don't cover
+ * directly. The capture box can tell the user "type something"; a chip
+ * cannot, because a blank chip has no user behind it — it is a blank string
+ * that reached `collocations` from an older build or another device (new
+ * fields on synced data are optional, and the read side is lenient by
+ * design). It renders as a plain label, exactly as it did before this was
+ * tappable. A button that would stage nothing is worse than no button.
+ */
+export type ChipCaptureStatus = 'addable' | 'in-staging' | 'in-library' | 'inert'
+
+export function chipCaptureStatus(
+  text: string, words: Word[], staging: StagingItem[],
+): ChipCaptureStatus {
+  switch (checkCapture(text, words, staging).kind) {
+    case 'empty': return 'inert'
+    case 'in-library': return 'in-library'
+    case 'in-staging': return 'in-staging'
+    case 'ok': return 'addable'
+  }
 }

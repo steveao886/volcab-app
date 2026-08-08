@@ -40,7 +40,7 @@ are genuinely new.
 ## The state model
 
 No new synced field. Each chip's text goes through the existing
-`checkCapture` (`src/pages/stagingCapture.ts`), which already distinguishes
+`checkCapture` (`src/lib/stagingCapture.ts`), which already distinguishes
 exactly the cases needed:
 
 | Status | Renders as | Marker |
@@ -63,8 +63,8 @@ fails. If the push fails the word is still staged locally and still queued
 reasoning as the comment at `src/pages/AddWord.tsx:154`.
 
 The row does hold one piece of local state, and it is not about feedback:
-see Accessibility below, where a mount-time snapshot keeps a tapped chip
-from unmounting out from under the keyboard focus that is on it.
+see Accessibility below, where a set of what this row staged keeps a tapped
+chip from unmounting out from under the keyboard focus that is on it.
 
 The markers are **text, not color**. CLAUDE.md: correctness must never be
 conveyed by color alone.
@@ -95,22 +95,28 @@ to be deleted by hand. Fail closed: stage the literal text of the chip.
 
 ## Components
 
-**`src/lib/chipCapture.ts`** (new, with colocated test) — the pure status
-function. It is a thin pass over `checkCapture`, and carries one rule of its
-own: an empty or whitespace-only chip is never `addable`. The word data is
-lenient on the read side and a blank string in `collocations` is possible;
-a button that stages nothing is worse than no button.
+**`src/lib/stagingCapture.ts`** — `chipCaptureStatus` joins `checkCapture`
+here rather than in a module of its own: it is the same question about the
+same two data sources, and splitting them would have left one concept in two
+files. The module moves from `src/pages/` to `src/lib/` in the process — it
+was already pure with a colocated test, and a second surface now asks it, so
+`lib/` importing from `pages/` was the alternative.
 
-**`src/components/CaptureChipRow.tsx`** (new) — reads `words`, `staging`
-and `addStaging` from the store itself, so both call sites are one line.
+**`src/components/CaptureChips.tsx`** (new) — reads `words`, `staging` and
+`addStaging` from the store itself, so both call sites are one line.
 
 ```ts
 interface CaptureChip { word: string; label?: ReactNode }
-function CaptureChipRow(props: { label: string; items: CaptureChip[] }): JSX.Element
+function CaptureChips(props: { items: CaptureChip[]; className?: string }): JSX.Element
 ```
 
 `word` is what gets staged; `label` overrides the rendered content for
 related forms, which show `form + pos + zh` rather than bare text.
+
+**It renders the chips and nothing else.** The section heading and the row's
+spacing stay with the page, passed in as `className`. The two pages lay their
+tag blocks out differently (`.review-tags` vs `.worddetail-tag-group`, which
+carries separator rules), and unifying that is not what this change is for.
 
 **`src/components/Chip.tsx`** — gains one optional prop, `toggle` (default
 `true`). When false, `aria-pressed` is omitted. An interactive chip today is
@@ -121,7 +127,7 @@ hardcoded attribute keeps the mechanism visible at the call site.
 
 ## Call sites
 
-- `src/pages/ReviewCard.tsx` — `TagRow` is replaced by `CaptureChipRow`;
+- `src/pages/ReviewCard.tsx` — `TagRow` now renders `CaptureChips`;
   the related-forms block uses it too.
 - `src/pages/WordDetail.tsx` — the three chip rows are replaced. The
   related-forms block changes from a vertical `<ul>` (`.worddetail-related`)
@@ -168,17 +174,19 @@ is the bare word, which does not say what tapping it does.
 Status alone must not decide the element type, or keyboard focus breaks: a
 tapped chip becomes `in-staging`, `in-staging` renders as `<span>`, and the
 focused `<button>` would unmount under the cursor — focus falls to `<body>`
-and the next Tab restarts from the top of the page. So the element type is
-decided **once, at mount**: a chip that was `addable` then stays a
-`<button>` for the life of the row, gaining
+and the next Tab restarts from the top of the page. So a `captured` set records
+what this row staged, and a chip in it stays a `<button>` for the life of the
+row, gaining
 `aria-disabled="true"` and the 已加入 marker instead of unmounting.
 `aria-disabled` does not block activation the way `disabled` does — but
 `disabled` blurs the focused element, which is the bug being avoided — so
 the handler returns early when the chip is no longer `addable`. Chips
-that were already staged or already in the library at mount render as
-`<span>` from the start. This mirrors the local `settled` set in
-`src/pages/Discover.tsx:45`, and for the same reason: the list must not
-reshape under the finger.
+that were already staged or already in the library render as `<span>`. This
+mirrors the local `settled` set in `src/pages/Discover.tsx:45`, and for the
+same reason: the list must not reshape under the finger.
+
+`stopPropagation` runs on a spent chip too, not just a live one — otherwise
+a second tap on 已加入 would fall through to the card and flip it away.
 
 ## Testing
 
@@ -195,7 +203,27 @@ component tests. `src/lib/chipCapture.test.ts` covers:
 
 ## Verification
 
-`npm test && npm run build && npx oxlint`, plus a preview pass at 375px on
-both `/review` (flipped card) and a word detail page: confirm the chip rows
-do not overflow, that tapping a chip does not flip the card, and that the
-tapped chip changes to 已加入 without the page scrolling.
+`npm test && npm run build && npx oxlint` — 817 tests, clean build, clean
+lint.
+
+Measured in the dev preview at 375x812, dark theme, on `/word/imperious`
+(two synonyms already in the library) and on a flipped `/review` card:
+
+- `domineering` / `overbearing` render as `<span>` + 已有; the rest are
+  `<button>` with `aria-label="把 X 加入待补全"` and no `aria-pressed`.
+- Tapping stages: the chip becomes `<button aria-disabled="true">X已加入</button>`,
+  `document.activeElement` is still that button, and `/add` then lists the
+  word under 待补全 — the round trip the whole feature exists for.
+- Tapping a chip on the review card leaves `aria-expanded="true"`: the card
+  does not flip. Tapping a spent chip likewise.
+- **Three rows wrap on that page, and all three measure a 12px line gap and
+  0px hit-area overlap** — the wrapping is real, so the 8px gap really would
+  have overlapped by 4px.
+- `scrollWidth === clientWidth === 375`: no horizontal overflow.
+
+One measurement trap worth recording: with the preview pane hidden the page
+composites no frames, so a CSS transition never advances and
+`getComputedStyle` keeps returning the *starting* value. The settled chip's
+background read as `transparent` for that reason alone. Setting
+`transition: none` before reading gives the true value
+(`--surface-sunken`).

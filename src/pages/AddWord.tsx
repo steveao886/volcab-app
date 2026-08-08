@@ -24,8 +24,8 @@ import { todayStr } from '../lib/srs'
 import { useApp } from '../state/store'
 import type { Meaning, RelatedForm, Word } from '../types'
 import { lookupWord } from './dictionaryApi'
-import { checkCapture } from './stagingCapture'
-import type { CaptureCheck } from './stagingCapture'
+import { checkCapture } from '../lib/stagingCapture'
+import type { CaptureCheck } from '../lib/stagingCapture'
 import './AddWord.css'
 
 /**

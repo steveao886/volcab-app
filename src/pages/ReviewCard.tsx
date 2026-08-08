@@ -1,4 +1,4 @@
-import { Chip } from '../components/Chip'
+import { CaptureChips } from '../components/CaptureChips'
 import { ExampleSentence } from '../components/ExampleSentence'
 import wordNotesFile from '../data/wordNotes.json'
 import { wordNote } from '../lib/wordNotes'
@@ -18,11 +18,7 @@ function TagRow({ label, items }: { label: string; items: string[] }) {
   return (
     <div className="review-tags">
       <p className="review-tags__label section-title">{label}</p>
-      <div className="review-tags__row">
-        {items.map((item) => (
-          <Chip key={item} interactive={false} label={<span lang="en">{item}</span>} />
-        ))}
-      </div>
+      <CaptureChips className="review-tags__row" items={items.map(item => ({ word: item }))} />
     </div>
   )
 }
@@ -142,21 +138,19 @@ export function ReviewCardBack({ word }: { word: Word }) {
       {word.relatedForms.length > 0 && (
         <div className="review-tags">
           <p className="review-tags__label section-title">同根词</p>
-          <div className="review-tags__row">
-            {word.relatedForms.map((rf) => (
-              <Chip
-                key={rf.form}
-                interactive={false}
-                label={
-                  <>
-                    <span lang="en">{rf.form}</span>
-                    <span className="review-tags__pos">{rf.pos}</span>
-                    {rf.zh}
-                  </>
-                }
-              />
-            ))}
-          </div>
+          <CaptureChips
+            className="review-tags__row"
+            items={word.relatedForms.map(rf => ({
+              word: rf.form,
+              label: (
+                <>
+                  <span lang="en">{rf.form}</span>
+                  <span className="chip__pos">{rf.pos}</span>
+                  {rf.zh}
+                </>
+              ),
+            }))}
+          />
         </div>
       )}
     </div>
