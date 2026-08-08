@@ -170,8 +170,8 @@ function GuessSession({ questions, onRestart }: { questions: GuessQuestion[]; on
   function next() {
     if (isLast) {
       // Settle once, at the end: a word whose answer was revealed counts as
-      // wrong and gets its due date pulled forward; one solved with clues
-      // still counts as retrieved. recordGuess never touches ease/interval.
+      // wrong and is stamped missedAt for the drill; one solved with clues
+      // still counts as retrieved. recordGuess never touches the schedule.
       playSessionDone(soundEnabled)
       recordGuess(
         results.filter(r => !r.solved).map(r => r.id),

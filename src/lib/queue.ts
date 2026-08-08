@@ -1,4 +1,4 @@
-import { INITIAL_EASE, todayStr } from './srs'
+import { addDays, INITIAL_EASE, todayStr } from './srs'
 import type { Progress, Word } from '../types'
 
 export interface DailyQueue { due: string[]; fresh: string[] }
@@ -54,6 +54,22 @@ export function buildQueue(words: Word[], progress: Progress, today: string): Da
 
 /** How many words a max a dedicated lapse-word session brings in at once. 20 is roughly what one sitting can clear. */
 export const LAPSE_SESSION_SIZE = 20
+
+/**
+ * How long a practice miss keeps a word in the drill.
+ *
+ * Practice surfaces stamp `missedAt` and nothing else (see
+ * ProgressEntry.missedAt for why they stopped writing `due`), so this queue
+ * is the only thing that acts on a miss — without it a quiz error would
+ * vanish into the statistics.
+ *
+ * A week rather than a day: quiz volume is uneven, one week measured on the
+ * live library ran from 1 session to 17, and a one-day window would drop
+ * every miss made on a day the drill wasn't opened. It is a ceiling, not a
+ * sentence — answering the word correctly in the drill clears `missedAt`
+ * immediately.
+ */
+export const MISS_RECENCY_DAYS = 7
 
 /**
  * The interval at which a word counts as known and stops being "stubborn".
@@ -165,17 +181,30 @@ export function rankStrugglingWords(words: Word[], progress: Progress): Word[] {
 }
 
 /**
- * The drill session for struggling words: the ranking above, minus words
- * already reviewed today. The session ignores due dates by design, so
- * without this the same handful of words came back every single time the
- * page was opened, in an order that was fully deterministic down to the
- * tiebreakers. A pass through the list empties it for the day and the
- * entry point on the Today page disappears, which is the feedback the mode
- * never gave.
+ * The drill session: **what you just got wrong, then what you keep getting
+ * wrong** — minus anything already dealt with today.
  *
- * The filter stays here rather than in the ranking because the stats
- * leaderboard deliberately keeps today's drilled words visible — a word
- * shouldn't blink off that card an hour after you practiced it.
+ * The two halves answer different questions and only the second one is the
+ * ranking above. `missedAt` words are a fresh observation from a quiz, the
+ * sprint or 猜词; the ease ranking is an estimate accumulated over months.
+ * Recent misses lead because they are the more actionable of the two, and
+ * because this queue is now the only place a practice miss goes at all —
+ * the surfaces that record one deliberately no longer touch `due` (see
+ * ProgressEntry.missedAt).
+ *
+ * **The miss half is added here and not to rankStrugglingWords**, which
+ * feeds the stats leaderboard as well. That list is defined by the
+ * scheduler's own signals, ease and interval, and consolidateWord already
+ * refused to force entries into it for exactly this reason: a definition
+ * the card and the queue share stops meaning anything once either can
+ * inject rows. The two were always allowed to differ — the "reviewed
+ * today" filter below has only ever lived here.
+ *
+ * The session ignores due dates by design, so without that filter the same
+ * handful of words came back every single time the page was opened, in an
+ * order that was fully deterministic down to the tiebreakers. A pass
+ * through the list empties it for the day and the entry point on the Today
+ * page disappears, which is the feedback the mode never gave.
  */
 export function buildLapseQueue(
   words: Word[],
@@ -183,7 +212,23 @@ export function buildLapseQueue(
   today: string,
   limit = LAPSE_SESSION_SIZE,
 ): string[] {
-  return rankStrugglingWords(words, progress)
+  const cutoff = addDays(today, -MISS_RECENCY_DAYS)
+  const missed = words
+    .filter(w => {
+      const e = progress.words[w.id]
+      return e && e.state !== 'new' && e.missedAt !== undefined && e.missedAt >= cutoff
+    })
+    // Most recent miss first; dates are YYYY-MM-DD, so string order is
+    // chronological. Ties break the same way the ranking below does.
+    .sort((a, b) => {
+      const ma = progress.words[a.id].missedAt ?? '', mb = progress.words[b.id].missedAt ?? ''
+      if (ma !== mb) return mb < ma ? -1 : 1
+      const d = score(b) - score(a)
+      return d !== 0 ? d : a.id.localeCompare(b.id)
+    })
+
+  const seen = new Set(missed.map(w => w.id))
+  return [...missed, ...rankStrugglingWords(words, progress).filter(w => !seen.has(w.id))]
     // lastReviewedAt is an ISO instant; the day it belongs to is the
     // user's local day, which is what `today` is. Comparing the raw UTC
     // prefix would drop a word a few hours early or late depending on

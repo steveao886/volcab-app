@@ -5,7 +5,7 @@ import {
 } from './queue'
 import { INITIAL_EASE } from './srs'
 import { emptyProgress } from '../types'
-import type { Progress, Word } from '../types'
+import type { Progress, ProgressEntry, Word } from '../types'
 
 const word = (id: string, usageScore?: number): Word => ({
   id, headword: id, phonetic: '/x/', meanings: [{ pos: 'n.', en: 'x', zh: 'x' }],
@@ -93,7 +93,7 @@ describe('buildQueue — prioritized by encounter probability', () => {
 // Shared by the two struggling-words suites below. Default ease is one
 // lapse's worth below initial (2.5 − 0.2): a real lapsed-and-not-recovered
 // entry, since a lapse always costs ease and only "easy" gives it back.
-const strugglingEntry = (lapses: number, over: Partial<{ ease: number; intervalDays: number; lastReviewedAt: string }> = {}) => ({
+const strugglingEntry = (lapses: number, over: Partial<ProgressEntry> = {}) => ({
   state: 'review' as const, ease: INITIAL_EASE - 0.2, intervalDays: 5, due: '2099-01-01',
   stepIndex: 0, reps: 9, lapses, lastReviewedAt: '2026-07-15T00:00:00Z', ...over,
 })
@@ -179,11 +179,60 @@ describe('buildLapseQueue', () => {
     return p
   }
 
-  it('same order as rankStrugglingWords — the drill and the leaderboard never disagree', () => {
+  it('with no recent miss in play, same order as rankStrugglingWords', () => {
     const p = emptyProgress()
     p.words['mild'] = strugglingEntry(1, { ease: 2.35 })
     p.words['worst'] = strugglingEntry(1, { ease: 1.5 })
     expect(buildLapseQueue([word('mild'), word('worst')], p, TODAY)).toEqual(['worst', 'mild'])
+  })
+
+  it('a word missed in a quiz is drilled even though nothing about its schedule says it is hard', () => {
+    // The case the whole field exists for: healthy ease, a long interval, so
+    // rankStrugglingWords will never see it — and before missedAt the only
+    // way to surface it was to pull `due` forward, which is what inflated
+    // the schedule.
+    const p = emptyProgress()
+    p.words['a'] = { state: 'review', ease: INITIAL_EASE, intervalDays: 90, due: '2026-10-20', stepIndex: 0, reps: 6, lapses: 0, lastReviewedAt: '2026-07-22T00:00:00Z', missedAt: TODAY }
+    expect(rankStrugglingWords([word('a')], p)).toEqual([])
+    expect(buildLapseQueue([word('a')], p, TODAY)).toEqual(['a'])
+  })
+
+  it('a fresh miss leads the durable strugglers — the newer observation first', () => {
+    const p = emptyProgress()
+    p.words['struggler'] = strugglingEntry(3, { ease: 1.4 })
+    p.words['missed'] = { state: 'review', ease: INITIAL_EASE, intervalDays: 20, due: '2026-08-13', stepIndex: 0, reps: 4, lapses: 0, lastReviewedAt: '2026-07-20T00:00:00Z', missedAt: TODAY }
+    expect(buildLapseQueue([word('struggler'), word('missed')], p, TODAY)).toEqual(['missed', 'struggler'])
+  })
+
+  it('more recent misses lead older ones', () => {
+    const p = emptyProgress()
+    const missed = (missedAt: string) => ({ state: 'review' as const, ease: INITIAL_EASE, intervalDays: 20, due: '2026-08-13', stepIndex: 0, reps: 4, lapses: 0, lastReviewedAt: '2026-07-01T00:00:00Z', missedAt })
+    p.words['old'] = missed('2026-07-20')
+    p.words['new'] = missed('2026-07-23')
+    expect(buildLapseQueue([word('old'), word('new')], p, TODAY)).toEqual(['new', 'old'])
+  })
+
+  it('a miss older than the recency window drops out — it is a ceiling, not a sentence', () => {
+    const at = (missedAt: string): Progress => {
+      const q = emptyProgress()
+      q.words['a'] = { state: 'review', ease: INITIAL_EASE, intervalDays: 20, due: '2026-08-13', stepIndex: 0, reps: 4, lapses: 0, lastReviewedAt: '2026-07-01T00:00:00Z', missedAt }
+      return q
+    }
+    expect(buildLapseQueue([word('a')], at('2026-07-18'), TODAY)).toEqual(['a'])   // 6 days ago
+    expect(buildLapseQueue([word('a')], at('2026-07-17'), TODAY)).toEqual(['a'])   // exactly MISS_RECENCY_DAYS
+    expect(buildLapseQueue([word('a')], at('2026-07-16'), TODAY)).toEqual([])      // one day past
+  })
+
+  it('a word that is both recently missed and struggling appears once', () => {
+    const p = emptyProgress()
+    p.words['both'] = strugglingEntry(2, { ease: 1.6, missedAt: TODAY })
+    expect(buildLapseQueue([word('both')], p, TODAY)).toEqual(['both'])
+  })
+
+  it('a new word is never drilled on a miss — it has no schedule to protect yet', () => {
+    const p = emptyProgress()
+    p.words['a'] = { state: 'new', ease: INITIAL_EASE, intervalDays: 0, due: TODAY, stepIndex: 0, reps: 0, lapses: 0, lastReviewedAt: '2026-07-01T00:00:00Z', missedAt: TODAY }
+    expect(buildLapseQueue([word('a')], p, TODAY)).toEqual([])
   })
 
   it('ignores the due date — struggling words are actively cleared, not waited on until due', () => {

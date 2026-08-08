@@ -81,6 +81,33 @@ export interface ProgressEntry {
   reps: number
   lapses: number
   lastReviewedAt: string // ISO timestamp, the basis for conflict-merge resolution
+  /**
+   * The last day a practice surface got this word wrong — a quiz, the
+   * sprint, 猜词, or a drill. `YYYY-MM-DD`.
+   *
+   * **This is what practice is allowed to write, and the whole of it.**
+   * Practice used to signal a miss by setting `due` to today, under a
+   * comment promising it left `ease` and `intervalDays` alone. It did, and
+   * it still wrecked the schedule: a word pulled into the review queue gets
+   * graded there, and `gradeWord` multiplies whatever `intervalDays` it
+   * finds — so a word missed two days after its last review, then answered
+   * "good" on the card, grew as if it had been held the full interval.
+   * Measured on the live library before this field existed: 9 words sat at
+   * an ease below initial (the scheduler's own "this is hard for you")
+   * while scheduled 60 days or more out, `promulgate` at ease 1.70 and 268
+   * days, and the words with the longest intervals had nearly twice the
+   * library's median rep count. More gradings produced longer intervals,
+   * which is exactly backwards.
+   *
+   * So `due` now belongs to the scheduler alone. A miss lands here instead,
+   * and buildLapseQueue reads it to put the word in front of you the same
+   * day — in the drill, which by construction cannot reach `intervalDays`.
+   *
+   * Optional like every added field: another device on an older build
+   * pushes entries without it, and the correct reading of its absence is
+   * "no recent miss recorded", not a rejected merge.
+   */
+  missedAt?: string
 }
 
 export interface DailyStat {

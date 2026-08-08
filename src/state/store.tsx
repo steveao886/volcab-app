@@ -6,7 +6,7 @@ import type { QuizMetricKey } from '../lib/quiz'
 import { gradeWord, todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
 import { emptyProgress, emptyStat } from '../types'
-import type { DailyStat, Grade, Progress, StagingItem, Word } from '../types'
+import type { DailyStat, Grade, Progress, ProgressEntry, StagingItem, Word } from '../types'
 import { classifySyncFailure, friendlyError, httpStatus, logoutDiscarded, ownerSwitched } from './errors'
 import {
   appendPendingOp, appendPendingStaging, bootSnapshot, cachedProgress, carryOverFor,
@@ -63,18 +63,18 @@ export interface AppActions {
   login(token: string): Promise<void>
   logout(): void
   grade(wordId: string, g: Grade): void
-  /** Stubborn-word drill, graded one card at a time: practice only, so a miss pulls the due date forward and nothing else moves */
+  /** Stubborn-word drill, graded one card at a time: practice only, so a miss stamps missedAt and nothing else moves */
   recordLapseDrill(wordId: string, g: Grade): void
   /** Same-day consolidation pass over today's new words. Practice, like recordLapseDrill, but a miss is not counted as a lapse */
   recordConsolidation(wordId: string, g: Grade): void
   /** Reject a suggested word, permanently: the id is remembered in synced progress so later suggestion batches skip it */
   dismissSuggestion(id: string): void
   recordQuiz(correct: number, total: number, wrongIds: string[], mode: QuizMetricKey): void
-  /** 回想's 巩固 button: declare a quiz miss a real forget — due today, lapses counted, nothing else moves */
+  /** 回想's 巩固 button: declare a quiz miss a real forget — missedAt stamped, lapses counted, nothing else moves */
   consolidateWord(id: string): void
-  /** Sprint settlement: like recordQuiz, only pulls forward the due date of missed words, plus refreshes the personal best score */
+  /** Sprint settlement: like recordQuiz, only stamps missedAt on missed words, plus refreshes the personal best score */
   recordSprint(score: number, wrongIds: string[], asked: number): void
-  /** 猜词 settlement: same due-date-only contract, plus the best count of no-clue solves */
+  /** 猜词 settlement: same missedAt-only contract, plus the best count of no-clue solves */
   recordGuess(wrongIds: string[], unaided: number, asked: number, solved: number): void
   /** Add or edit an entry (upsert by id), pushes words.json immediately */
   saveWord(word: Word): Promise<void>
@@ -620,6 +620,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
    * without changing anything else would let this device's otherwise-stale
    * copy of the word beat a real review done on another device.
    */
+  /** Returns the entry unchanged when there is no miss recorded, so a no-op stays a no-op. */
+  const clearMissed = (e: ProgressEntry): ProgressEntry => {
+    if (e.missedAt === undefined) return e
+    const { missedAt: _settled, ...rest } = e
+    return rest
+  }
+
   const practiceGrade = useCallback((wordId: string, g: Grade, countLapse: boolean) => {
     const now = new Date()
     const day = todayStr(now)
@@ -633,11 +640,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // chart. newLearned is untouched — neither drill ever introduces a word.
     stat.reviewed += 1
     if (correct) stat.correct += 1
+    // Getting it right settles the miss — otherwise the word keeps
+    // qualifying for the drill on missedAt alone and comes back every day
+    // until the recency window ages it out, however well you now know it.
+    //
+    // Returns `prev` itself when there was no miss to settle, and that
+    // identity is load-bearing: a correct pass over a word that wasn't
+    // missed must write *nothing*, not even a fresh object, or the
+    // "drilling writes nothing" guarantee below stops being checkable.
     const entry = correct
-      ? prev
+      ? clearMissed(prev)
       : {
           ...prev,
-          due: day,
+          missedAt: day,
           lastReviewedAt: now.toISOString(),
           ...(countLapse ? { lapses: prev.lapses + 1 } : {}),
         }
@@ -714,7 +729,36 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // The session count itself is quizTaken; the score lands in quizModes, and missed words are already reflected in the review schedule by having their due date pulled forward
+  /**
+   * Stamps a practice miss on each word, and stamps nothing else.
+   *
+   * The one thing every practice surface is allowed to write. It used to be
+   * `due = today`, described in four places as "only pull the due date
+   * forward, ease/interval untouched" — true of the assignment and false of
+   * the effect. A word in the review queue gets graded there, and gradeWord
+   * multiplies whatever intervalDays it finds, so a miss two days after the
+   * last review, answered "good" on the card, grew the interval as if the
+   * whole interval had been served. See ProgressEntry.missedAt for the
+   * measurement that ended it.
+   *
+   * `lastReviewedAt` is deliberately not stamped either: a quiz question is
+   * not a card reviewed, saying so was always a small lie, and
+   * buildLapseQueue reads that field to decide what has already been dealt
+   * with today — stamping it here would hide the miss from the very drill
+   * this exists to feed.
+   */
+  const markMissed = (words: Progress['words'], ids: string[], day: string): Progress['words'] => {
+    const out = { ...words }
+    for (const id of ids) {
+      const e = out[id]
+      if (e) out[id] = { ...e, missedAt: day }
+    }
+    return out
+  }
+
+  // The session count itself is quizTaken; the score lands in quizModes. A
+  // missed word is stamped with missedAt and picked up by the 还没记牢
+  // drill — it does not enter the review queue; see markMissed.
   const recordQuiz = useCallback((correct: number, total: number, wrongIds: string[], mode: QuizMetricKey) => {
     const now = new Date()
     const day = todayStr(now)
@@ -722,12 +766,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const stat = { ...(cur.dailyStats[day] ?? emptyStat()) }
     stat.quizTaken += 1
     bumpMode(stat, mode, total, correct)
-    const words = { ...cur.words }
-    for (const id of wrongIds) {
-      const e = words[id]
-      if (e) words[id] = { ...e, due: day, lastReviewedAt: now.toISOString() }  // only pull the due date forward, ease/interval untouched
-    }
-    commitProgress({ ...cur, words, dailyStats: { ...cur.dailyStats, [day]: stat } })
+    commitProgress({ ...cur, words: markMissed(cur.words, wrongIds, day), dailyStats: { ...cur.dailyStats, [day]: stat } })
     void flushProgress()
   }, [commitProgress, flushProgress])
 
@@ -763,15 +802,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       ...cur,
       words: {
         ...cur.words,
-        [id]: { ...prev, due: day, lapses: prev.lapses + 1, lastReviewedAt: now.toISOString() },
+        [id]: { ...prev, missedAt: day, lapses: prev.lapses + 1, lastReviewedAt: now.toISOString() },
       },
     })
     schedulePush()
   }, [commitProgress, schedulePush])
 
-  // Sprint shares the same contract as recordQuiz (missed words only get
-  // their due date pulled forward, ease/interval untouched); the one extra
-  // thing it does is refresh the best score.
+  // Sprint shares the same contract as recordQuiz (missed words are only
+  // stamped with missedAt; due, ease and interval all belong to the
+  // scheduler); the one extra thing it does is refresh the best score.
   const recordSprint = useCallback((score: number, wrongIds: string[], asked: number) => {
     const now = new Date()
     const day = todayStr(now)
@@ -779,12 +818,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const stat = { ...(cur.dailyStats[day] ?? emptyStat()) }
     stat.quizTaken += 1
     bumpMode(stat, 'sprint', asked, score)
-    const words = { ...cur.words }
-    for (const id of wrongIds) {
-      const e = words[id]
-      if (e) words[id] = { ...e, due: day, lastReviewedAt: now.toISOString() }
-    }
-    const next: Progress = { ...cur, words, dailyStats: { ...cur.dailyStats, [day]: stat } }
+    const next: Progress = { ...cur, words: markMissed(cur.words, wrongIds, day), dailyStats: { ...cur.dailyStats, [day]: stat } }
     // Only refresh on a **strict** greater-than: a tie shouldn't rewrite the
     // record date to today. Same rule as merge.ts's "equal score keeps the
     // earlier date" — the two must stay consistent, or a sync round trip
@@ -797,8 +831,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [commitProgress, flushProgress])
 
   /**
-   * 猜词 settlement. Same contract as recordQuiz — a missed word only gets
-   * its due date pulled forward, ease and interval untouched — plus the
+   * 猜词 settlement. Same contract as recordQuiz — a missed word is only
+   * stamped with missedAt, the schedule untouched — plus the
    * personal best, which for this mode is **how many words were solved with
    * no clue bought**, not the session score. The score moves with which
    * words came up and how freely the clue shop was used; the unaided count
@@ -815,12 +849,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const stat = { ...(cur.dailyStats[day] ?? emptyStat()) }
     stat.quizTaken += 1
     bumpMode(stat, 'guess', asked, solved)
-    const words = { ...cur.words }
-    for (const id of wrongIds) {
-      const e = words[id]
-      if (e) words[id] = { ...e, due: day, lastReviewedAt: now.toISOString() }
-    }
-    const next: Progress = { ...cur, words, dailyStats: { ...cur.dailyStats, [day]: stat } }
+    const next: Progress = { ...cur, words: markMissed(cur.words, wrongIds, day), dailyStats: { ...cur.dailyStats, [day]: stat } }
     if (cur.bestGuess === undefined || unaided > cur.bestGuess.score) {
       next.bestGuess = { score: unaided, date: day }
     }

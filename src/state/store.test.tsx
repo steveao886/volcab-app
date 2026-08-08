@@ -801,9 +801,8 @@ describe('login: handling this device\'s debt', () => {
 })
 
 // === Sprint settlement ==========================================================
-// recordSprint shares the "missed words only get their due date pulled
-// forward, ease/interval untouched" contract with recordQuiz; the only
-// extra thing is the best score. The condition for refreshing the record
+// recordSprint shares the "a missed word is only stamped with missedAt"
+// contract with recordQuiz; the only extra thing is the best score. The condition for refreshing the record
 // must match merge.ts's "equal score keeps the earlier date" -- if the two
 // disagree, a sync round trip will keep rewriting the date back and forth.
 
@@ -814,6 +813,53 @@ describe('login: handling this device\'s debt', () => {
 // went through grade(), so each pass multiplied the interval by ease -- so
 // the interval-stability assertion below is the whole point of this block,
 // not a formality.
+
+describe('recordQuiz: a quiz miss must not be able to lengthen the schedule', () => {
+  // The failure this exists to prevent, end to end. recordQuiz used to set
+  // due = today on a miss, under a comment promising ease and intervalDays
+  // were untouched -- and they were, by that function. The damage came one
+  // step later: the word entered the review queue, the user graded it
+  // "good" on the card, and gradeWord multiplied the interval it found. A
+  // word missed days after its last review grew as if it had been held the
+  // whole interval, so the words missed most often ended up scheduled
+  // furthest out. Measured on the live library: 9 words sat below initial
+  // ease while scheduled 60+ days ahead, promulgate at ease 1.70 and 268
+  // days.
+  it('a missed word keeps its due date, so it never reaches the review card early', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.words['alpha']
+    expect(before.due > today).toBe(true)
+
+    await step(() => { app().recordQuiz(0, 1, ['alpha'], 'mixed') })
+
+    const after = app().progress.words['alpha']
+    expect(after.missedAt).toBe(today)
+    expect(after.due).toBe(before.due)
+    expect(after.intervalDays).toBe(before.intervalDays)
+    expect(after.ease).toBe(before.ease)
+    expect(after.state).toBe(before.state)
+    expect(after.lapses).toBe(before.lapses)
+  })
+
+  it('missing the same word ten times in one day cannot move the schedule at all', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.words['alpha']
+
+    for (let i = 0; i < 10; i++) await step(() => { app().recordQuiz(0, 1, ['alpha'], 'mixed') })
+
+    const after = app().progress.words['alpha']
+    expect(after.due).toBe(before.due)
+    expect(after.intervalDays).toBe(before.intervalDays)
+  })
+
+  it('a word with no record is skipped rather than invented', async () => {
+    await bootAsAlice()
+    await step(() => { app().recordQuiz(0, 1, ['never-seen'], 'mixed') })
+    expect(app().progress.words['never-seen']).toBeUndefined()
+  })
+})
 
 describe('recordLapseDrill: drilling never moves the schedule outward', () => {
   it('a correct answer leaves ease, interval and due exactly where they were', async () => {
@@ -848,7 +894,7 @@ describe('recordLapseDrill: drilling never moves the schedule outward', () => {
     expect(app().progress.words['alpha'].due).toBe(before.due)
   })
 
-  it('a miss pulls due forward to today and counts the lapse, still without touching ease or interval', async () => {
+  it('a miss stamps missedAt and counts the lapse, leaving the schedule — due included — alone', async () => {
     await bootAsAlice()
     await step(() => { app().grade('alpha', 'easy') })
     const before = app().progress.words['alpha']
@@ -857,7 +903,12 @@ describe('recordLapseDrill: drilling never moves the schedule outward', () => {
     await step(() => { app().recordLapseDrill('alpha', 'again') })
 
     const after = app().progress.words['alpha']
-    expect(after.due).toBe(today)
+    // due used to be pulled to today here. That put the word in the review
+    // queue, where grading it multiplied intervalDays — practice reshaping
+    // the schedule through the back door. buildLapseQueue reads missedAt
+    // instead, and it cannot reach an interval.
+    expect(after.missedAt).toBe(today)
+    expect(after.due).toBe(before.due)
     expect(after.lapses).toBe(before.lapses + 1)
     expect(after.ease).toBe(before.ease)
     expect(after.intervalDays).toBe(before.intervalDays)
@@ -888,7 +939,7 @@ describe('recordLapseDrill: drilling never moves the schedule outward', () => {
 })
 
 describe('consolidateWord: 巩固 declares a miss a real forget, and nothing more', () => {
-  it('pulls due to today and counts the lapse, leaving ease/interval/state alone', async () => {
+  it('stamps missedAt and counts the lapse, leaving due/ease/interval/state alone', async () => {
     await bootAsAlice()
     await step(() => { app().grade('alpha', 'easy') })
     const before = app().progress.words['alpha']
@@ -897,7 +948,8 @@ describe('consolidateWord: 巩固 declares a miss a real forget, and nothing mor
     await step(() => { app().consolidateWord('alpha') })
 
     const after = app().progress.words['alpha']
-    expect(after.due).toBe(today)
+    expect(after.missedAt).toBe(today)
+    expect(after.due).toBe(before.due)
     expect(after.lapses).toBe(before.lapses + 1)
     expect(after.ease).toBe(before.ease)
     expect(after.intervalDays).toBe(before.intervalDays)
@@ -967,7 +1019,7 @@ describe('grade: the retention measurement', () => {
 })
 
 describe('recordConsolidation: same contract, but a fumble is not a lapse', () => {
-  it('a miss pulls due forward without counting a lapse — day-one shakiness is not forgetting', async () => {
+  it('a miss stamps missedAt without counting a lapse — day-one shakiness is not forgetting', async () => {
     await bootAsAlice()
     await step(() => { app().grade('alpha', 'easy') })
     const before = app().progress.words['alpha']
@@ -975,7 +1027,8 @@ describe('recordConsolidation: same contract, but a fumble is not a lapse', () =
     await step(() => { app().recordConsolidation('alpha', 'again') })
 
     const after = app().progress.words['alpha']
-    expect(after.due).toBe(today)
+    expect(after.missedAt).toBe(today)
+    expect(after.due).toBe(before.due)
     expect(after.lapses).toBe(before.lapses)     // the one difference from recordLapseDrill
     expect(after.ease).toBe(before.ease)
     expect(after.intervalDays).toBe(before.intervalDays)
@@ -1071,12 +1124,12 @@ describe('dismissSuggestion', () => {
 })
 
 describe('recordSprint: best score', () => {
-  it('the first score is automatically the record, and pulls the missed word\'s due date to today without touching ease or interval', async () => {
+  it('the first score is automatically the record, and stamps the missed word without touching its schedule', async () => {
     await bootAsAlice()
     // Grade it easy once first so it graduates to review with a due date a
     // few days out -- otherwise due would already be today, and the
-    // "pulled forward" assertion wouldn't mean anything (it would pass
-    // under any implementation).
+    // "left alone" assertion wouldn't mean anything (it would pass under
+    // any implementation).
     await step(() => { app().grade('alpha', 'easy') })
     const before = app().progress.words['alpha']
     expect(before.due > today).toBe(true)
@@ -1086,7 +1139,8 @@ describe('recordSprint: best score', () => {
     expect(app().progress.bestSprint).toEqual({ score: 12, date: today })
     expect(app().progress.dailyStats[today].quizTaken).toBe(1)
     const after = app().progress.words['alpha']
-    expect(after.due).toBe(today)
+    expect(after.missedAt).toBe(today)
+    expect(after.due).toBe(before.due)
     expect(after.ease).toBe(before.ease)               // grading logic never touches it
     expect(after.intervalDays).toBe(before.intervalDays)
     expect(after.lapses).toBe(before.lapses)
