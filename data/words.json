@@ -3224,55 +3224,6 @@
       "addedAt": "2026-07-24"
     },
     {
-      "id": "nonrepudiation",
-      "headword": "nonrepudiation",
-      "phonetic": "/ˌnɑːnrɪˌpjuːdiˈeɪʃən/",
-      "meanings": [
-        {
-          "pos": "n.",
-          "en": "(information security) assurance that a party cannot later deny having sent a message or performed an action",
-          "zh": "(信息安全)不可否认性"
-        }
-      ],
-      "examples": [
-        "We added digital signatures to the payment API purely for nonrepudiation — the vendor kept disputing invoices they'd clearly approved.",
-        "An audit log alone doesn't give you nonrepudiation; without a signed hash, an admin could still claim the timestamp was forged.",
-        "The e-signature platform touted end-to-end nonrepudiation, so a contractor couldn't later claim someone else had signed the change order.",
-        "Regulators required nonrepudiation on every trade confirmation, meaning a trader's digital signature had to be cryptographically tied to the exact order sent.",
-        "Without nonrepudiation built into the voting system, election officials worried a losing candidate could claim the recorded ballots weren't really theirs."
-      ],
-      "synonyms": [
-        "proof of origin",
-        "accountability guarantee",
-        "undeniable authenticity"
-      ],
-      "antonyms": [
-        "repudiation",
-        "deniability"
-      ],
-      "collocations": [
-        "nonrepudiation of origin",
-        "provide nonrepudiation",
-        "nonrepudiation service"
-      ],
-      "relatedForms": [
-        {
-          "form": "repudiate",
-          "pos": "v.",
-          "zh": "否认;拒绝承认"
-        },
-        {
-          "form": "repudiation",
-          "pos": "n.",
-          "zh": "否认;拒绝承认"
-        }
-      ],
-      "usageScore": 5,
-      "etymology": "non-(不) + repudiate(拒绝承认) → 抵赖不掉 → 不可否认性",
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24"
-    },
-    {
       "id": "perverse",
       "headword": "perverse",
       "phonetic": "/pərˈvɜːrs/",
@@ -9149,56 +9100,6 @@
       ],
       "usageScore": 5,
       "etymology": "in-(不) + decere(合宜,同 decorum) → 不成体统 → 猥亵",
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24"
-    },
-    {
-      "id": "indent",
-      "headword": "indent",
-      "phonetic": "/ɪnˈdɛnt/",
-      "meanings": [
-        {
-          "pos": "v.",
-          "en": "(typesetting) to start a line of text further from the margin than the rest of the paragraph",
-          "zh": "(排版)缩进;使缩排",
-          "share": 90,
-          "phonetic": "/ɪnˈdɛnt/"
-        },
-        {
-          "pos": "n.",
-          "en": "(chiefly British/business) an official order for goods, especially placed with a foreign supplier",
-          "zh": "(贸易/采购)订货单;订购单",
-          "share": 10,
-          "phonetic": "/ˈɪndɛnt/"
-        }
-      ],
-      "examples": [
-        "The linter kept failing until I indented the nested JSX block by two more spaces.",
-        "Procurement raised an indent for three hundred server racks, routing it straight to the Shenzhen supplier.",
-        "The style guide requires writers to indent the first line of every new paragraph by exactly one tab, no exceptions for headers.",
-        "She kept forgetting to indent the block quote in her thesis, and the formatting committee flagged it twice before the final defense.",
-        "Our new intern indented every single bullet point differently across the slide deck, so the whole thing looked like a ransom note."
-      ],
-      "synonyms": [
-        "tab",
-        "offset",
-        "purchase order"
-      ],
-      "antonyms": [],
-      "collocations": [
-        "indent a paragraph",
-        "raise an indent",
-        "indent level"
-      ],
-      "relatedForms": [
-        {
-          "form": "indentation",
-          "pos": "n.",
-          "zh": "缩进;凹痕"
-        }
-      ],
-      "usageScore": 5,
-      "etymology": "in-(进入) + dens/dent-(牙) → 咬出个豁口 → 缩排",
       "sourceNote": "59-61",
       "addedAt": "2026-07-24"
     },
