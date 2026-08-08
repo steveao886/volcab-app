@@ -72,7 +72,11 @@ describe('eligibleGroups', () => {
     expect(eligibleGroups([G], missing, all)).toHaveLength(0)
   })
 
-  it('rejects groups smaller than a pair', () => {
+  it('a lone member is eligible once the group carries outside distractors — the 380-word case', () => {
+    expect(eligibleGroups([{ ...G, order: ['pervade'], extra: ['shrewd', 'canny'] }], words, all)).toHaveLength(1)
+  })
+
+  it('rejects a lone member with nothing to stand against — its distractors would all be scenery', () => {
     expect(eligibleGroups([{ ...G, order: ['pervade'] }], words, all)).toHaveLength(0)
   })
 })
@@ -103,6 +107,20 @@ describe('buildRecallQuestion', () => {
     expect(q).not.toBeNull()
     expect(q!.options).not.toContain('noun-filler')
     expect(q!.options).toContain('verb-filler')
+  })
+
+  it('outside distractors take option slots ahead of fillers — that is the whole point of authoring them', () => {
+    const q = buildRecallQuestion(
+      { ...G, order: ['pervade'], extra: ['shrewd', 'canny'] },
+      words, LIB, seqRng([0.1, 0.5, 0.9, 0.3]),
+    )
+    expect(q).not.toBeNull()
+    expect(q!.answer).toEqual(['pervade'])
+    expect(q!.options).toHaveLength(4)
+    for (const o of ['pervade', 'shrewd', 'canny']) expect(q!.options).toContain(o)
+    // Exactly one slot was left for a filler, and no member of the group
+    // sneaked back in as one.
+    expect(q!.memberHeadwords).toEqual(['pervade'])
   })
 
   it('returns null rather than shipping fewer than four options', () => {
@@ -140,6 +158,10 @@ describe('buildOrderQuestion', () => {
 
   it('refuses pairs — ranking two items is the same act as picking one', () => {
     expect(buildOrderQuestion({ ...G, order: ['pervade', 'permeate'] }, words, seqRng([0.5]))).toBeNull()
+  })
+
+  it('refuses any group carrying outside distractors — there is no authored ranking for a word the library lacks', () => {
+    expect(buildOrderQuestion({ ...G, extra: ['shrewd'] }, words, seqRng([0.5]))).toBeNull()
   })
 })
 

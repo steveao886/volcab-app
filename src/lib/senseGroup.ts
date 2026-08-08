@@ -47,6 +47,24 @@ export interface SenseGroup {
   en?: string
   /** Word ids, best fit first. The whole answer key for 排序; order[0] is the answer for 唤词. */
   order: string[]
+  /**
+   * Confusable distractors that are **not in the library** — plain
+   * headwords, not ids.
+   *
+   * The mode was capped at 59 groups by requiring every member to be a
+   * library word. Measured over the 504-word library: 121 words were in a
+   * group, and **380 more had no library-internal partner at all** — their
+   * natural rivals are ordinary words the learner already knows. `astute`
+   * has no rival among C1/C2 Latinate entries; against `shrewd`, `canny`,
+   * `sagacious` it becomes a real question.
+   *
+   * These are only ever wrong options. They are never ranked — ordering a
+   * word the library does not carry would mean authoring a judgment about
+   * something outside the vocabulary, and a group holding any is asked as
+   * 唤词 only. Tapping one behaves exactly like tapping a filler: it maps
+   * to no id and marks nothing (see wrongIdsFor).
+   */
+  extra?: string[]
   /** One or two sentences naming the dimension that decides the ranking. */
   why: string
 }
@@ -103,7 +121,12 @@ export function eligibleGroups(
   progress: Progress,
 ): SenseGroup[] {
   return groups.filter(g =>
-    g.order.length >= 2 &&
+    // One library member is enough *when the group brings its own outside
+    // distractors*. What must never happen is a lone member with none: the
+    // other three options would all be random same-POS fillers, and a
+    // question whose wrong answers are scenery tests nothing.
+    g.order.length + (g.extra?.length ?? 0) >= 2 &&
+    g.order.length >= 1 &&
     g.order.every(id => words.has(id)) &&
     isLearned(g.order[0], progress),
   )
@@ -152,7 +175,10 @@ export function buildRecallQuestion(
   const answer = headwords[0]
   const pos = (members as Word[])[0].meanings[0]?.pos ?? ''
 
-  const options = new Set(headwords)
+  // Authored distractors first — members, then the outside confusables —
+  // so fillers only ever top up what the group could not supply itself. A
+  // filler is a random same-POS word; an authored rival is the question.
+  const options = new Set([...headwords, ...(g.extra ?? [])])
   // Same POS only: an adjective among verbs is a free elimination, which
   // quietly refunds the commit gate's whole cost.
   const fillers = shuffle(
@@ -189,6 +215,11 @@ export function buildOrderQuestion(
   rng: () => number,
 ): RecallQuestion | null {
   if (g.order.length < 3) return null
+  // A group carrying outside distractors is 唤词-only: they are not in the
+  // library, so there is no authored ranking for them, and shuffling them
+  // into a 排序 answer key would ask the learner to order words this app
+  // never claims to teach.
+  if ((g.extra?.length ?? 0) > 0) return null
   const members = g.order.map(id => words.get(id))
   if (members.some(m => m === undefined)) return null
   const headwords = (members as Word[]).map(m => m.headword)

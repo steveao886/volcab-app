@@ -37,6 +37,7 @@ const words = JSON.parse(readFileSync('data/words.json', 'utf8')).words as {
 }[]
 const posOf = new Map(words.map(w => [w.id, w.meanings[0]?.pos ?? '']))
 const headwordOf = new Map(words.map(w => [w.id, w.headword]))
+const libraryHeadwords = new Set(words.map(w => w.headword.toLowerCase()))
 const errors: string[] = []
 
 /**
@@ -66,8 +67,8 @@ const seenSet = new Set<string>()
 data.groups.forEach((g: unknown, i: number) => {
   const at = `groups[${i}]`
   if (typeof g !== 'object' || g === null) { errors.push(`${at}: not an object`); return }
-  const { zh, target, en, order, why } = g as {
-    zh?: unknown; target?: unknown; en?: unknown; order?: unknown; why?: unknown
+  const { zh, target, en, order, extra, why } = g as {
+    zh?: unknown; target?: unknown; en?: unknown; order?: unknown; extra?: unknown; why?: unknown
   }
 
   if (typeof zh !== 'string' || zh.trim() === '') { errors.push(`${at}: zh must be a non-empty string`); return }
@@ -101,7 +102,7 @@ data.groups.forEach((g: unknown, i: number) => {
   if (!Array.isArray(order) || order.some(id => typeof id !== 'string')) {
     errors.push(`${at}: order must be an array of word ids`); return
   }
-  if (order.length < 2 || order.length > 4) errors.push(`${at}: ${order.length} members (must be 2–4)`)
+  if (order.length < 1 || order.length > 4) errors.push(`${at}: ${order.length} members (must be 1–4)`)
   if (new Set(order).size !== order.length) errors.push(`${at}: duplicate ids in order`)
   for (const id of order) {
     if (!posOf.has(id)) errors.push(`${at}: ${id} not in the vocabulary — this group can never render`)
@@ -110,6 +111,41 @@ data.groups.forEach((g: unknown, i: number) => {
   // inside one sentence, so ranking them is not a judgment the mode tests.
   const poses = new Set(order.map(id => posOf.get(id)).filter(p => p !== undefined))
   if (poses.size > 1) errors.push(`${at}: mixed POS ${[...poses].join('/')} — members must compete in the same slot`)
+
+  // Outside distractors: confusable words the library does not carry. They
+  // exist because requiring every member to be a library word capped the
+  // mode at 59 groups while 380 words had no library-internal partner at
+  // all.
+  let extraList: string[] = []
+  if (extra !== undefined) {
+    if (!Array.isArray(extra) || extra.some(x => typeof x !== 'string' || x.trim() === '')) {
+      errors.push(`${at}: extra must be an array of non-empty headwords`)
+    } else {
+      extraList = extra as string[]
+      for (const x of extraList) {
+        // A library word listed here would be offered as a plain wrong
+        // answer when it is in fact rankable, and tapping it would mark
+        // nothing — the group is claiming the word is out of scope while
+        // the library says otherwise. Put it in `order` instead.
+        if (libraryHeadwords.has(x.toLowerCase())) {
+          errors.push(`${at}: extra "${x}" is a library word — it belongs in order, where it can be ranked and marked`)
+        }
+        if (/[一-鿿]/.test(x)) errors.push(`${at}: extra "${x}" is not English`)
+      }
+      if (new Set(extraList.map(x => x.toLowerCase())).size !== extraList.length) {
+        errors.push(`${at}: duplicate entries in extra`)
+      }
+      const overlap = extraList.filter(x => order.some(id => headwordOf.get(id)?.toLowerCase() === x.toLowerCase()))
+      if (overlap.length > 0) errors.push(`${at}: extra repeats a member (${overlap.join(', ')})`)
+    }
+  }
+
+  // Four options are shown; fillers are random same-POS words and test
+  // nothing. Requiring three authored ones means at most one slot is
+  // scenery.
+  if (order.length + extraList.length < 3) {
+    errors.push(`${at}: only ${order.length + extraList.length} authored option(s) — needs 3, or three of the four shown are random fillers`)
+  }
 
   const key = [...order].sort().join('|')
   if (seenSet.has(key)) errors.push(`${at}: same member set as an earlier group — one trio, one scenario each; merge or differentiate`)
@@ -143,6 +179,9 @@ data.groups.forEach((g: unknown, i: number) => {
         if (other !== undefined && contains(en, other)) {
           errors.push(`${at}: en also contains "${other}", another member — that gives the ranking away`)
         }
+      }
+      for (const x of extraList) {
+        if (contains(en, x)) errors.push(`${at}: en also contains "${x}", a distractor — the reveal must not endorse a wrong option`)
       }
     }
   }
