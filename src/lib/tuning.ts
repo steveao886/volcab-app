@@ -37,9 +37,11 @@ export const MIN_RETENTION_SAMPLE = 150
  * The arithmetic answer can be extreme — at 97.8% observed retention the
  * multiplier that lands on 90% is 4.7x — and acting on it would be
  * indefensible off a few hundred reviews. It also compounds: at 1.3 the
- * per-review multiplier goes from 2.5 to 3.25, so five reviews in the
- * interval is already ~3.7x longer. Moving 30% at a time and re-measuring
- * gets to the same place without betting the schedule on a noisy estimate.
+ * per-review multiplier goes from 2.5 to 3.25, and the interval pulls away
+ * from a plain schedule every review until MAX_INTERVAL_DAYS clips it — at
+ * the current ceiling that is the fourth one. Moving 30% at a time and
+ * re-measuring gets to the same place without betting the schedule on a
+ * noisy estimate.
  */
 const MAX_STEP = 0.3
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addDays, clampIntervalModifier, gradeWord, MAX_INTERVAL_DAYS, previewIntervals, todayStr } from './srs'
+import { addDays, clampIntervalModifier, gradeWord, MAX_INTERVAL_DAYS, MAX_INTERVAL_MODIFIER, previewIntervals, todayStr } from './srs'
 import type { ProgressEntry } from '../types'
 
 const now = new Date(2026, 6, 24, 10, 0, 0) // 2026-07-24 local time
@@ -69,9 +69,9 @@ describe('review phase', () => {
     const e = gradeWord(reviewEntry({ ease: 1.3 }), 'hard', now, noFuzz)
     expect(e.ease).toBe(1.3)
   })
-  it('interval caps at 365 days', () => {
+  it('interval caps at MAX_INTERVAL_DAYS', () => {
     const e = gradeWord(reviewEntry({ intervalDays: 300, ease: 2.5 }), 'good', now, noFuzz)
-    expect(e.intervalDays).toBe(365)
+    expect(e.intervalDays).toBe(MAX_INTERVAL_DAYS)
   })
   it('interval advances by at least 1 day', () => {
     const e = gradeWord(reviewEntry({ intervalDays: 1, ease: 1.3 }), 'hard', now, noFuzz)
@@ -94,18 +94,30 @@ describe('intervalModifier', () => {
     expect(stretched).toBe(Math.round(plain * 1.3))
   })
 
-  it('compounds across reviews — five at 1.3 is far more than 30% longer', () => {
-    // Started from a one-day interval on purpose: from a longer one both
-    // sides run into MAX_INTERVAL_DAYS within five reviews and the ratio
-    // collapses back to 1, which would make this assertion meaningless.
+  it('compounds across reviews — three at 1.3 is more than a flat 30% longer', () => {
+    // Three reviews, not the five this used to run. Starting from one day
+    // was the old way of staying clear of MAX_INTERVAL_DAYS, because the
+    // ratio collapses back to 1 once both sides are pinned to the ceiling.
+    // At a 100-day ceiling that trap arrives on the fourth review — the
+    // stretched side computes 107 and gets clipped — so the window where
+    // compounding is observable at all is now three: 20 vs 33.
     let plain = reviewEntry({ intervalDays: 1 }), stretched = reviewEntry({ intervalDays: 1 })
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
       plain = gradeWord(plain, 'good', now, noFuzz)
       stretched = gradeWord(stretched, 'good', now, noFuzz, 1.3)
     }
     expect(plain.intervalDays).toBeLessThan(MAX_INTERVAL_DAYS)
     expect(stretched.intervalDays).toBeLessThan(MAX_INTERVAL_DAYS)
-    expect(stretched.intervalDays / plain.intervalDays).toBeGreaterThan(2.5)
+    expect(stretched.intervalDays / plain.intervalDays).toBeGreaterThan(1.5)
+  })
+
+  it('the ceiling binds the modifier — the largest allowed one cannot run away', () => {
+    // The reason the compounding test above had to shrink: the modifier's
+    // own docs warn that it compounds, and the ceiling is what stops that
+    // warning from being open-ended.
+    let e = reviewEntry({ intervalDays: 1 })
+    for (let i = 0; i < 10; i++) e = gradeWord(e, 'good', now, noFuzz, MAX_INTERVAL_MODIFIER)
+    expect(e.intervalDays).toBe(MAX_INTERVAL_DAYS)
   })
 
   it('never lets an interval stand still, even below 1', () => {
@@ -165,8 +177,8 @@ describe('previewIntervals', () => {
   })
 
   it('caps at MAX_INTERVAL_DAYS', () => {
-    // good: 300×2.5=750 → capped 365
-    expect(previewIntervals(reviewEntry({ intervalDays: 300 }), NOW).good).toBe('365 天')
+    // good: 300×2.5=750 → clipped to the ceiling
+    expect(previewIntervals(reviewEntry({ intervalDays: 300 }), NOW).good).toBe(`${MAX_INTERVAL_DAYS} 天`)
   })
 
   it('never mutates the entry it previews', () => {

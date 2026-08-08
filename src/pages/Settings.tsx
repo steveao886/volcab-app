@@ -51,8 +51,9 @@ function clampNewPerDay(raw: string, fallback: number): number {
 function parseModifier(raw: string, fallback: number): number {
   const n = Number.parseFloat(raw)
   if (!Number.isFinite(n)) return fallback
-  // One decimal place. The knob compounds — 1.3 means 3.7x after five
-  // reviews — so there is no meaning to be had in the second digit.
+  // One decimal place. The knob compounds review over review until
+  // MAX_INTERVAL_DAYS clips it, so it moves the schedule far more than the
+  // number reads — there is no meaning to be had in the second digit.
   return clampIntervalModifier(Math.round(n * 10) / 10)
 }
 
@@ -293,7 +294,7 @@ export function Settings() {
         <Field
           label="间隔系数"
           htmlFor="settings-interval-modifier"
-          hint={`复习间隔的整体倍率,${MIN_INTERVAL_MODIFIER}–${MAX_INTERVAL_MODIFIER}。留存率明显高于 90% 时调大它,间隔会变长、每天要复习的词会变少。它是复利的:1.3 在五次复习后就是约 3.7 倍。`}
+          hint={`复习间隔的整体倍率,${MIN_INTERVAL_MODIFIER}–${MAX_INTERVAL_MODIFIER}。留存率明显高于 90% 时调大它,间隔会变长、每天要复习的词会变少。它是复利的,每复习一次乘一次,直到撞上间隔上限。`}
         >
           <TextInput
             id="settings-interval-modifier"

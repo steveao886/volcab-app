@@ -4,7 +4,33 @@ export const LEARNING_STEPS = 2      // Learning steps: reappears at 1 minute an
 export const MIN_EASE = 1.3
 /** Ease a word starts on. Only "easy" ever raises it, so a word answered "good" every time sits here forever — which is what makes distance below it a usable difficulty signal. */
 export const INITIAL_EASE = 2.5
-export const MAX_INTERVAL_DAYS = 365
+/**
+ * Ceiling on a review interval.
+ *
+ * Was 365, which in practice meant no ceiling at all — the schedule reached
+ * it on its own and words sat a year out. Measured on the live library when
+ * this changed: 301 words in the review phase, median interval 12 days, but
+ * 19 at 90 days or more and 9 past 180, topping out at the old cap exactly.
+ *
+ * The argument for a year was that quizzes already catch a forgotten word:
+ * questionPool (lib/quiz.ts) filters on `state !== 'new'` and ignores `due`
+ * entirely, so a word 119 days out is still drawn every day, and answering
+ * it wrong pulls `due` back to today. Simulated against the real library
+ * with the app's own weightedShuffle — 310-word pool, 10 questions a
+ * session, 8.1 sessions a day — a 119-day word surfaces about every 4 days,
+ * and the ones carried furthest surface *more* often, since a low ease and
+ * a lapse both raise their draw weight.
+ *
+ * That safety net is real but conditional: it holds only while the quizzes
+ * keep happening, and quiz volume over a single week ranged from 1 session
+ * to 17. A cap costs a few more reviews a day and does not depend on a
+ * habit holding. 100 rather than 90 or 120 is the round number the user
+ * asked for; nothing in the algorithm turns on the exact value.
+ *
+ * **Forward-looking only.** Entries already scheduled past this keep their
+ * `due` date until they next come up, at which point fuzz() clamps them.
+ */
+export const MAX_INTERVAL_DAYS = 100
 const GRADUATE_DAYS = 1
 const EASY_GRADUATE_DAYS = 4
 
@@ -54,9 +80,14 @@ export function clampIntervalModifier(v: number | undefined): number {
  * output of the learning steps, and stretching a word's very first review
  * out is a different decision from stretching the ones after it.
  *
- * Note that it compounds. At 1.3 the effective multiplier per review goes
- * from 2.5 to 3.25, so five reviews in the interval is 1.3^5 ≈ 3.7 times
- * longer, not 30%. Small numbers here move fast.
+ * Note that it compounds, up to a point. At 1.3 the effective multiplier
+ * per review goes from 2.5 to 3.25, so the interval runs away far faster
+ * than the 30% the number looks like — but MAX_INTERVAL_DAYS clips it
+ * before the compounding gets far. Starting from one day, 1.3 already
+ * reaches the ceiling on the fourth review (107, clipped to 100) against
+ * plain 2.5's 50, so the widest gap the modifier can actually open is
+ * roughly 2x, not the 3.7x the raw arithmetic gives. Small numbers here
+ * still move fast; they just stop sooner than they used to.
  */
 export function gradeWord(
   prev: ProgressEntry | undefined,
@@ -137,8 +168,8 @@ function diffDays(from: string, to: string): number {
  * within the session by queue position, not by clock (see
  * LEARNING_STEPS), so a minutes figure would be an invention.
  *
- * Labels stay in days all the way to 365 天 — converting to 月/年 would
- * round away exactly the magnitude this exists to show.
+ * Labels stay in days all the way to MAX_INTERVAL_DAYS — converting to
+ * 月/年 would round away exactly the magnitude this exists to show.
  */
 export function previewIntervals(
   prev: ProgressEntry | undefined,
