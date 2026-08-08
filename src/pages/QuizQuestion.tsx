@@ -182,14 +182,16 @@ interface AnswerFeedbackProps {
   correct: boolean
   onNext: () => void
   nextLabel: string
+  /** The answer itself — rendered above the button. Keep it short. */
   children?: ReactNode
+  /** Optional reference material — rendered below the button, out of the way. */
+  detail?: ReactNode
 }
 
 /**
  * Feedback block shown after grading: shared by multiple-choice and
- * spelling questions — status text + "Next question" button, with room for
- * the spelling question's "correct spelling" line (children) beyond just
- * multiple-choice.
+ * spelling questions — status text + "Next question" button, with two slots
+ * around the button.
  *
  * Only ever mounted at the moment grading completes (the parent
  * conditionally renders it based on locked/submitted), so a mount effect
@@ -200,8 +202,24 @@ interface AnswerFeedbackProps {
  * Focus goes straight through a ref — Button now declares a ref prop, so
  * there's no need to route around it with a fixed id + getElementById
  * anymore.
+ *
+ * **Which slot a thing goes in is what keeps the page still.** Focusing an
+ * element that is below the fold scrolls it into view, so anything tall
+ * placed above the button drags the whole page down the instant an answer
+ * lands — which is exactly what the contrast comparison card did: two
+ * full entries plus a difference note, every single time, whether or not
+ * you wanted to read them.
+ *
+ * - `children` is the answer itself, and stays above the button: short, and
+ *   the reason you are looking at the screen (spelling's 正确拼写 line).
+ * - `detail` is reference material you may or may not want, and goes below:
+ *   the contrast card. Scroll to it if you care; otherwise the next
+ *   question is already under your thumb.
+ *
+ * Same rule the review page settled on when its grade buttons moved above
+ * the card (see the comment at pages/Review.tsx).
  */
-function AnswerFeedback({ correct, onNext, nextLabel, children }: AnswerFeedbackProps) {
+function AnswerFeedback({ correct, onNext, nextLabel, children, detail }: AnswerFeedbackProps) {
   const nextRef = useRef<HTMLButtonElement>(null)
   useEffect(() => {
     nextRef.current?.focus()
@@ -216,6 +234,7 @@ function AnswerFeedback({ correct, onNext, nextLabel, children }: AnswerFeedback
       <Button ref={nextRef} className="quiz-q__next" variant="primary" block onClick={onNext}>
         {nextLabel}
       </Button>
+      {detail}
     </>
   )
 }
@@ -331,11 +350,16 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
       </div>
 
       {locked ? (
-        <AnswerFeedback correct={chosen === question.answer} onNext={onNext} nextLabel={nextLabel}>
-          {question.type === 'contrast' && question.contrastId !== undefined ? (
-            <ContrastCard answerId={question.wordId} otherId={question.contrastId} />
-          ) : null}
-        </AnswerFeedback>
+        <AnswerFeedback
+          correct={chosen === question.answer}
+          onNext={onNext}
+          nextLabel={nextLabel}
+          detail={
+            question.type === 'contrast' && question.contrastId !== undefined ? (
+              <ContrastCard answerId={question.wordId} otherId={question.contrastId} />
+            ) : null
+          }
+        />
       ) : null}
     </div>
   )
