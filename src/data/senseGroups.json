@@ -2063,6 +2063,2134 @@
       ],
       "en": "That longer hours mean more output is a common fallacy.",
       "why": "fallacy 指推理本身站不住脚的错误论断,逻辑学的标准词;misconception 是对事实的误解;myth 指广为流传却不真的说法;faulty reasoning 是描述性短语,不能作可数名词用。"
+    },
+    {
+      "zh": "作伪证的代价比他想瞒住的那件事重得多。",
+      "target": "作伪证",
+      "order": [
+        "perjury"
+      ],
+      "extra": [
+        "false testimony",
+        "lying under oath",
+        "contempt"
+      ],
+      "en": "The perjury cost him far more than the thing he was hiding.",
+      "why": "perjury 特指宣誓后仍作虚假陈述这一罪名,是法律术语;false testimony 只描述证词不实,不含罪名;lying under oath 是它的白话说法;contempt 指藐视法庭,是另一回事。"
+    },
+    {
+      "zh": "她那份庭外证词录了四个小时,逐字存档。",
+      "target": "庭外证词",
+      "order": [
+        "deposition"
+      ],
+      "extra": [
+        "sworn statement",
+        "affidavit",
+        "transcript"
+      ],
+      "en": "Her deposition ran four hours and was transcribed word for word.",
+      "why": "deposition 特指开庭前在律师主持下录取的口头证词,可被交叉盘问;sworn statement 泛指宣誓声明;affidavit 是单方面书面陈述,不接受盘问;transcript 只是记录文本本身。"
+    },
+    {
+      "zh": "专家也会犯错,所以这套流程要求两人复核。",
+      "target": "会犯错",
+      "order": [
+        "fallible"
+      ],
+      "extra": [
+        "error-prone",
+        "imperfect",
+        "only human"
+      ],
+      "en": "Experts are fallible, which is why the process asks for two reviewers.",
+      "why": "fallible 指本性上就有可能出错,是对能力边界的陈述,中性;error-prone 强调出错频率高,带批评;imperfect 泛指不完美;only human 是口语化的开脱。"
+    },
+    {
+      "zh": "他谈起那个项目时的热忱让整屋人都安静下来。",
+      "target": "热忱",
+      "order": [
+        "fervor"
+      ],
+      "extra": [
+        "zeal",
+        "ardor",
+        "intensity"
+      ],
+      "en": "He spoke about the project with a fervor that quieted the room.",
+      "why": "fervor 指发自内心的强烈热情,可以是信仰、事业或爱;zeal 强调为达成目标而近乎狂热的投入,有时含贬义;ardor 更偏情感层面的炽热;intensity 只说强度大,不指明是热情。"
+    },
+    {
+      "zh": "这版录音对原始现场的还原度极高。",
+      "target": "还原度",
+      "order": [
+        "fidelity"
+      ],
+      "extra": [
+        "faithfulness",
+        "accuracy",
+        "true to the original"
+      ],
+      "en": "The transfer keeps a high fidelity to the original session.",
+      "why": "fidelity 指复制品对原件的忠实程度,音频与翻译语境常用,也可指对人的忠诚;faithfulness 更常说对人或承诺的忠贞;accuracy 只讲数值或事实上的准确;true to the original 是描述性短语。"
+    },
+    {
+      "zh": "他对那个数字的执念让整个复盘会偏离了重点。",
+      "target": "执念",
+      "order": [
+        "fixation"
+      ],
+      "extra": [
+        "obsession",
+        "preoccupation",
+        "hang-up"
+      ],
+      "en": "His fixation on that one number pulled the whole review off course.",
+      "why": "fixation 指注意力死死粘在某一点上不肯移开,含病态意味,搭配 on;obsession 强调挥之不去、反复侵入的念头;preoccupation 只说心思被占据,程度轻;hang-up 是口语,指心理上的疙瘩。"
+    },
+    {
+      "zh": "筹备了三年的计划终于在上个月开花结果。",
+      "target": "开花结果",
+      "order": [
+        "fruition"
+      ],
+      "extra": [
+        "realization",
+        "culmination",
+        "payoff"
+      ],
+      "en": "Three years of planning came to fruition last month.",
+      "why": "fruition 指长期投入终于结出结果,几乎固定在 come to fruition;realization 侧重把设想变成现实;culmination 强调发展到顶点的那一刻;payoff 偏口语,指得到的回报。"
+    },
+    {
+      "zh": "这份材料整理得杂乱无章,前后顺序完全对不上。",
+      "target": "杂乱无章",
+      "order": [
+        "haphazard"
+      ],
+      "extra": [
+        "disorganized",
+        "slapdash",
+        "hit-or-miss"
+      ],
+      "en": "The file is haphazard: nothing follows anything else.",
+      "why": "haphazard 指没有章法、全凭偶然地拼凑,重点在缺乏计划;disorganized 强调本该有序却乱了;slapdash 侧重做得草率马虎;hit-or-miss 指效果时好时坏、不稳定。"
+    },
+    {
+      "zh": "谈判在第三轮陷入僵局,双方都不肯先让步。",
+      "target": "僵局",
+      "order": [
+        "impasse"
+      ],
+      "extra": [
+        "deadlock",
+        "stalemate",
+        "standoff"
+      ],
+      "en": "Talks reached an impasse in the third round with neither side moving.",
+      "why": "impasse 指走不下去、前面没路的处境,强调无解;deadlock 侧重双方力量相当而卡住;stalemate 原为棋类术语,指谁也赢不了的僵持;standoff 强调对峙的姿态。"
+    },
+    {
+      "zh": "听到那句评价,她当场愤愤不平地站了起来。",
+      "target": "愤愤不平",
+      "order": [
+        "indignant"
+      ],
+      "extra": [
+        "affronted",
+        "aggrieved",
+        "irate"
+      ],
+      "en": "She stood up, indignant at what had just been said.",
+      "why": "indignant 指因遭遇不公而生的正当愤怒,自认理直;affronted 强调觉得被当众冒犯;aggrieved 侧重觉得自己受了委屈,常用于正式申诉;irate 只讲怒气之盛,不含是非判断。"
+    },
+    {
+      "zh": "没有任何流程是万无一失的,双签也不例外。",
+      "target": "万无一失",
+      "order": [
+        "infallible"
+      ],
+      "extra": [
+        "foolproof",
+        "unerring",
+        "watertight"
+      ],
+      "en": "No process is infallible, and dual sign-off is no exception.",
+      "why": "infallible 指从不出错,常用于人、判断或体系,略带绝对化;foolproof 强调傻瓜也用不坏,针对设计;unerring 侧重每次都精准命中;watertight 多形容论证或合同没有漏洞。"
+    },
+    {
+      "zh": "用三根皮筋和一支笔解决这个问题,靠的是巧思。",
+      "target": "巧思",
+      "order": [
+        "ingenuity"
+      ],
+      "extra": [
+        "resourcefulness",
+        "inventiveness",
+        "cleverness"
+      ],
+      "en": "Two rubber bands and a pen: the fix was pure ingenuity.",
+      "why": "ingenuity 指想出巧妙办法的创造力,强调解法本身的妙;resourcefulness 侧重在条件有限时还能找到出路;inventiveness 强调能造出新东西;cleverness 泛指聪明,可能只是口才。"
+    },
+    {
+      "zh": "那句话本身无害,是被截图之后才变了味。",
+      "target": "无害",
+      "order": [
+        "innocuous"
+      ],
+      "extra": [
+        "inoffensive",
+        "benign",
+        "unremarkable"
+      ],
+      "en": "The line was innocuous until someone screenshotted it.",
+      "why": "innocuous 指本身不会造成伤害或冒犯,常用于事后对比;inoffensive 侧重不至于惹人不快;benign 强调不含恶意,医学上指良性;unremarkable 只说平淡无奇,不涉及是否有害。"
+    },
+    {
+      "zh": "她做了半年的内省,才想明白自己为什么一直不快乐。",
+      "target": "内省",
+      "order": [
+        "introspection"
+      ],
+      "extra": [
+        "self-examination",
+        "soul-searching",
+        "navel-gazing"
+      ],
+      "en": "Half a year of introspection finally told her why she was unhappy.",
+      "why": "introspection 指向内审视自己的想法与动机,中性偏正式;self-examination 更强调检讨对错;soul-searching 侧重面临重大抉择时的反复掂量;navel-gazing 是贬义,指只顾自省而不干实事。"
+    },
+    {
+      "zh": "新人刚进来时性格是可塑的,半年后就定型了。",
+      "target": "可塑的",
+      "order": [
+        "malleable"
+      ],
+      "extra": [
+        "impressionable",
+        "pliable",
+        "formative"
+      ],
+      "en": "New hires are malleable for about half a year, and then they set.",
+      "why": "malleable 原指金属可锤打成形,用于人时指容易被塑造,中性;impressionable 强调容易受他人影响,多用于年轻人,略含风险;pliable 侧重顺从、不抵抗;formative 形容的是那段时期而非人。"
+    },
+    {
+      "zh": "那支队伍里一半是拿钱办事的雇佣兵。",
+      "target": "雇佣兵",
+      "order": [
+        "mercenary"
+      ],
+      "extra": [
+        "soldier of fortune",
+        "hired gun",
+        "contractor"
+      ],
+      "en": "Half that unit were mercenaries, in it for the pay.",
+      "why": "mercenary 指为报酬替外国或他方作战的人,也作形容词指唯利是图;soldier of fortune 偏浪漫化的说法;hired gun 现多比喻被高价请来的专业人士;contractor 是当代委婉语,回避了雇佣兵三字。"
+    },
+    {
+      "zh": "一场大火把那片老街区彻底抹平了。",
+      "target": "彻底抹平",
+      "order": [
+        "obliteration"
+      ],
+      "extra": [
+        "annihilation",
+        "eradication",
+        "wiping out"
+      ],
+      "en": "The fire left the old quarter in near-total obliteration.",
+      "why": "obliteration 强调抹得一点痕迹都不剩,连存在过的证据都没了;annihilation 侧重整体被消灭,多用于人群或军队;eradication 指连根拔除,常用于疾病与陋习;wiping out 是口语说法。"
+    },
+    {
+      "zh": "他对这件事的态度在两个月里反复摇摆。",
+      "target": "反复摇摆",
+      "order": [
+        "oscillate"
+      ],
+      "extra": [
+        "waver",
+        "vacillate",
+        "seesaw"
+      ],
+      "en": "His position oscillated between the two options for two months.",
+      "why": "oscillate 原是物理上的往复振荡,用于观点时强调在两端之间来回,中性;waver 侧重信心动摇、快要撑不住;vacillate 含贬义,指优柔寡断迟迟不决;seesaw 强调此起彼伏的交替。"
+    },
+    {
+      "zh": "他表面上的理由是身体原因,真正的原因谁都清楚。",
+      "target": "表面上的",
+      "order": [
+        "ostensible"
+      ],
+      "extra": [
+        "purported",
+        "professed",
+        "stated"
+      ],
+      "en": "The ostensible reason was his health; everyone knew the real one.",
+      "why": "ostensible 指对外宣称的、与实情多半不符,几乎总暗示另有隐情;purported 强调据称如此但未经证实;professed 侧重本人自己声称;stated 最中性,只说这是写明的说法。"
+    },
+    {
+      "zh": "没有哪一项技术是万灵药,这条也不例外。",
+      "target": "万灵药",
+      "order": [
+        "panacea"
+      ],
+      "extra": [
+        "cure-all",
+        "silver bullet",
+        "magic wand"
+      ],
+      "en": "No technology is a panacea, and this one is no exception.",
+      "why": "panacea 指号称能治百病的东西,用时多半在否定它,正式;cure-all 是它的白话对应;silver bullet 强调一击解决难题的那个特效手段;magic wand 侧重不切实际的幻想。"
+    },
+    {
+      "zh": "那篇致辞通篇都是陈词滥调,没有一句是他自己的。",
+      "target": "陈词滥调",
+      "order": [
+        "platitude"
+      ],
+      "extra": [
+        "cliché",
+        "truism",
+        "boilerplate"
+      ],
+      "en": "The speech was a string of platitudes and not one line of his own.",
+      "why": "platitude 特指听着有道理却空洞乏味的老生常谈,常用于批评讲话;cliché 泛指用滥了的表达,不限于道理;truism 指本身正确但说了等于没说;boilerplate 是套用的固定模板文字。"
+    },
+    {
+      "zh": "消息公布之后,股价当天急剧下跌。",
+      "target": "急剧",
+      "order": [
+        "precipitously"
+      ],
+      "extra": [
+        "steeply",
+        "sharply",
+        "off a cliff"
+      ],
+      "en": "The share price fell precipitously the day the news broke.",
+      "why": "precipitously 强调又快又陡、几乎垂直地下落,正式且多用于坏方向;steeply 只说坡度大,涨跌都能用;sharply 侧重变化幅度明显;off a cliff 是形象的口语夸张。"
+    },
+    {
+      "zh": "这批设备的采购流程走了整整九个月。",
+      "target": "采购",
+      "order": [
+        "procurement"
+      ],
+      "extra": [
+        "sourcing",
+        "purchasing",
+        "acquisition"
+      ],
+      "en": "Procurement for this equipment took nine full months.",
+      "why": "procurement 特指机构按既定流程获取物资或服务,含招标与合规的意味,正式;sourcing 强调找到供应商这一环;purchasing 是日常的买;acquisition 更常指收购企业或获得资产。"
+    },
+    {
+      "zh": "他在谈判桌上的本事,业内很少有人比得了。",
+      "target": "本事",
+      "order": [
+        "prowess"
+      ],
+      "extra": [
+        "mastery",
+        "command",
+        "chops"
+      ],
+      "en": "His prowess at the negotiating table has few equals in the field.",
+      "why": "prowess 指经过验证的高超能力,带敬佩的分量,常搭配 at 或 in;mastery 强调对某领域已完全掌握;command 侧重对工具或语言的驾驭;chops 是口语,多用于音乐与技术圈。"
+    },
+    {
+      "zh": "当时的审慎让公司躲过了后来那轮暴雷。",
+      "target": "审慎",
+      "order": [
+        "prudence"
+      ],
+      "extra": [
+        "foresight",
+        "restraint",
+        "good sense"
+      ],
+      "en": "That prudence kept the company clear of the collapse that followed.",
+      "why": "prudence 指权衡长远风险后的克制与稳妥,是一种品质;foresight 强调预见到了将来会发生什么;restraint 只说忍住没做;good sense 泛指判断力正常。"
+    },
+    {
+      "zh": "那家小馆子是这座城市小吃的典型代表。",
+      "target": "典型代表",
+      "order": [
+        "quintessential"
+      ],
+      "extra": [
+        "archetypal",
+        "classic",
+        "the definitive"
+      ],
+      "en": "That stall is the quintessential version of the city's street food.",
+      "why": "quintessential 指最纯粹地体现了某类事物的本质,近乎标杆;archetypal 强调符合某个原型模式;classic 侧重经受住时间检验;the definitive 指最权威、可作为标准的那一个。"
+    },
+    {
+      "zh": "那片棚户区在三天里被夷为平地。",
+      "target": "夷为平地",
+      "order": [
+        "raze"
+      ],
+      "extra": [
+        "level",
+        "flatten",
+        "bulldoze"
+      ],
+      "en": "The settlement was razed within three days.",
+      "why": "raze 指把建筑物整片推平、片瓦不留,正式且多用于被动;level 是中性的推平;flatten 更口语;bulldoze 强调用推土机这一手段,也可比喻强行推进。"
+    },
+    {
+      "zh": "他成名之后反而过起了离群索居的日子。",
+      "target": "离群索居",
+      "order": [
+        "reclusive"
+      ],
+      "extra": [
+        "withdrawn",
+        "hermit-like",
+        "off the grid"
+      ],
+      "en": "Fame turned him reclusive rather than the other way round.",
+      "why": "reclusive 指长期主动避开社交、独自生活;withdrawn 强调从人群中退缩的状态,常因抑郁;hermit-like 是比喻说法;off the grid 侧重脱离现代生活的基础设施。"
+    },
+    {
+      "zh": "他公开否认了自己两年前签过的那份协议。",
+      "target": "公开否认",
+      "order": [
+        "repudiate"
+      ],
+      "extra": [
+        "disavow",
+        "renounce",
+        "walk back"
+      ],
+      "en": "He publicly repudiated the agreement he had signed two years earlier.",
+      "why": "repudiate 指正式声明不再承认某事的效力或与之的关系,正式且强硬;disavow 侧重否认与自己有关;renounce 强调放弃本属于自己的权利或身份;walk back 是口语,指把说过的话往回收。"
+    },
+    {
+      "zh": "急救人员在路边把他抢救了过来。",
+      "target": "抢救",
+      "order": [
+        "resuscitate"
+      ],
+      "extra": [
+        "revive",
+        "bring round",
+        "reanimate"
+      ],
+      "en": "Paramedics resuscitated him at the roadside.",
+      "why": "resuscitate 特指对呼吸心跳停止者施行的急救,医学术语,也可比喻救活濒死的项目;revive 泛指使恢复生气;bring round 是使苏醒的口语;reanimate 偏文学与科幻。"
+    },
+    {
+      "zh": "这类病人对轻微感染就格外易感。",
+      "target": "易感",
+      "order": [
+        "susceptible"
+      ],
+      "extra": [
+        "prone",
+        "vulnerable",
+        "at risk of"
+      ],
+      "en": "These patients are susceptible to even mild infections.",
+      "why": "susceptible 指体质或性格上容易受某种作用影响,搭配 to,医学语境标准词;prone 强调倾向于反复发生某事,搭配 to;vulnerable 侧重缺乏防护、受伤害后果严重;at risk of 只陈述风险存在。"
+    },
+    {
+      "zh": "那套说法在新数据面前已经站不住脚。",
+      "target": "站不住脚",
+      "order": [
+        "untenable"
+      ],
+      "extra": [
+        "indefensible",
+        "unsustainable",
+        "no longer holds"
+      ],
+      "en": "The position became untenable once the new data landed.",
+      "why": "untenable 指立场或论点无法再守住,也可指处境难以为继,正式;indefensible 强调在道义上没法辩护;unsustainable 侧重资源或速度上撑不下去;no longer holds 是描述性说法。"
+    },
+    {
+      "zh": "车子在弯道上突然转向,冲进了应急车道。",
+      "target": "突然转向",
+      "order": [
+        "veer"
+      ],
+      "extra": [
+        "swerve",
+        "lurch",
+        "career off"
+      ],
+      "en": "The car veered on the bend and ended up in the hard shoulder.",
+      "why": "veer 指方向明显改变,可用于车辆也可用于话题或政策的转向;swerve 强调为避让而猛地一闪;lurch 侧重失去平衡的踉跄;career off 指失控地冲出去。"
+    },
+    {
+      "zh": "药效在两小时后开始减弱,疼痛又回来了。",
+      "target": "减弱",
+      "order": [
+        "subdue"
+      ],
+      "extra": [
+        "quell",
+        "damp down",
+        "take the edge off"
+      ],
+      "en": "Nothing subdued the pain once the two hours were up.",
+      "why": "subdue 指把某种强烈的东西压下去、使之温和,宾语可以是人、情绪或声音;quell 强调平息骚动或恐惧;damp down 侧重降低强度;take the edge off 只说削去最难受的那一部分。"
+    },
+    {
+      "zh": "委员会九分钟就走过场地批准了那笔预算。",
+      "target": "走过场地批准",
+      "order": [
+        "rubber-stamp"
+      ],
+      "extra": [
+        "wave through",
+        "nod through",
+        "sign off without reading"
+      ],
+      "en": "The committee rubber-stamped the budget in nine minutes.",
+      "why": "rubber-stamp 指形式上审批、实际未加审查,含明确批评;wave through 强调放行时连看都不看;nod through 是英式说法,多用于议事;sign off without reading 是描述性短语,不是固定表达。"
+    },
+    {
+      "zh": "这套理论认为财富最终会向下渗透到普通人。",
+      "target": "向下渗透",
+      "order": [
+        "trickle-down"
+      ],
+      "extra": [
+        "supply-side",
+        "top-down",
+        "filter down"
+      ],
+      "en": "The theory says trickle-down effects will reach ordinary people in the end.",
+      "why": "trickle-down 特指减富人税以间接惠及大众的那套主张,常带质疑语气;supply-side 是它所属的经济学派名称;top-down 泛指自上而下的任何结构;filter down 只描述逐层向下的动作。"
+    },
+    {
+      "zh": "公司请了第三方来核实那批数据的来源。",
+      "target": "核实",
+      "order": [
+        "corroborate"
+      ],
+      "extra": [
+        "back up",
+        "bear out",
+        "cross-verify"
+      ],
+      "en": "A third party was brought in to corroborate where the data came from.",
+      "why": "corroborate 指用另一独立来源印证已有说法,法律与科研常用;back up 是口语的支持;bear out 强调事实最终证明某说法成立;cross-verify 是描述性的交叉核对。"
+    },
+    {
+      "zh": "她的语料库收了三十年的报纸,共两亿词。",
+      "target": "语料库",
+      "order": [
+        "corpus"
+      ],
+      "extra": [
+        "dataset",
+        "text collection",
+        "archive"
+      ],
+      "en": "Her corpus covers thirty years of newspapers, two hundred million words.",
+      "why": "corpus 特指为语言研究而系统收集的文本集合,语言学术语;dataset 泛指任何数据集;text collection 是描述性说法;archive 强调长期保存,不必然供分析。"
+    },
+    {
+      "zh": "手术前她被推进去做了全身麻醉。",
+      "target": "麻醉",
+      "order": [
+        "anesthesia"
+      ],
+      "extra": [
+        "sedation",
+        "numbing",
+        "being put under"
+      ],
+      "en": "She was taken in for general anesthesia before the operation.",
+      "why": "anesthesia 指以药物使痛觉或意识消失的医学处理,分全身与局部;sedation 只是让人镇静放松,意识仍在;numbing 是局部失去知觉的通俗说法;being put under 是口语。"
+    },
+    {
+      "zh": "那批样品里的杂质含量超出了标准三倍。",
+      "target": "杂质",
+      "order": [
+        "impurity"
+      ],
+      "extra": [
+        "contaminant",
+        "adulterant",
+        "foreign matter"
+      ],
+      "en": "Impurity levels in the batch ran three times over the limit.",
+      "why": "impurity 指材料中混入的非目标成分,化学与冶金的中性术语;contaminant 强调外来污染物,含有害意味;adulterant 特指为牟利掺进去的东西;foreign matter 是检验报告里的描述性说法。"
+    },
+    {
+      "zh": "法官要求她把那通电话逐字复述一遍。",
+      "target": "逐字",
+      "order": [
+        "verbatim"
+      ],
+      "extra": [
+        "word for word",
+        "to the letter",
+        "in full"
+      ],
+      "en": "The judge asked her to repeat the call verbatim.",
+      "why": "verbatim 指一字不改地照录或复述,常修饰 quote、transcript;word for word 是它的白话说法;to the letter 强调严格照办某项指示;in full 只说完整不删节,不保证用词相同。"
+    },
+    {
+      "zh": "两个部门为那笔预算的归属争了整整六周。",
+      "target": "争",
+      "order": [
+        "wrangle"
+      ],
+      "extra": [
+        "squabble",
+        "haggle",
+        "tussle"
+      ],
+      "en": "The two departments wrangled over that budget line for six weeks.",
+      "why": "wrangle 指旷日持久、来回拉锯的争执,常搭配 over;squabble 是为小事拌嘴,时间短;haggle 专指讨价还价;tussle 强调较劲角力,可以是身体上的。"
+    },
+    {
+      "zh": "这个版本把原著删节到只剩三分之一。",
+      "target": "删节",
+      "order": [
+        "abridge"
+      ],
+      "extra": [
+        "condense",
+        "cut down",
+        "expurgate"
+      ],
+      "en": "This edition abridges the original to a third of its length.",
+      "why": "abridge 指保留主干、删去枝节的正式缩编,常见于 abridged edition;condense 强调压缩得更紧凑而不必删内容;cut down 是口语的砍短;expurgate 特指删掉被认为不妥的部分。"
+    },
+    {
+      "zh": "计划到现在还没有明确形状,只是一堆想法。",
+      "target": "没有明确形状",
+      "order": [
+        "amorphous"
+      ],
+      "extra": [
+        "shapeless",
+        "inchoate",
+        "free-floating"
+      ],
+      "en": "The plan is still amorphous, a pile of ideas and nothing more.",
+      "why": "amorphous 指缺乏确定形态或结构,可指物质也可指想法;shapeless 更具体地说没有外形;inchoate 强调刚开头、尚未成形;free-floating 侧重没有依附、四处飘荡。"
+    },
+    {
+      "zh": "没人会不情愿给她这份荣誉,她确实做到了。",
+      "target": "不情愿给",
+      "order": [
+        "begrudge"
+      ],
+      "extra": [
+        "resent",
+        "grudge",
+        "hold against"
+      ],
+      "en": "Nobody would begrudge her the recognition; she earned it.",
+      "why": "begrudge 指心里不情愿地让别人得到某物,常用于否定句表示欣然认可;resent 是对某事怀恨在心;grudge 作名词指积怨;hold against 强调把某事记在对方账上。"
+    },
+    {
+      "zh": "这三章的论证前后连贯,读下来一气呵成。",
+      "target": "前后连贯",
+      "order": [
+        "cohere"
+      ],
+      "extra": [
+        "hold together",
+        "hang together",
+        "be consistent"
+      ],
+      "en": "The three chapters cohere well enough to read in one sitting.",
+      "why": "cohere 指各部分在逻辑上彼此契合、构成整体,正式;hold together 强调没有散架;hang together 是口语,多用于说法是否自洽;be consistent 只说不自相矛盾。"
+    },
+    {
+      "zh": "他为迟到编造了一个越说越长的理由。",
+      "target": "编造",
+      "order": [
+        "concoct"
+      ],
+      "extra": [
+        "cook up",
+        "fabricate",
+        "dream up"
+      ],
+      "en": "He concocted an excuse that got longer the more he talked.",
+      "why": "concoct 指临时拼凑出一套说辞或计划,含随意杂糅的意味;cook up 是口语版;fabricate 强调完全捏造、意在欺骗;dream up 侧重凭空想出,不必然是谎话。"
+    },
+    {
+      "zh": "那批旧档案被打发到了地下三层的储藏间。",
+      "target": "打发到",
+      "order": [
+        "consign"
+      ],
+      "extra": [
+        "relegate",
+        "banish",
+        "pack off"
+      ],
+      "en": "The old files were consigned to a storeroom three floors down.",
+      "why": "consign 指把某物正式交付或打发到某处,常用被动且带弃置意味;relegate 强调降到更低的位置或等级;banish 侧重驱逐出去;pack off 是口语的打发走人。"
+    },
+    {
+      "zh": "调查认定承包商在这起事故里应受谴责。",
+      "target": "应受谴责",
+      "order": [
+        "culpable"
+      ],
+      "extra": [
+        "blameworthy",
+        "at fault",
+        "answerable"
+      ],
+      "en": "The inquiry found the contractor culpable for the collapse.",
+      "why": "culpable 指对已发生的坏结果负有过失责任,法律色彩浓;blameworthy 是道德层面的该受责备;at fault 是口语,多用于事故责任划分;answerable 强调有义务作出交代,不等于有错。"
+    },
+    {
+      "zh": "这份文件精确划定了双方各自的责任边界。",
+      "target": "精确划定",
+      "order": [
+        "delineate"
+      ],
+      "extra": [
+        "set out",
+        "demarcate",
+        "spell out"
+      ],
+      "en": "The document delineates where each side's responsibility ends.",
+      "why": "delineate 指把轮廓或界限清楚地描画出来,可用于责任、角色与概念;set out 是中性的列明;demarcate 专指划定地理或职权边界;spell out 强调讲得极其具体、不留含糊。"
+    },
+    {
+      "zh": "那场大火之后,一整个街区的人陷入了赤贫。",
+      "target": "赤贫",
+      "order": [
+        "destitution"
+      ],
+      "extra": [
+        "penury",
+        "indigence",
+        "utter poverty"
+      ],
+      "en": "The fire left a whole block in destitution.",
+      "why": "destitution 指连基本生活所需都没有的极端贫困,正式;penury 强调长期拮据的窘迫;indigence 是法律与救济文书用语;utter poverty 是描述性的强调说法。"
+    },
+    {
+      "zh": "他们租下的是一栋年久失修的老楼,窗框都朽了。",
+      "target": "年久失修",
+      "order": [
+        "dilapidated"
+      ],
+      "extra": [
+        "ramshackle",
+        "decrepit",
+        "run-down"
+      ],
+      "en": "They took a dilapidated building with window frames already rotting.",
+      "why": "dilapidated 指因长期缺乏维护而破败,重点在失修;ramshackle 强调结构松散、摇摇欲坠;decrepit 也用于人,指老朽;run-down 更口语,也可形容地区或身体状态。"
+    },
+    {
+      "zh": "把总数按年龄段拆开之后,结论完全变了。",
+      "target": "拆开",
+      "order": [
+        "disaggregate"
+      ],
+      "extra": [
+        "break down",
+        "split out",
+        "unbundle"
+      ],
+      "en": "Disaggregate the total by age band and the conclusion flips.",
+      "why": "disaggregate 指把汇总数据还原成更细的分组,统计学术语;break down 是通用的分解;split out 强调把某一部分单独拎出来;unbundle 多指把打包的商品或服务拆开卖。"
+    },
+    {
+      "zh": "时间把碑上的名字一点点抹去了。",
+      "target": "抹去",
+      "order": [
+        "efface"
+      ],
+      "extra": [
+        "wear away",
+        "expunge",
+        "blot out"
+      ],
+      "en": "Time had effaced the names on the stone.",
+      "why": "efface 指表面痕迹被逐渐磨掉,也用于 self-effacing 指不出风头;wear away 强调磨损这一物理过程;expunge 指从记录中正式删除;blot out 侧重整片遮盖住看不见。"
+    },
+    {
+      "zh": "这属于择期手术,可以排到下个季度。",
+      "target": "择期",
+      "order": [
+        "elective"
+      ],
+      "extra": [
+        "non-urgent",
+        "scheduled",
+        "discretionary"
+      ],
+      "en": "It is elective surgery and can wait until next quarter.",
+      "why": "elective 在医学语境特指可由病人选择时间、非紧急的手术;non-urgent 只说不着急;scheduled 强调已排入日程;discretionary 多用于经费或权限,指可自行决定。"
+    },
+    {
+      "zh": "她用一张图就把那套机制解释清楚了。",
+      "target": "解释清楚",
+      "order": [
+        "elucidate"
+      ],
+      "extra": [
+        "shed light on",
+        "expound",
+        "make plain"
+      ],
+      "en": "One diagram elucidated the whole mechanism.",
+      "why": "elucidate 指把晦涩的东西讲明白,正式,宾语多是概念或文本;shed light on 强调提供了新的理解角度;expound 侧重详细阐述自己的观点;make plain 是直白的说清楚。"
+    },
+    {
+      "zh": "那家店集中体现了这条街过去二十年的变化。",
+      "target": "集中体现",
+      "order": [
+        "epitomize"
+      ],
+      "extra": [
+        "embody",
+        "typify",
+        "sum up"
+      ],
+      "en": "That shop epitomizes what has happened to the street in twenty years.",
+      "why": "epitomize 指最典型地浓缩体现某类事物的特征;embody 强调把抽象的东西具体化成实体;typify 侧重是常见类型的代表;sum up 是口语的概括。"
+    },
+    {
+      "zh": "他学识渊博,却从不用来压人。",
+      "target": "学识渊博",
+      "order": [
+        "erudite"
+      ],
+      "extra": [
+        "learned",
+        "well-read",
+        "scholarly"
+      ],
+      "en": "He is erudite and never uses it to talk down to anyone.",
+      "why": "erudite 指经年累积的深厚学问,常带敬意;learned 意思接近但更旧;well-read 侧重书读得多;scholarly 强调治学的方式与态度,也可形容文章。"
+    },
+    {
+      "zh": "追悼会上他那句玩笑显得很不合时宜。",
+      "target": "不合时宜",
+      "order": [
+        "facetious"
+      ],
+      "extra": [
+        "flippant",
+        "glib",
+        "ill-timed"
+      ],
+      "en": "His facetious remark landed badly at the memorial.",
+      "why": "facetious 指在不该开玩笑的场合硬要俏皮;flippant 强调对严肃事情态度轻率;glib 侧重话说得太顺太滑、显得不诚恳;ill-timed 只说时机不对,不涉及语气。"
+    },
+    {
+      "zh": "他们提前公布了数据,先一步堵住了外界的猜测。",
+      "target": "先一步堵住",
+      "order": [
+        "forestall"
+      ],
+      "extra": [
+        "preempt",
+        "head off",
+        "get ahead of"
+      ],
+      "en": "Releasing the data early forestalled most of the speculation.",
+      "why": "forestall 指抢在事情发生前采取行动使其不能发生;preempt 强调先占先做以剥夺对方机会;head off 是口语的拦下;get ahead of 侧重抢在前面控制局面。"
+    },
+    {
+      "zh": "看到学生真的用上了那套方法,他很欣慰。",
+      "target": "欣慰",
+      "order": [
+        "gratify"
+      ],
+      "extra": [
+        "please",
+        "hearten",
+        "give satisfaction"
+      ],
+      "en": "It gratified him to see students actually using the method.",
+      "why": "gratify 指愿望或期待得到满足而生的愉悦,较正式,常用被动 be gratified;please 最通用;hearten 强调让人重拾信心;give satisfaction 是描述性搭配。"
+    },
+    {
+      "zh": "他天生爱热闹,一个人待不过半天。",
+      "target": "爱热闹",
+      "order": [
+        "gregarious"
+      ],
+      "extra": [
+        "sociable",
+        "outgoing",
+        "convivial"
+      ],
+      "en": "He is gregarious and cannot spend half a day alone.",
+      "why": "gregarious 指天性喜欢与人群待在一起,也用于描述群居动物;sociable 强调乐于交往、好相处;outgoing 侧重主动外向;convivial 特指宴饮场合的热络气氛。"
+    },
+    {
+      "zh": "连年战乱使这个地区彻底贫困下去。",
+      "target": "彻底贫困下去",
+      "order": [
+        "impoverish"
+      ],
+      "extra": [
+        "beggar",
+        "drain",
+        "reduce to poverty"
+      ],
+      "en": "Years of fighting impoverished the whole region.",
+      "why": "impoverish 指使人或地区变穷,也可指使土壤、语言变贫瘠;beggar 作动词更文学,常见于 beggar belief;drain 强调资源被抽走;reduce to poverty 是描述性说法。"
+    },
+    {
+      "zh": "那次事故让他右手丧失了工作能力。",
+      "target": "丧失了工作能力",
+      "order": [
+        "incapacitate"
+      ],
+      "extra": [
+        "disable",
+        "put out of action",
+        "render unfit"
+      ],
+      "en": "The accident incapacitated his right hand for good.",
+      "why": "incapacitate 指使丧失正常行动或履职能力,正式,常用被动;disable 更通用,也指使设备失效;put out of action 是口语;render unfit 强调不再符合某项资格。"
+    },
+    {
+      "zh": "法庭以有伤风化的罪名对那场演出提起了指控。",
+      "target": "有伤风化",
+      "order": [
+        "indecency"
+      ],
+      "extra": [
+        "obscenity",
+        "lewdness",
+        "impropriety"
+      ],
+      "en": "The show was charged with indecency.",
+      "why": "indecency 是法律上对冒犯公序良俗行为的罪名,范围较宽;obscenity 特指露骨到被法律禁止的色情内容;lewdness 强调淫猥的举止;impropriety 只说不得体,不构成罪名。"
+    },
+    {
+      "zh": "这一章讲的是从样本推断总体的那套方法。",
+      "target": "推断",
+      "order": [
+        "inferential"
+      ],
+      "extra": [
+        "deductive",
+        "presumptive",
+        "drawing conclusions"
+      ],
+      "en": "The chapter covers inferential methods: what a sample says about a population.",
+      "why": "inferential 特指从样本推及总体的那一类统计方法,与描述统计相对;deductive 是从一般推到个别的演绎;presumptive 指暂且推定、可被推翻;drawing conclusions 是描述性短语。"
+    },
+    {
+      "zh": "她发着烧被送去了校医务室。",
+      "target": "校医务室",
+      "order": [
+        "infirmary"
+      ],
+      "extra": [
+        "sick bay",
+        "nurse's office",
+        "medical room"
+      ],
+      "en": "She was sent to the infirmary with a fever.",
+      "why": "infirmary 指学校、军营或修道院里的常设医务处,略旧但仍在用;sick bay 多指船上或军中的;nurse's office 是美国中小学的日常说法;medical room 是描述性的。"
+    },
+    {
+      "zh": "演讲被后排的一句插话打断了两次。",
+      "target": "插话",
+      "order": [
+        "interjection"
+      ],
+      "extra": [
+        "interruption",
+        "outburst",
+        "heckle"
+      ],
+      "en": "An interjection from the back row broke the talk twice.",
+      "why": "interjection 指突然插入的一句话,也可指语法上的感叹词;interruption 强调打断这个动作本身;outburst 侧重情绪激动地爆发出来;heckle 特指起哄质问演讲者。"
+    },
+    {
+      "zh": "那两年只是个过渡期,他自己从没当真。",
+      "target": "过渡期",
+      "order": [
+        "interlude"
+      ],
+      "extra": [
+        "intermission",
+        "breathing space",
+        "stopgap period"
+      ],
+      "en": "Those two years were an interlude he never took seriously.",
+      "why": "interlude 指夹在两段主要时期之间的一段插曲,可长可短;intermission 特指演出中场休息;breathing space 强调喘口气的余裕;stopgap period 侧重临时凑合。"
+    },
+    {
+      "zh": "两个采样点之间的数值是用插值算出来的。",
+      "target": "插值",
+      "order": [
+        "interpolation"
+      ],
+      "extra": [
+        "gap-filling",
+        "estimation between points",
+        "smoothing"
+      ],
+      "en": "The values between the two sample points come from interpolation.",
+      "why": "interpolation 指在已知数据点之间推算中间值,与外推 extrapolation 相对;gap-filling 是描述性说法;estimation between points 更是解释而非术语;smoothing 是另一类处理,目的在去噪。"
+    },
+    {
+      "zh": "他在正文里穿插了不少手绘的小图。",
+      "target": "穿插",
+      "order": [
+        "intersperse"
+      ],
+      "extra": [
+        "dot",
+        "pepper",
+        "scatter through"
+      ],
+      "en": "He interspersed the text with small hand-drawn figures.",
+      "why": "intersperse 指把一类东西间隔地分布在另一类之中,常用被动 be interspersed with;dot 强调星星点点;pepper 侧重密集地撒布,常带负面;scatter through 是描述性说法。"
+    },
+    {
+      "zh": "主动公开失误这件事本身值得称赞。",
+      "target": "值得称赞",
+      "order": [
+        "laudable"
+      ],
+      "extra": [
+        "commendable",
+        "praiseworthy",
+        "to their credit"
+      ],
+      "en": "Disclosing the error unprompted was laudable.",
+      "why": "laudable 指行为在道义上值得表扬,正式,常暗示结果未必成功;commendable 接近但更常用于日常表扬;praiseworthy 是它的直白同义;to their credit 是插入语,不能作定语。"
+    },
+    {
+      "zh": "法官考虑到他主动自首,最终从宽处理。",
+      "target": "从宽处理",
+      "order": [
+        "leniency"
+      ],
+      "extra": [
+        "clemency",
+        "mercy",
+        "a lighter sentence"
+      ],
+      "en": "The judge showed leniency because he had turned himself in.",
+      "why": "leniency 指在可裁量范围内从轻,常说 show leniency;clemency 特指赦免或减刑这一正式权力;mercy 偏道德与情感上的宽恕;a lighter sentence 只是结果的描述。"
+    },
+    {
+      "zh": "那家老店身上有种说不清的神秘感。",
+      "target": "神秘感",
+      "order": [
+        "mystique"
+      ],
+      "extra": [
+        "aura",
+        "allure",
+        "mystery"
+      ],
+      "en": "The old shop has a mystique nobody can quite explain.",
+      "why": "mystique 指围绕某人或某物形成的神秘吸引力,常因不为人知而生;aura 强调散发出的气场;allure 侧重诱人的吸引力;mystery 只说谜团本身,不含魅力。"
+    },
+    {
+      "zh": "那趟从广州到拉萨的旅程成了他一生的漫游。",
+      "target": "漫游",
+      "order": [
+        "odyssey"
+      ],
+      "extra": [
+        "trek",
+        "pilgrimage",
+        "long haul"
+      ],
+      "en": "The trip from Guangzhou to Lhasa became the odyssey of his life.",
+      "why": "odyssey 指漫长曲折、充满波折并带来转变的旅程,典出荷马史诗;trek 强调艰苦跋涉;pilgrimage 特指朝圣或带信仰意味的行程;long haul 只说路远时间久。"
+    },
+    {
+      "zh": "每台设备出厂前都要做一次彻底灭菌。",
+      "target": "灭菌",
+      "order": [
+        "sterilization"
+      ],
+      "extra": [
+        "disinfection",
+        "autoclaving",
+        "decontamination"
+      ],
+      "en": "Every unit goes through sterilization before it ships.",
+      "why": "sterilization 指杀灭包括芽孢在内的一切微生物,是最彻底的一级;disinfection 只杀灭大部分致病菌;autoclaving 是实现灭菌的一种具体手段;decontamination 泛指清除污染物。"
+    },
+    {
+      "zh": "他常年失眠,凌晨三点还在回工作消息。",
+      "target": "常年失眠",
+      "order": [
+        "insomniac"
+      ],
+      "extra": [
+        "poor sleeper",
+        "night owl",
+        "light sleeper"
+      ],
+      "en": "A lifelong insomniac, he was still answering work messages at three.",
+      "why": "insomniac 指长期难以入睡的人,近乎临床描述;poor sleeper 只说睡眠质量差;night owl 强调习惯晚睡,未必睡不着;light sleeper 指睡得浅、易被吵醒。"
+    },
+    {
+      "zh": "整段引文他放进了页面下方的注释里。",
+      "target": "页面下方的注释",
+      "order": [
+        "footnote"
+      ],
+      "extra": [
+        "endnote",
+        "annotation",
+        "marginal note"
+      ],
+      "en": "He moved the whole quotation into a footnote.",
+      "why": "footnote 指排在同一页底部的注释,也可比喻无关紧要的小角色;endnote 统一排在章末或书末;annotation 泛指任何注解;marginal note 是写在页边空白处的。"
+    },
+    {
+      "zh": "这套系统对不可知论式的立场并不友好。",
+      "target": "不可知",
+      "order": [
+        "agnostic"
+      ],
+      "extra": [
+        "noncommittal",
+        "undecided",
+        "neutral"
+      ],
+      "en": "The system is not friendly to an agnostic position.",
+      "why": "agnostic 原指认为神是否存在无法知晓的人,技术语境引申为不预设、不绑定某一方;noncommittal 指故意不表态;undecided 说的是还没想好;neutral 强调不偏袒任何一边。"
+    },
+    {
+      "zh": "确诊阅读障碍之后,学校给他调整了考试方式。",
+      "target": "阅读障碍",
+      "order": [
+        "dyslexia"
+      ],
+      "extra": [
+        "reading difficulty",
+        "word blindness",
+        "learning difference"
+      ],
+      "en": "After the dyslexia diagnosis the school changed how he sat exams.",
+      "why": "dyslexia 是特定的神经发育性阅读障碍诊断名;reading difficulty 只描述读得吃力,原因不限;word blindness 是早期旧称;learning difference 是回避病理色彩的当代委婉说法。"
+    },
+    {
+      "zh": "那套设备用的是过时的接口,配件早就停产了。",
+      "target": "过时的",
+      "order": [
+        "outmoded"
+      ],
+      "extra": [
+        "obsolete",
+        "antiquated",
+        "legacy"
+      ],
+      "en": "The rig uses an outmoded connector whose parts stopped shipping years ago.",
+      "why": "outmoded 指被更新的东西取代而显得落伍,重点在时代变了;obsolete 强调已彻底不再使用、被正式淘汰;antiquated 带古旧可笑的意味;legacy 是技术圈中性说法,指仍在服役的旧系统。"
+    },
+    {
+      "zh": "两台仪器之间的温差小到勉强可察觉。",
+      "target": "勉强可察觉",
+      "order": [
+        "perceptible"
+      ],
+      "extra": [
+        "discernible",
+        "detectable",
+        "just noticeable"
+      ],
+      "en": "The gap between the two instruments was barely perceptible.",
+      "why": "perceptible 指凭感官刚好能觉察到,强调在感知门槛之上;discernible 侧重能分辨出来、区别于别的东西;detectable 指仪器测得到,不必然人能感觉到;just noticeable 是描述性短语。"
+    },
+    {
+      "zh": "他盯着那张账单,一脸茫然。",
+      "target": "茫然",
+      "order": [
+        "perplexity"
+      ],
+      "extra": [
+        "bewilderment",
+        "puzzlement",
+        "incomprehension"
+      ],
+      "en": "He stared at the invoice in perplexity.",
+      "why": "perplexity 指因想不通而困惑,常伴随试图理清的努力;bewilderment 强调彻底懵住、失去方向;puzzlement 语气最轻,像遇到一个谜;incomprehension 指根本没听懂,是理解的缺席。"
+    },
+    {
+      "zh": "新政出台前没人问过民众的意见。",
+      "target": "民众",
+      "order": [
+        "populace"
+      ],
+      "extra": [
+        "citizenry",
+        "general public",
+        "rank and file"
+      ],
+      "en": "Nobody asked the populace before the policy went out.",
+      "why": "populace 指一国或一地的普通民众整体,略正式且常带与统治者对举的意味;citizenry 强调作为公民的身份与权利;general public 是中性的公众;rank and file 原指基层成员,多用于组织内部。"
+    },
+    {
+      "zh": "这只花瓶的来龙去脉只能追到一九三八年。",
+      "target": "来龙去脉",
+      "order": [
+        "provenance"
+      ],
+      "extra": [
+        "ownership history",
+        "pedigree",
+        "chain of custody"
+      ],
+      "en": "The vase's provenance can only be traced back to 1938.",
+      "why": "provenance 指某物从何而来、经过谁手的完整记录,艺术与数据领域都用;ownership history 是它的白话解释;pedigree 强调血统或谱系的显赫;chain of custody 是法证术语,指证物的交接链条。"
+    },
+    {
+      "zh": "合同依照第七条的规定自动续期一年。",
+      "target": "依照",
+      "order": [
+        "pursuant"
+      ],
+      "extra": [
+        "in accordance with",
+        "under the terms of",
+        "as provided by"
+      ],
+      "en": "Pursuant to clause seven, the contract renews for a further year.",
+      "why": "pursuant 几乎只以 pursuant to 出现,是法律文书里的依照,最正式;in accordance with 通用于合规语境;under the terms of 强调依据的是合同条款本身;as provided by 侧重按某文件所规定。"
+    },
+    {
+      "zh": "评审容易高估刚发生的事,这种偏差需要校正。",
+      "target": "刚发生",
+      "order": [
+        "recency"
+      ],
+      "extra": [
+        "freshness",
+        "last impression",
+        "the latest thing"
+      ],
+      "en": "Reviewers over-weight recency, and the bias needs correcting.",
+      "why": "recency 指仅因发生得近而被赋予过多分量,是心理学与检索领域的术语;freshness 强调新鲜未陈旧,是褒义;last impression 只说最后的印象;the latest thing 指最新出现的事物。"
+    },
+    {
+      "zh": "公司按小时给这些临时人员支付报酬。",
+      "target": "支付报酬",
+      "order": [
+        "remunerate"
+      ],
+      "extra": [
+        "compensate",
+        "pay out",
+        "recompense"
+      ],
+      "en": "The company remunerates these temporary staff by the hour.",
+      "why": "remunerate 指为提供的劳务付酬,正式且偏书面,常见于合同;compensate 强调补偿损失或付出,也可指赔偿;pay out 侧重款项支出这一动作;recompense 更旧,带回报的意味。"
+    },
+    {
+      "zh": "她花了六年才克服那道语言上的坎。",
+      "target": "克服",
+      "order": [
+        "surmount"
+      ],
+      "extra": [
+        "get over",
+        "overcome",
+        "rise above"
+      ],
+      "en": "It took her six years to surmount the language barrier.",
+      "why": "surmount 原意是翻越到某物之上,用于困难时强调越过一道明确的障碍,正式;get over 是口语;overcome 最通用,也可用于情绪;rise above 侧重不被琐碎或恶意拖下水。"
+    },
+    {
+      "zh": "那伙人用假合同骗走了二十多个老人的养老钱。",
+      "target": "骗走",
+      "order": [
+        "swindle"
+      ],
+      "extra": [
+        "defraud",
+        "con",
+        "fleece"
+      ],
+      "en": "They swindled more than twenty pensioners with fake contracts.",
+      "why": "swindle 指用欺骗手段骗取钱财,日常与新闻都用;defraud 是法律术语,强调构成欺诈罪;con 偏口语,重在骗取信任;fleece 形象上是剪羊毛,指宰客、收费高得离谱。"
+    },
+    {
+      "zh": "他身边围着一圈只会附和的马屁精。",
+      "target": "马屁精",
+      "order": [
+        "sycophant"
+      ],
+      "extra": [
+        "toady",
+        "yes-man",
+        "bootlicker"
+      ],
+      "en": "He is surrounded by sycophants who only ever agree.",
+      "why": "sycophant 指为讨好有权者而一味奉承的人,正式且贬义最重;toady 强调低声下气地跟随;yes-man 特指从不反对的下属;bootlicker 最粗俗直白。"
+    },
+    {
+      "zh": "那份礼貌只是表面的伪装,底下全是算计。",
+      "target": "表面的伪装",
+      "order": [
+        "veneer"
+      ],
+      "extra": [
+        "facade",
+        "front",
+        "thin coat"
+      ],
+      "en": "The politeness was a veneer over a great deal of calculation.",
+      "why": "veneer 原指贴面薄木板,比喻薄薄一层掩盖真相的表象,常说 a veneer of;facade 指整个正面门脸式的伪装,规模更大;front 是口语的幌子;thin coat 只是字面描述。"
+    },
+    {
+      "zh": "这条流水线上的浪费比返工成本还高。",
+      "target": "浪费",
+      "order": [
+        "wastefulness"
+      ],
+      "extra": [
+        "extravagance",
+        "profligacy",
+        "squandering"
+      ],
+      "en": "Wastefulness on that line costs more than the rework does.",
+      "why": "wastefulness 指做事方式本身造成的耗损,中性偏批评;extravagance 强调铺张奢侈的花销;profligacy 更重,含道德上的挥霍无度;squandering 侧重把本可用好的资源白白糟蹋掉。"
+    },
+    {
+      "zh": "在外二十年,他始终渴望回到那个小镇。",
+      "target": "渴望",
+      "order": [
+        "yearn"
+      ],
+      "extra": [
+        "long",
+        "pine",
+        "ache"
+      ],
+      "en": "Twenty years away and he still yearned for that town.",
+      "why": "yearn 指持久而深切的向往,常搭配 for,带温柔的怅惘;long 意思接近但更中性常用;pine 强调因失去而憔悴,程度更痛;ache 侧重那种近乎生理疼痛的思念。"
+    },
+    {
+      "zh": "她还在康复期,医生不建议这么早复工。",
+      "target": "康复期",
+      "order": [
+        "convalescent"
+      ],
+      "extra": [
+        "recuperating",
+        "on the mend",
+        "post-operative"
+      ],
+      "en": "She is still convalescent and the doctor advises against going back this early.",
+      "why": "convalescent 特指大病或手术后逐步恢复的那一阶段,正式,也可作名词;recuperating 强调正在恢复这一进行中的过程;on the mend 是口语的好转;post-operative 只标明术后,不说明恢复到哪一步。"
+    },
+    {
+      "zh": "这笔债券以美元计价,与本币汇率无关。",
+      "target": "以美元计价",
+      "order": [
+        "denominate"
+      ],
+      "extra": [
+        "priced in",
+        "expressed in",
+        "quoted in"
+      ],
+      "en": "The bond is denominated in dollars, whatever the local rate does.",
+      "why": "denominate 在金融语境几乎只以被动 be denominated in 出现,指以某币种计值;priced in 另有已被计入价格的常用义,容易误解;expressed in 是中性的以某单位表示;quoted in 指报价所用的单位。"
+    },
+    {
+      "zh": "他在这一行的地位是几十年积累起来的。",
+      "target": "地位",
+      "order": [
+        "eminence"
+      ],
+      "extra": [
+        "prominence",
+        "standing",
+        "renown"
+      ],
+      "en": "His eminence in the field took decades to build.",
+      "why": "eminence 指因成就而获得的崇高地位,带敬意,正式;prominence 只说显眼、受关注,未必受尊敬;standing 强调在群体中的位置与声誉;renown 侧重名声传得广。"
+    },
+    {
+      "zh": "接连三次交付失败,暴露的是管理上的无能。",
+      "target": "无能",
+      "order": [
+        "ineptitude"
+      ],
+      "extra": [
+        "incompetence",
+        "bungling",
+        "mismanagement"
+      ],
+      "en": "Three failed deliveries exposed real ineptitude in management.",
+      "why": "ineptitude 指缺乏胜任所需的能力与判断,书面且刺耳;incompetence 是最通用的不称职;bungling 强调把事情办砸的过程;mismanagement 特指管理方式不当,不评价个人能力。"
+    },
+    {
+      "zh": "他有个改不掉的小毛病,开会永远迟到五分钟。",
+      "target": "小毛病",
+      "order": [
+        "foible"
+      ],
+      "extra": [
+        "quirk",
+        "idiosyncrasy",
+        "little failing"
+      ],
+      "en": "He has one foible: he is always five minutes late.",
+      "why": "foible 指无伤大雅、甚至有点可爱的性格弱点,语气宽容;quirk 强调与众不同的怪癖,不含缺点意味;idiosyncrasy 更正式,指个人独有的习性;little failing 是描述性的说法。"
+    },
+    {
+      "zh": "那个倒霉的司机刚好停在树倒下的位置。",
+      "target": "倒霉的",
+      "order": [
+        "hapless"
+      ],
+      "extra": [
+        "luckless",
+        "ill-fated",
+        "poor"
+      ],
+      "en": "The hapless driver had parked exactly where the tree came down.",
+      "why": "hapless 指纯粹因运气差而遭殃,常带一丝同情的调侃;luckless 语气更平,只陈述没运气;ill-fated 强调结局注定不幸,多用于事件;poor 作定语时是口语的可怜的。"
+    },
+    {
+      "zh": "那份工作单调乏味,他做了七年。",
+      "target": "单调乏味",
+      "order": [
+        "humdrum"
+      ],
+      "extra": [
+        "monotonous",
+        "mundane",
+        "run-of-the-mill"
+      ],
+      "en": "The job was humdrum and he stayed seven years.",
+      "why": "humdrum 指日复一日毫无变化因而乏味,常形容生活与工作;monotonous 强调节奏或声音的单一重复;mundane 侧重平凡琐碎、不高尚;run-of-the-mill 指普通得没有特色。"
+    },
+    {
+      "zh": "那位审稿人吹毛求疵,连标点都要争。",
+      "target": "吹毛求疵",
+      "order": [
+        "hypercritical"
+      ],
+      "extra": [
+        "nitpicking",
+        "fault-finding",
+        "pedantic"
+      ],
+      "en": "The reviewer was hypercritical, arguing down to the punctuation.",
+      "why": "hypercritical 指批评过了头、近乎苛刻,正式;nitpicking 强调专挑无关紧要的小毛病;fault-finding 侧重总在找错这一习惯;pedantic 指过分拘泥规则与细节,重在迂腐。"
+    },
+    {
+      "zh": "听完判决,他始终面无表情。",
+      "target": "面无表情",
+      "order": [
+        "impassive"
+      ],
+      "extra": [
+        "expressionless",
+        "stone-faced",
+        "deadpan"
+      ],
+      "en": "He stayed impassive all the way through the verdict.",
+      "why": "impassive 指不流露任何情绪,可能内心有波澜只是不显,正式;expressionless 只客观描述脸上没有表情;stone-faced 是形象的口语;deadpan 特指故意板着脸说笑话的那种表情。"
+    },
+    {
+      "zh": "那道防线在当时被认为坚不可摧。",
+      "target": "坚不可摧",
+      "order": [
+        "impregnable"
+      ],
+      "extra": [
+        "unassailable",
+        "invulnerable",
+        "unbreachable"
+      ],
+      "en": "The line was considered impregnable at the time.",
+      "why": "impregnable 原指攻不破的要塞,强调外力打不进来;unassailable 多用于地位、论点无懈可击;invulnerable 侧重伤害不了、刀枪不入;unbreachable 是描述性的说法,不如前几个自然。"
+    },
+    {
+      "zh": "那还只是初期的裂纹,当时谁都没在意。",
+      "target": "初期的",
+      "order": [
+        "incipient"
+      ],
+      "extra": [
+        "early-stage",
+        "budding",
+        "in its infancy"
+      ],
+      "en": "It was an incipient crack and nobody paid attention.",
+      "why": "incipient 指刚开始出现、尚不明显的阶段,正式,常用于问题与疾病;early-stage 是中性的描述;budding 带正面色彩,多形容才华或恋情;in its infancy 强调整个事物还处在起步期。"
+    },
+    {
+      "zh": "两次测量之间的差别小到可以忽略。",
+      "target": "小到可以忽略",
+      "order": [
+        "infinitesimal"
+      ],
+      "extra": [
+        "negligible",
+        "vanishingly small",
+        "minute"
+      ],
+      "en": "The difference between the two readings is infinitesimal.",
+      "why": "infinitesimal 指小到趋近于零,源自微积分,带数学色彩;negligible 强调小到不必考虑,是实务判断;vanishingly small 是强调性的描述;minute 只说体积或数量极小。"
+    },
+    {
+      "zh": "他那副讨好的语气让所有人都不自在。",
+      "target": "讨好的",
+      "order": [
+        "ingratiating"
+      ],
+      "extra": [
+        "obsequious",
+        "fawning",
+        "unctuous"
+      ],
+      "en": "His ingratiating tone made everyone uncomfortable.",
+      "why": "ingratiating 指刻意让自己讨人喜欢,重点在动机可疑;obsequious 强调低三下四地顺从;fawning 形象上像狗摇尾乞怜;unctuous 特指那种油滑而假意热络的腔调。"
+    },
+    {
+      "zh": "她的行文风格无法模仿,一读就知道是谁。",
+      "target": "无法模仿",
+      "order": [
+        "inimitable"
+      ],
+      "extra": [
+        "one of a kind",
+        "unmistakable",
+        "impossible to copy"
+      ],
+      "en": "Her prose is inimitable: you know it from one paragraph.",
+      "why": "inimitable 指独特到别人学不来,几乎总是褒义;one of a kind 强调世上仅此一个;unmistakable 侧重一眼就能认出来;impossible to copy 是字面描述,缺少那份赞赏。"
+    },
+    {
+      "zh": "这位新手第一周就问了整个组一遍问题。",
+      "target": "新手",
+      "order": [
+        "neophyte"
+      ],
+      "extra": [
+        "novice",
+        "newcomer",
+        "greenhorn"
+      ],
+      "en": "The neophyte worked through the whole team with questions in week one.",
+      "why": "neophyte 指刚入某个领域的新人,略正式,原用于宗教入门者;novice 是最通用的初学者;newcomer 只说新来的,不涉及技能;greenhorn 是口语,带取笑生手的意味。"
+    },
+    {
+      "zh": "那把小提琴的音色甜美流畅,能听出年份。",
+      "target": "甜美流畅",
+      "order": [
+        "mellifluous"
+      ],
+      "extra": [
+        "dulcet",
+        "honeyed",
+        "silky"
+      ],
+      "en": "The violin has a mellifluous tone you can date by ear.",
+      "why": "mellifluous 字面是流蜜般的,专形容声音悦耳顺滑,正式;dulcet 更旧且常带戏谑,如 dulcet tones;honeyed 多形容言语甜腻、别有用心;silky 侧重顺滑的质感,也可形容布料。"
+    },
+    {
+      "zh": "监考老师在开考前收走了所有的手机。",
+      "target": "监考老师",
+      "order": [
+        "invigilator"
+      ],
+      "extra": [
+        "proctor",
+        "exam supervisor",
+        "invigilating staff"
+      ],
+      "en": "The invigilator collected every phone before the paper started.",
+      "why": "invigilator 是英式英语里的监考人员;proctor 是美式对应词,在英国另指大学纪律官;exam supervisor 是描述性说法;invigilating staff 指承担这项工作的一组人。"
+    },
+    {
+      "zh": "这几个零件的互换性让维修快了一倍。",
+      "target": "互换性",
+      "order": [
+        "interchangeability"
+      ],
+      "extra": [
+        "substitutability",
+        "drop-in compatibility",
+        "cross-fit"
+      ],
+      "en": "The interchangeability of these parts halved the repair time.",
+      "why": "interchangeability 指同规格部件可彼此替换的工程属性;substitutability 更多用于经济学里商品的可替代性;drop-in compatibility 强调无需改动即可换上;cross-fit 不是标准术语。"
+    },
+    {
+      "zh": "数据入库前要先做一次规范化,统一大小写和顺序。",
+      "target": "规范化",
+      "order": [
+        "canonicalization"
+      ],
+      "extra": [
+        "normalization",
+        "standardization",
+        "cleanup"
+      ],
+      "en": "Canonicalization runs before ingest: one casing, one ordering.",
+      "why": "canonicalization 指把同义的多种写法收敛到唯一的规范形式,计算机术语;normalization 在数据库里另指范式化,在统计里指归一化,容易混;standardization 泛指制定统一标准;cleanup 只说清洗脏数据。"
+    },
+    {
+      "zh": "这项权限是可委托的,可以指定他人代行。",
+      "target": "可委托的",
+      "order": [
+        "delegable"
+      ],
+      "extra": [
+        "assignable",
+        "transferable",
+        "able to be deputed"
+      ],
+      "en": "The authority is delegable: you may name someone to act for you.",
+      "why": "delegable 特指职权可以授予他人代为行使,主体仍是原持有者;assignable 多指合同权利可转让给第三方;transferable 强调整体转移出去;able to be deputed 是描述性说法。"
+    },
+    {
+      "zh": "发酵前要给这缸料充分通气。",
+      "target": "通气",
+      "order": [
+        "aerate"
+      ],
+      "extra": [
+        "oxygenate",
+        "ventilate",
+        "aerify"
+      ],
+      "en": "Aerate the mash thoroughly before fermentation starts.",
+      "why": "aerate 指让空气进入液体或土壤,酿造、污水处理与园艺都用;oxygenate 特指提高含氧量,医学与生化语境;ventilate 是给空间通风,对象是房间不是液体;aerify 极少用。"
+    },
+    {
+      "zh": "市场长期低估这类资产的真实价值。",
+      "target": "低估",
+      "order": [
+        "undervaluation"
+      ],
+      "extra": [
+        "underpricing",
+        "mispricing",
+        "being marked down"
+      ],
+      "en": "Persistent undervaluation has followed this asset class for years.",
+      "why": "undervaluation 指估值低于内在价值这一状态,金融分析常用;underpricing 特指发行或定价时定得偏低;mispricing 只说定价错了,方向不限;being marked down 指被下调,是动作。"
+    },
+    {
+      "zh": "这条腺体的分泌量会随温度变化。",
+      "target": "分泌",
+      "order": [
+        "secretion"
+      ],
+      "extra": [
+        "discharge",
+        "output",
+        "exudate"
+      ],
+      "en": "Secretion from the gland varies with temperature.",
+      "why": "secretion 指腺体制造并释放有用物质的过程或产物,生物学中性词;discharge 泛指排出物,常暗示异常;output 只讲产量;exudate 特指渗出的液体,多与炎症相关。"
+    },
+    {
+      "zh": "这匹马是纯种的,血统证书能追四代。",
+      "target": "纯种的",
+      "order": [
+        "purebred"
+      ],
+      "extra": [
+        "pedigreed",
+        "thoroughbred",
+        "full-blooded"
+      ],
+      "en": "The horse is purebred with papers going back four generations.",
+      "why": "purebred 指父母同属一个品种,通用于各类家畜;pedigreed 强调有正式血统登记文件;thoroughbred 特指英国纯血马这一马种,不能泛用;full-blooded 更口语,也用于比喻。"
+    },
+    {
+      "zh": "用两个已知点算出中间那个值,靠的是插值。",
+      "target": "插值",
+      "order": [
+        "interpolate"
+      ],
+      "extra": [
+        "fill in between",
+        "estimate between points",
+        "splice in"
+      ],
+      "en": "Interpolate between the two known points to get the middle value.",
+      "why": "interpolate 指在已知数据之间推算中间值,与向外推的 extrapolate 相对;fill in between 是白话解释;estimate between points 同样是描述;splice in 指把一段插进去,多用于影片与代码。"
+    },
+    {
+      "zh": "这类问题属于形而上学,实验答不了。",
+      "target": "形而上学",
+      "order": [
+        "metaphysics"
+      ],
+      "extra": [
+        "ontology",
+        "first philosophy",
+        "speculative philosophy"
+      ],
+      "en": "Questions like that belong to metaphysics; no experiment settles them.",
+      "why": "metaphysics 指研究存在与实在本质的哲学分支;ontology 是其中专门研究存在者的部分,范围更窄;first philosophy 是亚里士多德的旧称;speculative philosophy 强调思辨方式。"
+    },
+    {
+      "zh": "他答应了三件事,一件也没办成,实在靠不住。",
+      "target": "靠不住",
+      "order": [
+        "feckless"
+      ],
+      "extra": [
+        "hopeless",
+        "good-for-nothing",
+        "unreliable"
+      ],
+      "en": "He promised three things and delivered none: feckless is the word.",
+      "why": "feckless 指既无能力也无责任心,做什么都指望不上,带鄙夷;hopeless 强调差到没救,可用于任何事;good-for-nothing 是骂人的口语;unreliable 只说不可靠,不评价能力。"
+    },
+    {
+      "zh": "这批样品的短缺让实验只能推迟。",
+      "target": "短缺",
+      "order": [
+        "paucity"
+      ],
+      "extra": [
+        "dearth",
+        "scarcity",
+        "thin supply"
+      ],
+      "en": "A paucity of samples pushed the experiment back.",
+      "why": "paucity 指数量少到不够用,正式,常搭配 of;dearth 强调本该有却几乎没有,语气更重;scarcity 侧重供不应求这一经济状态;thin supply 是描述性说法。"
+    },
+    {
+      "zh": "那通半夜的电话让她整晚都不安。",
+      "target": "不安",
+      "order": [
+        "perturb"
+      ],
+      "extra": [
+        "unsettle",
+        "rattle",
+        "throw off"
+      ],
+      "en": "The midnight call perturbed her for the rest of the night.",
+      "why": "perturb 指打乱原本平静的心绪或系统状态,正式,物理上也指轨道摄动;unsettle 强调让人心里没底;rattle 是口语,指被吓得慌了手脚;throw off 侧重打乱节奏。"
+    },
+    {
+      "zh": "账上那几笔异常挪动预示着后来的暴雷。",
+      "target": "预示",
+      "order": [
+        "presage"
+      ],
+      "extra": [
+        "portend",
+        "foreshadow",
+        "bode"
+      ],
+      "en": "Those odd transfers presaged the collapse that followed.",
+      "why": "presage 指某事成为后来事件的预兆,正式,多为坏事;portend 语气更重,近乎凶兆;foreshadow 常用于叙事中的伏笔;bode 几乎只用在 bode well 或 bode ill 里。"
+    },
+    {
+      "zh": "那种互相起外号的做法在董事会上显得很幼稚。",
+      "target": "幼稚",
+      "order": [
+        "puerile"
+      ],
+      "extra": [
+        "juvenile",
+        "infantile",
+        "sophomoric"
+      ],
+      "en": "The name-calling looked puerile in a board meeting.",
+      "why": "puerile 指成年人做出与年龄不符的孩子气行为,书面且带鄙夷;juvenile 意思接近但更常用,也指法律上的未成年;infantile 程度最重,近乎婴儿般;sophomoric 特指自以为高明的浅薄。"
+    },
+    {
+      "zh": "她那身礼服在灯光下艳丽动人。",
+      "target": "艳丽动人",
+      "order": [
+        "ravishing"
+      ],
+      "extra": [
+        "stunning",
+        "breathtaking",
+        "resplendent"
+      ],
+      "en": "She looked ravishing in that dress under the lights.",
+      "why": "ravishing 指美到令人失神,程度极高且略显文学;stunning 是最常用的惊艳;breathtaking 多形容景色或场面;resplendent 强调华丽夺目、光彩照人。"
+    },
+    {
+      "zh": "菜单上那道菜的描述很诱人,可惜当天售罄。",
+      "target": "诱人",
+      "order": [
+        "tantalizing"
+      ],
+      "extra": [
+        "enticing",
+        "mouthwatering",
+        "just out of reach"
+      ],
+      "en": "The description was tantalizing and the dish had sold out.",
+      "why": "tantalizing 指看得见却拿不到,勾着人心痒,典出坦塔罗斯;enticing 只说有吸引力,能不能得到不重要;mouthwatering 专说食物看着好吃;just out of reach 是字面描述。"
+    },
+    {
+      "zh": "轴在受力后发生了轻微的扭转变形。",
+      "target": "扭转",
+      "order": [
+        "torsion"
+      ],
+      "extra": [
+        "twisting",
+        "torque",
+        "angular strain"
+      ],
+      "en": "The shaft showed slight torsion under load.",
+      "why": "torsion 指材料受扭矩作用而产生的扭转变形这一现象,力学术语;twisting 是日常的拧转动作;torque 指施加的扭矩本身,是原因不是结果;angular strain 不是标准搭配。"
+    },
+    {
+      "zh": "他的事业在四十岁那年到达顶点。",
+      "target": "顶点",
+      "order": [
+        "zenith"
+      ],
+      "extra": [
+        "pinnacle",
+        "high-water mark",
+        "apex"
+      ],
+      "en": "His career reached its zenith at forty.",
+      "why": "zenith 原是天文学的天顶,比喻声望或成就的最高点,常暗示此后走低;pinnacle 强调尖顶般的极致位置;high-water mark 指历史最高水位、后来没再超过;apex 更偏几何与生物学的顶端。"
+    },
+    {
+      "zh": "被当众点名之后,他窘迫地低下了头。",
+      "target": "窘迫",
+      "order": [
+        "abashed"
+      ],
+      "extra": [
+        "sheepish",
+        "mortified",
+        "red-faced"
+      ],
+      "en": "Named in front of everyone, he looked abashed and dropped his head.",
+      "why": "abashed 指因自觉失礼或被揭穿而局促羞愧,略书面,常用 be abashed;sheepish 是那种知道自己理亏的讪讪表情;mortified 程度最重,羞得想找地缝;red-faced 只描述脸红这一外表。"
+    },
+    {
+      "zh": "他是个讲究吃的人,为一锅高汤能开三小时车。",
+      "target": "讲究吃的人",
+      "order": [
+        "epicure"
+      ],
+      "extra": [
+        "gourmet",
+        "gastronome",
+        "foodie"
+      ],
+      "en": "An epicure to the core, he will drive three hours for one stock.",
+      "why": "epicure 指对饮食品味极为挑剔并从中获得享受的人,略古雅;gourmet 更常用,强调懂行会点;gastronome 偏学究,研究饮食之道;foodie 是当代口语,门槛低得多。"
+    },
+    {
+      "zh": "这条路自古以来就是两地之间唯一的通道。",
+      "target": "自古以来",
+      "order": [
+        "immemorial"
+      ],
+      "extra": [
+        "age-old",
+        "from time out of mind",
+        "since forever"
+      ],
+      "en": "The road has linked the two towns from time immemorial.",
+      "why": "immemorial 几乎只出现在 from time immemorial 里,指久远到无从追溯;age-old 形容存在很久的习俗或问题,可作定语;from time out of mind 是更旧的同义短语;since forever 是口语夸张。"
+    },
+    {
+      "zh": "他那种好管闲事让邻里都躲着他走。",
+      "target": "好管闲事",
+      "order": [
+        "officiousness"
+      ],
+      "extra": [
+        "meddling",
+        "bossiness",
+        "busybody behavior"
+      ],
+      "en": "His officiousness kept the neighbours at a distance.",
+      "why": "officiousness 指没被请求就热心插手、还摆出权威姿态,贬义;meddling 强调干涉他人事务这一行为;bossiness 侧重爱指挥别人;busybody behavior 是描述性说法。"
+    },
+    {
+      "zh": "远处传来一声哀伤的鸟叫,叫了很久。",
+      "target": "哀伤的",
+      "order": [
+        "plaintive"
+      ],
+      "extra": [
+        "mournful",
+        "doleful",
+        "wistful"
+      ],
+      "en": "A plaintive bird call carried from somewhere far off.",
+      "why": "plaintive 指声音里带着诉苦般的哀怨,专形容声音与曲调;mournful 强调哀悼式的悲伤;doleful 更沉重压抑;wistful 侧重怅然若失的向往,不那么悲。"
+    },
+    {
+      "zh": "门口聚了一群乌合之众,谁也说不清诉求。",
+      "target": "乌合之众",
+      "order": [
+        "rabble"
+      ],
+      "extra": [
+        "mob",
+        "riffraff",
+        "unruly crowd"
+      ],
+      "en": "A rabble gathered at the gate with no demand anyone could name.",
+      "why": "rabble 指杂乱无组织的下层人群,含轻蔑,常说 rouse the rabble;mob 强调情绪失控、可能施暴的群体;riffraff 直指身份低贱的人,骂意更重;unruly crowd 是中性描述。"
+    },
+    {
+      "zh": "两人来回的机智应答成了整场访谈的亮点。",
+      "target": "机智应答",
+      "order": [
+        "repartee"
+      ],
+      "extra": [
+        "banter",
+        "badinage",
+        "quick comebacks"
+      ],
+      "en": "The repartee between them made the whole interview.",
+      "why": "repartee 特指反应极快、你来我往的机敏对答,褒义;banter 强调朋友间的调侃玩笑,不必机智;badinage 更古雅,指轻松的戏谑;quick comebacks 是口语描述。"
+    },
+    {
+      "zh": "那个职位是个挂名的闲差,一年开两次会。",
+      "target": "挂名的闲差",
+      "order": [
+        "sinecure"
+      ],
+      "extra": [
+        "cushy post",
+        "no-show job",
+        "honorary role"
+      ],
+      "en": "The post is a sinecure: two meetings a year.",
+      "why": "sinecure 指有薪俸却几乎无实际职责的职位,正式;cushy post 强调轻松舒服;no-show job 特指根本不用露面的挂名工作,常涉不当;honorary role 是名誉职务,通常无薪。"
+    },
+    {
+      "zh": "她对每个病人的关切细致到记得对方孩子的名字。",
+      "target": "关切",
+      "order": [
+        "solicitude"
+      ],
+      "extra": [
+        "attentiveness",
+        "thoughtfulness",
+        "tender concern"
+      ],
+      "en": "Her solicitude went as far as remembering each patient's children.",
+      "why": "solicitude 指发自内心、体贴入微的关怀,正式且带温度;attentiveness 强调注意力放在对方身上;thoughtfulness 侧重替人着想的举动;tender concern 是描述性搭配。"
+    },
+    {
+      "zh": "那家店橱窗里陈列着几件动物标本。",
+      "target": "动物标本",
+      "order": [
+        "taxidermy"
+      ],
+      "extra": [
+        "mounted specimens",
+        "stuffed animals",
+        "preserved mounts"
+      ],
+      "en": "The window displays several pieces of taxidermy.",
+      "why": "taxidermy 指剥制并塑形保存动物躯体的这门技艺及其成品;mounted specimens 是博物馆用语,强调已装架;stuffed animals 在日常更常指毛绒玩具,容易误解;preserved mounts 是描述性说法。"
+    },
+    {
+      "zh": "这类骗局专挑不谨慎的人下手。",
+      "target": "不谨慎的",
+      "order": [
+        "unwary"
+      ],
+      "extra": [
+        "unsuspecting",
+        "off guard",
+        "gullible"
+      ],
+      "en": "The scam is built for the unwary.",
+      "why": "unwary 指没有提防、缺少警觉,常作 the unwary 指这一类人;unsuspecting 强调压根没料到有诈;off guard 是短语,指当下松懈的状态;gullible 侧重轻信,是性格上的易骗。"
+    },
+    {
+      "zh": "他谈吐温文尔雅,却把该说的都说了。",
+      "target": "温文尔雅",
+      "order": [
+        "urbane"
+      ],
+      "extra": [
+        "suave",
+        "polished",
+        "debonair"
+      ],
+      "en": "He was urbane throughout and still said everything that needed saying.",
+      "why": "urbane 指见多识广而从容得体的谈吐风度,褒义;suave 强调圆滑讨喜,有时暗示不太真诚;polished 侧重经过打磨的老练;debonair 更偏潇洒有魅力的外在气质。"
+    },
+    {
+      "zh": "他在法庭上郑重宣誓放弃了原来的国籍。",
+      "target": "郑重宣誓放弃",
+      "order": [
+        "abjuration"
+      ],
+      "extra": [
+        "renunciation",
+        "recantation",
+        "formal disavowal"
+      ],
+      "en": "The abjuration of his former citizenship was made in open court.",
+      "why": "abjuration 指以誓言正式弃绝某种身份或主张,极正式;renunciation 泛指放弃权利或身份,不必发誓;recantation 特指公开收回此前说过的话或信仰;formal disavowal 是描述性说法。"
+    },
+    {
+      "zh": "他说不想提那件事,然后把细节全讲了一遍。",
+      "target": "不想提",
+      "order": [
+        "apophasis"
+      ],
+      "extra": [
+        "paralipsis",
+        "praeteritio",
+        "mock omission"
+      ],
+      "en": "Saying he would not mention it and then detailing it is apophasis.",
+      "why": "apophasis 指以宣称不提某事的方式反而把它说出来的修辞格;paralipsis 与 praeteritio 是它在不同传统里的别名,含义几乎相同;mock omission 是白话解释,不是术语。"
+    },
+    {
+      "zh": "照片里那张胖嘟嘟的小脸让所有人都笑了。",
+      "target": "胖嘟嘟",
+      "order": [
+        "cherubic"
+      ],
+      "extra": [
+        "angelic",
+        "round-faced",
+        "chubby-cheeked"
+      ],
+      "en": "The cherubic face in the photograph made everyone smile.",
+      "why": "cherubic 指像小天使那样圆润可爱的面容,专用于孩童;angelic 更强调纯洁善良的气质,不限外貌;round-faced 只客观描述脸型;chubby-cheeked 侧重脸颊肉嘟嘟。"
+    },
+    {
+      "zh": "连年的掠夺让这一带的森林几乎不剩什么。",
+      "target": "掠夺",
+      "order": [
+        "depredation"
+      ],
+      "extra": [
+        "plunder",
+        "pillage",
+        "ravaging"
+      ],
+      "en": "Years of depredation left almost nothing of the forest.",
+      "why": "depredation 指持续的劫掠与蹂躏及其造成的破坏,常用复数,正式;plunder 强调抢走财物这一行为;pillage 多指战时对城镇的洗劫;ravaging 侧重造成的毁坏状态。"
+    },
+    {
+      "zh": "被问到亏损时,他一副满不在乎的样子。",
+      "target": "满不在乎",
+      "order": [
+        "insouciant"
+      ],
+      "extra": [
+        "nonchalant",
+        "blasé",
+        "unbothered"
+      ],
+      "en": "Asked about the losses, he stayed insouciant.",
+      "why": "insouciant 指对本该在意的事显得轻松无忧,源自法语,文学色彩重;nonchalant 是最常用的从容不在意;blasé 强调见得太多以致麻木;unbothered 是当代口语。"
+    },
+    {
+      "zh": "金属表面的氧化在潮湿环境里快得多。",
+      "target": "氧化",
+      "order": [
+        "oxidization"
+      ],
+      "extra": [
+        "rusting",
+        "tarnishing",
+        "corrosion"
+      ],
+      "en": "Oxidization of the surface runs much faster in damp air.",
+      "why": "oxidization 指物质与氧结合的化学过程,通用于各种元素;rusting 专指铁生锈这一种;tarnishing 特指银铜等表面失去光泽;corrosion 指材料被环境侵蚀,机制不限于氧化。"
+    },
+    {
+      "zh": "她夜里心悸得厉害,做了两次动态心电图。",
+      "target": "心悸",
+      "order": [
+        "palpitation"
+      ],
+      "extra": [
+        "racing heartbeat",
+        "fluttering",
+        "pounding chest"
+      ],
+      "en": "Palpitations at night sent her for two Holter monitors.",
+      "why": "palpitation 指自己能感觉到心跳异常这一症状,临床术语,多用复数;racing heartbeat 是白话描述;fluttering 侧重那种扑腾感;pounding chest 强调撞击般的搏动。"
+    },
+    {
+      "zh": "这类肌肉萎缩症在儿童期就会显出来。",
+      "target": "萎缩症",
+      "order": [
+        "dystrophy"
+      ],
+      "extra": [
+        "wasting",
+        "degeneration",
+        "muscle loss"
+      ],
+      "en": "This form of dystrophy shows up in childhood.",
+      "why": "dystrophy 指因营养或代谢障碍导致组织发育不良与退化的一类疾病,医学术语;wasting 泛指消瘦萎缩这一表现;degeneration 强调结构与功能的退化;muscle loss 只描述肌肉减少。"
+    },
+    {
+      "zh": "医生给他开了一盒温和的泻药。",
+      "target": "泻药",
+      "order": [
+        "laxative"
+      ],
+      "extra": [
+        "purgative",
+        "stool softener",
+        "bowel aid"
+      ],
+      "en": "The doctor prescribed a mild laxative.",
+      "why": "laxative 是促进排便药物的通称,强度从温和到强烈;purgative 特指作用猛烈的泻剂;stool softener 只软化粪便,不刺激肠道;bowel aid 不是规范用语。"
+    },
+    {
+      "zh": "这个变量描述的是转动的快慢,不是移动的快慢。",
+      "target": "转动的快慢",
+      "order": [
+        "angular"
+      ],
+      "extra": [
+        "rotational",
+        "spin-related",
+        "about an axis"
+      ],
+      "en": "The variable is angular: it describes rotation, not translation.",
+      "why": "angular 在力学中指与角度或转动相关的量,如 angular velocity;rotational 意思相近,更强调旋转这一运动形式;spin-related 多用于粒子物理的自旋;about an axis 是描述性短语。"
+    },
+    {
+      "zh": "那幅画里的身形丰腴,是那个年代的审美。",
+      "target": "丰腴",
+      "order": [
+        "voluptuous"
+      ],
+      "extra": [
+        "curvaceous",
+        "full-figured",
+        "statuesque"
+      ],
+      "en": "The figure in the painting is voluptuous, very much of its period.",
+      "why": "voluptuous 指丰满而带感官魅力,也可形容音乐或色彩的浓艳;curvaceous 只说曲线明显;full-figured 是中性委婉的体型描述;statuesque 强调像雕像般高大端庄。"
     }
   ]
 }
