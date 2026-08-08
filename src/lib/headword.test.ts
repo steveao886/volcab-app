@@ -85,32 +85,33 @@ describe('full-library regression', () => {
     expect(missed.map(w => w.headword)).toEqual([])
   })
 
-  it('no word is mismarked across the full library — every marked span must start with an approximate stem of the headword', async () => {
+  it('no word is mismarked across the full library — every marked span must be a genuine inflection of its headword', async () => {
     // The loose-stem fallback path can match unrelated words like indict→industry or allude→all.
     // In practice this has never triggered on the current word list (the base form is always
     // present), but a new word could hit it at any time — so pin down "no false positives" as a
     // full-library assertion instead of relying on a one-off manual check.
     //
-    // The stem test is applied **per word**, not to the headword as one string.
-    // Only the first word of a phrase inflects, so comparing whole strings
-    // fails on correct spans: "bite the bullet" would demand a span starting
-    // "bite the bul" and reject the perfectly good "bit the bullet". Checking
-    // the head against the stem and requiring the tail verbatim is both
-    // correct for phrases and strictly stronger for them — the tail has to
-    // match exactly rather than merely extend a prefix.
+    // **isInflectionOf is the oracle, not a hand-rolled stem prefix.** This
+    // used to compare each span against `headword.slice(0, len - 3)`, which
+    // rejected two whole classes of correct span the matcher supports on
+    // purpose: an irregular phrase head (bear the brunt → bore the brunt,
+    // which IRREGULAR_FORMS exists to match) and a hyphenated single word,
+    // which it split into two and then demanded the tail verbatim
+    // (rubber-stamp → rubber-stamped). Both surfaced the day words with
+    // those shapes were added.
+    //
+    // Swapping in isInflectionOf is also strictly stronger, not just more
+    // permissive: it deliberately does not use the loose fallback, and its
+    // own docs record that the forms it rejects are exactly that fallback's
+    // false positives — preside→president, indict→industry, allude→all. The
+    // prefix rule caught none of those (approxStem('indict') is 'ind', and
+    // 'industry' starts with 'ind').
     const lib = (await import('../../data/words.json')).default
-    const approxStem = (word: string) => word.slice(0, Math.max(3, word.length - 3))
     const wrong: string[] = []
     for (const w of lib.words) {
-      const parts = w.headword.trim().toLowerCase().split(/[\s-]+/)
       for (const ex of w.examples) {
         for (const seg of splitByHeadword(ex, w.headword)) {
-          if (!seg.hit) continue
-          const got = seg.text.toLowerCase().split(/[\s-]+/)
-          const ok = got.length === parts.length
-            && got[0].startsWith(approxStem(parts[0]))
-            && parts.slice(1).every((p, i) => got[i + 1] === p)
-          if (!ok) wrong.push(`${w.headword} → ${seg.text}`)
+          if (seg.hit && !isInflectionOf(seg.text, w.headword)) wrong.push(`${w.headword} → ${seg.text}`)
         }
       }
     }

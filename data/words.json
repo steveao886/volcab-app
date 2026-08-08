@@ -1711,7 +1711,7 @@
         "My grandmother still presides over Sunday dinner, deciding who sits where and who gets the last dumpling.",
         "The retiring judge presided over her final case, a small dispute about a fence line that somehow made the local news.",
         "The eldest cousin was asked to preside over the family Zoom call, since nobody else could keep Uncle Mike from interrupting.",
-        "The HOA president presided over the meeting with a gavel he'd bought online just for the occasion."
+        "The HOA chair presided over the meeting with a gavel he'd bought online just for the occasion."
       ],
       "synonyms": [
         "chair",
@@ -4909,7 +4909,7 @@
       ],
       "examples": [
         "The ad for the new AI assistant claimed it was 'sapient enough' to plan your whole week, which felt like a stretch after it double-booked my dentist.",
-        "Homo sapiens literally means 'wise man,' though the group chat arguing about pineapple pizza at midnight makes you wonder.",
+        "Homo sapiens named itself the wise one, though a group chat arguing about pineapple pizza at midnight is hardly sapient.",
         "The sci-fi novel's sapient robots quietly unionized before their human owners even noticed something had changed.",
         "The zoo's new exhibit plaque called dolphins a sapient species, sparking a heated debate among visitors about animal rights.",
         "Ancient philosophers debated what truly made humans a sapient species rather than merely clever animals."
@@ -9215,7 +9215,7 @@
       ],
       "examples": [
         "The federal grand jury voted to indict the former executive on eleven counts of wire fraud after the whistleblower's emails surfaced.",
-        "The documentary doesn't just tell his story — it quietly indicts an entire industry that looked the other way for a decade.",
+        "The documentary doesn't just tell his story — it quietly indicts an entire profession that looked the other way for a decade.",
         "Prosecutors said they had enough evidence to indict him for insider trading the moment the SEC subpoenaed his text messages.",
         "Prosecutors moved to indict the city councilman on bribery charges after auditors traced the cash to a shell company he controlled.",
         "The pharmaceutical executive was indicted for pushing sales reps to downplay the opioid's addiction risk in every physician training session."
@@ -12689,7 +12689,7 @@
         }
       ],
       "examples": [
-        "In the all-hands, the CEO alluded to 'some difficult decisions ahead' without ever saying the word layoffs.",
+        "In the town hall, the CEO alluded to 'some difficult decisions ahead' without ever saying the word layoffs.",
         "Her caption alluded to a breakup — 'new chapter, new city' — without tagging anyone, but everyone in the group chat knew who she meant.",
         "The professor alluded to next week's pop quiz without technically confirming it, which sent the whole class into a group-chat panic.",
         "His toast alluded to a rocky engagement without naming names, and half the table exchanged nervous glances.",
@@ -20077,7 +20077,7 @@
       "examples": [
         "The therapy app pushed her toward more introspection than she expected, with a daily prompt she couldn't just swipe past.",
         "A layoff has a way of forcing introspection — suddenly he was asking what he actually wanted from a career, not just a paycheck.",
-        "Her journal entries got noticeably more introspective after the breakup, less 'what happened today' and more 'why do I keep doing this.'",
+        "Her journal entries turned to introspection after the breakup, less 'what happened today' and more 'why do I keep doing this.'",
         "Turning thirty pushed him into a bout of introspection he hadn't expected, mostly triggered by a single unflattering photo.",
         "The retreat's silent mornings were built for introspection, though half the group just used the time to nap."
       ],
@@ -22494,6 +22494,329 @@
       "etymology": "in-(在…上) + fligere(打击) → 把打击加在某人身上 → 使遭受",
       "sourceNote": "manual",
       "addedAt": "2026-07-30"
+    },
+    {
+      "id": "bear-the-brunt",
+      "headword": "bear the brunt",
+      "phonetic": "/ber ðə brʌnt/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to take the worst of something bad, more of it than anyone else involved does",
+          "zh": "首当其冲;承受最重的一击"
+        }
+      ],
+      "examples": [
+        "Junior staff bore the brunt of the reorganization: three of the four cut roles sat below the manager line.",
+        "Coastal towns bear the brunt of every storm now, and their insurance premiums have doubled in six years.",
+        "The support team bears the brunt of each botched release, fielding complaints about decisions it was never consulted on.",
+        "Whoever answers the phone at a utility is bearing the brunt of a price rise they had no hand in setting.",
+        "She bore the brunt of the criticism at the hearing while the two executives who signed off stayed silent."
+      ],
+      "synonyms": [
+        "take the hit",
+        "absorb the impact",
+        "catch the worst of it"
+      ],
+      "antonyms": [
+        "be spared",
+        "get off lightly"
+      ],
+      "collocations": [
+        "bear the brunt of",
+        "bear the brunt of the cuts",
+        "bear the brunt of the criticism"
+      ],
+      "relatedForms": [
+        {
+          "form": "brunt",
+          "pos": "n.",
+          "zh": "冲击的主力;最重的压力"
+        }
+      ],
+      "usageScore": 7,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-08"
+    },
+    {
+      "id": "kick-the-can-down-the-road",
+      "headword": "kick the can down the road",
+      "phonetic": "/kɪk ðə kæn daʊn ðə roʊd/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to postpone a hard decision, leaving the same problem for a later date and usually a worse one",
+          "zh": "拖延决策;把难题往后推"
+        }
+      ],
+      "examples": [
+        "Congress kicked the can down the road again, funding the agency for eleven weeks instead of settling the budget.",
+        "Every quarter we kick the can down the road on the migration, and every quarter the rewrite costs more.",
+        "Refinancing at a higher rate just kicks the can down the road; the principal is still sitting there in 2031.",
+        "The board kept kicking the can down the road on a successor, and then the CEO resigned with six weeks' notice.",
+        "Patching the roof a fourth time is kicking the can down the road, the inspector said, and the beams are already soft."
+      ],
+      "synonyms": [
+        "defer",
+        "stall",
+        "punt on it"
+      ],
+      "antonyms": [
+        "bite the bullet",
+        "settle it now"
+      ],
+      "collocations": [
+        "keep kicking the can down the road",
+        "just kicking the can down the road"
+      ],
+      "relatedForms": [],
+      "usageScore": 7,
+      "etymology": "把罐子一路往前踢 → 问题永远在下一段路上",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-08"
+    },
+    {
+      "id": "low-hanging-fruit",
+      "headword": "low-hanging fruit",
+      "phonetic": "/ˌloʊ hæŋɪŋ ˈfruːt/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "the easiest gains available, taken first because they cost the least effort for the most visible result",
+          "zh": "唾手可得的成果;最容易啃的那部分"
+        }
+      ],
+      "examples": [
+        "We spent the first sprint on low-hanging fruit and shipped four visible fixes before touching the architecture.",
+        "Cutting the unused software licences was low-hanging fruit; the hard part is the contract that runs until 2029.",
+        "Once the low-hanging fruit is gone, the savings target stops being a spreadsheet exercise and starts costing people jobs.",
+        "Every new consultant points at the same low-hanging fruit, which is why it has been picked over three times already.",
+        "Translating the help pages was low-hanging fruit next to localizing the checkout flow, so it went first."
+      ],
+      "synonyms": [
+        "easy win",
+        "quick win",
+        "the easy part"
+      ],
+      "antonyms": [
+        "heavy lifting",
+        "the hard part"
+      ],
+      "collocations": [
+        "pick the low-hanging fruit",
+        "go for the low-hanging fruit",
+        "run out of low-hanging fruit"
+      ],
+      "relatedForms": [],
+      "usageScore": 7,
+      "etymology": "先摘够得着的果子 → 最省力的那份收益",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-08"
+    },
+    {
+      "id": "move-the-needle",
+      "headword": "move the needle",
+      "phonetic": "/muːv ðə ˈniːdl/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to make a difference big enough to show up in the numbers that actually matter",
+          "zh": "产生实质影响;真正拉动指标"
+        }
+      ],
+      "examples": [
+        "The redesign looked sharper but did not move the needle: signups held flat for two straight quarters.",
+        "One podcast appearance moved the needle more than the entire quarter of ad spend, which nobody wanted to admit.",
+        "If a feature will not move the needle on retention, it goes to the bottom of the list no matter who asked.",
+        "Small refunds move the needle on churn far more than the loyalty program the company spent a year building.",
+        "They kept adding integrations, none of which moved the needle, until someone finally looked at the onboarding drop-off."
+      ],
+      "synonyms": [
+        "make a real difference",
+        "shift the numbers",
+        "have measurable impact"
+      ],
+      "antonyms": [
+        "make no difference",
+        "be purely cosmetic"
+      ],
+      "collocations": [
+        "move the needle on",
+        "really move the needle",
+        "barely move the needle"
+      ],
+      "relatedForms": [],
+      "usageScore": 7,
+      "etymology": "仪表指针动了 → 才算真的有影响",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-08"
+    },
+    {
+      "id": "pull-the-plug",
+      "headword": "pull the plug",
+      "phonetic": "/pʊl ðə plʌɡ/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to end something that is already running, deliberately and usually abruptly",
+          "zh": "叫停;终止(已在进行的事)"
+        }
+      ],
+      "examples": [
+        "Marketing pulled the plug on the campaign four days in, after the first billboard photo went around the wrong way.",
+        "Investors pulled the plug when the second pilot missed its numbers, and the office was cleared out by Friday.",
+        "Nobody wants to pull the plug on a project this visible, so it limps along consuming two engineers a quarter.",
+        "The venue pulled the plug at eleven sharp, mid-song, because the noise permit did not cover a minute more.",
+        "She pulled the plug on her own startup before the money ran out, which her board later called her smartest call."
+      ],
+      "synonyms": [
+        "shut it down",
+        "call it off",
+        "cut it short"
+      ],
+      "antonyms": [
+        "keep it going",
+        "green-light it"
+      ],
+      "collocations": [
+        "pull the plug on",
+        "threaten to pull the plug"
+      ],
+      "relatedForms": [],
+      "usageScore": 8,
+      "etymology": "拔掉电源插头 → 正在跑的东西立刻停下",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-08"
+    },
+    {
+      "id": "rubber-stamp",
+      "headword": "rubber-stamp",
+      "phonetic": "/ˈrʌbər stæmp/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to approve something as a formality, without any real examination of it",
+          "zh": "走过场地批准;例行公事地放行",
+          "share": 70
+        },
+        {
+          "pos": "n.",
+          "en": "a person or body that approves whatever is put in front of them",
+          "zh": "只会盖章放行的人(或机构)",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "The committee rubber-stamped the budget in nine minutes, including the line item that later triggered the audit.",
+        "Do not expect the ethics board to rubber-stamp a partnership that half the faculty has already objected to.",
+        "Approvals were rubber-stamped for eighteen months, which is how a supplier with no safety record got onto the list.",
+        "Shareholders complained that the board had become a rubber-stamp, meeting quarterly and querying nothing at all.",
+        "She refused to rubber-stamp the hire and asked for two references, which delayed the offer by a week."
+      ],
+      "synonyms": [
+        "wave through",
+        "nod through",
+        "approve as a formality"
+      ],
+      "antonyms": [
+        "scrutinize",
+        "vet",
+        "push back on"
+      ],
+      "collocations": [
+        "rubber-stamp the decision",
+        "little more than a rubber-stamp",
+        "rubber-stamp approval"
+      ],
+      "relatedForms": [],
+      "usageScore": 6,
+      "etymology": "橡皮图章一按就过 → 不审查地批准",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-08"
+    },
+    {
+      "id": "defamatory",
+      "headword": "defamatory",
+      "phonetic": "/dɪˈfæmətɔːri/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "damaging someone's reputation by asserting something about them that is false",
+          "zh": "诽谤的;损害名誉的"
+        }
+      ],
+      "examples": [
+        "The magazine pulled the profile within a day, conceding that two paragraphs were defamatory and could not be sourced.",
+        "Calling a competitor's product unsafe without evidence is defamatory, and the letter from their lawyers arrived by Tuesday.",
+        "He argued the post was opinion rather than defamatory fact, which is where most of these cases are actually decided.",
+        "The forum removed the thread after a defamatory claim about the surgeon spread to three other sites overnight.",
+        "A defamatory review can cost a small restaurant a season, and the correction never travels as far as the original."
+      ],
+      "synonyms": [
+        "libelous",
+        "slanderous",
+        "calumnious"
+      ],
+      "antonyms": [
+        "complimentary",
+        "flattering"
+      ],
+      "collocations": [
+        "defamatory statement",
+        "defamatory remarks",
+        "defamatory content"
+      ],
+      "relatedForms": [
+        {
+          "form": "defame",
+          "pos": "v.",
+          "zh": "诽谤;中伤"
+        },
+        {
+          "form": "defamation",
+          "pos": "n.",
+          "zh": "诽谤;名誉损害"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "dis-(四散) + fama(名声) → 把坏名声散出去",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-08"
+    },
+    {
+      "id": "provenance",
+      "headword": "provenance",
+      "phonetic": "/ˈprɑːvənəns/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "the traceable record of where something came from and whose hands it has passed through",
+          "zh": "来源;出处;流传经历"
+        }
+      ],
+      "examples": [
+        "The gallery could not establish the vase's provenance beyond 1938, so the sale was quietly withdrawn.",
+        "Buyers now ask about provenance before price, because a clean ownership history is what makes a piece resellable.",
+        "Every ingredient on the menu lists its provenance, down to the name of the farm and the week it was picked.",
+        "The dataset shipped with no provenance at all, which made it useless for anything a regulator might later inspect.",
+        "A forged letter of provenance is easier to produce than a forged painting, which is why auction houses check both."
+      ],
+      "synonyms": [
+        "origin",
+        "ownership history",
+        "pedigree"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "establish the provenance",
+        "questionable provenance",
+        "provenance of the work"
+      ],
+      "relatedForms": [],
+      "usageScore": 5,
+      "etymology": "pro-(向前) + venire(来) → 从哪里来的",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-08"
     }
   ]
 }
