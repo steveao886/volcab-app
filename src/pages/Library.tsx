@@ -116,6 +116,19 @@ export function Library() {
   const sourceNotes = useMemo(() => distinctSourceNotes(words), [words])
   const filteredIds = useMemo(() => new Set(filtered.map(w => w.id)), [filtered])
 
+  // Empty values are left out rather than serialized as `q=&status=all`, so
+  // an unfiltered library links to a clean /practice — the URL a user might
+  // reasonably bookmark or type. Practice.tsx defaults every absent
+  // parameter to the same no-restriction value, so the two forms mean the
+  // same thing.
+  const practiceParams = useMemo(() => {
+    const p = new URLSearchParams()
+    if (query.trim() !== '') p.set('q', query.trim())
+    if (status !== 'all') p.set('status', status)
+    if (sourceNote !== null) p.set('src', sourceNote)
+    return p.toString()
+  }, [query, status, sourceNote])
+
   // When filter conditions change, entries that are selected but no longer
   // visible must be dropped from the selection set, otherwise "select all"
   // and "N items selected" would no longer match the list the user sees.
@@ -243,6 +256,19 @@ export function Library() {
           </div>
         )}
       </div>
+
+      {/* The entry point to free practice, and the reason /practice takes a
+          filter instead of a preset list: whatever combination of search,
+          status and source is on screen right now *is* the vocabulary of
+          "what I want to practise", and the library already has the UI for
+          expressing it. Hidden in manage mode, where a tap is already
+          claimed by selection, and hidden at zero results, where it would
+          promise a session with nothing in it. */}
+      {!manageMode && filtered.length > 0 && (
+        <Link className="btn btn--secondary library-practice" to={`/practice?${practiceParams}`}>
+          练这 <span className="num">{filtered.length}</span> 个 →
+        </Link>
+      )}
 
       {manageMode && filtered.length > 0 && (
         <div className="library-selectall">

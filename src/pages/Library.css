@@ -166,3 +166,12 @@
   align-items: center;
   gap: var(--sp-1);
 }
+
+/* --- Free-practice entry ------------------------------------------------------
+   A full-width button between the filters and the list, because that is
+   where the count it names is decided. Secondary, not primary: the page's
+   subject is the list itself, and this is one thing you can do with it. */
+
+.library-practice {
+  width: 100%;
+}
