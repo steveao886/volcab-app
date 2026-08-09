@@ -1000,7 +1000,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     updateSettings, syncNow, exportAll,
     ...(import.meta.env.DEV ? { enterDemoMode } : {}),
   }), [
-    state, login, logout, grade, recordLapseDrill, recordConsolidation, dismissSuggestion, recordQuiz, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
+    state, login, logout, grade, recordLapseDrill, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll, enterDemoMode,
   ])
 

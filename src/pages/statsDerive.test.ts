@@ -4,7 +4,7 @@ import type { Progress, Word } from '../types'
 import {
   accuracySeries, accuracyStats, agoLabel, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
   masteryBreakdown, modeAccuracy, modeOverview, recommendMode, retentionStats, shortDate,
-  strugglingSummary, usageCoverage, windowSummary,
+  usageCoverage, windowSummary,
 } from './statsDerive'
 import type { DayPoint } from './statsDerive'
 
@@ -133,37 +133,10 @@ describe('dueForecast', () => {
   })
 })
 
-describe('strugglingSummary', () => {
-  const struggling = (ease: number, lapses = 1) => ({
-    state: 'review' as const, ease, intervalDays: 3, due: '2026-07-30',
-    stepIndex: 0, reps: 5, lapses, lastReviewedAt: '2026-07-20T00:00:00Z',
-  })
-
-  it('ranks by ease ascending and reports the full total behind the top slice', () => {
-    const words = [w('a'), w('b'), w('c')]
-    const p = emptyProgress()
-    p.words['a'] = struggling(2.35)
-    p.words['b'] = struggling(1.5)
-    p.words['c'] = struggling(1.9)
-    const s = strugglingSummary(words, p, 2)
-    expect(s.top.map(t => t.word.id)).toEqual(['b', 'c'])
-    expect(s.total).toBe(3)
-  })
-
-  it('carries the lapse count through for the row label — 0 for words that were only ever "hard"', () => {
-    const p = emptyProgress()
-    p.words['a'] = struggling(2.35, 0)
-    p.words['b'] = struggling(1.5, 4)
-    const s = strugglingSummary([w('a'), w('b')], p, 5)
-    expect(s.top.map(t => t.lapses)).toEqual([4, 0])
-  })
-
-  it('a word at initial ease is not struggling, whatever it once cost', () => {
-    const p = emptyProgress()
-    p.words['a'] = struggling(2.5, 6)
-    expect(strugglingSummary([w('a')], p, 5)).toEqual({ total: 0, top: [] })
-  })
-})
+// The strugglingSummary suite stood here. It only ever tested that the
+// wrapper passed rankStrugglingWords' output through — the ranking rules
+// themselves (ease as the entry condition, both exits, the ordering) are
+// covered in lib/queue.test.ts and are unaffected by the card's removal.
 
 describe('forecastLabel / shortDate', () => {
   it('names the two days that have names, weekday for the rest', () => {

@@ -9,15 +9,13 @@ import { AccuracyTrend, ReviewBars } from './statsCharts'
 import {
   accuracySeries, accuracyStats, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
   masteryBreakdown, MODE_ACCURACY_MIN, modeAccuracy, retentionStats, shortDate,
-  strugglingSummary, usageCoverage, windowSummary,
+  usageCoverage, windowSummary,
 } from './statsDerive'
 import { computeStreak, longestStreak } from './todayStats'
 import './Stats.css'
 
 const WINDOW_DAYS = 30
 const FORECAST_DAYS = 7
-/** Five is enough to recognise the pattern; the full list is one tap away in the lapse session. */
-const TOP_STRUGGLING = 5
 
 const pct = (ratio: number) => Math.round(ratio * 100)
 
@@ -60,7 +58,6 @@ export function Stats() {
       mastery: masteryBreakdown(words, progress),
       coverage: usageCoverage(words, progress),
       forecast: dueForecast(words, progress, today, FORECAST_DAYS),
-      struggling: strugglingSummary(words, progress, TOP_STRUGGLING),
       totals: cumulativeTotals(progress),
       modes: modeAccuracy(progress),
       // Only a complete absence of dailyStats counts as a "never studied"
@@ -71,7 +68,7 @@ export function Stats() {
   }, [words, progress, today])
   const {
     days, acc, summary, accStats, retention, streak, best, mastery,
-    totals, modes, coverage, forecast, struggling, hasHistory,
+    totals, modes, coverage, forecast, hasHistory,
   } = derived
 
   if (!hasHistory) {
@@ -323,39 +320,18 @@ export function Stats() {
         </ul>
       </Card>
 
-      {/* Names the words that aren't sticking *right now*, ranked by the
-          scheduler's own difficulty estimate — not the lifetime lapse
-          ledger this card used to be, which visibly never changed (see the
-          2026-08-05 struggling-words spec). An absent card honestly means
-          nothing is currently shaky. The row tag stays in lapse counts
-          because "忘 3 次" is self-explanatory where an ease number is
-          jargon; "偏难" marks the words that were only ever graded hard. */}
-      {struggling.total > 0 && (
-        <Card>
-          <div className="stats-card-head">
-            <p className="section-title stats-section-title">还没记牢的词</p>
-            <Link to="/review?mode=lapses" className="stats-card-head__link">
-              专攻 →
-            </Link>
-          </div>
-          <ul className="stats-lapses">
-            {struggling.top.map(({ word, lapses: n }) => (
-              <li key={word.id}>
-                <Link to={`/word/${word.id}`} className="stats-lapse">
-                  <span className="word stats-lapse__word" lang="en">
-                    {word.headword}
-                  </span>
-                  <span className="muted stats-lapse__zh">{word.meanings[0]?.zh ?? ''}</span>
-                  <span className="num stats-lapse__count">{n > 0 ? `忘 ${n} 次` : '偏难'}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <p className="faint stats-note">
-            共 <span className="num">{struggling.total}</span> 个词还没记牢。
-          </p>
-        </Card>
-      )}
+      {/* The 还没记牢的词 card stood here, listing the five worst words with
+          a 专攻 → link to /review?mode=lapses. Both halves failed. The link
+          landed on an empty page as often as not — the drill is a daily
+          task, so it filters out anything already reviewed today, refuses a
+          second pass, and caps at 20, none of which a card offering "these
+          54 words, now" can honour. And the list itself was not what the
+          user wanted from it: practising those words was, which is what
+          /practice is for. Removed rather than repaired, on the user's call.
+
+          The ranking is untouched — rankStrugglingWords still drives the
+          drill queue, the Today row and tuning. It just no longer has a
+          page that names it. */}
 
       {/* Per-mode, never blended: the seven surfaces test different things
           at different difficulties, so one combined figure moves more when

@@ -1,4 +1,3 @@
-import { rankStrugglingWords } from '../lib/queue'
 import { QUIZ_METRIC_KEYS, QUIZ_METRIC_LABELS } from '../lib/quiz'
 import type { QuizMetricKey } from '../lib/quiz'
 import { addDays } from '../lib/srs'
@@ -172,35 +171,13 @@ export function dueForecast(words: Word[], progress: Progress, today: string, sp
   return { days: dates.map(date => ({ date, count: counts.get(date)! })), beyond, total }
 }
 
-export interface StrugglingWord { word: Word; lapses: number }
-export interface StrugglingSummary {
-  /** Every word currently struggling, not just the ones listed below. */
-  total: number
-  top: StrugglingWord[]
-}
-
-/**
- * The words that aren't sticking right now.
- *
- * Selection and ordering are delegated to rankStrugglingWords, the same
- * ranking the drill session uses, so the leaderboard and the session it
- * links to never disagree about which word is worst. (The session
- * additionally drops words already reviewed today; the card keeps them —
- * a word shouldn't blink off it an hour after you drilled it.)
- *
- * This used to rank over everything that had ever lapsed, as a lifetime
- * record. It was rebuilt on the current-difficulty ranking because the
- * record never visibly changed — see the 2026-08-05 struggling-words spec.
- * `lapses` still rides along per row: "忘 3 次" explains a word's presence
- * better than an ease number would, and 0 marks the graded-hard-only words.
- */
-export function strugglingSummary(words: Word[], progress: Progress, topN: number): StrugglingSummary {
-  const ranked = rankStrugglingWords(words, progress)
-  return {
-    total: ranked.length,
-    top: ranked.slice(0, topN).map(word => ({ word, lapses: progress.words[word.id].lapses })),
-  }
-}
+/* strugglingSummary lived here, wrapping rankStrugglingWords into a
+   { total, top } shape for the stats page's 还没记牢的词 card. The card was
+   removed (see the comment where it stood in Stats.tsx) and this had no
+   other consumer, so it went with it rather than sitting unused —
+   rankStrugglingWords in lib/queue.ts is still the one definition of a
+   struggling word, and still feeds the drill queue, the Today row and
+   tuning. */
 
 const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 
