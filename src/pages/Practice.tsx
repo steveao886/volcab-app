@@ -6,7 +6,7 @@ import { Card } from '../components/Card'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { isEditableTarget } from '../lib/keys'
-import { PRACTICE_DRAW_SIZE, samplePractice } from '../lib/practice'
+import { buildMixedPractice, mixedPracticePool, PRACTICE_DRAW_SIZE, samplePractice } from '../lib/practice'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { filterToParams, filterWords, paramsToFilter } from './libraryFilter'
@@ -47,21 +47,44 @@ export function Practice() {
   // redraw the deck under the user's hands.
   const [searchParams] = useSearchParams()
   const [filter] = useState(() => paramsToFilter(searchParams))
+  // `pick=mixed` is the Today-page row: half struggling, half steady, no
+  // library filter involved. Anything else — including a missing value —
+  // is the library-slice mode, read side lenient as ever.
+  const [mixed] = useState(() => searchParams.get('pick') === 'mixed')
 
-  // Back goes to the library *as it was left*, not to all 504 words. The
-  // library keeps its filter in the URL under these same three parameter
-  // names, so re-encoding what this page was given lands on the exact list
-  // the 练这 N 个 button was pressed from.
+  // Back goes where you came from. For a library slice that is the library
+  // *as it was left*: the filter lives in the URL under these same
+  // parameter names, so re-encoding lands on the exact list the 练这 N 个
+  // button was pressed from. The mixed draw has no filter and was reached
+  // from 今日.
   const backTo = useMemo(() => {
+    if (mixed) return '/'
     const qs = filterToParams(filter)
     return qs === '' ? '/library' : `/library?${qs}`
-  }, [filter])
+  }, [mixed, filter])
 
   // progress is part of the filter (the status chip reads learning state),
   // and every sync tick hands back a new object — so this has to be memoized
   // or a background push would re-filter the whole library. Same precedent
   // as Library.tsx's own `filtered`.
-  const pool = useMemo(() => filterWords(words, progress, filter), [words, progress, filter])
+  //
+  // For the mixed draw this is the *union* of both halves rather than the
+  // deck's own recipe: its only job is answering "is there anything left I
+  // haven't drawn", which decides whether 再来一批 is offered.
+  const pool = useMemo(
+    () => (mixed ? mixedPracticePool(words, progress) : filterWords(words, progress, filter)),
+    [mixed, words, progress, filter],
+  )
+
+  // One draw, whichever mode this is. The deck is only ever produced here,
+  // so the two modes can't drift on size or exclusion handling.
+  const draw = useCallback(
+    (exclude?: ReadonlySet<string>) =>
+      mixed
+        ? buildMixedPractice(words, progress, PRACTICE_DRAW_SIZE, { exclude })
+        : samplePractice(pool, PRACTICE_DRAW_SIZE, { exclude }),
+    [mixed, words, progress, pool],
+  )
 
   // The deck holds Word objects rather than ids, unlike Review.tsx's queue.
   // A word deleted from another device mid-session then just stays on its
@@ -69,7 +92,7 @@ export function Practice() {
   // recordPractice finds no progress entry. That removes the whole
   // "the head of the queue points at a word that no longer exists"
   // transitional state the review page has to render around.
-  const [deck, setDeck] = useState<Word[]>(() => samplePractice(pool))
+  const [deck, setDeck] = useState<Word[]>(() => draw())
   const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set())
   const [idx, setIdx] = useState(0)
   const [flipped, setFlipped] = useState(false)
@@ -119,10 +142,10 @@ export function Practice() {
 
   const redraw = useCallback(() => {
     setSeen(drawn)
-    setDeck(samplePractice(pool, PRACTICE_DRAW_SIZE, { exclude: drawn }))
+    setDeck(draw(drawn))
     setIdx(0)
     setFlipped(false)
-  }, [drawn, pool])
+  }, [drawn, draw])
 
   const handleCardKeyDown = useCallback(
     (e: ReactKeyboardEvent<HTMLDivElement>) => {
@@ -167,10 +190,14 @@ export function Practice() {
           <p className="review-done__label">{neverStarted ? '没有可练的词' : '这一批练完了'}</p>
           <p className="muted">
             {neverStarted
-              ? '这组筛选条件下没有词条,回词库换个条件试试。'
+              ? mixed
+                ? '还没有已掌握的词可以练,先去复习几轮吧。'
+                : '这组筛选条件下没有词条,回词库换个条件试试。'
               : hasMore
                 ? '想接着练就再抽一批,不想练随时可以走 —— 这里不记进度。'
-                : '这组筛选条件下的词都过了一遍。'}
+                : mixed
+                  ? '能练的词都过了一遍。'
+                  : '这组筛选条件下的词都过了一遍。'}
           </p>
           {hasMore && (
             <Button variant="primary" size="lg" onClick={redraw}>
@@ -178,7 +205,7 @@ export function Practice() {
             </Button>
           )}
           <Link to={backTo} className="btn btn--secondary btn--lg">
-            返回词库
+            {mixed ? '返回今日' : '返回词库'}
           </Link>
         </div>
       </Page>
@@ -206,7 +233,8 @@ export function Practice() {
           rather than discovered after — same placement decision as the
           review page's drill note. */}
       <p className="faint review-drill-note">
-        随便练:答错的词会进顽固词队列,但不影响复习计划,也不计入今日复习。
+        {mixed ? '一半已掌握的词随机抽,一半是最近老忘的。' : '随便练:'}
+        答错的词会进顽固词队列,但不影响复习计划,也不计入今日复习。
       </p>
 
       {/* Above the card, like the review grades: always in the same place,

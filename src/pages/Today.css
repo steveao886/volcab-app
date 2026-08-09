@@ -125,6 +125,27 @@
   color: var(--text-faint);
 }
 
+/* --- Free practice row ----------------------------------------------------
+   Between the plan and the stats footer: below the things that can actually
+   be completed, above the things that are just readouts. Two stacked lines
+   rather than the footer's flex row, because the second line is a sentence
+   explaining what the draw is made of and must not be split across the
+   width at 375px. */
+
+.today-practice {
+  display: grid;
+  gap: var(--sp-1);
+}
+
+.today-practice__label {
+  font-weight: 600;
+}
+
+.today-practice__meta {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+}
+
 /* --- Footer stat line: the /stats entry point ----------------------------- */
 
 .today-footer {

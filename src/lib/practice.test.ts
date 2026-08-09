@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { PRACTICE_DRAW_SIZE, samplePractice } from './practice'
-import type { Word } from '../types'
+import { buildMixedPractice, mixedPracticePool, PRACTICE_DRAW_SIZE, samplePractice } from './practice'
+import { INITIAL_EASE } from './srs'
+import { emptyProgress } from '../types'
+import type { Progress, Word } from '../types'
 
 const word = (id: string): Word => ({
   id, headword: id, phonetic: '/x/', meanings: [{ pos: 'n.', en: 'x', zh: 'x' }],
@@ -76,5 +78,90 @@ describe('samplePractice', () => {
     const before = original.map(w => w.id)
     samplePractice(original, 5, { rng: mulberry32(9) })
     expect(original.map(w => w.id)).toEqual(before)
+  })
+})
+
+describe('buildMixedPractice', () => {
+  // 'review' + ease below initial => struggling; 'review' at initial ease => merely mastered.
+  const prog = (spec: Record<string, { ease: number; state?: 'review' | 'learning' | 'new' }>): Progress => {
+    const p = emptyProgress()
+    for (const [id, s] of Object.entries(spec)) {
+      p.words[id] = {
+        state: s.state ?? 'review', ease: s.ease, intervalDays: 5, due: '2026-09-01',
+        stepIndex: 0, reps: 4, lapses: s.ease < INITIAL_EASE ? 1 : 0, lastReviewedAt: '2026-08-01T00:00:00Z',
+      }
+    }
+    return p
+  }
+  const hardIds = (n: number) => Object.fromEntries(Array.from({ length: n }, (_, i) => [`h${i}`, { ease: 2.0 }]))
+  const easyIds = (n: number) => Object.fromEntries(Array.from({ length: n }, (_, i) => [`e${i}`, { ease: INITIAL_EASE }]))
+  const setup = (nHard: number, nEasy: number) => {
+    const spec = { ...hardIds(nHard), ...easyIds(nEasy) }
+    return { words: Object.keys(spec).map(word), progress: prog(spec) }
+  }
+
+  it('splits the deck down the middle: half struggling, half merely mastered', () => {
+    const { words, progress } = setup(30, 30)
+    const drawn = buildMixedPractice(words, progress, 20, { rng: mulberry32(1) })
+    expect(drawn).toHaveLength(20)
+    expect(drawn.filter(w => w.id.startsWith('h'))).toHaveLength(10)
+    expect(drawn.filter(w => w.id.startsWith('e'))).toHaveLength(10)
+  })
+
+  it('never repeats a word, even though a struggling word is also a mastered word', () => {
+    const { words, progress } = setup(30, 30)
+    const drawn = buildMixedPractice(words, progress, 20, { rng: mulberry32(2) })
+    expect(new Set(drawn.map(w => w.id)).size).toBe(20)
+  })
+
+  it('does not hand back the same ten hard words every session — the frozen-list failure', () => {
+    const { words, progress } = setup(40, 40)
+    const a = buildMixedPractice(words, progress, 20, { rng: mulberry32(3) }).filter(w => w.id.startsWith('h'))
+    const b = buildMixedPractice(words, progress, 20, { rng: mulberry32(9) }).filter(w => w.id.startsWith('h'))
+    expect(a.map(w => w.id).sort()).not.toEqual(b.map(w => w.id).sort())
+  })
+
+  it('backfills from the mastered side when there are barely any struggling words', () => {
+    const { words, progress } = setup(2, 40)
+    const drawn = buildMixedPractice(words, progress, 20, { rng: mulberry32(4) })
+    expect(drawn).toHaveLength(20)
+    expect(drawn.filter(w => w.id.startsWith('h')).length).toBeLessThanOrEqual(2)
+  })
+
+  it('backfills from the struggling side when almost nothing is merely mastered', () => {
+    const { words, progress } = setup(40, 2)
+    const drawn = buildMixedPractice(words, progress, 20, { rng: mulberry32(5) })
+    expect(drawn).toHaveLength(20)
+    expect(drawn.filter(w => w.id.startsWith('h')).length).toBeGreaterThanOrEqual(18)
+  })
+
+  it('honours the exclusion set, so a redraw walks on instead of resampling', () => {
+    const { words, progress } = setup(10, 10)
+    const first = buildMixedPractice(words, progress, 10, { rng: mulberry32(6) })
+    const second = buildMixedPractice(words, progress, 10, { rng: mulberry32(7), exclude: new Set(first.map(w => w.id)) })
+    expect(second.some(w => first.some(f => f.id === w.id))).toBe(false)
+  })
+
+  it('ignores never-studied and still-learning words — this is practice over what you have already met', () => {
+    const p = prog({ a: { ease: INITIAL_EASE }, b: { ease: INITIAL_EASE, state: 'learning' }, c: { ease: INITIAL_EASE, state: 'new' } })
+    const drawn = buildMixedPractice([word('a'), word('b'), word('c'), word('d')], p, 20, { rng: mulberry32(8) })
+    expect(drawn.map(w => w.id)).toEqual(['a'])
+  })
+
+  it('an empty library is a normal outcome, not a throw', () => {
+    expect(buildMixedPractice([], emptyProgress(), 20, { rng: mulberry32(1) })).toEqual([])
+    expect(buildMixedPractice(setup(5, 5).words, setup(5, 5).progress, 0, { rng: mulberry32(1) })).toEqual([])
+  })
+})
+
+describe('mixedPracticePool', () => {
+  it('is the union of struggling and mastered, each word once', () => {
+    const p = emptyProgress()
+    const mk = (ease: number) => ({ state: 'review' as const, ease, intervalDays: 5, due: '2026-09-01', stepIndex: 0, reps: 4, lapses: 0, lastReviewedAt: '2026-08-01T00:00:00Z' })
+    p.words['hard'] = mk(2.0)       // struggling AND review — must appear once, not twice
+    p.words['easy'] = mk(INITIAL_EASE)
+    p.words['fresh'] = { ...mk(INITIAL_EASE), state: 'new' }
+    const pool = mixedPracticePool([word('hard'), word('easy'), word('fresh')], p)
+    expect(pool.map(w => w.id).sort()).toEqual(['easy', 'hard'])
   })
 })

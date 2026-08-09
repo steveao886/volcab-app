@@ -92,6 +92,18 @@ export function Today() {
         </ul>
       </section>
 
+      {/* Free practice, outside the plan on purpose. Everything in 今日安排
+          above is something the scheduler is asking for and can be finished;
+          this can't be finished, doesn't count, and is available whether or
+          not the day's work is done — putting it in that list would make it
+          read as a fifth chore. It sits here because "I want to look at some
+          words" is a real impulse that previously had only one home, buried
+          under the library's filter bar. */}
+      <Link to="/practice?pick=mixed" className="card card--interactive today-practice">
+        <span className="today-practice__label">随便练练</span>
+        <span className="muted today-practice__meta">一半已掌握的随机抽,一半是最近老忘的 · 不计入复习</span>
+      </Link>
+
       <Link to="/stats" className="card card--interactive today-footer">
         <span>
           连续 <span className="num today-footer__accent">{streak}</span> 天
