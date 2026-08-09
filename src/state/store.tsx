@@ -67,6 +67,16 @@ export interface AppActions {
   recordLapseDrill(wordId: string, g: Grade): void
   /** Same-day consolidation pass over today's new words. Practice, like recordLapseDrill, but a miss is not counted as a lapse */
   recordConsolidation(wordId: string, g: Grade): void
+  /**
+   * Free practice (`/practice`): the thinnest write in the app. A miss stamps
+   * missedAt; a correct answer clears it, and over an unmissed word commits
+   * nothing at all.
+   *
+   * Unlike every other practice surface it does **not** touch dailyStats —
+   * see the comment on the implementation for why that omission is the
+   * feature.
+   */
+  recordPractice(wordId: string, correct: boolean): void
   /** Reject a suggested word, permanently: the id is remembered in synced progress so later suggestion batches skip it */
   dismissSuggestion(id: string): void
   recordQuiz(correct: number, total: number, wrongIds: string[], mode: QuizMetricKey): void
@@ -686,6 +696,51 @@ export function AppProvider({ children }: { children: ReactNode }) {
   )
 
   /**
+   * Free practice, one card at a time. Writes strictly less than
+   * practiceGrade, and the two subtractions are the whole design.
+   *
+   * **dailyStats is never touched.** Every other surface that shows you a
+   * card counts it: practiceGrade increments stat.reviewed so the drill
+   * keeps the streak alive and lands in the 30-day chart. This one must
+   * not, because it has no budget and no completion — you can open it
+   * twenty times an hour over any slice of the library. Counting those
+   * flips as reviews would let a casual afternoon outscore a real review
+   * session, and every figure derived from reviewed (the streak, the chart,
+   * the accuracy rate) would stop describing anything. This is the user's
+   * "不计入真的复习" in one line.
+   *
+   * **lastReviewedAt is never stamped.** Not an omission: buildLapseQueue
+   * reads that field to decide which words have already been dealt with
+   * today, so writing it here would hide the miss from the stubborn-word
+   * drill this stamp exists to feed. Same reasoning markMissed records, and
+   * the same mergeProgress hazard clearMissed's comment names — a bumped
+   * timestamp lets this device's otherwise-stale copy beat a real review
+   * done elsewhere.
+   *
+   * `lapses` stays untouched for the reason recordConsolidation gives: a
+   * lapse means forgetting a word you had learned, established on a graded
+   * review card. Flipping past one here is not that.
+   *
+   * Words still in the `new` state are skipped outright. missedAt is only
+   * ever read for words past `new` (buildLapseQueue filters on exactly
+   * that), so stamping one would push a sync diff for a field nothing will
+   * read — the same no-op-write objection dismissSuggestion raises.
+   */
+  const recordPractice = useCallback((wordId: string, correct: boolean) => {
+    const cur = stateRef.current.progress
+    const prev = cur.words[wordId]
+    if (!prev || prev.state === 'new') return
+    const entry = correct ? clearMissed(prev) : { ...prev, missedAt: todayStr(new Date()) }
+    // Object identity, exactly as clearMissed promises: a correct answer
+    // over a word that was never missed has nothing to record, and bailing
+    // here is what keeps "a clean pass writes nothing" true rather than
+    // merely nearly true.
+    if (entry === prev) return
+    commitProgress({ ...cur, words: { ...cur.words, [wordId]: entry } })
+    schedulePush()
+  }, [commitProgress, schedulePush])
+
+  /**
    * Rejecting a suggested word. Append-only, and nothing in the scheduler
    * ever reads it — the list exists so a word the user has already said no
    * to never comes back in a later batch.
@@ -941,7 +996,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AppContextValue>(() => ({
     ...state,
-    login, logout, grade, recordLapseDrill, recordConsolidation, dismissSuggestion, recordQuiz, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
+    login, logout, grade, recordLapseDrill, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll,
     ...(import.meta.env.DEV ? { enterDemoMode } : {}),
   }), [

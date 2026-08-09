@@ -938,6 +938,115 @@ describe('recordLapseDrill: drilling never moves the schedule outward', () => {
   })
 })
 
+// recordPractice is the same "practice never reshapes the schedule"
+// contract minus two more writes, and the subtractions are the reason it
+// exists rather than reusing recordLapseDrill. Free practice has no daily
+// budget and no completion -- the user can open it over any slice of the
+// library, as many times an hour as they like -- so the dailyStats
+// assertions below are not hygiene. If a casual flip counted as a review,
+// the streak, the 30-day chart and the accuracy rate would all stop
+// describing review sessions, which is precisely what the user asked to
+// avoid with "不计入真的复习时间".
+describe('recordPractice: free practice writes less than any other surface', () => {
+  it('a correct answer over a word that was never missed writes nothing at all — not even a fresh object', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.words['alpha']
+
+    await step(() => { app().recordPractice('alpha', true) })
+
+    // Object identity, the same guarantee recordLapseDrill's correct path
+    // makes. It is what keeps "a clean pass writes nothing" checkable
+    // instead of merely approximately true -- a fresh object with equal
+    // fields would still mark progress dirty and push a diff for nothing.
+    expect(app().progress.words['alpha']).toBe(before)
+  })
+
+  it('a miss stamps missedAt and touches nothing else — not lapses, not lastReviewedAt', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.words['alpha']
+    expect(before.due > today).toBe(true)
+
+    await step(() => { app().recordPractice('alpha', false) })
+
+    const after = app().progress.words['alpha']
+    expect(after.missedAt).toBe(today)
+    expect(after.due).toBe(before.due)
+    expect(after.ease).toBe(before.ease)
+    expect(after.intervalDays).toBe(before.intervalDays)
+    expect(after.state).toBe(before.state)
+    // Unlike recordLapseDrill, a miss here is not a lapse: a lapse means
+    // forgetting a word you had learned, established on a graded review
+    // card. Flipping past one casually is not that.
+    expect(after.lapses).toBe(before.lapses)
+    // And not lastReviewedAt. buildLapseQueue reads that field as "already
+    // dealt with today", so stamping it would hide this very miss from the
+    // drill the stamp exists to feed.
+    expect(after.lastReviewedAt).toBe(before.lastReviewedAt)
+  })
+
+  it('a correct answer settles an earlier miss, so a word does not keep coming back once you know it', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().recordPractice('alpha', false) })
+    expect(app().progress.words['alpha'].missedAt).toBe(today)
+
+    await step(() => { app().recordPractice('alpha', true) })
+
+    expect(app().progress.words['alpha'].missedAt).toBeUndefined()
+  })
+
+  it('never counts as a review — a whole session of it leaves the day untouched', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.dailyStats[today]
+
+    for (let i = 0; i < 10; i++) {
+      await step(() => { app().recordPractice('alpha', false) })
+      await step(() => { app().recordPractice('alpha', true) })
+    }
+
+    // Byte-identical, not merely equal: the day's record must not be
+    // rewritten at all by a surface that has no claim on it.
+    expect(app().progress.dailyStats[today]).toBe(before)
+  })
+
+  it('twenty passes in one day cannot move the schedule', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.words['alpha']
+
+    for (let i = 0; i < 20; i++) await step(() => { app().recordPractice('alpha', i % 2 === 0) })
+
+    const after = app().progress.words['alpha']
+    expect(after.intervalDays).toBe(before.intervalDays)
+    expect(after.due).toBe(before.due)
+    expect(after.ease).toBe(before.ease)
+  })
+
+  it('a word with no record is skipped rather than invented — the library filter can serve never-studied words', async () => {
+    await bootAsAlice()
+    const before = app().progress.words
+    await step(() => { app().recordPractice('beta', false) })
+    expect(app().progress.words).toBe(before)
+  })
+
+  it('a word still in the new state is skipped: missedAt is only ever read past new, so stamping one pushes a diff nothing reads', async () => {
+    const p = emptyProgress()
+    p.words['alpha'] = {
+      state: 'new', ease: 2.5, intervalDays: 0, due: today,
+      stepIndex: 0, reps: 0, lapses: 0, lastReviewedAt: '2026-07-25T00:00:00Z',
+    }
+    await bootAsAlice({ progress: p })
+    const before = app().progress.words
+
+    await step(() => { app().recordPractice('alpha', false) })
+
+    expect(app().progress.words).toBe(before)
+  })
+})
+
 describe('consolidateWord: 巩固 declares a miss a real forget, and nothing more', () => {
   it('stamps missedAt and counts the lapse, leaving due/ease/interval/state alone', async () => {
     await bootAsAlice()
