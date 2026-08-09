@@ -157,22 +157,39 @@ control.
   out to be wanted, they belong as library filters, where the rest of the app
   gets them too.
 
-## Known data problem, tracked separately
+## Known data problem, measured, repair not yet done
 
 `rankStrugglingWords` selects on `ease < 2.5 && intervalDays < 21`. The
 pre-`71fba29` bug inflated `intervalDays` (a practice miss set `due = today`,
 and the next review multiplied whatever interval it found) and never touched
 `ease`. Since `intervalDays` is an *exclusion* here, the damage runs one way:
 genuinely hard words carried past 21 days are filed as mature and vanish from
-the list. `71fba29` measured 9 words below initial ease scheduled 60+ days
-out; those are exactly the ones missing.
+the list.
+
+**Measured against the live `progress.json` on 2026-08-08** (fetched read-only
+from `volcab-data`; 312 entries past `new`):
+
+| | |
+|---|---|
+| `ease < 2.5` — the scheduler's own "this is hard for you" | **81** |
+| of those, `intervalDays < 21` — what the card was showing | 54 |
+| of those, `intervalDays >= 21` — hidden by the inflated exclusion | **27** |
+
+So the count the user was reading was short by exactly a third. Eight of the
+27 sit beyond the current `MAX_INTERVAL_DAYS` of 100; three sit at exactly
+365, the old ceiling, which is the bug's fingerprint — `arduous` (ease 2.30)
+and `contentious` (ease 2.30) are both due 2027-08. `promulgate`, the word
+`71fba29` named at ease 1.70 / 268 days, is still there unchanged.
+
+The reversed signature that commit measured is also still in the stored data:
+words scheduled 90+ days out have a median 8 reps against the library's 5.
+More gradings still means longer intervals, for the entries written before
+the fix.
 
 `71fba29` stopped new pollution but repaired nothing already stored, and
-`MAX_INTERVAL_DAYS` is documented as forward-looking only. The displayed
-count is therefore an undercount. Measuring it needs the live
-`progress.json`, which exists only in `volcab-data` and the browser — a
-read-only script is ready and waiting for an exported backup. Repair is out
-of scope for this spec.
+`MAX_INTERVAL_DAYS` is documented as forward-looking only, so these clear
+only as each word next comes due — years away for the 365-day entries.
+Repair is out of scope for this spec and awaiting a decision.
 
 ## Testing
 

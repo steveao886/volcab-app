@@ -224,3 +224,42 @@ the round:
   one carried a wrong `lang` attribute; both were caught because agents
   were told to run the full gate and report deviations rather than
   silently patch. Keep that reporting clause in every dispatch prompt.
+
+## The struggling-word count is an undercount (2026-08-08, unrepaired)
+
+`rankStrugglingWords` requires `ease < 2.5 && intervalDays < 21`. The
+pre-`71fba29` bug inflated `intervalDays` and never touched `ease` — and
+`intervalDays` is an *exclusion* in that predicate, so the damage runs one
+way only: a word the scheduler itself rates hard, carried past 21 days, is
+filed as mature and disappears from every surface built on the ranking.
+
+Measured on the live `progress.json`, 312 entries past `new`:
+
+| | |
+|---|---|
+| `ease < 2.5` | **81** |
+| shown (`intervalDays < 21`) | 54 |
+| hidden (`intervalDays >= 21`) | **27** |
+
+Short by a third. Eight of the 27 are beyond the current
+`MAX_INTERVAL_DAYS` of 100; three sit at exactly 365 — the old ceiling,
+which is the bug's fingerprint. `promulgate` is still at ease 1.70 / 268
+days, the same figures `71fba29`'s message quotes. That commit's other
+signal survives too: words 90+ days out have a median 8 reps against the
+library's 5, so for pre-fix entries more gradings still means longer
+intervals.
+
+**Nothing has repaired this.** `71fba29` closed the source;
+`MAX_INTERVAL_DAYS` is forward-looking by design, so an entry only gets
+clamped when it next comes due — 2027 for the 365-day words. Any figure
+derived from the ranking is low until someone decides how to fix the
+stored data.
+
+Reproducing the measurement does **not** need a manual export. `gh` is
+authenticated with `repo` scope and `steveao886/volcab-data` is reachable:
+
+    gh api -H "Accept: application/vnd.github.raw" \
+      repos/steveao886/volcab-data/contents/progress.json
+
+Worth remembering generally — the private data repo is readable from the
+CLI, so "ask the user to export a backup" is rarely the right move.
