@@ -3,11 +3,52 @@ import type { Progress, Word, WordState } from '../types'
 /** Values for the status-filter chip; 'all' applies no filtering. */
 export type StatusFilter = 'all' | WordState
 
+const STATUS_FILTERS: StatusFilter[] = ['all', 'new', 'learning', 'review']
+
 export interface LibraryFilterOptions {
   query: string
   status: StatusFilter
   /** null = no source-note restriction; otherwise matches Word.sourceNote exactly */
   sourceNote: string | null
+}
+
+/** The no-restriction filter — what an unparameterised URL means. */
+export const ALL_WORDS: LibraryFilterOptions = { query: '', status: 'all', sourceNote: null }
+
+/**
+ * Filter state as a query string, and back.
+ *
+ * These exist because two pages have to agree on the encoding: the library
+ * puts its filter in the URL so it survives leaving the page, and /practice
+ * reads the same three parameters to rebuild the slice it was sent. A second
+ * copy of the spelling in either page is a bug waiting for someone to add a
+ * fourth filter to one of them.
+ *
+ * **Defaults are omitted rather than spelled out**, so an unfiltered library
+ * is `/library` and not `/library?q=&status=all` — the form somebody might
+ * reasonably type or bookmark. paramsToFilter maps every absent parameter
+ * back to the same default, so the two spellings name the same set.
+ *
+ * Reading is lenient, per the repo's read-side rule: an unknown `status`
+ * (hand-edited, or a value some future build wrote) falls back to 'all'
+ * rather than matching nothing and rendering an empty page.
+ */
+export function filterToParams(opts: LibraryFilterOptions): string {
+  const p = new URLSearchParams()
+  const q = opts.query.trim()
+  if (q !== '') p.set('q', q)
+  if (opts.status !== 'all') p.set('status', opts.status)
+  if (opts.sourceNote !== null) p.set('src', opts.sourceNote)
+  return p.toString()
+}
+
+export function paramsToFilter(sp: URLSearchParams): LibraryFilterOptions {
+  const status = sp.get('status')
+  return {
+    query: sp.get('q') ?? '',
+    status: STATUS_FILTERS.find(s => s === status) ?? 'all',
+    sourceNote: sp.get('src'),
+  }
 }
 
 /**

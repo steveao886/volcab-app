@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
-import { distinctSourceNotes, filterWords, wordState } from './libraryFilter'
+import { ALL_WORDS, distinctSourceNotes, filterToParams, filterWords, paramsToFilter, wordState } from './libraryFilter'
+import type { LibraryFilterOptions } from './libraryFilter'
 
 function mkWord(overrides: Partial<Word> & { id: string }): Word {
   return {
@@ -237,5 +238,47 @@ describe('distinctSourceNotes', () => {
   it('a sourceNote with a non-numeric prefix (like manually-added "manual") sorts to the end, alphabetically', () => {
     const words = [mkWord({ id: 'a', sourceNote: 'manual' }), mkWord({ id: 'b', sourceNote: '8-11' })]
     expect(distinctSourceNotes(words)).toEqual(['8-11', 'manual'])
+  })
+})
+
+describe('filterToParams / paramsToFilter', () => {
+  const roundTrip = (f: LibraryFilterOptions) => paramsToFilter(new URLSearchParams(filterToParams(f)))
+
+  it('an unfiltered library produces an empty query string, not q=&status=all', () => {
+    expect(filterToParams(ALL_WORDS)).toBe('')
+  })
+
+  it('no parameters at all means no restriction — the two spellings name the same set', () => {
+    expect(paramsToFilter(new URLSearchParams(''))).toEqual(ALL_WORDS)
+  })
+
+  it('omits each default independently rather than all-or-nothing', () => {
+    expect(filterToParams({ query: '', status: 'review', sourceNote: null })).toBe('status=review')
+    expect(filterToParams({ query: 'ab', status: 'all', sourceNote: null })).toBe('q=ab')
+    expect(filterToParams({ query: '', status: 'all', sourceNote: '8-11' })).toBe('src=8-11')
+  })
+
+  it('round-trips every combination unchanged — the two pages must agree on the encoding', () => {
+    const cases: LibraryFilterOptions[] = [
+      ALL_WORDS,
+      { query: 'ab', status: 'new', sourceNote: '8-11' },
+      { query: 'per se', status: 'learning', sourceNote: 'manual' },
+      { query: '', status: 'review', sourceNote: null },
+    ]
+    for (const c of cases) expect(roundTrip(c)).toEqual(c)
+  })
+
+  it('a query needing escaping survives the trip', () => {
+    expect(roundTrip({ query: 'a&b=c d', status: 'all', sourceNote: null }).query).toBe('a&b=c d')
+  })
+
+  it('trims the query on the way out, so a stray space does not become a filter', () => {
+    expect(filterToParams({ query: '  ', status: 'all', sourceNote: null })).toBe('')
+    expect(filterToParams({ query: ' ab ', status: 'all', sourceNote: null })).toBe('q=ab')
+  })
+
+  it('an unknown status falls back to all rather than matching nothing — read side lenient', () => {
+    expect(paramsToFilter(new URLSearchParams('status=bogus')).status).toBe('all')
+    expect(paramsToFilter(new URLSearchParams('status=')).status).toBe('all')
   })
 })

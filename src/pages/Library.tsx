@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Chip } from '../components/Chip'
@@ -12,8 +12,8 @@ import { SyncStatus } from '../components/SyncStatus'
 import { TextInput } from '../components/TextInput'
 import { useApp } from '../state/store'
 import type { Word, WordState } from '../types'
-import { distinctSourceNotes, filterWords, wordState } from './libraryFilter'
-import type { StatusFilter } from './libraryFilter'
+import { ALL_WORDS, distinctSourceNotes, filterToParams, filterWords, paramsToFilter, wordState } from './libraryFilter'
+import type { LibraryFilterOptions, StatusFilter } from './libraryFilter'
 import './Library.css'
 
 const STATUS_CHIPS: { key: StatusFilter; label: string }[] = [
@@ -87,9 +87,24 @@ function emptyStateCopy(
 export function Library() {
   const { words, progress, deleteWords, syncStatus, syncError, syncNow } = useApp()
 
-  const [query, setQuery] = useState('')
-  const [status, setStatus] = useState<StatusFilter>('all')
-  const [sourceNote, setSourceNote] = useState<string | null>(null)
+  // The filter lives in the URL, not in component state. It used to be three
+  // useStates, and leaving the page threw all three away — filter down to
+  // something specific, go practise it, come back, and you are staring at all
+  // 504 words again. The URL also makes the filter survive a reload, which on
+  // an installed PWA is routine, and makes a slice linkable.
+  //
+  // **replace: true on every write.** The search box writes on each
+  // keystroke; pushing history entries would turn one typed word into a dozen
+  // back-presses before the system gesture finally left the page. Same
+  // reasoning as the ?mode= switches (see CLAUDE.md).
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { query, status, sourceNote } = paramsToFilter(searchParams)
+  const setFilter = (next: Partial<LibraryFilterOptions>) => {
+    setSearchParams(filterToParams({ query, status, sourceNote, ...next }), { replace: true })
+  }
+  const setQuery = (q: string) => setFilter({ query: q })
+  const setStatus = (s: StatusFilter) => setFilter({ status: s })
+  const setSourceNote = (n: string | null) => setFilter({ sourceNote: n })
 
   const [manageMode, setManageMode] = useState(false)
   const [selected, setSelected] = useState<Set<string>>(new Set())
@@ -116,18 +131,12 @@ export function Library() {
   const sourceNotes = useMemo(() => distinctSourceNotes(words), [words])
   const filteredIds = useMemo(() => new Set(filtered.map(w => w.id)), [filtered])
 
-  // Empty values are left out rather than serialized as `q=&status=all`, so
-  // an unfiltered library links to a clean /practice — the URL a user might
-  // reasonably bookmark or type. Practice.tsx defaults every absent
-  // parameter to the same no-restriction value, so the two forms mean the
-  // same thing.
-  const practiceParams = useMemo(() => {
-    const p = new URLSearchParams()
-    if (query.trim() !== '') p.set('q', query.trim())
-    if (status !== 'all') p.set('status', status)
-    if (sourceNote !== null) p.set('src', sourceNote)
-    return p.toString()
-  }, [query, status, sourceNote])
+  // /practice reads the same three parameters this page writes, so the link
+  // is the current filter re-encoded — one shared spelling, in libraryFilter.
+  const practiceParams = useMemo(
+    () => filterToParams({ query, status, sourceNote }),
+    [query, status, sourceNote],
+  )
 
   // When filter conditions change, entries that are selected but no longer
   // visible must be dropped from the selection set, otherwise "select all"
@@ -250,7 +259,7 @@ export function Library() {
                 key={note}
                 label={note}
                 selected={sourceNote === note}
-                onClick={() => setSourceNote(prev => (prev === note ? null : note))}
+                onClick={() => setSourceNote(sourceNote === note ? null : note)}
               />
             ))}
           </div>
@@ -311,11 +320,11 @@ export function Library() {
           ) : (
             <Button
               variant="secondary"
-              onClick={() => {
-                setQuery('')
-                setStatus('all')
-                setSourceNote(null)
-              }}
+              // One write, not three. Each setter derives the next URL from
+              // this render's filter, so three calls in a row would each
+              // overwrite the last from stale values and only the final
+              // field would actually clear.
+              onClick={() => setFilter(ALL_WORDS)}
             >
               清除筛选条件
             </Button>

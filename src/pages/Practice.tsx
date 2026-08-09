@@ -9,8 +9,7 @@ import { isEditableTarget } from '../lib/keys'
 import { PRACTICE_DRAW_SIZE, samplePractice } from '../lib/practice'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
-import { filterWords } from './libraryFilter'
-import type { StatusFilter } from './libraryFilter'
+import { filterToParams, filterWords, paramsToFilter } from './libraryFilter'
 import { ReviewCardBack } from './ReviewCard'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
@@ -21,13 +20,6 @@ import type { Word } from '../types'
 // back into a page after a reload. Vite dedupes the second import.
 import './Review.css'
 import './Practice.css'
-
-const STATUSES: StatusFilter[] = ['all', 'new', 'learning', 'review']
-
-/** Read side lenient: a hand-edited or stale URL falls back to "no restriction" rather than rendering nothing. */
-function parseStatus(raw: string | null): StatusFilter {
-  return STATUSES.find(s => s === raw) ?? 'all'
-}
 
 /**
  * Free practice: a slice of the library, shuffled, twenty at a time.
@@ -54,11 +46,16 @@ export function Practice() {
   // three values decide the pool, and letting them change mid-session would
   // redraw the deck under the user's hands.
   const [searchParams] = useSearchParams()
-  const [filter] = useState(() => ({
-    query: searchParams.get('q') ?? '',
-    status: parseStatus(searchParams.get('status')),
-    sourceNote: searchParams.get('src'),
-  }))
+  const [filter] = useState(() => paramsToFilter(searchParams))
+
+  // Back goes to the library *as it was left*, not to all 504 words. The
+  // library keeps its filter in the URL under these same three parameter
+  // names, so re-encoding what this page was given lands on the exact list
+  // the 练这 N 个 button was pressed from.
+  const backTo = useMemo(() => {
+    const qs = filterToParams(filter)
+    return qs === '' ? '/library' : `/library?${qs}`
+  }, [filter])
 
   // progress is part of the filter (the status chip reads learning state),
   // and every sync tick hands back a new object — so this has to be memoized
@@ -165,7 +162,7 @@ export function Practice() {
   if (finished) {
     const neverStarted = deck.length === 0 && seen.size === 0
     return (
-      <Page eyebrow="Practice" title="自由练习" back="/library">
+      <Page eyebrow="Practice" title="自由练习" back={backTo}>
         <div className="review-done">
           <p className="review-done__label">{neverStarted ? '没有可练的词' : '这一批练完了'}</p>
           <p className="muted">
@@ -180,7 +177,7 @@ export function Practice() {
               再来一批
             </Button>
           )}
-          <Link to="/library" className="btn btn--secondary btn--lg">
+          <Link to={backTo} className="btn btn--secondary btn--lg">
             返回词库
           </Link>
         </div>
@@ -189,7 +186,7 @@ export function Practice() {
   }
 
   return (
-    <Page eyebrow="Practice" title="自由练习" back="/library">
+    <Page eyebrow="Practice" title="自由练习" back={backTo}>
       <div className="review-progress">
         <div
           className="progress"
