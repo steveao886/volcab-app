@@ -4,6 +4,10 @@ import { INITIAL_EASE } from './srs'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
 
+/** Fixed date for difficultyWeight's recent-miss window. Fixtures below carry no missedAt unless a test sets one, so this only matters where one does. */
+const TODAY = '2026-08-08'
+
+
 const word = (id: string): Word => ({
   id, headword: id, phonetic: '/x/', meanings: [{ pos: 'n.', en: 'x', zh: 'x' }],
   examples: ['a', 'b'], synonyms: [], antonyms: [], collocations: [], relatedForms: [], sourceNote: 't', addedAt: '2026-07-01',
@@ -102,7 +106,7 @@ describe('buildMixedPractice', () => {
 
   it('splits the deck down the middle: half struggling, half merely mastered', () => {
     const { words, progress } = setup(30, 30)
-    const drawn = buildMixedPractice(words, progress, 20, { rng: mulberry32(1) })
+    const drawn = buildMixedPractice(words, progress, TODAY, 20, { rng: mulberry32(1) })
     expect(drawn).toHaveLength(20)
     expect(drawn.filter(w => w.id.startsWith('h'))).toHaveLength(10)
     expect(drawn.filter(w => w.id.startsWith('e'))).toHaveLength(10)
@@ -110,47 +114,47 @@ describe('buildMixedPractice', () => {
 
   it('never repeats a word, even though a struggling word is also a mastered word', () => {
     const { words, progress } = setup(30, 30)
-    const drawn = buildMixedPractice(words, progress, 20, { rng: mulberry32(2) })
+    const drawn = buildMixedPractice(words, progress, TODAY, 20, { rng: mulberry32(2) })
     expect(new Set(drawn.map(w => w.id)).size).toBe(20)
   })
 
   it('does not hand back the same ten hard words every session — the frozen-list failure', () => {
     const { words, progress } = setup(40, 40)
-    const a = buildMixedPractice(words, progress, 20, { rng: mulberry32(3) }).filter(w => w.id.startsWith('h'))
-    const b = buildMixedPractice(words, progress, 20, { rng: mulberry32(9) }).filter(w => w.id.startsWith('h'))
+    const a = buildMixedPractice(words, progress, TODAY, 20, { rng: mulberry32(3) }).filter(w => w.id.startsWith('h'))
+    const b = buildMixedPractice(words, progress, TODAY, 20, { rng: mulberry32(9) }).filter(w => w.id.startsWith('h'))
     expect(a.map(w => w.id).sort()).not.toEqual(b.map(w => w.id).sort())
   })
 
   it('backfills from the mastered side when there are barely any struggling words', () => {
     const { words, progress } = setup(2, 40)
-    const drawn = buildMixedPractice(words, progress, 20, { rng: mulberry32(4) })
+    const drawn = buildMixedPractice(words, progress, TODAY, 20, { rng: mulberry32(4) })
     expect(drawn).toHaveLength(20)
     expect(drawn.filter(w => w.id.startsWith('h')).length).toBeLessThanOrEqual(2)
   })
 
   it('backfills from the struggling side when almost nothing is merely mastered', () => {
     const { words, progress } = setup(40, 2)
-    const drawn = buildMixedPractice(words, progress, 20, { rng: mulberry32(5) })
+    const drawn = buildMixedPractice(words, progress, TODAY, 20, { rng: mulberry32(5) })
     expect(drawn).toHaveLength(20)
     expect(drawn.filter(w => w.id.startsWith('h')).length).toBeGreaterThanOrEqual(18)
   })
 
   it('honours the exclusion set, so a redraw walks on instead of resampling', () => {
     const { words, progress } = setup(10, 10)
-    const first = buildMixedPractice(words, progress, 10, { rng: mulberry32(6) })
-    const second = buildMixedPractice(words, progress, 10, { rng: mulberry32(7), exclude: new Set(first.map(w => w.id)) })
+    const first = buildMixedPractice(words, progress, TODAY, 10, { rng: mulberry32(6) })
+    const second = buildMixedPractice(words, progress, TODAY, 10, { rng: mulberry32(7), exclude: new Set(first.map(w => w.id)) })
     expect(second.some(w => first.some(f => f.id === w.id))).toBe(false)
   })
 
   it('ignores never-studied and still-learning words — this is practice over what you have already met', () => {
     const p = prog({ a: { ease: INITIAL_EASE }, b: { ease: INITIAL_EASE, state: 'learning' }, c: { ease: INITIAL_EASE, state: 'new' } })
-    const drawn = buildMixedPractice([word('a'), word('b'), word('c'), word('d')], p, 20, { rng: mulberry32(8) })
+    const drawn = buildMixedPractice([word('a'), word('b'), word('c'), word('d')], p, TODAY, 20, { rng: mulberry32(8) })
     expect(drawn.map(w => w.id)).toEqual(['a'])
   })
 
   it('an empty library is a normal outcome, not a throw', () => {
-    expect(buildMixedPractice([], emptyProgress(), 20, { rng: mulberry32(1) })).toEqual([])
-    expect(buildMixedPractice(setup(5, 5).words, setup(5, 5).progress, 0, { rng: mulberry32(1) })).toEqual([])
+    expect(buildMixedPractice([], emptyProgress(), TODAY, 20, { rng: mulberry32(1) })).toEqual([])
+    expect(buildMixedPractice(setup(5, 5).words, setup(5, 5).progress, TODAY, 0, { rng: mulberry32(1) })).toEqual([])
   })
 })
 

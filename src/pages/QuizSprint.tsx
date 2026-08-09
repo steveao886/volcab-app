@@ -8,6 +8,7 @@ import type { QuizType } from '../lib/quiz'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
+import { todayStr } from '../lib/srs'
 
 /**
  * The 60-second sprint.
@@ -37,13 +38,17 @@ const TICK_MS = 200
 
 export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: () => void }) {
   const { progress, recordSprint } = useApp()
+  // Pinned once, alongside the question set: difficultyWeight's recent-miss
+  // window reads it, and a session must not change meaning midway because
+  // the clock rolled past midnight.
+  const [today] = useState(() => todayStr(new Date()))
   const soundEnabled = isSoundEnabled(progress.settings)
 
   // Lazy initial value, same reasoning as QuizSession: generateQuiz uses
   // Math.random, and calling it again during a re-render would silently
   // swap out the question set mid-quiz.
   const [questions] = useState(() =>
-    generateQuiz(words, progress, SPRINT_QUESTIONS, Math.random, SPRINT_TYPES),
+    generateQuiz(words, progress, today, SPRINT_QUESTIONS, Math.random, SPRINT_TYPES),
   )
   // Snapshot of the record at the moment the round starts: recordSprint
   // updates progress.bestSprint in place, so without saving a copy first

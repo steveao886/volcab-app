@@ -305,6 +305,7 @@ export function generateRecallSession(
   groups: SenseGroup[],
   words: Map<string, Word>,
   progress: Progress,
+  today: string,
   seen: ReadonlySet<string>,
   debt: ReadonlySet<string>,
   count: number,
@@ -314,7 +315,7 @@ export function generateRecallSession(
   const weight = (g: SenseGroup) =>
     Math.max(...g.order.map(id => {
       const w = words.get(id)
-      return w === undefined ? 1 : difficultyWeight(w, progress)
+      return w === undefined ? 1 : difficultyWeight(w, progress, today)
     }))
   const drawn = weightedShuffle(eligible, weight, rng)
   // Stable partition into the three buckets above; each keeps its weighted

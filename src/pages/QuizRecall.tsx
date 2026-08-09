@@ -11,6 +11,7 @@ import { isSoundEnabled, playQuizResult } from '../lib/sound'
 import { storage } from '../lib/storage'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
+import { todayStr } from '../lib/srs'
 
 const QUESTION_COUNT = 10
 
@@ -313,6 +314,10 @@ export function RecallSession({
   onRestart: () => void
 }) {
   const { progress, recordQuiz, consolidateWord } = useApp()
+  // Pinned once, alongside the question set: difficultyWeight's recent-miss
+  // window reads it, and a session must not change meaning midway because
+  // the clock rolled past midnight.
+  const [today] = useState(() => todayStr(new Date()))
 
   const [questions] = useState<RecallQuestion[]>(() => {
     const byId = new Map(words.map(w => [w.id, w]))
@@ -325,7 +330,7 @@ export function RecallSession({
     const recent = storage.get<string[]>('recentRecall') ?? []
     const seen = new Set(recent.slice(0, recentWindow(eligible.length)))
     const debt = new Set(storage.get<string[]>('recallDebt') ?? [])
-    return generateRecallSession(groups, byId, progress, seen, debt, QUESTION_COUNT, Math.random)
+    return generateRecallSession(groups, byId, progress, today, seen, debt, QUESTION_COUNT, Math.random)
   })
   const [index, setIndex] = useState(0)
   const [score, setScore] = useState(0)

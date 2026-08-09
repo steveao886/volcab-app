@@ -6,6 +6,10 @@ import {
 import { emptyProgress } from '../types'
 import type { Progress, ProgressEntry, Word } from '../types'
 
+/** Fixed date for difficultyWeight's recent-miss window. Fixtures below carry no missedAt unless a test sets one, so this only matters where one does. */
+const TODAY = '2026-08-08'
+
+
 const word = (over: Partial<Word> = {}): Word => ({
   id: 'abrogate',
   headword: 'abrogate',
@@ -156,7 +160,7 @@ describe('generateGuessSession', () => {
     const p = learned(words)
     p.words['w0'] = entry({ state: 'new' })
     delete p.words['w1']
-    const ids = generateGuessSession(words, p, {}, 10, () => 0.5).map(q => q.id)
+    const ids = generateGuessSession(words, p, TODAY, {}, 10, () => 0.5).map(q => q.id)
     expect(ids).not.toContain('w0')
     expect(ids).not.toContain('w1')
     expect(ids).toHaveLength(4)
@@ -164,12 +168,12 @@ describe('generateGuessSession', () => {
 
   it('stops at the requested count even with a big library', () => {
     const words = library(50)
-    expect(generateGuessSession(words, learned(words), {}, 10, () => 0.5)).toHaveLength(10)
+    expect(generateGuessSession(words, learned(words), TODAY, {}, 10, () => 0.5)).toHaveLength(10)
   })
 
   it('returns what it can rather than nothing when the library is thin', () => {
     const words = library(3)
-    expect(generateGuessSession(words, learned(words), {}, 10, () => 0.5)).toHaveLength(3)
+    expect(generateGuessSession(words, learned(words), TODAY, {}, 10, () => 0.5)).toHaveLength(3)
   })
 
   it('leans toward the words that are giving trouble', () => {
@@ -182,7 +186,7 @@ describe('generateGuessSession', () => {
     for (let i = 1; i <= 200; i++) {
       const seq = [i / 201, 1 - i / 201]
       let k = 0
-      const s = generateGuessSession(words, p, {}, 1, () => seq[k++ % seq.length])
+      const s = generateGuessSession(words, p, TODAY, {}, 1, () => seq[k++ % seq.length])
       if (s[0]?.id === 'w0') hardFirst++
     }
     expect(hardFirst).toBeGreaterThan(100)
@@ -191,14 +195,14 @@ describe('generateGuessSession', () => {
   it('skips a word that cannot carry a question instead of emitting a blank one', () => {
     const words = library(3)
     words[0].meanings = [{ pos: 'v.', en: 'x', zh: '' }]
-    const ids = generateGuessSession(words, learned(words), {}, 10, () => 0.5).map(q => q.id)
+    const ids = generateGuessSession(words, learned(words), TODAY, {}, 10, () => 0.5).map(q => q.id)
     expect(ids).not.toContain('w0')
   })
 
   it('hands each question its own 要点 when there is one', () => {
     const words = library(2)
     const notes = { w0: '只用于 w0 这种场合。' }
-    const session = generateGuessSession(words, learned(words), notes, 10, () => 0.5)
+    const session = generateGuessSession(words, learned(words), TODAY, notes, 10, () => 0.5)
     expect(session.find(q => q.id === 'w0')?.clues.some(c => c.kind === 'note')).toBe(true)
     expect(session.find(q => q.id === 'w1')?.clues.some(c => c.kind === 'note')).toBe(false)
   })

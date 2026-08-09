@@ -99,6 +99,7 @@ export function mixedPracticePool(words: Word[], progress: Progress): Word[] {
 export function buildMixedPractice(
   words: Word[],
   progress: Progress,
+  today: string,
   size: number = PRACTICE_DRAW_SIZE,
   opts: { rng?: () => number; exclude?: ReadonlySet<string> } = {},
 ): Word[] {
@@ -111,7 +112,7 @@ export function buildMixedPractice(
 
   const hard = weightedShuffle(
     struggling.filter(available),
-    w => difficultyWeight(w, progress),
+    w => difficultyWeight(w, progress, today),
     rng,
   )
   const steady = shuffle(

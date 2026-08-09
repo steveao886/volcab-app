@@ -7,6 +7,10 @@ import type { RecallQuestion, SenseGroup } from './senseGroup'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
 
+/** Fixed date for difficultyWeight's recent-miss window. Fixtures below carry no missedAt unless a test sets one, so this only matters where one does. */
+const TODAY = '2026-08-08'
+
+
 const mkWord = (id: string, pos = 'v.'): Word => ({
   id,
   headword: id,
@@ -237,7 +241,7 @@ describe('generateRecallSession', () => {
   it('drops a group whose answer is unlearned, and never exceeds count', () => {
     // capitulate is order[0] of group 2 — without it that group cannot be asked at all.
     const partial = learned(lib.filter(w => w.id !== 'capitulate').map(w => w.id))
-    const qs = generateRecallSession(groups, words, partial, new Set(), new Set(), 10, seqRng([0.3, 0.7, 0.1, 0.9, 0.5]))
+    const qs = generateRecallSession(groups, words, partial, TODAY, new Set(), new Set(), 10, seqRng([0.3, 0.7, 0.1, 0.9, 0.5]))
     expect(qs.length).toBe(2)
     for (const q of qs) expect(q.orderIds[0]).not.toBe('capitulate')
   })
@@ -247,7 +251,7 @@ describe('generateRecallSession', () => {
     // be asked to produce capitulate without knowing what sits beside it —
     // but it must never be handed over for ranking.
     const partial = learned(lib.filter(w => w.id !== 'succumb').map(w => w.id))
-    const qs = generateRecallSession(groups, words, partial, new Set(), new Set(), 10, seqRng([0.3, 0.7, 0.1, 0.9, 0.5]))
+    const qs = generateRecallSession(groups, words, partial, TODAY, new Set(), new Set(), 10, seqRng([0.3, 0.7, 0.1, 0.9, 0.5]))
     const g2 = qs.filter(q => q.orderIds.includes('succumb'))
     expect(g2.length).toBe(1)
     expect(g2[0].kind).toBe('recall')
@@ -256,13 +260,13 @@ describe('generateRecallSession', () => {
   it('surfaces unseen prompts before recently seen ones', () => {
     const seen = new Set([groups[0].zh, groups[2].zh])
     // Whatever the rng does, the single unseen prompt must come first.
-    const qs = generateRecallSession(groups, words, all, seen, new Set(), 3, seqRng([0.42, 0.17, 0.88, 0.61]))
+    const qs = generateRecallSession(groups, words, all, TODAY, seen, new Set(), 3, seqRng([0.42, 0.17, 0.88, 0.61]))
     expect(qs[0].prompt).toBe(groups[1].zh)
   })
 
   it('a fully seen pool still yields questions — degraded, not empty', () => {
     const seen = new Set(groups.map(g => g.zh))
-    const qs = generateRecallSession(groups, words, all, seen, new Set(), 3, seqRng([0.5, 0.2, 0.8]))
+    const qs = generateRecallSession(groups, words, all, TODAY, seen, new Set(), 3, seqRng([0.5, 0.2, 0.8]))
     expect(qs.length).toBe(3)
   })
 
@@ -273,13 +277,13 @@ describe('generateRecallSession', () => {
     const debt = new Set([groups[2].zh])
     const seen = new Set([groups[2].zh])   // seen AND owed: the debt must win
     for (const r of [seqRng([0.3, 0.9, 0.1]), seqRng([0.8, 0.2, 0.6])]) {
-      const qs = generateRecallSession(groups, words, all, seen, debt, 3, r)
+      const qs = generateRecallSession(groups, words, all, TODAY, seen, debt, 3, r)
       expect(qs[0].prompt).toBe(groups[2].zh)
     }
   })
 
   it('alternates the two kinds when groups qualify for both', () => {
-    const qs = generateRecallSession(groups, words, all, new Set(), new Set(), 3, seqRng([0.3, 0.6, 0.1, 0.8, 0.4]))
+    const qs = generateRecallSession(groups, words, all, TODAY, new Set(), new Set(), 3, seqRng([0.3, 0.6, 0.1, 0.8, 0.4]))
     expect(qs.map(q => q.kind)).toEqual(['recall', 'order', 'recall'])
   })
 })

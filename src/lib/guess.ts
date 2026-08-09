@@ -233,6 +233,7 @@ export function classifyGuess(
 export function generateGuessSession(
   words: Word[],
   progress: Progress,
+  today: string,
   notes: Record<string, string>,
   count: number,
   rng: () => number,
@@ -243,7 +244,7 @@ export function generateGuessSession(
   })
 
   const out: GuessQuestion[] = []
-  for (const w of weightedShuffle(pool, x => difficultyWeight(x, progress), rng)) {
+  for (const w of weightedShuffle(pool, x => difficultyWeight(x, progress, today), rng)) {
     if (out.length >= count) break
     // A word with no gloss can't carry a question; skip it rather than emit
     // a blank card. Read the note leniently — 40% of words have none.

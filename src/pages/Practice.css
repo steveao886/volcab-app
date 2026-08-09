@@ -35,3 +35,36 @@
     margin-inline: auto;
   }
 }
+
+/* --- End-of-session recap --------------------------------------------------
+   Rows follow the library's shape: headword takes what it needs, the gloss
+   fills and truncates. At 375px something has to give, and the gloss is the
+   part you can reconstruct from the headword — the same tradeoff the old
+   stats leaderboard made. */
+
+.practice-recap__list {
+  display: grid;
+  gap: var(--sp-1);
+}
+
+.practice-recap__row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: var(--sp-2);
+  padding-block: var(--sp-2);
+  min-height: var(--tap);
+  color: inherit;
+  text-decoration: none;
+}
+
+.practice-recap__word {
+  font-size: var(--fs-base);
+}
+
+.practice-recap__zh {
+  overflow: hidden;
+  font-size: var(--fs-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

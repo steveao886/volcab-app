@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { QUIZ_TYPES, clozeCollocation, clozeExample, contrastPairKey, generateAudioQuiz, generateContrastQuiz, generateQuiz, pickCloze, pickMeaning, sharedSynonyms, difficultyWeight, weightedShuffle} from './quiz'
+import { MISS_RECENCY_DAYS } from './queue'
+import { addDays } from './srs'
 import { emptyProgress } from '../types'
 import type { Meaning, Progress, Word } from '../types'
+
+/** Fixed date for difficultyWeight's recent-miss window. Fixtures below carry no missedAt unless a test sets one, so this only matters where one does. */
+const TODAY = '2026-08-08'
+
 
 // These fields cover everything the six question types need: examples/collocations contain
 // the base headword form (the cloze question must be able to locate it), synonyms/antonyms
@@ -96,7 +102,7 @@ describe('generateQuiz — sense share weighting', () => {
 
   it('a minor sense can be tested too — it used to be hardcoded to meanings[0], so the 30% sense would never come up', () => {
     // rng is always 0.95 → every draw lands in the last 30% of the 70/30 split
-    const qs = generateQuiz(multiWords, studiedMulti(), 6, () => 0.95)
+    const qs = generateQuiz(multiWords, studiedMulti(), TODAY, 6, () => 0.95)
     const withMeaning = qs.filter(q => q.type === 'word2meaning' || q.type === 'meaning2word' || q.type === 'spelling')
     expect(withMeaning.length).toBeGreaterThan(0)
     const texts = withMeaning.map(q => (q.type === 'word2meaning' ? q.answer : q.prompt))
@@ -111,7 +117,7 @@ describe('generateQuiz — sense share weighting', () => {
     // still passes entirely.)
     const lcg = (seed: number) => () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff), seed / 0x7fffffff)
     for (let s = 1; s <= 40; s++) {
-      const qs = generateQuiz(multiWords, studiedMulti(), 12, lcg(s))
+      const qs = generateQuiz(multiWords, studiedMulti(), TODAY, 12, lcg(s))
       for (const q of qs.filter(q => q.type === 'word2meaning')) {
         const w = multiWords.find(x => x.id === q.wordId)!
         const ownLabels = w.meanings.map(m => `${m.pos} ${m.zh}`)
@@ -123,7 +129,7 @@ describe('generateQuiz — sense share weighting', () => {
 
 describe('generateQuiz', () => {
   it('generates the requested count, rotates question types, never repeats a word', () => {
-    const qs = generateQuiz(words, studied(), 6, seq())
+    const qs = generateQuiz(words, studied(), TODAY, 6, seq())
     expect(qs).toHaveLength(6)
     expect(new Set(qs.map(q => q.wordId)).size).toBe(6)
     // question types rotate deterministically, evenly distributed within one round. No longer
@@ -133,7 +139,7 @@ describe('generateQuiz', () => {
     expect(new Set(types).size).toBe(Math.min(qs.length, QUIZ_TYPES.length))
   })
   it('multiple-choice questions have 4 options including the correct answer, with no duplicate options', () => {
-    const qs = generateQuiz(words, studied(), 6, seq())
+    const qs = generateQuiz(words, studied(), TODAY, 6, seq())
     for (const q of qs.filter(q => q.type !== 'spelling')) {
       expect(q.options).toHaveLength(4)
       expect(new Set(q.options).size).toBe(4)
@@ -141,27 +147,27 @@ describe('generateQuiz', () => {
     }
   })
   it('spelling questions have no options, and the answer is the headword', () => {
-    const qs = generateQuiz(words, studied(), 6, seq())
+    const qs = generateQuiz(words, studied(), TODAY, 6, seq())
     const sp = qs.find(q => q.type === 'spelling')!
     expect(sp.options).toEqual([])
     expect(sp.answer).toBe(sp.wordId)
   })
   it('falls back to the full word list when fewer than 4 words have been learned', () => {
-    const qs = generateQuiz(words, emptyProgress(), 4, seq())
+    const qs = generateQuiz(words, emptyProgress(), TODAY, 4, seq())
     expect(qs).toHaveLength(4)
   })
   it('returns empty when the word list has fewer than 4 words', () => {
-    expect(generateQuiz(words.slice(0, 3), emptyProgress(), 5, seq())).toEqual([])
+    expect(generateQuiz(words.slice(0, 3), emptyProgress(), TODAY, 5, seq())).toEqual([])
   })
   it('spelling questions carry a separate phonetic field, the prompt no longer has the phonetic appended', () => {
-    const qs = generateQuiz(words, studied(), 6, seq())
+    const qs = generateQuiz(words, studied(), TODAY, 6, seq())
     const sp = qs.find(q => q.type === 'spelling')!
     const w = words.find(x => x.id === sp.wordId)!
     expect(sp.phonetic).toBe(w.phonetic)
     expect(sp.prompt).not.toContain(w.phonetic)
   })
   it('multiple-choice questions do not carry a phonetic field', () => {
-    const qs = generateQuiz(words, studied(), 6, seq())
+    const qs = generateQuiz(words, studied(), TODAY, 6, seq())
     for (const q of qs.filter(q => q.type !== 'spelling')) {
       expect(q.phonetic).toBeUndefined()
     }
@@ -185,7 +191,7 @@ describe('generateQuiz', () => {
     }
     const zeroRng = () => 0
     for (const count of [1, 2, 3, 4]) {
-      const qs = generateQuiz(collisionWords, p, count, zeroRng)
+      const qs = generateQuiz(collisionWords, p, TODAY, count, zeroRng)
       for (const q of qs.filter(q => q.type !== 'spelling')) {
         expect(new Set(q.options).size).toBe(4)
         expect(q.options.filter(o => o === q.answer).length).toBe(1)
@@ -258,7 +264,7 @@ describe('sharedSynonyms', () => {
 
 describe('new question types', () => {
   it('example cloze: the prompt contains a blank and not the answer word, choose one headword out of four', () => {
-    const qs = generateQuiz(words, studied(), 12, seq())
+    const qs = generateQuiz(words, studied(), TODAY, 12, seq())
     const q = qs.find(x => x.type === 'clozeExample')
     if (q === undefined) return // did not come up this round, not a failure
     expect(q.prompt).toContain('___')
@@ -267,14 +273,14 @@ describe('new question types', () => {
     expect(q.options).toContain(q.answer)
   })
   it('collocation cloze: likewise does not give away the answer', () => {
-    const qs = generateQuiz(words, studied(), 12, seq())
+    const qs = generateQuiz(words, studied(), TODAY, 12, seq())
     const q = qs.find(x => x.type === 'clozeCollocation')
     if (q === undefined) return
     expect(q.prompt).toContain('___')
     expect(q.prompt.toLowerCase()).not.toContain(q.answer.toLowerCase())
   })
   it('synonym/antonym hint: labels the kind, and the hint word is not a shared synonym', () => {
-    const qs = generateQuiz(words, studied(), 12, seq())
+    const qs = generateQuiz(words, studied(), TODAY, 12, seq())
     const q = qs.find(x => x.type === 'synonymHint')
     if (q === undefined) return
     expect(q.hintKind === 'synonym' || q.hintKind === 'antonym').toBe(true)
@@ -290,7 +296,7 @@ describe('new question types', () => {
     const hintsByWord = new Map<string, Set<string>>()
     let antonymSeen = false
     for (let s = 1; s <= 40; s++) {
-      for (const q of generateQuiz(words, studied(), 12, lcg(s)).filter(q => q.type === 'synonymHint')) {
+      for (const q of generateQuiz(words, studied(), TODAY, 12, lcg(s)).filter(q => q.type === 'synonymHint')) {
         const w = words.find(x => x.id === q.wordId)!
         // Whatever is drawn, it is one of this word's own hints, labeled by its source list
         const fromSyn = w.synonyms.includes(q.prompt)
@@ -418,7 +424,7 @@ describe('generateContrastQuiz', () => {
 
 describe('generateAudioQuiz', () => {
   it('listen-and-choose-meaning: choose one out of four senses, the prompt is the headword to be read aloud', () => {
-    const qs = generateAudioQuiz(words, studied(), 6, seq())
+    const qs = generateAudioQuiz(words, studied(), TODAY, 6, seq())
     const q = qs.find(x => x.type === 'audio2meaning')
     expect(q).toBeDefined()
     expect(q!.options).toHaveLength(4)
@@ -428,7 +434,7 @@ describe('generateAudioQuiz', () => {
   })
 
   it('listen-and-spell: no options, the answer is the headword, with the phonetic included for display on reveal', () => {
-    const qs = generateAudioQuiz(words, studied(), 6, seq())
+    const qs = generateAudioQuiz(words, studied(), TODAY, 6, seq())
     const q = qs.find(x => x.type === 'audio2spelling')
     expect(q).toBeDefined()
     expect(q!.options).toEqual([])
@@ -437,33 +443,33 @@ describe('generateAudioQuiz', () => {
   })
 
   it('the two question types rotate, never sticking to just one for a whole round', () => {
-    const qs = generateAudioQuiz(words, studied(), 6, seq())
+    const qs = generateAudioQuiz(words, studied(), TODAY, 6, seq())
     expect(new Set(qs.map(q => q.type)).size).toBe(2)
   })
 
   it('returns an empty array when the word list has fewer than 4 words', () => {
-    expect(generateAudioQuiz(words.slice(0, 3), emptyProgress(), 4, seq())).toEqual([])
+    expect(generateAudioQuiz(words.slice(0, 3), emptyProgress(), TODAY, 4, seq())).toEqual([])
   })
 })
 
 describe('generateQuiz question-type restriction (used by sprint mode)', () => {
   it('only generates the specified types', () => {
-    const qs = generateQuiz(words, studied(), 6, seq(), ['word2meaning'])
+    const qs = generateQuiz(words, studied(), TODAY, 6, seq(), ['word2meaning'])
     expect(qs.length).toBeGreaterThan(0)
     expect(qs.every(q => q.type === 'word2meaning')).toBe(true)
   })
 
   it('when two types are specified, both actually come up', () => {
-    const qs = generateQuiz(words, studied(), 6, seq(), ['word2meaning', 'meaning2word'])
+    const qs = generateQuiz(words, studied(), TODAY, 6, seq(), ['word2meaning', 'meaning2word'])
     expect(new Set(qs.map(q => q.type))).toEqual(new Set(['word2meaning', 'meaning2word']))
   })
 
   it('an empty type list returns an empty array, without looping forever or falling back to the default types', () => {
-    expect(generateQuiz(words, studied(), 6, seq(), [])).toEqual([])
+    expect(generateQuiz(words, studied(), TODAY, 6, seq(), [])).toEqual([])
   })
 
   it('behavior is unchanged when this parameter is omitted — all six types still rotate', () => {
-    const qs = generateQuiz(words, studied(), 6, seq())
+    const qs = generateQuiz(words, studied(), TODAY, 6, seq())
     expect(new Set(qs.map(q => q.type)).size).toBeGreaterThan(1)
     expect(qs.every(q => QUIZ_TYPES.includes(q.type))).toBe(true)
   })
@@ -591,16 +597,16 @@ describe('difficultyWeight', () => {
   }
 
   it('a word at the starting ease with no lapses is the baseline', () => {
-    expect(difficultyWeight(word('a', '甲'), withEntry('a'))).toBe(1)
+    expect(difficultyWeight(word('a', '甲'), withEntry('a'), TODAY)).toBe(1)
   })
 
   it('a word never reviewed is also baseline, not zero — it must stay reachable', () => {
-    expect(difficultyWeight(word('a', '甲'), emptyProgress())).toBe(1)
+    expect(difficultyWeight(word('a', '甲'), emptyProgress(), TODAY)).toBe(1)
   })
 
   it('lower ease weighs more', () => {
-    const hard = difficultyWeight(word('a', '甲'), withEntry('a', { ease: 1.3 }))
-    const mid = difficultyWeight(word('a', '甲'), withEntry('a', { ease: 2.0 }))
+    const hard = difficultyWeight(word('a', '甲'), withEntry('a', { ease: 1.3 }), TODAY)
+    const mid = difficultyWeight(word('a', '甲'), withEntry('a', { ease: 2.0 }), TODAY)
     expect(hard).toBeGreaterThan(mid)
     expect(mid).toBeGreaterThan(1)
   })
@@ -608,19 +614,53 @@ describe('difficultyWeight', () => {
   it('ease above the starting value does not weigh less than baseline', () => {
     // Burying words the user has demonstrably learned buys nothing, and the
     // floor keeps every word reachable.
-    expect(difficultyWeight(word('a', '甲'), withEntry('a', { ease: 3.0 }))).toBe(1)
+    expect(difficultyWeight(word('a', '甲'), withEntry('a', { ease: 3.0 }), TODAY)).toBe(1)
   })
 
   it('lapses add on top of ease', () => {
-    const withLapses = difficultyWeight(word('a', '甲'), withEntry('a', { ease: 2.0, lapses: 2 }))
-    const without = difficultyWeight(word('a', '甲'), withEntry('a', { ease: 2.0 }))
+    const withLapses = difficultyWeight(word('a', '甲'), withEntry('a', { ease: 2.0, lapses: 2 }), TODAY)
+    const without = difficultyWeight(word('a', '甲'), withEntry('a', { ease: 2.0 }), TODAY)
     expect(withLapses).toBeGreaterThan(without)
   })
 
   it('lapses stop counting past the cap, so one disastrous word cannot swamp the draw', () => {
-    const three = difficultyWeight(word('a', '甲'), withEntry('a', { lapses: 3 }))
-    const twenty = difficultyWeight(word('a', '甲'), withEntry('a', { lapses: 20 }))
+    const three = difficultyWeight(word('a', '甲'), withEntry('a', { lapses: 3 }), TODAY)
+    const twenty = difficultyWeight(word('a', '甲'), withEntry('a', { lapses: 20 }), TODAY)
     expect(twenty).toBe(three)
+  })
+
+  // The recent-miss term. Before it existed, every practice surface stamped
+  // missedAt and only the stubborn-word drill ever read it — a word fumbled
+  // in a quiz an hour ago was no likelier to be asked again than one never
+  // missed.
+  const missedOn = (day: string) => {
+    const p = emptyProgress()
+    p.words['a'] = { ...entry(), missedAt: day }
+    return p
+  }
+
+  it('a word missed today is worth exactly two untouched ones', () => {
+    // weightedShuffle's stated semantics: weight 2 behaves like two entries.
+    expect(difficultyWeight(word('a', '甲'), missedOn(TODAY), TODAY)).toBe(2)
+  })
+
+  it('a miss still inside the recency window counts', () => {
+    expect(difficultyWeight(word('a', '甲'), missedOn(addDays(TODAY, -(MISS_RECENCY_DAYS - 1))), TODAY)).toBe(2)
+  })
+
+  it('a miss that has aged out carries no weight — unlike lapses, this term decays', () => {
+    expect(difficultyWeight(word('a', '甲'), missedOn(addDays(TODAY, -(MISS_RECENCY_DAYS + 1))), TODAY)).toBe(1)
+  })
+
+  it("the boundary day itself still counts, matching buildLapseQueue's cutoff", () => {
+    expect(difficultyWeight(word('a', '甲'), missedOn(addDays(TODAY, -MISS_RECENCY_DAYS)), TODAY)).toBe(2)
+  })
+
+  it('adds on top of ease and lapses rather than replacing them', () => {
+    const p = emptyProgress()
+    p.words['a'] = { ...entry({ ease: 2.0, lapses: 2 }), missedAt: TODAY }
+    const clean = difficultyWeight(word('a', '甲'), withEntry('a', { ease: 2.0, lapses: 2 }), TODAY)
+    expect(difficultyWeight(word('a', '甲'), p, TODAY)).toBe(clean + 1)
   })
 })
 

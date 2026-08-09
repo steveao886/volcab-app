@@ -9,6 +9,7 @@ import type { ClueKind, GuessQuestion, GuessVerdict } from '../lib/guess'
 import { isSoundEnabled, playQuizResult, playSessionDone } from '../lib/sound'
 import type { WordNotesFile } from '../lib/wordNotes'
 import { useApp } from '../state/store'
+import { todayStr } from '../lib/srs'
 import './Guess.css'
 
 /**
@@ -291,12 +292,16 @@ function GuessSession({ questions, onRestart }: { questions: GuessQuestion[]; on
  */
 export function GuessMode() {
   const { words, progress } = useApp()
+  // Pinned once, alongside the question set: difficultyWeight's recent-miss
+  // window reads it, and a session must not change meaning midway because
+  // the clock rolled past midnight.
+  const [today] = useState(() => todayStr(new Date()))
   const [round, setRound] = useState(0)
 
   // Regenerated only when the round counter moves, so a re-render can't
   // silently swap the question set out mid-session.
   const questions = useMemo(
-    () => generateGuessSession(words, progress, (wordNotesFile as WordNotesFile).notes, QUESTION_COUNT, Math.random),
+    () => generateGuessSession(words, progress, today, (wordNotesFile as WordNotesFile).notes, QUESTION_COUNT, Math.random),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [round],
   )

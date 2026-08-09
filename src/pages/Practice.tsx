@@ -9,6 +9,7 @@ import { isEditableTarget } from '../lib/keys'
 import { buildMixedPractice, mixedPracticePool, PRACTICE_DRAW_SIZE, samplePractice } from '../lib/practice'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
+import { todayStr } from '../lib/srs'
 import { filterToParams, filterWords, paramsToFilter } from './libraryFilter'
 import { ReviewCardBack } from './ReviewCard'
 import { useApp } from '../state/store'
@@ -41,6 +42,10 @@ import './Practice.css'
  */
 export function Practice() {
   const { words, progress, recordPractice } = useApp()
+  // Pinned for the session, like Review.tsx: it feeds difficultyWeight's
+  // recent-miss term, and a draw must not change meaning because the clock
+  // rolled past midnight mid-session.
+  const [today] = useState(() => todayStr(new Date()))
 
   // **Read once, on mount**, the same reasoning as Review.tsx's mode: these
   // three values decide the pool, and letting them change mid-session would
@@ -81,9 +86,9 @@ export function Practice() {
   const draw = useCallback(
     (exclude?: ReadonlySet<string>) =>
       mixed
-        ? buildMixedPractice(words, progress, PRACTICE_DRAW_SIZE, { exclude })
+        ? buildMixedPractice(words, progress, today, PRACTICE_DRAW_SIZE, { exclude })
         : samplePractice(pool, PRACTICE_DRAW_SIZE, { exclude }),
-    [mixed, words, progress, pool],
+    [mixed, words, progress, today, pool],
   )
 
   // The deck holds Word objects rather than ids, unlike Review.tsx's queue.
@@ -94,6 +99,12 @@ export function Practice() {
   // transitional state the review page has to render around.
   const [deck, setDeck] = useState<Word[]>(() => draw())
   const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set())
+  // The words answered 不认识 this sitting, accumulated across redraws. The
+  // done screen used to say only "这一批练完了" — you could miss six words
+  // and be told nothing about which. The effect was always real (each one
+  // stamps missedAt and enters the stubborn-word drill), it was just
+  // invisible, and an invisible consequence may as well not exist.
+  const [missed, setMissed] = useState<Word[]>([])
   const [idx, setIdx] = useState(0)
   const [flipped, setFlipped] = useState(false)
 
@@ -134,6 +145,7 @@ export function Practice() {
       // is the earliest point where sound plays for an answer.
       playGrade(correct ? 'good' : 'again', soundEnabled)
       recordPractice(cur.id, correct)
+      if (!correct) setMissed(m => [...m, cur])
       setIdx(i => i + 1)
       setFlipped(false)
     },
@@ -208,6 +220,32 @@ export function Practice() {
             {mixed ? '返回今日' : '返回词库'}
           </Link>
         </div>
+
+        {/* What you actually got wrong, and what happens to it now. This
+            page's one real consequence — a miss stamps missedAt and the word
+            leads the stubborn-word drill — was completely invisible until
+            here: you could fumble six words and be told only "这一批练完了".
+            Naming them is also the cheapest possible answer, since the deck
+            is already in hand and nothing new is stored. */}
+        {missed.length > 0 && (
+          <Card className="practice-recap">
+            <p className="section-title">这一轮没答上来的</p>
+            <ul className="practice-recap__list">
+              {missed.map(w => (
+                <li key={w.id}>
+                  <Link to={`/word/${w.id}`} className="practice-recap__row">
+                    <span className="word practice-recap__word" lang="en">{w.headword}</span>
+                    <span className="muted practice-recap__zh">{w.meanings[0]?.zh ?? ''}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <p className="faint stats-note">
+              这 <span className="num">{missed.length}</span> 个已经排进顽固词队列,
+              这周做测验也会更常碰到它们。
+            </p>
+          </Card>
+        )}
       </Page>
     )
   }

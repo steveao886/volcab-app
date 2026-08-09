@@ -77,6 +77,10 @@ function QuizSession({
   onRestart: () => void
 }) {
   const { progress, recordQuiz } = useApp()
+  // Pinned once, alongside the question set: difficultyWeight's recent-miss
+  // window reads it, and a session must not change meaning midway because
+  // the clock rolled past midnight.
+  const [today] = useState(() => todayStr(new Date()))
 
   // Generated only once, on mount: all three generator functions default to
   // Math.random under the hood, so calling them again during a re-render
@@ -93,8 +97,8 @@ function QuizSession({
         storage.get<string[]>('recentContrast') ?? [],
       )
     }
-    if (mode === 'audio') return generateAudioQuiz(words, progress, QUESTION_COUNT)
-    return generateQuiz(words, progress, QUESTION_COUNT)
+    if (mode === 'audio') return generateAudioQuiz(words, progress, today, QUESTION_COUNT)
+    return generateQuiz(words, progress, today, QUESTION_COUNT)
   })
   const [index, setIndex] = useState(0)
   const [score, setScore] = useState(0)

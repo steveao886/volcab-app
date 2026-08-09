@@ -1,6 +1,10 @@
 import { buildContrastPairs } from './contrast'
 import { headwordPattern } from './headword'
-import { INITIAL_EASE } from './srs'
+// MISS_RECENCY_DAYS is imported rather than restated: it is one fact — how
+// long a practice miss stays relevant — and two copies would silently drift
+// the day the drill's window changes.
+import { MISS_RECENCY_DAYS } from './queue'
+import { addDays, INITIAL_EASE } from './srs'
 import type { Meaning, Progress, Word } from '../types'
 
 export type QuizType =
@@ -216,6 +220,17 @@ function pickDistractorLabels(
 const LAPSE_WEIGHT_CAP = 3
 
 /**
+ * What a fresh miss is worth in the draw.
+ *
+ * 1 doubles a baseline word: weightedShuffle's stated semantics are that
+ * "a weight of 2 makes an item behave like two entries", so a word you
+ * just fumbled is worth exactly two untouched ones. Sized to sit alongside
+ * the ease term rather than swamp it — the warning against cranking
+ * multipliers below applies to this one too.
+ */
+const RECENT_MISS_WEIGHT = 1
+
+/**
  * How much more often a word should be quizzed than an average one.
  *
  * Selection used to be a plain shuffle, so a word forgotten five times and
@@ -230,21 +245,49 @@ const LAPSE_WEIGHT_CAP = 3
  * - **Lapses**, as a supplement. It never decreases and is sparse — 11 of
  *   169 learned words carry any — so it cannot be the main signal, but a
  *   word that has genuinely been forgotten deserves the lift.
+ * - **A recent miss**, added later. Every practice surface stamps
+ *   `missedAt` and the stubborn-word drill was its only reader, so a word
+ *   fumbled in a quiz an hour ago was no likelier to be asked again than
+ *   one never missed — the two signals the app already collects were not
+ *   speaking to each other. It carries no weight past
+ *   MISS_RECENCY_DAYS, and answering the word correctly anywhere clears
+ *   the stamp outright, so unlike `lapses` this term genuinely decays.
  *
- * Measured over the live library (169 learned words): words that have
- * lapsed or lost ease go from 10.7% of quiz slots to 17.1%, and the
- * heaviest word is 2.5x an untouched one. Simulating 300 ten-question
- * quizzes gives 16.9%, and still draws all 169 words — nothing starves.
+ * Measured over the live library (311 learned words, 2026-08-08, 300
+ * simulated ten-question quizzes). Words that have lapsed or lost ease are
+ * 29.9% of the library and take 40.6% of quiz slots, so the ease/lapse tilt
+ * is doing real work. Adding the miss term takes recently-missed words from
+ * 2.4% of slots to 4.1% — a 1.7x lift on the handful of words it applies
+ * to, while the struggling share as a whole barely moves (40.6% to 41.4%).
+ * All 311 words are still drawn; nothing starves.
  *
- * A deliberately modest shift. 79% of learned words sit at exactly the
- * starting ease because they have only ever been graded "good", so the
+ * **The heaviest word does not change: 3.47x an untouched one either way.**
+ * The word at the top is there on ease and lapses, and a fresh miss adds a
+ * flat 1 rather than multiplying, so this term cannot produce a new
+ * runaway. That is the property that makes it safe to add.
+ *
+ * The aggregate numbers look small because only 6 words carried a miss
+ * inside the window on the day this was measured — which is the point. The
+ * term exists to matter for the few words you just fumbled, not to reshape
+ * the draw.
+ *
+ * A deliberately modest shift. Most learned words sit at exactly the
+ * starting ease because they have only ever been graded "good", so that
  * signal is thin; the way to sharpen it is to use "hard" during review,
  * not to crank the multipliers here and amplify noise.
  */
-export function difficultyWeight(w: Word, progress: Progress): number {
+export function difficultyWeight(w: Word, progress: Progress, today: string): number {
   const e = progress.words[w.id]
   if (!e) return 1
-  return 1 + 1.5 * Math.max(0, INITIAL_EASE - e.ease) + 0.5 * Math.min(e.lapses, LAPSE_WEIGHT_CAP)
+  // `today` is threaded in rather than read from the clock here: every
+  // date-dependent function in lib/ takes its date (see srs.ts, queue.ts),
+  // and a hidden new Date() would make the weighting untestable at exactly
+  // the boundary that matters.
+  const missedRecently = e.missedAt !== undefined && e.missedAt >= addDays(today, -MISS_RECENCY_DAYS)
+  return 1
+    + 1.5 * Math.max(0, INITIAL_EASE - e.ease)
+    + 0.5 * Math.min(e.lapses, LAPSE_WEIGHT_CAP)
+    + (missedRecently ? RECENT_MISS_WEIGHT : 0)
 }
 
 /**
@@ -283,6 +326,7 @@ function questionPool(words: Word[], progress: Progress): Word[] | null {
 export function generateQuiz(
   words: Word[],
   progress: Progress,
+  today: string,
   count: number,
   rng: () => number = Math.random,
   types: readonly QuizType[] = QUIZ_TYPES,
@@ -297,7 +341,7 @@ export function generateQuiz(
   // The shared-word set is computed once for the whole word library — putting it inside the loop would make it O(n²)
   const sharedSynonymsCache = sharedSynonyms(words)
 
-  const candidates = weightedShuffle(pool, w => difficultyWeight(w, progress), rng)
+  const candidates = weightedShuffle(pool, w => difficultyWeight(w, progress, today), rng)
   const questions: QuizQuestion[] = []
 
   for (let ci = 0; ci < candidates.length && questions.length < count; ci++) {
@@ -518,13 +562,14 @@ export function generateContrastQuiz(
 export function generateAudioQuiz(
   words: Word[],
   progress: Progress,
+  today: string,
   count: number,
   rng: () => number = Math.random,
 ): QuizQuestion[] {
   const pool = questionPool(words, progress)
   if (pool === null) return []
 
-  const candidates = weightedShuffle(pool, w => difficultyWeight(w, progress), rng)
+  const candidates = weightedShuffle(pool, w => difficultyWeight(w, progress, today), rng)
   const questions: QuizQuestion[] = []
 
   for (let ci = 0; ci < candidates.length && questions.length < count; ci++) {
