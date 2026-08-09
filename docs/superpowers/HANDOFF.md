@@ -225,7 +225,7 @@ the round:
   were told to run the full gate and report deviations rather than
   silently patch. Keep that reporting clause in every dispatch prompt.
 
-## The struggling-word count is an undercount (2026-08-08, unrepaired)
+## The struggling-word count was an undercount (2026-08-08, repaired)
 
 `rankStrugglingWords` requires `ease < 2.5 && intervalDays < 21`. The
 pre-`71fba29` bug inflated `intervalDays` and never touched `ease` — and
@@ -249,11 +249,31 @@ signal survives too: words 90+ days out have a median 8 reps against the
 library's 5, so for pre-fix entries more gradings still means longer
 intervals.
 
-**Nothing has repaired this.** `71fba29` closed the source;
+**Repaired 2026-08-08** (`volcab-data` commit `dd6d6a0`). All 27 entries
+clamped to `intervalDays` 20 with `due` recomputed as their last-reviewed day
+plus 20; the list now reports 81 with 0 hidden. Two things that repair
+turned on, both of which would have silently wasted it:
+
+- **Clamp to 20, not 21.** The predicate is `intervalDays < MATURE_INTERVAL_DAYS`.
+  Clamping to 21 leaves every word excluded and the whole repair is a no-op.
+- **`lastReviewedAt` had to be bumped +1 second.** `mergeProgress(local,
+  remote)` keeps the local entry when `le.lastReviewedAt >= re.lastReviewedAt`
+  — local wins ties — and it is called local-first on both the boot path
+  (`store.tsx`) and the push-conflict path (`sync.ts`). Repairing the remote
+  without touching the timestamp means the browser's cached copy out-ranks it
+  and reverts the fix the next time the app opens. A whole second, not a
+  millisecond: ISO strings compare as strings, and +1ms can confine the change
+  to the fractional part, which compares backwards against a timestamp that
+  has none. The calendar day is unchanged, so `buildLapseQueue`'s
+  "already dealt with today" reading is unaffected.
+
+**Any future direct write to `progress.json` faces the same merge trap.**
+Bump the timestamp or the write will not survive.
+
+Why it needed a one-time repair at all: `71fba29` closed the source, but
 `MAX_INTERVAL_DAYS` is forward-looking by design, so an entry only gets
-clamped when it next comes due — 2027 for the 365-day words. Any figure
-derived from the ranking is low until someone decides how to fix the
-stored data.
+clamped when it next comes due — 2027 for the 365-day words. Waiting was
+not a plan.
 
 Reproducing the measurement does **not** need a manual export. `gh` is
 authenticated with `repo` scope and `steveao886/volcab-data` is reachable:
