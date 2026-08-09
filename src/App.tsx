@@ -6,6 +6,7 @@ import { DevGallery } from './pages/DevGallery'
 import { Discover } from './pages/Discover'
 import { Library } from './pages/Library'
 import { Login } from './pages/Login'
+import { Practice } from './pages/Practice'
 import { Quiz } from './pages/Quiz'
 import { Review } from './pages/Review'
 import { Settings } from './pages/Settings'
@@ -46,6 +47,12 @@ function App() {
           <Route path="/quiz" element={<Quiz />} />
           {/* 猜词 moved into /quiz; the old bookmarkable route redirects rather than 404s. */}
           <Route path="/guess" element={<Navigate to="/quiz?mode=guess" replace />} />
+          {/* Its own route rather than /review?mode=free: the two review
+              sub-modes are that page with a different queue, while this
+              grades two ways, writes strictly less, and draws from a library
+              filter instead of the scheduler. The filter travels in the
+              query string (q/status/src), never a list of ids. */}
+          <Route path="/practice" element={<Practice />} />
           <Route path="/library" element={<Library />} />
           <Route path="/discover" element={<Discover />} />
           <Route path="/word/:id" element={<WordDetail />} />

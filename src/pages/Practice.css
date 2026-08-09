@@ -1,0 +1,37 @@
+/* ==========================================================================
+   Free practice page.
+
+   Almost everything here is borrowed rather than redefined: the card, the
+   progress row, the flip hint and the done screen are the review page's,
+   and Practice.tsx imports Review.css for exactly that reason. The card
+   *is* the review card — copying its rules under .practice- names would
+   mean two stylesheets drifting apart on a shared component
+   (ReviewCardBack emits .review-back and everything under it).
+
+   What's genuinely different is the answer row: two buttons where the
+   review page has four.
+   ========================================================================== */
+
+.practice-answers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+}
+
+/* Matches .review-grades: the label and its key hint stack, so the two
+   buttons keep the same height as the four they replace and the card
+   below doesn't jump on flip. */
+.practice-answers .btn {
+  padding-inline: var(--sp-2);
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* On wider screens the pair shouldn't stretch the full content width —
+   same treatment, and same breakpoint, as .review-grades. */
+@media (min-width: 900px) {
+  .practice-answers {
+    max-width: 480px;
+    margin-inline: auto;
+  }
+}
