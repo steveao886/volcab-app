@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { GitHubClient } from '../lib/github'
 import { mergeProgress } from '../lib/merge'
 import type { QuizMetricKey } from '../lib/quiz'
-import { gradeWord, todayStr } from '../lib/srs'
+import { demoteWord, gradeWord, todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
 import { emptyProgress, emptyStat } from '../types'
 import type { DailyStat, Grade, Progress, ProgressEntry, StagingItem, Word } from '../types'
@@ -79,12 +79,18 @@ export interface AppActions {
   recordPractice(wordId: string, correct: boolean): void
   /** Reject a suggested word, permanently: the id is remembered in synced progress so later suggestion batches skip it */
   dismissSuggestion(id: string): void
+  /**
+   * Quiz settlement (综合 / 回想 / 辨析 / 听音 / 短文). A missed word is
+   * stamped with missedAt **and has its interval halved** — see demoteWord.
+   * The sprint deliberately does not; its misses are speed artifacts as
+   * often as memory ones.
+   */
   recordQuiz(correct: number, total: number, wrongIds: string[], mode: QuizMetricKey): void
   /** 回想's 巩固 button: declare a quiz miss a real forget — missedAt stamped, lapses counted, nothing else moves */
   consolidateWord(id: string): void
-  /** Sprint settlement: like recordQuiz, only stamps missedAt on missed words, plus refreshes the personal best score */
+  /** Sprint settlement: stamps missedAt and, unlike recordQuiz, never demotes — a miss under a 60-second clock is as likely to be timing as memory. Plus the personal best. */
   recordSprint(score: number, wrongIds: string[], asked: number): void
-  /** 猜词 settlement: same missedAt-only contract, plus the best count of no-clue solves */
+  /** 猜词 settlement: same contract as recordQuiz, demotion included, plus the best count of no-clue solves */
   recordGuess(wrongIds: string[], unaided: number, asked: number, solved: number): void
   /** Add or edit an entry (upsert by id), pushes words.json immediately */
   saveWord(word: Word): Promise<void>
@@ -802,18 +808,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
    * with today — stamping it here would hide the miss from the very drill
    * this exists to feed.
    */
-  const markMissed = (words: Progress['words'], ids: string[], day: string): Progress['words'] => {
+  const markMissed = (
+    words: Progress['words'],
+    ids: string[],
+    day: string,
+    demote = false,
+  ): Progress['words'] => {
     const out = { ...words }
     for (const id of ids) {
       const e = out[id]
-      if (e) out[id] = { ...e, missedAt: day }
+      // demoteWord returns the entry untouched when it doesn't apply — not
+      // in the review phase, or already demoted today — so this stays a
+      // plain stamp in every case the demotion declines.
+      if (e) out[id] = { ...(demote ? demoteWord(e, day) : e), missedAt: day }
     }
     return out
   }
 
   // The session count itself is quizTaken; the score lands in quizModes. A
-  // missed word is stamped with missedAt and picked up by the 还没记牢
-  // drill — it does not enter the review queue; see markMissed.
+  // missed word is stamped with missedAt, picked up by the 还没记牢 drill,
+  // and has its interval halved (demoteWord) — the one way a quiz reaches
+  // the schedule, and it only ever moves a date toward now.
+  //
+  // Every mode routed through here demotes, four-option ones included. That
+  // means roughly one miss in four is a failed guess rather than a failed
+  // memory; the per-day cap in demoteWord is what bounds the cost of that,
+  // and a real review multiplies the interval straight back. Recorded as a
+  // deliberate choice in the 2026-08-09 quiz-demotion spec.
   const recordQuiz = useCallback((correct: number, total: number, wrongIds: string[], mode: QuizMetricKey) => {
     const now = new Date()
     const day = todayStr(now)
@@ -821,7 +842,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const stat = { ...(cur.dailyStats[day] ?? emptyStat()) }
     stat.quizTaken += 1
     bumpMode(stat, mode, total, correct)
-    commitProgress({ ...cur, words: markMissed(cur.words, wrongIds, day), dailyStats: { ...cur.dailyStats, [day]: stat } })
+    commitProgress({ ...cur, words: markMissed(cur.words, wrongIds, day, true), dailyStats: { ...cur.dailyStats, [day]: stat } })
     void flushProgress()
   }, [commitProgress, flushProgress])
 
@@ -863,9 +884,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     schedulePush()
   }, [commitProgress, schedulePush])
 
-  // Sprint shares the same contract as recordQuiz (missed words are only
-  // stamped with missedAt; due, ease and interval all belong to the
-  // scheduler); the one extra thing it does is refresh the best score.
+  // Sprint stamps missedAt and stops there — **the one quiz surface that
+  // does not demote**. Answers are given against a 60-second clock, so a
+  // miss is as likely to mean "ran out of time" as "didn't know it", and
+  // that is not evidence worth spending half an interval on. The extra
+  // thing it does is refresh the best score.
   const recordSprint = useCallback((score: number, wrongIds: string[], asked: number) => {
     const now = new Date()
     const day = todayStr(now)
@@ -904,7 +927,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const stat = { ...(cur.dailyStats[day] ?? emptyStat()) }
     stat.quizTaken += 1
     bumpMode(stat, 'guess', asked, solved)
-    const next: Progress = { ...cur, words: markMissed(cur.words, wrongIds, day), dailyStats: { ...cur.dailyStats, [day]: stat } }
+    const next: Progress = { ...cur, words: markMissed(cur.words, wrongIds, day, true), dailyStats: { ...cur.dailyStats, [day]: stat } }
     if (cur.bestGuess === undefined || unaided > cur.bestGuess.score) {
       next.bestGuess = { score: unaided, date: day }
     }

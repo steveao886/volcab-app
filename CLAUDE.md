@@ -54,7 +54,17 @@ Everything under `src/state/` that touches sync is **data-safety logic, not wiri
 
 ### SRS
 
-`src/lib/srs.ts` is the scheduler. `recordQuiz` in `store.tsx` only pulls a wrong word's `due` date forward — it never touches `ease` or `intervalDays`. **Any new quiz mode must preserve that**; quizzes are practice, and practice must not reshape the review schedule.
+`src/lib/srs.ts` is the scheduler, and it owns the schedule. Practice surfaces may reach it in exactly one way:
+
+**A quiz miss halves `intervalDays` and never does anything else** (`demoteWord`). `ease`, `lapses`, `state` and `lastReviewedAt` are the scheduler's alone; `due` only ever moves *toward* now, never away. Three guards make that safe and all three are load-bearing:
+
+- **Review-phase words only**, and **at most one demotion per word per day** (`ProgressEntry.demotedOn`). Wrong demotes and right does nothing, so without the cap it is a one-way ratchet and quizzes have no daily limit.
+- **`due` takes a minimum against the existing date.** Scheduling from today alone can push a near-due word *further out* — a miss would promote it.
+- **The 60-second sprint is exempt**, and the drills (`practiceGrade`) and free practice (`recordPractice`) never demote at all.
+
+Everything else still holds: a practice miss stamps `missedAt` and nothing more. **Never pull `due` forward while leaving `intervalDays` alone** — `gradeWord` computes `next = intervalDays * ease` knowing nothing about elapsed time, so a word yanked back early and graded "good" grows as if the full interval had been served. That was a real bug (`71fba29`); the demotion above avoids it by changing the interval itself.
+
+See `docs/superpowers/specs/2026-08-09-quiz-demotion-design.md`.
 
 ## Conventions
 

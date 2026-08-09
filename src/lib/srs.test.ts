@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addDays, clampIntervalModifier, gradeWord, MAX_INTERVAL_DAYS, MAX_INTERVAL_MODIFIER, previewIntervals, todayStr } from './srs'
+import { addDays, clampIntervalModifier, demoteWord, gradeWord, MAX_INTERVAL_DAYS, MAX_INTERVAL_MODIFIER, previewIntervals, todayStr } from './srs'
 import type { ProgressEntry } from '../types'
 
 const now = new Date(2026, 6, 24, 10, 0, 0) // 2026-07-24 local time
@@ -186,5 +186,72 @@ describe('previewIntervals', () => {
     const before = { ...e }
     previewIntervals(e, NOW)
     expect(e).toEqual(before)
+  })
+})
+
+describe('demoteWord: a quiz miss halves the interval, and only ever toward now', () => {
+  const TODAY = '2026-08-09'
+  const entry = (over: Partial<ProgressEntry> = {}): ProgressEntry => ({
+    state: 'review', ease: 2.5, intervalDays: 30, due: '2026-09-08',
+    stepIndex: 0, reps: 6, lapses: 0, lastReviewedAt: '2026-08-09T00:00:00Z', ...over,
+  })
+
+  it('halves the interval and brings the date in with it', () => {
+    const out = demoteWord(entry(), TODAY)
+    expect(out.intervalDays).toBe(15)
+    expect(out.due).toBe('2026-08-24')
+  })
+
+  it('never pushes a review further away — the near-due word that would otherwise be promoted', () => {
+    // 30-day interval, but 29 of those days are already served: due tomorrow.
+    // Scheduling from today would move it from tomorrow to a fortnight out,
+    // so a miss would have rewarded the word.
+    const out = demoteWord(entry({ due: '2026-08-10' }), TODAY)
+    expect(out.intervalDays).toBe(15)
+    expect(out.due).toBe('2026-08-10')
+  })
+
+  it('an overdue word keeps its overdue date rather than being pushed to the future', () => {
+    const out = demoteWord(entry({ due: '2026-08-01' }), TODAY)
+    expect(out.due).toBe('2026-08-01')
+  })
+
+  it('floors at one day instead of collapsing to zero', () => {
+    expect(demoteWord(entry({ intervalDays: 1 }), TODAY).intervalDays).toBe(1)
+    expect(demoteWord(entry({ intervalDays: 2 }), TODAY).intervalDays).toBe(1)
+  })
+
+  it('touches nothing but the interval, the date, and the marker', () => {
+    const before = entry()
+    const after = demoteWord(before, TODAY)
+    expect(after.ease).toBe(before.ease)
+    expect(after.lapses).toBe(before.lapses)
+    expect(after.state).toBe(before.state)
+    expect(after.stepIndex).toBe(before.stepIndex)
+    expect(after.reps).toBe(before.reps)
+    expect(after.lastReviewedAt).toBe(before.lastReviewedAt)
+    expect(after.demotedOn).toBe(TODAY)
+  })
+
+  it('a second miss the same day is a no-op, and returns the identical object', () => {
+    const once = demoteWord(entry(), TODAY)
+    expect(demoteWord(once, TODAY)).toBe(once)
+  })
+
+  it('but the next day it can demote again — the cap is per day, not for ever', () => {
+    const once = demoteWord(entry(), TODAY)
+    const twice = demoteWord(once, '2026-08-10')
+    expect(twice.intervalDays).toBe(7)
+  })
+
+  it('learning-phase words are left alone: halving a minute-step interval means nothing', () => {
+    const learning = entry({ state: 'learning', intervalDays: 0, due: TODAY })
+    expect(demoteWord(learning, TODAY)).toBe(learning)
+  })
+
+  it('a real review afterwards multiplies the halved interval straight back up — the demotion is reversible', () => {
+    const demoted = demoteWord(entry(), TODAY)
+    const reviewed = gradeWord(demoted, 'good', new Date('2026-08-24T12:00:00'), () => 0.5)
+    expect(reviewed.intervalDays).toBeGreaterThan(demoted.intervalDays)
   })
 })

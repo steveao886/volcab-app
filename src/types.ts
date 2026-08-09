@@ -108,6 +108,21 @@ export interface ProgressEntry {
    * "no recent miss recorded", not a rejected merge.
    */
   missedAt?: string
+  /**
+   * The last day a quiz miss halved this word's interval. `YYYY-MM-DD`.
+   *
+   * Exists to cap a ratchet. Demotion fires on a wrong answer and nothing
+   * fires on a right one, and quizzes have no daily limit — so without a
+   * per-day guard, playing enough of them could only ever push intervals
+   * down, until everything sat on the floor. That is the mirror image of the
+   * drift 71fba29 removed. With it, a word loses at most half its interval
+   * in a day and the next successful review multiplies it back.
+   *
+   * Optional like every added field: another device on an older build
+   * pushes entries without it, and the correct reading of its absence is
+   * "not demoted today", not a rejected merge.
+   */
+  demotedOn?: string
 }
 
 export interface DailyStat {

@@ -814,7 +814,7 @@ describe('login: handling this device\'s debt', () => {
 // the interval-stability assertion below is the whole point of this block,
 // not a formality.
 
-describe('recordQuiz: a quiz miss must not be able to lengthen the schedule', () => {
+describe('recordQuiz: a quiz miss may shorten the schedule but never lengthen it', () => {
   // The failure this exists to prevent, end to end. recordQuiz used to set
   // due = today on a miss, under a comment promising ease and intervalDays
   // were untouched -- and they were, by that function. The damage came one
@@ -825,7 +825,13 @@ describe('recordQuiz: a quiz miss must not be able to lengthen the schedule', ()
   // furthest out. Measured on the live library: 9 words sat below initial
   // ease while scheduled 60+ days ahead, promulgate at ease 1.70 and 268
   // days.
-  it('a missed word keeps its due date, so it never reaches the review card early', async () => {
+  //
+  // These two used to assert a miss could not move the schedule *at all*.
+  // Since the 2026-08-09 demotion change a miss halves the interval on
+  // purpose, so what they guard is now the direction: never later, never
+  // longer. That is the property 71fba29 was actually about — the bug made
+  // intervals grow — and it is the one that must not regress.
+  it('a missed word is never scheduled further out — the interval halves, it does not grow', async () => {
     await bootAsAlice()
     await step(() => { app().grade('alpha', 'easy') })
     const before = app().progress.words['alpha']
@@ -835,23 +841,27 @@ describe('recordQuiz: a quiz miss must not be able to lengthen the schedule', ()
 
     const after = app().progress.words['alpha']
     expect(after.missedAt).toBe(today)
-    expect(after.due).toBe(before.due)
-    expect(after.intervalDays).toBe(before.intervalDays)
+    expect(after.due <= before.due).toBe(true)
+    expect(after.intervalDays).toBe(Math.max(1, Math.floor(before.intervalDays / 2)))
+    // The interval is the only scheduling field a quiz may reach.
     expect(after.ease).toBe(before.ease)
     expect(after.state).toBe(before.state)
     expect(after.lapses).toBe(before.lapses)
   })
 
-  it('missing the same word ten times in one day cannot move the schedule at all', async () => {
+  it('missing the same word ten times in one day costs exactly one halving, not ten', async () => {
     await bootAsAlice()
     await step(() => { app().grade('alpha', 'easy') })
     const before = app().progress.words['alpha']
 
     for (let i = 0; i < 10; i++) await step(() => { app().recordQuiz(0, 1, ['alpha'], 'mixed') })
 
+    // Without the per-day cap this is a one-way ratchet: quizzes have no
+    // daily limit, so ten misses would floor the interval at 1 in a single
+    // sitting and every heavily-quizzed word would collapse.
     const after = app().progress.words['alpha']
-    expect(after.due).toBe(before.due)
-    expect(after.intervalDays).toBe(before.intervalDays)
+    expect(after.intervalDays).toBe(Math.max(1, Math.floor(before.intervalDays / 2)))
+    expect(after.due <= before.due).toBe(true)
   })
 
   it('a word with no record is skipped rather than invented', async () => {
@@ -947,6 +957,99 @@ describe('recordLapseDrill: drilling never moves the schedule outward', () => {
 // the streak, the 30-day chart and the accuracy rate would all stop
 // describing review sessions, which is precisely what the user asked to
 // avoid with "不计入真的复习时间".
+describe('quiz demotion: a miss halves the interval, and only the sprint is exempt', () => {
+  // The rule this replaces said quizzes must never reshape the schedule. It
+  // was written against practice making intervals *grow* (71fba29), which is
+  // the opposite accident — see the 2026-08-09 quiz-demotion spec.
+  it('a quiz miss halves the interval and pulls the date in with it', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().grade('alpha', 'easy') })   // out to a real interval
+    const before = app().progress.words['alpha']
+    expect(before.state).toBe('review')
+    expect(before.intervalDays).toBeGreaterThan(1)
+
+    await step(() => { app().recordQuiz(0, 1, ['alpha'], 'mixed') })
+
+    const after = app().progress.words['alpha']
+    expect(after.intervalDays).toBe(Math.max(1, Math.floor(before.intervalDays / 2)))
+    expect(after.due <= before.due).toBe(true)
+    expect(after.demotedOn).toBe(today)
+    expect(after.missedAt).toBe(today)
+    // The interval is the only scheduling field that moves.
+    expect(after.ease).toBe(before.ease)
+    expect(after.lapses).toBe(before.lapses)
+    expect(after.state).toBe(before.state)
+    expect(after.lastReviewedAt).toBe(before.lastReviewedAt)
+  })
+
+  it('a second miss the same day changes nothing — the ratchet is capped per day', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().recordQuiz(0, 1, ['alpha'], 'mixed') })
+    const afterFirst = app().progress.words['alpha']
+
+    for (let i = 0; i < 5; i++) await step(() => { app().recordQuiz(0, 1, ['alpha'], 'mixed') })
+
+    const afterMany = app().progress.words['alpha']
+    expect(afterMany.intervalDays).toBe(afterFirst.intervalDays)
+    expect(afterMany.due).toBe(afterFirst.due)
+  })
+
+  it('猜词 demotes on the same terms', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.words['alpha']
+
+    await step(() => { app().recordGuess(['alpha'], 0, 1, 0) })
+
+    expect(app().progress.words['alpha'].intervalDays)
+      .toBe(Math.max(1, Math.floor(before.intervalDays / 2)))
+  })
+
+  it('the sprint never demotes — a miss under the clock is as likely to be timing as memory', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.words['alpha']
+
+    await step(() => { app().recordSprint(0, ['alpha'], 1) })
+
+    const after = app().progress.words['alpha']
+    expect(after.intervalDays).toBe(before.intervalDays)
+    expect(after.due).toBe(before.due)
+    expect(after.demotedOn).toBeUndefined()
+    expect(after.missedAt).toBe(today)      // still recorded, just not acted on
+  })
+
+  it('a correct answer never demotes: only wrongIds are touched', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.words['alpha']
+
+    await step(() => { app().recordQuiz(1, 1, [], 'mixed') })
+
+    expect(app().progress.words['alpha']).toBe(before)
+  })
+
+  it('a word still in the learning phase is left alone', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'good') })   // still learning, interval 0
+    const before = app().progress.words['alpha']
+    expect(before.state).toBe('learning')
+
+    await step(() => { app().recordQuiz(0, 1, ['alpha'], 'mixed') })
+
+    const after = app().progress.words['alpha']
+    expect(after.intervalDays).toBe(before.intervalDays)
+    expect(after.due).toBe(before.due)
+    expect(after.demotedOn).toBeUndefined()
+  })
+})
+
 describe('recordPractice: free practice writes less than any other surface', () => {
   it('a correct answer over a word that was never missed writes nothing at all — not even a fresh object', async () => {
     await bootAsAlice()

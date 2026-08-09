@@ -185,3 +185,52 @@ export function previewIntervals(
   }
   return out
 }
+
+/**
+ * A quiz miss halves this word's interval.
+ *
+ * The one place practice is allowed to reach the schedule, and it only ever
+ * moves it *toward* now. Until this existed, a word you had just failed to
+ * recall kept its dates untouched — miss it today and the scheduler went on
+ * asserting "you know this, see you in October", having just been shown
+ * otherwise. See the 2026-08-09 quiz-demotion spec for why the long-standing
+ * "practice must not reshape the schedule" rule is rewritten rather than
+ * broken: it was written against practice making intervals *grow*, which is
+ * a different accident (gradeWord multiplies whatever interval it finds,
+ * knowing nothing about elapsed time).
+ *
+ * **`due` takes a minimum, and it is not a nicety.** Scheduling from today
+ * alone can push a review *further away*: a word on a 30-day interval that
+ * falls due tomorrow has already served 29 of those days, so halving to 15
+ * and counting from today would move it from tomorrow to a fortnight out —
+ * a miss would have promoted it. The minimum is what makes this a demotion
+ * in every case rather than in most.
+ *
+ * Untouched on purpose: `ease` (the difficulty estimate is calibrated on
+ * review grades, and doubles as the definition of a struggling word and the
+ * main term in difficultyWeight — three readings that quiz results would
+ * blur at once), `lapses` (a lapse is forgetting a word you had learned,
+ * established on a graded card), `state`, `stepIndex`, `reps` and
+ * `lastReviewedAt`.
+ *
+ * Returns `prev` itself whenever nothing applies, so a no-op writes nothing
+ * — the same identity guarantee clearMissed makes in store.tsx, and what
+ * keeps "a second miss the same day changes nothing" checkable rather than
+ * merely likely.
+ */
+export function demoteWord(prev: ProgressEntry, today: string): ProgressEntry {
+  // Learning-phase words are already on minute-to-day steps that the drill
+  // and the learning steps themselves handle; halving there means nothing.
+  if (prev.state !== 'review') return prev
+  // One per day. Without this the operation is a one-way ratchet — see
+  // ProgressEntry.demotedOn.
+  if (prev.demotedOn === today) return prev
+  const next = Math.max(1, Math.floor(prev.intervalDays / 2))
+  const from = addDays(today, next)
+  return {
+    ...prev,
+    intervalDays: next,
+    due: from < prev.due ? from : prev.due,
+    demotedOn: today,
+  }
+}
