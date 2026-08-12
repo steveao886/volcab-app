@@ -24,21 +24,41 @@ const QUESTION_COUNT = 10
  * docs/superpowers/specs/2026-08-07-recall-mode-design.md.
  */
 
-type Stage = 'commit' | 'answer' | 'revealed'
+type Stage = 'commit' | 'hint' | 'answer' | 'revealed'
 
 /**
- * How a question was missed. The two are scored identically — the word is
+ * How a question was missed. All four are scored identically — the word is
  * not in productive vocabulary either way — but they are different findings
- * and must not be reported as one:
+ * with different remedies and must not be reported as one:
  *
- * - `blank`: nothing came. 想不起来 at the commit gate.
+ * - `blank`: nothing came, not even with the English definition in front of
+ *   you.
  * - `other`: something came, but it was none of the options — the learner
  *   reached for a simpler word that says roughly the same thing. This is
  *   the state the mode exists to find, and until it had its own button the
  *   only way to report it was 想不起来, which is simply false: the meaning
  *   *was* available, the word was not.
+ * - `hint-hit`: the English definition unlocked it. The concept is learned;
+ *   what failed is the Chinese-side handle — measured at 36.7% of the
+ *   library sharing a gloss fragment with another entry, that is a content
+ *   fact, not a study failure.
+ * - `hint-miss`: even reading the definition, the reach was for a
+ *   confusable. The sharpest finding the mode can produce.
  */
-type Miss = 'blank' | 'other'
+type Miss = 'blank' | 'other' | 'hint-hit' | 'hint-miss'
+
+/**
+ * The results list is where you decide what to do about a miss, so the four
+ * kinds have to stay apart there: 提示后想起 asks for a better Chinese-side
+ * handle, 意思到了 asks for exposure, 没想起来 asks for review, and 提示后仍错
+ * asks you to open the contrast note for that pair.
+ */
+const MISS_TAG: Record<Miss, string> = {
+  blank: '没想起来',
+  other: '意思到了',
+  'hint-hit': '提示后想起',
+  'hint-miss': '提示后仍错',
+}
 
 interface RecallQuestionViewProps {
   question: RecallQuestion
@@ -61,7 +81,14 @@ function RecallQuestionView({
   /** 唤词: the one option picked. 排序: the tap sequence so far. */
   const [picked, setPicked] = useState<string[]>([])
   const answeredRef = useRef(false)
+  /**
+   * Whether the English definition was read before answering. A ref, not
+   * state: settle() runs inside the tap's own call stack (iOS unlocks audio
+   * only there) and must see the current value, not the render's.
+   */
+  const hintedRef = useRef(false)
   const commitRef = useRef<HTMLButtonElement>(null)
+  const hintRef = useRef<HTMLButtonElement>(null)
   const nextRef = useRef<HTMLButtonElement>(null)
 
   // Focus 我想好了 on mount: Enter walks the happy path with no pointer.
@@ -69,6 +96,9 @@ function RecallQuestionView({
   useEffect(() => {
     commitRef.current?.focus()
   }, [])
+  useEffect(() => {
+    if (stage === 'hint') hintRef.current?.focus()
+  }, [stage])
   useEffect(() => {
     if (stage === 'revealed') nextRef.current?.focus()
   }, [stage])
@@ -84,7 +114,21 @@ function RecallQuestionView({
     onAnswered(isCorrect, isCorrect ? [] : wrongIdsFor(question, pick), kind)
   }, [question, soundEnabled, onAnswered])
 
-  const giveUp = useCallback(() => settle(false, null, 'blank'), [settle])
+  /**
+   * 想不起来 is now a tier, not an exit. The English definition is the middle
+   * term in `situation → concept → word`, and the Chinese ambiguity that made
+   * the first attempt unfair does not exist there. Only when the group has no
+   * usable definition — read side stays lenient — does this settle straight
+   * away, exactly as it did before the tier existed.
+   */
+  const giveUp = useCallback(() => {
+    if (stage === 'commit' && question.kind === 'recall' && question.hint !== undefined) {
+      hintedRef.current = true
+      setStage('hint')
+      return
+    }
+    settle(false, null, 'blank')
+  }, [stage, question, settle])
   // Scored exactly like 想不起来 — wrongIdsFor marks the answer and nothing
   // else, because whatever was reached for is not among this card's options
   // and cannot be identified without typing.
@@ -94,7 +138,16 @@ function RecallQuestionView({
     // The pick lands in state as well as in settle(): the reveal reads
     // `picked` for the 你的选择 tag.
     setPicked([opt])
-    settle(opt === question.answer[0], [opt], null)
+    const matched = opt === question.answer[0]
+    // Reached through the hint: **scored wrong whatever was picked**. You
+    // could not produce it cold, and cold production is what this mode
+    // measures — letting the tier buy points would make the score, and the
+    // SRS signal behind it, mean something softer than it says.
+    if (hintedRef.current) {
+      settle(false, [opt], matched ? 'hint-hit' : 'hint-miss')
+      return
+    }
+    settle(matched, [opt], null)
   }, [question, settle])
 
   const tapOrder = useCallback((opt: string) => {
@@ -147,16 +200,20 @@ function RecallQuestionView({
     correct ? '回答正确'
       : miss === 'blank' ? '想不起来 —— 那就在这儿把它记住'
         : miss === 'other' ? '意思到了,词还没到 —— 这正是要练的'
-          : '回答错误'
+          : miss === 'hint-hit' ? '提示后想起来了 —— 这次不算对,但通路正在建立'
+            : miss === 'hint-miss' ? '看了英文释义还是拿错了词 —— 这一对值得单独看'
+              : '回答错误'
 
   return (
     <div className="quiz-q">
       <p className="quiz-q__label">
         {stage === 'commit'
           ? t !== undefined ? '标出的意思,你会用哪个英文词?' : '想表达下面这句话,你会用哪个词?'
-          : question.kind === 'recall'
-            ? '你刚才想到的是哪个?'
-            : '三个都沾边 —— 按贴切程度排序,最贴切的先点'}
+          : stage === 'hint'
+            ? '换个入口 —— 读英文释义,再想一次'
+            : question.kind === 'recall'
+              ? '你刚才想到的是哪个?'
+              : '三个都沾边 —— 按贴切程度排序,最贴切的先点'}
       </p>
       <p className="quiz-q__prompt">{prompt}</p>
 
@@ -173,6 +230,24 @@ function RecallQuestionView({
             想不起来
           </Button>
         </div>
+      ) : stage === 'hint' ? (
+        /* The second tier. A native speaker goes situation → concept → word,
+           never 中文 → 英文, and this definition is that middle term — it can
+           carry the weight because word-entry-spec requires `en` to stand on
+           its own. 减轻 is three words in this library; "to make suffering or
+           a problem less severe" is one. Everything reached from here scores
+           wrong, so nothing is bought by arriving. */
+        <>
+          <p className="recall-hint" lang="en">{question.hint}</p>
+          <div className="recall-gate">
+            <Button ref={hintRef} variant="primary" block onClick={() => setStage('answer')}>
+              我想好了
+            </Button>
+            <Button variant="secondary" block onClick={giveUp}>
+              还是想不起来
+            </Button>
+          </div>
+        </>
       ) : (
         <>
           <div className="quiz-options" role="group" aria-label="选项">
@@ -454,10 +529,8 @@ export function RecallSession({
                         summary: "the meaning was there, the word wasn't" is
                         a different diagnosis from "nothing came", and the
                         list is where you decide what to do about it. */}
-                    {misses[w.id] === 'other' ? (
-                      <span className="quiz-option__tag">意思到了</span>
-                    ) : misses[w.id] === 'blank' ? (
-                      <span className="quiz-option__tag">没想起来</span>
+                    {misses[w.id] !== undefined ? (
+                      <span className="quiz-option__tag">{MISS_TAG[misses[w.id]]}</span>
                     ) : null}
                   </Link>
                 </li>

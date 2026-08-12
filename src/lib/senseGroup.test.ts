@@ -150,6 +150,46 @@ describe('buildRecallQuestion', () => {
   })
 })
 
+describe('the English hint', () => {
+  /** Two senses, so "which one does this scenario mean" is a real question. */
+  const succumb: Word = {
+    ...mkWord('succumb'),
+    meanings: [
+      { pos: 'v.', en: 'to stop resisting pressure or temptation', zh: '屈服', share: 70 },
+      { pos: 'v.', en: 'to die of an illness or injury', zh: '死于', share: 30 },
+    ],
+  }
+  const lib = [succumb, mkWord('capitulate'), mkWord('yield'), mkWord('relent')]
+  const words = wordsMap(lib)
+  const g: SenseGroup = { ...G, order: ['succumb', 'capitulate', 'yield'] }
+  const build = (group: SenseGroup, pool = lib) =>
+    buildRecallQuestion(group, words, pool, seqRng([0.1, 0.5, 0.9, 0.3]))
+
+  it('resolves the sense the group names, not the dominant one', () => {
+    expect(build({ ...g, sense: 1 })!.hint).toBe('to die of an illness or injury')
+  })
+
+  it('defaults to sense 0 — the highest share is the scenario a group is usually about', () => {
+    expect(build(g)!.hint).toBe('to stop resisting pressure or temptation')
+  })
+
+  it('falls back to sense 0 rather than throwing when the index is out of range', () => {
+    // validate-sense-groups rejects this on the write side; the read side
+    // stays lenient, like every other bundled-content lookup.
+    expect(build({ ...g, sense: 7 })!.hint).toBe('to stop resisting pressure or temptation')
+  })
+
+  it('yields no hint when the entry carries no usable definition — 想不起来 then settles as it always did', () => {
+    const blank: Word = { ...mkWord('succumb'), meanings: [{ pos: 'v.', en: '  ', zh: '屈服' }] }
+    const q = buildRecallQuestion(g, wordsMap([blank, ...lib.slice(1)]), [blank, ...lib.slice(1)], seqRng([0.4]))
+    expect(q!.hint).toBeUndefined()
+  })
+
+  it('never reaches 排序 — the three members are already on screen, so a definition hands over the ranking', () => {
+    expect(buildOrderQuestion({ ...g, sense: 1 }, words, seqRng([0.8, 0.2, 0.6]))!.hint).toBeUndefined()
+  })
+})
+
 describe('buildOrderQuestion', () => {
   const words = wordsMap(LIB)
 

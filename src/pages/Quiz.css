@@ -478,6 +478,21 @@
   line-height: var(--lh-body);
 }
 
+/* The English definition offered after 想不起来 — a second question, not a
+   reveal, so it must not look like .recall-en (which appears only once the
+   answer is already on screen). Boxed rather than ruled, and set apart from
+   the Chinese prompt above it: the eye should land here and stop, because
+   this is the sentence being retrieved from now. */
+.recall-hint {
+  margin-top: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-sm);
+  background: var(--surface-sunken);
+  color: var(--text);
+  line-height: var(--lh-body);
+}
+
 /* The authored why — same visual role as the contrast card's note. */
 .recall-why {
   margin-top: var(--sp-2);

@@ -36,6 +36,7 @@ const words = JSON.parse(readFileSync('data/words.json', 'utf8')).words as {
   meanings: { pos: string }[]
 }[]
 const posOf = new Map(words.map(w => [w.id, w.meanings[0]?.pos ?? '']))
+const senseCountOf = new Map(words.map(w => [w.id, w.meanings.length]))
 const headwordOf = new Map(words.map(w => [w.id, w.headword]))
 const libraryHeadwords = new Set(words.map(w => w.headword.toLowerCase()))
 const errors: string[] = []
@@ -67,8 +68,8 @@ const seenSet = new Set<string>()
 data.groups.forEach((g: unknown, i: number) => {
   const at = `groups[${i}]`
   if (typeof g !== 'object' || g === null) { errors.push(`${at}: not an object`); return }
-  const { zh, target, en, order, extra, why } = g as {
-    zh?: unknown; target?: unknown; en?: unknown; order?: unknown; extra?: unknown; why?: unknown
+  const { zh, target, en, order, extra, sense, why } = g as {
+    zh?: unknown; target?: unknown; en?: unknown; order?: unknown; extra?: unknown; sense?: unknown; why?: unknown
   }
 
   if (typeof zh !== 'string' || zh.trim() === '') { errors.push(`${at}: zh must be a non-empty string`); return }
@@ -111,6 +112,20 @@ data.groups.forEach((g: unknown, i: number) => {
   // inside one sentence, so ranking them is not a judgment the mode tests.
   const poses = new Set(order.map(id => posOf.get(id)).filter(p => p !== undefined))
   if (poses.size > 1) errors.push(`${at}: mixed POS ${[...poses].join('/')} — members must compete in the same slot`)
+
+  // Which sense of the answer the scenario is about, driving the English
+  // hint shown after 想不起来. Dangling here is the same class of fault as a
+  // note keyed to a word that does not exist: the read side falls back to
+  // sense 0 and renders something plausible, so nothing downstream will ever
+  // report that this group is pointing at a sense its answer does not have.
+  if (sense !== undefined) {
+    const n = senseCountOf.get(order[0] as string)
+    if (!Number.isInteger(sense) || (sense as number) < 0) {
+      errors.push(`${at}: sense must be a non-negative integer, got ${JSON.stringify(sense)}`)
+    } else if (n !== undefined && (sense as number) >= n) {
+      errors.push(`${at}: sense ${sense} but ${headwordOf.get(order[0] as string)} has ${n} meaning(s) — the hint would silently fall back to sense 0`)
+    }
+  }
 
   // Outside distractors: confusable words the library does not carry. They
   // exist because requiring every member to be a library word capped the

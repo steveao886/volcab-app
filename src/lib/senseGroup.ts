@@ -65,6 +65,27 @@ export interface SenseGroup {
    * to no id and marks nothing (see wrongIdsFor).
    */
   extra?: string[]
+  /**
+   * Which of the **answer word's** senses this scenario is about — an index
+   * into `order[0]`'s `meanings`. Drives the English hint and nothing else.
+   *
+   * Defaults to 0, the highest-share sense, which is what a scenario is
+   * almost always written about. Audited over all 329 groups: 79 have a
+   * polysemous answer and **exactly one** of them is about a secondary
+   * sense — `agreeable`'s 只要各方都点头 scenario is "willing to go along
+   * with", sense 1, while sense 0 is "pleasant, and easy to spend time with
+   * or in". Left to the default, that group's hint would have pointed the
+   * learner away from the word it was asking for.
+   *
+   * One case in 329 is still worth a field rather than a rewritten
+   * scenario: the alternative is a rule that every group must be about its
+   * answer's dominant sense, which would quietly ban the 30%-share senses
+   * from ever being asked.
+   *
+   * Optional here and range-checked by validate-sense-groups, the same
+   * write-strict / read-lenient split as `target` and `en`.
+   */
+  sense?: number
   /** One or two sentences naming the dimension that decides the ranking. */
   why: string
 }
@@ -81,6 +102,14 @@ export interface RecallQuestion {
   target?: string
   /** The scenario in English, using the answer. Revealed with the answer, never before it. */
   en?: string
+  /**
+   * The answer word's English definition for the sense in play — shown
+   * **only after 想不起来**, as a second retrieval attempt.
+   *
+   * Absent on 排序, where all three members are on screen from the start and
+   * a definition would hand over the ranking the question exists to ask.
+   */
+  hint?: string
   why: string
   /** Every group member's word id, in answer-key order (best first). */
   orderIds: string[]
@@ -156,6 +185,26 @@ const usableTarget = (g: SenseGroup): string | undefined => {
 }
 
 /**
+ * The English definition offered after 想不起来 — the middle term in
+ * `situation → concept → word`, which is the path production actually takes.
+ *
+ * It can be offered at all because `en` is authored to carry the load:
+ * docs/word-entry-spec.md requires it to "stand on its own", against the
+ * goal of understanding English in English. The Chinese ambiguity that makes
+ * the first attempt unfair is absent here — 减轻 is three words in this
+ * library (alleviate / assuage / extenuate), but "to make suffering or a
+ * problem less severe" is one.
+ *
+ * Out of range falls back to sense 0 instead of throwing: the write-side
+ * gate already rejects a dangling index, and if one ever reaches the app the
+ * right outcome is a slightly-off hint, not a question that fails to render.
+ */
+const hintFor = (w: Word, sense?: number): string | undefined => {
+  const en = w.meanings[sense ?? 0]?.en ?? w.meanings[0]?.en
+  return typeof en === 'string' && en.trim() !== '' ? en : undefined
+}
+
+/**
  * 唤词: the user has committed to a word in their head; these options find
  * out which one it was. The group's own members are the distractors that
  * matter (mistaking pervade for suffuse is the finding worth having), and
@@ -196,6 +245,7 @@ export function buildRecallQuestion(
     prompt: g.zh,
     target: usableTarget(g),
     en: g.en,
+    hint: hintFor((members as Word[])[0], g.sense),
     why: g.why,
     orderIds: [...g.order],
     memberHeadwords: headwords,
