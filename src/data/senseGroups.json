@@ -4405,6 +4405,473 @@
         "compliance"
       ],
       "why": "acquiescence 是不出声的接受：不再争辩、勉强认了，重点在『没有反对』而不是积极赞成，常搭 tacit acquiescence。"
+    },
+    {
+      "zh": "新升降桌治不好腰痛，但把疼痛压到能撑完一天。",
+      "target": "把疼痛压到能撑完一天",
+      "en": "The new standing desk did not cure his back pain, but it alleviated it enough to get through a full day.",
+      "order": [
+        "alleviate",
+        "assuage",
+        "extenuate"
+      ],
+      "why": "alleviate 减轻的是疼痛、贫困、拥堵这类客观存在的问题，宾语就是麻烦本身；assuage 安抚的是恐惧、内疚这类感受；extenuate 只用于过错，指用情有可原的理由减轻罪责，说不了身体的疼。"
+    },
+    {
+      "zh": "会议吵成一团，他全程没提高过一次音量。",
+      "target": "没提高过一次音量",
+      "en": "The call turned into a shouting match and he kept perfect decorum, never once raising his voice.",
+      "order": [
+        "decorum",
+        "propriety",
+        "amenity"
+      ],
+      "why": "decorum 说的是场合上的仪态得体、不失态，常搭 maintain decorum；propriety 说的是合乎公认规范的正当性，评的是该不该做而不是好不好看；amenity 绝大多数场合指健身房、洗衣房这类便利设施，礼节义极少露面。"
+    },
+    {
+      "zh": "看到自己争了三次的功能真的上线，她心里很受用。",
+      "target": "心里很受用",
+      "en": "It gratified her to see the feature she had fought for three times finally ship.",
+      "order": [
+        "gratify",
+        "assuage",
+        "appease"
+      ],
+      "why": "gratify 给的是愉悦与满足感，宾语是人或人的心愿，常用 it gratified her to…；assuage 缓和的是恐惧、内疚这类不快的情绪；appease 是靠让步换对方消气，往往带姑息意味。三者只在『满足』这个中文词上重合。"
+    },
+    {
+      "zh": "仿版球鞋铺满市场，限量这块招牌一夜就掉了价。",
+      "target": "掉了价",
+      "en": "Knockoffs flooding the market debased the brand's whole limited-edition pitch overnight.",
+      "order": [
+        "debase",
+        "disparage",
+        "belittle"
+      ],
+      "why": "debase 降低的是价值、品质或品格，宾语常是货币、品牌、语言这类事物；disparage 是开口贬损某人某物，重在言语；belittle 是把对方的成绩说得无足轻重，重在轻视。"
+    },
+    {
+      "zh": "测试结果出来，证明她当初的坚持是对的。",
+      "target": "证明她当初的坚持是对的",
+      "en": "The test results vindicated her insistence on rebuilding the checkout flow.",
+      "order": [
+        "vindicate",
+        "corroborate",
+        "substantiate"
+      ],
+      "why": "vindicate 是事后证明某人当初的判断或坚持是对的，含洗清质疑的意味；corroborate 是用另一份独立证据去佐证已有的说法；substantiate 是为一个还没站住的主张拿出证据来。"
+    },
+    {
+      "zh": "半栋楼的人都说要搬走，房东对涨租还是一步不让。",
+      "target": "一步不让",
+      "en": "Half the building threatened to leave and the landlord stayed obdurate about the increase.",
+      "order": [
+        "obdurate",
+        "obstinate",
+        "refractory"
+      ],
+      "why": "obdurate 强调在恳求与压力面前铁石心肠，重点是不为所动；obstinate 只说固执，不预设有人在施压；refractory 现代主要用于医学，指对治疗无反应。"
+    },
+    {
+      "zh": "咖啡一滴一滴透过滤纸往下渗，他盯着收件箱发呆。",
+      "target": "透过滤纸往下渗",
+      "en": "The coffee percolated through the filter while he stared at his inbox.",
+      "order": [
+        "percolate",
+        "permeate",
+        "pervade"
+      ],
+      "why": "percolate 是液体一点点滤过多孔材料的具体动作，也用于消息慢慢渗开；permeate 是扩散并遍及整体，强调铺满；pervade 强调走到哪儿都能感觉到，宾语多是气味、氛围这类可感知的东西。"
+    },
+    {
+      "zh": "她光是通勤路上，一周就能听完三本书。",
+      "target": "一周就能听完三本书",
+      "en": "She is a voracious reader, finishing three audiobooks a week on her commute alone.",
+      "order": [
+        "voracious",
+        "acquisitive"
+      ],
+      "extra": [
+        "insatiable"
+      ],
+      "why": "voracious 本义是食量惊人，引申为对某事如饥似渴，最常搭 reader、appetite；acquisitive 说的是占有欲，想把东西买下来、攒起来，跟读得多完全是两码事。"
+    },
+    {
+      "zh": "她反对开放式改造的态度强烈到全场安静了一秒。",
+      "target": "态度强烈到全场安静",
+      "en": "Her objection to the open-office plan was vehement enough that the room went quiet for a second.",
+      "order": [
+        "vehement",
+        "acrimonious"
+      ],
+      "extra": [
+        "emphatic"
+      ],
+      "why": "vehement 形容表达的强度，一个人说得又强又有力，宾语是 objection、denial 这类表态；acrimonious 形容争执本身的气氛尖酸带怨恨，修饰 divorce、debate，不用来夸一个人态度坚决。"
+    },
+    {
+      "zh": "那个实习生比谁都早看出演示里的定价漏洞。",
+      "target": "比谁都早看出",
+      "en": "The astute intern spotted the pricing bug in the demo before anyone senior did.",
+      "order": [
+        "astute",
+        "adroit"
+      ],
+      "extra": [
+        "perceptive"
+      ],
+      "why": "astute 说的是判断力：看得准，能从形势里看出别人没看到的东西；adroit 说的是手法：把一件难办的事处理得漂亮利落，重点在做得好而不在看得准。"
+    },
+    {
+      "zh": "咖啡师眼睛都没往下看，手上就拉出一朵完整的叶子。",
+      "target": "眼睛都没往下看",
+      "en": "The barista's deft hands poured a perfect rosetta without her even looking down.",
+      "order": [
+        "deft",
+        "adroit"
+      ],
+      "extra": [
+        "nimble"
+      ],
+      "why": "deft 形容动作本身干净利落、快而准，多用于手上的活；adroit 更常形容处理局面的灵巧——把一场难开的会办得漂亮，重点在应对而不在手速。"
+    },
+    {
+      "zh": "那个酒保只见过一次就记住了你点什么，还问你这周怎么样。",
+      "target": "还问你这周怎么样",
+      "en": "The genial bartender remembered your order after one visit and always asked about your week.",
+      "order": [
+        "genial",
+        "agreeable"
+      ],
+      "extra": [
+        "affable"
+      ],
+      "why": "genial 形容待人的温度：热络、亲切，让人如沐春风，只能形容人；agreeable 范围宽得多，可以说事物令人愉快，也可以说某人点头答应，唯独说不出这种主动的热络。"
+    },
+    {
+      "zh": "限时特惠只是个花招，那个折扣码半年来天天有效。",
+      "target": "只是个花招",
+      "en": "The limited-time banner is pure artifice; the discount code has worked every day for six months.",
+      "order": [
+        "artifice",
+        "machination"
+      ],
+      "extra": [
+        "gimmick"
+      ],
+      "why": "artifice 指人为设计的花招、巧饰，未必伤人，常用于营销话术与表演；machination 几乎总是复数，指暗中策划、意在害人的阴谋，分量重得多。"
+    },
+    {
+      "zh": "四岁小孩一句你的汤像洗碗池的味道，比什么反馈都直接。",
+      "target": "比什么反馈都直接",
+      "en": "A four-year-old's artless honesty — your soup tastes like the sink — lands harder than any review.",
+      "order": [
+        "artless",
+        "unpretentious"
+      ],
+      "extra": [
+        "guileless"
+      ],
+      "why": "artless 说的是不藏心机、想到什么说什么，天真到有点扎人；unpretentious 说的是不摆架子、不装门面，评的是姿态高不高——一个人可以很世故却依然不摆架子。"
+    },
+    {
+      "zh": "两杯下肚，他见谁都要争两句，最后跟司机吵了起来。",
+      "target": "见谁都要争两句",
+      "en": "Two drinks in, he turned belligerent and ended up shouting at the driver.",
+      "order": [
+        "belligerent",
+        "contentious"
+      ],
+      "extra": [
+        "truculent"
+      ],
+      "why": "belligerent 形容人：一副随时要打架的挑衅姿态；contentious 绝大多数场合形容事：引起争议、容易吵起来的话题，形容人时也只是爱抬杠，不含动手的意味。"
+    },
+    {
+      "zh": "为办婚礼又借了一笔，不到一年就把家底掏空了。",
+      "target": "把家底掏空",
+      "en": "Taking out a second loan for the wedding turned out to be ruinous within a year.",
+      "order": [
+        "ruinous",
+        "cataclysmic"
+      ],
+      "extra": [
+        "crippling"
+      ],
+      "why": "ruinous 强调把人拖垮、尤其是经济上倾家荡产，规模可以只涉及一个家庭；cataclysmic 指突如其来的剧变与大灾难，量级是时代、市场、地质事件。"
+    },
+    {
+      "zh": "人事要因为一次逾期开掉实习生，组长私下替他求了情。",
+      "target": "替他求了情",
+      "en": "When HR moved to fire the intern, the team lead interceded quietly and got him a second chance.",
+      "order": [
+        "intercede",
+        "conciliate"
+      ],
+      "extra": [
+        "mediate"
+      ],
+      "why": "intercede 是替第三方向有权的人开口求情，说话的人自己不在争端里；conciliate 是安抚对立的双方、把关系修好，做的人通常就站在冲突中间。"
+    },
+    {
+      "zh": "这份文档把谁批什么划得清清楚楚，工单再没在半路卡住。",
+      "target": "划得清清楚楚",
+      "en": "The onboarding doc delineates exactly who approves what, so no ticket sits in limbo.",
+      "order": [
+        "delineate",
+        "elucidate"
+      ],
+      "extra": [
+        "demarcate"
+      ],
+      "why": "delineate 是把界线精确划出来——谁负责哪一段、范围到哪儿为止，重点在边界清楚；elucidate 是把一件难懂的事解释明白，重点在让人听懂，不涉及划分。"
+    },
+    {
+      "zh": "他们还在医院，婆婆就把婴儿房重摆了一遍，说是帮忙。",
+      "target": "说是帮忙",
+      "en": "His overbearing mother-in-law rearranged the whole nursery while they were still at the hospital.",
+      "order": [
+        "overbearing",
+        "domineering"
+      ],
+      "extra": [
+        "intrusive"
+      ],
+      "why": "overbearing 强调压迫感：不请自来、不给别人留余地，做的人往往自认是好意；domineering 强调支配欲：明确要把别人管住、按自己的意思来，多出现在有权力关系的场合。"
+    },
+    {
+      "zh": "接零活的人常常这个月赚得不错，接下来六周一单都没有。",
+      "target": "一单都没有",
+      "en": "Gig work leaves people in a precarious spot: a good month, then nothing for six weeks.",
+      "order": [
+        "precarious",
+        "erratic"
+      ],
+      "extra": [
+        "insecure"
+      ],
+      "why": "precarious 说的是随时会塌：处境不稳、没有安全垫，重点是风险；erratic 说的是没规律：忽高忽低、捉摸不定，可以毫无危险，比如一个人的作息。"
+    },
+    {
+      "zh": "客户的修改意见细到把两天的活拖成了三周。",
+      "target": "修改意见细到",
+      "en": "The client's exacting revision notes turned a two-day mockup into a three-week ordeal.",
+      "order": [
+        "exacting",
+        "exigent"
+      ],
+      "extra": [
+        "punctilious"
+      ],
+      "why": "exacting 说的是要求高、耗心力，修饰工作、标准、人；exigent 说的是紧急、迫在眉睫，管的是时间而不是标准——两个词只是长得像，意思并不挨着。"
+    },
+    {
+      "zh": "服务器凌晨两点崩了，整组人就地开了个临时的会。",
+      "target": "临时的会",
+      "en": "The whole team ended up in an impromptu meeting the moment the server crashed at two in the morning.",
+      "order": [
+        "impromptu",
+        "extemporaneous"
+      ],
+      "extra": [
+        "ad-lib"
+      ],
+      "why": "impromptu 说的是没安排、临时起意，可以修饰会议、演出、聚会，日常常用；extemporaneous 几乎只用于演讲——不看讲稿地讲，正式得多，说不出临时开个会。"
+    },
+    {
+      "zh": "通勤的人低声嘀咕着晚点，却没人真的下车另找路线。",
+      "target": "低声嘀咕",
+      "en": "Commuters grumbled about the delay, but nobody actually stepped off to find another route.",
+      "order": [
+        "grumble",
+        "grouse"
+      ],
+      "extra": [
+        "mutter"
+      ],
+      "why": "grumble 是低声嘀咕、含含糊糊地表达不满，声音小动作也小；grouse 是持续地抱怨同一件事，抱怨得更明白也更久，但同样停留在嘴上。"
+    },
+    {
+      "zh": "客户提第四轮修改，他叹了口气把笔记本一合。",
+      "target": "把笔记本一合",
+      "en": "He gave a petulant sigh and shut his laptop when the client asked for a fourth round.",
+      "order": [
+        "petulant",
+        "headstrong"
+      ],
+      "extra": [
+        "sulky"
+      ],
+      "why": "petulant 是为小事使性子、闹脾气，带孩子气，重点在情绪；headstrong 是一意孤行，非要按自己的意思做，重点在意志，未必生气。"
+    },
+    {
+      "zh": "工会在医保这条上寸步不让，罢工拖进了第三周。",
+      "target": "寸步不让",
+      "en": "The union stayed intransigent on healthcare and the strike ran into a third week.",
+      "order": [
+        "intransigent",
+        "headstrong"
+      ],
+      "extra": [
+        "unyielding"
+      ],
+      "why": "intransigent 用于谈判与立场：拒绝妥协、谈不拢，主语常是工会、党派、代表团；headstrong 说的是个人性格上的一意孤行，多用于孩子和年轻人，跟谈判桌无关。"
+    },
+    {
+      "zh": "找来一个通两种方言的翻译，语言就不再是谈判的障碍。",
+      "target": "不再是谈判的障碍",
+      "en": "Language stopped being an impediment once we brought in a translator fluent in both dialects.",
+      "order": [
+        "impediment",
+        "hindrance"
+      ],
+      "extra": [
+        "obstacle"
+      ],
+      "why": "impediment 指挡住去路、让事情根本做不成的障碍，正式，常搭 language / speech / legal；hindrance 指拖慢进度的麻烦，事情还做得成，只是变慢。"
+    },
+    {
+      "zh": "人事一封邮件都没发，整组人已经感觉到要裁员了。",
+      "target": "已经感觉到要裁员",
+      "en": "The team could feel the impending layoffs before HR sent a single email.",
+      "order": [
+        "impending",
+        "imminent"
+      ],
+      "extra": [
+        "looming"
+      ],
+      "why": "impending 强调那种笼罩下来的预感，坏事还没来，气氛已经变了；imminent 强调时间上马上就到，是个中性的时间判断，可以用于航班延误这种不带压迫感的事。"
+    },
+    {
+      "zh": "她说了三次不找工作，招聘的人还是天天来私信。",
+      "target": "天天来私信",
+      "en": "Recruiters kept importuning her long after she had said three times that she was not looking.",
+      "order": [
+        "importune",
+        "persecute"
+      ],
+      "extra": [
+        "pester"
+      ],
+      "why": "importune 是死缠烂打地反复请求，目的是想让你答应某件事；persecute 是因族群、信仰或立场而系统性地迫害打压，分量重得多，不用来说推销和骚扰。"
+    },
+    {
+      "zh": "市中心的拥堵治不动了，干脆把两条车道改成公交专用。",
+      "target": "治不动了",
+      "en": "Downtown congestion had become so intractable that the city turned two lanes into a bus corridor.",
+      "order": [
+        "intractable",
+        "recalcitrant"
+      ],
+      "extra": [
+        "insoluble"
+      ],
+      "why": "intractable 的典型宾语是问题：棘手、久拖不决、怎么治都治不动；recalcitrant 的宾语是有意志的对象——不服管教的人，或被拟人化的机器，重点是抗拒管束。"
+    },
+    {
+      "zh": "连熬三个通宵之后，办公室里那点感冒她一沾就中。",
+      "target": "一沾就中",
+      "en": "After three all-nighters she was susceptible to whatever cold was going around the office.",
+      "order": [
+        "susceptible",
+        "malleable"
+      ],
+      "extra": [
+        "vulnerable"
+      ],
+      "why": "susceptible 是易受侵害：容易被传染、被说服、被影响，后面常接 to，重点在挡不住；malleable 是可塑造：像金属一样能被敲打成形，形容人时指性格还没定型，是中性甚至正面的。"
+    },
+    {
+      "zh": "那段脱口秀开场十分钟就因为用词被打了标记。",
+      "target": "因为用词被打了标记",
+      "en": "The comedian's set was flagged for obscene language within the first ten minutes.",
+      "order": [
+        "obscene",
+        "unsavory"
+      ],
+      "extra": [
+        "profane"
+      ],
+      "why": "obscene 主要指淫秽下流，触犯的是公序良俗的底线，也可引申指数额离谱到不体面；unsavory 是让人隐隐反感、疑心有猫腻，说的是名声与勾当见不得光，含蓄得多。"
+    },
+    {
+      "zh": "一走进纪念馆主厅，参观的人自己就安静肃穆下来。",
+      "target": "安静肃穆下来",
+      "en": "Visitors turn reverent and quiet the moment they step into the memorial's main hall.",
+      "order": [
+        "reverent",
+        "pious"
+      ],
+      "extra": [
+        "solemn"
+      ],
+      "why": "reverent 说的是流露出的敬意与肃穆，对象可以是纪念馆、逝者、一门手艺，不必与宗教有关；pious 专指笃信宗教、按教规生活，用来形容参观者就不对了。"
+    },
+    {
+      "zh": "打印机偏在截止前不听使唤，四十页报告卡在第一页。",
+      "target": "不听使唤",
+      "en": "The printer turned recalcitrant right before the deadline, jamming on page one of forty.",
+      "order": [
+        "recalcitrant",
+        "refractory"
+      ],
+      "extra": [
+        "balky"
+      ],
+      "why": "recalcitrant 指抗拒管束、怎么都不配合，可以说人，也常拟人化地说机器；refractory 在现代英语里九成用于医学——对治疗无反应的疾病，日常说一台打印机会显得很怪。"
+    },
+    {
+      "zh": "他连着一个月每天发早安，她才终于也回了一句。",
+      "target": "也回了一句",
+      "en": "He texted good morning every day for a month before she finally reciprocated.",
+      "order": [
+        "reciprocate",
+        "requite"
+      ],
+      "extra": [
+        "repay"
+      ],
+      "why": "reciprocate 是以同样的方式回应对方的举动，日常常用，主动语态自然；requite 更书面也更窄，几乎只活在 unrequited love 这个搭配里。"
+    },
+    {
+      "zh": "食品统一收一档销售税，收银员掏的比例反而比老板高。",
+      "target": "比例反而比老板高",
+      "en": "A flat grocery tax is deeply regressive: the cashier pays a bigger share than the owner.",
+      "order": [
+        "regressive",
+        "retrograde"
+      ],
+      "extra": [
+        "inequitable"
+      ],
+      "why": "regressive 在经济语境里有个固定义：累退的——收入越低负担比例越高的税制；retrograde 说的是方向上的倒退，一步退回从前，评的是进程而不是分配。"
+    },
+    {
+      "zh": "那位工程师专门请来盯整座桥的施工，从浇筑盯到验收。",
+      "target": "从浇筑盯到验收",
+      "en": "The site engineer was hired to superintend the bridge from the foundation pour to final inspection.",
+      "order": [
+        "superintend",
+        "wrangle"
+      ],
+      "extra": [
+        "oversee"
+      ],
+      "why": "superintend 是正式的监督管理：有职责在身，从头盯到尾，主语常是工程师、监理、主管；wrangle 的日常主力义其实是激烈争论，作管理时也带着费劲驾驭的意味。"
+    },
+    {
+      "zh": "总裁辞职，半个领导层跟着走，公司经历了一场剧变。",
+      "target": "一场剧变",
+      "en": "The company went through a massive upheaval after the CEO resigned and half the leadership followed.",
+      "order": [
+        "upheaval",
+        "turmoil"
+      ],
+      "extra": [
+        "overhaul"
+      ],
+      "why": "upheaval 强调突如其来的巨大变动，格局被整个掀翻，是事件；turmoil 强调持续的纷乱与不安，是状态——收件箱可以陷入 turmoil，但那不是一场 upheaval。"
     }
   ]
 }

@@ -14,10 +14,18 @@ Measured over the 523-word library, they are right, and it is structural:
 
 | | |
 |---|---|
-| words sharing a Chinese gloss fragment with another word | **192 / 523 = 36.7%** |
-| Chinese gloss fragments claimed by more than one word | 126 |
+| words sharing a Chinese gloss fragment with another word | **148 / 523 = 28.3%** |
+| Chinese gloss fragments claimed by more than one word | 97 |
 | covered words having exactly **one** 回想 scenario | 344 of 398 (86%) |
 | words with no 回想 entry point at all | 125 |
+
+**Correction.** The first pass at this reported 192 words / 36.7%, and that
+number is wrong. It split glosses on parentheses as well as on punctuation,
+so `(医学)扭转` contributed the fragment `医学` and collided with seven
+unrelated medical entries. Stripping the parenthetical qualifier before
+splitting — a qualifier is not a meaning — gives the figures above. The
+conclusion is unchanged and the named examples are all real collisions; the
+magnitude is smaller than first claimed.
 
 `减轻` points at alleviate, assuage and extenuate. `满足` points at assuage,
 gratify and appease. `渗透` points at percolate, pervade and permeate.
@@ -154,13 +162,20 @@ by more than one word, one sense group that forces the distinction. `减轻`
 becomes a single 排序 question over alleviate / assuage / extenuate, whose
 members are each other's natural distractors.
 
-126 fragments collide, but not all are meanings. `医学`, `法律`, `正式` and
-similar are domain and register markers that happen to sit inside a gloss —
-`(医学)扭转` shares `医学` with seven other entries and shares no meaning with
-any of them. Those are filtered out, not authored around. The remainder is
-the batch, and any cluster whose ranking cannot be made unarguable from a
-member's own example sentence is skipped: `docs/superpowers/HANDOFF.md` and
-the word-content skill both say an arguable answer key is worse than no
+Two filters decide what is authorable, and both were found by trying:
+
+- **Parenthetical qualifiers are not meanings.** `医学`, `法律`, `正式` are
+  domain and register markers that happen to sit inside a gloss. Stripping
+  them is what turns 126 apparent collisions into 97 real ones.
+- **The validator ranks on `meanings[0].pos`**, the entry's *primary* part
+  of speech, so a cluster held together by a member's secondary sense can
+  still be unaskable. `有害的` looks like four adjectives — detrimental,
+  inimical, malignant and `malign`, which is primarily a verb. Nine
+  clusters fail this way and are dropped, not worked around.
+
+Any cluster whose ranking cannot be made unarguable from a member's own
+example sentence is skipped as well: `docs/superpowers/HANDOFF.md` and the
+word-content skill both say an arguable answer key is worse than no
 question, and this session already dropped two groups on that rule.
 
 ## Testing

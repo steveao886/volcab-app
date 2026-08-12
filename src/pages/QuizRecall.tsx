@@ -39,9 +39,11 @@ type Stage = 'commit' | 'hint' | 'answer' | 'revealed'
  *   only way to report it was 想不起来, which is simply false: the meaning
  *   *was* available, the word was not.
  * - `hint-hit`: the English definition unlocked it. The concept is learned;
- *   what failed is the Chinese-side handle — measured at 36.7% of the
- *   library sharing a gloss fragment with another entry, that is a content
- *   fact, not a study failure.
+ *   what failed is the Chinese-side handle — 148 of 523 words (28.3%) share
+ *   a Chinese gloss fragment with another entry, so that is a content fact,
+ *   not a study failure. Counted with parenthetical qualifiers stripped
+ *   first: leaving them in scores `(医学)扭转` as sharing a meaning with
+ *   seven unrelated entries and inflates the figure to 36.7%.
  * - `hint-miss`: even reading the definition, the reach was for a
  *   confusable. The sharpest finding the mode can produce.
  */
