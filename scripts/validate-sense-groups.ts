@@ -213,3 +213,22 @@ if (errors.length > 0) {
 // "not asked", which is the correct failure.
 const covered = new Set(data.groups.flatMap((g: { order: string[] }) => g.order))
 console.log(`senseGroups: ${data.groups.length} groups OK, covering ${covered.size} words`)
+
+// The long-tail target report. Reported, never enforced: a target is the
+// answer word's Chinese rendering, and how long that is depends on the word
+// — `atomic` genuinely needs 要么都成功，要么都不生效 (12), while `alleviate`
+// needs 减轻 (2). No length rule can tell the two apart, so this prints the
+// tail and asks a human to read it.
+//
+// The threshold is p95 of the 312 groups that set the convention (mean 3.1,
+// p50 3, p95 5), so a normal corpus shows a handful of entries here. A batch
+// that shipped at mean 6.1 — clauses marked instead of words, caught by the
+// user on the first question they saw — would have put 20+ lines on screen.
+const LONG_TARGET = 5
+const long = data.groups
+  .map((g: { target?: string; order: string[] }, i: number) => ({ g, i }))
+  .filter(({ g }: { g: { target?: string } }) => (g.target?.length ?? 0) > LONG_TARGET)
+if (long.length > 0) {
+  console.log(`\n${long.length} target(s) longer than ${LONG_TARGET} characters — check each marks only what its answer word says, not the clause around it:`)
+  for (const { g, i } of long) console.log(`  [${i}] ${g.order[0]}: ${g.target}`)
+}

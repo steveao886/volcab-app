@@ -4193,8 +4193,8 @@
       "why": "voluptuous 指丰满而带感官魅力,也可形容音乐或色彩的浓艳;curvaceous 只说曲线明显;full-figured 是中性委婉的体型描述;statuesque 强调像雕像般高大端庄。"
     },
     {
-      "zh": "为了让抗议的居民不再上门，市政厅答应了他们所有条件。",
-      "target": "答应了他们所有条件",
+      "zh": "市政厅答应了所有条件，把上门抗议的居民安抚了下去。",
+      "target": "安抚了下去",
       "en": "The council appeased the protesters by agreeing to every demand on their list, and the doorstep visits stopped.",
       "order": [
         "appease",
@@ -4204,8 +4204,8 @@
       "why": "appease 的核心是用实质让步换对方消停，常带姑息的贬义；placate 只求把眼前的怒气压下去，未必付出代价；conciliate 是主动修好、把对立双方拉回谈判桌，重点在化解关系。"
     },
     {
-      "zh": "他连遮掩都懒得做，当着全组的面把功劳记到自己头上。",
-      "target": "连遮掩都懒得做",
+      "zh": "他毫不遮掩地当着全组的面把功劳记到自己头上。",
+      "target": "毫不遮掩",
       "en": "It was a blatant grab for credit, made in front of the whole team without even a pretense of modesty.",
       "order": [
         "blatant",
@@ -4216,7 +4216,7 @@
     },
     {
       "zh": "只要各方都点头，我今晚就把新排期发给客户。",
-      "target": "各方都点头",
+      "target": "都点头",
       "en": "If everyone is agreeable, I can send the client the revised schedule tonight.",
       "order": [
         "agreeable"
@@ -4229,9 +4229,9 @@
       "sense": 1
     },
     {
-      "zh": "新同事乐意跟大家一起吃午饭，周末却只想一个人待着。",
-      "target": "乐意跟大家一起吃午饭",
-      "en": "The new hire is sociable enough over lunch, then vanishes into a weekend nobody hears about.",
+      "zh": "新同事挺爱跟人来往，周末却只想一个人待着。",
+      "target": "爱跟人来往",
+      "en": "The new hire is sociable enough, then vanishes into a weekend nobody hears about.",
       "order": [
         "sociable",
         "gregarious",
@@ -4240,8 +4240,8 @@
       "why": "sociable 是中性偏轻的评价：愿意与人相处、场合上也处得来，可以只限于工作日的午饭；gregarious 是天性层面的爱扎堆，人越多越亢奋，与这里的『周末只想独处』直接矛盾；genial 说的是待人的温度，答不了『愿不愿意跟人一起』这个问题。"
     },
     {
-      "zh": "他挑了靠厨房的角落座位，好让自己不被人注意到。",
-      "target": "不被人注意到",
+      "zh": "他挑了靠厨房的角落座位，好让自己不显眼。",
+      "target": "不显眼",
       "en": "He took the corner table by the kitchen, where he could stay inconspicuous until the interview was over.",
       "order": [
         "inconspicuous",
@@ -4253,8 +4253,8 @@
       "why": "inconspicuous 说的是客观上不引人注意，重点在自己不被看见；unobtrusive 的重点是不打扰别人——人在场、也被看见，只是不碍事。"
     },
     {
-      "zh": "没人提起她的口音，他却当众学了一遍。",
-      "target": "当众学了一遍",
+      "zh": "没人提起她的口音，他当众学了一遍，多余又失礼。",
+      "target": "多余又失礼",
       "en": "Mocking her accent in front of everyone was uncalled-for, and the silence that followed said so.",
       "order": [
         "uncalled-for",
@@ -4293,7 +4293,7 @@
     },
     {
       "zh": "她整场庭审记了满满一本笔记，其中三条后来定了案。",
-      "target": "满满一本笔记",
+      "target": "满满一本",
       "en": "She took copious notes through the whole deposition, and three of them ended up deciding the case.",
       "order": [
         "copious",
@@ -4305,8 +4305,8 @@
       "why": "copious 强调量大到充裕、记不完用不完，最常搭笔记、细节、数据；profuse 强调不断涌出、过量到近乎铺张，典型搭配是道歉、出汗、流血，不用来形容笔记多。"
     },
     {
-      "zh": "被问到丢掉的合同时，他只耸了耸肩，好像那不算什么。",
-      "target": "只耸了耸肩",
+      "zh": "被问到丢掉的合同，他耸耸肩，一副毫不上心的样子。",
+      "target": "毫不上心",
       "en": "Asked about the lost contract, he gave a nonchalant shrug, as if the quarter belonged to somebody else.",
       "order": [
         "nonchalant",
@@ -4317,7 +4317,7 @@
     },
     {
       "zh": "纪录片翻出了创始人早年那段见不得光的经历。",
-      "target": "见不得光的经历",
+      "target": "见不得光",
       "en": "The documentary dug up an unsavory chapter of the founder's early career that the prospectus had skipped.",
       "order": [
         "unsavory",
@@ -4330,7 +4330,7 @@
     },
     {
       "zh": "她对开放式办公室的排斥强到宁可少拿一点钱换一扇门。",
-      "target": "对开放式办公室的排斥",
+      "target": "排斥",
       "en": "Her aversion to open-plan offices was strong enough that she took less money for a job with a door.",
       "order": [
         "aversion",
@@ -4343,7 +4343,7 @@
     },
     {
       "zh": "那个部门封闭到别的楼层提个好点子都像是在指责他们。",
-      "target": "封闭到",
+      "target": "封闭",
       "en": "The department had grown so insular that a good idea from another floor was treated as an accusation.",
       "order": [
         "insular"
@@ -4355,8 +4355,8 @@
       "why": "insular 的字面是『岛』，形容一个圈子与外界隔绝、对外来的人和想法一概排斥，可修饰部门、社区、文化，重点是封闭本身。"
     },
     {
-      "zh": "这门课把人类同属一个共同体的主张一路追溯到古希腊。",
-      "target": "人类同属一个共同体",
+      "zh": "这门课把世界主义一路追溯到古希腊的犬儒学派。",
+      "target": "世界主义",
       "en": "The seminar traced cosmopolitanism back to a Greek who called himself a citizen of the world.",
       "order": [
         "cosmopolitanism"
@@ -4407,8 +4407,8 @@
       "why": "acquiescence 是不出声的接受：不再争辩、勉强认了，重点在『没有反对』而不是积极赞成，常搭 tacit acquiescence。"
     },
     {
-      "zh": "新升降桌治不好腰痛，但把疼痛压到能撑完一天。",
-      "target": "把疼痛压到能撑完一天",
+      "zh": "新升降桌治不好腰痛，但把那股疼减轻了不少。",
+      "target": "减轻",
       "en": "The new standing desk did not cure his back pain, but it alleviated it enough to get through a full day.",
       "order": [
         "alleviate",
@@ -4418,8 +4418,8 @@
       "why": "alleviate 减轻的是疼痛、贫困、拥堵这类客观存在的问题，宾语就是麻烦本身；assuage 安抚的是恐惧、内疚这类感受；extenuate 只用于过错，指用情有可原的理由减轻罪责，说不了身体的疼。"
     },
     {
-      "zh": "会议吵成一团，他全程没提高过一次音量。",
-      "target": "没提高过一次音量",
+      "zh": "会议吵成一团，他全程举止得体，没提高过一次音量。",
+      "target": "举止得体",
       "en": "The call turned into a shouting match and he kept perfect decorum, never once raising his voice.",
       "order": [
         "decorum",
@@ -4430,7 +4430,7 @@
     },
     {
       "zh": "看到自己争了三次的功能真的上线，她心里很受用。",
-      "target": "心里很受用",
+      "target": "很受用",
       "en": "It gratified her to see the feature she had fought for three times finally ship.",
       "order": [
         "gratify",
@@ -4451,8 +4451,8 @@
       "why": "debase 降低的是价值、品质或品格，宾语常是货币、品牌、语言这类事物；disparage 是开口贬损某人某物，重在言语；belittle 是把对方的成绩说得无足轻重，重在轻视。"
     },
     {
-      "zh": "测试结果出来，证明她当初的坚持是对的。",
-      "target": "证明她当初的坚持是对的",
+      "zh": "测试结果替她当初的坚持正了名。",
+      "target": "正了名",
       "en": "The test results vindicated her insistence on rebuilding the checkout flow.",
       "order": [
         "vindicate",
@@ -4462,8 +4462,8 @@
       "why": "vindicate 是事后证明某人当初的判断或坚持是对的，含洗清质疑的意味；corroborate 是用另一份独立证据去佐证已有的说法；substantiate 是为一个还没站住的主张拿出证据来。"
     },
     {
-      "zh": "半栋楼的人都说要搬走，房东对涨租还是一步不让。",
-      "target": "一步不让",
+      "zh": "半栋楼的人都说要搬走，房东对涨租仍不为所动。",
+      "target": "不为所动",
       "en": "Half the building threatened to leave and the landlord stayed obdurate about the increase.",
       "order": [
         "obdurate",
@@ -4474,7 +4474,7 @@
     },
     {
       "zh": "咖啡一滴一滴透过滤纸往下渗，他盯着收件箱发呆。",
-      "target": "透过滤纸往下渗",
+      "target": "往下渗",
       "en": "The coffee percolated through the filter while he stared at his inbox.",
       "order": [
         "percolate",
@@ -4484,8 +4484,8 @@
       "why": "percolate 是液体一点点滤过多孔材料的具体动作，也用于消息慢慢渗开；permeate 是扩散并遍及整体，强调铺满；pervade 强调走到哪儿都能感觉到，宾语多是气味、氛围这类可感知的东西。"
     },
     {
-      "zh": "她光是通勤路上，一周就能听完三本书。",
-      "target": "一周就能听完三本书",
+      "zh": "她读书如饥似渴，光通勤路上一周就听完三本。",
+      "target": "如饥似渴",
       "en": "She is a voracious reader, finishing three audiobooks a week on her commute alone.",
       "order": [
         "voracious",
@@ -4498,7 +4498,7 @@
     },
     {
       "zh": "她反对开放式改造的态度强烈到全场安静了一秒。",
-      "target": "态度强烈到全场安静",
+      "target": "态度强烈",
       "en": "Her objection to the open-office plan was vehement enough that the room went quiet for a second.",
       "order": [
         "vehement",
@@ -4510,8 +4510,8 @@
       "why": "vehement 形容表达的强度，一个人说得又强又有力，宾语是 objection、denial 这类表态；acrimonious 形容争执本身的气氛尖酸带怨恨，修饰 divorce、debate，不用来夸一个人态度坚决。"
     },
     {
-      "zh": "那个实习生比谁都早看出演示里的定价漏洞。",
-      "target": "比谁都早看出",
+      "zh": "那个实习生眼光很准，比谁都早看出定价漏洞。",
+      "target": "眼光很准",
       "en": "The astute intern spotted the pricing bug in the demo before anyone senior did.",
       "order": [
         "astute",
@@ -4523,8 +4523,8 @@
       "why": "astute 说的是判断力：看得准，能从形势里看出别人没看到的东西；adroit 说的是手法：把一件难办的事处理得漂亮利落，重点在做得好而不在看得准。"
     },
     {
-      "zh": "咖啡师眼睛都没往下看，手上就拉出一朵完整的叶子。",
-      "target": "眼睛都没往下看",
+      "zh": "咖啡师手上利落得很，眼睛都没往下看就拉出一朵叶子。",
+      "target": "手上利落",
       "en": "The barista's deft hands poured a perfect rosetta without her even looking down.",
       "order": [
         "deft",
@@ -4536,8 +4536,8 @@
       "why": "deft 形容动作本身干净利落、快而准，多用于手上的活；adroit 更常形容处理局面的灵巧——把一场难开的会办得漂亮，重点在应对而不在手速。"
     },
     {
-      "zh": "那个酒保只见过一次就记住了你点什么，还问你这周怎么样。",
-      "target": "还问你这周怎么样",
+      "zh": "那个酒保待人热络，只见过一次就记住了你点什么。",
+      "target": "待人热络",
       "en": "The genial bartender remembered your order after one visit and always asked about your week.",
       "order": [
         "genial",
@@ -4550,7 +4550,7 @@
     },
     {
       "zh": "限时特惠只是个花招，那个折扣码半年来天天有效。",
-      "target": "只是个花招",
+      "target": "花招",
       "en": "The limited-time banner is pure artifice; the discount code has worked every day for six months.",
       "order": [
         "artifice",
@@ -4562,8 +4562,8 @@
       "why": "artifice 指人为设计的花招、巧饰，未必伤人，常用于营销话术与表演；machination 几乎总是复数，指暗中策划、意在害人的阴谋，分量重得多。"
     },
     {
-      "zh": "四岁小孩一句你的汤像洗碗池的味道，比什么反馈都直接。",
-      "target": "比什么反馈都直接",
+      "zh": "四岁小孩说话不藏心机，一句你的汤像洗碗池的味道。",
+      "target": "不藏心机",
       "en": "A four-year-old's artless honesty — your soup tastes like the sink — lands harder than any review.",
       "order": [
         "artless",
@@ -4575,8 +4575,8 @@
       "why": "artless 说的是不藏心机、想到什么说什么，天真到有点扎人；unpretentious 说的是不摆架子、不装门面，评的是姿态高不高——一个人可以很世故却依然不摆架子。"
     },
     {
-      "zh": "两杯下肚，他见谁都要争两句，最后跟司机吵了起来。",
-      "target": "见谁都要争两句",
+      "zh": "两杯下肚他就一身火气，见谁都要争两句。",
+      "target": "一身火气",
       "en": "Two drinks in, he turned belligerent and ended up shouting at the driver.",
       "order": [
         "belligerent",
@@ -4601,8 +4601,8 @@
       "why": "ruinous 强调把人拖垮、尤其是经济上倾家荡产，规模可以只涉及一个家庭；cataclysmic 指突如其来的剧变与大灾难，量级是时代、市场、地质事件。"
     },
     {
-      "zh": "人事要因为一次逾期开掉实习生，组长私下替他求了情。",
-      "target": "替他求了情",
+      "zh": "人事要因为一次逾期开掉实习生，组长私下替他求情。",
+      "target": "替他求情",
       "en": "When HR moved to fire the intern, the team lead interceded quietly and got him a second chance.",
       "order": [
         "intercede",
@@ -4627,8 +4627,8 @@
       "why": "delineate 是把界线精确划出来——谁负责哪一段、范围到哪儿为止，重点在边界清楚；elucidate 是把一件难懂的事解释明白，重点在让人听懂，不涉及划分。"
     },
     {
-      "zh": "他们还在医院，婆婆就把婴儿房重摆了一遍，说是帮忙。",
-      "target": "说是帮忙",
+      "zh": "他们还在医院，婆婆不由分说把婴儿房重摆了一遍。",
+      "target": "不由分说",
       "en": "His overbearing mother-in-law rearranged the whole nursery while they were still at the hospital.",
       "order": [
         "overbearing",
@@ -4640,8 +4640,8 @@
       "why": "overbearing 强调压迫感：不请自来、不给别人留余地，做的人往往自认是好意；domineering 强调支配欲：明确要把别人管住、按自己的意思来，多出现在有权力关系的场合。"
     },
     {
-      "zh": "接零活的人常常这个月赚得不错，接下来六周一单都没有。",
-      "target": "一单都没有",
+      "zh": "接零活的人处境很悬，这个月赚得不错，下个月一单都没有。",
+      "target": "处境很悬",
       "en": "Gig work leaves people in a precarious spot: a good month, then nothing for six weeks.",
       "order": [
         "precarious",
@@ -4653,8 +4653,8 @@
       "why": "precarious 说的是随时会塌：处境不稳、没有安全垫，重点是风险；erratic 说的是没规律：忽高忽低、捉摸不定，可以毫无危险，比如一个人的作息。"
     },
     {
-      "zh": "客户的修改意见细到把两天的活拖成了三周。",
-      "target": "修改意见细到",
+      "zh": "客户的修改意见极其苛细，两天的活拖成了三周。",
+      "target": "极其苛细",
       "en": "The client's exacting revision notes turned a two-day mockup into a three-week ordeal.",
       "order": [
         "exacting",
@@ -4667,7 +4667,7 @@
     },
     {
       "zh": "服务器凌晨两点崩了，整组人就地开了个临时的会。",
-      "target": "临时的会",
+      "target": "临时的",
       "en": "The whole team ended up in an impromptu meeting the moment the server crashed at two in the morning.",
       "order": [
         "impromptu",
@@ -4692,8 +4692,8 @@
       "why": "grumble 是低声嘀咕、含含糊糊地表达不满，声音小动作也小；grouse 是持续地抱怨同一件事，抱怨得更明白也更久，但同样停留在嘴上。"
     },
     {
-      "zh": "客户提第四轮修改，他叹了口气把笔记本一合。",
-      "target": "把笔记本一合",
+      "zh": "客户提第四轮修改，他一脸不耐烦地把笔记本合上。",
+      "target": "一脸不耐烦",
       "en": "He gave a petulant sigh and shut his laptop when the client asked for a fourth round.",
       "order": [
         "petulant",
@@ -4719,7 +4719,7 @@
     },
     {
       "zh": "找来一个通两种方言的翻译，语言就不再是谈判的障碍。",
-      "target": "不再是谈判的障碍",
+      "target": "障碍",
       "en": "Language stopped being an impediment once we brought in a translator fluent in both dialects.",
       "order": [
         "impediment",
@@ -4731,8 +4731,8 @@
       "why": "impediment 指挡住去路、让事情根本做不成的障碍，正式，常搭 language / speech / legal；hindrance 指拖慢进度的麻烦，事情还做得成，只是变慢。"
     },
     {
-      "zh": "人事一封邮件都没发，整组人已经感觉到要裁员了。",
-      "target": "已经感觉到要裁员",
+      "zh": "人事一封邮件都没发，那场山雨欲来的裁员已经人人有感。",
+      "target": "山雨欲来",
       "en": "The team could feel the impending layoffs before HR sent a single email.",
       "order": [
         "impending",
@@ -4744,8 +4744,8 @@
       "why": "impending 强调那种笼罩下来的预感，坏事还没来，气氛已经变了；imminent 强调时间上马上就到，是个中性的时间判断，可以用于航班延误这种不带压迫感的事。"
     },
     {
-      "zh": "她说了三次不找工作，招聘的人还是天天来私信。",
-      "target": "天天来私信",
+      "zh": "她说了三次不找工作，猎头还是死缠烂打地来私信。",
+      "target": "死缠烂打",
       "en": "Recruiters kept importuning her long after she had said three times that she was not looking.",
       "order": [
         "importune",
@@ -4783,8 +4783,8 @@
       "why": "susceptible 是易受侵害：容易被传染、被说服、被影响，后面常接 to，重点在挡不住；malleable 是可塑造：像金属一样能被敲打成形，形容人时指性格还没定型，是中性甚至正面的。"
     },
     {
-      "zh": "那段脱口秀开场十分钟就因为用词被打了标记。",
-      "target": "因为用词被打了标记",
+      "zh": "那段脱口秀开场十分钟就因为用词下流被打了标记。",
+      "target": "用词下流",
       "en": "The comedian's set was flagged for obscene language within the first ten minutes.",
       "order": [
         "obscene",
@@ -4797,7 +4797,7 @@
     },
     {
       "zh": "一走进纪念馆主厅，参观的人自己就安静肃穆下来。",
-      "target": "安静肃穆下来",
+      "target": "安静肃穆",
       "en": "Visitors turn reverent and quiet the moment they step into the memorial's main hall.",
       "order": [
         "reverent",
@@ -4835,8 +4835,8 @@
       "why": "reciprocate 是以同样的方式回应对方的举动，日常常用，主动语态自然；requite 更书面也更窄，几乎只活在 unrequited love 这个搭配里。"
     },
     {
-      "zh": "食品统一收一档销售税，收银员掏的比例反而比老板高。",
-      "target": "比例反而比老板高",
+      "zh": "这种税制是累退的：食品统一收一档，穷人负担的比例更高。",
+      "target": "累退",
       "en": "A flat grocery tax is deeply regressive: the cashier pays a bigger share than the owner.",
       "order": [
         "regressive",
@@ -4848,8 +4848,8 @@
       "why": "regressive 在经济语境里有个固定义：累退的——收入越低负担比例越高的税制；retrograde 说的是方向上的倒退，一步退回从前，评的是进程而不是分配。"
     },
     {
-      "zh": "那位工程师专门请来盯整座桥的施工，从浇筑盯到验收。",
-      "target": "从浇筑盯到验收",
+      "zh": "那位工程师专门请来监理整座桥的施工，从浇筑到验收。",
+      "target": "监理",
       "en": "The site engineer was hired to superintend the bridge from the foundation pour to final inspection.",
       "order": [
         "superintend",

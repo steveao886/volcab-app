@@ -27,6 +27,25 @@ export interface SenseGroup {
    * Without the mark the question was unanswerable in practice: a sentence
    * carries half a dozen content words and nothing said which one was
    * wanted (user-reported on day one).
+   *
+   * **It is the answer word's Chinese rendering, not the clause around it.**
+   * Every character has to be part of what the word itself says: 没抵住 for
+   * succumb, 立足点 for foothold, 应受谴责 for culpable. Measured over the
+   * 312 groups authored before 2026-08-12, which set the convention: mean
+   * 3.1 characters, p50 3, p95 5.
+   *
+   * A batch of 54 groups broke this and shipped, and the user caught it on
+   * the first question they saw: `alleviate` was marked
+   * 把疼痛压到能撑完一天 — 10 characters bundling the result clause
+   * 能撑完一天, which alleviate does not express. Under a dotted emphasis
+   * mark that reads as "produce all of this in one word", and it cannot be
+   * done. The batch measured mean 6.1 against the corpus's 3.1; retargeted,
+   * it is 3.7.
+   *
+   * Length is the symptom, not the rule — `atomic`'s 要么都成功，要么都不生效
+   * is 12 characters and correct, because the word really does say all of
+   * it. validate-sense-groups reports the long tail rather than capping it,
+   * because only reading each one can tell the two apart.
    */
   target?: string
   /**
