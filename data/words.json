@@ -22718,6 +22718,989 @@
       "etymology": "pro-(向前) + venire(来) → 从哪里来的",
       "sourceNote": "manual",
       "addedAt": "2026-08-08"
+    },
+    {
+      "id": "aversion",
+      "headword": "aversion",
+      "phonetic": "/əˈvɜːrʒən/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "a strong feeling of dislike toward something, or an unwillingness to go near it",
+          "zh": "厌恶,反感;抵触情绪"
+        }
+      ],
+      "examples": [
+        "Her aversion to open-plan offices was so strong that she took a pay cut for a job with a door she could close.",
+        "The fund manager's risk aversion cost the portfolio two years of gains, but it also spared clients the crash.",
+        "He developed a lasting aversion to oat milk after a barista scorched a whole jug of it in front of him.",
+        "Investors read the sudden aversion to chip stocks as a sign that the rate cut was no longer coming.",
+        "My nephew's aversion to anything green on his plate has turned every family dinner into a negotiation."
+      ],
+      "synonyms": [
+        "antipathy",
+        "distaste",
+        "repugnance",
+        "loathing"
+      ],
+      "antonyms": [
+        "liking",
+        "fondness",
+        "penchant",
+        "predilection"
+      ],
+      "collocations": [
+        "a strong aversion to",
+        "have an aversion to",
+        "risk aversion",
+        "aversion therapy"
+      ],
+      "relatedForms": [
+        {
+          "form": "averse",
+          "pos": "adj.",
+          "zh": "厌恶的;反对的"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "ab-(离开) + vertere(转) → 转身避开 → 厌恶",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-09"
+    },
+    {
+      "id": "antipathetic",
+      "headword": "antipathetic",
+      "phonetic": "/ˌæntɪpəˈθetɪk/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "feeling or showing strong dislike for someone or something, or being fundamentally opposed to it",
+          "zh": "极其反感的;强烈抵触的"
+        }
+      ],
+      "examples": [
+        "The new principal was openly antipathetic to anything that smelled like standardized testing, and quietly shelved three district programs.",
+        "Critics called the studio's culture antipathetic to risk, which is why every summer release looked like the last one.",
+        "He was antipathetic toward the whole idea of networking events, yet somehow left with four business cards.",
+        "The committee proved antipathetic to the proposal long before the presenter reached his second slide.",
+        "Her father remained antipathetic to the marriage for a decade, then held the baby and forgot every objection."
+      ],
+      "synonyms": [
+        "averse",
+        "hostile",
+        "unsympathetic",
+        "ill-disposed"
+      ],
+      "antonyms": [
+        "sympathetic",
+        "well-disposed",
+        "receptive"
+      ],
+      "collocations": [
+        "antipathetic to reform",
+        "deeply antipathetic",
+        "antipathetic toward outsiders"
+      ],
+      "relatedForms": [
+        {
+          "form": "antipathy",
+          "pos": "n.",
+          "zh": "反感,厌恶"
+        }
+      ],
+      "usageScore": 3,
+      "etymology": "anti-(反) + pathos(情感) → 情感相斥 → 反感的",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-09"
+    },
+    {
+      "id": "blatant",
+      "headword": "blatant",
+      "phonetic": "/ˈbleɪtənt/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "done openly and without any attempt to hide it, usually of something bad",
+          "zh": "公然的,明目张胆的;毫不掩饰的"
+        }
+      ],
+      "examples": [
+        "The email was a blatant attempt to take credit for work the intern had done over three weekends.",
+        "Fans booed for a full minute after the referee ignored a blatant handball inside the box.",
+        "The listing's photos showed a blatant mismatch with the apartment we walked into on move-in day.",
+        "She called out his blatant disregard for the agenda, and the conference room went very quiet.",
+        "Regulators fined the bank for blatant advertising that promised returns nobody could actually earn."
+      ],
+      "synonyms": [
+        "flagrant",
+        "glaring",
+        "brazen",
+        "barefaced"
+      ],
+      "antonyms": [
+        "subtle",
+        "discreet",
+        "understated",
+        "covert"
+      ],
+      "collocations": [
+        "a blatant lie",
+        "blatant disregard",
+        "blatant violation",
+        "blatantly obvious"
+      ],
+      "relatedForms": [
+        {
+          "form": "blatantly",
+          "pos": "adv.",
+          "zh": "公然地,露骨地"
+        }
+      ],
+      "usageScore": 8,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-09"
+    },
+    {
+      "id": "agreeable",
+      "headword": "agreeable",
+      "phonetic": "/əˈɡriːəbəl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "pleasant, and easy to spend time with or in",
+          "zh": "令人愉快的;和蔼可亲的",
+          "share": 50
+        },
+        {
+          "pos": "adj.",
+          "en": "willing to accept or go along with something",
+          "zh": "欣然同意的;乐意的",
+          "share": 30
+        },
+        {
+          "pos": "adj.",
+          "en": "acceptable; satisfying what is required",
+          "zh": "可接受的;合意的",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "The hotel was nothing special, but the courtyard breakfast made it an unexpectedly agreeable place to spend a week.",
+        "Their new landlord turned out to be an agreeable man who fixed the boiler the same afternoon we called.",
+        "If everyone is agreeable to moving the deadline, I will send the client a revised schedule tonight.",
+        "She was agreeable to almost any restaurant, provided it was within walking distance of the office.",
+        "The terms looked agreeable on paper until our lawyer read the clause about automatic renewal."
+      ],
+      "synonyms": [
+        "pleasant",
+        "amiable",
+        "congenial",
+        "amenable"
+      ],
+      "antonyms": [
+        "disagreeable",
+        "unpleasant",
+        "objectionable",
+        "obstinate"
+      ],
+      "collocations": [
+        "an agreeable surprise",
+        "be agreeable to the terms",
+        "perfectly agreeable",
+        "an agreeable manner"
+      ],
+      "relatedForms": [
+        {
+          "form": "agreeably",
+          "pos": "adv.",
+          "zh": "令人愉快地"
+        },
+        {
+          "form": "agreeableness",
+          "pos": "n.",
+          "zh": "惬意;随和"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "ad-(朝向) + gratus(令人愉悦的) → 合心意的",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-09"
+    },
+    {
+      "id": "blameworthy",
+      "headword": "blameworthy",
+      "phonetic": "/ˈbleɪmwɜːrði/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "deserving to be blamed for something that went wrong",
+          "zh": "该受责备的;有过失的"
+        }
+      ],
+      "examples": [
+        "The report found the contractor blameworthy for skipping two inspections, but stopped short of recommending prosecution.",
+        "He is less blameworthy than the manager who signed off on the numbers without opening the spreadsheet.",
+        "Juries tend to find a distracted driver more blameworthy than one whose brakes simply failed.",
+        "She admitted she was blameworthy for the delay, then spent the weekend rebuilding the schedule anyway.",
+        "The ethics board called the omission blameworthy but not fraudulent, which saved his license and ended his career."
+      ],
+      "synonyms": [
+        "culpable",
+        "guilty",
+        "reprehensible",
+        "at fault"
+      ],
+      "antonyms": [
+        "blameless",
+        "innocent",
+        "faultless"
+      ],
+      "collocations": [
+        "morally blameworthy",
+        "held blameworthy",
+        "blameworthy conduct"
+      ],
+      "relatedForms": [
+        {
+          "form": "blameworthiness",
+          "pos": "n.",
+          "zh": "应受责备;可责性"
+        },
+        {
+          "form": "blameless",
+          "pos": "adj.",
+          "zh": "无可指责的"
+        }
+      ],
+      "usageScore": 4,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-09"
+    },
+    {
+      "id": "preempt",
+      "headword": "preempt",
+      "phonetic": "/priˈempt/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to act first in order to stop something from happening, or to make it irrelevant",
+          "zh": "先发制人地阻止;抢先一步化解",
+          "share": 80
+        },
+        {
+          "pos": "v.",
+          "en": "to take the place of a scheduled broadcast or a prior claim",
+          "zh": "(节目)取代,占先播出;优先取得",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "The company published its own audit on Friday to preempt the leak everyone knew was coming Monday.",
+        "She preempted the obvious objection by putting the cost breakdown on the very first slide.",
+        "Sending the apology before the story ran preempted a week of headlines the PR team had already drafted.",
+        "The city preempted a housing fight by rezoning the corridor while the developers were still hiring lawyers.",
+        "The emergency broadcast preempted the final ten minutes of the game, and the group chat has not forgiven it."
+      ],
+      "synonyms": [
+        "forestall",
+        "head off",
+        "anticipate",
+        "preclude"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "preempt criticism",
+        "preempt a strike",
+        "preempt the question",
+        "preempt regular programming"
+      ],
+      "relatedForms": [
+        {
+          "form": "preemptive",
+          "pos": "adj.",
+          "zh": "先发制人的"
+        },
+        {
+          "form": "preemption",
+          "pos": "n.",
+          "zh": "先发制人;优先购买权"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "pre-(先) + emere(取,买) → 先取一步 → 抢先阻止",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-09"
+    },
+    {
+      "id": "inconspicuous",
+      "headword": "inconspicuous",
+      "phonetic": "/ˌɪnkənˈspɪkjuəs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "not easily noticed, because it does not stand out from what is around it",
+          "zh": "不显眼的;不引人注目的"
+        }
+      ],
+      "examples": [
+        "He chose an inconspicuous table near the kitchen so he could leave the interview without shaking twelve hands.",
+        "The bug lived in an inconspicuous helper function that nobody had opened since the original commit.",
+        "Her tattoo was deliberately inconspicuous, tucked where a rolled sleeve would hide it during client meetings.",
+        "The safe house looked inconspicuous from the road, which was the only feature the agency actually paid for.",
+        "A small, inconspicuous charge appeared on the statement every month until she finally called the bank."
+      ],
+      "synonyms": [
+        "unobtrusive",
+        "discreet",
+        "unassuming",
+        "low-key"
+      ],
+      "antonyms": [
+        "conspicuous",
+        "prominent",
+        "flashy",
+        "ostentatious"
+      ],
+      "collocations": [
+        "remain inconspicuous",
+        "an inconspicuous corner",
+        "look inconspicuous"
+      ],
+      "relatedForms": [
+        {
+          "form": "conspicuous",
+          "pos": "adj.",
+          "zh": "显眼的,惹人注目的"
+        },
+        {
+          "form": "inconspicuously",
+          "pos": "adv.",
+          "zh": "不显眼地"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "in-(不) + con-(共) + specere(看) → 不被看到 → 不显眼",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-09"
+    },
+    {
+      "id": "sociable",
+      "headword": "sociable",
+      "phonetic": "/ˈsoʊʃəbəl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "enjoying the company of other people and easy to be around",
+          "zh": "好交际的,合群的;友好随和的"
+        }
+      ],
+      "examples": [
+        "He is sociable in short bursts, then needs an entire quiet Sunday to recover from a birthday party.",
+        "The office moved to Friday lunches because the new hires were more sociable over food than over Slack.",
+        "Her grandmother stayed sociable well into her nineties, hosting card games that ran past midnight.",
+        "Border collies are sociable enough to greet strangers, but they will herd your guests toward the kitchen.",
+        "A sociable roommate sounded great until the third consecutive weeknight of strangers in the living room."
+      ],
+      "synonyms": [
+        "gregarious",
+        "outgoing",
+        "convivial",
+        "affable"
+      ],
+      "antonyms": [
+        "reclusive",
+        "aloof",
+        "withdrawn",
+        "unsociable"
+      ],
+      "collocations": [
+        "a sociable person",
+        "sociable by nature",
+        "a sociable evening"
+      ],
+      "relatedForms": [
+        {
+          "form": "sociability",
+          "pos": "n.",
+          "zh": "好交际;社交性"
+        },
+        {
+          "form": "unsociable",
+          "pos": "adj.",
+          "zh": "不合群的"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "socius(同伴) + -able → 能与人为伴的 → 好交际的",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-09"
+    },
+    {
+      "id": "copious",
+      "headword": "copious",
+      "phonetic": "/ˈkoʊpiəs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "produced or present in large quantities",
+          "zh": "大量的,丰富的;充裕的"
+        }
+      ],
+      "examples": [
+        "She took copious notes during the deposition, and three of them ended up deciding the case.",
+        "The recipe calls for copious amounts of butter, which is the only reason anyone finishes the tray.",
+        "His copious apologies did nothing to shorten the four hours we spent waiting at the gate.",
+        "The report includes copious detail about the outage but never says who approved the deploy.",
+        "Copious rain in April left the reservoir fuller than it had been in a decade."
+      ],
+      "synonyms": [
+        "abundant",
+        "plentiful",
+        "ample",
+        "profuse"
+      ],
+      "antonyms": [
+        "scant",
+        "sparse",
+        "meager",
+        "scarce"
+      ],
+      "collocations": [
+        "copious notes",
+        "copious amounts of",
+        "copious detail"
+      ],
+      "relatedForms": [
+        {
+          "form": "copiously",
+          "pos": "adv.",
+          "zh": "大量地"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "copia(丰富,充裕) → 大量的",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-09"
+    },
+    {
+      "id": "insular",
+      "headword": "insular",
+      "phonetic": "/ˈɪnsələr/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "closed off from outside ideas and people, and uninterested in them",
+          "zh": "思想狭隘的;与外界隔绝的",
+          "share": 80
+        },
+        {
+          "pos": "adj.",
+          "en": "belonging to or characteristic of an island",
+          "zh": "岛屿的;海岛的",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "The department had grown so insular that a good idea from another floor was treated as an accusation.",
+        "Living in the same six blocks for forty years made him insular in ways he could not hear in his own jokes.",
+        "Critics accused the festival of becoming insular, booking the same twelve bands the founders loved in college.",
+        "An insular engineering culture is how a company ends up shipping its fourth incompatible logging library.",
+        "The survey mapped insular species that exist nowhere but on three volcanic outcrops in the Pacific."
+      ],
+      "synonyms": [
+        "parochial",
+        "narrow-minded",
+        "inward-looking",
+        "provincial"
+      ],
+      "antonyms": [
+        "cosmopolitan",
+        "worldly",
+        "open-minded",
+        "outward-looking"
+      ],
+      "collocations": [
+        "an insular community",
+        "insular thinking",
+        "insular culture"
+      ],
+      "relatedForms": [
+        {
+          "form": "insularity",
+          "pos": "n.",
+          "zh": "狭隘;闭塞"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "insula(岛) → 与外界隔绝 → 思想狭隘的",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-09"
+    },
+    {
+      "id": "cosmopolitanism",
+      "headword": "cosmopolitanism",
+      "phonetic": "/ˌkɑːzməˈpɑːlɪtənɪzəm/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "the belief that all human beings belong to one community, above nation or tribe",
+          "zh": "世界主义(视全人类为一个共同体的思想)",
+          "share": 60
+        },
+        {
+          "pos": "n.",
+          "en": "the quality of being at ease among many cultures; the international character of a place",
+          "zh": "国际化气息;见多识广的世界性",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "The seminar traced cosmopolitanism from Diogenes calling himself a citizen of the world to today's climate treaties.",
+        "Critics argue that cosmopolitanism asks people to love humanity in general while neglecting the neighbors they actually have.",
+        "A wave of nationalist politics has made cosmopolitanism sound naive to voters who once found it obvious.",
+        "Her cosmopolitanism was learned in airport lounges, and it showed in how quickly she could read a room.",
+        "The city sells its cosmopolitanism in tourism ads, then argues about immigration at every council meeting."
+      ],
+      "synonyms": [
+        "internationalism",
+        "globalism",
+        "universalism",
+        "worldliness"
+      ],
+      "antonyms": [
+        "nationalism",
+        "parochialism",
+        "insularity",
+        "provincialism"
+      ],
+      "collocations": [
+        "rooted cosmopolitanism",
+        "cultural cosmopolitanism",
+        "a spirit of cosmopolitanism"
+      ],
+      "relatedForms": [
+        {
+          "form": "cosmopolitan",
+          "pos": "adj.",
+          "zh": "世界性的;见多识广的"
+        }
+      ],
+      "usageScore": 3,
+      "etymology": "kosmos(世界) + polites(公民) → 世界公民 → 世界主义",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-09"
+    },
+    {
+      "id": "intercession",
+      "headword": "intercession",
+      "phonetic": "/ˌɪntərˈseʃən/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "the act of stepping in to plead with someone on another person's behalf",
+          "zh": "代为说情;从中斡旋,调停",
+          "share": 70
+        },
+        {
+          "pos": "n.",
+          "en": "prayer offered on behalf of another person",
+          "zh": "(宗教)代祷",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "Only the ambassador's quiet intercession kept the two delegations at the table past midnight.",
+        "He got the internship through his aunt's intercession, and spent two years proving he deserved it anyway.",
+        "The prisoner's release came after months of intercession by a small human-rights group nobody had heard of.",
+        "Without the union's intercession, the schedule change would have gone through on a Friday afternoon email.",
+        "Her grandmother lit a candle every Sunday and asked for the saint's intercession on behalf of the family."
+      ],
+      "synonyms": [
+        "mediation",
+        "intervention",
+        "advocacy",
+        "entreaty"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "through the intercession of",
+        "quiet intercession",
+        "divine intercession"
+      ],
+      "relatedForms": [
+        {
+          "form": "intercede",
+          "pos": "v.",
+          "zh": "代为说情;调停"
+        },
+        {
+          "form": "intercessor",
+          "pos": "n.",
+          "zh": "说情者;代祷者"
+        }
+      ],
+      "usageScore": 3,
+      "etymology": "inter-(之间) + cedere(走) → 走到两者中间 → 说情",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-09"
+    },
+    {
+      "id": "nonchalant",
+      "headword": "nonchalant",
+      "phonetic": "/ˌnɑːnʃəˈlɑːnt/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "calm and casual about something that would normally cause concern",
+          "zh": "若无其事的;满不在乎的"
+        }
+      ],
+      "examples": [
+        "He was nonchalant about the missed flight until he learned the next one was thirty hours later.",
+        "She gave a nonchalant shrug that fooled everyone except the friend who had watched her rehearse it.",
+        "The goalkeeper's nonchalant clearance rolled straight to a striker who could not believe his luck.",
+        "His nonchalant tone on the call did not match the six drafts of the resignation letter on his desk.",
+        "Teenagers perfect a nonchalant walk past the very person they crossed the whole cafeteria to see."
+      ],
+      "synonyms": [
+        "insouciant",
+        "unconcerned",
+        "casual",
+        "offhand"
+      ],
+      "antonyms": [
+        "anxious",
+        "concerned",
+        "flustered",
+        "earnest"
+      ],
+      "collocations": [
+        "a nonchalant shrug",
+        "nonchalant about",
+        "affect a nonchalant air"
+      ],
+      "relatedForms": [
+        {
+          "form": "nonchalance",
+          "pos": "n.",
+          "zh": "若无其事;漠不关心"
+        },
+        {
+          "form": "nonchalantly",
+          "pos": "adv.",
+          "zh": "若无其事地"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "non-(不) + calere(在意,发热) → 不上心 → 满不在乎",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-09"
+    },
+    {
+      "id": "destitute",
+      "headword": "destitute",
+      "phonetic": "/ˈdestɪtuːt/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "without money, food, or a home; extremely poor",
+          "zh": "赤贫的,一贫如洗的",
+          "share": 80
+        },
+        {
+          "pos": "adj.",
+          "en": "completely lacking something, used with 'of'",
+          "zh": "全然缺乏的(与 of 连用)",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "The fire left two dozen families destitute, sleeping in a school gym while the insurance calls went unanswered.",
+        "He died destitute in a rented room, twelve years after selling the patent that made someone else rich.",
+        "A single hospital bill can leave an uninsured household destitute within a month.",
+        "The charity was founded to house destitute veterans who had fallen through every other program.",
+        "The screenplay is destitute of a single line anyone would repeat on the way out of the theater."
+      ],
+      "synonyms": [
+        "impoverished",
+        "penniless",
+        "indigent",
+        "poverty-stricken"
+      ],
+      "antonyms": [
+        "affluent",
+        "prosperous",
+        "wealthy",
+        "well-off"
+      ],
+      "collocations": [
+        "left destitute",
+        "destitute families",
+        "destitute of ideas"
+      ],
+      "relatedForms": [
+        {
+          "form": "destitution",
+          "pos": "n.",
+          "zh": "赤贫;穷困"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "de-(向下) + statuere(放置) → 被弃置一旁 → 一无所有",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-10"
+    },
+    {
+      "id": "appease",
+      "headword": "appease",
+      "phonetic": "/əˈpiːz/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to calm someone down by giving them what they want",
+          "zh": "安抚,平息(怒气)",
+          "share": 50
+        },
+        {
+          "pos": "v.",
+          "en": "to give in to an aggressor's demands in the hope of avoiding conflict",
+          "zh": "姑息,绥靖(对侵略者让步)",
+          "share": 30
+        },
+        {
+          "pos": "v.",
+          "en": "to satisfy a hunger, thirst, or curiosity",
+          "zh": "满足(饥饿、欲望、好奇心)",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "The airline offered vouchers to appease passengers who had spent the night on terminal floors.",
+        "He rewrote the announcement twice to appease a board that objected to the word restructuring.",
+        "Historians still argue whether the 1938 agreement appeased an aggressor or merely bought a year of rearmament.",
+        "Critics said the compromise appeased the loudest lobby while quietly taxing everyone who had not shown up.",
+        "A cold slice of pizza at two in the morning appeased his hunger enough to get him back to the draft."
+      ],
+      "synonyms": [
+        "placate",
+        "pacify",
+        "mollify",
+        "conciliate"
+      ],
+      "antonyms": [
+        "provoke",
+        "antagonize",
+        "aggravate",
+        "inflame"
+      ],
+      "collocations": [
+        "appease critics",
+        "a policy of appeasement",
+        "appease the gods",
+        "appease one's hunger"
+      ],
+      "relatedForms": [
+        {
+          "form": "appeasement",
+          "pos": "n.",
+          "zh": "安抚;绥靖政策"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "ad-(向) + pax(和平) → 使趋于平和 → 安抚",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-10"
+    },
+    {
+      "id": "acquiescence",
+      "headword": "acquiescence",
+      "phonetic": "/ˌækwiˈesəns/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "acceptance of something without protest, often reluctant or merely passive",
+          "zh": "默许;勉强同意,顺从"
+        }
+      ],
+      "examples": [
+        "The board took her silence as acquiescence, and the merger went to a vote before she could object.",
+        "Years of acquiescence to unpaid overtime ended the day the schedule appeared without a single day off.",
+        "His acquiescence came with a raised eyebrow that everyone in the room understood perfectly.",
+        "The treaty passed through tired acquiescence rather than any real agreement about what it would cost.",
+        "She mistook polite acquiescence for enthusiasm and booked the venue the same afternoon."
+      ],
+      "synonyms": [
+        "compliance",
+        "assent",
+        "consent",
+        "submission"
+      ],
+      "antonyms": [
+        "resistance",
+        "defiance",
+        "dissent",
+        "objection"
+      ],
+      "collocations": [
+        "tacit acquiescence",
+        "acquiescence in a decision",
+        "meet with acquiescence"
+      ],
+      "relatedForms": [
+        {
+          "form": "acquiesce",
+          "pos": "v.",
+          "zh": "默许;勉强同意"
+        },
+        {
+          "form": "acquiescent",
+          "pos": "adj.",
+          "zh": "默许的;顺从的"
+        }
+      ],
+      "usageScore": 4,
+      "etymology": "ad-(向) + quiescere(安静) → 静下来不反对 → 默许",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-10"
+    },
+    {
+      "id": "unsavory",
+      "headword": "unsavory",
+      "phonetic": "/ʌnˈseɪvəri/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "morally offensive or disreputable, and best not looked at too closely",
+          "zh": "不名誉的;令人反感的",
+          "share": 80
+        },
+        {
+          "pos": "adj.",
+          "en": "unpleasant to taste or smell",
+          "zh": "难吃的;气味难闻的",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "The documentary dug up an unsavory chapter of the founder's career that the IPO prospectus had skipped.",
+        "He was fired for unsavory dealings with a supplier whose invoices nobody could match to a delivery.",
+        "The bar attracted an unsavory crowd after midnight, which the owner preferred to call atmosphere.",
+        "Her lawyer warned that the emails contained unsavory details that would look far worse read aloud.",
+        "An unsavory smell from the office fridge finally forced a company-wide amnesty on unlabeled containers."
+      ],
+      "synonyms": [
+        "disreputable",
+        "distasteful",
+        "shady",
+        "sordid"
+      ],
+      "antonyms": [
+        "reputable",
+        "wholesome",
+        "respectable"
+      ],
+      "collocations": [
+        "an unsavory reputation",
+        "unsavory characters",
+        "unsavory details"
+      ],
+      "relatedForms": [
+        {
+          "form": "savory",
+          "pos": "adj.",
+          "zh": "可口的;体面的"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "un-(不) + sapor(味道) → 不合口味 → 令人反感的",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-11"
+    },
+    {
+      "id": "unwarranted",
+      "headword": "unwarranted",
+      "phonetic": "/ʌnˈwɔːrəntɪd/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "not justified by the facts or the situation",
+          "zh": "无正当理由的;毫无根据的"
+        }
+      ],
+      "examples": [
+        "The audit found the layoffs were an unwarranted response to a single bad quarter.",
+        "She called the extra security screening unwarranted, and the airline eventually agreed in writing.",
+        "His confidence in the forecast was unwarranted, as anyone who had read the footnotes could have told him.",
+        "The court ruled the search unwarranted and threw out everything the officers had found in the trunk.",
+        "An unwarranted assumption about the file format cost the team three days of debugging."
+      ],
+      "synonyms": [
+        "unjustified",
+        "groundless",
+        "uncalled-for",
+        "gratuitous"
+      ],
+      "antonyms": [
+        "justified",
+        "warranted",
+        "merited",
+        "deserved"
+      ],
+      "collocations": [
+        "unwarranted intrusion",
+        "an unwarranted assumption",
+        "wholly unwarranted"
+      ],
+      "relatedForms": [
+        {
+          "form": "warranted",
+          "pos": "adj.",
+          "zh": "有正当理由的"
+        }
+      ],
+      "usageScore": 7,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-12"
+    },
+    {
+      "id": "uncalled-for",
+      "headword": "uncalled-for",
+      "phonetic": "/ʌnˈkɔːldˌfɔːr/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "unnecessary and rude, said of a remark or action nobody had any reason to make",
+          "zh": "唐突无礼的;多余而不必要的"
+        }
+      ],
+      "examples": [
+        "His comment about her accent was uncalled-for, and the room's silence made that clear before anyone spoke.",
+        "The review contained an uncalled-for jab at the author's earlier book that had nothing to do with this one.",
+        "She apologized for an uncalled-for email she had sent at midnight after reading the sales numbers.",
+        "Booing a nine-year-old at a school recital is uncalled-for no matter how flat the recorder sounded.",
+        "The coach called the tackle uncalled-for and pulled his own player off the field before the referee could."
+      ],
+      "synonyms": [
+        "gratuitous",
+        "unwarranted",
+        "unjustified",
+        "needless"
+      ],
+      "antonyms": [
+        "warranted",
+        "justified",
+        "deserved",
+        "appropriate"
+      ],
+      "collocations": [
+        "an uncalled-for remark",
+        "completely uncalled-for",
+        "uncalled-for criticism"
+      ],
+      "relatedForms": [],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-12"
     }
   ]
 }

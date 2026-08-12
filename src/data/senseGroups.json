@@ -794,12 +794,12 @@
       "zh": "那句无端的人身攻击让整场辩论失了体面。",
       "target": "无端的",
       "order": [
-        "gratuitous"
+        "gratuitous",
+        "uncalled-for",
+        "unwarranted"
       ],
       "extra": [
-        "uncalled-for",
-        "needless",
-        "unwarranted"
+        "needless"
       ],
       "en": "One gratuitous personal jab cost the whole debate its dignity.",
       "why": "gratuitous 指毫无必要还带冒犯,常搭配 violence、insult;uncalled-for 是口语说法,只说不该说;needless 只讲多余,不含冒犯;unwarranted 强调缺乏正当理由,多用于指控或干预。"
@@ -1998,11 +1998,11 @@
       "zh": "那是一次极其恶劣的违规,监管方直接吊销了执照。",
       "target": "极其恶劣",
       "order": [
-        "egregious"
+        "egregious",
+        "blatant"
       ],
       "extra": [
         "flagrant",
-        "blatant",
         "glaring"
       ],
       "en": "It was an egregious breach, and the regulator pulled the licence outright.",
@@ -2740,10 +2740,10 @@
       "zh": "调查认定承包商在这起事故里应受谴责。",
       "target": "应受谴责",
       "order": [
-        "culpable"
+        "culpable",
+        "blameworthy"
       ],
       "extra": [
-        "blameworthy",
         "at fault",
         "answerable"
       ],
@@ -2894,10 +2894,10 @@
       "zh": "他们提前公布了数据,先一步堵住了外界的猜测。",
       "target": "先一步堵住",
       "order": [
-        "forestall"
+        "forestall",
+        "preempt"
       ],
       "extra": [
-        "preempt",
         "head off",
         "get ahead of"
       ],
@@ -2922,10 +2922,10 @@
       "zh": "他天生爱热闹,一个人待不过半天。",
       "target": "爱热闹",
       "order": [
-        "gregarious"
+        "gregarious",
+        "sociable"
       ],
       "extra": [
-        "sociable",
         "outgoing",
         "convivial"
       ],
@@ -4098,10 +4098,10 @@
       "zh": "被问到亏损时,他一副满不在乎的样子。",
       "target": "满不在乎",
       "order": [
-        "insouciant"
+        "insouciant",
+        "nonchalant"
       ],
       "extra": [
-        "nonchalant",
         "blasé",
         "unbothered"
       ],
@@ -4191,6 +4191,219 @@
       ],
       "en": "The figure in the painting is voluptuous, very much of its period.",
       "why": "voluptuous 指丰满而带感官魅力,也可形容音乐或色彩的浓艳;curvaceous 只说曲线明显;full-figured 是中性委婉的体型描述;statuesque 强调像雕像般高大端庄。"
+    },
+    {
+      "zh": "为了让抗议的居民不再上门，市政厅答应了他们所有条件。",
+      "target": "答应了他们所有条件",
+      "en": "The council appeased the protesters by agreeing to every demand on their list, and the doorstep visits stopped.",
+      "order": [
+        "appease",
+        "placate",
+        "conciliate"
+      ],
+      "why": "appease 的核心是用实质让步换对方消停，常带姑息的贬义；placate 只求把眼前的怒气压下去，未必付出代价；conciliate 是主动修好、把对立双方拉回谈判桌，重点在化解关系。"
+    },
+    {
+      "zh": "他连遮掩都懒得做，当着全组的面把功劳记到自己头上。",
+      "target": "连遮掩都懒得做",
+      "en": "It was a blatant grab for credit, made in front of the whole team without even a pretense of modesty.",
+      "order": [
+        "blatant",
+        "barefaced",
+        "egregious"
+      ],
+      "why": "blatant 的重心是毫不遮掩、当众就做，未必最恶劣；barefaced 专指说谎或无礼时脸都不红，宾语几乎只有谎言和厚颜；egregious 评的是恶劣程度出格，与藏没藏无关。"
+    },
+    {
+      "zh": "只要各方都点头，我今晚就把新排期发给客户。",
+      "target": "各方都点头",
+      "en": "If everyone is agreeable, I can send the client the revised schedule tonight.",
+      "order": [
+        "agreeable"
+      ],
+      "extra": [
+        "amenable",
+        "willing"
+      ],
+      "why": "be agreeable to something 表示点头答应、不反对，是 agreeable 除『令人愉快』之外的第二个活跃义；这一层只出现在人做主语、后接 to 的句式里。"
+    },
+    {
+      "zh": "新同事乐意跟大家一起吃午饭，周末却只想一个人待着。",
+      "target": "乐意跟大家一起吃午饭",
+      "en": "The new hire is sociable enough over lunch, then vanishes into a weekend nobody hears about.",
+      "order": [
+        "sociable",
+        "gregarious",
+        "genial"
+      ],
+      "why": "sociable 是中性偏轻的评价：愿意与人相处、场合上也处得来，可以只限于工作日的午饭；gregarious 是天性层面的爱扎堆，人越多越亢奋，与这里的『周末只想独处』直接矛盾；genial 说的是待人的温度，答不了『愿不愿意跟人一起』这个问题。"
+    },
+    {
+      "zh": "他挑了靠厨房的角落座位，好让自己不被人注意到。",
+      "target": "不被人注意到",
+      "en": "He took the corner table by the kitchen, where he could stay inconspicuous until the interview was over.",
+      "order": [
+        "inconspicuous",
+        "unobtrusive"
+      ],
+      "extra": [
+        "low-key"
+      ],
+      "why": "inconspicuous 说的是客观上不引人注意，重点在自己不被看见；unobtrusive 的重点是不打扰别人——人在场、也被看见，只是不碍事。"
+    },
+    {
+      "zh": "没人提起她的口音，他却当众学了一遍。",
+      "target": "当众学了一遍",
+      "en": "Mocking her accent in front of everyone was uncalled-for, and the silence that followed said so.",
+      "order": [
+        "uncalled-for",
+        "gratuitous"
+      ],
+      "why": "uncalled-for 专门评价一句话或一个举动失礼：没人招惹你却偏要说，是日常口语；gratuitous 更书面，强调本可不必却偏要，多用于影视里多余的暴力与情色；needless 只讲多余，不含冒犯。",
+      "extra": [
+        "needless"
+      ]
+    },
+    {
+      "zh": "只凭一个季度的数字就裁员，审计组认为这反应站不住脚。",
+      "target": "站不住脚",
+      "en": "The auditors called the layoffs an unwarranted response to a single bad quarter.",
+      "order": [
+        "unwarranted",
+        "gratuitous"
+      ],
+      "extra": [
+        "unjustified"
+      ],
+      "why": "unwarranted 的争点是有没有事实支撑，说的是反应或结论站不住脚；gratuitous 的争点是必要性与冒犯性，强调本可不必却偏要，常带道德色彩。"
+    },
+    {
+      "zh": "他打心底排斥这类社交场合，一句话不说也看得出来。",
+      "target": "打心底排斥",
+      "en": "He is antipathetic to networking events in a way that shows even when he says nothing at all.",
+      "order": [
+        "antipathetic"
+      ],
+      "extra": [
+        "averse",
+        "ill-disposed"
+      ],
+      "why": "antipathetic 形容一个人从骨子里排斥某人或某事，是内心状态，可以完全不表现为冲突；它是书面语，多接 to 或 toward，日常口语很少用。"
+    },
+    {
+      "zh": "她整场庭审记了满满一本笔记，其中三条后来定了案。",
+      "target": "满满一本笔记",
+      "en": "She took copious notes through the whole deposition, and three of them ended up deciding the case.",
+      "order": [
+        "copious",
+        "profuse"
+      ],
+      "extra": [
+        "voluminous"
+      ],
+      "why": "copious 强调量大到充裕、记不完用不完，最常搭笔记、细节、数据；profuse 强调不断涌出、过量到近乎铺张，典型搭配是道歉、出汗、流血，不用来形容笔记多。"
+    },
+    {
+      "zh": "被问到丢掉的合同时，他只耸了耸肩，好像那不算什么。",
+      "target": "只耸了耸肩",
+      "en": "Asked about the lost contract, he gave a nonchalant shrug, as if the quarter belonged to somebody else.",
+      "order": [
+        "nonchalant",
+        "insouciant",
+        "apathetic"
+      ],
+      "why": "nonchalant 多描述当下的神态与动作，一个耸肩就够，日常最常用；insouciant 是书面语，带法式气质，形容一贯的性情而不是此刻的反应；apathetic 说的是提不起兴趣、缺乏关心，与这里『装作不在意』的姿态不是一回事。"
+    },
+    {
+      "zh": "纪录片翻出了创始人早年那段见不得光的经历。",
+      "target": "见不得光的经历",
+      "en": "The documentary dug up an unsavory chapter of the founder's early career that the prospectus had skipped.",
+      "order": [
+        "unsavory",
+        "disreputable"
+      ],
+      "extra": [
+        "sordid"
+      ],
+      "why": "unsavory 说的是让人隐隐反感、疑心有猫腻，未必已有定论，可修饰经历、交易、圈子；disreputable 说的是名声已经坏掉、上不了台面，评的是既成的声誉。"
+    },
+    {
+      "zh": "她对开放式办公室的排斥强到宁可少拿一点钱换一扇门。",
+      "target": "对开放式办公室的排斥",
+      "en": "Her aversion to open-plan offices was strong enough that she took less money for a job with a door.",
+      "order": [
+        "aversion",
+        "antipathy"
+      ],
+      "extra": [
+        "distaste"
+      ],
+      "why": "aversion 侧重『一想到就想躲开』，对象可以是食物、风险、场合这类事物，常搭 to；antipathy 更重也更针对人或立场，是发自内心的敌意与厌憎。"
+    },
+    {
+      "zh": "那个部门封闭到别的楼层提个好点子都像是在指责他们。",
+      "target": "封闭到",
+      "en": "The department had grown so insular that a good idea from another floor was treated as an accusation.",
+      "order": [
+        "insular"
+      ],
+      "extra": [
+        "parochial",
+        "inward-looking"
+      ],
+      "why": "insular 的字面是『岛』，形容一个圈子与外界隔绝、对外来的人和想法一概排斥，可修饰部门、社区、文化，重点是封闭本身。"
+    },
+    {
+      "zh": "这门课把人类同属一个共同体的主张一路追溯到古希腊。",
+      "target": "人类同属一个共同体",
+      "en": "The seminar traced cosmopolitanism back to a Greek who called himself a citizen of the world.",
+      "order": [
+        "cosmopolitanism"
+      ],
+      "extra": [
+        "internationalism",
+        "universalism"
+      ],
+      "why": "cosmopolitanism 指把全人类看作一个共同体、超越国族的主张，是一套政治哲学立场；它也可以指一座城市的国际化气息，但学术语境里几乎总是前者。"
+    },
+    {
+      "zh": "全靠大使私下出面说情，两国代表才没在半夜散场。",
+      "target": "出面说情",
+      "en": "Only the ambassador's quiet intercession kept the two delegations at the table past midnight.",
+      "order": [
+        "intercession"
+      ],
+      "extra": [
+        "mediation",
+        "advocacy"
+      ],
+      "why": "intercession 是替第三方出面向有权者说情、求情，重心在『为别人开口』；它也用于宗教中的代祷，同样是替他人向更高一方陈情。"
+    },
+    {
+      "zh": "一场火灾让二十多户人家一无所有，只能睡在学校体育馆。",
+      "target": "一无所有",
+      "en": "The fire left two dozen families destitute, sleeping in a school gym while the insurance calls went unanswered.",
+      "order": [
+        "destitute"
+      ],
+      "extra": [
+        "penniless",
+        "indigent"
+      ],
+      "why": "destitute 是贫穷的极端：连钱、食物、住处都没有，常说 left destitute；它还有一个书面用法 destitute of，表示完全欠缺某种品质。"
+    },
+    {
+      "zh": "董事会把她的沉默当成了默许，没等她开口就付诸表决。",
+      "target": "默许",
+      "en": "The board read her silence as acquiescence and moved the merger to a vote before she could object.",
+      "order": [
+        "acquiescence"
+      ],
+      "extra": [
+        "assent",
+        "compliance"
+      ],
+      "why": "acquiescence 是不出声的接受：不再争辩、勉强认了，重点在『没有反对』而不是积极赞成，常搭 tacit acquiescence。"
     }
   ]
 }
