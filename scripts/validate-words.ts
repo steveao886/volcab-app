@@ -31,6 +31,19 @@ for (const w of data.words) {
     if (m.phonetic !== undefined && !/^\/.+\/$/.test(m.phonetic)) {
       errors.push(`${ctx}: meaning phonetic must look like /.../, got ${JSON.stringify(m.phonetic)}`)
     }
+    // speakAs is fed to a speech synthesizer, never displayed. The likely
+    // mistake is pasting the IPA into it, which the synthesizer would read
+    // aloud as punctuation — hence the inverse of the rule above.
+    if (m.speakAs !== undefined) {
+      if (typeof m.speakAs !== 'string' || m.speakAs.trim() === '') {
+        errors.push(`${ctx}: meaning speakAs must be a non-empty string, got ${JSON.stringify(m.speakAs)}`)
+      } else if (m.speakAs.includes('/')) {
+        errors.push(`${ctx}: meaning speakAs is a respelling for a speech synthesizer, not IPA — got ${JSON.stringify(m.speakAs)}`)
+      }
+      if (m.phonetic === undefined) {
+        errors.push(`${ctx}: meaning has speakAs but no phonetic — a respelling means nothing without the pronunciation it spells`)
+      }
+    }
   }
 
   // A heteronym cannot be described by one pronunciation, and the omission is
@@ -40,8 +53,14 @@ for (const w of data.words) {
   // lib/heteronym.ts for why this is a curated list plus one systematic rule
   // and not a guess from part of speech.
   if (Array.isArray(w.meanings)) {
+    // "Carries a phonetic" is not the test — "carries one that says something
+    // new" is. This gate once accepted any meaning-level phonetic at all, and
+    // presage satisfied it with a verb sense holding a byte-identical copy of
+    // the word-level string: the gate passed while the entry recorded zero
+    // second pronunciations.
+    const divergent = w.meanings.filter((m: { phonetic?: string }) => m.phonetic !== undefined && m.phonetic !== w.phonetic)
     const reason = heteronymRisk(w.headword ?? '', w.meanings.map((m: { pos: string }) => m.pos))
-    if (reason !== null && !w.meanings.some((m: { phonetic?: string }) => m.phonetic !== undefined)) {
+    if (reason !== null && divergent.length === 0) {
       const why = reason === 'ate-alternation'
         ? 'an -ate word used as both a verb and something else takes /-eɪt/ as the verb and /-ət/ otherwise'
         : 'this headword is pronounced differently depending on the sense'
@@ -49,6 +68,21 @@ for (const w of data.words) {
         `${ctx}: ${why}, but every meaning shares the single word-level phonetic ${JSON.stringify(w.phonetic)}. `
         + 'Give the sense that differs its own `phonetic`. If the two senses really do sound alike, take the word off KNOWN in src/lib/heteronym.ts and say why.',
       )
+    }
+    // A divergent sense has no recording to play — see Meaning.speakAs — so
+    // without a respelling there is no sound for it at all. That is not a
+    // cosmetic gap: senseVoices drops the per-sense buttons from the *whole*
+    // entry rather than show one sense with audio and one without, so an
+    // unwritten respelling silently disables the feature for the word.
+    // Keyed off the divergence itself rather than heteronymRisk, so a word
+    // that is not on the curated list is still held to it.
+    for (const m of divergent) {
+      if (typeof m.speakAs !== 'string' || m.speakAs.trim() === '') {
+        errors.push(
+          `${ctx}: the ${m.pos} sense has its own phonetic ${JSON.stringify(m.phonetic)}, which no recording can play. `
+          + 'Add a `speakAs` respelling for the synthesizer — e.g. presage /ˈprɛsɪdʒ/ is written "press-idge" — and listen to it before committing.',
+        )
+      }
     }
   }
   // Sense share: the rule shares one implementation (src/lib/senseShare.ts)
