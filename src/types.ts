@@ -24,7 +24,7 @@ export interface Meaning {
   /**
    * Pronunciation for this sense specifically, when the word is a heteronym
    * and `Word.phonetic` cannot cover it — `presage` is /prɪˈseɪdʒ/ as a verb
-   * and /ˈpresɪdʒ/ as a noun.
+   * and /ˈprɛsɪdʒ/ as a noun.
    *
    * Absent on almost every meaning, and that absence is the normal case, not
    * missing data: one pronunciation is the truth for all but a handful of
@@ -33,6 +33,28 @@ export interface Meaning {
    * falls back to the word-level phonetic.
    */
   phonetic?: string
+  /**
+   * An ASCII respelling of `phonetic` that a speech synthesizer reads
+   * correctly — presage's noun sense is `/ˈprɛsɪdʒ/`, written `press-idge`.
+   *
+   * It exists because there is no recording to play. Both audio sources in
+   * lib/pronounce.ts key on spelling alone: youdao's dictvoice takes no sense
+   * parameter, and dictionaryapi.dev returns exactly one audio for presage
+   * and one for indurate. Synthesis is the only rung that can say something
+   * different, and the Web Speech API accepts no phoneme input, so the only
+   * lever left is the spelling handed to it.
+   *
+   * **Hand-authored and listened to, never derived.** There is no
+   * IPA-to-respelling converter here and writing one is its own project; a
+   * derivation that is 90% right mispronounces one word in ten with full
+   * confidence. Same rule as `Word.etymology`: a wrong pronunciation is not a
+   * missing fact, it is a false memory anchor.
+   *
+   * Only meaningful alongside a `phonetic` that differs from the word-level
+   * one. Absent means that sense gets no button — and, per senseVoices in
+   * lib/sensePronounce.ts, neither does any other sense of the same word.
+   */
+  speakAs?: string
 }
 
 /** Related forms sharing the same root: not entered as separate words, but shown on the word detail page to aid remembering them as a family. */
