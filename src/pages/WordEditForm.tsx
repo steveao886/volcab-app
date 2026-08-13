@@ -23,7 +23,9 @@ import type { Meaning, Word } from '../types'
  * headword / phonetic / relatedForms / sourceNote / addedAt are always
  * carried over unchanged, merged on submit as
  * `{ ...word, ...editedFields }`, so fields not shown in this form are
- * never silently swallowed.
+ * never silently swallowed. `meanings` is the exception that has to earn
+ * that claim separately — it is rebuilt rather than merged, so see the note
+ * on the rebuild in handleSubmit.
  *
  * usageScore and meaning share must be editable here, not just fillable on
  * /add: otherwise a mistake here has no way to be corrected, and share
@@ -125,13 +127,18 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
     // descending — aligning with the storage invariant required by
     // scripts/validate-words.ts, without bothering the user to sort it
     // themselves.
+    //
+    // Everything but `key` is carried through by the rest spread, and that
+    // shape is load-bearing rather than stylistic. This was once an explicit
+    // `{ pos, en, zh }` plus share, which silently deleted `phonetic` from
+    // both of the library's heteronyms the first time either was edited —
+    // the one field on a Meaning that this form has no input for. An
+    // allow-list here has to be updated by whoever adds the next optional
+    // field, and the cost of forgetting is destroyed data on save, so the
+    // default is now "survives".
     const cleanedMeanings: Meaning[] = normalizeMeanings(
       meanings
-        .map(m => {
-          const row: Meaning = { pos: m.pos.trim(), en: m.en.trim(), zh: m.zh.trim() }
-          if (m.share !== undefined) row.share = m.share
-          return row
-        })
+        .map(({ key: _key, ...m }) => ({ ...m, pos: m.pos.trim(), en: m.en.trim(), zh: m.zh.trim() }))
         .filter(m => m.pos !== '' || m.en !== '' || m.zh !== ''),
     )
 

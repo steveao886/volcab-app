@@ -59,18 +59,21 @@ export interface SenseVoice {
  * that IPA is what labels which button makes which sound.
  */
 export function senseVoices(word: Word): (SenseVoice | null)[] {
+  // Positional against word.meanings: the respelling this sense needs, or
+  // null when the word-level recording already covers it. An empty string is
+  // the third state and the interesting one — this sense needs a respelling
+  // and does not have one.
+  const needed = word.meanings.map(m =>
+    m.phonetic !== undefined && m.phonetic !== word.phonetic ? (m.speakAs ?? '').trim() : null,
+  )
   const silent = word.meanings.map(() => null)
 
-  const diverges = (phonetic?: string): boolean =>
-    phonetic !== undefined && phonetic !== word.phonetic
+  if (needed.every(r => r === null)) return silent  // nothing diverges
+  if (needed.some(r => r === '')) return silent     // something diverges unwritten
 
-  const divergent = word.meanings.filter(m => diverges(m.phonetic))
-  if (divergent.length === 0) return silent
-  if (divergent.some(m => (m.speakAs ?? '').trim() === '')) return silent
-
-  return word.meanings.map(m =>
-    diverges(m.phonetic)
-      ? { kind: 'synth' as const, text: m.speakAs.trim() }
-      : { kind: 'recording' as const, text: word.headword },
+  return needed.map(r =>
+    r === null
+      ? { kind: 'recording' as const, text: word.headword }
+      : { kind: 'synth' as const, text: r },
   )
 }
