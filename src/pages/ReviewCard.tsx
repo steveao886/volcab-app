@@ -1,6 +1,8 @@
 import { CaptureChips } from '../components/CaptureChips'
 import { ExampleSentence } from '../components/ExampleSentence'
+import { SenseSpeakButton } from '../components/SenseSpeakButton'
 import wordNotesFile from '../data/wordNotes.json'
+import { senseVoices } from '../lib/sensePronounce'
 import { wordNote } from '../lib/wordNotes'
 import type { WordNotesFile } from '../lib/wordNotes'
 import type { Word } from '../types'
@@ -26,6 +28,9 @@ function TagRow({ label, items }: { label: string; items: string[] }) {
 export function ReviewCardBack({ word }: { word: Word }) {
   const showIndex = word.meanings.length > 1
   const note = wordNote(wordNotesFile as WordNotesFile, word.id)
+  // All null except on a heteronym whose divergent sense has a respelling —
+  // see lib/sensePronounce.ts.
+  const voices = senseVoices(word)
 
   return (
     <div className="review-back">
@@ -47,17 +52,25 @@ export function ReviewCardBack({ word }: { word: Word }) {
       </div>
 
       <ol className="review-meanings">
-        {word.meanings.map((m, i) => (
+        {word.meanings.map((m, i) => {
+          const voice = voices[i]
+          return (
           <li className="review-meaning" key={`${m.pos}-${i}`}>
             <p className="review-meaning__head">
               {showIndex && <span className="review-meaning__idx num faint">{i + 1}</span>}
               <span className="pos">{m.pos}</span>
               {/* Only present on a heteronym: the phonetic above the meanings
-                  is the word-level one and cannot be true of both senses. */}
+                  is the word-level one and cannot be true of both senses.
+                  On the sense that does match it this looks like a repeat and
+                  is not one — it labels which of the buttons beside it makes
+                  which sound. */}
               {m.phonetic !== undefined && (
                 <span className="ipa" lang="en">
                   {m.phonetic}
                 </span>
+              )}
+              {voice !== null && (
+                <SenseSpeakButton voice={voice} headword={word.headword} pos={m.pos} />
               )}
               {/* The share value uses .faint, a marginal note rather than
                   the protagonist: the first thing seen after flipping
@@ -87,7 +100,8 @@ export function ReviewCardBack({ word }: { word: Word }) {
             <p lang="en">{m.en}</p>
             <p className="muted">{m.zh}</p>
           </li>
-        ))}
+          )
+        })}
       </ol>
 
       {/* The usage note sits directly under the meanings and above the

@@ -7,10 +7,12 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ExampleSentence } from '../components/ExampleSentence'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
+import { SenseSpeakButton } from '../components/SenseSpeakButton'
 import { StateDot } from '../components/StateDot'
 import { SyncStatus } from '../components/SyncStatus'
 import wordNotesFile from '../data/wordNotes.json'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
+import { senseVoices } from '../lib/sensePronounce'
 import { wordNote } from '../lib/wordNotes'
 import type { WordNotesFile } from '../lib/wordNotes'
 import { useApp } from '../state/store'
@@ -103,6 +105,9 @@ export function WordDetail() {
   const entry = progress.words[word.id]
   const note = wordNote(wordNotesFile as WordNotesFile, word.id)
   const state = wordState(word, progress)
+  // All null on every word but a heteronym, and all null on a heteronym whose
+  // divergent sense has no respelling yet — see lib/sensePronounce.ts.
+  const voices = senseVoices(word)
   const hasTags = word.synonyms.length > 0 || word.antonyms.length > 0 || word.collocations.length > 0
 
   return (
@@ -143,18 +148,27 @@ export function WordDetail() {
         <>
           <Card>
             <ol className="worddetail-meaning-list">
-              {word.meanings.map((m, i) => (
+              {word.meanings.map((m, i) => {
+                const voice = voices[i]
+                return (
                 <li className="worddetail-meaning" key={`${m.pos}-${i}`}>
                   {/* Part of speech and meaning share share a row, presented consistently with the back of the review card */}
                   <p className="worddetail-meaning__head">
                     <span className="pos">{m.pos}</span>
                   {/* Only present on a heteronym, where the word-level
                       phonetic cannot be true of both senses — presage is
-                      /prɪˈseɪdʒ/ as a verb and /ˈprɛsɪdʒ/ as a noun. */}
+                      /prɪˈseɪdʒ/ as a verb and /ˈprɛsɪdʒ/ as a noun.
+                      Reads as a redundancy on the sense that matches the
+                      word-level phonetic, and is not one: once the buttons
+                      below exist, this is the label saying which button
+                      makes which sound. */}
                   {m.phonetic !== undefined && (
                     <span className="ipa" lang="en">
                       {m.phonetic}
                     </span>
+                  )}
+                  {voice !== null && (
+                    <SenseSpeakButton voice={voice} headword={word.headword} pos={m.pos} />
                   )}
                     {m.share !== undefined && (
                       <span className="num faint worddetail-meaning__share">{m.share}%</span>
@@ -165,7 +179,8 @@ export function WordDetail() {
                   </p>
                   <p className="worddetail-meaning__zh">{m.zh}</p>
                 </li>
-              ))}
+                )
+              })}
             </ol>
             {/* Inside the meanings card rather than a card of its own: the
                 note qualifies the definitions directly above it (which

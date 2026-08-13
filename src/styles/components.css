@@ -978,3 +978,52 @@
     bottom: var(--sp-4);
   }
 }
+
+/* --- Per-sense pronunciation ------------------------------------------------
+   The speaker printed beside a meaning-level phonetic, on the two surfaces
+   that show one: the word detail page and the back of a review card. Only
+   ever rendered on a heteronym — see lib/sensePronounce.ts. */
+
+.sense-speak {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  flex: none;
+  /* The meaning-head row is baseline-aligned so the pos tag, IPA and share
+     sit on one line. An inline-flex box has no useful baseline of its own and
+     would drag the row down, so this one opts out and centres instead. */
+  align-self: center;
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--r-full);
+  color: var(--text-muted);
+  transition:
+    background-color var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease);
+}
+
+/* The visible pill is deliberately small — it sits inside a dense dictionary
+   row, and the full --tap circle the review card's front speaker uses would
+   set the row height. The tap target is restored here instead, so the thing
+   you can hit is 44px even though the thing you can see is not. Adjacent
+   senses are separated by their en/zh lines, well clear of overlapping. */
+.sense-speak::after {
+  content: '';
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  min-width: var(--tap);
+  min-height: var(--tap);
+}
+
+.sense-speak:hover {
+  background: var(--surface-sunken);
+  color: var(--text);
+}
+
+.sense-speak__tag {
+  font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-eyebrow);
+}
