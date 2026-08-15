@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildMixedPractice, mixedPracticePool, PRACTICE_DRAW_SIZE, samplePractice } from './practice'
+import { buildMixedPractice, mixedPracticePool, nextStrugglingBatch, PRACTICE_DRAW_SIZE, samplePractice } from './practice'
 import { INITIAL_EASE } from './srs'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
@@ -167,5 +167,35 @@ describe('mixedPracticePool', () => {
     p.words['fresh'] = { ...mk(INITIAL_EASE), state: 'new' }
     const pool = mixedPracticePool([word('hard'), word('easy'), word('fresh')], p)
     expect(pool.map(w => w.id).sort()).toEqual(['easy', 'hard'])
+  })
+})
+
+describe('nextStrugglingBatch', () => {
+  it('batch composition is the head of the pool, whatever the seed', () => {
+    const first = (seed: number) => new Set(nextStrugglingBatch(pool(50), 20, { rng: mulberry32(seed) }).map(w => w.id))
+    const expected = new Set(pool(50).slice(0, 20).map(w => w.id))
+    expect(first(1)).toEqual(expected)
+    expect(first(2)).toEqual(expected)
+  })
+
+  it('shuffles within the batch: a different seed reorders, never recomposes', () => {
+    const ids = (seed: number) => nextStrugglingBatch(pool(50), 20, { rng: mulberry32(seed) }).map(w => w.id)
+    expect(ids(1)).not.toEqual(ids(2))
+    expect(new Set(ids(1))).toEqual(new Set(ids(2)))
+  })
+
+  it('exclusion walks deeper into the pool instead of resampling the head', () => {
+    const all = pool(50)
+    const excluded = new Set(all.slice(0, 20).map(w => w.id))
+    const next = new Set(nextStrugglingBatch(all, 20, { rng: mulberry32(3), exclude: excluded }).map(w => w.id))
+    expect(next).toEqual(new Set(all.slice(20, 40).map(w => w.id)))
+  })
+
+  it('a pool walked to the end returns the remainder, then empty', () => {
+    const all = pool(25)
+    const firstTwo = new Set(all.slice(0, 20).map(w => w.id))
+    expect(nextStrugglingBatch(all, 20, { rng: mulberry32(4), exclude: firstTwo })).toHaveLength(5)
+    const everything = new Set(all.map(w => w.id))
+    expect(nextStrugglingBatch(all, 20, { rng: mulberry32(5), exclude: everything })).toEqual([])
   })
 })
