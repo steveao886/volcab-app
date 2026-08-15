@@ -43,6 +43,12 @@ import { speak } from './tts'
  *   code fix, which is precisely why shipping one appeared to change
  *   nothing.
  *
+ * A third rule guards the same bottom rung from the other side: **only a
+ * real failure counts as one.** Restarting a clip interrupts the previous
+ * one, and an interrupted play() rejects — so for as long as that read as a
+ * failure, tapping the speak button twice made the local engine read the
+ * word over the top of the restart. See the guards on play().
+ *
  * iOS shapes the design: audio must start inside a user gesture, so
  * `pronounce()` is synchronous and never awaits — every URL it might play
  * is either already in the map or derivable from the headword alone.
@@ -211,9 +217,23 @@ let playing: HTMLAudioElement | null = null
 /**
  * Plays one URL, calling `onFail` if it doesn't start.
  *
- * One flag guards both handlers: a failed load can reject play() AND fire
- * onerror, and without the guard the fallback ran twice. Measured in the
- * browser — a blocked mp3 produced two TTS utterances.
+ * Two guards, each for a different way of reaching `onFail` twice or wrongly:
+ *
+ * - **One flag for both handlers.** A failed load can reject play() AND fire
+ *   onerror, and without the flag the fallback ran twice. Measured in the
+ *   browser — a blocked mp3 produced two TTS utterances.
+ * - **A superseded element's failure is not this play's failure.** The
+ *   `pause()` above is *this module interrupting itself*, and in Chrome
+ *   pausing an element whose play() has not settled yet rejects that promise
+ *   with AbortError ("The play() request was interrupted by a call to
+ *   pause()"). Nothing distinguished that from "this recording won't play",
+ *   so an ordinary re-tap during loading dropped straight to the bottom rung
+ *   — the one engine this whole file exists to route around — and layered it
+ *   over the restarted clip. Measured in Chrome with two taps 0ms apart:
+ *   Microsoft David begins reading at 24ms while the replacement youdao clip
+ *   is still fetching and only becomes audible at 435ms. Comparing against
+ *   `playing` rather than sniffing `err.name` also covers the onerror half,
+ *   and needs no error-string matching.
  */
 function play(url: string, onFail: () => void): void {
   playing?.pause()
@@ -221,7 +241,7 @@ function play(url: string, onFail: () => void): void {
   playing = audio
   let failed = false
   const fail = () => {
-    if (failed) return
+    if (failed || playing !== audio) return
     failed = true
     onFail()
   }

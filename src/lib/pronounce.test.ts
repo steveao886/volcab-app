@@ -92,15 +92,27 @@ let unplayable: (url: string) => boolean
 class FakeAudio {
   onerror: (() => void) | null = null
   src: string
+  /** Rejects this element's still-pending play(), the way a real one does when it is interrupted. */
+  private abort: ((err: Error) => void) | null = null
   constructor(src: string) {
     this.src = src
     played.push({ url: src })
   }
-  pause(): void { /* no-op */ }
+  pause(): void {
+    // A no-op fake hid a real bug for as long as it existed. In Chrome,
+    // pausing an element whose play() has not settled yet **rejects that
+    // promise** — "The play() request was interrupted by a call to pause()",
+    // name AbortError — and play() only settles once playback actually
+    // starts, 435ms away on a cold youdao fetch (measured in-browser).
+    this.abort?.(Object.assign(new Error('interrupted by pause()'), { name: 'AbortError' }))
+    this.abort = null
+  }
   play(): Promise<void> {
-    return unplayable(this.src)
-      ? Promise.reject(new Error('NotSupportedError'))
-      : Promise.resolve()
+    if (unplayable(this.src)) return Promise.reject(new Error('NotSupportedError'))
+    return new Promise((resolve, reject) => {
+      this.abort = reject
+      setTimeout(() => { this.abort = null; resolve() }, 0)
+    })
   }
 }
 
@@ -173,6 +185,38 @@ describe('pronounce — a dead recording must not land on the local engine', () 
 
     expect(played.map(p => p.url)).toEqual([youdaoUrl('conflate')])
     expect(spoken).toEqual([])
+  })
+})
+
+describe('pronounce — an interruption is not a failure', () => {
+  beforeEach(installChannels)
+  afterEach(() => vi.unstubAllGlobals())
+
+  // Tapping the speak button again while the first clip is still loading is
+  // an ordinary thing to do: a cold youdao fetch is 435ms away from making a
+  // sound, so "nothing happened, tap it again" is the natural reaction — and
+  // a brand-new word is exactly the case that is never cached. The re-tap
+  // pauses the loading element, which rejects its play() promise, and that
+  // rejection used to be indistinguishable from "this recording won't play":
+  // the ladder fell to the bottom rung and Microsoft David read the word over
+  // the top of the restarted clip (measured in Chrome: David starts at 24ms,
+  // the replacement clip becomes audible at 435ms).
+  it('a re-tap while the clip is still loading restarts it without waking the local engine', async () => {
+    pronounce('conflate')
+    pronounce('conflate')
+    await flush()
+
+    expect(played.map(p => p.url)).toEqual([youdaoUrl('conflate'), youdaoUrl('conflate')])
+    expect(spoken).toEqual([])
+  })
+
+  it('still reaches the local engine when the replacement itself cannot play — the offline case survives the guard', async () => {
+    pronounce('conflate')
+    unplayable = () => true
+    pronounce('conflate')
+    await flush()
+
+    expect(spoken).toEqual(['conflate'])
   })
 })
 
