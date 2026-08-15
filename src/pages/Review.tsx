@@ -8,7 +8,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { isEditableTarget } from '../lib/keys'
-import { buildConsolidateQueue, buildLapseQueue, buildQueue, CONSOLIDATE_DELAY_HOURS, rankStrugglingWords } from '../lib/queue'
+import { buildConsolidateQueue, buildLapseQueue, buildQueue, CONSOLIDATE_DELAY_HOURS, rankStrugglingWords, strugglingPracticePool } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { storage } from '../lib/storage'
 import { previewIntervals, todayStr } from '../lib/srs'
@@ -314,6 +314,15 @@ export function Review() {
     [lapseMode, words, progress],
   )
 
+  // The extra-practice pool can be non-empty while today's drill queue is
+  // empty — the drill filters out words reviewed today, the pool does not —
+  // so the 继续加练 button gets its own check rather than reusing the
+  // queue's emptiness.
+  const hasExtraPractice = useMemo(
+    () => (lapseMode ? strugglingPracticePool(words, progress, today).length > 0 : false),
+    [lapseMode, words, progress, today],
+  )
+
   const eyebrow = consolidateMode ? 'Consolidate' : lapseMode ? 'Lapses' : 'Review'
   const title = consolidateMode ? '今日巩固' : lapseMode ? '顽固词' : '复习'
 
@@ -349,7 +358,7 @@ export function Review() {
               : lapseMode
                 ? empty
                   ? clearedForToday
-                    ? '顽固词每天练一遍就够了,明天再来。'
+                    ? '计入成绩的一轮每天练一遍就够了。'
                     : '眼下没有记不牢的词 —— 这是好事。'
                   : '这一批错得最多的词都过了一遍。'
                 : empty
@@ -359,6 +368,16 @@ export function Review() {
           <Link to="/" className="btn btn--primary btn--lg">
             返回今日
           </Link>
+          {lapseMode && hasExtraPractice && (
+            <>
+              <Link to="/practice?pick=struggling" className="btn btn--secondary btn--lg">
+                继续加练
+              </Link>
+              {/* The write contract printed on the control that invokes it —
+                  same rule as keyboard shortcuts on buttons. */}
+              <p className="faint">不计成绩、不影响排期,从最难的词开始。</p>
+            </>
+          )}
         </div>
       </Page>
     )
