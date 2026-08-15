@@ -56,6 +56,43 @@ codes — read them.
 7. **Ship**: `npm test && npm run build && npx oxlint`, commit the word list
    and its notes together — they are one change.
 
+## Batches of 6+ words: fan out the authoring
+
+Measured on the 24-word batch of 2026-08-14: ~25 minutes end to end, and
+the two *authoring* stretches (entries ~8 min, notes ~7 min) were the bulk
+of it. Both are embarrassingly parallel — entries never reference each
+other, and each note depends only on its own pair — so for a batch of 6 or
+more words, dispatch authoring to parallel subagents:
+
+1. **Fan out entry authoring.** Split the staged headwords into chunks of
+   ~6 and launch one general-purpose subagent per chunk, in a single
+   message so they run concurrently. Each prompt must be self-contained:
+   paste the entry rules from `docs/word-entry-spec.md` (5 located
+   examples, 12–30 words each, usageScore, share rules, etymology-or-omit),
+   the exact JSON shape of one recent entry, and the chunk's headwords.
+   Have each agent return a JSON array; the orchestrator concatenates.
+2. **Pre-check centrally, never per-agent.** Run the merged array through
+   the locate/mismark/word-count pre-check (headwordPattern +
+   isInflectionOf over every example) *before* touching `data/words.json`.
+   Send any failing entry back to a fresh agent with the specific failure;
+   do not let an agent self-certify.
+3. **The pair diff is the one barrier.** It needs the *whole* batch in
+   `data/words.json` first (batch members can pair with each other), so it
+   cannot overlap with step 1. Run it once, centrally.
+4. **Fan out note authoring.** Partition the new pair keys into chunks
+   (~10 pairs each), and give every agent the full zh/en definitions of
+   both words in each of its pairs — the note must state a real
+   distinction, and an agent without the definitions will invent one. Word
+   notes ride along in the same chunks. Merge, sort keys, validate
+   centrally.
+5. **Everything after the notes stays serial**: validators, `npm test`,
+   build, live-library merge (sha-guarded), staging trim, one commit.
+   These were ~7 min of the 25 and are gates, not authoring — parallelism
+   has nothing to win there.
+
+Below ~6 words the subagent spin-up and prompt duplication cost more than
+they save; author inline.
+
 ## Periodic content refresh (the automated entry point)
 
 Run the staleness scan first; **author only what it names**. The scan is
