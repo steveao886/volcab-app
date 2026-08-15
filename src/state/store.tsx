@@ -75,8 +75,12 @@ export interface AppActions {
    * Unlike every other practice surface it does **not** touch dailyStats —
    * see the comment on the implementation for why that omission is the
    * feature.
+   *
+   * `settle: false` (the unlimited struggling walk) additionally keeps a
+   * correct answer from clearing `missedAt` — see the implementation for
+   * why that surface must not settle misses.
    */
-  recordPractice(wordId: string, correct: boolean): void
+  recordPractice(wordId: string, correct: boolean, opts?: { settle?: boolean }): void
   /** Reject a suggested word, permanently: the id is remembered in synced progress so later suggestion batches skip it */
   dismissSuggestion(id: string): void
   /**
@@ -732,11 +736,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
    * that), so stamping one would push a sync diff for a field nothing will
    * read — the same no-op-write objection dismissSuggestion raises.
    */
-  const recordPractice = useCallback((wordId: string, correct: boolean) => {
+  const recordPractice = useCallback((wordId: string, correct: boolean, opts: { settle?: boolean } = {}) => {
+    const { settle = true } = opts
     const cur = stateRef.current.progress
     const prev = cur.words[wordId]
     if (!prev || prev.state === 'new') return
-    const entry = correct ? clearMissed(prev) : { ...prev, missedAt: todayStr(new Date()) }
+    // settle: false is the unlimited struggling walk (pick=struggling): a
+    // correct answer minutes after a miss is short-term memory, which
+    // proves nothing about retention — clearing missedAt on it would let
+    // one afternoon of re-practice systematically empty tomorrow's drill
+    // queue (the 2026-08-15 spec's central hazard). `prev` itself, not a
+    // copy, so the identity guard below keeps "writes nothing" checkable.
+    const entry = correct ? (settle ? clearMissed(prev) : prev) : { ...prev, missedAt: todayStr(new Date()) }
     // Object identity, exactly as clearMissed promises: a correct answer
     // over a word that was never missed has nothing to record, and bailing
     // here is what keeps "a clean pass writes nothing" true rather than
