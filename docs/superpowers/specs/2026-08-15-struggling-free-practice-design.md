@@ -147,9 +147,22 @@ shows the button.
 Secondary button styling: vermilion is reserved for annotation and
 destructive actions.
 
-Not on the Today page: Today is a plan with a completion state, and a
-never-finishable row would break it. Not on the stats card, per the user's
-choice — one entry point, where the drill just ended.
+Not a Today-page *plan row*: Today's plan is a list with a completion
+state, and a never-finishable row would break it. Not on the stats card,
+per the user's choice.
+
+**Addendum (2026-08-15, post-ship):** the finish-screen entry alone proved
+unreachable in practice. The Today plan's done rows are deliberately inert
+(`PlanRow`: "a link to a page that will say 'nothing to do' is a dead end
+dressed as an action"), so once the daily drill was cleared there was no
+path back to the finish screen — the entry was effectively one-shot, and
+the user reported exactly that. Fix: a second, durable entry as a card in
+the Today page's practice section, beside 随便练练 — the section that
+exists precisely for practice that "can't be finished, doesn't count, and
+is available whether or not the day's work is done." It links straight to
+`/practice?pick=struggling` and hides when the pool is empty, same as the
+finish-screen button. This does not contradict the plan-row reasoning
+above: the card sits outside the plan.
 
 ### 5. Page behavior (`Practice.tsx`)
 
