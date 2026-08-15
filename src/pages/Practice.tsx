@@ -6,8 +6,9 @@ import { Card } from '../components/Card'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { isEditableTarget } from '../lib/keys'
-import { buildMixedPractice, mixedPracticePool, PRACTICE_DRAW_SIZE, samplePractice } from '../lib/practice'
+import { buildMixedPractice, mixedPracticePool, nextStrugglingBatch, PRACTICE_DRAW_SIZE, samplePractice } from '../lib/practice'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
+import { strugglingPracticePool } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { todayStr } from '../lib/srs'
 import { filterToParams, filterWords, paramsToFilter } from './libraryFilter'
@@ -52,10 +53,14 @@ export function Practice() {
   // redraw the deck under the user's hands.
   const [searchParams] = useSearchParams()
   const [filter] = useState(() => paramsToFilter(searchParams))
-  // `pick=mixed` is the Today-page row: half struggling, half steady, no
-  // library filter involved. Anything else — including a missing value —
-  // is the library-slice mode, read side lenient as ever.
-  const [mixed] = useState(() => searchParams.get('pick') === 'mixed')
+  // `pick=mixed` is the Today-page row: half struggling, half steady.
+  // `pick=struggling` is the unlimited walk down the stubborn pool, entered
+  // from the lapse drill's finish screens (2026-08-15 spec). Anything else
+  // — including a missing value — is the library-slice mode, read side
+  // lenient as ever.
+  const [pick] = useState(() => searchParams.get('pick'))
+  const mixed = pick === 'mixed'
+  const struggling = pick === 'struggling'
 
   // Back goes where you came from. For a library slice that is the library
   // *as it was left*: the filter lives in the URL under these same
@@ -63,10 +68,10 @@ export function Practice() {
   // button was pressed from. The mixed draw has no filter and was reached
   // from 今日.
   const backTo = useMemo(() => {
-    if (mixed) return '/'
+    if (mixed || struggling) return '/'
     const qs = filterToParams(filter)
     return qs === '' ? '/library' : `/library?${qs}`
-  }, [mixed, filter])
+  }, [mixed, struggling, filter])
 
   // progress is part of the filter (the status chip reads learning state),
   // and every sync tick hands back a new object — so this has to be memoized
@@ -76,19 +81,29 @@ export function Practice() {
   // For the mixed draw this is the *union* of both halves rather than the
   // deck's own recipe: its only job is answering "is there anything left I
   // haven't drawn", which decides whether 再来一批 is offered.
+  // The struggling pool recomputing after a miss (the commit hands back a
+  // new progress object) is harmless: the changed word is already in
+  // `drawn`, and unseen words' entries did not move.
   const pool = useMemo(
-    () => (mixed ? mixedPracticePool(words, progress) : filterWords(words, progress, filter)),
-    [mixed, words, progress, filter],
+    () =>
+      struggling
+        ? strugglingPracticePool(words, progress, today)
+        : mixed
+          ? mixedPracticePool(words, progress)
+          : filterWords(words, progress, filter),
+    [struggling, mixed, words, progress, today, filter],
   )
 
   // One draw, whichever mode this is. The deck is only ever produced here,
   // so the two modes can't drift on size or exclusion handling.
   const draw = useCallback(
     (exclude?: ReadonlySet<string>) =>
-      mixed
-        ? buildMixedPractice(words, progress, today, PRACTICE_DRAW_SIZE, { exclude })
-        : samplePractice(pool, PRACTICE_DRAW_SIZE, { exclude }),
-    [mixed, words, progress, today, pool],
+      struggling
+        ? nextStrugglingBatch(pool, PRACTICE_DRAW_SIZE, { exclude })
+        : mixed
+          ? buildMixedPractice(words, progress, today, PRACTICE_DRAW_SIZE, { exclude })
+          : samplePractice(pool, PRACTICE_DRAW_SIZE, { exclude }),
+    [struggling, mixed, words, progress, today, pool],
   )
 
   // The deck holds Word objects rather than ids, unlike Review.tsx's queue.
@@ -144,12 +159,12 @@ export function Practice() {
       // AudioContext to be created/resumed within a user gesture, and this
       // is the earliest point where sound plays for an answer.
       playGrade(correct ? 'good' : 'again', soundEnabled)
-      recordPractice(cur.id, correct)
+      recordPractice(cur.id, correct, { settle: !struggling })
       if (!correct) setMissed(m => [...m, cur])
       setIdx(i => i + 1)
       setFlipped(false)
     },
-    [cur, flipped, recordPractice, soundEnabled],
+    [cur, flipped, recordPractice, soundEnabled, struggling],
   )
 
   const redraw = useCallback(() => {
@@ -158,6 +173,16 @@ export function Practice() {
     setIdx(0)
     setFlipped(false)
   }, [drawn, draw])
+
+  // 从头再练: the "unlimited" in unlimited practice. Resets the walk and the
+  // recap — a word missed in two walks must not appear twice in one list.
+  const restart = useCallback(() => {
+    setSeen(new Set())
+    setDeck(draw(new Set()))
+    setIdx(0)
+    setFlipped(false)
+    setMissed([])
+  }, [draw])
 
   const handleCardKeyDown = useCallback(
     (e: ReactKeyboardEvent<HTMLDivElement>) => {
@@ -197,27 +222,38 @@ export function Practice() {
   if (finished) {
     const neverStarted = deck.length === 0 && seen.size === 0
     return (
-      <Page eyebrow="Practice" title="自由练习" back={backTo}>
+      <Page eyebrow="Practice" title={struggling ? '顽固词加练' : '自由练习'} back={backTo}>
         <div className="review-done">
           <p className="review-done__label">{neverStarted ? '没有可练的词' : '这一批练完了'}</p>
           <p className="muted">
             {neverStarted
-              ? mixed
-                ? '还没有已掌握的词可以练,先去复习几轮吧。'
-                : '这组筛选条件下没有词条,回词库换个条件试试。'
-              : hasMore
-                ? '想接着练就再抽一批,不想练随时可以走 —— 这里不记进度。'
+              ? struggling
+                ? '眼下没有顽固词 —— 这是好事。'
                 : mixed
-                  ? '能练的词都过了一遍。'
-                  : '这组筛选条件下的词都过了一遍。'}
+                  ? '还没有已掌握的词可以练,先去复习几轮吧。'
+                  : '这组筛选条件下没有词条,回词库换个条件试试。'
+              : hasMore
+                ? struggling
+                  ? '想接着练就继续下一批,越往后越接近记牢 —— 这里不记进度。'
+                  : '想接着练就再抽一批,不想练随时可以走 —— 这里不记进度。'
+                : struggling
+                  ? '顽固词都过了一遍。还想练可以从头再来,这里不设上限。'
+                  : mixed
+                    ? '能练的词都过了一遍。'
+                    : '这组筛选条件下的词都过了一遍。'}
           </p>
           {hasMore && (
             <Button variant="primary" size="lg" onClick={redraw}>
               再来一批
             </Button>
           )}
+          {struggling && !hasMore && !neverStarted && (
+            <Button variant="primary" size="lg" onClick={restart}>
+              从头再练
+            </Button>
+          )}
           <Link to={backTo} className="btn btn--secondary btn--lg">
-            {mixed ? '返回今日' : '返回词库'}
+            {mixed || struggling ? '返回今日' : '返回词库'}
           </Link>
         </div>
 
@@ -251,7 +287,7 @@ export function Practice() {
   }
 
   return (
-    <Page eyebrow="Practice" title="自由练习" back={backTo}>
+    <Page eyebrow="Practice" title={struggling ? '顽固词加练' : '自由练习'} back={backTo}>
       <div className="review-progress">
         <div
           className="progress"
@@ -271,8 +307,12 @@ export function Practice() {
           rather than discovered after — same placement decision as the
           review page's drill note. */}
       <p className="faint review-drill-note">
-        {mixed ? '一半已掌握的词随机抽,一半是最近老忘的。' : '随便练:'}
-        答错的词会进顽固词队列,但不影响复习计划,也不计入今日复习。
+        {struggling
+          ? '专攻顽固词:刚错过的和最难的排最前。不计成绩、不影响排期,答对也不会提前出队 —— 真正的检验在明天的正式一轮。'
+          : <>
+              {mixed ? '一半已掌握的词随机抽,一半是最近老忘的。' : '随便练:'}
+              答错的词会进顽固词队列,但不影响复习计划,也不计入今日复习。
+            </>}
       </p>
 
       {/* Above the card, like the review grades: always in the same place,

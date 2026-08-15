@@ -8,7 +8,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { isEditableTarget } from '../lib/keys'
-import { buildConsolidateQueue, buildLapseQueue, buildQueue, CONSOLIDATE_DELAY_HOURS, rankStrugglingWords } from '../lib/queue'
+import { buildConsolidateQueue, buildLapseQueue, buildQueue, CONSOLIDATE_DELAY_HOURS, strugglingPracticePool } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { storage } from '../lib/storage'
 import { previewIntervals, todayStr } from '../lib/srs'
@@ -307,11 +307,14 @@ export function Review() {
   }, [curId, flipped, toggleFlip, handleGrade])
 
   const reviewedToday = progress.dailyStats[today]?.reviewed ?? 0
-  // Only asked when the drill comes up empty, but the hook can't be
-  // conditional; the filter is cheap next to the card render either way.
-  const hasStrugglingWords = useMemo(
-    () => (lapseMode ? rankStrugglingWords(words, progress).length > 0 : false),
-    [lapseMode, words, progress],
+  // The extra-practice pool can be non-empty while today's drill queue is
+  // empty — the drill filters out words reviewed today, the pool does not —
+  // so both the 继续加练 button and the empty-state wording read the pool,
+  // not the queue. Only asked when the drill comes up empty, but the hook
+  // can't be conditional; the filter is cheap next to the card render.
+  const hasExtraPractice = useMemo(
+    () => (lapseMode ? strugglingPracticePool(words, progress, today).length > 0 : false),
+    [lapseMode, words, progress, today],
   )
 
   const eyebrow = consolidateMode ? 'Consolidate' : lapseMode ? 'Lapses' : 'Review'
@@ -324,8 +327,12 @@ export function Review() {
     // while "you already did them today" is a schedule. Saying the first
     // when the second is true would quietly claim the list had been
     // cleared for good. `alreadyDone` is read once on mount, so it still
-    // reports the state the session *started* in.
-    const clearedForToday = empty && (alreadyDone || (lapseMode && hasStrugglingWords))
+    // reports the state the session *started* in. The distinction reads
+    // the practice pool, not the ease ranking: a word missed in a quiz
+    // today sits in the pool (and under the 继续加练 button) while the
+    // ranking knows nothing of it, and "没有记不牢的词" printed above that
+    // button would contradict it.
+    const clearedForToday = empty && (alreadyDone || (lapseMode && hasExtraPractice))
     return (
       <Page eyebrow={eyebrow} title={title} back="/">
         <div className="review-done">
@@ -349,7 +356,7 @@ export function Review() {
               : lapseMode
                 ? empty
                   ? clearedForToday
-                    ? '顽固词每天练一遍就够了,明天再来。'
+                    ? '计入成绩的一轮每天练一遍就够了。'
                     : '眼下没有记不牢的词 —— 这是好事。'
                   : '这一批错得最多的词都过了一遍。'
                 : empty
@@ -359,6 +366,16 @@ export function Review() {
           <Link to="/" className="btn btn--primary btn--lg">
             返回今日
           </Link>
+          {lapseMode && hasExtraPractice && (
+            <>
+              <Link to="/practice?pick=struggling" className="btn btn--secondary btn--lg">
+                继续加练
+              </Link>
+              {/* The write contract printed on the control that invokes it —
+                  same rule as keyboard shortcuts on buttons. */}
+              <p className="faint">不计成绩、不影响排期,从最难的词开始。</p>
+            </>
+          )}
         </div>
       </Page>
     )

@@ -1148,6 +1148,37 @@ describe('recordPractice: free practice writes less than any other surface', () 
 
     expect(app().progress.words).toBe(before)
   })
+
+  it('settle: false — a correct answer leaves an earlier miss standing, so extra practice cannot eat tomorrow\'s drill', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().recordPractice('alpha', false) })
+    const before = app().progress.words['alpha']
+    expect(before.missedAt).toBe(today)
+
+    await step(() => { app().recordPractice('alpha', true, { settle: false }) })
+
+    // Object identity, not merely "missedAt survives": nothing may be
+    // committed at all — the same checkable guarantee the settling path
+    // makes for a clean pass.
+    expect(app().progress.words['alpha']).toBe(before)
+  })
+
+  it('settle: false — a miss still stamps missedAt and touches nothing else; the signal is genuine whichever surface observes it', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.words['alpha']
+
+    await step(() => { app().recordPractice('alpha', false, { settle: false }) })
+
+    const after = app().progress.words['alpha']
+    expect(after.missedAt).toBe(today)
+    expect(after.due).toBe(before.due)
+    expect(after.ease).toBe(before.ease)
+    expect(after.intervalDays).toBe(before.intervalDays)
+    expect(after.lapses).toBe(before.lapses)
+    expect(after.lastReviewedAt).toBe(before.lastReviewedAt)
+  })
 })
 
 describe('consolidateWord: 巩固 declares a miss a real forget, and nothing more', () => {

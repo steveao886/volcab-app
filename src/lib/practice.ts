@@ -47,6 +47,29 @@ export function samplePractice(
 }
 
 /**
+ * One batch of the unlimited struggling-word walk (`pick=struggling`).
+ *
+ * Deliberately NOT samplePractice: this mode's premise, printed on the
+ * button that opens it, is hardest-first — so the ordering is a promise,
+ * not the hidden bias that keeps samplePractice uniform. Composition is
+ * the next `size` unseen words in pool order, which makes batch 1 the most
+ * urgent twenty and 再来一批 a step deeper down the ranking; the shuffle is
+ * only *within* the batch, so the cards can't be recited by position.
+ *
+ * Same exclusion contract as samplePractice: empty means the walk is done.
+ */
+export function nextStrugglingBatch(
+  pool: Word[],
+  size: number = PRACTICE_DRAW_SIZE,
+  opts: { rng?: () => number; exclude?: ReadonlySet<string> } = {},
+): Word[] {
+  if (size <= 0) return []
+  const { rng = Math.random, exclude } = opts
+  const eligible = exclude === undefined ? pool : pool.filter(w => !exclude.has(w.id))
+  return shuffle(eligible.slice(0, size), rng)
+}
+
+/**
  * Words the Today-page practice row is allowed to draw from: everything
  * you have mastered, plus everything you keep forgetting.
  *
