@@ -181,14 +181,14 @@ export function rankStrugglingWords(words: Word[], progress: Progress): Word[] {
 }
 
 /**
- * The drill session: **what you just got wrong, then what you keep getting
- * wrong** — minus anything already dealt with today.
+ * Every word currently worth extra practice, most urgent first: **what you
+ * just got wrong, then what you keep getting wrong.**
  *
  * The two halves answer different questions and only the second one is the
  * ranking above. `missedAt` words are a fresh observation from a quiz, the
  * sprint or 猜词; the ease ranking is an estimate accumulated over months.
  * Recent misses lead because they are the more actionable of the two, and
- * because this queue is now the only place a practice miss goes at all —
+ * because this pool is now the only place a practice miss goes at all —
  * the surfaces that record one deliberately no longer touch `due` (see
  * ProgressEntry.missedAt).
  *
@@ -197,21 +197,14 @@ export function rankStrugglingWords(words: Word[], progress: Progress): Word[] {
  * scheduler's own signals, ease and interval, and consolidateWord already
  * refused to force entries into it for exactly this reason: a definition
  * the card and the queue share stops meaning anything once either can
- * inject rows. The two were always allowed to differ — the "reviewed
- * today" filter below has only ever lived here.
+ * inject rows.
  *
- * The session ignores due dates by design, so without that filter the same
- * handful of words came back every single time the page was opened, in an
- * order that was fully deterministic down to the tiebreakers. A pass
- * through the list empties it for the day and the entry point on the Today
- * page disappears, which is the feedback the mode never gave.
+ * Uncapped and blind to what happened today: this is the whole stubborn
+ * universe, in drill order. The daily drill below narrows it; the
+ * unlimited walk (`/practice?pick=struggling`) consumes it as is — see
+ * the 2026-08-15 struggling-free-practice spec.
  */
-export function buildLapseQueue(
-  words: Word[],
-  progress: Progress,
-  today: string,
-  limit = LAPSE_SESSION_SIZE,
-): string[] {
+export function strugglingPracticePool(words: Word[], progress: Progress, today: string): Word[] {
   const cutoff = addDays(today, -MISS_RECENCY_DAYS)
   const missed = words
     .filter(w => {
@@ -219,7 +212,7 @@ export function buildLapseQueue(
       return e && e.state !== 'new' && e.missedAt !== undefined && e.missedAt >= cutoff
     })
     // Most recent miss first; dates are YYYY-MM-DD, so string order is
-    // chronological. Ties break the same way the ranking below does.
+    // chronological. Ties break the same way the ranking above does.
     .sort((a, b) => {
       const ma = progress.words[a.id].missedAt ?? '', mb = progress.words[b.id].missedAt ?? ''
       if (ma !== mb) return mb < ma ? -1 : 1
@@ -229,6 +222,30 @@ export function buildLapseQueue(
 
   const seen = new Set(missed.map(w => w.id))
   return [...missed, ...rankStrugglingWords(words, progress).filter(w => !seen.has(w.id))]
+}
+
+/**
+ * The daily drill session: the pool above, minus anything already dealt
+ * with today, capped to one sitting.
+ *
+ * The session ignores due dates by design, so without the reviewed-today
+ * filter the same handful of words came back every single time the page
+ * was opened, in an order that was fully deterministic down to the
+ * tiebreakers. A pass through the list empties it for the day and the
+ * entry point on the Today page disappears, which is the feedback the
+ * mode never gave.
+ *
+ * Deriving from strugglingPracticePool rather than duplicating it is
+ * load-bearing: the drill and the unlimited walk must never disagree
+ * about what "stubborn" means.
+ */
+export function buildLapseQueue(
+  words: Word[],
+  progress: Progress,
+  today: string,
+  limit = LAPSE_SESSION_SIZE,
+): string[] {
+  return strugglingPracticePool(words, progress, today)
     // lastReviewedAt is an ISO instant; the day it belongs to is the
     // user's local day, which is what `today` is. Comparing the raw UTC
     // prefix would drop a word a few hours early or late depending on

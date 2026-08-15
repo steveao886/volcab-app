@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   buildConsolidateQueue, buildLapseQueue, buildQueue,
-  CONSOLIDATE_DELAY_HOURS, CONSOLIDATE_MAX_INTERVAL_DAYS, MATURE_INTERVAL_DAYS, rankStrugglingWords,
+  CONSOLIDATE_DELAY_HOURS, CONSOLIDATE_MAX_INTERVAL_DAYS, LAPSE_SESSION_SIZE,
+  MATURE_INTERVAL_DAYS, rankStrugglingWords, strugglingPracticePool,
 } from './queue'
 import { INITIAL_EASE } from './srs'
 import { emptyProgress } from '../types'
@@ -329,5 +330,40 @@ describe('buildConsolidateQueue', () => {
     const p = emptyProgress()
     ws.forEach((w, i) => { p.words[w.id] = entry({ lastReviewedAt: at(4 + i / 60) }) })
     expect(buildConsolidateQueue(ws, p, now, TODAY)).toHaveLength(40)
+  })
+})
+
+describe('strugglingPracticePool: the drill queue before the daily narrowing', () => {
+  const TODAY = '2026-07-24'
+
+  it('recent misses lead by recency, then the ease ranking, deduplicated', () => {
+    const p = emptyProgress()
+    p.words['struggler'] = strugglingEntry(3, { ease: 1.4 })
+    p.words['both'] = strugglingEntry(2, { ease: 1.6, missedAt: TODAY })
+    p.words['missed'] = { state: 'review', ease: INITIAL_EASE, intervalDays: 20, due: '2026-08-13', stepIndex: 0, reps: 4, lapses: 0, lastReviewedAt: '2026-07-20T00:00:00Z', missedAt: '2026-07-23' }
+    const ws = [word('struggler'), word('both'), word('missed')]
+    // 'both' (missed today) before 'missed' (yesterday); 'struggler' enters
+    // via the ranking; 'both' appears exactly once despite qualifying twice.
+    expect(strugglingPracticePool(ws, p, TODAY).map(w => w.id)).toEqual(['both', 'missed', 'struggler'])
+  })
+
+  it('is uncapped — the daily session size bounds the drill, not the pool', () => {
+    const ws = Array.from({ length: LAPSE_SESSION_SIZE + 7 }, (_, i) => word(`w${i}`))
+    const p = emptyProgress()
+    ws.forEach((w, i) => { p.words[w.id] = strugglingEntry(i) })
+    expect(strugglingPracticePool(ws, p, TODAY)).toHaveLength(LAPSE_SESSION_SIZE + 7)
+  })
+
+  it('keeps words reviewed today — the unlimited walk may repeat them; the drill must not', () => {
+    const p = emptyProgress()
+    p.words['drilledToday'] = strugglingEntry(1, { lastReviewedAt: '2026-07-24T09:00:00Z' })
+    expect(strugglingPracticePool([word('drilledToday')], p, TODAY).map(w => w.id)).toEqual(['drilledToday'])
+    expect(buildLapseQueue([word('drilledToday')], p, TODAY)).toEqual([])
+  })
+
+  it('a miss outside the recency window with healthy ease is not in the pool at all', () => {
+    const p = emptyProgress()
+    p.words['a'] = { state: 'review', ease: INITIAL_EASE, intervalDays: 20, due: '2026-08-13', stepIndex: 0, reps: 4, lapses: 0, lastReviewedAt: '2026-07-01T00:00:00Z', missedAt: '2026-07-16' }
+    expect(strugglingPracticePool([word('a')], p, TODAY)).toEqual([])
   })
 })
