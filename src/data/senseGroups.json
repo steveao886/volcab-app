@@ -2852,10 +2852,10 @@
       "zh": "那家店集中体现了这条街过去二十年的变化。",
       "target": "集中体现",
       "order": [
-        "epitomize"
+        "epitomize",
+        "embody"
       ],
       "extra": [
-        "embody",
         "typify",
         "sum up"
       ],
@@ -3062,10 +3062,10 @@
       "zh": "主动公开失误这件事本身值得称赞。",
       "target": "值得称赞",
       "order": [
-        "laudable"
+        "laudable",
+        "commendable"
       ],
       "extra": [
-        "commendable",
         "praiseworthy",
         "to their credit"
       ],
@@ -3216,10 +3216,10 @@
       "zh": "他盯着那张账单,一脸茫然。",
       "target": "茫然",
       "order": [
-        "perplexity"
+        "perplexity",
+        "bewilderment"
       ],
       "extra": [
-        "bewilderment",
         "puzzlement",
         "incomprehension"
       ],
@@ -3790,11 +3790,11 @@
       "zh": "账上那几笔异常挪动预示着后来的暴雷。",
       "target": "预示",
       "order": [
-        "presage"
+        "presage",
+        "foreshadow"
       ],
       "extra": [
         "portend",
-        "foreshadow",
         "bode"
       ],
       "en": "Those odd transfers presaged the collapse that followed.",
@@ -4283,10 +4283,10 @@
       "target": "打心底排斥",
       "en": "He is antipathetic to networking events in a way that shows even when he says nothing at all.",
       "order": [
-        "antipathetic"
+        "antipathetic",
+        "averse"
       ],
       "extra": [
-        "averse",
         "ill-disposed"
       ],
       "why": "antipathetic 形容一个人从骨子里排斥某人或某事，是内心状态，可以完全不表现为冲突；它是书面语，多接 to 或 toward，日常口语很少用。"
