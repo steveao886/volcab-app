@@ -14,22 +14,30 @@ export type QuizType =
   | 'contrast' | 'audio2meaning' | 'audio2spelling'
 
 /**
- * The seven practice surfaces, as recorded in `DailyStat.quizModes`.
+ * Every practice surface that has ever recorded into `DailyStat.quizModes`.
  *
  * A stable wire key per surface, deliberately **not** the Chinese label
  * (which can be reworded) and not the `?mode=` param (which `mixed` reaches
  * by being absent). Renaming one of these orphans that surface's history,
  * so treat them as append-only.
+ *
+ * **`guess` is retired, not deleted.** The 猜词 mode was removed from the app
+ * on 2026-08-17 because it went unused next to 回想, but the days it was
+ * played are real and still sit in `quizModes` on the server. Dropping the
+ * key would strand those rows behind a label nothing can render — which is
+ * exactly the orphaning the append-only rule above exists to prevent. A
+ * retired key generates no new rows and the stats page already renders its
+ * section conditionally, so it costs one line here and nothing on screen.
  */
 export const QUIZ_METRIC_KEYS = [
-  'mixed', 'recall', 'contrast', 'audio', 'sprint', 'passage', 'guess',
+  'mixed', 'recall', 'contrast', 'audio', 'sprint', 'passage', 'guess', 'antonym',
 ] as const
 export type QuizMetricKey = (typeof QUIZ_METRIC_KEYS)[number]
 
 /** The label each surface shows on the stats page. Kept beside the keys so a new mode can't be added to one and forgotten in the other. */
 export const QUIZ_METRIC_LABELS: Record<QuizMetricKey, string> = {
   mixed: '综合', recall: '回想', contrast: '辨析', audio: '听音',
-  sprint: '极速', passage: '短文', guess: '猜词',
+  sprint: '极速', passage: '短文', guess: '猜词', antonym: '反义',
 }
 
 /**

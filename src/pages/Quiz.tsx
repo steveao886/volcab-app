@@ -16,7 +16,6 @@ import type { Progress, Word } from '../types'
 import { agoLabel, modeOverview, recommendMode } from './statsDerive'
 import type { ModeOverviewRow } from './statsDerive'
 import { QuizQuestionView } from './QuizQuestion'
-import { GuessMode } from './Guess'
 import { PassageSession } from './QuizPassage'
 import { RecallSession } from './QuizRecall'
 import { SprintSession } from './QuizSprint'
@@ -44,7 +43,7 @@ const MODES = [
   { key: 'audio', label: '听音', desc: '听发音,选词义' },
   { key: 'sprint', label: '极速', desc: '60 秒,能答多少答多少' },
   { key: 'passage', label: '短文', desc: '整段文章挖空填词' },
-  { key: 'guess', label: '猜词', desc: '按释义逐步猜出单词' },
+  { key: 'antonym', label: '反义', desc: '给一个词,选出它的反义词' },
 ] as const
 
 type QuizMode = (typeof MODES)[number]['key']
@@ -54,10 +53,15 @@ const MODE_LABEL: Record<QuizMode, string> = Object.fromEntries(MODES.map(m => [
 const isMode = (v: string | null): v is QuizMode => MODES.some(m => m.key === v)
 
 /** Explanation for when no questions can be generated: each mode is missing something different, and one generic message would leave people not knowing what to do. */
-const EMPTY_HINT: Record<Exclude<QuizMode, 'sprint' | 'passage' | 'recall' | 'guess'>, string> = {
+const EMPTY_HINT: Record<Exclude<QuizMode, 'sprint' | 'passage' | 'recall'>, string> = {
   mixed: '需要至少 4 个词条才能测试。当前词库还不够,先去添加或多学几个单词吧。',
   contrast: '你学过的词里还凑不出易混的一对。辨析只考已经学过的词 —— 拿两个没见过的词问「该用哪个」没有意义。再学一阵子,这里的题会自己多起来。',
   audio: '需要至少 4 个词条才能开始听音练习。当前词库还不够,先去添加或多学几个单词吧。',
+  // Narrower than the others by construction: an antonym question needs the
+  // *pair* to be in the library, and only 106 of 566 words have a
+  // library-internal opposite. Say that plainly rather than leaving the
+  // impression the mode is broken.
+  antonym: '你学过的词里还凑不出一对反义词。反义题两边都得是库里的词 —— 只有词条的「反义词」里写着另一个词条时才成对。再学一阵子,或给已有词条补上反义词,题就会多起来。',
 }
 
 /**
@@ -73,7 +77,7 @@ function QuizSession({
   onRestart,
 }: {
   words: Word[]
-  mode: Exclude<QuizMode, 'sprint' | 'passage' | 'recall' | 'guess'>
+  mode: Exclude<QuizMode, 'sprint' | 'passage' | 'recall'>
   onRestart: () => void
 }) {
   const { progress, recordQuiz } = useApp()
@@ -98,6 +102,10 @@ function QuizSession({
       )
     }
     if (mode === 'audio') return generateAudioQuiz(words, progress, today, QUESTION_COUNT)
+    // The one type, rather than the whole rotation. Same generator and the
+    // same difficulty weighting as 综合 — the mode is a filter on the type
+    // list, not a second implementation.
+    if (mode === 'antonym') return generateQuiz(words, progress, today, QUESTION_COUNT, Math.random, ['antonymPick'])
     return generateQuiz(words, progress, today, QUESTION_COUNT)
   })
   const [index, setIndex] = useState(0)
@@ -271,10 +279,9 @@ export function Quiz() {
   return isMode(raw) ? <QuizSessionPage mode={raw} /> : <QuizHub />
 }
 
-/** Card line: sprint and guess chase a personal best, the rest show accuracy once it clears the floor. */
+/** Card line: sprint chases a personal best, the rest show accuracy once it clears the floor. */
 function statLabel(key: QuizMetricKey, row: ModeOverviewRow | undefined, progress: Progress): string {
   if (key === 'sprint' && progress.bestSprint !== undefined) return `最高 ${progress.bestSprint.score} 题`
-  if (key === 'guess' && progress.bestGuess !== undefined) return `最佳 ${progress.bestGuess.score} 词`
   if (row === undefined || row.asked === 0) return '—'
   if (row.rate === null) return `练过 ${row.asked} 题`
   return `${Math.round(row.rate * 100)}%`
@@ -366,11 +373,6 @@ function QuizSessionPage({ mode }: { mode: QuizMode }) {
           by one). */}
       {mode === 'sprint' ? (
         <SprintSession key={`sprint-${session}`} words={words} onRestart={restart} />
-      ) : mode === 'guess' ? (
-        // GuessMode owns its own round counter and question generation, so
-        // it needs no key and no onRestart — the one mode that predates the
-        // switcher and kept its internals when its chrome moved here.
-        <GuessMode />
       ) : mode === 'recall' ? (
         groups === null ? (
           <Card className="quiz-empty"><p className="muted">正在加载题组…</p></Card>

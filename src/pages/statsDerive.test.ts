@@ -305,9 +305,12 @@ const progWithModes = (
 }
 
 describe('modeOverview', () => {
-  it('returns all seven modes in fixed key order, played or not', () => {
+  // `guess` sits in the middle rather than at the end because the keys are
+  // append-only: 猜词 was retired from the app but its recorded days are
+  // still on the server, so the key stays and `antonym` was appended after it.
+  it('returns every metric key in fixed order, played or not — including the retired one', () => {
     const rows = modeOverview(emptyProgress())
-    expect(rows.map(r => r.mode)).toEqual(['mixed', 'recall', 'contrast', 'audio', 'sprint', 'passage', 'guess'])
+    expect(rows.map(r => r.mode)).toEqual(['mixed', 'recall', 'contrast', 'audio', 'sprint', 'passage', 'guess', 'antonym'])
     expect(rows[0]).toMatchObject({ asked: 0, correct: 0, rate: null, lastPlayed: null })
   })
 
