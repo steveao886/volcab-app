@@ -51,10 +51,12 @@
       "en": "The grand jury voted to indict the former executive on eleven counts of wire fraud.",
       "order": [
         "indict",
-        "incriminate",
-        "inculpate"
+        "incriminate"
       ],
-      "why": "indict 是检方或大陪审团启动正式指控，宾语是人并带上罪名；incriminate 和 inculpate 说的是证据让人显得有罪，不是法律程序，其中 inculpate 更书面、日常几乎不用。"
+      "why": "indict 是检方或大陪审团启动正式指控，宾语是人并带上罪名；incriminate 和 inculpate 说的是证据让人显得有罪，不是法律程序，其中 inculpate 更书面、日常几乎不用。",
+      "extra": [
+        "inculpate"
+      ]
     },
     {
       "zh": "他本想置身事外，在家族群里回了一句就被卷进了遗产纠纷。",
@@ -62,10 +64,12 @@
       "en": "One reply in the family group chat was enough to embroil him in the inheritance dispute.",
       "order": [
         "embroil",
-        "implicate",
-        "inculpate"
+        "implicate"
       ],
-      "why": "embroil 只是被卷进纠纷或麻烦，不含有罪的意思；implicate 指证据显示某人涉入了不法行为；inculpate 意思相近但属法律书面语，还带明确的归罪意味。"
+      "why": "embroil 只是被卷进纠纷或麻烦，不含有罪的意思；implicate 指证据显示某人涉入了不法行为；inculpate 意思相近但属法律书面语，还带明确的归罪意味。",
+      "extra": [
+        "inculpate"
+      ]
     },
     {
       "zh": "要不要每周回办公室五天，成了全员大会上最有争议的话题。",
@@ -469,10 +473,12 @@
       "en": "The study implicated poor sleep in the participants' declining memory.",
       "order": [
         "implicate",
-        "incriminate",
-        "inculpate"
+        "incriminate"
       ],
-      "why": "implicate 的宾语既可以是人，也可以是原因或事物，指出它与某个后果有牵连；incriminate 和 inculpate 都必须指向有罪责的人，其中 inculpate 只出现在正式法律语境，日常几乎不用。"
+      "why": "implicate 的宾语既可以是人，也可以是原因或事物，指出它与某个后果有牵连；incriminate 和 inculpate 都必须指向有罪责的人，其中 inculpate 只出现在正式法律语境，日常几乎不用。",
+      "extra": [
+        "inculpate"
+      ]
     },
     {
       "zh": "葬礼上，弟弟致辞追忆祖父，讲了许多家人没听过的往事。",
@@ -3729,20 +3735,6 @@
       ],
       "en": "Interpolate between the two known points to get the middle value.",
       "why": "interpolate 指在已知数据之间推算中间值,与向外推的 extrapolate 相对;fill in between 是白话解释;estimate between points 同样是描述;splice in 指把一段插进去,多用于影片与代码。"
-    },
-    {
-      "zh": "这类问题属于形而上学,实验答不了。",
-      "target": "形而上学",
-      "order": [
-        "metaphysics"
-      ],
-      "extra": [
-        "ontology",
-        "first philosophy",
-        "speculative philosophy"
-      ],
-      "en": "Questions like that belong to metaphysics; no experiment settles them.",
-      "why": "metaphysics 指研究存在与实在本质的哲学分支;ontology 是其中专门研究存在者的部分,范围更窄;first philosophy 是亚里士多德的旧称;speculative philosophy 强调思辨方式。"
     },
     {
       "zh": "他答应了三件事,一件也没办成,实在靠不住。",

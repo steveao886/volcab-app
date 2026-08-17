@@ -5688,54 +5688,6 @@
       "addedAt": "2026-07-24"
     },
     {
-      "id": "cartelize",
-      "headword": "cartelize",
-      "phonetic": "/ˈkɑːrtəlaɪz/",
-      "meanings": [
-        {
-          "pos": "v.",
-          "en": "(economics) to organize an industry or group of producers into a cartel to control prices or output",
-          "zh": "(经济学)使卡特尔化;组成价格联盟"
-        }
-      ],
-      "examples": [
-        "Regulators accused the three airlines of quietly cartelizing transatlantic routes, coordinating fares within a few dollars of each other.",
-        "Once OPEC members agreed to cartelize oil output, global crude prices jumped nearly twenty percent within a month.",
-        "Fertilizer manufacturers were accused of quietly agreeing to cartelize supply, keeping prices high through a drought that should have lowered demand.",
-        "Container shipping lines effectively cartelized transpacific routes during the pandemic, and freight rates tripled within a single quarter.",
-        "Coffee exporters in three countries tried to cartelize bean prices, but a bumper harvest in a fourth country broke the agreement."
-      ],
-      "synonyms": [
-        "collude",
-        "form a cartel",
-        "price-fix"
-      ],
-      "antonyms": [
-        "deregulate"
-      ],
-      "collocations": [
-        "cartelize an industry",
-        "cartelized market",
-        "cartelize production"
-      ],
-      "relatedForms": [
-        {
-          "form": "cartel",
-          "pos": "n.",
-          "zh": "卡特尔;企业联合;价格联盟"
-        },
-        {
-          "form": "cartelization",
-          "pos": "n.",
-          "zh": "卡特尔化"
-        }
-      ],
-      "usageScore": 4,
-      "etymology": "意大利 cartello(告示、纸牌) ← carta(纸) → 一纸盟约 → 结成价格联盟",
-      "sourceNote": "42-49",
-      "addedAt": "2026-07-24"
-    },
-    {
       "id": "cohere",
       "headword": "cohere",
       "phonetic": "/koʊˈhɪr/",
@@ -9013,50 +8965,6 @@
       ],
       "usageScore": 6,
       "etymology": "in-(向) + crimen(罪) → 把罪往身上引 → 使负罪",
-      "sourceNote": "59-61",
-      "addedAt": "2026-07-24"
-    },
-    {
-      "id": "inculpate",
-      "headword": "inculpate",
-      "phonetic": "/ɪnˈkʌlpeɪt/",
-      "meanings": [
-        {
-          "pos": "v.",
-          "en": "to accuse of or show involvement in a fault or crime",
-          "zh": "控告;使负罪;归咎于"
-        }
-      ],
-      "examples": [
-        "The intern's forwarded Slack messages ended up inculpating the whole marketing team in the leaked-campaign scandal, not just the one person who sent it.",
-        "His lawyer advised him to stay silent in the interview, since anything he said could inculpate him further in the fraud case.",
-        "The audit was careful not to inculpate the entire finance department when only one rogue approver had signed off on the fake invoices.",
-        "The forensic accountant's report ended up inculpating two vendors who'd been quietly splitting kickbacks on every contract for three years.",
-        "A single recovered text message inculpated the store manager in the inventory theft that had been blamed on overnight staff for months."
-      ],
-      "synonyms": [
-        "incriminate",
-        "implicate",
-        "accuse",
-        "charge"
-      ],
-      "antonyms": [
-        "exculpate",
-        "exonerate"
-      ],
-      "collocations": [
-        "inculpate someone in",
-        "a self-inculpating statement"
-      ],
-      "relatedForms": [
-        {
-          "form": "inculpatory",
-          "pos": "adj.",
-          "zh": "归罪的;证明有罪的"
-        }
-      ],
-      "usageScore": 4,
-      "etymology": "in-(向) + culpa(过错,同 culpable) → 归咎于",
       "sourceNote": "59-61",
       "addedAt": "2026-07-24"
     },
@@ -12451,46 +12359,6 @@
       ],
       "usageScore": 5,
       "etymology": "laxus(松) → 使松下来 → 泻药",
-      "sourceNote": "72-75",
-      "addedAt": "2026-07-24"
-    },
-    {
-      "id": "metaphysics",
-      "headword": "metaphysics",
-      "phonetic": "/ˌmɛtəˈfɪzɪks/",
-      "meanings": [
-        {
-          "pos": "n.",
-          "en": "(philosophy) the branch of philosophy concerned with the fundamental nature of reality, being, and existence",
-          "zh": "(哲学)形而上学"
-        }
-      ],
-      "examples": [
-        "The seminar spent the whole afternoon on Aristotle's metaphysics, debating what it even means for something to 'exist.'",
-        "His thesis leaned heavily on metaphysics, questioning whether time is a real dimension or just a construct of perception.",
-        "The late-night dorm conversation somehow drifted from video games into metaphysics, with someone insisting free will was just an illusion.",
-        "His philosophy minor was really just an excuse to keep taking metaphysics electives instead of finishing his actual major requirements.",
-        "The podcast episode on metaphysics tried to explain personal identity over time using nothing but a broken ship as an example."
-      ],
-      "synonyms": [
-        "ontology",
-        "philosophy of being"
-      ],
-      "antonyms": [],
-      "collocations": [
-        "study metaphysics",
-        "metaphysics of mind",
-        "Aristotelian metaphysics"
-      ],
-      "relatedForms": [
-        {
-          "form": "metaphysical",
-          "pos": "adj.",
-          "zh": "形而上学的;玄学的"
-        }
-      ],
-      "usageScore": 5,
-      "etymology": "meta-(在…之后) —— 亚里士多德此书排在《物理学》之后 → 形而上学",
       "sourceNote": "72-75",
       "addedAt": "2026-07-24"
     },
@@ -20704,51 +20572,6 @@
       ],
       "usageScore": 4,
       "etymology": "in-(在旁) + vigilare(守夜警醒) → 在旁盯着 → 监考官",
-      "sourceNote": "104-106",
-      "addedAt": "2026-07-24"
-    },
-    {
-      "id": "irrevocable",
-      "headword": "irrevocable",
-      "phonetic": "/ɪˈrɛvəkəbəl/",
-      "meanings": [
-        {
-          "pos": "adj.",
-          "en": "not able to be changed, reversed, or recovered; final",
-          "zh": "不可撤销的;不可挽回的"
-        }
-      ],
-      "examples": [
-        "Hitting 'delete account' came with a warning in red: this action is irrevocable, no recovery period, no second chances.",
-        "Signing the letter of intent felt irrevocable, even though the lawyer insisted they could still walk away before closing.",
-        "The damage to their friendship after the money dispute felt irrevocable, no matter how many times he apologized.",
-        "Clicking 'confirm purchase' on the nonrefundable flight felt irrevocable the second the confirmation email landed in his inbox.",
-        "The judge's ruling was irrevocable, and no amount of appeal filings could undo the custody arrangement now."
-      ],
-      "synonyms": [
-        "irreversible",
-        "final",
-        "unalterable",
-        "permanent"
-      ],
-      "antonyms": [
-        "revocable",
-        "reversible"
-      ],
-      "collocations": [
-        "irrevocable decision",
-        "irrevocable damage",
-        "irrevocable letter of credit"
-      ],
-      "relatedForms": [
-        {
-          "form": "revoke",
-          "pos": "v.",
-          "zh": "撤销"
-        }
-      ],
-      "usageScore": 5,
-      "etymology": "in-(不) + revocare(叫回来) → 叫不回来 → 不可撤销",
       "sourceNote": "104-106",
       "addedAt": "2026-07-24"
     },
