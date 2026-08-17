@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { QUIZ_TYPES, clozeCollocation, clozeExample, contrastPairKey, generateAudioQuiz, generateContrastQuiz, generateQuiz, pickCloze, pickMeaning, sharedSynonyms, difficultyWeight, weightedShuffle} from './quiz'
+import { QUIZ_TYPES, buildAntonymIndices, clozeCollocation, clozeExample, contrastPairKey, generateAntonymQuestion, generateAudioQuiz, generateContrastQuiz, generateQuiz, pickCloze, pickMeaning, sharedSynonyms, difficultyWeight, weightedShuffle} from './quiz'
+import { buildAntonymPairs } from './antonym'
 import { MISS_RECENCY_DAYS } from './queue'
 import { addDays } from './srs'
 import { emptyProgress } from '../types'
@@ -698,5 +699,177 @@ describe('weightedShuffle', () => {
 
   it('an empty list is not an error', () => {
     expect(weightedShuffle([], () => 1, mulberry(1))).toEqual([])
+  })
+})
+
+/**
+ * antonymPick — the seventh mixed-quiz type. Fixtures here need real
+ * library-internal opposites, which the shared `word()` fixture above
+ * deliberately does not have (its antonyms are id-prefixed strings so that
+ * synonymHint can always draw one).
+ */
+const anto = (id: string, antonyms: string[], pos = 'adj.'): Word => ({
+  id, headword: id, phonetic: `/${id}/`, meanings: [{ pos, en: `def of ${id}`, zh: `${id}义` }],
+  examples: [`We saw ${id} things.`, `It was ${id} again.`],
+  synonyms: [`${id}-syn`], antonyms, collocations: [`${id} thing`],
+  relatedForms: [], sourceNote: 't', addedAt: '2026-07-01',
+})
+
+const allStudied = (ws: Word[]): Progress => {
+  const p = emptyProgress()
+  for (const w of ws) {
+    p.words[w.id] = { state: 'review', ease: 2.5, intervalDays: 3, due: '2026-08-01', stepIndex: 0, reps: 1, lapses: 0, lastReviewedAt: '2026-07-20T00:00:00Z' }
+  }
+  return p
+}
+
+const onlyAntonym = (ws: Word[], n = 20, seed = 3) =>
+  generateQuiz(ws, allStudied(ws), TODAY, n, mulberry(seed), ['antonymPick'])
+
+describe('generateQuiz — antonymPick', () => {
+  // hot/cold are the pair; the rest are same-POS filler with no opposites.
+  const base = [
+    anto('hot', ['cold']), anto('cold', []),
+    anto('damp', []), anto('loud', []), anto('brisk', []), anto('vague', []),
+  ]
+
+  it('asks one headword and offers four headwords, one of which is its opposite', () => {
+    const qs = onlyAntonym(base, 4)
+    expect(qs.length).toBeGreaterThan(0)
+    for (const q of qs) {
+      expect(q.type).toBe('antonymPick')
+      expect(q.options).toHaveLength(4)
+      expect(q.options).toContain(q.answer)
+      expect([q.prompt, q.answer].sort()).toEqual(['cold', 'hot'])
+      expect(q.antonymId).toBe(q.answer)
+      // The prompt word is the graded one: it is what the difficulty
+      // weighting drew, so it must be what a miss demotes.
+      expect(q.wordId).toBe(q.prompt)
+    }
+  })
+
+  it('both directions of a pair are reachable', () => {
+    const prompts = new Set<string>()
+    for (let seed = 0; seed < 30; seed++) for (const q of onlyAntonym(base, 6, seed)) prompts.add(q.prompt)
+    expect([...prompts].sort()).toEqual(['cold', 'hot'])
+  })
+
+  /**
+   * The two-correct-answers failure, arriving by a route sharedSynonyms
+   * does not cover: 25 of the library's 106 antonym-paired words have more
+   * than one opposite. If only the drawn answer were excluded, one of the
+   * others could stand in the option list as a second correct answer.
+   */
+  it('no distractor is another opposite of the prompt word', () => {
+    const many = [
+      anto('antagonize', ['placate', 'conciliate', 'appease']),
+      anto('placate', []), anto('conciliate', []), anto('appease', []),
+      anto('shelve', []), anto('draft', []), anto('audit', []), anto('renew', []),
+    ]
+    const qs = onlyAntonym(many, 12)
+    expect(qs.length).toBeGreaterThan(0)
+    for (const q of qs) {
+      const forbidden = q.prompt === 'antagonize'
+        ? ['placate', 'conciliate', 'appease'].filter(x => x !== q.answer)
+        : ['antagonize'].filter(x => x !== q.answer)
+      for (const f of forbidden) expect(q.options).not.toContain(f)
+    }
+  })
+
+  /**
+   * A distractor sharing a synonym with the answer is very likely an
+   * opposite of the prompt too — nobody wrote it into the antonyms array,
+   * which is exactly why the contrast graph has to be consulted instead of
+   * trusted absence.
+   */
+  it('no distractor is a confusable partner of the answer', () => {
+    const ws = [
+      { ...anto('conspicuous', ['unobtrusive']), synonyms: ['visible'] },
+      { ...anto('unobtrusive', []), synonyms: ['discreet'] },
+      { ...anto('subtle', []), synonyms: ['discreet'] }, // shares "discreet" with the answer
+      anto('damp', []), anto('loud', []), anto('brisk', []), anto('vague', []), anto('stern', []),
+    ]
+    for (const q of onlyAntonym(ws, 12)) {
+      if (q.answer === 'unobtrusive') expect(q.options).not.toContain('subtle')
+    }
+  })
+
+  it('all four options share a part of speech — three verbs beside one adjective gives the answer away', () => {
+    const mixed = [
+      anto('hot', ['cold']), anto('cold', []),
+      anto('damp', []), anto('loud', []),
+      anto('shelve', [], 'v.'), anto('draft', [], 'v.'), anto('audit', [], 'v.'),
+    ]
+    const pos = new Map(mixed.map(w => [w.headword, w.meanings[0].pos]))
+    for (const q of onlyAntonym(mixed, 12)) {
+      expect(new Set(q.options.map(o => pos.get(o)))).toEqual(new Set(['adj.']))
+    }
+  })
+
+  it('a pair with too few same-POS distractors is skipped, not downgraded', () => {
+    const thin = [anto('hot', ['cold']), anto('cold', []), anto('shelve', [], 'v.'), anto('draft', [], 'v.')]
+    expect(onlyAntonym(thin, 5)).toEqual([])
+  })
+
+  it('a library with no internal opposites yields no questions rather than throwing', () => {
+    expect(onlyAntonym([anto('damp', []), anto('loud', []), anto('brisk', []), anto('vague', [])], 5)).toEqual([])
+  })
+
+  it('the same seed reproduces the same question', () => {
+    expect(onlyAntonym(base, 4, 9)).toEqual(onlyAntonym(base, 4, 9))
+  })
+
+  it('joins the mixed rotation, so a long quiz contains one', () => {
+    const ws = [...base, anto('near', ['far']), anto('far', []), anto('meek', []), anto('bold', [])]
+    const qs = generateQuiz(ws, allStudied(ws), TODAY, 21, mulberry(5), QUIZ_TYPES)
+    expect(qs.some(q => q.type === 'antonymPick')).toBe(true)
+  })
+})
+
+describe('full-library regression — antonymPick', () => {
+  /**
+   * The counterpart to headword.test.ts's two full-library assertions: pin
+   * down that the exclusion rules leave a buildable question for **every**
+   * direction, over the real library rather than fixtures. If this ever
+   * fails, the fix is to look at why that word's same-POS distractor pool
+   * ran dry — not to relax an exclusion, since each one is there to stop a
+   * question shipping with two correct answers.
+   */
+  it('every askable direction over the real library builds a complete question', async () => {
+    const lib = (await import('../../data/words.json')).default as unknown as { words: Word[] }
+    const indices = buildAntonymIndices(lib.words)
+    const byId = new Map(lib.words.map(w => [w.id, w]))
+    const failed: string[] = []
+    let built = 0
+    for (const { a, b } of buildAntonymPairs(lib.words)) {
+      for (const [from, to] of [[a, b], [b, a]]) {
+        const q = generateAntonymQuestion(byId.get(from)!, lib.words, lib.words, indices, mulberry(1), to)
+        if (q === null) failed.push(`${from} → ${to}`)
+        else built++
+      }
+    }
+    expect(failed).toEqual([])
+    expect(built).toBe(138)
+  })
+
+  it('no question over the real library offers a second valid answer', async () => {
+    const lib = (await import('../../data/words.json')).default as unknown as { words: Word[] }
+    const indices = buildAntonymIndices(lib.words)
+    const byId = new Map(lib.words.map(w => [w.id, w]))
+    const byHeadword = new Map(lib.words.map(w => [w.headword, w.id]))
+    const bad: string[] = []
+    for (const { a, b } of buildAntonymPairs(lib.words)) {
+      for (const [from, to] of [[a, b], [b, a]]) {
+        const q = generateAntonymQuestion(byId.get(from)!, lib.words, lib.words, indices, mulberry(1), to)
+        if (q === null) continue
+        for (const opt of q.options) {
+          if (opt === q.answer) continue
+          const id = byHeadword.get(opt)!
+          if (indices.antonyms.get(from)?.has(id)) bad.push(`${from} → ${to}: ${opt} is also an opposite`)
+          if (indices.confusable.get(to)?.has(id)) bad.push(`${from} → ${to}: ${opt} is confusable with the answer`)
+        }
+      }
+    }
+    expect(bad).toEqual([])
   })
 })

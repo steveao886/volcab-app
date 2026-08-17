@@ -1,3 +1,4 @@
+import { antonymIndex } from './antonym'
 import { buildContrastPairs } from './contrast'
 import { headwordPattern } from './headword'
 // MISS_RECENCY_DAYS is imported rather than restated: it is one fact — how
@@ -9,7 +10,7 @@ import type { Meaning, Progress, Word } from '../types'
 
 export type QuizType =
   | 'word2meaning' | 'meaning2word' | 'spelling'
-  | 'clozeExample' | 'clozeCollocation' | 'synonymHint'
+  | 'clozeExample' | 'clozeCollocation' | 'synonymHint' | 'antonymPick'
   | 'contrast' | 'audio2meaning' | 'audio2spelling'
 
 /**
@@ -42,7 +43,7 @@ export const QUIZ_METRIC_LABELS: Record<QuizMetricKey, string> = {
  */
 export const QUIZ_TYPES: readonly QuizType[] = [
   'word2meaning', 'meaning2word', 'spelling',
-  'clozeExample', 'clozeCollocation', 'synonymHint',
+  'clozeExample', 'clozeCollocation', 'synonymHint', 'antonymPick',
 ]
 
 /** The two question types that rotate in listening mode: audio→meaning, audio→spelling. */
@@ -79,6 +80,11 @@ export interface QuizQuestion {
    *  uses this to show both words' meanings/examples/collocations side by side once the
    *  answer is revealed — that comparison card is the actual point of discrimination mode. */
   contrastId?: string
+  /** Carried only by antonymPick questions: the id of the **answer** word, i.e. the opposite.
+   *  `wordId` is the prompt word, so the reveal needs this to name the other half of the pair.
+   *  Kept separate from contrastId rather than merged into one `partnerId`: that would rename a
+   *  field discrimination mode already depends on, in exchange for one identifier. */
+  antonymId?: string
 }
 
 /**
@@ -323,6 +329,120 @@ function questionPool(words: Word[], progress: Progress): Word[] | null {
  *   functions. Sprint mode uses this parameter to narrow things down to two four-choice
  *   types (a spelling question would blow the 60-second pace).
  */
+/**
+ * The two graphs an antonymPick question has to consult, built once per quiz.
+ *
+ * Same reason `sharedSynonymsCache` is hoisted out of the candidate loop
+ * below: `buildContrastPairs` walks the whole library, and rebuilding it per
+ * question would make generation O(n²).
+ */
+export interface AntonymIndices {
+  /** id → every library word that is an opposite of it */
+  antonyms: Map<string, Set<string>>
+  /** id → every library word it is confusable with, read off the contrast graph */
+  confusable: Map<string, Set<string>>
+}
+
+export function buildAntonymIndices(words: Word[]): AntonymIndices {
+  const confusable = new Map<string, Set<string>>()
+  const link = (from: string, to: string) => {
+    const set = confusable.get(from)
+    if (set) set.add(to)
+    else confusable.set(from, new Set([to]))
+  }
+  for (const p of buildContrastPairs(words)) {
+    link(p.a, p.b)
+    link(p.b, p.a)
+  }
+  return { antonyms: antonymIndex(words), confusable }
+}
+
+/**
+ * One "pick the opposite" question, or null when it can't be built cleanly.
+ *
+ * Exported so the full-library regression can force a direction and assert
+ * that every one of the 138 askable directions survives the exclusions.
+ *
+ * Three things are kept out of the distractors, and all three are the same
+ * failure wearing different clothes — **a four-choice question with two
+ * correct answers**, which is what `sharedSynonyms` was introduced to stop
+ * (see its comment above):
+ *
+ * 1. *Every* opposite of the prompt word, not just the one drawn as the
+ *    answer. 25 of the library's 106 antonym-paired words carry more than
+ *    one; antagonize and agreeable carry four.
+ * 2. Anything confusable with the answer. A word sharing a synonym with the
+ *    answer is very likely an opposite of the prompt as well — nobody wrote
+ *    it into the `antonyms` array, which is precisely why absence there
+ *    can't be trusted.
+ * 3. A different part of speech from the answer. The other question types
+ *    don't filter on POS and don't need to; here, three verbs standing
+ *    beside one adjective hand the answer over without the learner reading
+ *    a single word.
+ *
+ * Rule 3 is a hard requirement rather than a preference. Falling back to
+ * mixed-POS distractors when the same-POS pool runs dry would quietly turn
+ * the thin cases — the ones most likely to hit it — into free questions;
+ * returning null instead lets the caller move to the next candidate word,
+ * which is how every other branch in generateQuiz handles a dead end.
+ */
+export function generateAntonymQuestion(
+  w: Word,
+  words: Word[],
+  pool: Word[],
+  indices: AntonymIndices,
+  rng: () => number,
+  forcedAnswerId?: string,
+): QuizQuestion | null {
+  const opposites = indices.antonyms.get(w.id)
+  if (opposites === undefined || opposites.size === 0) return null
+
+  const byId = new Map(words.map(x => [x.id, x]))
+  const answerId = forcedAnswerId ?? [...opposites][Math.floor(rng() * opposites.size)]
+  const answer = byId.get(answerId)
+  if (answer === undefined || !opposites.has(answerId)) return null
+
+  const answerPos = answer.meanings[0]?.pos
+  if (answerPos === undefined) return null
+  const nearAnswer = indices.confusable.get(answerId)
+
+  const eligible = (x: Word) =>
+    x.id !== w.id
+    && x.id !== answerId
+    && !opposites.has(x.id)
+    && !(nearAnswer?.has(x.id) ?? false)
+    && x.meanings[0]?.pos === answerPos
+
+  const seen = new Set<string>([answer.headword, w.headword])
+  const distractors: string[] = []
+  const collect = (list: Word[]) => {
+    for (const cand of shuffle(list.filter(eligible), rng)) {
+      if (distractors.length >= 3) break
+      if (seen.has(cand.headword)) continue
+      seen.add(cand.headword)
+      distractors.push(cand.headword)
+    }
+  }
+  // Pool first, then the whole library — the same fallback order
+  // pickDistractorLabels uses. A word the learner hasn't met yet is still a
+  // perfectly good wrong option.
+  collect(pool)
+  if (distractors.length < 3) collect(words)
+  if (distractors.length < 3) return null
+
+  return {
+    type: 'antonymPick',
+    // The prompt word, not the answer. Every branch below records the
+    // candidate the difficulty weighting drew; recording the answer instead
+    // would let a miss demote a word the scheduler never selected.
+    wordId: w.id,
+    prompt: w.headword,
+    options: shuffle([answer.headword, ...distractors], rng),
+    answer: answer.headword,
+    antonymId: answer.id,
+  }
+}
+
 export function generateQuiz(
   words: Word[],
   progress: Progress,
@@ -340,6 +460,9 @@ export function generateQuiz(
 
   // The shared-word set is computed once for the whole word library — putting it inside the loop would make it O(n²)
   const sharedSynonymsCache = sharedSynonyms(words)
+  // Same reason, and only paid when the rotation actually contains the type:
+  // buildAntonymIndices walks the contrast graph over the whole library.
+  const antonymIndices = types.includes('antonymPick') ? buildAntonymIndices(words) : null
 
   const candidates = weightedShuffle(pool, w => difficultyWeight(w, progress, today), rng)
   const questions: QuizQuestion[] = []
@@ -355,6 +478,17 @@ export function generateQuiz(
         options: [], answer: w.headword,
         phonetic: w.phonetic,
       })
+      continue
+    }
+
+    if (type === 'antonymPick') {
+      // Only 106 of 566 words have a library-internal opposite, so most
+      // candidates fall straight through here. That is fine: the slot index
+      // doesn't advance on a `continue`, so the next candidate is tried for
+      // the same type rather than the type being skipped.
+      const q = antonymIndices === null ? null : generateAntonymQuestion(w, words, pool, antonymIndices, rng)
+      if (q === null) continue
+      questions.push(q)
       continue
     }
 

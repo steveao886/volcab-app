@@ -23,6 +23,7 @@ const TYPE_LABEL: Record<QuizType, string> = {
   clozeExample: '根据例句选出正确的单词',
   clozeCollocation: '根据搭配选出正确的单词',
   synonymHint: '选出对应的单词',
+  antonymPick: '选出意思相反的词',
   contrast: '两个近义词,哪个更贴合这句话?',
   audio2meaning: '听发音,选出正确的释义',
   audio2spelling: '听发音,拼写这个单词',
@@ -148,6 +149,39 @@ function ContrastCard({ answerId, otherId }: { answerId: string; otherId: string
   )
 }
 
+/**
+ * Reveal card for an antonymPick question: the word that was asked, then its
+ * opposite.
+ *
+ * Reuses ContrastSide rather than growing a second layout — both cards are
+ * answering "here are two words, look at them together", and 375px forces
+ * the same stacked shape on either of them.
+ *
+ * **No authored note row, unlike ContrastCard.** Discrimination mode needs
+ * one because near-synonyms produce sentences where either word fits and
+ * only a human can say what separates them. Opposites don't have that
+ * problem: the two glosses side by side *are* the explanation, and 69
+ * hand-written notes saying "one is the reverse of the other" would be the
+ * kind of padding validate-word-notes exists to keep out.
+ *
+ * Prompt word first and untagged, answer second and tagged: the question
+ * was "what is the opposite of X", so reading top to bottom replays it.
+ */
+function AntonymCard({ promptId, answerId }: { promptId: string; answerId: string }) {
+  const { words } = useApp()
+  const asked = words.find(w => w.id === promptId)
+  const opposite = words.find(w => w.id === answerId)
+  if (asked === undefined || opposite === undefined) return null
+
+  return (
+    <div className="quiz-contrast">
+      <p className="quiz-q__label">这对反义词</p>
+      <ContrastSide word={asked} isAnswer={false} />
+      <ContrastSide word={opposite} isAnswer />
+    </div>
+  )
+}
+
 function ContrastSide({ word, isAnswer }: { word: Word; isAnswer: boolean }) {
   const m = word.meanings[0]
   return (
@@ -252,10 +286,16 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
   const isCloze =
     question.type === 'clozeExample' || question.type === 'clozeCollocation' || question.type === 'contrast'
   // The prompts for example/collocation cloze and synonym/antonym hints are
-  // all English, but not a single headword — reusing word2meaning's
-  // dictionary serif below would be misleading, since that visual language
-  // is reserved for "the one headword on the whole screen".
-  const promptLang = question.type === 'word2meaning' || isCloze || question.type === 'synonymHint' ? 'en' : undefined
+  // all English, but not a single headword — reusing the dictionary serif
+  // below would be misleading, since that visual language is reserved for
+  // "the one headword on the whole screen".
+  const promptLang =
+    question.type === 'word2meaning' || isCloze
+    || question.type === 'synonymHint' || question.type === 'antonymPick'
+      ? 'en'
+      : undefined
+  // The two types whose prompt *is* a lone headword, and so get the serif.
+  const isHeadwordPrompt = question.type === 'word2meaning' || question.type === 'antonymPick'
 
   const handleChoose = useCallback(
     (opt: string) => {
@@ -294,11 +334,11 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
       {question.type === 'synonymHint' && question.hintKind ? (
         <p className="quiz-hint-kind section-title">{HINT_KIND_LABEL[question.hintKind]}</p>
       ) : null}
-      {/* word2meaning's prompt is the only English headword on the question
-          (the sole "protagonist" on the whole screen), so it uses the
-          dictionary serif as a large-type headline; meaning2word's options
-          are also headwords, but those are four side-by-side clickable
-          controls, and the interface font is deliberately kept for
+      {/* word2meaning and antonymPick put a single English headword on the
+          question (the sole "protagonist" on the whole screen), so they use
+          the dictionary serif as a large-type headline; meaning2word's
+          options are also headwords, but those are four side-by-side
+          clickable controls, and the interface font is deliberately kept for
           buttons — large serif type would make the buttons uneven in
           height, and would dilute the "sole protagonist" visual signal
           into noise across a set of options. Don't casually unify this
@@ -307,7 +347,7 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
         <AudioPrompt text={question.prompt} />
       ) : (
         <p
-          className={question.type === 'word2meaning' ? 'word quiz-q__prompt' : 'quiz-q__prompt'}
+          className={isHeadwordPrompt ? 'word quiz-q__prompt' : 'quiz-q__prompt'}
           lang={promptLang}
         >
           {isCloze ? renderBlanked(question.prompt) : question.prompt}
@@ -357,6 +397,8 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
           detail={
             question.type === 'contrast' && question.contrastId !== undefined ? (
               <ContrastCard answerId={question.wordId} otherId={question.contrastId} />
+            ) : question.type === 'antonymPick' && question.antonymId !== undefined ? (
+              <AntonymCard promptId={question.wordId} answerId={question.antonymId} />
             ) : null
           }
         />
