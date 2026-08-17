@@ -10,6 +10,7 @@ import { todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
 import type { QuizMetricKey, QuizQuestion } from '../lib/quiz'
 import type { Passage } from '../lib/passage'
+import type { RecallSentence } from '../lib/recallSentence'
 import type { SenseGroup } from '../lib/senseGroup'
 import { useApp } from '../state/store'
 import type { Progress, Word } from '../types'
@@ -362,6 +363,19 @@ function QuizSessionPage({ mode }: { mode: QuizMode }) {
     return () => { alive = false }
   }, [mode, groups])
 
+  // 回想's second source. Loaded beside the groups rather than bundled into
+  // them: it is a separate authored file with its own validator, and only
+  // this one mode reads either.
+  const [sentences, setSentences] = useState<RecallSentence[] | null>(null)
+  useEffect(() => {
+    if (mode !== 'recall' || sentences !== null) return
+    let alive = true
+    void import('../data/recallSentences.json').then(m => {
+      if (alive) setSentences((m.default as { sentences: RecallSentence[] }).sentences)
+    })
+    return () => { alive = false }
+  }, [mode, sentences])
+
   const restart = useCallback(() => setSession(s => s + 1), [])
 
   return (
@@ -374,13 +388,14 @@ function QuizSessionPage({ mode }: { mode: QuizMode }) {
       {mode === 'sprint' ? (
         <SprintSession key={`sprint-${session}`} words={words} onRestart={restart} />
       ) : mode === 'recall' ? (
-        groups === null ? (
+        groups === null || sentences === null ? (
           <Card className="quiz-empty"><p className="muted">正在加载题组…</p></Card>
         ) : (
           <RecallSession
             key={`recall-${session}`}
             words={words}
             groups={groups}
+            sentences={sentences}
             onRestart={restart}
           />
         )

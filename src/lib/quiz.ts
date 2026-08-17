@@ -1,5 +1,5 @@
 import { antonymIndex } from './antonym'
-import { buildContrastPairs } from './contrast'
+import { buildContrastPairs, confusableIndex } from './contrast'
 import { headwordPattern } from './headword'
 // MISS_RECENCY_DAYS is imported rather than restated: it is one fact — how
 // long a practice miss stays relevant — and two copies would silently drift
@@ -352,17 +352,7 @@ export interface AntonymIndices {
 }
 
 export function buildAntonymIndices(words: Word[]): AntonymIndices {
-  const confusable = new Map<string, Set<string>>()
-  const link = (from: string, to: string) => {
-    const set = confusable.get(from)
-    if (set) set.add(to)
-    else confusable.set(from, new Set([to]))
-  }
-  for (const p of buildContrastPairs(words)) {
-    link(p.a, p.b)
-    link(p.b, p.a)
-  }
-  return { antonyms: antonymIndex(words), confusable }
+  return { antonyms: antonymIndex(words), confusable: confusableIndex(words) }
 }
 
 /**

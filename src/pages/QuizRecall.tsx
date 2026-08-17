@@ -5,6 +5,8 @@ import { ExampleSentence } from '../components/ExampleSentence'
 import { Card } from '../components/Card'
 import { optionIndexFromKey } from '../lib/keys'
 import { pushRecent, recentWindow } from '../lib/passage'
+import { usableSentences } from '../lib/recallSentence'
+import type { RecallSentence } from '../lib/recallSentence'
 import { eligibleGroups, generateRecallSession, orderCorrect, wrongIdsFor } from '../lib/senseGroup'
 import type { RecallQuestion, SenseGroup } from '../lib/senseGroup'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
@@ -352,8 +354,10 @@ function RecallQuestionView({
           )}
           {/* The why is what stops the reveal being a bare assertion: it
               names the dimension that decides (object, register,
-              connotation, grammar). Same job as the contrast card's note. */}
-          <p className="recall-why">{question.why}</p>
+              connotation, grammar). Same job as the contrast card's note.
+              A sentence-sourced question carries none — it ranks nothing —
+              and the English original above is its whole reveal. */}
+          {question.why !== undefined && <p className="recall-why">{question.why}</p>}
           {/* 巩固 sits on the question, not on the results page: the moment
               you want it is the moment you just missed it. */}
           {!correct && onReinforce !== undefined ? (
@@ -384,10 +388,12 @@ function RecallQuestionView({
 export function RecallSession({
   words,
   groups,
+  sentences,
   onRestart,
 }: {
   words: Word[]
   groups: SenseGroup[]
+  sentences: RecallSentence[]
   onRestart: () => void
 }) {
   const { progress, recordQuiz, consolidateWord } = useApp()
@@ -398,16 +404,20 @@ export function RecallSession({
 
   const [questions] = useState<RecallQuestion[]>(() => {
     const byId = new Map(words.map(w => [w.id, w]))
-    const eligible = eligibleGroups(groups, byId, progress)
+    // The window scales with everything drawable, both sources — sizing it
+    // off sense groups alone would keep demoting the same handful of prompts
+    // while the translated sentences (the larger pool) went unwindowed.
+    const poolSize = eligibleGroups(groups, byId, progress).length
+      + usableSentences(sentences, byId, progress).length
     // Recently seen prompts are demoted behind unseen ones — the same
     // windowing the passage picker uses (the one surface the repetition
     // audit measured at 0% repeats). The window scales with the eligible
     // pool so something always stays fresh to draw. Anything marked 巩固
     // last time jumps ahead of both.
     const recent = storage.get<string[]>('recentRecall') ?? []
-    const seen = new Set(recent.slice(0, recentWindow(eligible.length)))
+    const seen = new Set(recent.slice(0, recentWindow(poolSize)))
     const debt = new Set(storage.get<string[]>('recallDebt') ?? [])
-    return generateRecallSession(groups, byId, progress, today, seen, debt, QUESTION_COUNT, Math.random)
+    return generateRecallSession(groups, byId, progress, today, seen, debt, QUESTION_COUNT, Math.random, sentences)
   })
   const [index, setIndex] = useState(0)
   const [score, setScore] = useState(0)

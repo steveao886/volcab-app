@@ -1,5 +1,24 @@
+import { confusableIndex } from './contrast'
 import { difficultyWeight, shuffle, weightedShuffle } from './quiz'
+import { buildSentenceQuestion, usableSentences } from './recallSentence'
+import type { RecallSentence } from './recallSentence'
 import type { Progress, Word } from '../types'
+
+/**
+ * One drawable unit inside a 回想 session — either an authored sense group
+ * or a translated example sentence. Exactly one of the two is set.
+ *
+ * `key` is the prompt text, which doubles as the recency/debt key for both
+ * sources: a sense group's `zh` and a rendering's `zh` are both the sentence
+ * the learner saw, and both are unique.
+ */
+interface RecallCandidate {
+  group?: SenseGroup
+  sentence?: RecallSentence
+  key: string
+  /** The word ids this candidate practises — every member, or the one answer. */
+  ids: string[]
+}
 
 /**
  * 回想 — the Chinese-to-English direction, tap-only.
@@ -129,7 +148,12 @@ export interface RecallQuestion {
    * a definition would hand over the ranking the question exists to ask.
    */
   hint?: string
-  why: string
+  /**
+   * Why the answer wins. Present on every sense-group question, absent on a
+   * sentence-sourced one: that question ranks nothing, and restating the
+   * gloss to fill the field would be padding rather than an explanation.
+   */
+  why?: string
   /** Every group member's word id, in answer-key order (best first). */
   orderIds: string[]
   /** Members' headwords, parallel to orderIds — what wrongIdsFor maps a tapped option back through. */
@@ -379,30 +403,52 @@ export function generateRecallSession(
   debt: ReadonlySet<string>,
   count: number,
   rng: () => number,
+  sentences: RecallSentence[] = [],
 ): RecallQuestion[] {
-  const eligible = eligibleGroups(groups, words, progress)
-  const weight = (g: SenseGroup) =>
-    Math.max(...g.order.map(id => {
+  // The two sources are drawn from one pool rather than one after the other.
+  // Measured 2026-08-16: 147 learned words have no sense group at all, so
+  // dealing groups first would leave every one of them behind whatever
+  // groups exist, and dealing sentences first would bury 排序. Weighting both
+  // by the same difficultyWeight lets a struggling word surface from
+  // whichever source happens to carry it.
+  const candidates: RecallCandidate[] = [
+    ...eligibleGroups(groups, words, progress).map((g): RecallCandidate => ({ group: g, key: g.zh, ids: g.order })),
+    ...usableSentences(sentences, words, progress).map((s): RecallCandidate => ({ sentence: s, key: s.zh, ids: [s.id] })),
+  ]
+  const weight = (c: RecallCandidate) =>
+    Math.max(...c.ids.map(id => {
       const w = words.get(id)
       return w === undefined ? 1 : difficultyWeight(w, progress, today)
     }))
-  const drawn = weightedShuffle(eligible, weight, rng)
+  const drawn = weightedShuffle(candidates, weight, rng)
   // Stable partition into the three buckets above; each keeps its weighted
   // order within the bucket.
   const ordered = [
-    ...drawn.filter(g => debt.has(g.zh)),
-    ...drawn.filter(g => !debt.has(g.zh) && !seen.has(g.zh)),
-    ...drawn.filter(g => !debt.has(g.zh) && seen.has(g.zh)),
+    ...drawn.filter(c => debt.has(c.key)),
+    ...drawn.filter(c => !debt.has(c.key) && !seen.has(c.key)),
+    ...drawn.filter(c => !debt.has(c.key) && seen.has(c.key)),
   ]
 
   const fillerPool = [...words.values()].filter(w => {
     const e = progress.words[w.id]
     return e !== undefined && e.state !== 'new'
   })
+  // Built once per session, not per question: buildContrastPairs walks the
+  // whole library. Only sentence questions consult it.
+  const confusable = candidates.some(c => c.sentence !== undefined)
+    ? confusableIndex([...words.values()])
+    : new Map<string, Set<string>>()
 
   const out: RecallQuestion[] = []
-  for (const g of ordered) {
+  for (const c of ordered) {
     if (out.length >= count) break
+    if (c.sentence !== undefined) {
+      // Sentence-sourced questions are 唤词 only: there is nothing to rank.
+      const q = buildSentenceQuestion(c.sentence, words, fillerPool, confusable, rng)
+      if (q !== null) out.push(q)
+      continue
+    }
+    const g = c.group as SenseGroup
     // Alternate the two kinds; fall back to the other when a group can't
     // carry the preferred one (a pair can't be ordered, a member is unlearned
     // so ranking is off the table, a sparse library can't fill four options)

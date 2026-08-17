@@ -27,6 +27,29 @@ export interface ContrastPair {
   score: number
 }
 
+/**
+ * id → every word it is confusable with.
+ *
+ * The pair list turned into a lookup, because two callers now need to ask
+ * "is X confusable with Y" per question rather than walk the list: the
+ * antonym question keeps a confusable of its answer out of the options, and
+ * the sentence-sourced recall question does the same. Building it once per
+ * session is the same O(n²) argument `sharedSynonyms` is hoisted for.
+ */
+export function confusableIndex(words: Word[]): Map<string, Set<string>> {
+  const index = new Map<string, Set<string>>()
+  const link = (from: string, to: string) => {
+    const set = index.get(from)
+    if (set) set.add(to)
+    else index.set(from, new Set([to]))
+  }
+  for (const p of buildContrastPairs(words)) {
+    link(p.a, p.b)
+    link(p.b, p.a)
+  }
+  return index
+}
+
 const norm = (s: string) => s.trim().toLowerCase()
 
 /**
