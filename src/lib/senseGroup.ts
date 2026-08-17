@@ -2,7 +2,7 @@ import { confusableIndex } from './contrast'
 import { difficultyWeight, shuffle, weightedShuffle } from './quiz'
 import { buildSentenceQuestion, usableSentences } from './recallSentence'
 import type { RecallSentence } from './recallSentence'
-import type { Progress, Word } from '../types'
+import type { Progress, RecallStat, Word } from '../types'
 
 /**
  * One drawable unit inside a 回想 session — either an authored sense group
@@ -167,6 +167,37 @@ export interface RecallQuestion {
 const isLearned = (id: string, progress: Progress): boolean => {
   const e = progress.words[id]
   return e !== undefined && e.state !== 'new'
+}
+
+/**
+ * How much a word's production record should pull it forward, as a
+ * multiplier on `difficultyWeight`.
+ *
+ * A multiplier rather than a separate sort, so 回想 keeps drawing through
+ * the one `weightedShuffle` every mode uses: "trouble comes up more often"
+ * stays one idea across the app, and no word is ever excluded outright.
+ *
+ * **Never practised weighs the same as practised-and-fine (1.0), not more.**
+ * The tempting alternative — boost the unpractised — would drown the words
+ * the user has actually been failing under 146 words that merely arrived
+ * with this batch, on the very first session after it shipped.
+ *
+ * The scale tops out at 2.5, roughly matching the range difficultyWeight
+ * itself spans, so neither axis can bury the other: a word that is hard to
+ * recognise and hard to produce sorts above one that is only hard to
+ * produce.
+ */
+const recallWeight = (r: RecallStat | undefined): number => {
+  if (r === undefined || r.reps === 0) return 1
+  // A live miss streak is the sharpest signal available and outranks a
+  // merely mediocre lifetime rate.
+  if (r.streak === 0) return 2.5
+  const rate = r.correct / r.reps
+  if (rate < 0.5) return 2
+  if (rate < 0.8) return 1.5
+  // Produced correctly and on a streak: it has earned a rest, but not
+  // exclusion — the floor stays above zero so it can still be drawn.
+  return r.streak >= 3 ? 0.5 : 1
 }
 
 /**
@@ -418,7 +449,7 @@ export function generateRecallSession(
   const weight = (c: RecallCandidate) =>
     Math.max(...c.ids.map(id => {
       const w = words.get(id)
-      return w === undefined ? 1 : difficultyWeight(w, progress, today)
+      return w === undefined ? 1 : difficultyWeight(w, progress, today) * recallWeight(progress.words[id]?.recall)
     }))
   const drawn = weightedShuffle(candidates, weight, rng)
   // Stable partition into the three buckets above; each keeps its weighted
@@ -440,13 +471,12 @@ export function generateRecallSession(
     : new Map<string, Set<string>>()
 
   const out: RecallQuestion[] = []
-  for (const c of ordered) {
-    if (out.length >= count) break
+  const asked = new Set<string>()
+
+  const build = (c: RecallCandidate): RecallQuestion | null => {
     if (c.sentence !== undefined) {
       // Sentence-sourced questions are 唤词 only: there is nothing to rank.
-      const q = buildSentenceQuestion(c.sentence, words, fillerPool, confusable, rng)
-      if (q !== null) out.push(q)
-      continue
+      return buildSentenceQuestion(c.sentence, words, fillerPool, confusable, rng)
     }
     const g = c.group as SenseGroup
     // Alternate the two kinds; fall back to the other when a group can't
@@ -454,11 +484,36 @@ export function generateRecallSession(
     // so ranking is off the table, a sparse library can't fill four options)
     // rather than dropping the group.
     const rankable = isRankable(g, progress)
-    const q = rankable && out.length % 2 === 1
+    return rankable && out.length % 2 === 1
       ? buildOrderQuestion(g, words, rng) ?? buildRecallQuestion(g, words, fillerPool, rng)
       : buildRecallQuestion(g, words, fillerPool, rng)
         ?? (rankable ? buildOrderQuestion(g, words, rng) : null)
-    if (q !== null) out.push(q)
+  }
+
+  // Two passes, and the second one is why this isn't just a filter. A word
+  // now carries up to five renderings plus whatever groups name it, so one
+  // round could draw the same answer twice — observed on the first real
+  // simulation, where `affected` came up as both 做作 and 装腔作势 inside ten
+  // questions. Ten distinct words beat ten questions every time, so the
+  // first pass takes one question per word; the second fills any shortfall
+  // rather than handing back a short round, which is what a plain filter
+  // would do on a library too small to supply `count` distinct answers.
+  const used = new Set<string>()
+  for (const pass of [0, 1]) {
+    for (const c of ordered) {
+      if (out.length >= count) break
+      // Consumed candidates are tracked by prompt, not by answer word:
+      // skipping on the word alone would let pass 1 draw the very same
+      // prompt a second time.
+      if (used.has(c.key)) continue
+      const q = build(c)
+      if (q === null) continue
+      if (pass === 0 && asked.has(q.orderIds[0])) continue
+      used.add(c.key)
+      asked.add(q.orderIds[0])
+      out.push(q)
+    }
+    if (out.length >= count) break
   }
   return out
 }

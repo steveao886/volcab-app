@@ -396,7 +396,7 @@ export function RecallSession({
   sentences: RecallSentence[]
   onRestart: () => void
 }) {
-  const { progress, recordQuiz, consolidateWord } = useApp()
+  const { progress, recordQuiz, recordRecall, consolidateWord } = useApp()
   // Pinned once, alongside the question set: difficultyWeight's recent-miss
   // window reads it, and a session must not change meaning midway because
   // the clock rolled past midnight.
@@ -423,6 +423,8 @@ export function RecallSession({
   const [score, setScore] = useState(0)
   const [wrongIds, setWrongIds] = useState<string[]>([])
   const [misses, setMisses] = useState<Record<string, Miss>>({})
+  /** One entry per answered question, settled into ProgressEntry.recall when the scored round ends. */
+  const [produced, setProduced] = useState<{ id: string; correct: boolean }[]>([])
   const [reinforced, setReinforced] = useState<Set<string>>(new Set())
   /**
    * Questions to re-ask once the scored round is over. **Not scored** — the
@@ -443,6 +445,11 @@ export function RecallSession({
     // Seen means answered, not generated: quitting a session halfway must
     // not mark the unreached prompts as stale.
     storage.set('recentRecall', pushRecent(storage.get<string[]>('recentRecall') ?? [], q.prompt))
+    // The production record, collected per answer and written once at
+    // settlement. Keyed on the question's own answer word, so a 排序 question
+    // scores the word that had to come first — the same word wrongIdsFor
+    // treats as the subject.
+    setProduced(prev => [...prev, { id: q.orderIds[0], correct }])
     if (correct) {
       // Answering it right is the only thing that clears the debt — that is
       // what "巩固" was asking for in the first place.
@@ -490,8 +497,13 @@ export function RecallSession({
     if (scoredDone && !recordedRef.current) {
       recordedRef.current = true
       recordQuiz(score, total, wrongIds, 'recall')
+      // Written after recordQuiz and never merged into it: recordQuiz owns
+      // the schedule (a miss halves the interval), recordRecall owns the
+      // production axis and touches nothing the scheduler reads. Keeping
+      // them two calls is what keeps that boundary visible.
+      recordRecall(produced)
     }
-  }, [scoredDone, score, total, wrongIds, recordQuiz])
+  }, [scoredDone, score, total, wrongIds, produced, recordQuiz, recordRecall])
 
   const wordsById = useMemo(() => new Map(words.map(w => [w.id, w])), [words])
 

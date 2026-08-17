@@ -327,3 +327,120 @@ describe('generateRecallSession', () => {
     expect(qs.map(q => q.kind)).toEqual(['recall', 'order', 'recall'])
   })
 })
+
+describe('recall proficiency steers the draw', () => {
+  const word = (id: string): Word => ({
+    id, headword: id, phonetic: `/${id}/`,
+    meanings: [{ pos: 'adj.', en: `def of ${id}`, zh: `${id}义` }],
+    examples: [`It felt ${id} today.`, `Another ${id} day.`],
+    synonyms: [], antonyms: [], collocations: [], relatedForms: [],
+    sourceNote: 't', addedAt: '2026-07-01',
+  })
+  const ids = ['alpha', 'bravo', 'carol', 'delta', 'echo', 'fox']
+  const ws = ids.map(word)
+  const byId = new Map(ws.map(w => [w.id, w]))
+  const prog = (recall: Record<string, { reps: number; correct: number; streak: number; lastAt: string }>): Progress => {
+    const p = emptyProgress()
+    for (const w of ws) {
+      p.words[w.id] = {
+        state: 'review', ease: 2.5, intervalDays: 5, due: '2026-08-10',
+        stepIndex: 0, reps: 3, lapses: 0, lastReviewedAt: '2026-08-01T00:00:00Z',
+        ...(recall[w.id] ? { recall: recall[w.id] } : {}),
+      }
+    }
+    return p
+  }
+  const sentences = ids.map((id, i) => ({ id, i: 0, zh: `第${i}个句子在这里。`, target: `第${i}个` }))
+  const rngFrom = (seed: number) => () => {
+    seed = (seed * 1103515245 + 12345) % 2147483648
+    return seed / 2147483648
+  }
+  const drawOrder = (p: Progress) => {
+    const counts = new Map<string, number>()
+    for (let s = 1; s <= 120; s++) {
+      const qs = generateRecallSession([], byId, p, '2026-08-10', new Set(), new Set(), 2, rngFrom(s), sentences)
+      for (const q of qs) counts.set(q.orderIds[0], (counts.get(q.orderIds[0]) ?? 0) + 1)
+    }
+    return counts
+  }
+
+  /**
+   * The point of the whole field: a word that reads fine but cannot be
+   * produced has to surface, and nothing in the scheduler can see that —
+   * every fixture here has identical ease, interval and lapses.
+   */
+  it('a broken streak outdraws an identical word with a clean one', () => {
+    const counts = drawOrder(prog({
+      alpha: { reps: 6, correct: 2, streak: 0, lastAt: '2026-08-09T00:00:00Z' },
+      bravo: { reps: 6, correct: 6, streak: 6, lastAt: '2026-08-09T00:00:00Z' },
+    }))
+    expect(counts.get('alpha') ?? 0).toBeGreaterThan(counts.get('bravo') ?? 0)
+  })
+
+  /**
+   * The trap this rule exists to avoid: boosting never-practised words would
+   * have buried the words actually being failed under the 146 that merely
+   * arrived with the batch, on the first session after it shipped.
+   */
+  it('never practised does not outdraw practised-and-fine', () => {
+    const counts = drawOrder(prog({
+      bravo: { reps: 5, correct: 5, streak: 2, lastAt: '2026-08-09T00:00:00Z' },
+    }))
+    // carol/delta/echo/fox have no record at all; bravo is at neutral weight too.
+    const unpractised = counts.get('carol') ?? 0
+    expect(Math.abs(unpractised - (counts.get('bravo') ?? 0))).toBeLessThan(unpractised)
+  })
+
+  it('a word produced correctly on a streak is rested, never excluded', () => {
+    const counts = drawOrder(prog({
+      alpha: { reps: 9, correct: 9, streak: 9, lastAt: '2026-08-09T00:00:00Z' },
+    }))
+    expect(counts.get('alpha') ?? 0).toBeGreaterThan(0)
+    expect(counts.get('alpha') ?? 0).toBeLessThan(counts.get('carol') ?? 0)
+  })
+})
+
+describe('one round, distinct words', () => {
+  const word = (id: string): Word => ({
+    id, headword: id, phonetic: `/${id}/`,
+    meanings: [{ pos: 'adj.', en: `def of ${id}`, zh: `${id}义` }],
+    examples: [`It felt ${id} today.`, `Another ${id} day.`, `A third ${id} scene.`],
+    synonyms: [], antonyms: [], collocations: [], relatedForms: [],
+    sourceNote: 't', addedAt: '2026-07-01',
+  })
+  const ids = ['alpha', 'bravo', 'carol', 'delta', 'echo', 'fox', 'golf', 'hotel']
+  const ws = ids.map(word)
+  const byId = new Map(ws.map(w => [w.id, w]))
+  const p = emptyProgress()
+  for (const w of ws) {
+    p.words[w.id] = { state: 'review', ease: 2.5, intervalDays: 5, due: '2026-08-10', stepIndex: 0, reps: 3, lapses: 0, lastReviewedAt: '2026-08-01T00:00:00Z' }
+  }
+  // Three renderings each — exactly the shape that produced the duplicate.
+  const sentences = ids.flatMap(id => [0, 1, 2].map(i => ({ id, i, zh: `${id}的第${i}个句子。`, target: `第${i}个` })))
+  const rngFrom = (seed: number) => () => {
+    seed = (seed * 1103515245 + 12345) % 2147483648
+    return seed / 2147483648
+  }
+
+  it('never asks the same word twice while another word is still unasked', () => {
+    for (let s = 1; s <= 60; s++) {
+      const qs = generateRecallSession([], byId, p, '2026-08-10', new Set(), new Set(), 8, rngFrom(s), sentences)
+      expect(qs).toHaveLength(8)
+      expect(new Set(qs.map(q => q.orderIds[0])).size).toBe(8)
+    }
+  })
+
+  it('never repeats a prompt, even when it has to reuse a word to fill the round', () => {
+    // 3 words, 9 renderings, 8 asked: duplicates by word are unavoidable here.
+    const few = ids.slice(0, 3)
+    const smallProg = emptyProgress()
+    for (const id of few) {
+      smallProg.words[id] = { state: 'review', ease: 2.5, intervalDays: 5, due: '2026-08-10', stepIndex: 0, reps: 3, lapses: 0, lastReviewedAt: '2026-08-01T00:00:00Z' }
+    }
+    const smallSentences = sentences.filter(s => few.includes(s.id))
+    for (let s = 1; s <= 40; s++) {
+      const qs = generateRecallSession([], byId, smallProg, '2026-08-10', new Set(), new Set(), 8, rngFrom(s), smallSentences)
+      expect(new Set(qs.map(q => q.prompt)).size).toBe(qs.length)
+    }
+  })
+})

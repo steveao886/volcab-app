@@ -145,6 +145,43 @@ export interface ProgressEntry {
    * "not demoted today", not a rejected merge.
    */
   demotedOn?: string
+  /**
+   * How production is going for this word, tracked separately from the
+   * schedule.
+   *
+   * **A second axis, not a second scheduler.** Nothing here reaches
+   * `srs.ts`: not `state`, not `ease`, not `intervalDays`, not `due`, not
+   * `lapses`, not `lastReviewedAt`. The one door practice has into the
+   * schedule is a quiz miss halving `intervalDays` under three guards
+   * (CLAUDE.md), and this does not use it. That separation is the entire
+   * point — recognition and production come apart, and today the app cannot
+   * see the gap: a word can sit at ease 2.6 with a 20-day interval, read
+   * correctly every time, and still be unproducible from Chinese. Measured
+   * 2026-08-16, 回想 could ask only 307 of 454 learned words at all, so
+   * there was nothing to measure it with either.
+   *
+   * Optional like every added field: another device on an older build
+   * pushes entries without it, and the correct reading of its absence is
+   * "never practised in 回想", not a rejected merge.
+   */
+  recall?: RecallStat
+}
+
+/**
+ * Per-word 回想 record.
+ *
+ * `streak` is a state and `reps`/`correct` are a ledger, which is why
+ * mergeProgress treats them differently — see mergeRecall.
+ */
+export interface RecallStat {
+  /** Times this word has been the answer to a 回想 question. */
+  reps: number
+  /** How many of those were right first try. */
+  correct: number
+  /** Consecutive correct answers, reset to 0 by a miss. */
+  streak: number
+  /** ISO timestamp of the last 回想 answer. The merge key. */
+  lastAt: string
 }
 
 export interface DailyStat {

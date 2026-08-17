@@ -90,6 +90,8 @@ export interface AppActions {
    * often as memory ones.
    */
   recordQuiz(correct: number, total: number, wrongIds: string[], mode: QuizMetricKey): void
+  /** 回想 production record. Writes ProgressEntry.recall and nothing the scheduler owns. */
+  recordRecall(results: { id: string; correct: boolean }[]): void
   /** 回想's 巩固 button: declare a quiz miss a real forget — missedAt stamped, lapses counted, nothing else moves */
   consolidateWord(id: string): void
   /** Sprint settlement: stamps missedAt and, unlike recordQuiz, never demotes — a miss under a 60-second clock is as likely to be timing as memory. Plus the personal best. */
@@ -858,6 +860,45 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [commitProgress, flushProgress])
 
   /**
+   * 回想's production record, settled once per session alongside recordQuiz.
+   *
+   * **Writes `recall` and nothing else.** Not `state`, not `ease`, not
+   * `intervalDays`, not `due`, not `lapses`, not `lastReviewedAt` — the
+   * schedule stays entirely with `srs.ts`, whose single door for a practice
+   * surface is the quiz-miss demotion, and this does not use it. The point
+   * of the field is that recognition and production come apart; feeding it
+   * back into the scheduler would collapse the two axes it exists to
+   * separate.
+   *
+   * Idempotent by construction: the caller fires it once from the same
+   * effect that fires recordQuiz, guarded by the same ref.
+   */
+  const recordRecall = useCallback((results: { id: string; correct: boolean }[]) => {
+    if (results.length === 0) return
+    const at = new Date().toISOString()
+    const cur = stateRef.current.progress
+    const next = { ...cur.words }
+    for (const { id, correct } of results) {
+      const e = next[id]
+      // A word deleted on another device mid-session: skip rather than
+      // resurrect an entry for it, the same call practiceGrade makes.
+      if (e === undefined) continue
+      const prev = e.recall
+      next[id] = {
+        ...e,
+        recall: {
+          reps: (prev?.reps ?? 0) + 1,
+          correct: (prev?.correct ?? 0) + (correct ? 1 : 0),
+          streak: correct ? (prev?.streak ?? 0) + 1 : 0,
+          lastAt: at,
+        },
+      }
+    }
+    commitProgress({ ...cur, words: next })
+    void flushProgress()
+  }, [commitProgress, flushProgress])
+
+  /**
    * The 巩固 button on 回想's results page: the user declaring "count this
    * miss as a real forget". Due today, lapses incremented, lastReviewedAt
    * stamped — nothing else.
@@ -1030,11 +1071,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AppContextValue>(() => ({
     ...state,
-    login, logout, grade, recordLapseDrill, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
+    login, logout, grade, recordLapseDrill, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll,
     ...(import.meta.env.DEV ? { enterDemoMode } : {}),
   }), [
-    state, login, logout, grade, recordLapseDrill, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
+    state, login, logout, grade, recordLapseDrill, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll, enterDemoMode,
   ])
 

@@ -1009,6 +1009,45 @@ describe('quiz demotion: a miss halves the interval, and only the sprint is exem
       .toBe(Math.max(1, Math.floor(before.intervalDays / 2)))
   })
 
+  /**
+   * The contract the whole `recall` field rests on. 回想 is a second axis,
+   * not a second scheduler: if production feedback could reach ease or the
+   * interval, the two things the field exists to tell apart would collapse
+   * back into one number. Asserted field by field rather than with a
+   * snapshot so a newly added scheduler field fails here too.
+   */
+  it('recordRecall writes the production record and nothing the scheduler owns', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.words['alpha']
+
+    await step(() => { app().recordRecall([{ id: 'alpha', correct: false }]) })
+
+    const after = app().progress.words['alpha']
+    const { recall: _r, ...afterSched } = after
+    const { recall: _b, ...beforeSched } = before
+    expect(afterSched).toEqual(beforeSched)
+    expect(after.recall).toMatchObject({ reps: 1, correct: 0, streak: 0 })
+  })
+
+  it('recordRecall accumulates the ledger and resets the streak on a miss', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().recordRecall([{ id: 'alpha', correct: true }]) })
+    await step(() => { app().recordRecall([{ id: 'alpha', correct: true }]) })
+    expect(app().progress.words['alpha'].recall).toMatchObject({ reps: 2, correct: 2, streak: 2 })
+
+    await step(() => { app().recordRecall([{ id: 'alpha', correct: false }]) })
+    expect(app().progress.words['alpha'].recall).toMatchObject({ reps: 3, correct: 2, streak: 0 })
+  })
+
+  it('recordRecall skips a word deleted on another device mid-session', async () => {
+    await bootAsAlice()
+    await step(() => { app().recordRecall([{ id: 'nowhere', correct: true }]) })
+    expect(app().progress.words['nowhere']).toBeUndefined()
+  })
+
   it('the sprint never demotes — a miss under the clock is as likely to be timing as memory', async () => {
     await bootAsAlice()
     await step(() => { app().grade('alpha', 'easy') })

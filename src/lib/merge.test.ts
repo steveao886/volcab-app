@@ -307,3 +307,68 @@ describe('mergeProgress: optional dailyStat counters', () => {
     expect(m.dailyStats['2026-07-25'].quizModes).toEqual({ audio: { asked: 3, correct: 0 } })
   })
 })
+
+describe("mergeProgress's recall", () => {
+  const entry = (over: Partial<ProgressEntry> = {}): ProgressEntry => ({
+    state: 'review', ease: 2.5, intervalDays: 10, due: '2026-08-20',
+    stepIndex: 0, reps: 5, lapses: 0, lastReviewedAt: '2026-08-01T00:00:00Z', ...over,
+  })
+  const withEntry = (e: ProgressEntry): Progress => {
+    const p = emptyProgress()
+    p.words.alpha = e
+    return p
+  }
+  const stat = (reps: number, correct: number, streak: number, lastAt: string) =>
+    ({ reps, correct, streak, lastAt })
+
+  /**
+   * The reason recall is merged on its own timestamp rather than riding the
+   * wholesale entry pick: `lastReviewedAt` is the scheduler's stamp, and 回想
+   * deliberately never writes it. A device that graded the word more
+   * recently would otherwise carry a stale (or absent) recall record over
+   * the one that actually did the practice.
+   */
+  it('survives when the other device graded the word more recently', () => {
+    const practised = withEntry(entry({ lastReviewedAt: '2026-08-01T00:00:00Z', recall: stat(6, 5, 3, '2026-08-09T00:00:00Z') }))
+    const graded = withEntry(entry({ lastReviewedAt: '2026-08-10T00:00:00Z' }))
+    const m = mergeProgress(practised, graded)
+    // The graded entry wins the schedule…
+    expect(m.words.alpha.lastReviewedAt).toBe('2026-08-10T00:00:00Z')
+    // …and the practice is still there.
+    expect(m.words.alpha.recall).toEqual(stat(6, 5, 3, '2026-08-09T00:00:00Z'))
+  })
+
+  it('takes the later session for streak, and the higher count for the ledger', () => {
+    const a = withEntry(entry({ recall: stat(10, 8, 4, '2026-08-05T00:00:00Z') }))
+    const b = withEntry(entry({ recall: stat(7, 6, 1, '2026-08-09T00:00:00Z') }))
+    expect(mergeProgress(a, b).words.alpha.recall).toEqual(stat(10, 8, 1, '2026-08-09T00:00:00Z'))
+  })
+
+  it('a streak is never maxed — that would claim consecutive answers nobody gave', () => {
+    const a = withEntry(entry({ recall: stat(3, 3, 3, '2026-08-01T00:00:00Z') }))
+    const b = withEntry(entry({ recall: stat(4, 3, 0, '2026-08-08T00:00:00Z') }))
+    expect(mergeProgress(a, b).words.alpha.recall?.streak).toBe(0)
+  })
+
+  it('one side missing takes the other', () => {
+    const a = withEntry(entry({ recall: stat(2, 2, 2, '2026-08-05T00:00:00Z') }))
+    expect(mergeProgress(a, withEntry(entry())).words.alpha.recall).toEqual(stat(2, 2, 2, '2026-08-05T00:00:00Z'))
+    expect(mergeProgress(withEntry(entry()), a).words.alpha.recall).toEqual(stat(2, 2, 2, '2026-08-05T00:00:00Z'))
+  })
+
+  it('absent on both stays absent rather than becoming a zeroed record', () => {
+    const m = mergeProgress(withEntry(entry()), withEntry(entry()))
+    expect(Object.hasOwn(m.words.alpha, 'recall')).toBe(false)
+  })
+
+  /** The contract the whole field rests on: it is a second axis, not a second scheduler. */
+  it('merging recall leaves every scheduler field untouched', () => {
+    const sched = entry({ ease: 2.35, intervalDays: 17, due: '2026-09-02', reps: 9, lapses: 2 })
+    const a = withEntry({ ...sched, recall: stat(1, 0, 0, '2026-08-09T00:00:00Z') })
+    const b = withEntry({ ...sched, recall: stat(3, 3, 3, '2026-08-04T00:00:00Z') })
+    const m = mergeProgress(a, b).words.alpha
+    const { recall: _a, ...mergedSched } = m
+    const { recall: _b, ...originalSched } = a.words.alpha
+    expect(mergedSched).toEqual(originalSched)
+  })
+})

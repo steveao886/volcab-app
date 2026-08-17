@@ -1,4 +1,34 @@
-import type { BestRecord, DailyStat, Progress } from '../types'
+import type { BestRecord, DailyStat, Progress, RecallStat } from '../types'
+
+/**
+ * Two devices' 回想 records for one word.
+ *
+ * Split by what each field *is*, rather than one rule for the whole record:
+ *
+ * - `streak` and `lastAt` are a **state** — where retrieval stands right
+ *   now. The later session is the truer picture, and a streak cannot be
+ *   maxed anyway: it is order-dependent, so `max(3, 1)` would claim three
+ *   consecutive correct answers that never happened.
+ * - `reps` and `correct` are a **ledger**. Higher wins, the same rule
+ *   DailyStat's counters use, so practice already done can never be
+ *   subtracted by a sync.
+ *
+ * Undefined on both sides stays undefined rather than becoming a zeroed
+ * record — the same call maxOptional makes, and for the same reason:
+ * "never practised" and "practised zero times" are different claims and
+ * only one of them is supported.
+ */
+function mergeRecall(a: RecallStat | undefined, b: RecallStat | undefined): RecallStat | undefined {
+  if (a === undefined) return b
+  if (b === undefined) return a
+  const latest = a.lastAt >= b.lastAt ? a : b
+  return {
+    reps: Math.max(a.reps, b.reps),
+    correct: Math.max(a.correct, b.correct),
+    streak: latest.streak,
+    lastAt: latest.lastAt,
+  }
+}
 
 /**
  * Merges one optional counter the same way as the required ones (higher
@@ -100,6 +130,19 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
   for (const [id, le] of Object.entries(local.words)) {
     const re = words[id]
     if (!re || le.lastReviewedAt >= re.lastReviewedAt) words[id] = le
+  }
+  // **`recall` cannot ride the wholesale pick above.** That pick resolves an
+  // entry by `lastReviewedAt`, which only the scheduler stamps — 回想
+  // deliberately writes nothing the scheduler owns. So a phone that
+  // practised 回想 and a laptop that graded the same word in /review would
+  // resolve to the laptop's entry, and every rep of that practice would
+  // vanish on the next sync, silently and for good. Merged on its own
+  // timestamp instead.
+  for (const id of new Set([...Object.keys(local.words), ...Object.keys(remote.words)])) {
+    const merged = mergeRecall(local.words[id]?.recall, remote.words[id]?.recall)
+    const entry = words[id]
+    if (entry === undefined || merged === undefined) continue
+    words[id] = { ...entry, recall: merged }
   }
 
   const dailyStats: Progress['dailyStats'] = {}

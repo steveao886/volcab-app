@@ -294,6 +294,23 @@ export function WordDetail() {
                 <p className="stat__label">当代遇见概率</p>
               </div>
             )}
+            {/* Production, kept beside the schedule rather than folded into
+                it, because the whole reason the record exists is that the
+                two come apart: a word can be scheduled 20 days out on a
+                healthy ease and still be unproducible from Chinese. Absent
+                until 回想 has actually asked it — a 0/0 tile would read as a
+                failure rather than as "not measured yet", the same call the
+                usage-score tile above makes. */}
+            {entry?.recall !== undefined && entry.recall.reps > 0 && (
+              <div className="stat worddetail-stat--wide">
+                <p className="num stat__value">
+                  {entry.recall.correct} / {entry.recall.reps}
+                </p>
+                <p className="stat__label">
+                  回想说出{entry.recall.streak >= 3 ? ` · 连对 ${entry.recall.streak}` : ''}
+                </p>
+              </div>
+            )}
           </Card>
 
           <p className="worddetail-meta faint">
