@@ -24853,6 +24853,1221 @@
       "usageScore": 5,
       "sourceNote": "manual",
       "addedAt": "2026-08-14"
+    },
+    {
+      "id": "reconcile",
+      "headword": "reconcile",
+      "phonetic": "/ˈrekənsaɪl/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to find a way of making two facts, ideas, or statements that seem to conflict fit together",
+          "zh": "调和,使一致(看似矛盾的说法或事实)",
+          "share": 40
+        },
+        {
+          "pos": "v.",
+          "en": "to restore friendly relations between people after a quarrel or long separation",
+          "zh": "使和解,使重归于好",
+          "share": 30
+        },
+        {
+          "pos": "v.",
+          "en": "to check two sets of figures or records against each other and account for any difference",
+          "zh": "核对,使(账目)相符",
+          "share": 20
+        },
+        {
+          "pos": "v.",
+          "en": "to make yourself accept an unpleasant situation that you cannot change",
+          "zh": "使自己接受,使甘心于(无法改变的事)",
+          "share": 10
+        }
+      ],
+      "examples": [
+        "Nobody on the jury could reconcile the timestamp on the parking receipt with the witness who swore he was still at dinner.",
+        "The climate report tries to reconcile satellite readings with data from ocean buoys that have drifted hundreds of miles since 2019.",
+        "Two cousins who had not spoken since the funeral were finally reconciled over a group chat about selling the family cabin.",
+        "The treasurer spent Sunday night reconciling the club's bank statement against forty crumpled receipts from the spring fundraiser.",
+        "After three rejected appeals she reconciled herself to renting, and started looking at apartments near the train instead of houses."
+      ],
+      "synonyms": [
+        "harmonize",
+        "settle",
+        "reunite",
+        "square"
+      ],
+      "antonyms": [
+        "estrange",
+        "alienate",
+        "divide"
+      ],
+      "collocations": [
+        "reconcile with",
+        "reconcile differences",
+        "reconcile oneself to",
+        "hard to reconcile"
+      ],
+      "relatedForms": [
+        {
+          "form": "reconciliation",
+          "pos": "n.",
+          "zh": "和解,调和"
+        },
+        {
+          "form": "irreconcilable",
+          "pos": "adj.",
+          "zh": "不可调和的"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "re-(重新) + conciliare(使联合) → 重新走到一起",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "alienation",
+      "headword": "alienation",
+      "phonetic": "/ˌeɪliəˈneɪʃn/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "the feeling of not belonging to, or not being understood by, the group or society around you",
+          "zh": "疏离感,格格不入的感觉",
+          "share": 70
+        },
+        {
+          "pos": "n.",
+          "en": "the act of making someone stop being friendly or loyal to a person or group",
+          "zh": "使疏远,离间",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "Six months of remote onboarding left the new analyst with a quiet alienation that no amount of virtual coffee chats could fix.",
+        "The novel treats teenage alienation less as rebellion than as a bus ride home where nobody looks up from their phone.",
+        "Sociologists blame the district's rising alienation on the closure of the library, the pool, and the only late-night bus route.",
+        "Her lawyer argued that the constant late-night texts amounted to a deliberate alienation of the children from their father.",
+        "The manager's habit of rewriting every draft produced a slow alienation of the three writers who had been there longest."
+      ],
+      "synonyms": [
+        "estrangement",
+        "isolation",
+        "disaffection",
+        "detachment"
+      ],
+      "antonyms": [
+        "belonging",
+        "attachment",
+        "intimacy"
+      ],
+      "collocations": [
+        "a sense of alienation",
+        "social alienation",
+        "alienation from society",
+        "feelings of alienation"
+      ],
+      "relatedForms": [
+        {
+          "form": "alienate",
+          "pos": "v.",
+          "zh": "使疏远,使异化"
+        },
+        {
+          "form": "alienated",
+          "pos": "adj.",
+          "zh": "疏离的,格格不入的"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "alien-(外人的) + -ation(状态) → 成为局外人的状态",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "bewildering",
+      "headword": "bewildering",
+      "phonetic": "/bɪˈwɪldərɪŋ/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "so confusing, strange, or full of choices that you cannot understand it or decide what to do",
+          "zh": "令人困惑的,令人不知所措的"
+        }
+      ],
+      "examples": [
+        "The pharmacy aisle offers a bewildering row of cough syrups that differ only in flavor, price, and the color of the box.",
+        "Tokyo's Shinjuku station is bewildering on a first visit; even the signs pointing to the exits seem to disagree with each other.",
+        "Her new insurance plan came with a bewildering forty-page glossary that explained one unfamiliar term using three others.",
+        "The startup's pricing page was bewilderingly vague, so half the callers to support just wanted to know what a seat cost.",
+        "The museum hung the paintings in a bewildering order, so visitors kept circling back to check whether they had missed a room."
+      ],
+      "synonyms": [
+        "confusing",
+        "baffling",
+        "perplexing",
+        "disorienting"
+      ],
+      "antonyms": [
+        "clear",
+        "straightforward",
+        "intelligible"
+      ],
+      "collocations": [
+        "a bewildering array of",
+        "bewildering variety",
+        "bewildering choice"
+      ],
+      "relatedForms": [
+        {
+          "form": "bewilder",
+          "pos": "v.",
+          "zh": "使困惑,使不知所措"
+        },
+        {
+          "form": "bewilderment",
+          "pos": "n.",
+          "zh": "困惑,迷茫"
+        },
+        {
+          "form": "bewildered",
+          "pos": "adj.",
+          "zh": "困惑不解的"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "be-(使) + wilder(迷失荒野) → 使人如入荒野般困惑",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "bewilder",
+      "headword": "bewilder",
+      "phonetic": "/bɪˈwɪldər/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to confuse someone completely, especially by being too complicated or too strange to follow",
+          "zh": "使困惑,使晕头转向"
+        }
+      ],
+      "examples": [
+        "The new ticketing app bewilders older riders who just want a paper pass and a machine that takes coins.",
+        "It still bewilders me that the express train skips my station on Sundays but stops at the empty one two miles north.",
+        "The professor bewildered the class by opening with a joke in Latin and refusing to explain it until the final week.",
+        "Tourists arrive already bewildered by a menu that lists forty dumplings by number and nothing else.",
+        "Nothing bewilders a new parent faster than three brands of car seat and a manual translated from German by a machine."
+      ],
+      "synonyms": [
+        "baffle",
+        "confuse",
+        "perplex",
+        "confound"
+      ],
+      "antonyms": [
+        "clarify",
+        "enlighten",
+        "explain"
+      ],
+      "collocations": [
+        "utterly bewildered",
+        "bewildered by the choice",
+        "bewilder the audience"
+      ],
+      "relatedForms": [
+        {
+          "form": "bewildering",
+          "pos": "adj.",
+          "zh": "令人困惑的"
+        },
+        {
+          "form": "bewilderment",
+          "pos": "n.",
+          "zh": "困惑,迷茫"
+        },
+        {
+          "form": "bewildered",
+          "pos": "adj.",
+          "zh": "困惑不解的"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "be-(使) + wilder(迷失荒野) → 使人如入荒野般困惑",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "portend",
+      "headword": "portend",
+      "phonetic": "/pɔːrˈtend/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to be a sign or warning that something, usually something bad, is going to happen",
+          "zh": "预示,预兆(多指不祥之事)"
+        }
+      ],
+      "examples": [
+        "Analysts argued that three straight quarters of falling orders portend a hiring freeze long before any memo reaches the staff.",
+        "The cracked tile in the ceiling portended a leak that arrived, right on schedule, during the first heavy rain of October.",
+        "In the film, every crow on the fence portends something, which makes the ninety minutes feel longer than they are.",
+        "A goalkeeper limping off in the eleventh minute rarely portends a comfortable afternoon for the two thousand fans who traveled.",
+        "Nothing about the calm Tuesday morning portended the outage that would take the payment system down for eleven hours."
+      ],
+      "synonyms": [
+        "foreshadow",
+        "augur",
+        "presage",
+        "foretell"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "portend trouble",
+        "portend a change",
+        "may portend"
+      ],
+      "relatedForms": [
+        {
+          "form": "portent",
+          "pos": "n.",
+          "zh": "预兆,凶兆"
+        },
+        {
+          "form": "portentous",
+          "pos": "adj.",
+          "zh": "预示的,不祥的"
+        }
+      ],
+      "usageScore": 4,
+      "etymology": "por-(向前) + tendere(伸展) → 预先伸出征兆",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "ramble",
+      "headword": "ramble",
+      "phonetic": "/ˈræmbl/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to talk or write at length in a confused, aimless way that is hard to follow",
+          "zh": "漫无边际地说,东拉西扯",
+          "share": 50
+        },
+        {
+          "pos": "v.",
+          "en": "to walk for pleasure, especially in the countryside, without following a fixed route",
+          "zh": "漫步,闲逛(尤指乡间)",
+          "share": 30
+        },
+        {
+          "pos": "n.",
+          "en": "a long, unhurried walk taken for pleasure",
+          "zh": "漫步,郊游",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "The keynote speaker rambled for twenty minutes about his first startup before anyone realized he had skipped the actual product demo.",
+        "My uncle rambles through three unrelated stories every Thanksgiving and somehow lands, at the end, exactly on the point he wanted.",
+        "The review rambles for six paragraphs about parking before mentioning that the restaurant's noodles were, in fact, excellent.",
+        "Retirees from the village ramble across the moor every Wednesday, rain or not, and finish at a pub that opens early for them.",
+        "A two-hour ramble through the hills left her phone dead, her boots soaked, and her mood better than it had been all week."
+      ],
+      "synonyms": [
+        "digress",
+        "meander",
+        "wander",
+        "prattle"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "ramble on about",
+        "ramble off topic",
+        "go for a ramble"
+      ],
+      "relatedForms": [
+        {
+          "form": "rambling",
+          "pos": "adj.",
+          "zh": "冗长杂乱的"
+        },
+        {
+          "form": "rambler",
+          "pos": "n.",
+          "zh": "漫步者,散步的人"
+        }
+      ],
+      "usageScore": 5,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "pretentious",
+      "headword": "pretentious",
+      "phonetic": "/prɪˈtenʃəs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "trying to appear more important, talented, or cultured than you really are",
+          "zh": "自命不凡的,炫耀的(装出高人一等的样子)"
+        }
+      ],
+      "examples": [
+        "The café charges eleven dollars for toast and calls it a tasting experience, which my sister says is the most pretentious thing in the neighborhood.",
+        "His email signature listed four languages he had studied for one semester each, and everyone in the office found it quietly pretentious.",
+        "The film runs three hours without dialogue, and even critics who admired it admitted the ending was pretentious rather than profound.",
+        "She renamed the shared spreadsheet 'The Ledger of Intentions', which struck the whole team as pretentious for a list of grocery runs.",
+        "The wine bar's menu describes a cheap red as 'brooding and architectural', which is pretentious enough to make regulars order beer instead."
+      ],
+      "synonyms": [
+        "affected",
+        "ostentatious",
+        "grandiose",
+        "highfalutin"
+      ],
+      "antonyms": [
+        "modest",
+        "humble",
+        "plain"
+      ],
+      "collocations": [
+        "pretentious nonsense",
+        "sound pretentious",
+        "a pretentious name"
+      ],
+      "relatedForms": [
+        {
+          "form": "pretentiousness",
+          "pos": "n.",
+          "zh": "自命不凡,做作"
+        },
+        {
+          "form": "pretension",
+          "pos": "n.",
+          "zh": "自负,虚饰"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "prae-(在前) + tendere(伸展) → 在人前摆出姿态",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "obsequious",
+      "headword": "obsequious",
+      "phonetic": "/əbˈsiːkwiəs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "excessively eager to please or obey someone powerful, in a way that seems insincere",
+          "zh": "谄媚的,奉承的(对权势者过分讨好)"
+        }
+      ],
+      "examples": [
+        "The waiter became obsequious the moment he recognized the food critic, refilling water glasses that nobody had touched in twenty minutes.",
+        "Her replies to the vice president were so obsequious that colleagues started forwarding them around as a joke.",
+        "The chatbot apologizes four times per answer, an obsequious habit that makes users trust its actual corrections less.",
+        "He nodded obsequiously through the landlord's entire speech and then complained about the broken heater only in the group chat.",
+        "Investors were unnerved by the board's obsequious questions, which sounded rehearsed and never once challenged the founder's revenue forecast."
+      ],
+      "synonyms": [
+        "servile",
+        "fawning",
+        "sycophantic",
+        "ingratiating"
+      ],
+      "antonyms": [
+        "assertive",
+        "defiant",
+        "blunt"
+      ],
+      "collocations": [
+        "obsequious smile",
+        "obsequious flattery",
+        "obsequious manner"
+      ],
+      "relatedForms": [
+        {
+          "form": "obsequiousness",
+          "pos": "n.",
+          "zh": "谄媚,卑躬屈膝"
+        }
+      ],
+      "usageScore": 4,
+      "etymology": "ob-(朝向) + sequi(跟随) → 一味跟随讨好",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "clamorous",
+      "headword": "clamorous",
+      "phonetic": "/ˈklæmərəs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "making a loud confused noise, or demanding something loudly and persistently",
+          "zh": "喧闹的,吵嚷的(大声而不停地要求)"
+        }
+      ],
+      "examples": [
+        "The stadium was clamorous forty minutes before kickoff, with drums, air horns, and a brass band competing near the south gate.",
+        "Parents grew clamorous at the school board meeting once the superintendent admitted the new bus routes were already finalized.",
+        "A clamorous flock of crows took over the parking lot every evening, and nobody in the office could hold a phone call outside.",
+        "The comments section turned clamorous within an hour, demanding refunds in six languages before the studio had posted any statement.",
+        "Rain on the tin roof was so clamorous that the interviewer gave up and rescheduled the recording for the following morning."
+      ],
+      "synonyms": [
+        "noisy",
+        "vociferous",
+        "boisterous",
+        "strident"
+      ],
+      "antonyms": [
+        "quiet",
+        "hushed",
+        "subdued"
+      ],
+      "collocations": [
+        "clamorous crowd",
+        "clamorous demands",
+        "grow clamorous"
+      ],
+      "relatedForms": [
+        {
+          "form": "clamor",
+          "pos": "n.",
+          "zh": "喧闹,大声要求"
+        },
+        {
+          "form": "clamorously",
+          "pos": "adv.",
+          "zh": "喧闹地"
+        }
+      ],
+      "usageScore": 4,
+      "etymology": "clamare(呼喊) + -ous → 喧嚷不休的",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "extenuation",
+      "headword": "extenuation",
+      "phonetic": "/ɪkˌstenjuˈeɪʃn/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "the act of making a fault or offence seem less serious by giving reasons for it, or a reason offered for this purpose",
+          "zh": "减轻罪责,辩解(为过失开脱的理由)"
+        }
+      ],
+      "examples": [
+        "The lawyer offered his client's sleepless double shift in extenuation, but the judge kept the full fine in place.",
+        "In extenuation of his late rent, the tenant produced three months of hospital receipts and a letter from his employer.",
+        "She apologized for the missed deadline without extenuation, which surprised a manager used to hearing about traffic and broken laptops.",
+        "The airline's statement mixed apology with extenuation, blaming a vendor's software update for stranding passengers across three time zones.",
+        "Reviewers accepted the restaurant's extenuation about the flooded kitchen, but three of them still dropped it a full star."
+      ],
+      "synonyms": [
+        "mitigation",
+        "palliation",
+        "excuse"
+      ],
+      "antonyms": [
+        "aggravation",
+        "condemnation"
+      ],
+      "collocations": [
+        "in extenuation of",
+        "offer in extenuation",
+        "plead in extenuation"
+      ],
+      "relatedForms": [
+        {
+          "form": "extenuate",
+          "pos": "v.",
+          "zh": "减轻(罪责),为…开脱"
+        },
+        {
+          "form": "extenuating",
+          "pos": "adj.",
+          "zh": "可减轻罪责的"
+        }
+      ],
+      "usageScore": 3,
+      "etymology": "ex-(向外) + tenuis(薄的) → 把过错说轻,减罪",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "modesty",
+      "headword": "modesty",
+      "phonetic": "/ˈmɑːdəsti/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "the quality of not talking much about your own abilities or achievements",
+          "zh": "谦虚,谦逊(不夸耀自己)",
+          "share": 70
+        },
+        {
+          "pos": "n.",
+          "en": "behavior or clothing intended to avoid attracting attention or causing offence",
+          "zh": "端庄,得体(着装或举止上)",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "She accepted the engineering prize with real modesty, thanking the two interns whose failed prototype had taught the team the most.",
+        "His modesty about the marathon time was undermined by the finish photo he set as his profile picture that same night.",
+        "False modesty is its own kind of bragging, as anyone who has read a startup founder's resignation post can confirm.",
+        "The chef's modesty vanished the moment someone mentioned his sourdough, which he described for eleven minutes without pausing for questions.",
+        "The dress code asked for modesty in the temple courtyard, so the guide handed out long scarves at the ticket window."
+      ],
+      "synonyms": [
+        "humility",
+        "reserve",
+        "decorum"
+      ],
+      "antonyms": [
+        "arrogance",
+        "vanity",
+        "boastfulness",
+        "conceit"
+      ],
+      "collocations": [
+        "false modesty",
+        "with characteristic modesty",
+        "modesty forbids"
+      ],
+      "relatedForms": [
+        {
+          "form": "modest",
+          "pos": "adj.",
+          "zh": "谦虚的,适度的"
+        },
+        {
+          "form": "modestly",
+          "pos": "adv.",
+          "zh": "谦虚地,适度地"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "modus(尺度) + -ty → 有分寸,不自夸",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "discontent",
+      "headword": "discontent",
+      "phonetic": "/ˌdɪskənˈtent/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "a feeling of unhappiness or dissatisfaction, especially with your situation or with people in authority",
+          "zh": "不满,不满情绪(对处境或当权者)",
+          "share": 80
+        },
+        {
+          "pos": "adj.",
+          "en": "feeling dissatisfied and wanting a situation to change",
+          "zh": "不满的,不满足的",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "Rising rents turned quiet discontent into a tenants' union that filled the council chamber on a Tuesday night in February.",
+        "The exit survey buried the real discontent under a question about snacks, so leadership read the results as a catering problem.",
+        "Fan discontent over the season finale filled forums for weeks, and the showrunner deleted her account before the reunion special aired.",
+        "Nurses expressed their discontent by wearing black armbands through three shifts before the hospital agreed to reopen contract talks.",
+        "Shareholders remain discontent with a bonus scheme that pays out even in the years the factory misses every delivery target."
+      ],
+      "synonyms": [
+        "dissatisfaction",
+        "disaffection",
+        "unrest",
+        "resentment"
+      ],
+      "antonyms": [
+        "contentment",
+        "satisfaction",
+        "complacency"
+      ],
+      "collocations": [
+        "growing discontent",
+        "widespread discontent",
+        "express discontent"
+      ],
+      "relatedForms": [
+        {
+          "form": "discontented",
+          "pos": "adj.",
+          "zh": "不满的"
+        },
+        {
+          "form": "discontentment",
+          "pos": "n.",
+          "zh": "不满,不满足"
+        }
+      ],
+      "usageScore": 7,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "diffidence",
+      "headword": "diffidence",
+      "phonetic": "/ˈdɪfɪdəns/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "shyness and lack of confidence in one's own worth or ability, especially in front of other people",
+          "zh": "缺乏自信,羞怯,腼腆"
+        }
+      ],
+      "examples": [
+        "She answered the interviewer's questions with a diffidence that hid three years of shipping code nobody else on the team could read.",
+        "His diffidence at the standup meeting vanished the moment someone asked about the database migration he had spent the weekend rewriting.",
+        "The pianist walked onstage with such diffidence that the audience assumed a student had wandered up before the real performer arrived.",
+        "Years of being interrupted in meetings had bred a diffidence she was now unlearning, one raised hand at a time.",
+        "He apologized for his own question with the diffidence of a first-year student, then asked something the professor could not answer."
+      ],
+      "synonyms": [
+        "shyness",
+        "timidity",
+        "reticence",
+        "self-doubt"
+      ],
+      "antonyms": [
+        "confidence",
+        "assurance",
+        "boldness"
+      ],
+      "collocations": [
+        "with diffidence",
+        "natural diffidence",
+        "overcome one's diffidence"
+      ],
+      "relatedForms": [
+        {
+          "form": "diffident",
+          "pos": "adj.",
+          "zh": "缺乏自信的,羞怯的"
+        },
+        {
+          "form": "diffidently",
+          "pos": "adv.",
+          "zh": "羞怯地"
+        }
+      ],
+      "usageScore": 4,
+      "etymology": "dis-(不) + fidere(信任) → 不自信",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "melodious",
+      "headword": "melodious",
+      "phonetic": "/məˈloʊdiəs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "pleasant to listen to, with a smooth and tuneful sound",
+          "zh": "悦耳的,旋律优美的"
+        }
+      ],
+      "examples": [
+        "The subway violinist's melodious cover of a video-game theme stopped a dozen commuters who were already late for work.",
+        "Her voice on the podcast is so melodious that listeners keep the episode playing long after they have stopped following the argument.",
+        "The doorbell plays a melodious three-note chime that the previous owner recorded himself, and nobody in the family can change it.",
+        "Blackbirds sing melodiously outside the hospital window at four in the morning, indifferent to the patients trying to sleep through it.",
+        "The error message on the new washing machine arrives as a melodious little tune rather than the harsh beep everyone expects."
+      ],
+      "synonyms": [
+        "tuneful",
+        "harmonious",
+        "mellifluous",
+        "musical"
+      ],
+      "antonyms": [
+        "discordant",
+        "harsh",
+        "grating"
+      ],
+      "collocations": [
+        "melodious voice",
+        "deep and melodious",
+        "melodious song"
+      ],
+      "relatedForms": [
+        {
+          "form": "melody",
+          "pos": "n.",
+          "zh": "旋律,曲调"
+        },
+        {
+          "form": "melodiously",
+          "pos": "adv.",
+          "zh": "悦耳地"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "melos(曲调) + ōidē(歌唱) → 曲调悦耳的",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "eminent",
+      "headword": "eminent",
+      "phonetic": "/ˈemɪnənt/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "famous and highly respected within a particular profession or field of knowledge",
+          "zh": "杰出的,著名的(指某领域的权威)"
+        }
+      ],
+      "examples": [
+        "The conference flew in an eminent climate scientist who spent most of her keynote explaining why the previous speaker's chart was misleading.",
+        "Three eminent surgeons signed the letter, and the hospital board reversed the staffing decision within a week of it appearing online.",
+        "My grandfather kept a photograph of himself shaking hands with an eminent judge who later turned out to be taking bribes.",
+        "The obituary described him as an eminent translator, though he had spent his last decade writing crossword puzzles for a local paper.",
+        "Her lab is far too small for someone this eminent, but she refuses to move until the university replaces the ventilation."
+      ],
+      "synonyms": [
+        "distinguished",
+        "renowned",
+        "illustrious",
+        "notable"
+      ],
+      "antonyms": [
+        "obscure",
+        "unknown",
+        "undistinguished"
+      ],
+      "collocations": [
+        "eminent scholar",
+        "eminent figure",
+        "one of the most eminent"
+      ],
+      "relatedForms": [
+        {
+          "form": "eminence",
+          "pos": "n.",
+          "zh": "卓越,显赫"
+        },
+        {
+          "form": "eminently",
+          "pos": "adv.",
+          "zh": "突出地,非常"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "e-(向外) + minere(凸起) → 高出众人的",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "prominence",
+      "headword": "prominence",
+      "phonetic": "/ˈprɑːmɪnəns/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "the state of being important, well known, or easy to notice",
+          "zh": "显著,重要,知名度",
+          "share": 80
+        },
+        {
+          "pos": "n.",
+          "en": "a part that sticks out or rises above what surrounds it, such as a rocky height",
+          "zh": "突出物,凸起处(如高地、日珥)",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "The bassist rose to prominence after a thirty-second clip of her warm-up routine circulated on TikTok during the strike.",
+        "The redesign gives the unsubscribe link the same prominence as the buy button, which the marketing team fought against for months.",
+        "Climate adaptation gained prominence in the budget debate only after two floods closed the same highway in a single spring.",
+        "Her name appears on the poster with a prominence that annoys the three co-authors listed below in six-point grey type.",
+        "The trail ends at a rocky prominence where hikers queue for twenty minutes to photograph the valley from exactly the same spot."
+      ],
+      "synonyms": [
+        "fame",
+        "renown",
+        "importance",
+        "distinction"
+      ],
+      "antonyms": [
+        "obscurity",
+        "insignificance"
+      ],
+      "collocations": [
+        "rise to prominence",
+        "gain prominence",
+        "give prominence to"
+      ],
+      "relatedForms": [
+        {
+          "form": "prominent",
+          "pos": "adj.",
+          "zh": "显著的,杰出的"
+        },
+        {
+          "form": "prominently",
+          "pos": "adv.",
+          "zh": "显著地"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "pro-(向前) + minere(凸起) → 凸出,引人注目",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "hideous",
+      "headword": "hideous",
+      "phonetic": "/ˈhɪdiəs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "extremely ugly or unpleasant to look at, to the point of being shocking",
+          "zh": "极丑陋的,骇人的"
+        }
+      ],
+      "examples": [
+        "The landlord painted the entire flat a hideous shade of mustard and raised the rent two hundred pounds for the refurbishment.",
+        "My aunt knits a hideous Christmas sweater for me every year, and I have worn each one exactly once, in photographs.",
+        "The concert hall is acoustically perfect and hideous from the outside, a concrete block the city has tried three times to demolish.",
+        "Traffic was hideously slow on the bridge, so the ambulance crew took the tunnel and reached the hospital eleven minutes faster.",
+        "The mask he wore to the school play was so hideous that two children in the front row started crying immediately."
+      ],
+      "synonyms": [
+        "repulsive",
+        "grotesque",
+        "ghastly",
+        "monstrous"
+      ],
+      "antonyms": [
+        "beautiful",
+        "attractive",
+        "lovely"
+      ],
+      "collocations": [
+        "absolutely hideous",
+        "hideous mistake",
+        "hideous crime"
+      ],
+      "relatedForms": [
+        {
+          "form": "hideously",
+          "pos": "adv.",
+          "zh": "可怕地,极丑地"
+        },
+        {
+          "form": "hideousness",
+          "pos": "n.",
+          "zh": "丑陋,可怕"
+        }
+      ],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "gullible",
+      "headword": "gullible",
+      "phonetic": "/ˈɡʌləbl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "too ready to believe what others say, and therefore easy to trick or cheat",
+          "zh": "轻信的,易受骗的"
+        }
+      ],
+      "examples": [
+        "The scam targets gullible investors with screenshots of returns that any spreadsheet could produce in about four minutes.",
+        "I am gullible enough to believe every delivery text I receive, which is why my sister now manages my parcels.",
+        "He assumed his grandmother was gullible about technology, then watched her spot a phishing email he had already clicked twice.",
+        "New students are the most gullible market on campus, which is why three credit-card stalls appear outside the library every September.",
+        "The prank works only on someone gullible enough to hold a phone to their ear and repeat whatever the caller says."
+      ],
+      "synonyms": [
+        "credulous",
+        "naive",
+        "trusting",
+        "impressionable"
+      ],
+      "antonyms": [
+        "skeptical",
+        "shrewd",
+        "cynical"
+      ],
+      "collocations": [
+        "gullible enough to",
+        "prey on the gullible",
+        "naive and gullible"
+      ],
+      "relatedForms": [
+        {
+          "form": "gullibility",
+          "pos": "n.",
+          "zh": "轻信,易受骗"
+        }
+      ],
+      "usageScore": 7,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "crux",
+      "headword": "crux",
+      "phonetic": "/krʌks/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "the single most important point of a problem or argument, the one that decides everything else",
+          "zh": "关键,症结,最核心的难点"
+        }
+      ],
+      "examples": [
+        "The crux of the housing dispute is not the rent itself but who pays to replace the leaking roof.",
+        "Her lawyer skipped the timeline and went straight to the crux: nobody could produce the signed delivery receipt.",
+        "The crux of the interview came when they asked why she had left her previous job after eleven weeks.",
+        "Every review of the electric hatchback circles the same crux: charging time, not price, decides whether commuters switch.",
+        "We argued about fonts for an hour before someone named the crux, which was that the deadline had already slipped."
+      ],
+      "synonyms": [
+        "core",
+        "essence",
+        "heart",
+        "nub"
+      ],
+      "antonyms": [
+        "periphery"
+      ],
+      "collocations": [
+        "the crux of the matter",
+        "get to the crux",
+        "at the crux of"
+      ],
+      "relatedForms": [
+        {
+          "form": "crucial",
+          "pos": "adj.",
+          "zh": "至关重要的,决定性的"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "crux(十字,交叉) → 各方交汇处,即问题的关键",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "probabilistic",
+      "headword": "probabilistic",
+      "phonetic": "/ˌprɑːbəbɪˈlɪstɪk/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "based on the mathematics of chance, giving likelihoods rather than one certain answer",
+          "zh": "概率性的,基于概率的"
+        }
+      ],
+      "examples": [
+        "The weather app switched to a probabilistic forecast, so instead of rain at three it now shows a sixty percent chance.",
+        "Her thesis replaces the rigid rules engine with a probabilistic model that learns which loan applications a human would flag.",
+        "Chess engines now judge positions with a probabilistic score, offering a win percentage instead of the confident evaluations of the nineties.",
+        "Doctors gave a probabilistic answer about the surgery, which frustrated my father, who wanted a yes or a no.",
+        "Insurance pricing is probabilistic at heart: the company never knows your crash risk, only what drivers like you did."
+      ],
+      "synonyms": [
+        "stochastic",
+        "statistical",
+        "chance-based"
+      ],
+      "antonyms": [
+        "deterministic"
+      ],
+      "collocations": [
+        "probabilistic model",
+        "probabilistic forecast",
+        "probabilistic reasoning"
+      ],
+      "relatedForms": [
+        {
+          "form": "probability",
+          "pos": "n.",
+          "zh": "概率,可能性"
+        },
+        {
+          "form": "probable",
+          "pos": "adj.",
+          "zh": "很可能的"
+        }
+      ],
+      "usageScore": 4,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "premise",
+      "headword": "premise",
+      "phonetic": "/ˈpremɪs/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "a statement or idea that you take as true and build an argument, plan, or story on",
+          "zh": "前提,假定(论证或计划的出发点)",
+          "share": 60
+        },
+        {
+          "pos": "n.",
+          "en": "the building and land that a company or organization occupies, normally used in the plural form premises",
+          "zh": "经营场所,房屋及地产(常用复数premises)",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "The whole startup rests on the premise that people will pay monthly for software they used to buy once.",
+        "Half the show's jokes collapse because its premise, that nobody in the office owns a smartphone, stopped being believable.",
+        "The budget was built on a false premise: that fuel prices would stay flat through a war and an election.",
+        "Staff were told to leave the premises by six so the landlord could change every lock over the weekend.",
+        "The cafe lost its license after inspectors found two freezers on the premises running eight degrees too warm."
+      ],
+      "synonyms": [
+        "assumption",
+        "postulate",
+        "supposition",
+        "hypothesis"
+      ],
+      "antonyms": [
+        "conclusion"
+      ],
+      "collocations": [
+        "on the premise that",
+        "a false premise",
+        "the basic premise",
+        "on the premises"
+      ],
+      "relatedForms": [
+        {
+          "form": "premises",
+          "pos": "n.",
+          "zh": "(企业的)房屋与土地,经营场所"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "prae-(在前) + mittere(送出,放置) → 先行摆出的前提",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "plausible",
+      "headword": "plausible",
+      "phonetic": "/ˈplɔːzəbl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "seeming reasonable or likely to be true, although it has not been proved",
+          "zh": "貌似有理的,看似可信的"
+        }
+      ],
+      "examples": [
+        "His excuse about the train sounded plausible until we saw the photo of him at brunch that morning.",
+        "The only plausible explanation for the missing files is that the intern cleaned the shared drive before leaving.",
+        "Deepfake voices are now plausible enough that our finance team verifies every transfer request with a call back.",
+        "Every alibi in the podcast is plausible on its own, but three of them cannot all be true at once.",
+        "The startup's revenue projection looked plausible on the slide until an investor asked how many salespeople it assumed."
+      ],
+      "synonyms": [
+        "credible",
+        "believable",
+        "convincing",
+        "reasonable"
+      ],
+      "antonyms": [
+        "implausible",
+        "far-fetched",
+        "unbelievable"
+      ],
+      "collocations": [
+        "a plausible explanation",
+        "sound plausible",
+        "plausible deniability",
+        "perfectly plausible"
+      ],
+      "relatedForms": [
+        {
+          "form": "plausibly",
+          "pos": "adv.",
+          "zh": "貌似有理地"
+        },
+        {
+          "form": "plausibility",
+          "pos": "n.",
+          "zh": "可信度,貌似合理"
+        }
+      ],
+      "usageScore": 8,
+      "etymology": "plaudere(鼓掌) + -ible(可…的) → 值得鼓掌的,即看似可信",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
+    },
+    {
+      "id": "proposition",
+      "headword": "proposition",
+      "phonetic": "/ˌprɑːpəˈzɪʃn/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "an offer or plan put to someone, or a thing judged by how difficult or worthwhile it would be",
+          "zh": "提议,交易方案,(需要权衡的)一件事",
+          "share": 60
+        },
+        {
+          "pos": "n.",
+          "en": "a statement that puts forward an idea and can be judged true or false",
+          "zh": "命题,论断(可判断真假的陈述)",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "He pitched it as a simple proposition: we host the site free, and they let us keep the analytics.",
+        "Opening a bookshop next to a university sounds romantic, but as a business proposition it depends entirely on the rent.",
+        "Driving eleven hours to save ninety dollars on a mattress is a losing proposition once you count fuel and hotels.",
+        "The seminar spent an hour on a single proposition: that a machine can be wrong without ever being dishonest.",
+        "Each proposition in the report is footnoted, so a reader can check whether the claim about wages survives the data."
+      ],
+      "synonyms": [
+        "proposal",
+        "offer",
+        "assertion",
+        "statement"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "a business proposition",
+        "value proposition",
+        "a losing proposition",
+        "put forward a proposition"
+      ],
+      "relatedForms": [
+        {
+          "form": "propose",
+          "pos": "v.",
+          "zh": "提议,提出"
+        },
+        {
+          "form": "proposal",
+          "pos": "n.",
+          "zh": "提议,建议书"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "pro-(向前) + ponere(放置) → 摆到前面的提议或命题",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-16"
     }
   ]
 }

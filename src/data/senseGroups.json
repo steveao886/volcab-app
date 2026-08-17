@@ -1312,10 +1312,10 @@
       "zh": "拿了那么多奖之后,他身上那份谦逊反而更明显。",
       "target": "谦逊",
       "order": [
-        "humility"
+        "humility",
+        "modesty"
       ],
       "extra": [
-        "modesty",
         "meekness",
         "self-effacement"
       ],
@@ -3412,10 +3412,10 @@
       "zh": "他在这一行的地位是几十年积累起来的。",
       "target": "地位",
       "order": [
-        "eminence"
+        "eminence",
+        "prominence"
       ],
       "extra": [
-        "prominence",
         "standing",
         "renown"
       ],
@@ -3552,10 +3552,10 @@
       "zh": "他那副讨好的语气让所有人都不自在。",
       "target": "讨好的",
       "order": [
-        "ingratiating"
+        "ingratiating",
+        "obsequious"
       ],
       "extra": [
-        "obsequious",
         "fawning",
         "unctuous"
       ],
@@ -3791,10 +3791,10 @@
       "target": "预示",
       "order": [
         "presage",
+        "portend",
         "foreshadow"
       ],
       "extra": [
-        "portend",
         "bode"
       ],
       "en": "Those odd transfers presaged the collapse that followed.",
@@ -4014,15 +4014,15 @@
       "zh": "这类骗局专挑不谨慎的人下手。",
       "target": "不谨慎的",
       "order": [
-        "unwary"
+        "unwary",
+        "gullible"
       ],
       "extra": [
         "unsuspecting",
-        "off guard",
-        "gullible"
+        "off guard"
       ],
       "en": "The scam is built for the unwary.",
-      "why": "unwary 指没有提防、缺少警觉,常作 the unwary 指这一类人;unsuspecting 强调压根没料到有诈;off guard 是短语,指当下松懈的状态;gullible 侧重轻信,是性格上的易骗。"
+      "why": "unwary 指没有提防、缺少警觉,常作 the unwary 指这一类人;gullible 侧重轻信,是性格上的易骗,得真被骗到才算;unsuspecting 强调压根没料到有诈;off guard 是短语,指当下松懈的状态。"
     },
     {
       "zh": "他谈吐温文尔雅,却把该说的都说了。",
@@ -4872,6 +4872,73 @@
         "overhaul"
       ],
       "why": "upheaval 强调突如其来的巨大变动，格局被整个掀翻，是事件；turmoil 强调持续的纷乱与不安，是状态——收件箱可以陷入 turmoil，但那不是一场 upheaval。"
+    },
+    {
+      "zh": "两年没涨薪之后，车间里那股离心情绪再也藏不住。",
+      "target": "离心情绪",
+      "en": "Two years without a raise, and the disaffection on the shop floor was no longer something anyone could hide.",
+      "order": [
+        "disaffection",
+        "discontent",
+        "alienation"
+      ],
+      "why": "disaffection 一定针对当权者或管理层，表现是收回拥护、不再配合；discontent 只是普遍的不满情绪，不必指向谁；alienation 是个人融不进群体的疏离感，与拥护无关。"
+    },
+    {
+      "zh": "那个助理对总监卑躬屈膝的样子，让整个会议室都不自在。",
+      "target": "卑躬屈膝",
+      "en": "The assistant was so obsequious around the director that the whole room stopped talking.",
+      "order": [
+        "obsequious",
+        "sycophantic",
+        "ingratiating"
+      ],
+      "why": "obsequious 重在对权势者卑躬屈膝、有求必应的姿态；sycophantic 必须有言语上的吹捧奉承，目的是换取好处；ingratiating 语气最轻，只是刻意讨人喜欢，未必针对上位者。"
+    },
+    {
+      "zh": "他又一次把银行卡号报给了自称客服的陌生人，太好骗了。",
+      "target": "好骗",
+      "en": "He read his card number to a stranger claiming to be from the bank again, and he really is that gullible.",
+      "order": [
+        "gullible",
+        "credulous",
+        "unwary"
+      ],
+      "why": "gullible 着眼于真的被骗到手，是日常口语的贬义；credulous 指不加查证就相信别人的说法，重点在轻信，未必吃亏；unwary 只是没有戒心、没提防，连相信都谈不上。"
+    },
+    {
+      "zh": "财务花了一周，才把两份报表上差三万的用户数对上。",
+      "target": "对上",
+      "en": "It took finance a week to reconcile the two reports, which disagreed on the user count by thirty thousand.",
+      "order": [
+        "reconcile",
+        "dovetail",
+        "conciliate"
+      ],
+      "sense": 2,
+      "why": "reconcile 用来核对两组数字或调和两种说法，让它们相符，宾语是事实或账目；dovetail 指两件事本身严丝合缝地配合，不需要人去做；conciliate 的宾语只能是人，指安抚对方情绪。"
+    },
+    {
+      "zh": "那位病毒学家的知名度是在三个月里突然起来的。",
+      "target": "知名度",
+      "en": "The virologist's prominence came out of nowhere in the space of three months.",
+      "order": [
+        "prominence",
+        "eminence",
+        "criticality"
+      ],
+      "why": "prominence 指被大量看见、广为人知的状态，可以来得很快，不含褒贬；eminence 是同行公认的崇高地位，靠几十年成就积累；criticality 说的是一件事有多紧要，与出名无关。"
+    },
+    {
+      "zh": "他菜单上每道菜都配一段哲学，装腔作势得让人吃不下去。",
+      "target": "装腔作势",
+      "en": "Every dish on his menu came with a paragraph of philosophy, pretentious enough to kill the appetite.",
+      "order": [
+        "pretentious",
+        "affected",
+        "ostentatious"
+      ],
+      "why": "pretentious 指硬摆出高深、有品位的架势，实际撑不起来；affected 指言谈举止刻意做作、不自然，不一定装高深；ostentatious 是财物排场上的招摇炫耀，看得见摸得着。"
     }
   ]
 }
