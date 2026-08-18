@@ -10,7 +10,16 @@ const KEYS = {
   staging: 'volcab.staging',       // Local copy of the staging area for new words (staging.json)
   stagingSha: 'volcab.stagingSha',
   stagingOps: 'volcab.stagingOps', // Word collections not yet confirmed pushed to the remote, same mechanism as wordOps
-  recentPassages: 'volcab.recentPassages', // Ids of recently done passages. Only guards against repeats — not worth adding a sync field in progress.json for this
+  // How many times each passage has been served, by id. The passage picker
+  // hands the next turn to whichever passage has the lowest count, which is
+  // what levels them out; see pickPassage for why a count replaced the old
+  // score-and-recency-window pair. Superseded 'volcab.recentPassages', whose
+  // leftovers are harmless and simply stop being read.
+  //
+  // Local, not synced, for the same reason the recency lists below are: a
+  // second device keeping its own tally costs one early repeat, while a new
+  // field in progress.json costs a migration on a file three devices write.
+  passagePlays: 'volcab.passagePlays',
   recentRecall: 'volcab.recentRecall',     // Prompts (zh) of recently answered 回想 questions, same contract and same reasoning as recentPassages
   // Prompts the user pressed 巩固 on: they jump the queue next 回想 session
   // and are cleared once answered right. Local, like the two above — but

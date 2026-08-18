@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { buildPassageQuestion, DUE_WEIGHT, LEARNED_WEIGHT, MAX_BLANKS, parsePassage, parseSentence, pickDistractors, pickPassage, pushRecent, RECENT_LIMIT, recentWindow, scoreQuestion, selectBlanks } from './passage'
+import { buildPassageQuestion, MAX_BLANKS, parsePassage, parseSentence, pickDistractors, pickPassage, pushRecent, recordPlay, RECENT_LIMIT, recentWindow, selectBlanks } from './passage'
+import type { PassagePlay } from './passage'
 import type { Passage } from './passage'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
@@ -409,65 +410,100 @@ describe('pickPassage', () => {
 
   const p1 = passage({ id: 'p1', en: ['{{a}} {{b}} {{c}}'], zh: ['甲'] })
   const p2 = passage({ id: 'p2', en: ['{{d}} {{e}} {{f}}'], zh: ['乙'] })
+  const allLearned = progressWith(Object.fromEntries(ids.map(i => [i, TODAY])))
 
-  it('picks the passage with the most words due today', () => {
-    const progress = progressWith({
-      a: TODAY, b: TODAY, c: TODAY,        // p1: all three are due
-      d: TODAY, e: '2099-01-01', f: '2099-01-01',  // p2: only one is due
-    })
-    expect(pickPassage([p1, p2], words, progress, TODAY, [], rng)?.passage.id).toBe('p1')
+  it('picks the passage played fewest times', () => {
+    expect(pickPassage([p1, p2], words, allLearned, TODAY, { p1: { n: 3, last: 3 }, p2: { n: 1, last: 0 } }, rng)?.passage.id).toBe('p2')
+    expect(pickPassage([p1, p2], words, allLearned, TODAY, { p1: { n: 1, last: 0 }, p2: { n: 3, last: 3 } }, rng)?.passage.id).toBe('p1')
   })
 
-  it('recently done passages give way — on a second attempt you remember last time\'s answers, not the words', () => {
-    const progress = progressWith({
-      a: TODAY, b: TODAY, c: TODAY,
-      d: TODAY, e: TODAY, f: '2099-01-01',  // p2's score would normally be lower than p1's
-    })
-    expect(pickPassage([p1, p2], words, progress, TODAY, ['p1'], rng)?.passage.id).toBe('p2')
+  it('a passage the map has never heard of counts as zero, so new material goes to the front', () => {
+    expect(pickPassage([p1, p2], words, allLearned, TODAY, { p1: { n: 4, last: 3 } }, rng)?.passage.id).toBe('p2')
   })
 
-  it('a low-coverage passage still gets its turn — the old flat penalty could never outrun the score spread', () => {
-    // p1 has three due blanks (9 points), p2 one due and two learned (5).
-    // Under the penalty this gap was unbridgeable whenever it exceeded 5, so
-    // the high-coverage passage repeated forever. Excluding it forces the turn.
+  it('due words no longer buy a passage any advantage — the play count is the whole rule', () => {
+    // p1 has three words due today, p2 none. Under the old score p1 won 9 to
+    // 3 and kept on winning; that spread is what starved the rest of the corpus.
     const progress = progressWith({
       a: TODAY, b: TODAY, c: TODAY,
-      d: TODAY, e: '2099-01-01', f: '2099-01-01',
+      d: '2099-01-01', e: '2099-01-01', f: '2099-01-01',
     })
-    expect(pickPassage([p1, p2], words, progress, TODAY, ['p1'], rng)?.passage.id).toBe('p2')
+    expect(pickPassage([p1, p2], words, progress, TODAY, { p1: { n: 1, last: 0 } }, rng)?.passage.id).toBe('p2')
   })
 
-  it('rotates through every buildable passage instead of cycling a favoured few', () => {
+  it('levels the counts: every passage is played once before any is played twice', () => {
     const progress = progressWith({
       a: TODAY, b: TODAY, c: TODAY,
-      d: '2099-01-01', e: '2099-01-01', f: '2099-01-01',   // p2 scores far lower, permanently
+      d: '2099-01-01', e: '2099-01-01', f: '2099-01-01',   // p2 would have scored far lower, permanently
     })
+    const corpus = [p1, p2]
     const seen: string[] = []
-    let recent: string[] = []
-    for (let i = 0; i < 4; i++) {
-      const id = pickPassage([p1, p2], words, progress, TODAY, recent, rng)!.passage.id
+    let plays: Record<string, PassagePlay> = {}
+    for (let i = 0; i < 6; i++) {
+      const id = pickPassage(corpus, words, progress, TODAY, plays, mulberry32(i))!.passage.id
       seen.push(id)
-      recent = pushRecent(recent, id)
+      plays = recordPlay(plays, id, corpus.map(p => p.id))
     }
-    expect(seen).toEqual(['p1', 'p2', 'p1', 'p2'])
+    expect(seen.filter(id => id === 'p1')).toHaveLength(3)
+    expect(seen.filter(id => id === 'p2')).toHaveLength(3)
+    // and never the same one twice running, which is what the recency window used to buy
+    expect(seen.some((id, i) => i > 0 && id === seen[i - 1])).toBe(false)
   })
 
-  it('repeats rather than showing nothing when every fresh passage is unbuildable', () => {
-    // p2's words are all unlearned, so it cannot be built; p1 is recent. A
-    // repeat is still better than the empty state.
+  it('a passage just served waits out the cooldown even while everything is level', () => {
+    // Three passages, all level at one play. p3 was served last, so it is the
+    // one the cooldown holds back; with a pool of 3 the window is one serve.
+    const p3 = passage({ id: 'p3', en: ['{{a}} {{d}} {{e}}'], zh: ['丙'] })
+    const plays = { p1: { n: 1, last: 0 }, p2: { n: 1, last: 1 }, p3: { n: 1, last: 2 } }
+    const drawn = new Set(
+      Array.from({ length: 20 }, (_, i) =>
+        pickPassage([p1, p2, p3], words, allLearned, TODAY, plays, mulberry32(i))!.passage.id),
+    )
+    expect(drawn.has('p3')).toBe(false)
+    expect(drawn).toEqual(new Set(['p1', 'p2']))
+  })
+
+  it('the cooldown gives way rather than returning nothing when it would empty the tie', () => {
+    // One passage left at the low count and it is also the most recent. The
+    // count guarantee outranks the cooldown, so it is served anyway.
+    const plays = { p1: { n: 2, last: 0 }, p2: { n: 1, last: 1 } }
+    expect(pickPassage([p1, p2], words, allLearned, TODAY, plays, rng)?.passage.id).toBe('p2')
+  })
+
+  it('sets aside a passage more than a third of whose marked words are unlearned', () => {
+    // wide marks five words, two of them unlearned — two fifths, over the
+    // line. It is still buildable (three learned marks clear MIN_BLANKS), so
+    // the gate is the only thing keeping it out, and p1 wins despite having
+    // been played five more times.
+    const wide = passage({ id: 'wide', en: ['{{a}} {{b}} {{c}} {{e}} {{f}}'], zh: ['甲'] })
     const progress = progressWith({ a: TODAY, b: TODAY, c: TODAY })
-    expect(pickPassage([p1, p2], words, progress, TODAY, ['p1'], rng)?.passage.id).toBe('p1')
+    expect(pickPassage([p1, wide], words, progress, TODAY, { p1: { n: 5, last: 4 } }, rng)?.passage.id).toBe('p1')
+  })
+
+  it('a third exactly is still allowed — the bar is what it says it is', () => {
+    // narrow marks six, two unlearned — exactly a third, which is allowed.
+    // p1 has been played five more times, so if narrow were eligible it wins.
+    const narrow = passage({ id: 'narrow', en: ['{{a}} {{b}} {{c}} {{d}} {{e}} {{f}}'], zh: ['甲'] })
+    const progress = progressWith({ a: TODAY, b: TODAY, c: TODAY, d: TODAY })
+    expect(pickPassage([p1, narrow], words, progress, TODAY, { p1: { n: 5, last: 4 } }, rng)?.passage.id).toBe('narrow')
+  })
+
+  it('serves an over-the-line passage anyway rather than showing nothing', () => {
+    // The only buildable passage is thick with unlearned words; empty is worse.
+    const wide = passage({ id: 'wide', en: ['{{a}} {{b}} {{c}} {{e}} {{f}}'], zh: ['甲'] })
+    const progress = progressWith({ a: TODAY, b: TODAY, c: TODAY })
+    expect(pickPassage([wide], words, progress, TODAY, {}, rng)?.passage.id).toBe('wide')
   })
 
   it('returns null when no passage can produce a question', () => {
     const progress = progressWith({ a: TODAY })  // each passage has at most one blank available
-    expect(pickPassage([p1, p2], words, progress, TODAY, [], rng)).toBeNull()
+    expect(pickPassage([p1, p2], words, progress, TODAY, {}, rng)).toBeNull()
   })
 
   it('the passage with bad data is skipped, without affecting the others', () => {
     const broken = passage({ id: 'bad', en: ['{{a} {{b}} {{c}}'], zh: ['甲'] })
     const progress = progressWith({ a: TODAY, b: TODAY, c: TODAY })
-    expect(pickPassage([broken, p1], words, progress, TODAY, [], rng)?.passage.id).toBe('p1')
+    expect(pickPassage([broken, p1], words, progress, TODAY, {}, rng)?.passage.id).toBe('p1')
   })
 
   it('the same seed run twice gives identical results — the whole question-generation pipeline is built on reproducibility', () => {
@@ -479,37 +515,34 @@ describe('pickPassage', () => {
     const progress = progressWith(Object.fromEntries([...many, ...spare].map(i => [i, TODAY])))
     const big = passage({ id: 'big', en: [many.map(i => `{{${i}}}`).join(' ')], zh: ['甲'] })
 
-    expect(pickPassage([big, p1], ws, progress, TODAY, [], mulberry32(42)))
-      .toEqual(pickPassage([big, p1], ws, progress, TODAY, [], mulberry32(42)))
+    expect(pickPassage([big], ws, progress, TODAY, {}, mulberry32(42)))
+      .toEqual(pickPassage([big], ws, progress, TODAY, {}, mulberry32(42)))
 
     // a different seed really does give a different result, otherwise the assertion above is meaningless
-    const a = pickPassage([big, p1], ws, progress, TODAY, [], mulberry32(42))!
-    const b = pickPassage([big, p1], ws, progress, TODAY, [], mulberry32(7))!
+    const a = pickPassage([big], ws, progress, TODAY, {}, mulberry32(42))!
+    const b = pickPassage([big], ws, progress, TODAY, {}, mulberry32(7))!
     expect(a.choices).not.toEqual(b.choices)
   })
 })
 
-describe('scoreQuestion', () => {
-  const ids = ['a', 'b', 'c']
-  const words = ids.map(i => word(i))
-  const p = passage({ id: 'p1', en: ['{{a}} {{b}} {{c}}'], zh: ['甲'] })
-  const build = (progress: Progress) =>
-    buildPassageQuestion(p, words, progress, TODAY, [], mulberry32(3))!
-
-  const threeDue = progressWith({ a: TODAY, b: TODAY, c: TODAY })
-  const twoDue = progressWith({ a: TODAY, b: TODAY, c: '2099-01-01' })
-
-  it('due words are weighted higher than learned-but-not-due words — this is a review tool first, reading material second', () => {
-    expect(scoreQuestion(build(threeDue), threeDue, TODAY)).toBe(DUE_WEIGHT * 3)
-    expect(scoreQuestion(build(twoDue), twoDue, TODAY)).toBe(DUE_WEIGHT * 2 + LEARNED_WEIGHT)
-    expect(DUE_WEIGHT).toBeGreaterThan(LEARNED_WEIGHT)
+describe('recordPlay', () => {
+  it('counts a serve and stamps it with the next ordinal', () => {
+    expect(recordPlay({}, 'p1', ['p1', 'p2'])).toEqual({ p1: { n: 1, last: 0 } })
+    expect(recordPlay({ p1: { n: 2, last: 5 } }, 'p1', ['p1'])).toEqual({ p1: { n: 3, last: 6 } })
   })
 
-  it('recency is not part of the score — pickPassage filters on it instead', () => {
-    // It used to be a flat penalty here, and a constant could never outrun the
-    // score's own spread: seven due blanks is 21 points against three learned
-    // blanks at 3. The high-coverage passages simply always won.
-    expect(scoreQuestion.length).toBe(3)
+  it('the ordinal counts serves across the whole corpus, not per passage', () => {
+    const out = recordPlay({ p1: { n: 1, last: 0 }, p2: { n: 1, last: 1 } }, 'p1', ['p1', 'p2'])
+    expect(out.p1).toEqual({ n: 2, last: 2 })
+  })
+
+  it('drops ids the corpus no longer holds, so a retired passage stops occupying the map', () => {
+    expect(recordPlay({ old: { n: 9, last: 9 }, p1: { n: 1, last: 0 } }, 'p1', ['p1', 'p2']))
+      .toEqual({ p1: { n: 2, last: 1 } })
+  })
+
+  it('ignores a serve for an id outside the corpus rather than inventing an entry', () => {
+    expect(recordPlay({ p1: { n: 1, last: 0 } }, 'ghost', ['p1'])).toEqual({ p1: { n: 1, last: 0 } })
   })
 })
 

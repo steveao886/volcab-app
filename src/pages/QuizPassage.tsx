@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Chip } from '../components/Chip'
-import { pickPassage, pushRecent } from '../lib/passage'
-import type { Passage, PassageQuestion, Token } from '../lib/passage'
+import { pickPassage, recordPlay } from '../lib/passage'
+import type { Passage, PassagePlay, PassageQuestion, Token } from '../lib/passage'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
 import { todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
@@ -40,9 +40,11 @@ export function PassageSession({
   // Math.random, and calling it again during a re-render would quietly swap
   // out the passage mid-answer.
   const [question] = useState<PassageQuestion | null>(() => {
-    const recent = storage.get<string[]>('recentPassages') ?? []
-    const q = pickPassage(passages, words, progress, todayStr(new Date()), recent)
-    if (q !== null) storage.set('recentPassages', pushRecent(recent, q.passage.id))
+    const plays = storage.get<Record<string, PassagePlay>>('passagePlays') ?? {}
+    const q = pickPassage(passages, words, progress, todayStr(new Date()), plays)
+    // Counted at serve time, not at submit. Abandoning halfway still has to
+    // count, or backing out would hand the same passage straight back.
+    if (q !== null) storage.set('passagePlays', recordPlay(plays, q.passage.id, passages.map(p => p.id)))
     return q
   })
 

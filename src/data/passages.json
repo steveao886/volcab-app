@@ -709,12 +709,15 @@
         "真正让礼堂彻底空掉的,是导演对女主角的宽容:那人为了出差缺了四次排练,照样如期登台,而其余的人从十月起就一直在跑排练。"
       ],
       "exclude": [
+        "concur",
+        "countermand",
+        "felicitous",
         "grumble",
         "opportune",
-        "rickety",
+        "overturn",
+        "reconcile",
         "repudiate",
-        "countermand",
-        "concur"
+        "rickety"
       ]
     },
     {

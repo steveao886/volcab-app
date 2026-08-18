@@ -337,6 +337,16 @@ export interface PassageQuestion {
   blanks: Blank[]
   /** Already shuffled */
   choices: Choice[]
+  /** Distinct word ids marked in the passage text, blanked or not. */
+  marked: number
+  /**
+   * How many of those cannot be tested yet — still `state: 'new'`, missing a
+   * progress entry, or gone from the library entirely. Those words are printed
+   * as plain text, so this is also the count of words the passage asks the
+   * reader to read without ever having taught them. `pickPassage` sets a
+   * passage aside when the share gets too high.
+   */
+  unlearned: number
 }
 
 /**
@@ -365,8 +375,18 @@ export function buildPassageQuestion(
   // Then union in the author's manually called-out exclude (see Passage.exclude): the small
   // handful of ambiguous words that can't be computed.
   const excluded = new Set<string>(passage.exclude)
+  const markedIds = new Set<string>()
   for (const tokens of sentences) {
-    for (const t of tokens) if (t.kind === 'word') excluded.add(t.wordId)
+    for (const t of tokens) if (t.kind === 'word') { excluded.add(t.wordId); markedIds.add(t.wordId) }
+  }
+  // A word missing from the library counts as unlearned rather than being
+  // skipped. It reaches the reader as plain text either way, and the reader
+  // has certainly not learned a word the library no longer holds — a deleted
+  // word left exactly this kind of dangling mark once already (1666144).
+  let unlearned = 0
+  for (const id of markedIds) {
+    const e = progress.words[id]
+    if (!byId.has(id) || e === undefined || e.state === 'new') unlearned++
   }
   const distractors = pickDistractors(answerIds, excluded, words, byId, progress, pairs, DISTRACTOR_COUNT, rng)
 
@@ -378,12 +398,32 @@ export function buildPassageQuestion(
     rng,
   )
 
-  return { passage, sentences, blanks, choices }
+  return { passage, sentences, blanks, choices, marked: markedIds.size, unlearned }
 }
 
-/** Due words are weighted higher than learned-but-not-due — this feature is a review tool first, reading material second. */
-export const DUE_WEIGHT = 3
-export const LEARNED_WEIGHT = 1
+/**
+ * The share of a passage's marked words that may still be unlearned before
+ * the passage is set aside. Those words are printed as plain text, so a
+ * passage over the line is one the reader is being asked to read past a pile
+ * of words nobody taught them — and it yields fewer blanks besides.
+ *
+ * A third, not a stricter bar, because the corpus is mostly 7-mark passages:
+ * 31 of 42 mark exactly 7 words, so anything tighter turns a single unlearned
+ * word into a disqualification. Measured over 200 trials per level, drawing
+ * the unlearned set at random from the live library:
+ *
+ * | new words | buildable | <= 1/3 | <= 1/4 | eligible >= 7 |
+ * |-----------|-----------|--------|--------|---------------|
+ * | 5%        | 42.0      | 41.8   | 40.3   | 30.5          |
+ * | 10%       | 42.0      | 41.1   | 36.4   | 23.9          |
+ * | 30%       | 40.9      | 26.3   | 14.0   |  7.9          |
+ *
+ * "Every passage can fill a full-size question" (eligible >= MAX_BLANKS) is
+ * the rule this looks like it should be, and it is the wrong one: it strands
+ * a quarter of the corpus at 5% new words. A third stays inert until the
+ * unlearned share is genuinely high, which is the only time it should fire.
+ */
+export const MAX_UNLEARNED_SHARE = 1 / 3
 /** How many ids the "recently done" list keeps. Just a storage cap now — the window that actually matters is derived per corpus by recentWindow. Stored in localStorage, not in progress.json. */
 export const RECENT_LIMIT = 60
 
@@ -407,86 +447,149 @@ export function recentWindow(corpusSize: number): number {
 }
 
 /**
- * How much this passage is worth doing today, counting only what it would
- * actually make you recall.
+ * What the picker remembers about one passage.
  *
- * Recency is **not** part of the score. It used to be, as a flat penalty,
- * and it could not do the job — see pickPassage for why and for the
- * measurement. It is a filter there instead.
+ * `n` is what levels the corpus out; `last` only breaks ties between passages
+ * already level. Keeping both is what stops a round-robin from bunching at
+ * the cycle boundary — see pickPassage.
  */
-export function scoreQuestion(
-  q: PassageQuestion,
-  progress: Progress,
-  today: string,
-): number {
-  let s = 0
-  for (const b of q.blanks) {
-    s += progress.words[b.wordId].due <= today ? DUE_WEIGHT : LEARNED_WEIGHT
-  }
-  return s
+export interface PassagePlay {
+  /** How many times this passage has been served. */
+  n: number
+  /** The serve ordinal of the last time, counting from the first serve ever recorded. */
+  last: number
 }
 
 /**
- * Picks the passage most worth doing today. Returns null if none can be built (the caller
- * supplies the empty-state copy).
+ * How long a just-served passage stays out of a tie-break, as a fraction of
+ * the eligible pool. Half of 42 is twenty-one sessions.
  *
- * `buildContrastPairs` is computed only once for the whole word library — putting it inside
- * the loop would mean recomputing the inverted index once per passage.
+ * Measured over 126 sessions (three full cycles of the 42-passage corpus),
+ * counting repeats that came back inside 20 sessions:
  *
- * **Every passage is fully assembled and then scored — this is deliberate**: scoring needs
- * to count due words, and due words are a product of `selectBlanks`, so scoring before
- * assembling would mean duplicating the blank-selection logic. Measured on this machine: 3.7
- * ms for 30 passages, 18.0 ms for 200 passages (30 is roughly the current corpus size, 200
- * the planned size) — both well within the noise of a single click. If the corpus grows
- * past 200 passages, this should switch to "compute a lightweight score first, then only
- * fully assemble the top-scoring few" — but that's a change for when it's needed; doing it
- * now would trade readability for an invisible gain.
+ * | share | closest repeat | repeats under 20 | plays min..max |
+ * |-------|----------------|------------------|----------------|
+ * | none  | 6              | 8 of 84          | 3..3           |
+ * | 1/4   | 11             | 7 of 84          | 3..3           |
+ * | 1/3   | 17             | 3 of 84          | 3..3           |
+ * | 1/2   | 22             | 0 of 84          | 3..3           |
+ *
+ * A half costs nothing to take: the count guarantee holds at every setting,
+ * because everything the cooldown skips is level on `n` and still gets served
+ * this cycle. Going past a half would start emptying the tie-break often
+ * enough to fall through to the uncooled set, which is where the guarantee
+ * quietly stops being worth anything.
+ */
+export const COOLDOWN_SHARE = 1 / 2
+
+/**
+ * Picks the passage to do next.
+ *
+ * **Fewest plays wins.** There is no score. Ranking passages by how much
+ * review they would deliver was the old rule, and the arithmetic could not be
+ * rescued: seven due blanks scored 21 against three learned blanks at 3, so
+ * the top of the corpus monopolised the mode and the bottom starved.
+ * Windowing the recent picks patched the symptom and left the cause —
+ * measured over 60 consecutive sessions on the live corpus with 15% of words
+ * due, 12 of 42 passages were still never drawn once. Counting plays attacks
+ * it directly: measured over 126 sessions (three full cycles), every one of
+ * the 42 passages is served exactly three times.
+ *
+ * **Ties break towards whatever was served longest ago**, and that second
+ * rule is load-bearing rather than a refinement. Fewest-plays alone puts the
+ * order inside each cycle up to the rng, so a passage drawn late in one cycle
+ * can come back early in the next: measured, 8 of 84 repeats returned within
+ * 20 sessions and the closest was 6. Holding a passage out of the tie-break
+ * for `COOLDOWN_SHARE` of the pool takes that to 0 of 84, closest 22, and
+ * costs the count guarantee nothing — every candidate it skips is level on
+ * `n`, so they all still get served this cycle.
+ *
+ * Two things the count deliberately does **not** try to be:
+ *
+ * - **Not synced.** Same call as `recentPassages` before it (see the comment
+ *   on the storage key): a second device keeping its own tally costs one early
+ *   repeat, while a new field in progress.json costs a schema migration on a
+ *   file three devices write to.
+ * - **Not a fairness ledger across the gate.** Counts level within whatever
+ *   pool clears `MAX_UNLEARNED_SHARE` today. A passage held back for having
+ *   too many unlearned words keeps its low count and goes to the front of the
+ *   queue the moment it qualifies, which is the behaviour worth having.
+ *
+ * `buildContrastPairs` is computed once for the whole word library — putting
+ * it inside the loop would recompute the inverted index once per passage.
+ *
+ * **Every passage is fully assembled before being weighed**, because both the
+ * unlearned count and the blank count come out of the assembly. Measured on
+ * this machine: 3.7 ms for 30 passages, 18.0 ms for 200 (200 is the planned
+ * corpus size), both inside the noise of a single tap. Past 200, this should
+ * count marked words up front and only assemble the front-runners.
+ *
+ * @param plays Per-passage history by id. Ids absent from the map have never
+ *   been served, so a passage added to the corpus today goes to the front of
+ *   the queue — which is what you want from new material.
  */
 export function pickPassage(
   passages: Passage[],
   words: Word[],
   progress: Progress,
   today: string,
-  recentIds: string[],
+  plays: Record<string, PassagePlay>,
   rng: () => number = Math.random,
 ): PassageQuestion | null {
   const pairs = buildContrastPairs(words)
 
-  const bestOf = (candidates: Passage[]): PassageQuestion | null => {
-    let best: PassageQuestion | null = null
-    let bestScore = -Infinity
-    // Shuffle first: on a tie, whichever is encountered first wins; without shuffling it
-    // would always be one of the same few passages near the front of the array
-    for (const p of shuffle(candidates, rng)) {
-      const q = buildPassageQuestion(p, words, progress, today, pairs, rng)
-      if (q === null) continue
-      const s = scoreQuestion(q, progress, today)
-      if (s > bestScore) {
-        bestScore = s
-        best = q
-      }
-    }
-    return best
+  const built: PassageQuestion[] = []
+  for (const p of passages) {
+    const q = buildPassageQuestion(p, words, progress, today, pairs, rng)
+    if (q !== null) built.push(q)
   }
+  if (built.length === 0) return null
 
-  // Recently-done passages are **excluded, not penalised**. They used to cost
-  // a flat RECENT_PENALTY, which could never bridge the gap the score itself
-  // opens up: a passage with seven due blanks scores 21, one with three
-  // learned blanks scores 3, and no constant of 5 closes that. Measured over
-  // the live library, 22 of 26 passages were buildable and 40 consecutive
-  // sessions drew only 11 of them — the same eleven, in the same order,
-  // forever, while eleven perfectly usable passages never appeared once.
-  //
-  // Falling back to the full set matters for two cases: fewer passages exist
-  // than the recent list remembers, and every fresh passage turns out not to
-  // be buildable. Either way, repeating a passage beats the empty state.
-  //
-  // recentWindow caps at one short of the corpus, so something is always left
-  // to choose from; without that, a small corpus would exclude everything and
-  // the fallback would go back to picking purely on score.
-  const window = recentIds.slice(0, recentWindow(passages.length))
-  const fresh = passages.filter(p => !window.includes(p.id))
-  return bestOf(fresh) ?? bestOf(passages)
+  // Falling back to the whole buildable set matters while the library is young
+  // and nearly every passage is over the line. A passage thick with unlearned
+  // words still beats the empty state.
+  const ready = built.filter(q => q.unlearned <= q.marked * MAX_UNLEARNED_SHARE)
+  const pool = ready.length > 0 ? ready : built
+
+  const playsOf = (q: PassageQuestion) => plays[q.passage.id]?.n ?? 0
+  const fewest = Math.min(...pool.map(playsOf))
+  const tied = pool.filter(q => playsOf(q) === fewest)
+
+  // Never-served passages have no `last` and must sort ahead of every served
+  // one, hence -1 against a serve ordinal that starts at 0.
+  const lastOf = (q: PassageQuestion) => plays[q.passage.id]?.last ?? -1
+  const newest = Math.max(-1, ...pool.map(lastOf))
+  const cooled = tied.filter(q => lastOf(q) <= newest - Math.floor(pool.length * COOLDOWN_SHARE))
+
+  // Shuffle before taking the first: without it the tie always resolves to
+  // whichever passage sits earliest in the array, and at the start of a cycle
+  // every passage is tied.
+  return shuffle(cooled.length > 0 ? cooled : tied, rng)[0]
+}
+
+/**
+ * Records that a passage was served, and drops ids the corpus no longer holds.
+ *
+ * Pruning is what keeps a rewritten passage honest. Replacing a passage means
+ * giving it a new id — reusing the old one would inherit its play count and
+ * start the rewrite at the back of the queue — and without pruning the retired
+ * id would sit in the map forever.
+ */
+export function recordPlay(
+  plays: Record<string, PassagePlay>,
+  id: string,
+  corpusIds: string[],
+): Record<string, PassagePlay> {
+  const keep = new Set(corpusIds)
+  const out: Record<string, PassagePlay> = {}
+  let newest = -1
+  for (const [k, v] of Object.entries(plays)) {
+    if (!keep.has(k)) continue
+    out[k] = v
+    newest = Math.max(newest, v.last)
+  }
+  if (keep.has(id)) out[id] = { n: (out[id]?.n ?? 0) + 1, last: newest + 1 }
+  return out
 }
 
 /** Pushes an id to the front of "recently done," dropping the oldest once past the limit. */
