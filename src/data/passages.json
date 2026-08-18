@@ -2,789 +2,6 @@
   "version": 1,
   "passages": [
     {
-      "id": "committee-report",
-      "title": "一票通过的那份报告",
-      "en": [
-        "The committee's report was {{contentious}} before anyone had finished reading it.",
-        "Its central claim rested on a single lab result that no independent team could {{corroborate}}, and the paragraph blaming a decade-old {{oversight}} at the treatment plant used figures the plant's engineers had already {{refute|refuted}} in writing.",
-        "Two members called the methodology {{dubious}} and threatened to {{thwart}} the vote entirely.",
-        "The chair spent an hour trying to talk them down, but the {{animosity}} in the room had been building for months.",
-        "In the end the board {{ratify|ratified}} the report by a single vote, and nobody looked pleased about it."
-      ],
-      "zh": [
-        "还没等人读完,委员会那份报告就已经争议缠身。",
-        "它的核心论点建立在一个没有任何独立团队能证实的化验结果上,而指责水处理厂十年前那次失察的那一段,用的数字早被厂里的工程师书面驳斥过。",
-        "两名成员称这套方法靠不住,扬言要直接把表决搅黄。",
-        "主席花了一小时劝他们,但会议室里的敌意已经积攒了好几个月。",
-        "最后董事会以一票之差批准了这份报告,没有一个人看上去高兴。"
-      ],
-      "exclude": [
-        "substantiate",
-        "antipathy"
-      ]
-    },
-    {
-      "id": "sweltering-commute",
-      "title": "第九天的热浪",
-      "en": [
-        "The heat wave was in its ninth day, and the {{sweltering}} platform at Union Station smelled like hot rubber.",
-        "By noon the transit authority's inbox was {{inundate|inundated}} with complaints, most of them about a cooling system that an internal memo — {{ominous}} in tone — had flagged as the {{precursor}} to total failure back in March.",
-        "Management had given the maintenance team almost no {{leeway}} on the repair budget, and the {{grandiose}} plan to replace the entire line by 2029 did nothing for anyone standing on that platform.",
-        "The delays only {{exacerbate|exacerbated}} the crowding, and the heat refused to {{abate}} until well after dark."
-      ],
-      "zh": [
-        "热浪进入第九天,联合车站那个酷热难耐的站台闻起来像烧热的橡胶。",
-        "到中午,交通局的邮箱已经被投诉淹没,大多冲着那套冷却系统——三月一份不祥的内部备忘录早就把它标为整体瘫痪的先兆。",
-        "管理层在维修预算上几乎没给检修组任何回旋余地,而那个要在 2029 年前把整条线换掉的浮夸计划,对当天站在站台上的任何人都毫无用处。",
-        "延误只是让拥挤更加恶化,而暑气直到天黑很久之后才开始减弱。"
-      ],
-      "exclude": [
-        "slacken"
-      ]
-    },
-    {
-      "id": "ceo-ouster",
-      "title": "CEO下台风波",
-      "en": [
-        "For eleven years the {{incumbent}} had steered the company through two recessions without the board once doubting his judgment.",
-        "Then an audit found the problem was {{systemic}}, built into how each department reported numbers rather than one manager's mistake.",
-        "Long before the board acted, staff morale had been in {{turmoil}} for months, with no one sure which rumor to believe.",
-        "The vote to {{topple}} him grew {{acrimonious}}, with two directors accusing each other of burying the audit for weeks.",
-        "His removal was a sudden {{upheaval}} that stunned even the employees who wanted him gone, arriving overnight after months of rumor.",
-        "What steadied things was the interim chief's {{adaptability}}: she rewrote the org chart twice and made it stick."
-      ],
-      "zh": [
-        "十一年来,这位现任高管带领公司挺过了两次经济衰退,董事会从未对他的判断产生过怀疑。",
-        "随后一次审计发现,问题是系统性的,根植于每个部门上报数字的方式,而不是某个经理一个人的失误。",
-        "早在董事会采取行动之前,员工的士气就已经动荡不安了好几个月,谁也说不清该信哪个传闻。",
-        "推翻他的表决变得剑拔弩张,两名董事互相指责对方把审计报告压了好几周。",
-        "他的下台是一场突如其来的剧变,连希望他走人的员工都感到震惊——几个月的传言之后,变故一夜之间降临。",
-        "真正稳住局面的,是临时主管的适应能力:她把组织架构图重画了两次,并让改动真正落地生根。"
-      ],
-      "exclude": [
-        "depose"
-      ]
-    },
-    {
-      "id": "courtyard-architect",
-      "title": "不谈过去的建筑师",
-      "en": [
-        "Mira rarely talks about the {{autocracy}} that ruled her home country during her childhood, and when she does, it's only in half sentences.",
-        "She'll {{allude}} to a curfew, a checkpoint near her house, then change the subject before anyone can ask more.",
-        "Colleagues still don't know how much {{adversity}} it took to get her license recognized here, starting over with no contacts.",
-        "Ask about religion, and she'll admit to being a self-described {{agnostic}}, unconvinced by either side of her family's argument.",
-        "What she'll happily discuss is her {{affinity}} for shared courtyards, small spaces where a building actually becomes a neighborhood.",
-        "It {{appall|appalls}} her when developers list the courtyard as a disposable {{amenity}}, something to cut whenever the budget gets tight."
-      ],
-      "zh": [
-        "米拉很少提起她童年时笼罩着祖国的那个专制政权,提起时也总是话说一半就打住。",
-        "她只会含糊地提一句宵禁,提一句家附近的检查站,然后不等追问就把话题岔开。",
-        "同事们至今不知道,她当年要让本地承认她的执业资格、白手起家、举目无亲,到底吃了多少苦头。",
-        "谈到宗教,她会坦言自己是个不可知论者,家里正反两派的说法她都不买账。",
-        "她最爱聊的是自己对共享庭院情有独钟——那些让一栋楼真正变成街坊的小空间。",
-        "每当开发商把庭院列为可有可无的配套设施、一遇预算紧张就想砍掉,她总是感到震惊。"
-      ],
-      "exclude": [
-        "penchant"
-      ]
-    },
-    {
-      "id": "city-contract-scandal",
-      "title": "市政合同里的猫腻",
-      "en": [
-        "The reporter spent three months {{delve|delving}} into procurement records nobody had bothered to read.",
-        "What she found suggested that a city official had {{collude|colluded}} with the contractor, trading inside numbers for a guaranteed contract.",
-        "The clearest evidence was a stark {{disparity}} between what the city paid this contractor and what rival firms had quoted for the same job.",
-        "The city had no {{contingency}} in place if the contractor missed deadlines, no penalty clause, nothing.",
-        "A council member publicly {{denounce|denounced}} the arrangement at the next meeting, calling it a betrayal of every taxpayer in the district.",
-        "The mayor turned {{belligerent}} under questioning, insisting the deal wasn't {{detrimental}} to anyone, but by then most of the room had made up its mind."
-      ],
-      "zh": [
-        "这位记者花了三个月钻研那些没人愿意翻看的采购记录。",
-        "她发现,一名市府官员似乎和承包商勾结,拿内部数字换一份稳赚的合同。",
-        "最扎眼的证据,是市政府付给这家承包商的钱,和其他几家公司报价之间那道悬殊的差距。",
-        "市里压根没准备应急预案,承包商就算延期交付,也没有违约条款,什么保障都没有。",
-        "下次会议上,一名议员当众谴责了这笔交易,称其是对全区每一位纳税人的背叛。",
-        "被追问时,市长变得咄咄逼人,坚称这笔交易不会损害任何人的利益,可那时大多数人心里已经有了答案。"
-      ],
-      "exclude": [
-        "inimical"
-      ]
-    },
-    {
-      "id": "reading-intervention-pilot",
-      "title": "学区阅读干预计划引争议",
-      "en": [
-        "The superintendent unveiled a new reading program for students with {{dyslexia}}, its methods so {{eclectic}} — pulled from four unrelated curricula — that no single textbook would endorse the mix.",
-        "Its {{efficacy}} hadn't been tested in the district's schools, and that alone was enough to trigger open {{dissent}} at the board meeting.",
-        "Underperformance had long been {{endemic}} to three elementary schools on the east side, where reading scores had lagged for a decade.",
-        "A few skeptical teachers had spent years watching new initiatives {{elude}} any real evaluation, arriving with fanfare and leaving without data.",
-        "What finally won them over was the funding plan: specialists would be split among every school, not just the wealthiest, on terms that were finally {{equitable}}."
-      ],
-      "zh": [
-        "校长推出了一套专为诵读困难症学生设计的新阅读项目,教学方法兼收并蓄——分别取自四套互不相干的课程体系——以至于没有一本教材愿意为这种大杂烩背书。",
-        "这套方法的实际功效从没在本学区的学校里验证过,光这一点就在校董会上激起了公开的异议。",
-        "东区那三所小学的教学质量低下早已成了当地挥之不去的顽疾,阅读成绩十年来始终垫底。",
-        "几位持怀疑态度的老师这些年看多了新举措:它们总能躲开真正的评估,风光登场,又悄无声息地收场,连一份数据都没留下。",
-        "最终打动他们的是经费方案:专家名额将分配给每一所学校,而不只是最富裕的那几所,这样的安排终于称得上公平。"
-      ],
-      "exclude": [
-        "disparate"
-      ]
-    },
-    {
-      "id": "ceo-impromptu-presser",
-      "title": "CEO的临时记者会",
-      "en": [
-        "A whistleblower's {{grievance}} had sat unopened in HR's inbox for six weeks.",
-        "Once read, it did more than describe a bad manager — internal messages {{implicate|implicated}} the CEO in burying two earlier complaints.",
-        "By Thursday her resignation seemed {{imminent}} — a matter of hours — and reporters gathered outside.",
-        "She spoke to reporters that evening without a script, without notes, and without any preparation — the whole appearance had been {{impromptu}}.",
-        "Her first answer was {{gratuitous}} — an unnecessary insult at the reporter's outlet that answered nothing — and the room went cold.",
-        "Then she stopped deflecting, apologized, and answered the rest with real {{humility}}, admitting the crisis was more {{formidable}} in scale than anything she'd handled."
-      ],
-      "zh": [
-        "一名举报人提交的投诉,在人力资源部的邮箱里搁了六个星期,没人打开过。",
-        "等到终于有人翻开,才发现内容远不止一个管理不善的经理——几条内部消息还牵连出首席执行官本人,揭露她曾压下过两起更早的投诉。",
-        "到了周四,她辞职的消息眼看已迫在眉睫——只是几个小时的事——记者也已经聚在楼外。",
-        "那天晚上她面对记者,没有讲稿,没有笔记,毫无准备——整场露面完全是临时起意。",
-        "她的第一句回答毫无必要,冲着那家媒体没头没脑地讽刺了一句,压根没答到问题本身,现场瞬间冷了场。",
-        "接着她不再回避,道了歉,带着一份真正的谦逊回答剩下的问题,承认这场危机的严重程度远比她以往处理过的任何一次都更棘手。"
-      ],
-      "exclude": [
-        "extemporaneous"
-      ]
-    },
-    {
-      "id": "polluted-town-verdict",
-      "title": "小镇污染案宣判日",
-      "en": [
-        "Years after the first fish die-off, a grand jury {{indict|indicted}} the plant's former owner on charges of illegal dumping.",
-        "At the time, the woman who raised the alarm had been {{malign|maligned}} in the paper as a paranoid grudge-holder.",
-        "What changed the case was a set of {{meticulous}} logs she'd kept for a decade, dated and cross-referenced.",
-        "Read aloud in court, the logs gave jurors with no science background an account so {{lucid}} that they understood every step immediately.",
-        "The damage to the aquifer, experts testified, was {{irreparable}} — too widespread to pump out or treat.",
-        "Outside the courthouse a small group tried to {{incite}} a confrontation with reporters, but the {{malaise}} hanging over the town didn't lift with the verdict."
-      ],
-      "zh": [
-        "鱼群大量死亡多年之后,大陪审团终于以非法倾倒的罪名起诉了那家工厂的前老板。",
-        "当时,那个最先拉响警报的女人被当地报纸诽谤成一个满腹怨气、疑神疑鬼的偏执狂。",
-        "真正扭转局面的,是她十年间一丝不苟保存下来的记录——每一条都标好日期、相互印证。",
-        "这些记录在法庭上被大声宣读,讲述得清楚明白,连毫无科学背景的陪审员都当场听懂了每一步。",
-        "专家作证说,含水层受到的损害已经无法挽回——污染范围太大,根本没法抽出或处理。",
-        "法院外,一小撮人试图挑动跟记者的冲突,但笼罩全镇的低迷情绪并没有因这次判决而消散。"
-      ],
-      "exclude": [
-        "irrevocable"
-      ]
-    },
-    {
-      "id": "pharma-whistleblower",
-      "title": "揭发药企的代价",
-      "en": [
-        "Maya spent eight {{painstaking}} months combing through the lab's internal emails before trusting a single number in them.",
-        "She found a decade of buried side-effect data beside profits so {{obscene}} that the CFO stopped saying the number aloud.",
-        "Staying quiet would only {{perpetuate}} a cover-up that had already reached three other trials.",
-        "Getting the dates exactly right was of {{paramount}} importance once opposing counsel hinted that any slip could amount to {{perjury}}.",
-        "Former colleagues {{persecute|persecuted}} her for months before she filed a complaint, shutting her out of meetings.",
-        "When the case closed, her savings were gone and her position felt {{precarious}} — blacklisted, with no job offer in sight."
-      ],
-      "zh": [
-        "玛雅花了整整八个月,不厌其烦地翻查实验室的内部邮件,才敢相信里面任何一个数字。",
-        "她发现的是十年来被雪藏的副作用数据,旁边就是高得离谱的利润——高到首席财务官都不好意思把那个数字说出口。",
-        "她清楚,继续沉默只会让这场已经牵连三项试验的掩盖行为持续下去。",
-        "把日期核对精确,重要性压倒一切——对方律师已经暗示,任何一处细微出入都可能构成伪证罪。",
-        "在她提出投诉之前,前同事已经排挤了她好几个月,把她关在会议门外。",
-        "案子了结时,她的积蓄已经花光,处境也变得岌岌可危——上了黑名单,没有一份工作邀约。"
-      ],
-      "exclude": [
-        "exacting",
-        "protract"
-      ]
-    },
-    {
-      "id": "bike-lane-reversal",
-      "title": "说撤就撤的自行车道",
-      "en": [
-        "The mayor announced, under the {{pretense}} of a routine budget review, that the bike-lane expansion was cancelled — no hearing, no vote.",
-        "He made the call {{unilateral|unilaterally}} in a Tuesday memo, and cyclists learned only from a hastily deleted press release.",
-        "Advocates showed up at the next council meeting and {{rebuke|rebuked}} him to his face, reading his own department's safety data aloud.",
-        "His campaign had leaned hard on {{rhetoric}} about becoming \"the most walkable city in the state,\" and cancelling it looked exactly like the {{retrograde}} step advocates feared.",
-        "One council member, though, remained {{steadfast}}, refusing to {{succumb}} to pressure from developers eyeing the land."
-      ],
-      "zh": [
-        "市长以\"例行预算审查\"为幌子宣布——没有听证,也没有表决——自行车道扩建计划就此取消。",
-        "这是他在一份周二备忘录里单方面做出的决定,骑行者们只是从一份匆忙撤下的新闻稿里才得知此事。",
-        "倡导者们在下一次市议会会议上当面斥责了他,大声念出他自己所在部门的安全数据。",
-        "他的竞选言辞一直吹嘘要建成\"全州最宜步行的城市\",如今取消项目,恰恰印证了倡导者们担心的那种开倒车之举。",
-        "唯独一位议员始终坚定不移,拒绝向盯上这块地的开发商屈服。"
-      ],
-      "exclude": [
-        "acquiesce",
-        "reprove"
-      ]
-    },
-    {
-      "id": "pre-op-upsell",
-      "title": "手术前那张推销卡",
-      "en": [
-        "Ever since the doctor mentioned \"elective surgery,\" Grace felt real {{ambivalence}} about the knee replacement — relief at fixing the pain, dread at the cost.",
-        "That morning the doctor explained her {{anesthesia}} options, comparing the epidural to \"muting your lower half,\" a description {{analogous}} to one her nurse sister once used.",
-        "The doctor's {{adroit}} explanation, without a single scary word, {{alleviate|alleviated}} most of her fear before the nurse even started the IV.",
-        "Then, groggy in her hospital gown, Grace was handed a card upselling \"recovery insurance\" — small, but it felt like a genuine {{affront}}.",
-        "What actually felt {{abhorrent}} was learning weeks later that the same \"routine\" implant her policy covered had been marked up nearly four times its cost."
-      ],
-      "zh": [
-        "自从医生提到\"择期手术\"这几个字,格蕾丝对膝关节置换手术就充满矛盾心理——既庆幸终于能解决疼痛,又为接下来的花费忐忑不安。",
-        "手术当天早上,医生向她讲解了麻醉方案,把硬膜外麻醉比作\"把下半身调成静音\"——这个说法,和多年前身为护士的姐姐用过的比方十分相似。",
-        "医生对风险的讲解干净利落、不带一个吓人的字眼,几乎立刻减轻了她大半的恐惧,那时护士都还没开始扎点滴。",
-        "可她还处于术后迷糊状态、身上还穿着病号服时,有人递给她一张卡片,推销\"康复保险\"——一件小事,却让她觉得那是一次实打实的冒犯。",
-        "真正让她深恶痛绝的是,几周后才得知,自己保险本该覆盖的那款\"常规\"植入物,实际定价被抬高到近四倍。"
-      ],
-      "exclude": [
-        "artful",
-        "assuage",
-        "contemptible"
-      ]
-    },
-    {
-      "id": "library-renovation",
-      "title": "图书馆改造风波",
-      "en": [
-        "The architect hired for the town's library — tall and {{angular}}, built like his own blueprints — took the job after years of the council staying {{apathetic}} toward resident complaints, never once sending an inspector.",
-        "His plan turned out {{austere}} to the point of severity — raw concrete, bare bulbs, no ornament — and residents grew {{apprehensive}}, asking in a tight voice whether the number on the slide was final.",
-        "The renovation proved {{arduous}}: crews spent four months underpinning a foundation nobody had inspected in decades.",
-        "One {{astute}} board member alone caught that the \"contingency\" line had quietly doubled, raising an eyebrow, not an objection.",
-        "A columnist {{belabor|belabored}} a missing bike rack for weeks while the foundation story went unmentioned."
-      ],
-      "zh": [
-        "镇里请来负责图书馆设计的建筑师,又高又瘦削,浑身透着图纸般的硬朗线条——他接手时,镇议会已经对居民的投诉冷漠了好些年,连一次现场勘查都没派人去过。",
-        "他拿出的方案朴素得近乎冷硬——清水混凝土、裸露灯泡,没有一丝装饰——居民们看了都开始忐忑不安,声音发紧地追问投影上那个数字是不是最终报价。",
-        "翻修过程异常艰苦:施工队光是给那处几十年没人检查过的地基做加固,就花了整整四个月。",
-        "只有一位精明的董事会成员察觉到\"预备金\"那一项悄悄翻了一倍,他只是挑了挑眉,没有当场提出异议。",
-        "一位专栏作家却揪着少了个自行车架的事喋喋不休地写了好几个星期,地基那桩大事反倒没人提起。"
-      ]
-    },
-    {
-      "id": "editors-retirement",
-      "title": "总编辑退休那天",
-      "en": [
-        "The metro editor's retirement after thirty-one years set off {{clamor}} among reporters begging him to stay.",
-        "He was famously {{benevolent}} with nervous interns, coaching a first byline without raising his voice.",
-        "He was equally known for {{candor}}: he'd tell a writer, to their face, that a story buried its point in paragraph four.",
-        "What he demanded was {{brevity}} — a front-page piece had to survive being read aloud in ninety seconds or go back for a cut.",
-        "His last task was {{collate|collating}} four decades of notebooks into a single archive box.",
-        "Nobody thought the pension increase {{commensurate}} with thirty years of unpaid overtime, and his only worry was that the newsroom might slide into {{complacency}} once his chair sat empty."
-      ],
-      "zh": [
-        "这位跑了三十一年都市新闻版的编辑一宣布退休,编辑部里顿时炸开了锅,记者们纷纷嚷着求他留下。",
-        "他出了名地对紧张的实习生和善,哪怕是带一篇署名处女作,也从没提高过嗓门。",
-        "但他也一样以直言不讳出名——如果一篇稿子把重点埋到了第四段,他会当着作者的面直接说出来。",
-        "他真正看重的是简洁——头版稿子得经得起大声朗读九十秒的考验,读不完就得回去再删。",
-        "他退休前最后一件事,是把四十年积攒下来的采访本整理归档进一个箱子里。",
-        "没人觉得那点养老金涨幅配得上他三十年没算过加班费的付出,而他唯一放心不下的,是自己那把椅子空出来之后,编辑部会不会渐渐松懈下来。"
-      ],
-      "exclude": [
-        "magnanimous"
-      ]
-    },
-    {
-      "id": "vacant-lot-hearing",
-      "title": "空地听证会",
-      "en": [
-        "Every Tuesday two dozen neighbors {{congregate}} at the community center over the vacant lot on Birch Street.",
-        "The developer's brochure calls the site {{conducive}} to family recreation; its {{connotation}} is swing sets, not a six-story parking structure.",
-        "One {{conscientious}} council member read all four hundred pages of the report before the vote, underlining what others skipped.",
-        "When the developer promised the building would \"blend into the neighborhood,\" his architect looked like she'd heard it before — the pitch felt {{contrived}}.",
-        "By the meeting's end even the plan's original supporters had to {{concur}} that six stories was too many for a two-lane street.",
-        "The council gave the developer's traffic study little {{credence}}, since its numbers had already been wrong twice."
-      ],
-      "zh": [
-        "每周二,总有二十来个街坊聚在社区活动中心,争论桦树街那块空地。",
-        "开发商的宣传册说这块地有利于家庭休闲;可它给人的联想是秋千架,而不是一栋六层停车楼。",
-        "只有一位认真负责的议员在投票前把四百页的报告从头看到尾,把别人都跳过的地方一一划了线。",
-        "开发商保证这栋楼会\"融入社区风貌\"时,连他请的建筑师听着都像是听过好几遍了——这套说辞透着一股刻意编排的味道。",
-        "会议开到最后,连原本支持这个方案的人也不得不承认,六层楼对一条双车道的街来说实在太多了。",
-        "议会没怎么采信开发商那份交通研究报告,因为这家公司的数据此前已经错了两次。"
-      ],
-      "exclude": [
-        "assiduous",
-        "painstaking",
-        "sedulous"
-      ]
-    },
-    {
-      "id": "shell-company-scheme",
-      "title": "创始人的空壳公司骗局",
-      "en": [
-        "The company's first-year audit was so {{cursory}} that nobody flagged vendor payments to an address that, it later turned out, was the founder's sister's apartment.",
-        "Investigators eventually called the scheme {{devious}} but clumsy: a shell company registered under the sister's own real name.",
-        "It took one {{deft}} analyst — cross-referencing the registration against employee records — to catch a connection everyone else had missed.",
-        "Once her findings reached the board, they {{depose|deposed}} the founder within days, calling the ouster {{deterrence}} against any executive tempted to try the same thing.",
-        "Months later, in his {{deposition}}, the founder still insisted the missing funds were a bookkeeping error.",
-        "The whole affair {{dishearten|disheartened}} employees who had turned down higher salaries just to stay loyal to him."
-      ],
-      "zh": [
-        "公司第一年的审计做得极其粗略,没人留意到那些付给供应商的款项,打到的地址后来查实竟是创始人妹妹的公寓。",
-        "调查人员后来给这个骗局的评价是狡猾却又笨拙:那家空壳公司,登记用的居然是妹妹本人的真名。",
-        "最后是一位手法老练的分析师,把工商登记和员工名单一比对,才抓住了这个所有人都漏掉的线索。",
-        "她的调查结果一送到董事会,几天之内创始人就被罢免了,董事会称这次雷厉风行的撤职是给任何有同样念头的高管敲的警钟。",
-        "几个月后,在庭外证词中,这位创始人仍然坚称那笔不知去向的资金只是记账时的一个失误。",
-        "整件事让不少员工心灰意冷——他们当初可是拒绝了更高薪水的offer,就为了对他不离不弃。"
-      ],
-      "exclude": [
-        "topple"
-      ]
-    },
-    {
-      "id": "padlocked-fire-escape",
-      "title": "被反锁的太平门",
-      "en": [
-        "A reporter combed a dozen {{disparate}} kinds of records — court filings, tenant complaints, old permits — and found the landlord's maintenance logs so {{erratic}} that some months logged four inspections, others none at all.",
-        "From what she could confirm, she {{extrapolate|extrapolated}} that forty more units citywide were in the same shape.",
-        "The worst confirmed case was {{egregious}}: a fire escape padlocked shut, found after a tenant posted video online.",
-        "The video {{embroil|embroiled}} the housing department in a public reckoning over why no inspector had ever caught it.",
-        "Council members admitted they hadn't grasped the {{enormity}} of the problem until they saw that video themselves.",
-        "The hearings that followed {{engender|engendered}} the first real momentum in a decade for a citywide inspection overhaul."
-      ],
-      "zh": [
-        "一名记者翻遍了十几种性质迥异的资料——法院卷宗、租户投诉、陈旧的许可证件——发现这位房东的维修记录忽多忽少:有的月份记了四次检修,有的月份干脆一次都没有。",
-        "根据能核实的部分,她推算全市大概还有四十多套房子情况相同。",
-        "查证到的最严重案例简直骇人听闻:一部太平梯被挂锁死死锁住,直到一名租户把视频发到网上才被人发现。",
-        "这段视频把住房管理部门卷入了一场公开问责:为什么从没有一名检查员发现这个问题。",
-        "市议员们承认,直到亲眼看到那段视频,他们才真正意识到问题有多严重。",
-        "随后召开的听证会,催生出十年来第一次真正有力的推动,要对全市的检查制度动一次大手术。"
-      ]
-    },
-    {
-      "id": "diner-three-generations",
-      "title": "传到第三代的小餐馆",
-      "en": [
-        "Thirty years ago, Mara opened the diner on raw {{fervor}} and a small inheritance — a bet that turned out to be sheer {{fallacy}} when the first winter nearly bankrupted her.",
-        "She'll admit how {{fallible}} she was back then — she'd once bet three months of inventory on a hunch that turned out flat wrong.",
-        "Sam, by contrast, was {{fervent}} about the numbers, balancing the books every night even after sixteen-hour shifts.",
-        "His {{fidelity}} to that ritual, more than any decision, is what kept the diner solvent through three recessions.",
-        "Regulars remember him as the {{genial}} face behind the register, always ready with a joke.",
-        "Watching their granddaughter run that kitchen this spring finally felt, Mara says, like the dream reaching {{fruition}}."
-      ],
-      "zh": [
-        "三十年前,玛拉全凭一腔热忱和一小笔遗产开了这家餐馆——事实证明这个赌注完全是个错觉,第一个冬天就差点让她破产。",
-        "她自己也承认那时候有多容易犯错——她曾经凭一时直觉,一口气囤了三个月的货,结果彻底判断失误。",
-        "相比之下,萨姆对账目却格外较真,哪怕连轴转了十六个小时,每晚也一定要把账对平。",
-        "真正让餐馆在三次经济衰退中都没垮掉的,与其说是哪个决策,不如说是他对这套习惯的忠实坚持。",
-        "熟客们记得他是收银台后面那张和蔼的笑脸,随时能接上一句玩笑。",
-        "玛拉说,今年春天看着孙女掌管那间厨房,她才终于觉得,这个梦想算是真正修成正果了。"
-      ]
-    },
-    {
-      "id": "bridge-reopening",
-      "title": "大桥重启风波",
-      "en": [
-        "The bridge reopening had been delayed twice, and the latest schedule seemed {{haphazard}} — announced, pulled back, then announced again.",
-        "Part of the delay was mundane: the late steel shipment sitting in the warehouse for weeks proved more {{hindrance}} than help.",
-        "Talks with the contractor over who'd pay for that reached a flat {{impasse}}, and neither side called back.",
-        "At the press conference, the mayor — who has had a speech {{impediment}} since childhood — took every question himself.",
-        "One {{incisive}} follow-up cut through the evasions and forced him to admit that inspectors had already found {{impurity|impurities}} in the concrete mix.",
-        "A storm was already {{impending}}, and he now had two days, not two weeks, to explain the delay."
-      ],
-      "zh": [
-        "大桥重新开放已经延误两次,最新的时间表看起来杂乱无章——宣布,撤回,又重新宣布。",
-        "拖延的一部分说来平常:那批迟到的钢材在仓库里堆了好几周,与其说是帮忙,不如说是添乱。",
-        "就该由谁承担这笔损失,镇里和承包商的谈判陷入了僵局,双方都不肯再联系对方。",
-        "在新闻发布会上,市长从小就有言语障碍,却坚持亲自回答每一个问题。",
-        "一位记者一针见血的追问戳穿了他的搪塞,逼得他承认,检测人员早就在混凝土配比里发现了杂质。",
-        "一场风暴已经迫近,他现在只剩两天,而不是两周,来解释这场延误。"
-      ]
-    },
-    {
-      "id": "gas-station-reflection",
-      "title": "监控录像里的反光",
-      "en": [
-        "Ray had worked the gas station's graveyard shift for years; he was a lifelong {{insomniac}} who'd rather work than lie awake.",
-        "The night of the robbery, the store's grainy security footage looked entirely {{innocuous}} — just a hooded figure paying for a candy bar and leaving.",
-        "It took real {{ingenuity}} from a detective who noticed a reflection in the door glass and pulled a partial license plate out of the blur.",
-        "That reflection ended up {{incriminate|incriminating}} a man who had bragged that his alibi was {{infallible}}.",
-        "When detectives confronted him, he grew {{indignant}} and insisted the footage had been doctored.",
-        "Ray still remembers that reflection with total clarity; it left an impression so {{indelible}} that it hasn't faded since."
-      ],
-      "zh": [
-        "Ray在加油站值了多年夜班;他天生失眠,与其躺在床上睁眼到天亮,不如干脆去上班。",
-        "案发当晚,店里那段颗粒感很重的监控录像看起来毫无异样——只是一个戴着帽子的人买了根糖果就走了。",
-        "多亏一名警探独具巧思,注意到店门玻璃上的反光,才从模糊的画面里抠出了半截车牌号。",
-        "正是那处反光,最终让一个曾夸口自己不在场证明万无一失的男人栽了跟头。",
-        "警探找上门对质时,他一脸愤慨,坚称录像被人动了手脚。",
-        "那个反光的画面,Ray至今记得一清二楚;那印象刻得太深,始终没有淡去过。"
-      ]
-    },
-    {
-      "id": "factory-strike",
-      "title": "罢工谈判中的活检报告",
-      "en": [
-        "The strike at Milldale had dragged on for six weeks, and the wage dispute had turned {{intractable}} — three mediators had given up on middle ground.",
-        "Buried in the fine print were {{intricacy|intricacies}} about overtime neither side had fully worked through.",
-        "Elena, the strike's leader, argued fair pay wasn't a bonus but something {{intrinsic}} to the job.",
-        "Then a biopsy confirmed the tumor was {{malignant}}, and the news changed the tone of every meeting after.",
-        "It forced {{introspection}} on both sides; the owner admitted the numbers were never the real issue.",
-        "A mediator {{judicious}} enough to split the difference on healthcare sealed a deal within the week — not before an account, its intent {{malevolent}}, accused Elena of faking it."
-      ],
-      "zh": [
-        "米尔代尔工厂的罢工已经拖了六个星期,工资纠纷彻底陷入僵局——先后三位调解人都放弃了寻找折中方案。",
-        "合同细则里藏着不少关于加班费的复杂条款,双方都没能彻底捋清楚。",
-        "罢工领袖埃琳娜坚持认为,合理的薪酬不是额外施舍,而是这份工作本该具备的固有权利。",
-        "后来一次活检确认那是恶性肿瘤,这个消息让此后每一次谈判的气氛都变了。",
-        "这件事逼得双方都开始反躬自省;老板私下也承认,问题从来都不在数字本身。",
-        "一位足够审慎的调解人在医疗费用上促成了各让一步,一周之内就谈成了协议——协议达成前,一个匿名账号还不怀好意地指控埃琳娜是装病。"
-      ],
-      "exclude": [
-        "intransigent",
-        "sagacious",
-        "slanderous"
-      ]
-    },
-    {
-      "id": "mercenary-mime",
-      "title": "讣告里,那个演哑剧的老雇佣兵",
-      "en": [
-        "Before he became the plaza's best-loved {{mime}}, silently acting out rush-hour traffic, Dario had spent a decade fighting other people's wars as a paid {{mercenary}}.",
-        "Neighbors swore his personality was strangely {{malleable}}, soaking up a soldier's slang one year and a street performer's exaggerated grin the next.",
-        "A royalty dispute with a huge media company — {{monolithic}}, every branch running the same script, no exceptions ever made — {{mire|mired}} him in paperwork for years.",
-        "When he finally sued, the company's paper trail underwent {{obliteration}} so quiet that his lawyer never found one page proving the deal existed.",
-        "Even so, strangers online seemed almost {{morbid}} about it, replaying his goriest war photos on loop as if that were the whole obituary."
-      ],
-      "zh": [
-        "在成为广场上最受欢迎的哑剧演员、默默把早高峰堵车演给路人看之前,达里奥当过整整十年雇佣兵,别人给钱就替谁打仗。",
-        "邻居们都说他这人极易受人影响,前一年还满口大兵黑话,后一年就换上了街头艺人那种夸张的笑脸。",
-        "他和一家庞大僵化的媒体公司打版权官司——公司里每个部门都按同一套死板流程办事,从不通融——这官司把他拖进了没完没了的文书堆里,一拖就是好几年。",
-        "等他终于把公司告上法庭,那份合同的书面记录却悄无声息地被彻底销毁,律师翻遍档案也找不出一页能证明那笔交易存在过。",
-        "即便如此,网上那些陌生人还是表现出一种近乎病态的兴致,把他最血腥的战地照片翻出来反复播放,仿佛这就是他讣告的全部内容。"
-      ]
-    },
-    {
-      "id": "backyard-wedding",
-      "title": "后院婚礼那些小插曲",
-      "en": [
-        "Cassie's uncle, ordained online, {{officiate|officiated}} the backyard ceremony, reading the vows off a phone that buzzed with notifications.",
-        "The groom blamed the caterer for the delay, but the {{ostensible}} excuse didn't explain his hour-long call with his ex.",
-        "For months Cassie had {{oscillate|oscillated}} between eloping and this three-hundred-guest circus, still unsure which one she'd actually wanted.",
-        "Her mother's {{penchant}} for turning toasts into twenty-minute retrospectives meant guests heard about Cassie's third-grade talent show before appetizers even arrived.",
-        "The flower girl, {{oblivious}} to the ceremony, chased the dog through grill smoke that had already {{permeate|permeated}} every guest's clothes.",
-        "The planner had sold the seating app as the {{panacea}} for decades of family feuding, but by dessert two cousins weren't speaking."
-      ],
-      "zh": [
-        "卡西的舅舅刚在网上拿到证婚资格,就在后院主持了婚礼,一边读誓词一边被手机不停弹出的消息打断。",
-        "新郎把开场推迟的责任推给了餐饮公司,可这个说辞怎么也解释不了他为什么跟前女友通了整整一个小时电话。",
-        "这几个月,卡西一直在私奔和办这场三百人婚礼之间摇摆不定,到头来也没想明白自己到底想要哪一个。",
-        "她妈妈有个老毛病,一到敬酒环节就能把每段祝词讲成二十分钟的怀旧专场,结果开胃菜还没上桌,宾客就先听完了卡西三年级才艺表演的往事。",
-        "花童压根没在意婚礼在进行什么,只顾着追狗满场跑,烤架飘出的烟这时候早就渗进了每位宾客的衣服里。",
-        "婚礼策划师本来把那款排座位的软件吹成能化解这家人几十年积怨的万能解药,结果甜点还没端上来,两个表亲就已经互不搭理了。"
-      ]
-    },
-    {
-      "id": "foundation-scandal",
-      "title": "那家慈善基金会的丑闻",
-      "en": [
-        "The foundation had spent a decade calling itself {{philanthropic}}, funding scholarships abroad.",
-        "Auditors found the CEO's donation had been {{premeditated}} months earlier — a shell company built to launder stolen grants back to him.",
-        "The board fired him within a day — a decision so {{precipitous}} there'd been no time to verify the story — and the {{platitude|platitudes}} that followed fixed nothing.",
-        "Donations fell {{precipitously}} within a week, and three sponsors pulled out entirely.",
-        "The whistleblower who'd first flagged the shell company said her {{predisposition}} to distrust authority had finally paid off.",
-        "There was something {{perverse}} about it — not by anyone's design — the executives who approved the fraud kept bonuses, while the employee who exposed it got sidelined."
-      ],
-      "zh": [
-        "这家基金会花了十年时间把自己包装成慈善机构,对外资助各种奖学金项目。",
-        "审计人员发现,首席执行官那笔捐款其实是他几个月前就谋划好的——他专门注册了一家空壳公司,把骗来的拨款洗回自己腰包。",
-        "董事会一天之内就把他开除,仓促到根本来不及核实报道是否属实,而随后那些场面话也于事无补。",
-        "丑闻曝光一周之内,捐款额就直线下跌,三家赞助商索性直接撤资。",
-        "最早举报那家空壳公司的举报人说,她那种天生不信任权威的倾向,这次总算派上了用场。",
-        "这事透着一股说不出的别扭——并不是谁故意设计成这样——批准造假的高管保住了奖金,揭发问题的员工反倒被边缘化。"
-      ]
-    },
-    {
-      "id": "old-theatre-demolition",
-      "title": "老戏院的拆迁风波",
-      "en": [
-        "The Regal Theatre was about as {{quintessential}} an Art Deco cinema as the city had left, so the demolition notice taped to its door caused an uproar.",
-        "At the emergency session, the mayor {{preside|presided}} over the meeting while an engineer argued, with real technical {{prowess}}, that the balcony could be saved cheaply.",
-        "The trouble was that the city's {{procurement}} office had already signed a contract to {{raze}} the building that very Friday.",
-        "Fighting the contract now risked a wrangle over the penalty clause that would {{protract}} for months, past the council's own deadline.",
-        "Even so, the council showed more {{prudence}} than anyone expected, pausing the demolition for ninety days rather than let the bulldozers show up on schedule."
-      ],
-      "zh": [
-        "丽晶剧院大概是这座城市仅存的一座典型装饰艺术风格影院了,所以门上贴出的拆除通知一下子引爆了民怨。",
-        "紧急会议上,市长主持会议,一名工程师则凭过硬的技术本领据理力争,称那处看台其实花不了多少钱就能加固保住。",
-        "麻烦在于,市采购处早已签下合同,就定在这个周五把大楼夷为平地。",
-        "如果现在硬要毁约,围绕违约金条款的拉锯战恐怕会一拖就是好几个月,直接拖过市议会自己定的期限。",
-        "尽管如此,市议会还是表现出出乎意料的审慎,把拆除工作暂停了九十天,没有按原计划放推土机进场。"
-      ]
-    },
-    {
-      "id": "reclusive-rockstars-comeback",
-      "title": "隐居摇滚歌手的复出",
-      "en": [
-        "The singer had turned {{reclusive}} for a decade, refusing interviews and disappearing from public view entirely.",
-        "It started with a public {{relapse}} into drinking that pulled him off tour and into rehab mid-run.",
-        "His label {{reprimand|reprimanded}} him publicly, freezing the recording budget until he finished treatment and was cleared to return.",
-        "When a tabloid claimed the breakdown was staged for sympathy, he {{repudiate|repudiated}} the story outright, calling it cruel and false.",
-        "Now he's {{resolute}} about staying sober, and he's booked a tiny club {{reminiscent}} of the dive bars he played before anyone knew his name.",
-        "Fans who'd waited a decade lined up for tickets, and he says the least he can do is {{reciprocate}} by playing the set for free."
-      ],
-      "zh": [
-        "那位歌手已经隐居了整整十年,拒绝一切采访,彻底从公众视野中消失。",
-        "起因是一次公开的酗酒复发,把他从巡演中拉了下来,半途送进了戒疗中心。",
-        "唱片公司当众训斥了他,冻结了录音预算,直到他完成治疗、获准复出为止。",
-        "一家小报声称那次崩溃是他为博取同情而自导自演,他当即断然否认,称这说法既残忍又不实。",
-        "如今他下定决心要保持清醒,还订下了一家小酒馆——那地方让人想起他成名前跑场子的那些小酒吧。",
-        "苦等了十年的歌迷排队抢票,他说自己至少该用免费演出来回报大家。"
-      ],
-      "exclude": [
-        "denounce"
-      ]
-    },
-    {
-      "id": "clinic-funding-vote",
-      "title": "诊所存废那一票",
-      "en": [
-        "Dr. Alvarez was {{revere|revered}} across the valley, the only physician within forty miles who still made house calls.",
-        "The vote on funding it left the town {{riven}} between saving the clinic and cutting taxes, straining decades-old friendships.",
-        "Even so, the clinic still ran on {{rudimentary}} equipment — one decades-old X-ray machine and no working ventilator.",
-        "Closing it would be {{ruinous}} for anyone without a car, since the nearest emergency room was ninety minutes away.",
-        "Everyone remembered the night paramedics {{resuscitate|resuscitated}} a farmhand pulled from the grain silo, unsure whether he was even fully {{sentient}}, let alone able to speak.",
-        "Still, the clinic's three nurses stayed {{sanguine}} about the vote, hanging a hand-painted sign that just read 'Keep Doc Alvarez.'"
-      ],
-      "zh": [
-        "阿尔瓦雷斯医生在整个山谷都备受敬重,方圆四十英里内,只有他还坚持出诊到病人家里。",
-        "那场关于拨款的表决让整个小镇分裂成两派——一派要保住诊所,一派要削减税负,几十年的老交情因此出现裂痕。",
-        "即便如此,诊所用的还是最基本的设备——一台用了几十年的X光机,连一台能用的呼吸机都没有。",
-        "对没有车的人来说,关掉这家诊所将是灾难性的,因为最近的急诊室也要开车九十分钟才能到。",
-        "所有人都记得那一晚,急救人员把一名从谷仓筒仓里救出的农场工人抢救过来,当时都不确定他是否还有知觉,更别说开口说话了。",
-        "尽管如此,诊所的三名护士对这场表决依然乐观,挂出了一块手绘的牌子,上面只写着“留住阿尔瓦雷斯医生”。"
-      ]
-    },
-    {
-      "id": "robotics-league-gearbox",
-      "title": "机器人联赛翻出的那张发票",
-      "en": [
-        "Northfield's robotics team had won three regionals in a row with a gearbox no other school could buy, machined for free by the sponsor whose mark was printed on their shirts.",
-        "Coaches had complained for two seasons that the {{level-playing-field|level playing field}} promised in the league charter existed only on paper, but the appeals process was so thick with {{red-tape|red tape}} — four forms, two of them notarised, and a filing window of eleven days — that not one complaint had ever reached a hearing.",
-        "What finally moved the board was the {{smoking-gun|smoking gun}} a parent turned up in a public grant filing: an invoice from the sponsor's machine shop, billed to the team, for a part the rules class as commercially unavailable.",
-        "By then the sponsor's parts catalogue had become the {{de-facto|de facto}} rulebook — three of the five judges drew a salary somewhere in its supply chain, and no committee had ever voted them that authority.",
-        "In March the board {{bite-the-bullet|bit the bullet}} and banned every custom-machined component, knowing the ruling would cost the league its largest sponsor and about a third of its budget.",
-        "The ban carried one {{caveat}}: teams that had already built to the old rules could finish the spring season, provided they declared each part on the floor.",
-        "{{in-the-wake-of|In the wake of}} the decision, entries for next year fell by a fifth, and two of the coaches who signed the original complaint now say the league they got is fairer and smaller than the one they wanted."
-      ],
-      "zh": [
-        "北田中学的机器人队连拿三届区域赛冠军,靠的是一台别的学校根本买不到的变速箱——那是队服上印着标志的那家赞助商免费给他们加工的。",
-        "两个赛季以来,教练们一直抱怨联盟章程里承诺的公平竞争环境只存在于纸面上,可申诉流程的繁文缛节多到离谱——四张表格,其中两张要公证,申报窗口只有十一天——以至于没有一份投诉真正走到过听证那一步。",
-        "最终让理事会动起来的,是一位家长在公开的拨款申报材料里翻出的铁证:赞助商机械加工厂开给该队的一张发票,而那个零件按规则属于\"市面上买不到\"的类别。",
-        "到那时,赞助商的零件目录早已成了事实上的规则手册——五名裁判里有三人的工资出自它供应链上的某一环,而从来没有哪个委员会投票赋予过他们这种权力。",
-        "三月,理事会咬紧牙关,禁用了一切定制加工的部件,他们心里清楚,这项裁决会让联盟失去最大的赞助商,以及大约三分之一的预算。",
-        "禁令附带一条但书:已经按旧规则造好机器的队伍可以打完春季赛,前提是把上场的每一个零件都申报清楚。",
-        "这项决定之后,来年的报名数量掉了五分之一,当初在投诉书上签过字的教练里,有两位如今说,他们换来的联盟确实更公平了,却也比他们想要的那个更小。"
-      ]
-    },
-    {
-      "id": "payments-post-mortem",
-      "title": "复盘会上那半笔转账",
-      "en": [
-        "The post-mortem opened with the line everyone had already read in the incident channel: the debit from the customer's balance and the credit to the merchant's were never {{atomic}}, so a crash between the two left the money in neither account.",
-        "Sameer, on call the night it started, had repaired the first eleven stranded transfers by hand, and he was the one who called that habit the {{slippery-slope|slippery slope}} it turned out to be — by the third week nobody could say which rows the system had written and which a person had typed.",
-        "{{more-often-than-not|More often than not}}, a merchant noticed the missing payout before the monitoring did: of the nineteen incidents last quarter, fifteen arrived as support tickets and four as alerts.",
-        "The billing service was {{by-no-means|by no means}} the only code path that could strand money this way — refunds and payouts run the same debit-then-credit sequence, written by the same two people in the same week.",
-        "The fix had sat on the backlog since the first incident, blocked by the {{impasse}} the two teams reached every quarter: an hour engineering spent on reliability was an hour sales counted as taken from the feature list.",
-        "Nobody in the room defended the change that introduced it: three approvals inside four minutes, and both engineers who signed off said as much out loud.",
-        "{{that-said|That said}}, a review of any length would still have missed a failure the architecture permitted, and every action item that came out of the hour was aimed at the architecture rather than at the reviewers."
-      ],
-      "zh": [
-        "复盘会一开场,念的就是事故频道里所有人都已经看过的那句话:从客户余额扣款、给商户入账,这两步从来都不是原子性的,中间一旦崩溃,这笔钱就哪个账户里都不在了。",
-        "事发那晚值班的萨米尔,曾一笔一笔手工补好了最初十一笔卡住的转账,而正是他自己把这种做法称作后来果然收不住的滑坡——到第三周,已经没人说得清哪些记录是系统写的,哪些是人手敲进去的。",
-        "多半情况下,是商户先发现钱没到账,监控反倒慢了一步:上个季度的十九起事故里,十五起是以客服工单的形式冒出来的,只有四起来自告警。",
-        "会把钱卡在半路的代码路径,绝不止计费服务这一条——退款和打款走的是同一套\"先扣款再入账\"的流程,而且是同两个人在同一周里写出来的。",
-        "这个修复方案从第一起事故起就一直躺在待办列表里,卡住它的,是两个团队每个季度都要重演一遍的零和博弈:工程团队花在稳定性上的每一个小时,在销售那边都算成是从功能清单里抠走的一个小时。",
-        "会议室里没有人替那次引入问题的改动辩护:四分钟内三个人点了通过,两位签字的工程师自己也当场这么说了。",
-        "话虽如此,再仔细的评审也仍然会漏掉一个架构本身就允许发生的故障,因此这一小时里定下的每一项待办,针对的都是架构,而不是评审的人。"
-      ],
-      "exclude": [
-        "irreducible"
-      ]
-    },
-    {
-      "id": "museum-mammal-hall",
-      "title": "被封起来的哺乳动物展厅",
-      "en": [
-        "Nobody under sixty had been inside the museum's mammal hall since the roof leaked in 1998, and the padlocked doors only deepened its {{mystique}}.",
-        "Behind them stood forty cases of Victorian {{taxidermy}} — a moose, three wolves, and an elk whose antlers had been re-pinned twice since the war.",
-        "In March the new director settled the hall's future by {{fiat}}: a Monday memo, no curator consulted, every case to be dismantled before autumn.",
-        "Hoyt, who had run the preparation workshop for thirty years, took the news with {{imperious}} calm and began deciding on his own which mounts were worth saving, telling nobody what the criteria were.",
-        "Two students arrived in June to help, both {{neophyte|neophytes}} who had never held a scalpel, and when one of them mislabeled a tray of glass eyes he {{harangue|harangued}} them both for ten full minutes about what separates a museum from a gift shop.",
-        "What none of them disputed was the work itself: Hoyt's own mounts were {{meticulous}}, every whisker set by hand against a field photograph he had taken himself."
-      ],
-      "zh": [
-        "自 1998 年屋顶漏水以来,六十岁以下的人没有一个进过博物馆的哺乳动物展厅,那两扇上了挂锁的门只让它更添几分神秘。",
-        "门后立着四十座维多利亚时代的动物标本柜——一头驼鹿、三匹狼,还有一只麋鹿,它的角自战后已经重新固定过两次。",
-        "三月,新上任的馆长一纸命令就定下了展厅的去向:周一一份备忘录,没问过任何一位策展人,入秋前所有展柜一律拆除。",
-        "在标本制作车间干了三十年的霍伊特,听到消息时表现得傲慢而平静,自顾自地开始决定哪些标本值得留下,却不肯把标准告诉任何人。",
-        "六月来了两名学生帮忙,两人都是从没拿过解剖刀的新手;其中一个把一盘玻璃眼珠的标签贴错了,他当场就冲两人训斥了整整十分钟,讲什么叫博物馆、什么叫纪念品商店。",
-        "但没人质疑他的手艺本身:霍伊特亲手做的标本一丝不苟,每一根须毛都是对照着他自己拍的野外照片一根根摆上去的。"
-      ],
-      "exclude": [
-        "domineering",
-        "overbearing",
-        "painstaking",
-        "rebuke",
-        "reprimand",
-        "reprove"
-      ]
-    },
-    {
-      "id": "larkspur-kitchen",
-      "title": "疗养院厨房里的那锅汤",
-      "en": [
-        "For nine years Nadia had cooked for the twenty {{convalescent}} residents of Larkspur House, and she knew which of them could still taste salt and which could not.",
-        "Every morning she {{concoct|concocted}} a broth out of whatever the kitchen garden had given up overnight, so no two batches were ever quite the same.",
-        "In March the state health board {{promulgate|promulgated}} a nutrition rule requiring that every dish served in a care facility be logged, gram by gram, against an approved recipe.",
-        "The new forms wanted sodium and protein, plus a dozen {{extraneous}} figures that had nothing to do with whether anyone finished lunch.",
-        "What the approved list actually produced was {{austere}} — boiled, portioned, and the same colour on every tray by Wednesday.",
-        "So Nadia kept a pot going anyway, and the {{tantalizing}} smell of it reached the corridor hours before the trolley did, on a floor where half the residents were on restricted diets.",
-        "When the inspector finally came, she found the logbook half empty and the dining room full — roses from the south beds on every table, the long room {{ravishing}} in the late light in a way no form had a column for."
-      ],
-      "zh": [
-        "九年来,娜迪娅一直给拉克斯珀之家二十位康复期住客做饭,谁还尝得出咸味、谁已经尝不出来,她心里一清二楚。",
-        "每天早上,她都用菜园里一夜之间冒出来的东西熬一锅汤,所以没有哪两锅的味道是一样的。",
-        "三月,州卫生委员会颁布了一项营养法规,要求护理机构供应的每一道菜都必须按克对照核准食谱逐项登记。",
-        "新表格要填钠,要填蛋白质,还要填十几项多余的数字,而这些数字跟有没有人把午饭吃完毫无关系。",
-        "那份核准清单实际做出来的东西朴素得近乎寡淡——一律水煮、一律定量,到周三,整层楼的餐盘都是同一个颜色。",
-        "娜迪娅还是照旧在灶上煨着一锅汤,那股诱人的香味比送餐车早几个小时就飘到了走廊上——而这层楼有一半住客都在忌口。",
-        "检查员终于上门那天,看到的是半本空着的登记簿,和一间坐满了人的餐厅:南窗外的玫瑰摆上了每一张桌子,傍晚的光里,整个长厅美得让人挪不开眼——而这一栏,表格上并没有。"
-      ],
-      "exclude": [
-        "ascetic",
-        "gratuitous",
-        "ratify",
-        "sumptuous",
-        "superfluous"
-      ]
-    },
-    {
-      "id": "oncology-ward-third-week",
-      "title": "肿瘤科病房的第三周",
-      "en": [
-        "Mr. Okonkwo had been on the oncology ward for three weeks when the second scan came back and showed the tumour had {{metastasize|metastasized}} to his liver and spine.",
-        "His daughter Ada {{entreat|entreated}} the consultant three times that week — twice in the corridor, once in a letter she rewrote at two in the morning — to try one more round of treatment.",
-        "The registrar sent to answer her sounded almost {{insouciant}} about the whole thing, offering a shrug and a \"we'll see how he does,\" and Ada walked out of that corridor angrier than she had walked into it.",
-        "Her father, meanwhile, {{grumble|grumbled}} steadily about the porridge, the pillows and the radio in the next bed, and never once about the pain.",
-        "On the same night that one {{hapless}} student nurse knocked over the drip stand and then dropped the replacement bag on the floor, the ward sister three beds away read a temperature chart twice, called what she saw {{incipient}} sepsis, and had antibiotics running before anyone else would have called it anything at all.",
-        "Ada took what {{solace}} she could from that: whatever the scan said, somebody on that ward was still reading every chart twice."
-      ],
-      "zh": [
-        "奥孔科沃先生已经在肿瘤科病房住了三个星期,第二次扫描的结果出来,显示肿瘤已经转移到了肝脏和脊椎。",
-        "他女儿阿达那一周三次恳求主治医生再试一个疗程——两次是在走廊里堵着说的,还有一次写成了信,凌晨两点改了又改。",
-        "被派来答复她的住院医师语气近乎满不在乎,只耸了耸肩,来了句\"再看看他的情况\",阿达走出那条走廊时,比进去的时候更生气。",
-        "她父亲那边倒是一直在嘀咕:粥太稀,枕头太硬,隔壁床的收音机太吵——唯独从没提过一句疼。",
-        "同一个夜里,一名倒霉的实习护士先是撞倒了输液架,又把换上的药袋掉在了地上;而隔着三张床,护士长把一张体温单看了两遍,认定那是初期的脓毒症,在别人还看不出任何名堂之前就把抗生素挂了上去。",
-        "阿达从这件事里找回了她所能找回的那一点慰藉:不管扫描结果怎么说,这间病房里至少还有人会把每一张单子看两遍。"
-      ],
-      "exclude": [
-        "grouse",
-        "apathetic",
-        "importune"
-      ]
-    },
-    {
-      "id": "amateur-theatre-last-season",
-      "title": "剧社散架的那个春天",
-      "en": [
-        "The Havenport Players had put on one show a year in the same {{dilapidated}} church hall since 1961, and this spring the whole society came apart.",
-        "In January the committee voted to {{abrogate}} its oldest rule — that anyone who paid the annual dues was guaranteed a part — and eleven members tore up their cards before they left the room.",
-        "Those who stayed {{grouse|groused}} about the new audition system at every rehearsal, loudly and at length, until the director began saving her notes for after they had gone home.",
-        "The set collapsed twice in one week, which was less bad luck than plain {{ineptitude}} — nobody on the crew had ever held a drill — and the rehearsal calendar never {{dovetail|dovetailed}} with the hall's booking book, so the cast twice arrived to find a toddler music class already using the room.",
-        "Cutting the entire second act was {{expedient}}, since it saved a fortnight of rehearsal, and it also removed the only scene that explained why anyone in the play did anything.",
-        "What emptied the hall for good was the {{leniency}} the director showed her lead, who missed four rehearsals for a work trip and opened the show anyway, while everyone else had been turning up since October."
-      ],
-      "zh": [
-        "自 1961 年起,黑文港剧社每年都在同一间破旧的教堂礼堂里排演一出戏,而今年春天,整个剧社散了架。",
-        "一月里,委员会表决废除了剧社最老的一条规矩——只要交了年费,就保证有角色演——十一名成员还没走出会议室就撕掉了会员卡。",
-        "留下来的人在每一次排练上都对新的试镜制度发牢骚,嗓门大、话又长,到后来导演干脆等他们回家之后再讲戏。",
-        "布景一周之内塌了两次,与其说是运气不好,不如说纯粹是无能——道具组没有一个人碰过电钻;而排练日程表和礼堂的租借登记本从来就对不上,剧组两次赶到,发现屋里已经坐着一群上亲子音乐课的小孩。",
-        "把整个第二幕砍掉是个省事的权宜之计,毕竟能省下两周排练,可它同时也删掉了全剧唯一一场交代人物动机的戏。",
-        "真正让礼堂彻底空掉的,是导演对女主角的宽容:那人为了出差缺了四次排练,照样如期登台,而其余的人从十月起就一直在跑排练。"
-      ],
-      "exclude": [
-        "concur",
-        "countermand",
-        "felicitous",
-        "grumble",
-        "opportune",
-        "overturn",
-        "reconcile",
-        "repudiate",
-        "rickety"
-      ]
-    },
-    {
-      "id": "guest-conductor",
-      "title": "客席指挥的闭幕音乐会",
-      "en": [
-        "The civic orchestra hired a guest conductor for its closing concert, and the first rehearsal made plain how {{ostentatious}} an ending he had in mind: a podium built taller than the one in storage, a white jacket, a bow held until the last cough in the hall had died away.",
-        "The schedule he imposed was {{onerous}} beyond anything the players had agreed to — five three-hour evenings a week, from people who all had day jobs.",
-        "At the third rehearsal the principal cellist had the {{temerity}} to ask, in front of eighty colleagues, whether he had ever conducted an amateur ensemble before.",
-        "His answer was {{petulant}} rather than angry: a flick of the baton, and then two full rehearsals in which he spoke to every section except hers.",
-        "Someone in the second violins filmed the exchange {{surreptitious|surreptitiously}}, a phone propped inside a music stand, and it was on the orchestra's group chat before midnight.",
-        "None of it showed on the night, except for eight bars in the finale where his tempo {{veer|veered}} — dragging, then rushing — and eighty players had to feel their way back to the beat.",
-        "The audience, who heard only the music, gave him an ovation so {{rapturous}} that he came back out three times."
-      ],
-      "zh": [
-        "市民乐团为闭幕音乐会请来一位客席指挥,而第一次排练就把他想要的收场有多招摇讲得明明白白:一座特意加高的指挥台,一身白色礼服,还有一个要等全场最后一声咳嗽落定才肯直起身的鞠躬。",
-        "他排定的日程繁重得远超乐手们当初答应的程度——每周五个晚上,每次三小时,而这些人白天都有自己的工作。",
-        "第三次排练时,首席大提琴手竟有这个胆子,当着八十位同事的面发问:他此前究竟有没有指挥过业余乐团。",
-        "他的回应算不上愤怒,更像是在赌气使性子:指挥棒一甩,接下来整整两次排练,他跟每个声部都讲话,唯独跳过她那一组。",
-        "第二小提琴里有人把这一幕偷偷拍了下来——手机就支在谱架内侧——不到午夜,视频已经传遍了乐团的群聊。",
-        "演出当晚,这些都没有露出痕迹,只有终乐章有八个小节,他的速度陡然偏了向——先是拖沓,继而抢拍——八十名乐手只能各自摸索着找回拍点。",
-        "而只听见音乐的观众,给了他一阵狂热到近乎失控的喝彩,热烈得他三度返场谢幕。"
-      ],
-      "exclude": [
-        "ardent",
-        "arduous",
-        "exacting",
-        "effrontery",
-        "fervent",
-        "fractious",
-        "grandiose",
-        "querulous",
-        "sumptuous",
-        "testy"
-      ]
-    },
-    {
-      "id": "lake-house-estate",
-      "title": "湖边那栋房子分不下去",
-      "en": [
-        "Grandma Lin left the lake house to her four children in equal shares, which she believed would prevent a fight and turned out to be the surest way of starting one.",
-        "The {{wrangle}} over whether to sell ran three years and produced two lawyers, one appraisal nobody trusted, and a Thanksgiving that was over by seven o'clock.",
-        "Wes, the youngest, kept saying he only wanted the house to stay in the family, but his sisters were certain his real reasons were {{ulterior}}, since he had been living there rent-free since March.",
-        "Word that he had met a developer {{percolate|percolated}} through the cousins for weeks before anyone would say it out loud across the table.",
-        "His position turned {{untenable}} the month the tax bill arrived addressed to him alone and he could not explain who had changed the mailing address; he looked {{abashed}} for about a minute, then blamed the accountant.",
-        "It was Aunt Mei — so {{unobtrusive}} at those meetings that half the family forgot she attended them, filing every letter nobody had asked her to keep — who produced the folder that {{vindicate|vindicated}} him: the accountant's note about the address change, and Wes's own reply to the developer, dated in March, turning the offer down flat."
-      ],
-      "zh": [
-        "林奶奶把湖边那栋房子平分给了四个子女,她以为这样就能免掉一场争执,结果这恰恰是挑起争执最稳妥的办法。",
-        "围绕卖还是不卖的那场拉锯,前后耗了三年,耗出了两位律师、一份谁都不信的估价报告,还有一顿七点就散场的感恩节晚饭。",
-        "老幺韦斯反复说,他只是想让房子留在家里,可几个姐姐一口咬定他另有所图——毕竟从三月起,他就一直白住在那儿。",
-        "他见过开发商的风声在表亲们中间一点点传开,传了好几个星期,才终于有人肯在饭桌上把它挑明。",
-        "等到那张房产税单只写着他一个人的名字寄来、而他又说不清是谁改了邮寄地址,他的说法就再也站不住脚了;他窘迫了大约一分钟,转头就把责任推给了会计。",
-        "最后是梅姨——那些会上她低调得几乎让半个家族忘了她也在场,却把没人拜托她保存的每一封信都归了档——拿出了那只替他洗清嫌疑的文件夹:会计关于改地址的留言,还有韦斯自己在三月写给开发商、干脆利落回绝对方的那封回信。"
-      ],
-      "exclude": [
-        "diffident",
-        "impasse",
-        "metastasize",
-        "permeate",
-        "pervade",
-        "precarious",
-        "reticent",
-        "unpretentious"
-      ]
-    },
-    {
       "id": "failing-popup-restaurant",
       "title": "厨房里的闹剧",
       "en": [
@@ -1057,6 +274,1280 @@
         "sedulous",
         "spasmodic",
         "uncompromising"
+      ]
+    },
+    {
+      "id": "ocean-freighter-crew",
+      "title": "货轮上的风暴夜",
+      "en": [
+        "The captain stared at the radar screen, watching the squall line approach the freighter.",
+        "To {{assuage}} the crew's mounting panic, he ordered the first mate to secure the loose containers.",
+        "His {{contentious}} decision to sail straight through the gale was met with several {{facetious}} remarks from the chief engineer.",
+        "The engineer felt it was {{presumptuous}} to ignore the safety warnings issued by the maritime authority.",
+        "He threatened to {{denounce}} the captain once they reached port, dismissing the leadership's brave talk as empty {{rhetoric}}.",
+        "That {{reclusive}} deckhand, who rarely spoke to anyone during the voyage, stepped forward and grabbed the ropes.",
+        "With {{deft}} movements, he navigated the {{intricacy|intricacies}} of the rigging machinery despite the pitching vessel.",
+        "Minutes later, the captain {{promulgate|promulgated}} an emergency protocol, forcing everyone to put on life jackets."
+      ],
+      "zh": [
+        "船长盯着雷达屏幕，注视着飑线逼近货轮。",
+        "为了缓和船员们日益加剧的恐慌，他命令大副固定那些松动的集装箱。",
+        "然而，他径直穿过大风的这个有争议的决定，却引来了轮机长几句油腔滑调的玩笑。",
+        "轮机长认为，无视海事局发出的安全警告是非常自以为是的。",
+        "他甚至威胁说一到港口就要公开揭发船长，把领导层的豪言壮语斥为空话。",
+        "那个在航行中极少与人交谈的孤僻水手，走上前抓住了绳索。",
+        "尽管船只剧烈颠簸，他还是凭借灵巧的动作，处理了索具机械那复杂的细节。",
+        "几分钟后，船长颁布了一项紧急协议，强制所有人穿上救生衣。"
+      ],
+      "exclude": [
+        "abate",
+        "alleviate",
+        "appease",
+        "artful",
+        "barefaced",
+        "blatant",
+        "circumlocution",
+        "conciliate",
+        "placate",
+        "reprimand",
+        "slacken"
+      ]
+    },
+    {
+      "id": "herbarium-archive",
+      "title": "标本馆里的秘密",
+      "en": [
+        "The old botanist locked the heavy oak doors of the archive room.",
+        "He refused to {{capitulate}} to the museum board, who viewed the dried plant collections as {{extraneous}} items taking up valuable space.",
+        "Their argument earlier that afternoon had turned {{belligerent}}, with voices echoing through the silent halls.",
+        "To the scholar, the {{intrinsic}} value of these rare flora samples was impossible to replace with {{sumptuous}} modern displays.",
+        "One specific fern leaf from 1890 could {{corroborate}} his theory about historic climate shifts.",
+        "The newly appointed director wanted to {{depose}} him from his position as head curator.",
+        "Management considered his traditional preservation methods nothing but {{retrograde}} steps for the institution.",
+        "Stress had recently caused him to {{relapse}} into a nervous condition, mirroring the {{dystrophy}} that weakened his muscles years ago."
+      ],
+      "zh": [
+        "老植物学家锁上了档案室厚重的橡木门。",
+        "他拒绝向博物馆董事会妥协，因为他们把这些风干的植物收藏视为占用宝贵空间的多余物品。",
+        "他们那天下午早些时候的争吵变得火药味十足，声音在寂静的走廊里回荡。",
+        "对这位学者来说，这些罕见植物标本的内在价值，是无法用奢华的现代展览来替代的。",
+        "一片来自1890年的特定蕨类叶片，可以证实他关于历史气候变化的理论。",
+        "新上任的馆长想罢黜他首席研究员的职位。",
+        "管理层认为他传统的保存方法对机构而言完全是倒退的举措。",
+        "压力最近导致他旧病复发陷入紧张状态，情况类似于多年前使他肌肉衰弱的萎缩症。"
+      ],
+      "exclude": [
+        "acrimonious",
+        "antipathetic",
+        "disputatious",
+        "grandiose",
+        "inimical",
+        "irreducible",
+        "ostentatious",
+        "prodigal",
+        "profuse",
+        "rudimentary",
+        "topple"
+      ]
+    },
+    {
+      "id": "climbing-expedition",
+      "title": "攀岩队的最后尝试",
+      "en": [
+        "The wind howled against the nylon tent pitched on the narrow ledge.",
+        "The expedition leader, a young {{aspirant}} to the world record, watched his team grow increasingly {{fractious}}.",
+        "Fatigue had made their attitudes toxic, almost like some {{malignant}} disease spreading through the camp.",
+        "One climber tried to {{repudiate}} the agreed-upon route, finding it {{contemptible}} that they were taking such insane risks.",
+        "He drafted a written statement, almost like a legal {{deposition}}, to document his formal objection.",
+        "Since childhood, his severe {{dyslexia}} meant he hated writing, but this situation demanded a clear record.",
+        "The leader stepped out to {{refute}} the man's claims, arguing that the summit was still within reach.",
+        "Looking up at that {{ravishing}} alpenglow on the peak, neither man wanted to {{succumb}} to the mountain's harsh conditions."
+      ],
+      "zh": [
+        "狂风呼啸着吹打着搭在狭窄岩架上的尼龙帐篷。",
+        "探险队队长是个渴望打破世界纪录的年轻人，他看着自己的队伍变得越来越难以驾驭。",
+        "疲惫把他们的脾气一个个磨坏了，那股戾气像某种恶性病一样，在营地里一顶帐篷一顶帐篷地传。",
+        "一名攀岩者试图全盘否定之前商定的路线，觉得他们冒如此疯狂的风险实在可鄙。",
+        "他草拟了一份书面声明，简直像是一份法律证词，用来记录他的正式反对意见。",
+        "从童年起，他严重的阅读障碍就意味着他讨厌写字，但现在的情况需要一份清晰的记录。",
+        "队长走出去反驳了那个人的说法，争辩说顶峰依然触手可及。",
+        "抬头看着山顶上那迷人的高山余辉，两个男人都不想屈服于这座山恶劣的条件。"
+      ],
+      "exclude": [
+        "abhorrent",
+        "acquiesce",
+        "detrimental",
+        "disputatious",
+        "disreputable",
+        "ignominious",
+        "inimical",
+        "petulant"
+      ]
+    },
+    {
+      "id": "night-school-class",
+      "title": "夜校里的沉默",
+      "en": [
+        "The fluorescent lights buzzed overhead as adults squeezed into the tiny wooden desks.",
+        "The teacher reviewed that {{eclectic}} mix of essays, feeling deep {{ambivalence}} about her students' progress.",
+        "One paper contained a highly {{dubious}} claim about ancient history that lacked any factual basis.",
+        "The author had managed to {{beguile}} his classmates into believing a story about the most {{depraved}} of the medieval kings.",
+        "She worried this misinformation would {{metastasize}} throughout the classroom if left unchecked.",
+        "It was easy to let such errors pass to avoid making anyone feel {{dishearten|disheartened}}.",
+        "However, professional {{propriety}} dictated that she correct the historical record immediately.",
+        "Her {{judicious}} choice of words let her stay {{resolute}} about the correction without crushing the student's enthusiasm."
+      ],
+      "zh": [
+        "头顶的荧光灯嗡嗡作响，成年人们挤在狭小的木制课桌前。",
+        "老师批阅着那一批风格兼收并蓄的散文，对学生们的进步感到深深的矛盾心理。",
+        "其中一篇论文包含了一个关于古代历史的极其可疑的观点，缺乏任何事实依据。",
+        "作者硬是把同学们哄住了，让他们信了一个关于中世纪最堕落的那位国王的故事。",
+        "她担心如果置之不理，这种错误信息会在整个教室里扩散开来。",
+        "为了避免让任何人感到灰心，人们很容易对这样的错误一笑而过。",
+        "然而，出于职业的规矩，她必须立即纠正这个历史事实。",
+        "她措辞明智，既在这处纠正上寸步不让，又没把学生的热情打下去。"
+      ],
+      "exclude": [
+        "circumspect",
+        "disparate",
+        "engross",
+        "manifold",
+        "modesty",
+        "multifarious",
+        "percolate",
+        "provident",
+        "sagacious",
+        "sapient",
+        "vitiate"
+      ]
+    },
+    {
+      "id": "cross-country-coach",
+      "title": "跨州大巴上的插曲",
+      "en": [
+        "The air conditioning on the coach broke down, leaving everyone trapped in that {{sweltering}} heat for hours.",
+        "An older passenger began to {{grumble}} about the delay, condemning management's {{egregious}} negligence.",
+        "She managed to pry open a tiny window at the back.",
+        "The slight breeze did little to {{alleviate}} the stuffy cabin, while the root cause of the mechanical failure continued to {{elude}} our driver.",
+        "Beside me sat the {{pious}} one of the pair, reading his pocket Bible and ignoring the rising tension around him.",
+        "The rest of the travelers were {{riven}} by a bitter argument over whether to force a highway stop.",
+        "Some insisted that calling a rescue vehicle now would be pure {{wastefulness}} of time.",
+        "Others criticized the headquarters' {{insularity}}, claiming executives never rode their own buses.",
+        "The shouting match ended when we pulled into a dusty service station.",
+        "A local mechanic twisted some {{malleable}} copper wire into a temporary fuse, and the engine roared to life."
+      ],
+      "zh": [
+        "长途大巴上的空调坏了，让所有人都被困在那酷热难耐的高温中长达数小时。",
+        "一位年长的乘客开始抱怨延误，谴责管理层极其恶劣的疏忽。",
+        "她费力地在后排推开了一扇小窗户。",
+        "那点微风几乎无法缓解闷热的车厢，而机械故障的根本原因依然令我们的司机毫无头绪。",
+        "坐在我旁边的是两人里虔诚的那一个，他读着随身的袖珍圣经，对周围不断升级的紧张气氛毫不理会。",
+        "其余的旅客因为是否要强行在高速公路上停车而陷入了分裂。",
+        "有些人坚持认为，现在叫救援车完全是浪费时间。",
+        "另一些人则批评总部的思想闭塞，声称高管们从来不坐自家的大巴。",
+        "这场争吵直到我们驶入一个满是灰尘的服务站才结束。",
+        "一名当地修理工把一根可塑的铜丝拧成了一个临时保险丝，发动机又轰鸣了起来。"
+      ],
+      "exclude": [
+        "abate",
+        "alienation",
+        "assuage",
+        "barefaced",
+        "extenuate",
+        "gullible",
+        "myopia",
+        "obscene",
+        "outlandish",
+        "slacken"
+      ]
+    },
+    {
+      "id": "estate-liquidation",
+      "title": "庄园清算日",
+      "en": [
+        "The attorney read that {{ominous}} letter aloud to the gathered relatives.",
+        "It outlined the sheer {{enormity}} of the deceased uncle's debts, silencing the room.",
+        "Decades of reckless gambling had left the family with debts of {{ruinous}} size.",
+        "The oldest brother voiced his {{grievance}}, finding the idea of selling the family home completely {{abhorrent}}.",
+        "The estate's ledgers did not {{cohere}} with the lavish lifestyle the old man had maintained.",
+        "To make sense of the chaos, an accountant had to {{disaggregate}} years of tangled bank statements.",
+        "They realized the property was {{mire|mired}} in obscure legal disputes.",
+        "The tension in the dusty library was thick enough to cut with a knife.",
+        "Their only {{solace}} was finding a registered {{purebred}} stallion forgotten in the back stables.",
+        "Auctioning the magnificent creature off might be their only way to avoid bankruptcy."
+      ],
+      "zh": [
+        "律师向聚集在一起的亲属们大声宣读了那封不祥的信件。",
+        "信里概述了已故叔叔所欠债务的极端严重性，让整个房间陷入了死寂。",
+        "几十年不管不顾地赌下来，给这家人留下了一笔足以倾家荡产的债务。",
+        "大哥表达了他的不满，他觉得卖掉祖宅这个想法令人憎恶。",
+        "庄园的账本与老爷子生前维持的奢华生活方式在逻辑上不连贯。",
+        "为了理清这一团乱麻，会计师不得不把多年来错综复杂的银行流水拆分开来进行分析。",
+        "他们意识到，这处房产已经陷入了隐晦的法律纠纷泥沼中。",
+        "满是灰尘的图书室里，紧张的气氛凝重得仿佛能用刀切开。",
+        "他们唯一的慰藉，就是在后马厩里找到了一匹被遗忘的有登记记录的纯种公马。",
+        "把这匹神气的动物拍卖掉，可能是他们避免破产的唯一出路。"
+      ],
+      "exclude": [
+        "animosity",
+        "cataclysmic",
+        "contemptible",
+        "criticality",
+        "discontent",
+        "forbidding",
+        "inundate"
+      ]
+    },
+    {
+      "id": "print-shop-fire",
+      "title": "老印刷厂的火灾",
+      "en": [
+        "The cheap solvent they used was a known {{precursor}} to flammable gases.",
+        "Leaving it near the furnace was a careless decision that would {{implicate}} the floor manager.",
+        "A stray spark from that {{angular}} metal gear ignited the fumes, and the blast managed to {{engender}} absolute panic.",
+        "Workers scrambled toward the emergency exits as alarms blared.",
+        "Within minutes, the blaze threatened the total {{obliteration}} of the century-old facility.",
+        "Firefighters dragged a breathless operator outside, trying to {{resuscitate}} him before the {{dilapidated}} roof caved in.",
+        "Burning debris rained down on the asphalt parking lot.",
+        "That {{acrid}} cloud of toxic smoke drifted toward the residential neighborhood.",
+        "The factory owner issued {{profuse}} apologies to the community the next morning.",
+        "Yet the charred ruins stood there, casting a truly {{forbidding}} shadow over the edge of town."
+      ],
+      "zh": [
+        "他们使用的廉价溶剂是一种已知会生成易燃气体的前体。",
+        "把它留在熔炉附近是个粗心的决定，这牵连了车间主任。",
+        "从那个带棱角的金属齿轮上溅出的一点火花点燃了气体，爆炸引发了绝对的恐慌。",
+        "警报声大作，工人们争先恐后地向紧急出口逃生。",
+        "短短几分钟内，大火就威胁要将这座拥有百年历史的工厂彻底摧毁。",
+        "消防员把一名失去呼吸的操作工拖到室外，在破旧的屋顶坍塌前试图让他苏醒。",
+        "燃烧的碎片像雨点般落在了柏油停车场上。",
+        "那团刺鼻的有毒黑烟朝着住宅区飘去。",
+        "工厂老板第二天早上向社区表达了大量的歉意。",
+        "然而，那些烧焦的废墟依然矗立在那里，在小镇边缘投下了一道真正令人生畏的阴影。"
+      ],
+      "exclude": [
+        "formidable",
+        "ominous",
+        "prodigal"
+      ]
+    },
+    {
+      "id": "street-band-breakup",
+      "title": "街头乐队的解散",
+      "en": [
+        "The label gave the musicians zero {{leeway}} when drafting the grueling summer tour schedule.",
+        "Their aggressive manager warned that financial ruin was {{imminent}}, yet the drummer remained {{apathetic}}.",
+        "He rarely bothered to show up for afternoon soundchecks.",
+        "Meanwhile, the lead singer pitched his new concept album with exhausting {{fervor}}, having developed some {{morbid}} fascination with tragic historical figures.",
+        "He drafted a ten-minute rock opera about the last {{sentient}} execution machine on earth.",
+        "The rest of the band could not stand the creative direction.",
+        "Frustrated by the chaos, the bassist chose to {{abrogate}} his verbal contract with the group.",
+        "He realized the manager's confusing royalty statements were designed to {{swindle}} everyone out of merchandise profits.",
+        "To avoid a messy court battle, the lawyers had to {{delineate}} who owned the rights to which songs.",
+        "Ultimately, the tight-knit trio dissolved into this {{heterogeneous}} mix of bitter solo artists."
+      ],
+      "zh": [
+        "厂牌在安排严酷的夏季巡演日程时，没有给音乐人们留任何回旋余地。",
+        "他们激进的经纪人警告说财务破产即将发生，但鼓手依然冷漠不关心。",
+        "他现在甚至懒得在下午的试音环节露面了。",
+        "与此同时，主唱带着令人疲惫的狂热推销他的新概念专辑，他对悲剧历史人物产生了一种病态的迷恋。",
+        "他写了一部十分钟的摇滚歌剧，讲地球上最后一台有意识的行刑机器。",
+        "乐队的其他成员根本无法忍受这种创作方向。",
+        "贝斯手对这种混乱感到沮丧，决定废除他与乐队的口头协议。",
+        "他意识到经纪人那些令人困惑的版税报表，就是为了骗取大家的周边商品利润而设计的。",
+        "为了避免陷入混乱的法庭诉讼，律师们不得不精确界定谁拥有哪些歌曲的版权。",
+        "最终，这个曾经关系紧密的三人组，解散成了各种单飞艺人组成的异质混合体。"
+      ],
+      "exclude": [
+        "callous",
+        "countermand",
+        "languid",
+        "manifold",
+        "multifarious",
+        "overturn"
+      ]
+    },
+    {
+      "id": "veterinary-clinic-routine",
+      "title": "兽医站的日常",
+      "en": [
+        "The new clinic director unveiled his {{grandiose}} plans for a luxury pet spa at the {{impromptu}} staff meeting he had called that morning.",
+        "In reality, our current workplace was that {{austere}} cinderblock building with peeling paint.",
+        "We barely had enough space to store the incoming dog food.",
+        "It was always that common {{fallacy}} among clients that veterinary medicine was a highly lucrative business.",
+        "The technicians would often {{grouse}} about the broken X-ray machine.",
+        "Yesterday, a local charity had to {{intercede}} and pay the bills for a stray cat suffering from abnormal fluid {{secretion|secretions}}.",
+        "The poor animal needed immediate surgery to survive the night.",
+        "Our senior doctor operated on some {{amorphous}} mass near its stomach.",
+        "Later, he took time to {{officiate}} a tiny backyard burial for a hamster that didn't make it.",
+        "Despite the exhausting shifts, most of us remained {{sanguine}} about saving the next patient."
+      ],
+      "zh": [
+        "新来的诊所主任在他当天上午临时召集的员工会上，抛出了他那套建豪华宠物水疗馆的浮夸计划。",
+        "而现实中，我们目前的工作场所只是一栋油漆剥落的简朴煤渣砖楼。",
+        "我们几乎连存放新进狗粮的空间都没有。",
+        "客户们一直有个普遍的谬误，认为兽医是一门利润丰厚的生意。",
+        "技师们经常抱怨那台坏掉的X光机。",
+        "昨天，一家当地慈善机构不得不出面斡旋，替一只饱受异常体液分泌折磨的流浪猫支付了账单。",
+        "那只可怜的小动物需要立即手术才能熬过夜晚。",
+        "我们的资深兽医给它做了手术，取出胃部附近一个形状不规则的肿块。",
+        "后来，他抽时间为一只没救过来的仓鼠主持了一个小型的后院葬礼。",
+        "尽管轮班令人精疲力竭，但大多数人对拯救下一个病患依然保持着乐观。"
+      ],
+      "exclude": [
+        "entreat",
+        "extemporaneous",
+        "prodigal",
+        "sumptuous"
+      ]
+    },
+    {
+      "id": "freight-warehouse-night",
+      "title": "货运仓库的雨夜",
+      "en": [
+        "The night shift manager felt deeply {{apprehensive}} about the approaching storm.",
+        "A sudden power outage plunged the entire loading dock into darkness.",
+        "This threatened to {{exacerbate}} the chaos, as its {{ostensible}} cause remained unknown.",
+        "Small companies rarely enjoy any {{level-playing-field}} against major logistics firms.",
+        "That lack of fairness did not, however, {{extenuate}} the supervisor's continuous {{ineptitude}}.",
+        "He had failed to secure the heavy crates properly.",
+        "Any further delays would only {{antagonize}} the truck drivers waiting outside.",
+        "One impatient driver made some {{gratuitous}} comment about human operators being inherently {{fallible}}.",
+        "Upgrading the safety system was clearly no longer considered {{elective}}."
+      ],
+      "zh": [
+        "夜班经理对逼近的暴风雨感到深深的忧虑。",
+        "突然的停电让整个装卸区陷入了黑暗。",
+        "由于停电的表面原因仍然未知，这恐怕会使本就混乱的局面进一步恶化。",
+        "小公司在对抗大型物流企业时很难享有任何公平竞争的环境。",
+        "然而，这种不公并不能为这名主管持续的无能开脱。",
+        "他未能妥善固定好重型板条箱。",
+        "任何进一步的延误只会激怒在外面等候的卡车司机。",
+        "一名不耐烦的司机对人类操作员难免犯错发表了一些无端的嘲讽。",
+        "显然，升级安全系统已不再被视为可有可无的择期之选。"
+      ],
+      "exclude": [
+        "alleviate",
+        "disaffect",
+        "extenuation",
+        "incite"
+      ]
+    },
+    {
+      "id": "puppet-troupe-farewell",
+      "title": "木偶剧团的告别演出",
+      "en": [
+        "The old puppeteer worked in silence, hoping the pain in his wrists would soon {{abate}}.",
+        "Packing up the workshop was an incredibly {{arduous}} task.",
+        "He stopped to dust off a carved wooden horse.",
+        "He possessed rare {{humility}}, never seeking praise even when his {{artful}} designs won awards.",
+        "The troupe's fortunes used to {{oscillate}} between sold-out tours and near bankruptcy.",
+        "Now, endless {{red-tape}} had forced them to vacate the historic theater.",
+        "A few {{fervent}} fans stood in the rain and watched the last {{rickety}} prop wagon roll past.",
+        "The stage manager's {{interjection}}, when it came, cut straight across his thoughts.",
+        "She smiled sadly and turned off the overhead lights.",
+        "His final movements {{dovetail|dovetailed}} perfectly with the closing music."
+      ],
+      "zh": [
+        "老木偶师默默地工作着，只盼手腕上的疼痛能尽快缓解。",
+        "打包收拾这间工作室是一项极其艰苦的任务。",
+        "他停下来，拍去一匹雕花木马上的灰尘。",
+        "他拥有一种罕见的谦逊，即使他那精巧的设计屡获殊荣也从不寻求赞美。",
+        "剧团的命运曾经在门票售罄的巡演和濒临破产之间反复摇摆。",
+        "如今，没完没了的繁文缛节迫使他们腾出这座历史悠久的剧院。",
+        "几名狂热的粉丝站在雨里，看着最后一辆快散架的道具车滚过。",
+        "舞台监督那句插话来的时候，正好把他的思绪拦腰截断。",
+        "她悲伤地笑了笑，关掉了顶灯。",
+        "他最后的动作与闭幕音乐完美吻合。"
+      ],
+      "exclude": [
+        "adroit",
+        "alleviate",
+        "artifice",
+        "assuage",
+        "concur",
+        "deft",
+        "devious",
+        "erratic",
+        "precarious",
+        "reconcile",
+        "slacken"
+      ]
+    },
+    {
+      "id": "glass-kiln-shutdown",
+      "title": "玻璃窑的熄火期",
+      "en": [
+        "Cooling down this massive industrial furnace is quite {{formidable}}.",
+        "It is {{incumbent}} upon the engineers to monitor the temperature constantly.",
+        "Their {{de-facto}} manager showed her {{penchant}} for traditional blowing techniques.",
+        "She walked across the glowing shop floor to inspect the valves.",
+        "The most {{astute}} technician on the floor noticed a micro-fracture forming along the main pipe.",
+        "Rushing the process would be {{expedient}} but could ruin the crystals.",
+        "Using cheap fuel would inevitably {{debase}} the purity of their glass.",
+        "Their strict {{fidelity}} to the century-old recipe earned them international awards.",
+        "The team gathered around the control panel in silence.",
+        "Rather than direct measurement, they used sensors to {{interpolate}} the internal pressure and relied on {{inferential}} models."
+      ],
+      "zh": [
+        "让这座巨大的工业熔炉冷却下来是相当令人敬畏的挑战。",
+        "工程师们有责任不断监控温度。",
+        "他们实际上的管理人展现了她对传统吹制技术的偏爱。",
+        "她穿过红光闪烁的车间去检查阀门。",
+        "车间里最机敏的那位技工发现主管道上正在生出一道微裂纹。",
+        "加快进度固然方便，但可能会毁掉这些水晶。",
+        "使用廉价燃料不可避免地会降低他们玻璃的纯度。",
+        "他们对百年配方的严格忠实，为他们赢得了国际奖项。",
+        "团队成员在控制面板周围默默地聚集起来。",
+        "他们没有直接测量，而是使用传感器来插值计算内部压力，并依赖推论模型。"
+      ],
+      "exclude": [
+        "affinity",
+        "belittle",
+        "felicitous",
+        "forbidding",
+        "predisposition"
+      ]
+    },
+    {
+      "id": "dam-flood-season",
+      "title": "水坝的汛期",
+      "en": [
+        "The control room was in absolute {{turmoil}} as the water levels rose dangerously high.",
+        "Decades of neglected maintenance had allowed rust to {{permeate}} the primary floodgates.",
+        "They finally had to {{bite-the-bullet}} and open the emergency spillway.",
+        "It was truly {{outmoded}}, relying on giant iron wheels instead of digital switches.",
+        "Such {{clamor}} of the rushing water made it impossible to hear the radio dispatch.",
+        "The {{unwitting}} junior staffer who delayed the alert gave the mayor all the excuse he needed to {{malign}} the engineers.",
+        "Despite this, the chief engineer was {{magnanimous}}, forgiving the honest mistake immediately.",
+        "The power flickered and went out completely.",
+        "That {{ostentatious}} visitor center was flooded, but their plan to reinforce the valley wall had finally come to {{fruition}}.",
+        "The storm raged on throughout the long night."
+      ],
+      "zh": [
+        "随着水位升至危险的高度，控制室里陷入了彻底的混乱。",
+        "几十年来被忽视的维护，使得铁锈渗入了主防洪闸。",
+        "他们最终不得不硬着头皮，打开紧急溢洪道。",
+        "那确实是一个过时的系统，依赖巨大的铁轮而不是数字开关。",
+        "湍急水流的这种喧闹声让他们根本听不清无线电调度。",
+        "那位并不知情的年轻职员把警报耽搁了下来，市长要的正是这个借口，转头就把工程师们中伤了一遍。",
+        "尽管如此，总工程师还是宽宏大量的，立刻原谅了这个无心之失。",
+        "电源闪烁了一下，然后彻底断了。",
+        "那座炫耀的游客中心被淹没了，但他们加固山谷岩壁的计划终于结出了成果。",
+        "暴风雨在漫长的夜晚继续肆虐。"
+      ],
+      "exclude": [
+        "affected",
+        "belittle",
+        "benevolent",
+        "discontent",
+        "oblivious",
+        "philanthropic",
+        "prodigal",
+        "sumptuous"
+      ]
+    },
+    {
+      "id": "cellar-last-batch",
+      "title": "老酒厂的最后一批货",
+      "en": [
+        "Aging wine requires highly {{meticulous}} tracking of temperature and humidity.",
+        "The cellar master was viewed as some {{benevolent}} guardian by the apprentices.",
+        "Dust particles danced in the narrow shafts of sunlight.",
+        "Unfortunately, the barrels were stacked in a very {{haphazard}} arrangement, and one clumsy movement could cause a cask to {{topple}}.",
+        "They managed to {{surmount}} the logistical nightmare just before the harvest season.",
+        "Nobody wanted to stay late on a Friday evening.",
+        "The new management introduced a digital inventory system, promoting it as their {{panacea}}.",
+        "The software came with the sort of {{caveat}} nobody reads until too late — every old record had to be keyed in by hand, which turned out to be {{onerous}} beyond anyone's estimate.",
+        "They decided to {{abridge}} the historical logs to save time.",
+        "The stressful transition gave the manager stomach issues, forcing him to take a mild {{laxative}}."
+      ],
+      "zh": [
+        "酿造陈年葡萄酒，得一丝不苟地把温度和湿度一笔笔记下来。",
+        "这位酒窖主管被学徒们视为某种仁慈的守护者。",
+        "灰尘颗粒在狭窄的阳光光束中飞舞。",
+        "不幸的是，木桶的堆放方式非常杂乱无章，一个笨拙的动作就可能导致木桶倒塌。",
+        "他们设法在收获季节前克服了后勤方面的噩梦。",
+        "没有人想在星期五晚上留下来加班。",
+        "新管理层引入了一套数字库存系统，并将其宣传为他们的万灵药。",
+        "这套软件附了一条没人会认真看的但书——所有旧记录都得手工录入，而这件事的繁重程度超出了所有人的估计。",
+        "他们决定删节历史日志以节省时间。",
+        "压力巨大的过渡期导致经理出现了胃部问题，迫使他服用了一种温和的泻药。"
+      ],
+      "exclude": [
+        "depose",
+        "effortful",
+        "magnanimous"
+      ]
+    },
+    {
+      "id": "rescue-dog-exam",
+      "title": "搜救犬基地的考核",
+      "en": [
+        "That {{philanthropic}} organization donated three new obstacle courses to the dog facility.",
+        "During the drill, heavy rain proved to be a major {{hindrance}} for the younger pups.",
+        "Demand for certified tracking dogs surged dramatically {{in-the-wake-of}} the recent earthquake.",
+        "A veteran trainer spoke with admirable {{candor}} about the high failure rate.",
+        "She explained that any {{cataclysmic}} disaster zone overwhelms dogs without solid nerve control.",
+        "The muddy field made the final sprint extremely difficult.",
+        "One handler had such {{temerity}} to argue against her strict grading methods, and their exchange quickly grew {{acrimonious}}.",
+        "Everyone else remained perfectly quiet.",
+        "He wanted his retriever to pass, hoping the badge would {{efface}} their past mistakes and fulfill what they {{yearn}} for.",
+        "Despite the stress, the lead dog gave a surprisingly {{lucid}} demonstration of scent tracking."
+      ],
+      "zh": [
+        "那家慈善机构向这个犬类设施捐赠了三个新的障碍训练场。",
+        "测试期间，大雨被证明是对较小幼犬的一大障碍。",
+        "对认证追踪犬的需求在那场最近的地震之后急剧飙升。",
+        "一位资深训练员以令人钦佩的坦率谈论了那居高不下的淘汰率。",
+        "她解释说，任何灾难性的事故现场都会压垮那些没有稳固神经控制力的狗。",
+        "泥泞的场地让最后的冲刺变得极其困难。",
+        "一名训导员竟然有如此鲁莽的胆量去反驳她那严格的评分方法，他们的交锋迅速变得言辞激烈且充满怨恨。",
+        "其他所有人都保持着绝对的安静。",
+        "他希望他的猎犬能够通过，期盼这枚徽章能抹去他们过去的失误，并实现他们所渴望的目标。",
+        "尽管压力巨大，那只领头犬还是给出了一场极其清晰的气味追踪示范。"
+      ],
+      "exclude": [
+        "antipathetic",
+        "belligerent",
+        "disputatious",
+        "inimical",
+        "magnanimous",
+        "probity",
+        "ruinous"
+      ]
+    },
+    {
+      "id": "mountain-clinic-resignation",
+      "title": "诊所医生的辞职信",
+      "en": [
+        "Dr. Vance's sudden departure caused a massive {{upheaval}} at the valley clinic, leaving a gap that felt truly {{irreparable}}.",
+        "He had been their only physician for over twenty years.",
+        "His resignation letter was shocking in its {{brevity}}, offering no clues about his true motives.",
+        "The town council soon reached a bitter {{impasse}} over how to handle the sudden vacancy.",
+        "Some argued his exit was clearly {{premeditated}}, as he had been shipping his medical textbooks away since autumn.",
+        "They tried to push through a single {{atomic}} resolution to hire a replacement or shut the doors forever.",
+        "This harsh ultimatum made the elder members rather {{petulant}}, leading them to take {{circuitous}} routes just to avoid the mayor.",
+        "Instead of trying to {{elucidate}} the clinic's budget deficit, the mayor simply stormed out of the hall.",
+        "Given the grueling hours Vance had worked, few could truly {{begrudge}} him his rest.",
+        "By December, the building sat empty under the heavy snow."
+      ],
+      "zh": [
+        "万斯医生的突然离职在山谷诊所引起了一场大地震，他留下的空缺让人觉得根本无法弥补。",
+        "二十多年来，他一直是这里唯一的医生。",
+        "他的辞职信简短得令人震惊，丝毫没有透露他真正的动机。",
+        "镇议会很快就在如何处理这个突发空缺的问题上陷入了痛苦的僵局。",
+        "有人认为他的离开显然是蓄谋已久的，因为他从秋天起就把自己的医学书寄走了。",
+        "他们试图强行通过一项不可分割的决议：要么马上雇个继任者，要么永远关门。",
+        "这种严苛的最后通牒让几位年长的委员耍起了小脾气，他们甚至故意绕远路，就为了躲开镇长。",
+        "镇长并没有试图去阐明诊所的预算赤字，而是直接摔门离开了大厅。",
+        "考虑到万斯以前那繁重的工作时间，很少有人会真的嫉妒他能得到休息。",
+        "到了十二月，那栋建筑就在大雪中空置着。"
+      ],
+      "exclude": [
+        "discursive",
+        "fractious",
+        "indelible",
+        "monolithic",
+        "oblique",
+        "primitive",
+        "querulous",
+        "rambling",
+        "rudimentary",
+        "testy"
+      ]
+    },
+    {
+      "id": "border-checkpoint-smuggling",
+      "title": "边境线上的查验",
+      "en": [
+        "The new border guards showed remarkable {{adaptability}} when facing the endless stream of night cargo.",
+        "They had to be extremely {{circumspect}} about which trucks to search, as random delays could easily {{incite}} riots among the drivers.",
+        "One missing stamp was a common {{impediment}} that kept a vehicle waiting until dawn.",
+        "In the guardhouse, the captain was busy trying to {{collate}} the week's transit logs.",
+        "He noticed that {{precipitous}} drop in declared timber shipments from the northern province.",
+        "He knew that bending the rules was that dangerous {{slippery-slope}} that would lead to massive smuggling networks.",
+        "A rookie officer caught one driver making some {{surreptitious}} phone call to the region's highly {{preeminent}} logistics manager.",
+        "However, the {{inexorable}} advance of the patrol dogs toward his tires told a different story.",
+        "Before the sun came up, the entire convoy was seized."
+      ],
+      "zh": [
+        "新来的边防哨兵在面对夜间源源不断的货运车流时，展现出了惊人的适应能力。",
+        "他们在决定搜查哪辆卡车时必须极为慎重，因为随意的延误很容易在司机中煽动起骚乱。",
+        "漏盖一个章就是常见的障碍，会让一辆车一直等到天亮。",
+        "在警卫室里，队长正忙着整理这一周的通行日志。",
+        "他注意到来自北方省份的申报木材运输量出现了那般断崖式的下跌。",
+        "他深知对小错视而不见就是那种一旦开头就收不住的做法，最终会滋生出庞大的走私网络。",
+        "一名新来的警员逮到一个司机躲在锈迹斑斑的集装箱后头，偷偷摸摸地给本地区首屈一指的物流经理打电话。",
+        "然而，巡逻犬朝着他的车胎不可阻挡地逼近，说明事情绝没那么简单。",
+        "太阳升起之前，整个车队都被扣押了。"
+      ],
+      "exclude": [
+        "antagonize",
+        "eminent",
+        "intractable",
+        "intransigent",
+        "irrepressible",
+        "judicious",
+        "obdurate",
+        "obstinate",
+        "provident",
+        "race-to-the-bottom",
+        "tenacious",
+        "ulterior",
+        "uncompromising"
+      ]
+    },
+    {
+      "id": "sourdough-rebellion",
+      "title": "面包房里的叛逆",
+      "en": [
+        "For decades the family bakery ran as the founder's own {{autocracy}}, and nothing left the oven that he had not approved.",
+        "This suffocating management style created deep {{malaise}} among the night shift workers.",
+        "Their wages were hardly {{commensurate}} with the grueling hours they spent kneading dough.",
+        "During the morning meeting, the head baker offered highly {{incisive}} criticisms about the recipes, but the owner just offered another tired {{platitude}}.",
+        "They knew {{more-often-than-not}} that suggesting changes would only make the old man completely {{intransigent}}.",
+        "That morning, however, the pastry chef decided to {{veer}} from the traditional menu.",
+        "Doing so would deliberately {{contravene}} the shop's most sacred handbook.",
+        "He baked some delightfully {{unpretentious}} rustic loaves using leftover rye.",
+        "Customers smelled the fresh crust from the street.",
+        "By noon, every single loaf was sold out."
+      ],
+      "zh": [
+        "几十年来，这家家族面包房就是创始人一个人的专制王国，没有一炉面包是未经他点头出得了炉的。",
+        "这种令人窒息的管理风格在夜班工人中引发了一种深深的萎靡情绪。",
+        "他们揉面揉到深夜，拿到的工资跟这些辛苦的工时完全不相称。",
+        "在早会上，面包师领班对那些陈旧的配方提出了非常一针见血的批评，但老板却只是抛出了另一句老生常谈的套话。",
+        "他们知道，十有八九，提出修改建议只会让这老头变得越发固执己见。",
+        "然而那天早上，糕点主管决定突然转向，不按传统菜单来做。",
+        "这样做会公然违反店里最神圣的员工手册。",
+        "他用剩下的黑麦烤出了一些非常朴实无华的乡村面包。",
+        "顾客们在街上就闻到了新鲜的面包皮香味。",
+        "到了中午，所有面包都被抢购一空。"
+      ],
+      "exclude": [
+        "analogous",
+        "headstrong",
+        "impinge",
+        "inconspicuous",
+        "inexorable",
+        "intractable",
+        "perverse",
+        "recalcitrant",
+        "refractory",
+        "sagacious",
+        "tenacious",
+        "unobtrusive"
+      ]
+    },
+    {
+      "id": "manuscript-restoration",
+      "title": "脆弱的书页",
+      "en": [
+        "The chief archivist liked to gently {{allude}} to the dark history behind the library's oldest manuscript.",
+        "Restoring the fragile parchment was incredibly {{painstaking}} work that required steady hands.",
+        "Even one moment of careless {{complacency}} could easily {{incapacitate}} the entire preservation effort.",
+        "They had to scrape away every microscopic {{impurity}} from the vellum surface.",
+        "If the humidity in the room dropped too {{precipitously}}, the ancient binding would crack.",
+        "The task was {{by-no-means}} finished, as hundreds of pages still needed treatment.",
+        "Some visiting scholars tried to frankly {{belittle}} the slow progress, showing profound {{undervaluation}} of the quiet labor involved in saving history.",
+        "Finally, when the restored book was unveiled, the crowd broke into utterly {{rapturous}} applause.",
+        "The long months of silence had at last paid off.",
+        "Nobody questioned their methods ever again."
+      ],
+      "zh": [
+        "首席档案馆长总喜欢委婉地暗指图书馆那本最古老手稿背后的黑暗历史。",
+        "修复脆弱的羊皮纸是一项极其煞费苦心的工作，需要一双极其稳当的手。",
+        "哪怕是一瞬间粗心大意的自满，都很容易让整个保护工作付诸东流。",
+        "他们必须刮掉牛皮纸表面上每一个微小的杂质。",
+        "如果房间里的湿度下降得过于急剧，那古老的装订就会开裂。",
+        "这项任务绝没有完成，因为还有数百页需要处理。",
+        "一些来访的学者毫不客气地贬低他们缓慢的进度，这暴露出他们对拯救历史这种默默无闻的劳动长期存在低估。",
+        "最后，当这本修复好的书展出时，人群中爆发出极其狂喜的掌声。",
+        "漫长几个月的沉默终于得到了回报。",
+        "再也没有人质疑过他们的方法。"
+      ],
+      "exclude": [
+        "ardent",
+        "conscientious",
+        "debase",
+        "exacting",
+        "industrious",
+        "irrepressible",
+        "malign"
+      ]
+    },
+    {
+      "id": "mountain-rescue-team",
+      "title": "风雪中的救援",
+      "en": [
+        "Operating the high-altitude rescue station meant facing brutal {{adversity}} on a daily basis.",
+        "The budget was so tight, making their outdated equipment seem practically {{obscene}}.",
+        "During winter storms, stranded hikers would usually {{congregate}} near the thermal vents.",
+        "The crew could always sense every {{impending}} avalanche before the sirens even wailed.",
+        "Some climbers had a reckless {{predisposition}} to ignore warning signs entirely.",
+        "{{that-said}}, the captain was highly {{reticent}} about criticizing victims in front of reporters.",
+        "He preferred to fiercely {{wrangle}} with local politicians over funding.",
+        "The most {{recalcitrant}} of the officials argued that the town was already facing {{destitution}} and could not afford new snowmobiles.",
+        "The captain simply pointed to his map of danger zones and walked out.",
+        "His silent protest left the council chamber completely speechless."
+      ],
+      "zh": [
+        "运营这座高海拔救援站意味着每天都要面对残酷的逆境。",
+        "预算非常紧张，使得他们那些过时的设备看起来简直是不堪入目。",
+        "在冬季风暴中，被困的徒步旅行者通常会聚集在热气孔附近。",
+        "救援队总能在警报声响起之前就察觉到每一次迫近的雪崩。",
+        "有些登山者有一种不计后果的倾向，完全无视警告标志。",
+        "话虽如此，队长在记者面前对批评受害者显得非常沉默寡言。",
+        "他宁愿为了资金问题与当地政客激烈争吵。",
+        "官员里最顽固不化的那一位辩称，镇上已经穷得快揭不开锅，买不起新雪地摩托。",
+        "队长只是指了指他的危险区域地图，然后走了出去。",
+        "他的无声抗议让整个议会大厅鸦雀无声。"
+      ],
+      "exclude": [
+        "diffident",
+        "egregious",
+        "headstrong",
+        "intractable",
+        "intransigent",
+        "obdurate",
+        "outlandish",
+        "penchant",
+        "perverse",
+        "refractory",
+        "tenacious"
+      ]
+    },
+    {
+      "id": "south-slope-apiary",
+      "title": "南坡上的十一箱蜂",
+      "en": [
+        "Vera kept eleven hives on the south slope, and she was frankly {{agnostic}} about most of what the old beekeepers told her.",
+        "She would not {{perpetuate}} the story that you had to tell the bees when someone in the house died, though she never quite laughed at anyone who did.",
+        "That April it rained for nineteen days, weather in no way {{conducive}} to a strong colony, and Petar next door — {{insomniac}} since his wife's illness — watched her carry sugar syrup up the slope at four in the morning.",
+        "He was the first to see that one hive had turned {{perverse}}, its workers carrying pollen out of the box instead of into it.",
+        "Vera had no patience for the {{mystique}} the county association wrapped around swarm behaviour, and she said so at the spring meeting, at length.",
+        "Two weeks later a buyer from the city offered four times the going rate for the whole apiary.",
+        "She read {{ulterior}} motives into the offer at once, and she was right — the man wanted the slope, not the bees.",
+        "Petar was {{ardent}} on her behalf in a way she found embarrassing, and drove to the registry office himself; Vera stayed {{dispassionate}} and asked only to see the deed.",
+        "Neither of them slept much that week.",
+        "In the end she {{consign|consigned}} nine hives to a school on the far side of the valley, kept two, and the story about telling the bees went with them."
+      ],
+      "zh": [
+        "薇拉在南坡上养着十一箱蜂，老养蜂人传下来的那些说法，她大多是不置可否的。",
+        "家里死了人要去跟蜜蜂说一声——这种说法她不肯往下传，可也从没真的笑话过谁。",
+        "那年四月下了十九天雨，这种天气对蜂群的壮大毫无助益；隔壁的彼得——自妻子病后就一直失眠——看着她凌晨四点往坡上扛糖浆。",
+        "最先看出有一箱不对劲的是他：那箱的工蜂偏要反着来，把花粉往箱外搬，而不是往里搬。",
+        "县养蜂协会给分蜂行为裹上的那层神秘色彩，薇拉一点也不买账，春季会上她当众说了，还说了很久。",
+        "两周后，城里来了个买家，出的价是行情的四倍，要把整个蜂场盘下来。",
+        "她当场就读出了这背后别有用心——她没猜错，那人要的是这片坡地，不是蜜蜂。",
+        "彼得替她热心得让她有些难为情，自己开车跑了一趟登记处；薇拉倒是冷静得不带情绪，只要求看一眼地契。",
+        "那一周他们俩都没怎么睡。",
+        "最后她把九箱蜂托付给了山谷那头的一所学校，自己留下两箱——那个要跟蜜蜂说话的故事，也跟着一起去了。"
+      ],
+      "exclude": [
+        "auspicious",
+        "headstrong",
+        "intractable",
+        "intransigent",
+        "obdurate",
+        "opportune",
+        "protract",
+        "rapturous",
+        "recalcitrant",
+        "refractory",
+        "surreptitious",
+        "tenacious",
+        "vehement"
+      ]
+    },
+    {
+      "id": "corner-antiques-shop",
+      "title": "街角当铺的旧物",
+      "en": [
+        "The eccentric owner had a strange {{affinity}} for collecting forgotten heirlooms.",
+        "For him, preserving the history of each item was absolutely {{paramount}}.",
+        "Every rusted pocket watch carried a heavy {{connotation}} of lost time and broken promises.",
+        "One dusty corner was filled with seemingly {{innocuous}} trinkets alongside bizarre {{taxidermy}} owls.",
+        "He considered his cluttered store the highly {{quintessential}} example of urban archaeology.",
+        "Slowly, wild rumors began to {{percolate}} through the neighborhood about his hidden wealth.",
+        "A newly arrived antique mirror felt like an incredibly {{auspicious}} find, though he worried the current recession might quickly {{impoverish}} his loyal customers.",
+        "He placed the mirror in the window, hoping its shiny surface would serve as some {{subliminal}} invitation.",
+        "The bell above the door finally rang.",
+        "A shadowy figure stepped out of the rain."
+      ],
+      "zh": [
+        "这位古怪的老板对收集被遗忘的传家宝有一种奇特的偏爱。",
+        "对他来说，保存每件物品的历史是至关重要的。",
+        "每一块生锈的怀表都带有关于逝去时光和破碎承诺的沉重内涵。",
+        "一个满是灰尘的角落里堆满了看似无害的小玩意，旁边还有些稀奇古怪的动物标本。",
+        "他认为自己这家杂乱的店铺是城市考古学最典型的代表。",
+        "渐渐地，关于他隐藏财富的疯狂传言开始在街坊邻里间渗透流传。",
+        "新到的一面古董镜子，怎么看都像个极吉利的兆头——尽管他担心眼下的经济下行会很快让老主顾们手头拮据。",
+        "他把镜子放在橱窗里，希望它闪亮的表面能作为某种潜意识的邀请。",
+        "门上的铃铛终于响了。",
+        "一个黑影从雨中走了进来。"
+      ],
+      "exclude": [
+        "conducive",
+        "metastasize",
+        "oblivious",
+        "opportune",
+        "penchant",
+        "pervade",
+        "suffuse"
+      ]
+    },
+    {
+      "id": "antiquarian-bookshop",
+      "title": "旧书店里的真伪之争",
+      "en": [
+        "The old man had {{preside|presided}} over the dusty bookstore for forty years, trusting his own eyes more than any certificate.",
+        "So it {{appall|appalled}} him to find a fake first edition sitting right in his display case.",
+        "The seller's {{outlandish}} story about discovering the manuscript in a ruined castle was clearly a lie.",
+        "He knew any {{conscientious}} dealer would destroy it, but the forgery itself showed such remarkable {{ingenuity}} that he couldn't bear to.",
+        "He locked the leather-bound book in his bottom drawer, hiding it from the world.",
+        "He simply told his assistant that the item was not for sale.",
+        "Maintaining the lie that his collection was completely flawless had become {{untenable}} anyway.",
+        "By an unwritten {{fiat}}, the guild would hold him {{culpable}} if they ever found out he sold it.",
+        "To testify to its authenticity now would essentially be {{perjury}}.",
+        "This single volume {{epitomize|epitomized}} the quiet corruption that was slowly ruining his trade."
+      ],
+      "zh": [
+        "老人掌管这家积灰的旧书店已有四十年，他相信自己的眼睛胜过任何证书。",
+        "因此，当他发现自己的展示柜里竟然摆着一本伪造的初版书时，他感到无比震惊。",
+        "卖家声称在废墟城堡中发现这份手稿的离谱故事，显然是个谎言。",
+        "他深知任何尽责的古董商都会将其销毁，但这件赝品本身展现出的非凡巧思让他实在于心不忍。",
+        "他把这本真皮装帧的书锁在了最下面的抽屉里，将它对世人隐藏起来。",
+        "他只是告诉他的助手那件物品不卖。",
+        "无论如何，想要维持所有藏品绝对完美无瑕的谎言已经变得站不住脚了。",
+        "根据一项不成文的命令，如果行会发现他卖掉了这本书，就会认定他负有过失责任。",
+        "如果现在去证明它的真实性，那基本上就等同于作伪证。",
+        "这孤零零的一册书集中体现了那种正在慢慢毁掉他这行的无声腐败。"
+      ],
+      "exclude": [
+        "assiduous",
+        "egregious",
+        "exacting",
+        "industrious",
+        "obscene",
+        "painstaking",
+        "sedulous",
+        "superintend"
+      ]
+    },
+    {
+      "id": "boarding-school-scandal",
+      "title": "寄宿学校的深夜丑闻",
+      "en": [
+        "The elite boarding school boasted modern {{amenity|amenities}} but maintained a toxic culture among the students.",
+        "A group of older boys constantly {{persecute|persecuted}} anyone who didn't fit into their strict social hierarchy.",
+        "When the headmaster finally intervened, his {{imperious}} lecture in the dining hall shocked everyone into silence.",
+        "He read aloud a highly {{contrived}} apology letter, making the bullies stand on the stage looking completely {{abashed}}.",
+        "The silence in the room was heavy and uncomfortable.",
+        "However, hidden camera footage soon {{incriminate|incriminated}} the school's top swimmer, completely overshadowing his athletic {{prowess}}.",
+        "The police arrived on campus early the next morning.",
+        "He was formally expelled and charged with public {{indecency}}.",
+        "{{juxtapose|Juxtaposing}} his pristine academic record with his secret crimes left the staff deeply disturbed.",
+        "The administration's sudden commitment to transparency was considered {{laudable}}, but it came far too late for the victims."
+      ],
+      "zh": [
+        "这所精英寄宿学校标榜着现代化的便利设施，却在学生中维持着一种有害的文化。",
+        "一群高年级男生经常欺压任何不符合他们严格社交阶层的人。",
+        "当校长终于介入时，他在食堂里那番傲慢专横的训话让所有人震惊得哑口无言。",
+        "他大声朗读了一封极其做作的道歉信，让那些霸凌者站在台上显得十分窘迫。",
+        "房间里的沉默显得沉重而令人不安。",
+        "然而，隐藏摄像头的录像很快就牵连了学校的顶尖游泳选手，完全掩盖了他在体育上的高超技能。",
+        "警察在第二天一大早就抵达了校园。",
+        "他被正式开除，并被指控有伤风化。",
+        "将他完美无瑕的学业成绩与他秘密的罪行并置对比，让教职员工感到深深的不安。",
+        "校方突然承诺保持透明被认为是值得称赞的，但对受害者来说实在太晚了。"
+      ],
+      "exclude": [
+        "embroil"
+      ]
+    },
+    {
+      "id": "cemetery-expansion",
+      "title": "墓园的扩建争议",
+      "en": [
+        "The city planners decided to {{raze}} the old administrative building to make room for more graves.",
+        "They kept up their {{pretense}} that it was a necessary modernization project.",
+        "The demolition excavators were already parked down the street.",
+        "The neighbors grew {{indignant}} because they suspected the manager had {{collude|colluded}} with a private real estate firm.",
+        "At the cemetery gates, an elderly florist launched into a bitter {{harangue}} against the greedy officials.",
+        "She repeated her grandmother's original lease agreement {{verbatim}}, proving her right to stay.",
+        "Heavy rain began to fall on the protesters.",
+        "The security guards listened in {{perplexity}}, while nobody gave any {{credence}} to the manager's promises of fair compensation.",
+        "His {{overbearing}} attitude only made the crowd shout louder in protest.",
+        "Sensing that {{opportune}} moment, a local journalist stepped up with a camera to record the scene."
+      ],
+      "zh": [
+        "城市规划者决定将旧的行政楼夷为平地，腾出空间修建更多墓地。",
+        "他们一直伪装这是一项必要的现代化工程。",
+        "拆除用的挖掘机已经停在了街道尽头。",
+        "附近居民感到愤愤不平，因为他们怀疑经理与一家私营房地产公司暗中勾结。",
+        "在墓园大门外，一位年迈的花商对贪婪的官员发表了长篇大论的痛斥。",
+        "她一字不差地背诵了她祖母最初的租赁协议，证明了她有权留下来。",
+        "大雨开始落在抗议者的身上。",
+        "保安们满脸困惑地听着，而没有人相信经理关于公平赔偿的承诺。",
+        "他那盛气凌人的态度只让抗议的人群喊得更大声。",
+        "感觉到那个恰好的时机，一名当地记者拿着相机走上前来记录下了这一幕。"
+      ],
+      "exclude": [
+        "auspicious",
+        "conducive",
+        "machination",
+        "pantomime"
+      ]
+    },
+    {
+      "id": "boxing-gym-comeback",
+      "title": "拳馆里的卷土重来",
+      "en": [
+        "This {{disparity}} in skill between the veteran boxer and the young challenger was obvious.",
+        "Still {{convalescent}} from a broken rib, the older fighter had been away from the ring for a year.",
+        "The gym owner, {{barefaced}} about the money from the start, took the {{unilateral}} decision to schedule the match anyway.",
+        "Surrounded by {{sycophant|sycophants}}, the young champion spared his opponent only the most {{cursory}} glance at the weigh-in.",
+        "The crowd roared as the lights dimmed in the arena.",
+        "However, the veteran planned to {{protract}} the fight, dragging it into the later rounds.",
+        "He knew the younger man would eventually tire and his defense would {{slacken}}.",
+        "Blood dripped from the challenger's nose by the eighth round.",
+        "When the final bell rang, the stunning knockout left that {{indelible}} mark on boxing history.",
+        "The victory completely {{vindicate|vindicated}} the old fighter's relentless training methods."
+      ],
+      "zh": [
+        "这位老将与年轻挑战者之间在技巧上的这种差距显而易见。",
+        "由于肋骨骨折仍处于康复期，这位老拳手已经离开拳台一年了。",
+        "健身房老板从一开始就毫不掩饰是冲着钱来的，单方面拍板照常安排这场比赛。",
+        "被一群马屁精围着的年轻冠军，在称重时只极其草草地瞥了对手一眼。",
+        "当竞技场的灯光暗下时，人群发出了震耳欲聋的欢呼声。",
+        "然而，老将计划拖延比赛，将其拖入后面的回合。",
+        "他知道那个年轻人最终会疲惫不堪，防守也会随之松懈。",
+        "到了第八回合，鲜血从挑战者的鼻子里滴落下来。",
+        "当终场铃声响起时，那次令人震惊的击倒在拳击史上留下了不可磨灭的印记。",
+        "这场胜利彻底证明了这位老拳手那残酷的训练方法是绝对正确的。"
+      ],
+      "exclude": [
+        "abate",
+        "alleviate",
+        "assuage",
+        "egregious",
+        "extenuate",
+        "ingratiate",
+        "irreparable",
+        "perpetuate",
+        "presumptuous"
+      ]
+    },
+    {
+      "id": "volcano-observatory",
+      "title": "火山观测站的警告",
+      "en": [
+        "The massive volcano had remained completely {{inert}} for nearly three centuries.",
+        "Most geologists treated the daily seismic checks as just another {{perfunctory}} task.",
+        "When the ground finally began to shake, the team scrambled to execute their {{contingency}} plan.",
+        "The station's {{pompous}} lead scientist delivered a sharp {{rebuke}} to anyone who suggested an evacuation.",
+        "Unable to {{reconcile}} the rapidly climbing temperatures with the calm surface, the staff grew panicked.",
+        "The local mayor, showing surprising {{prudence}}, ordered the roads closed anyway.",
+        "He had to {{concoct}} some {{devious}} story about a bridge repair project to safely move tourists away.",
+        "Ash began to fall from the sky like gray snow.",
+        "Sirens wailed across the empty valley.",
+        "Once the eruption started, the lava flow proved to be an utterly {{intractable}} force, consuming everything in its path."
+      ],
+      "zh": [
+        "这座巨大的火山已经近三个世纪一动不动、毫无生气了。",
+        "大多数地质学家都把日常的地震检查看作是又一个例行公事的敷衍任务。",
+        "当地面终于开始震动时，团队手忙脚乱地开始执行他们的应急预案。",
+        "观测站那位自命不凡的首席科学家，谁提撤离就严厉训斥谁。",
+        "工作人员无法将急剧攀升的温度与平静的地表调和起来，心里变得越来越恐慌。",
+        "当地市长展现出了令人惊讶的审慎，无论如何还是下令封锁了道路。",
+        "他不得不编造某个狡猾的桥梁维修工程借口，以安全地将游客转移走。",
+        "火山灰像灰色的雪一样从天空中飘落。",
+        "警报声在空荡荡的山谷中回荡。",
+        "一旦火山爆发开始，熔岩流就被证明是一股极其难以阻挡的力量，吞噬了沿途的一切。"
+      ],
+      "exclude": [
+        "artful",
+        "artifice",
+        "dovetail",
+        "headstrong",
+        "implacable",
+        "inexorable",
+        "insolent",
+        "intransigent",
+        "languid",
+        "obdurate",
+        "perfidious",
+        "perverse",
+        "pretentious",
+        "recalcitrant",
+        "reprove",
+        "tenacious",
+        "uncompromising"
+      ]
+    },
+    {
+      "id": "tidal-station-maintenance",
+      "title": "落潮时的轰鸣",
+      "en": [
+        "The seasonal shutdown of the coastal turbines brought together teams with {{disparate}} backgrounds.",
+        "Engineers from the capital shared cramped quarters with local divers, creating an atmosphere {{reminiscent}} of a frontier camp.",
+        "They worked twelve-hour shifts deep inside the drained concrete chambers.",
+        "One older mechanic tried to {{entreat}} his supervisor for a break, hoping to {{forestall}} exhaustion before the night rotation.",
+        "But the strict maintenance schedule allowed no room for rest.",
+        "The unforgiving environment felt almost {{malevolent}}, pushing everyone to their physical limits.",
+        "The headquarters inspector, known to be {{erudite}}, struggled to decipher the rusted schematics.",
+        "A sudden crack in the main valve threatened to {{thwart}} their progress.",
+        "To fix the mechanism, a diver burdened by his {{disreputable}} past volunteered for the risky underwater weld.",
+        "When he finished, no one doubted its {{efficacy}}, his steady hands mimicking a doctor administering {{anesthesia}}."
+      ],
+      "zh": [
+        "沿海涡轮机的季节性停机将背景迥然不同的几支队伍聚在了此处。",
+        "首都工程师和本地潜水员挤在狭小的宿舍里，这种氛围让人联想到边疆营地。",
+        "他们在排干水的混凝土腔室内轮班干上十二个小时。",
+        "一位老机修工试图恳求主管给个休息时间，指望在夜班前先发制人地防止体力透支。",
+        "但严苛的检修进度表容不得半点喘息。",
+        "无情的环境几乎透着一股恶意，把每个人的身体逼到了极限。",
+        "那位向来以博学著称的总部视察员，在生锈的图纸面前也一筹莫展。",
+        "主阀门上突然出现的一道裂缝险些阻挠了他们的进度。",
+        "为了修复该装置，一名背负着不光彩过去的潜水员主动请缨，接下了危险的水下焊接任务。",
+        "完工后，再没人怀疑那道焊缝的功效，他那双稳当的手如同正在实施麻醉的医生。"
+      ],
+      "exclude": [
+        "analogous",
+        "contemptible",
+        "eclectic",
+        "ignominious",
+        "importune",
+        "intercede",
+        "manifold",
+        "multifarious",
+        "slanderous"
+      ]
+    },
+    {
+      "id": "racetrack-final-season",
+      "title": "秋风中的终点线",
+      "en": [
+        "A smell of stale beer and damp earth seemed to {{pervade}} the grandstand during its final autumn.",
+        "Developers had purchased the land months ago due to a zoning board's {{oversight}}.",
+        "The remaining jockeys knew their jobs would disappear by November.",
+        "His sudden burst of speed felt {{tantalizing}}, earning cheers instead of strict {{reprimand}} for ignoring the trainer's pace.",
+        "Such reckless behavior proved {{detrimental}} to his horse's joints.",
+        "The management installed new cameras near the stables as mere {{deterrence}} against late-night tampering.",
+        "No one bothered to watch the fuzzy black-and-white footage anyway.",
+        "In a rare moment of {{introspection}}, the track owner regretted selling out to those {{acquisitive}} real estate firms.",
+        "Yet his wife remained {{steadfast}}, packing up decades of trophies into cardboard boxes.",
+        "Local newspapers began to {{eulogize}} the venue weeks before the last gates ever opened."
+      ],
+      "zh": [
+        "在它最后一个秋季里，看台上似乎弥漫着陈腐啤酒和潮湿泥土的气味。",
+        "几个月前，由于分区委员会的一次疏忽，开发商已经买下了这块地。",
+        "留下来的骑师们心里清楚，他们的饭碗到十一月就会消失。",
+        "他那突如其来的爆发速度颇具诱惑力，非但没有因为无视练马师的节奏而招致严厉训斥，反而赢得了阵阵喝彩。",
+        "这种鲁莽的行为证明对他的马匹关节是有害的。",
+        "管理层在马厩附近安装了新摄像头，仅仅作为对深夜动动手脚的威慑。",
+        "反正根本没人去费心看那模糊的黑白录像。",
+        "在一次难得的自我反思中，赛马场老板后悔把产业卖给了那些贪婪的房地产公司。",
+        "然而他的妻子依然坚定不移，把几十年来赢得的奖杯打包进纸箱里。",
+        "甚至在最后一场比赛开闸的几周前，地方报纸就开始颂扬这个场地了。"
+      ],
+      "exclude": [
+        "covetous",
+        "deify",
+        "denounce",
+        "malignant",
+        "percolate",
+        "uncompromising"
+      ]
+    },
+    {
+      "id": "toll-booth-midnight",
+      "title": "凌晨三点的闸杆",
+      "en": [
+        "The graveyard shift on the turnpike always attracted drivers with {{erratic}} habits.",
+        "One frustrated trucker voiced his {{dissent}} over the new automated card readers.",
+        "The blinking red error lights felt {{analogous}} to a neon sign screaming for help.",
+        "The booth attendant answered with her {{insouciant}} shrug, holding no {{animosity}} toward the screaming man.",
+        "Through the glass, she decided to {{mime}} the motion of inserting the chip.",
+        "He pounded on the steering wheel while the cars piled up behind him.",
+        "That machine remained stubborn, acting like an untamed, {{refractory}} patient refusing medicine.",
+        "To keep traffic moving, she had to {{acquiesce}} and open the barrier, hoping her boss would {{gratify}} her choice later.",
+        "The trucker sped off into the darkness without a word of thanks.",
+        "She never expected anyone to {{reciprocate}} her small favors on this desolate highway."
+      ],
+      "zh": [
+        "收费站的午夜班总是会招来些驾驶习惯飘忽不定的司机。",
+        "一名沮丧的卡车司机对新安装的自动读卡器表达了异议。",
+        "闪烁的红色故障灯就像是在大声呼救的霓虹灯招牌。",
+        "收费员用她那满不在乎的耸肩作为回应，对那个大喊大叫的男人没带半点敌意。",
+        "隔着玻璃，她决定用哑剧般的动作模仿插入芯片的过程。",
+        "他使劲砸着方向盘，而他身后的汽车已经排成了长龙。",
+        "那台机器依然无动于衷，活像个未经驯服、拒绝吃药的顽固病人。",
+        "为了让车流继续前进，她只好默许放行并升起起落杆，希望老板事后能对她的决定感到满意。",
+        "卡车司机连句道谢的话都没说，便加速消失在黑暗中。",
+        "她也从未指望过在这条荒凉的高速公路上，会有人来回报她的小恩小惠。"
+      ],
+      "exclude": [
+        "antipathy",
+        "commensurate",
+        "discontent",
+        "grievance",
+        "headstrong",
+        "intransigent",
+        "obdurate",
+        "perverse",
+        "precarious",
+        "recalcitrant",
+        "reminiscent",
+        "rickety",
+        "succumb",
+        "tenacious"
+      ]
+    },
+    {
+      "id": "sorting-center-rush",
+      "title": "传送带上的雪花",
+      "en": [
+        "The union leaders met upstairs to {{ratify}} the holiday overtime agreement.",
+        "Down on the floor, exhaustion was already {{endemic}} among the seasonal workers.",
+        "Mountains of mismatched boxes piled up near the loading docks.",
+        "The junior sorters seemed to {{revere}} the shift manager for his {{adroit}} handling of fragile packages.",
+        "He never grew {{testy}}, even when someone dropped a box of glass ornaments.",
+        "Management tried to {{extrapolate}} next week's volume from the current chaos.",
+        "They hired extra trucks from private fleets to ease the backlog.",
+        "These outside drivers showed nothing but {{mercenary}} motives, charging double to rescue any {{hapless}} dispatcher trapped by the schedule.",
+        "Despite the pressure, the break room maintained its {{congenial}} atmosphere around the coffee machine.",
+        "One supervisor drank six cups and experienced terrifying {{palpitation|palpitations}} right before dawn."
+      ],
+      "zh": [
+        "工会领导人们在楼上开会，正式批准了节日加班协议。",
+        "而在楼下的分拣大厅里，临时工之间早已弥漫着难以根除的疲惫感。",
+        "堆积如山的规格不一的纸箱在装卸区附近越垒越高。",
+        "初级分拣员们似乎对轮班经理充满敬仰，因为他处理易碎包裹的手法极为机敏。",
+        "哪怕有人摔烂了一整盒玻璃装饰品，他也从不变得暴躁。",
+        "管理层试图从眼前的混乱中推断出下周的业务量。",
+        "他们从私人车队雇了额外的卡车来缓解积压。",
+        "这些外面的司机动机极其唯利是图，开出双倍价钱来拯救任何被日程表困住的倒霉调度员。",
+        "尽管压力重重，休息室的咖啡机旁依然保持着一种意气相投的友善氛围。",
+        "一位主管喝了六杯咖啡，结果在黎明前经历了可怕的心悸。"
+      ],
+      "exclude": [
+        "artful",
+        "deify",
+        "genial",
+        "petulant"
+      ]
+    },
+    {
+      "id": "underground-mycology",
+      "title": "孢子的抗争",
+      "en": [
+        "The subterranean farm resembled this {{monolithic}} maze of concrete corridors.",
+        "Heavy rains began to {{inundate}} the lower cultivation chambers.",
+        "Workers rushed to stack the precious spore bags on higher shelves.",
+        "One supervisor took the chaotic situation as a personal {{affront}}, deciding to {{embroil}} everyone in a shouting match.",
+        "He lacked even the most {{rudimentary}} leadership skills.",
+        "The humidity made the air thick and difficult to breathe.",
+        "The team's {{gregarious}} technician grew silent, noticing that {{incipient}} crack in the ceiling.",
+        "Management promised them {{equitable}} bonuses for saving the harvest.",
+        "They also refused to {{remunerate}} anyone who left the flooded zone early.",
+        "Two exhausted laborers ended up in the site's makeshift {{infirmary}}."
+      ],
+      "zh": [
+        "这座地下农场就像是这庞大一体的混凝土迷宫。",
+        "大雨开始淹没底部的几个栽培室。",
+        "工人们赶紧把珍贵的孢子袋堆到更高的架子上。",
+        "一名主管把这种混乱局面视为对个人的冒犯，决定把所有人都卷入一场骂战。",
+        "他甚至连最基本的领导能力都不具备。",
+        "湿气让空气变得浑浊，令人呼吸困难。",
+        "团队里那位平时爱交际的技术员安静了下来，注意到了天花板上那道刚刚出现的裂缝。",
+        "管理层承诺，为了拯救这次收成，会给他们发放公平的奖金。",
+        "他们还拒绝给任何提前离开洪水区的人支付报酬。",
+        "两名筋疲力尽的劳工最终躺进了工地的临时医务室。"
+      ],
+      "exclude": [
+        "atomic",
+        "condign",
+        "dispassionate",
+        "incriminate",
+        "irreducible",
+        "mire"
+      ]
+    },
+    {
+      "id": "pool-closure-notice",
+      "title": "干涸的瓷砖",
+      "en": [
+        "The city council decided to shut down the historic aquatic center.",
+        "The facility manager, our {{genial}} leader, remained {{oblivious}} to the true motives driving the closure.",
+        "He thought it was just a plumbing issue, missing widespread, {{systemic}} rot in the city budget.",
+        "A local journalist refused to {{belabor}} the obvious financial deficit.",
+        "She managed to {{intersperse}} her final article with interviews from former lifeguards.",
+        "One specific document became their {{smoking-gun}}, revealing how the mayor dodged those {{exacting}} safety inspections.",
+        "Citizens gathered outside the drained pool holding candles.",
+        "They observed deep, {{reverent}} silence for the place where they learned to swim.",
+        "Prosecutors urged the judge to show no {{leniency}} toward the corrupt officials.",
+        "A grand jury will {{indict}} the responsible politicians next week."
+      ],
+      "zh": [
+        "市议会决定关闭这座历史悠久的水上中心。",
+        "设施经理，我们和蔼可亲的领导，对推动关停的真正动机依然浑然不觉。",
+        "他以为那不过是管道问题，却没看到市府预算中那种系统性的腐败。",
+        "一名当地记者拒绝再去喋喋不休地强调那个显而易见的财务缺口。",
+        "她设法在最后一篇报道中穿插了对前救生员们的采访。",
+        "真正成了铁证的是一份文件,上面写着市长当初是怎么把那几道严苛的安检绕过去的。",
+        "市民们拿着蜡烛聚集在排干水的泳池外。",
+        "他们为这个教会自己游泳的地方保持着深深的、虔诚的沉默。",
+        "检察官敦促法官对这些腐败官员不要给予任何宽大处理。",
+        "一个大陪审团将于下周起诉那些负有责任的政客。"
+      ],
+      "exclude": [
+        "agreeable",
+        "assiduous",
+        "congenial",
+        "conscientious",
+        "painstaking",
+        "sociable",
+        "subconscious",
+        "subliminal",
+        "unwitting"
+      ]
+    },
+    {
+      "id": "quarry-blasting-permit",
+      "title": "悬崖边的印章",
+      "en": [
+        "Securing the new explosives license became a massive bureaucratic {{odyssey}}.",
+        "The quarry stood right next to a protected wildlife reserve.",
+        "Our {{domineering}} regional director tried to {{placate}} the angry environmentalists with vague promises.",
+        "Those activists argued that the rock walls remained {{precarious}}.",
+        "The geology department's eager {{neophyte}} drafted the preliminary safety report.",
+        "His tiny sensors were so {{unobtrusive}} that the wildlife ignored them.",
+        "The heavy drill machines sat idle for three full weeks.",
+        "Corporate {{procurement}} refused to buy more dynamite until they could {{delve}} into the updated rules.",
+        "They believed their legal team was {{infallible}}.",
+        "At last, the state board chose to {{concur}} with the safety findings, granting the final approval."
+      ],
+      "zh": [
+        "拿到新的炸药许可成了一场漫长曲折的官僚主义征途。",
+        "采石场紧挨着一个受保护的野生动物保护区。",
+        "我们那位专横的区域总监试图用含糊的承诺来安抚愤怒的环保人士。",
+        "那些活动家们辩称岩壁依然岌岌可危。",
+        "地质系那个热心的初学者起草了初步的安全报告。",
+        "他的微型传感器太不显眼了，野生动物全都无视了它们。",
+        "沉重的钻井机器整整闲置了三个星期。",
+        "公司的采购部门拒绝购买更多炸药，直到他们能深入探究更新后的法规。",
+        "他们相信自己的法律团队是绝不会出错的。",
+        "最终，州委员会选择同意这些安全调查结果，下发了最后批文。"
+      ],
+      "exclude": [
+        "assuage",
+        "dovetail",
+        "erratic",
+        "rickety",
+        "unpretentious"
       ]
     }
   ]
