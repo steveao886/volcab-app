@@ -26,7 +26,8 @@ const words = JSON.parse(readFileSync('data/words.json', 'utf8')).words as {
 const contrastNotes = JSON.parse(readFileSync('src/data/contrastNotes.json', 'utf8')).notes as Record<string, string>
 const wordNotes = JSON.parse(readFileSync('src/data/wordNotes.json', 'utf8')).notes as Record<string, string>
 const senseGroups = JSON.parse(readFileSync('src/data/senseGroups.json', 'utf8')).groups as { order: string[] }[]
-const passages = JSON.parse(readFileSync('src/data/passages.json', 'utf8')).passages as unknown[]
+const passages = JSON.parse(readFileSync('src/data/passages.json', 'utf8')).passages as { en: string[] }[]
+const recallSentences = JSON.parse(readFileSync('src/data/recallSentences.json', 'utf8')).sentences as { id: string }[]
 
 const pairs = buildContrastPairs(words as never)
 const posOf = new Map(words.map(w => [w.id, w.meanings[0]?.pos ?? '']))
@@ -53,6 +54,23 @@ const anchors = [...partners.entries()].filter(([, l]) => l.length >= 2).map(([i
 const grouped = new Set(senseGroups.flatMap(g => g.order))
 const uncoveredAnchors = anchors.filter(id => !grouped.has(id))
 
+// 4. 回想 coverage. The mode draws from two pools and a word needs only one
+// of them, so neither file alone answers "can this word be asked at all":
+// sense groups take words with confusable partners, recall sentences take
+// the rest. A word in neither is invisible to 回想 permanently, and until
+// this line existed nothing said so — measured on 2026-08-17, 36 words were
+// in that state while the scan printed FRESH.
+//
+// Reported as growth, not a required gap, on purpose. Every added word would
+// otherwise flip the library to STALE the moment it lands, and "FRESH is a
+// real verdict" is the property that keeps a refresh run from inventing work.
+// Note which words land here: **none of them are anchors** (an anchor by
+// definition has the partners a sense group needs), so this backlog can only
+// ever be cleared by authoring renderings, never by authoring groups.
+const inGroup = new Set(senseGroups.flatMap(g => g.order))
+const inRecall = new Set(recallSentences.map(s => s.id))
+const noRecallQuestion = words.map(w => w.id).filter(id => !inGroup.has(id) && !inRecall.has(id))
+
 // --- Report, priority order ------------------------------------------------
 
 let stale = false
@@ -68,6 +86,16 @@ console.log(`library: ${words.length} words · ${pairs.length} pairs · ${senseG
 gap('contrastNotes missing (required)', missingContrast, true)
 gap('wordNotes missing (required)', missingNotes, true)
 gap('sense-group anchors uncovered (pool growth)', uncoveredAnchors, false)
-console.log(`\npassages: ${passages.length} — grow when the corpus feels thin; no required floor`)
+gap('words with no 回想 question at all (pool growth)', noRecallQuestion, false)
+
+// Passage coverage is printed, never a STALE trigger. Covering every word
+// three times over needs roughly 200 passages, so a coverage line here would
+// hold the scan at STALE for months and train the reader to ignore it. The
+// number that actually decides whether to write more is not in this repo: it
+// is how often the corpus gets played, because play-count selection puts
+// `corpus size` sessions between repeats (see the passage-selection spec).
+const marked = new Set<string>()
+for (const p of passages) for (const s of p.en) for (const m of s.matchAll(/\{\{([^{}|]+)/g)) marked.add(m[1].trim())
+console.log(`\npassages: ${passages.length}, marking ${marked.size}/${words.length} words — grow when the corpus feels thin; no required floor`)
 
 console.log(stale ? '\nSTALE — author what is named above, nothing else' : '\nFRESH — nothing owed, stop here')
