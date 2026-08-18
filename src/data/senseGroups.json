@@ -4931,6 +4931,299 @@
         "ostentatious"
       ],
       "why": "pretentious 指硬摆出高深、有品位的架势，实际撑不起来；affected 指言谈举止刻意做作、不自然，不一定装高深；ostentatious 是财物排场上的招摇炫耀，看得见摸得着。"
+    },
+    {
+      "zh": "议会以压倒性票数单方面废止了那项通商条约。",
+      "target": "废止",
+      "en": "Parliament voted overwhelmingly to abrogate the trade treaty, ending sixty years of tariff-free exchange in a single afternoon.",
+      "order": [
+        "abrogate",
+        "countermand",
+        "overturn"
+      ],
+      "why": "abrogate 的宾语是法律、条约、协议这类成文规约，整部作废，动作出自有权立法或缔约的一方；countermand 撤的是一道已经下达的具体命令，必须先有命令，撤的人通常是发令者本人或其上级；overturn 推翻的是已经作出的判决、裁定或结果，多由更高一级机构来做，被推翻的是「判断」而不是「规约」。"
+    },
+    {
+      "zh": "他谈起自己病情时那种冷静的口吻，让最亲近的朋友都渐渐疏远了。",
+      "target": "疏远",
+      "en": "The clinical calm with which he discussed his own illness began, over that winter, to alienate even his closest friends.",
+      "order": [
+        "alienate",
+        "disaffect",
+        "antagonize"
+      ],
+      "why": "alienate 说的是关系变冷、生出隔阂，对方未必有敌意，只是不再亲近；disaffect 专指对组织、上级或事业失去忠诚，宾语通常是成员、部下、选民，且多以 disaffected 的形式出现；antagonize 是主动招惹，把对方变成对手，必然带着火气——朋友只是慢慢走远，谈不上被激怒。"
+    },
+    {
+      "zh": "那场讲座旁征博引，一路岔开话题，两小时里始终没回到提纲。",
+      "target": "岔开话题",
+      "en": "The lecture was learned but thoroughly discursive, wandering from Ottoman tax records to birdsong and never once returning to the printed outline.",
+      "order": [
+        "discursive",
+        "rambling",
+        "circuitous"
+      ],
+      "why": "discursive 说的是话题不断岔开、旁征博引，内容可能很有学问，只是没有主线；rambling 强调又长又乱、听者抓不住重点，贬义明显，不含「博学」的意味；circuitous 指绕远路——路线或说法虽然绕，却始终朝着一个目的地，而这场讲座根本没往提纲上走。"
+    },
+    {
+      "zh": "他绕开那条街已成习惯，问起来只说不清楚，像某种潜藏的抗拒。",
+      "target": "潜藏的",
+      "sense": 0,
+      "en": "Avoiding that street had become a habit he could not explain, some subconscious refusal he had never once put into words.",
+      "order": [
+        "subconscious",
+        "subliminal",
+        "unwitting",
+        "oblivious"
+      ],
+      "why": "subconscious 指念头藏在意识层面之下，本人察觉不到却在左右行为；subliminal 是「阈下」，专指刺激本身弱到低于感知门槛，用于广告、信号这类外部输入；unwitting 说的是做了某事而不知情，落点在行为；oblivious 是对眼前正在发生的事浑然不觉，落点在外部环境。他不是没察觉外界，是没察觉自己。"
+    },
+    {
+      "zh": "报备本身不难，可每月两次这项义务，对小公司是沉重的负担。",
+      "target": "沉重的负担",
+      "en": "Filing was simple enough on its own, but doing it twice a month proved an onerous obligation for a company of six people.",
+      "order": [
+        "onerous",
+        "effortful",
+        "arduous"
+      ],
+      "why": "onerous 的重点是负担——责任、义务、条款压在身上，未必费体力，难在推不掉；effortful 说的是做起来要费劲、尚未形成自动反应，用于技能和认知过程，不含「义务」这层；arduous 强调过程本身漫长艰苦，通常是攀登、跋涉、长期工程这类具体的苦。报备一点也不难，难的是甩不掉。"
+    },
+    {
+      "zh": "那位审稿人对注释格式一寸不让，宁可整篇退回也不放行。",
+      "target": "一寸不让",
+      "en": "The reviewer was uncompromising about citation format, returning a whole manuscript rather than letting one stray comma through.",
+      "order": [
+        "uncompromising",
+        "resolute",
+        "steadfast"
+      ],
+      "why": "uncompromising 说的是不肯让步、标准一分不降，重点在「不接受折中」；resolute 是下定决心去做一件事，重点在面对困难不动摇，对着的通常是目标而不是标准；steadfast 强调长期不变的忠诚或支持，多用于对人、对事业，带感情色彩。审稿人不是在坚持什么目标，是一步都不肯退。"
+    },
+    {
+      "zh": "出事之后他头一件事是把责任推给实习生，这做法实在卑劣。",
+      "target": "卑劣",
+      "en": "His first move after the accident was to put the blame on the intern, which everyone still in the room found contemptible.",
+      "order": [
+        "contemptible",
+        "ignominious",
+        "disreputable"
+      ],
+      "why": "contemptible 是对行为本身下的道德判断——值得鄙视；ignominious 说的是结局丢脸、下场不光彩，常修饰 defeat、retreat、end 这类词，不用来骂一个动作；disreputable 讲的是名声，指人或场所口碑不好，未必做过什么具体的坏事。推卸责任是行为卑劣，不是败得难看。"
+    },
+    {
+      "zh": "这个方案的风险不是外部环境带来的，而是它固有的。",
+      "target": "固有的",
+      "en": "The risk was not something the market imposed on it; the risk was intrinsic to the design, there from the very first sketch.",
+      "order": [
+        "intrinsic",
+        "irreducible",
+        "rudimentary"
+      ],
+      "why": "intrinsic 指属性长在事物本身，抽掉外部条件也还在，反义是外部强加；irreducible 说的是已经拆不下去，再简化就不成立，用在数学、逻辑、论证的结构上；rudimentary 讲的是发育程度——初步的、粗糙的、没长全的，评价的是完成度而不是来源。风险的来源在方案自己身上，跟能不能再拆无关。"
+    },
+    {
+      "zh": "谢幕时全场起立，那阵狂喜的欢呼整整持续了六分钟。",
+      "target": "狂喜的",
+      "en": "The curtain call brought the house to its feet, and the rapturous cheering ran a full six minutes before anyone thought to sit down.",
+      "order": [
+        "rapturous",
+        "irrepressible",
+        "ardent"
+      ],
+      "why": "rapturous 形容当场爆发的狂喜，几乎只用于 applause、welcome、reception 这类集体反应；irrepressible 说的是压也压不住，重点在「抑制失败」，可以修饰笑声、精神、某个人，本身不含喜悦；ardent 是持续的热忱，用于 supporter、admirer、defender，讲的是立场热烈，而不是此刻情绪高涨。"
+    },
+    {
+      "zh": "在那个小小的读书会上，他头一次遇到几个真正聊得来的人。",
+      "target": "聊得来",
+      "sense": 0,
+      "en": "At that small reading group he found, for the first time in years, a handful of genuinely congenial company.",
+      "order": [
+        "congenial",
+        "genial",
+        "agreeable"
+      ],
+      "why": "congenial 强调志趣相投、合得来，说的是双方之间的匹配，一个人不能单独 congenial；genial 说的是一个人本身性情和蔼，对谁都一样，不涉及匹配；agreeable 是「让人舒服的」，可以形容人，也可以形容天气和安排，程度最浅。他遇到的不是一群好脾气的人，是一群跟他对得上的人。"
+    },
+    {
+      "zh": "她从开门干到熄灯，一天也没歇过，勤快得让人心疼。",
+      "target": "勤快",
+      "en": "She was at it from opening up to lights-out and never took a day off: the most industrious hand the shop had ever had.",
+      "order": [
+        "industrious",
+        "assiduous",
+        "painstaking"
+      ],
+      "why": "industrious 说的是活干得多、不停歇，落点在劳动量；assiduous 强调对一件事持之以恒地下功夫，常跟 attention、study 搭配，落点在专注和坚持；painstaking 讲的是舍得在细节上耗功夫，落点在精细，一个人可以很 painstaking 却干得很慢。她的特点是量大不歇。"
+    },
+    {
+      "zh": "他在业主大会上当众说了那番话，事后被认定属于口头诽谤。",
+      "target": "口头诽谤",
+      "en": "What he said out loud at the residents meeting was later found to be slanderous, and the minutes had recorded every word.",
+      "order": [
+        "slanderous",
+        "defamatory",
+        "malevolent"
+      ],
+      "why": "slanderous 特指口说的诽谤——法律上区分 slander（口头）与 libel（书面），这条是前者；defamatory 是上位词，书面口头都算，法律文书里最常用；malevolent 说的是心怀恶意，形容动机、眼神、笑容，跟内容真假、是否说出口都无关。这句话的要害正在于「当众说出口」。"
+    },
+    {
+      "zh": "她没说话，只抬手做了个不容置疑的手势，全场立刻安静。",
+      "target": "不容置疑",
+      "en": "She said nothing at all, only raised one hand in a gesture so imperious that the room went quiet at once.",
+      "order": [
+        "imperious",
+        "domineering",
+        "overbearing"
+      ],
+      "why": "imperious 形容那一瞬间的姿态——命令式的、不容回嘴的，可以修饰一个手势、一种语气；domineering 说的是长期的支配关系，用来概括一个人在家里或团队里一贯的做派；overbearing 强调压得人喘不过气，重点在给对方造成的压迫感。这里只有一个抬手的动作，谈不上长期做派。"
+    },
+    {
+      "zh": "这个方向上真正称得上首屈一指的，全世界不超过三个人。",
+      "target": "首屈一指",
+      "en": "In this particular corner of the field there are perhaps three preeminent figures in the world, and she has been one of them for a decade.",
+      "order": [
+        "preeminent",
+        "paramount",
+        "eminent"
+      ],
+      "why": "preeminent 是「在同行里最拔尖的那个」，隐含跟别人比出来的第一；eminent 只说有名望、受人尊敬，一个领域可以有几十位 eminent 学者，不必排名次；paramount 讲的是重要性上的优先级，修饰 concern、importance、duty 这类抽象事物，不能用来说一个人有名。这里比的就是名次。"
+    },
+    {
+      "zh": "那孩子毫无心机地把大人的原话复述了一遍，满屋人都愣住。",
+      "target": "毫无心机",
+      "en": "The child repeated what the adults had said word for word, and the ingenuousness of it stopped the whole room cold.",
+      "order": [
+        "ingenuousness",
+        "candor",
+        "credulity"
+      ],
+      "why": "ingenuousness 是天真直露——不懂得掩饰，说真话是因为压根没想到要藏；candor 是有意选择的坦率，说话人明知可以回避而选择直说，是一种成熟的品质；credulity 指轻易相信别人，落点在「信」而不在「说」。孩子不是勇敢，是还不知道有些话不能原样转述。"
+    },
+    {
+      "zh": "把责任推给已经离职的人最省事，虽然谁都知道那不公道。",
+      "target": "最省事",
+      "sense": 0,
+      "en": "Blaming the man who had already resigned was the expedient course, and everyone at the table knew it was not the just one.",
+      "order": [
+        "expedient",
+        "opportune",
+        "felicitous"
+      ],
+      "why": "expedient 说的是「这么做省事、管用」，而且往往暗示不正当——它常跟正义、原则对着用；opportune 讲的是时机赶得巧，形容时刻、场合，不含道德色彩；felicitous 形容措辞或安排恰到好处、漂亮得体，落点在得体而不在便利。这里的要害正是省事但不公道。"
+    },
+    {
+      "zh": "阁楼那把椅子四条腿都松了，坐上去吱呀直响，随时会散。",
+      "target": "随时会散",
+      "en": "The one chair left in the attic was so rickety that it creaked under any weight at all, every joint in it long since loose.",
+      "order": [
+        "rickety",
+        "precarious",
+        "erratic"
+      ],
+      "why": "rickety 说的是东西本身做工松散、快散架，用于椅子、楼梯、桥这类结构；precarious 强调位置或处境不稳——搁在边上随时会掉、局面随时会崩，未必是东西本身不结实；erratic 讲的是行为没规律、忽好忽坏，形容人或机器的表现，不形容结构。椅子的问题在榫头松了。"
+    },
+    {
+      "zh": "那顿饭摆了整整二十道菜，用料之丰盛是他这辈子没见过的。",
+      "target": "丰盛",
+      "en": "Twenty courses came to the table that night, the most sumptuous meal he had ever in his life sat down to.",
+      "order": [
+        "sumptuous",
+        "ostentatious",
+        "grandiose"
+      ],
+      "why": "sumptuous 是货真价实的奢华，形容食物、织物、陈设，说的是东西本身用料好；ostentatious 的重点在「摆给人看」，为的是炫耀，贬义明确，东西未必真贵；grandiose 修饰计划、构想、风格，说的是规模吹得太大、不切实际。这里只是菜多料足，没有人在炫耀什么。"
+    },
+    {
+      "zh": "上坡最后一段他不得不放慢脚步，队伍一下子被拉开两百米。",
+      "target": "放慢脚步",
+      "en": "On the last of the climb he had to slacken his pace, and the gap behind him opened to two hundred metres inside a minute.",
+      "order": [
+        "slacken",
+        "abate",
+        "assuage"
+      ],
+      "why": "slacken 是主动把速度、力道、绷紧的东西放松下来，宾语是 pace、grip、rope 这类由人控制的；abate 说的是自行减弱——风停了、疼痛退了、争议冷下去，通常不是谁去做的；assuage 的宾语必须是情绪或疑虑，安抚的是人心。他是自己把速度降下来的。"
+    },
+    {
+      "zh": "这个行当只认师承，外面来的人再有本事也进不去，闭塞得很。",
+      "target": "闭塞",
+      "en": "The trade recognized nothing but lineage; talent from outside simply did not get in, and its insularity had not shifted in a century.",
+      "order": [
+        "insularity",
+        "myopia",
+        "alienation"
+      ],
+      "why": "insularity 说的是封闭排外——只认圈内人，不接受外来的东西，是空间和群体意义上的「关起门来」；myopia 是短视，看不见远处，问题出在时间维度，指只顾眼前；alienation 讲的是疏离感，落点在个体被排斥之后的感受，而不在群体的封闭本身。这里描述的是行当的姿态。"
+    },
+    {
+      "zh": "午后院子里一点声音也没有，连狗都摊在砖地上懒洋洋喘气。",
+      "target": "懒洋洋",
+      "en": "Nothing stirred in the courtyard after noon; even the dog lay flat on the brick, languid and panting in the heat.",
+      "order": [
+        "languid",
+        "apathetic",
+        "inert"
+      ],
+      "why": "languid 是懒洋洋、提不起力气动，常跟暑热、慵倦的氛围连在一起，不带责备；apathetic 说的是提不起兴趣、不关心，是态度问题，只能形容人；inert 强调完全不动，可以形容物体，用在人身上指该行动而毫无作为，带批评意味。狗不是不关心什么，只是热得懒得动。"
+    },
+    {
+      "zh": "争论到最后其实只剩一个问题：这东西究竟有没有感觉。",
+      "target": "有没有感觉",
+      "en": "Underneath the whole argument lay one question: whether the thing was sentient, whether there was anything it was like to be it.",
+      "order": [
+        "sentient"
+      ],
+      "extra": [
+        "conscious",
+        "animate",
+        "percipient"
+      ],
+      "why": "sentient 说的是具备感受能力——能疼、能觉察冷暖，伦理讨论正是在这里划线；conscious 侧重清醒、有自我意识，麻醉之后醒过来叫 conscious，跟能不能感觉痛苦不是一回事；animate 只表示有生命、会动，与无生命物体相对；percipient 强调感知敏锐、看得出门道，形容人的洞察力。这里问的是它会不会疼。"
+    },
+    {
+      "zh": "他母亲一辈子未雨绸缪，柜子底下永远压着半袋米留给坏年景。",
+      "target": "未雨绸缪",
+      "en": "His mother was provident to the end of her life: half a sack of rice always under the cupboard, kept back for a bad year that never came.",
+      "order": [
+        "provident",
+        "circumspect",
+        "judicious"
+      ],
+      "why": "provident 说的是为将来可能的困难预先准备，常跟储蓄、囤粮连在一起，落点在「提前留出余地」；circumspect 是行事说话处处留神、怕出纰漏，落点在当下的小心；judicious 指判断得当、分寸拿捏得好，评价的是某个决定明智，不含预备的意思。她不是谨慎，是一直在为还没来的坏年头留后手。"
+    },
+    {
+      "zh": "两家互保了二十年，他转头就把底细交了出去，背信弃义。",
+      "target": "背信弃义",
+      "en": "The two families had stood surety for each other twenty years, and he handed the ledgers over anyway, as perfidious an act as the village could remember.",
+      "order": [
+        "perfidious",
+        "devious",
+        "underhand"
+      ],
+      "why": "perfidious 的前提是先有信任或盟约，背叛的是那份托付，分量最重；devious 说的是手段绕、不走正路，重点在方法迂回，未必辜负了谁；underhand 指偷偷做、不摆上台面，落点在隐蔽。他的要害在于本来受人所托。"
+    },
+    {
+      "zh": "他给的解释离谱到没人接得上话，说是海鸥叼走了那份合同。",
+      "target": "离谱",
+      "en": "His explanation was outlandish enough to silence the room: a seagull, he said, had carried the contract clean off the terrace.",
+      "order": [
+        "outlandish",
+        "egregious",
+        "obscene"
+      ],
+      "why": "outlandish 说的是荒唐古怪、超出常理，让人觉得离奇，却不一定生气；egregious 强调恶劣到骇人，用来说错误、违规、失职，带明确谴责；obscene 本义是淫秽，引申用来骂数额、浪费大到不成体统，也是道德指责。海鸥叼走合同只是荒唐，不涉及谁做错了什么。"
+    },
+    {
+      "zh": "那栋楼灰墙高窗，门脸冷硬得没人会顺路走近，里面却是幼儿园。",
+      "target": "冷硬",
+      "en": "Grey walls, high windows, a frontage forbidding enough that nobody ever walked up to it by accident, and inside it, a nursery school.",
+      "order": [
+        "forbidding",
+        "formidable",
+        "ominous"
+      ],
+      "why": "forbidding 说的是外表看着冷硬、让人不敢靠近，纯粹是观感，跟里面装着什么无关；formidable 指实力强大、值得敬畏，评价的是能耐，被形容的对象往往真的难对付；ominous 是不祥，暗示接下来要出事，重点在预兆。这栋楼既不厉害，也没有坏事要发生，只是长得吓人。"
     }
   ]
 }
