@@ -92,12 +92,36 @@ the cap never comes down at a due word's expense.
 
 ## Corpus side
 
-Two properties of the data turned out to matter as much as the picker:
+Two properties of the data turned out to matter as much as the picker, and
+both were fixed in the same sweep (`84a8c22`, `66fdb4d`).
 
 - **Corpus size sets the floor on repeat distance.** Nothing in the picker can
-  put more sessions between repeats than there are passages.
-- **Marking more words than `MAX_BLANKS` is what makes a repeat feel new.**
-  A passage marking 7 words has exactly one blank set; the cap only rotates
-  one word out. Measured over 300 assemblies, a 7-mark passage yields 7
-  distinct blank sets and a 10-mark passage yields 115, against a C(10,7)=120
-  ceiling. New passages should mark 10.
+  put more sessions between repeats than there are passages. 34 -> 42.
+- **Marking more words than `MAX_BLANKS` is what makes a repeat feel new.** A
+  passage marking 7 words has exactly one blank set, because the cap rotates
+  out a single word. All 42 passages now mark 10. Measured over 300
+  assemblies each: mean 110.9 distinct blank sets per passage, worst 107,
+  against a C(10,7) = 120 ceiling. The old 7-mark shape scored 7.
+
+Word coverage went 236 -> 420 of 566 across the two commits.
+
+## What the exclude audit found
+
+All 42 exclude lists were read by hand, and the tier-1 pool is nowhere near
+safe by default. `validate-passages` prints the pool precisely because no
+check can decide whether a word would also fit the blank.
+
+The recurring offender is the **stubborn cluster** — obdurate, obstinate,
+intractable, intransigent, recalcitrant, refractory, headstrong, tenacious,
+inexorable, uncompromising. Any passage marking one of them draws most of the
+rest as tier-1 candidates, and they are mutually substitutable in almost any
+sentence. `volcano-observatory` needed 17 exclusions. Smaller repeat
+offenders: the *soothe* family (assuage / placate / appease / conciliate /
+alleviate / abate / slacken) and the *diligent* family (assiduous /
+conscientious / painstaking / industrious / sedulous).
+
+Emptying a tier-1 pool is the right call when it comes to that. Distractors
+fall back to same-part-of-speech and then any learned word, which makes the
+passage slightly easier — and an easier passage beats one with two correct
+answers. The difficulty lives in placing 7 answers into 7 blanks anyway, not
+in the 2 distractors.

@@ -283,3 +283,46 @@ authenticated with `repo` scope and `steveao886/volcab-data` is reachable:
 
 Worth remembering generally — the private data repo is readable from the
 CLI, so "ask the user to export a backup" is rarely the right move.
+
+
+## Delegating bulk content drafting to Gemini (2026-08-17)
+
+`~/repos/antigravity-setup.md` plus `~/repos/antigravity-run.js` drive the
+local Antigravity agent from the CLI, and volcab is already a registered
+project. Both modes were verified from this repo: Q&A via `--quiet`, and
+file handoff via `--wait-file`. Writes work even though volcab's project json
+has an empty `settings` block — the setup doc predicts that would block them
+and it does not.
+
+Forty-two passages were drafted this way. What the round trips taught:
+
+**The gate holds; the prose does not.** Across 420 markers the validator
+caught every structural error, and every one was mechanical. Nothing about
+correctness got through. But style has no gate, and the first draft came back
+uniformly padded — an adjective on every noun and an `-ly` adverb on every
+verb, sentences that read the same in any order. Abstract style instructions
+did not land. **Quoting the model's own worst sentences back at it did.**
+
+**Give it rules it cannot infer, precomputed.** Two markers failed because
+`headwordPattern` falls back to `stem + [a-z]*` when the exact word is
+missing, so `{{subdue}}` collides with *submarine* and `{{modesty}}` with
+*modern* and *model*. No amount of instruction gets a model to derive that.
+Handing over a per-word table of banned prefixes dropped it to zero.
+
+**Watch what a constraint makes it write.** Told not to put an article against
+a marker, it wrote `one absolute {{autocracy}}` and `One {{astute}}
+technician` — 13 of them. The warning was satisfied and the English was worse.
+A rule that can be dodged will be.
+
+**Parallel batches cannot see each other.** Five concurrent runs produced two
+identical ids and five duplicated settings, because each brief listed only the
+ids that existed when it was written. Either serialise, or assign disjoint
+namespaces and settings up front.
+
+**Do the Chinese yourself.** Two rounds of sharpening the brief never got the
+register; the output stays translationese ("他高度孤立的物理位置使他极易受到…的
+影响"). It is the half the user reads every session and the half no validator
+sees. Budget for editing it, not for prompting it.
+
+The division that worked: Gemini drafts English prose; the validator gates
+structure; a person writes the Chinese and reads every distractor pool.
