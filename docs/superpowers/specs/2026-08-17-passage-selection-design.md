@@ -55,9 +55,10 @@ marked words are still unlearned. Unlearned words are printed as plain text,
 so a passage over the line asks the reader to read past a pile of words nobody
 has taught them, and it yields fewer blanks besides.
 
-A third rather than something stricter because of the corpus's shape: 31 of 42
-passages mark exactly 7 words, so a tighter bar turns a single unlearned word
-into a disqualification. Measured over 200 trials per level:
+The threshold was picked against the pre-rewrite corpus, where 31 of 42
+passages marked exactly 7 words and a tighter bar turned a single unlearned
+word into a disqualification. Measured over 200 trials per level, passages
+still eligible out of 42:
 
 | new words | buildable | ≤1/3 | ≤1/4 | eligible ≥ 7 |
 |-----------|-----------|------|------|--------------|
@@ -65,8 +66,24 @@ into a disqualification. Measured over 200 trials per level:
 | 10%       | 42.0      | 41.1 | 36.4 | 23.9         |
 | 30%       | 40.9      | 26.3 | 14.0 | 7.9          |
 
-"Every passage must be able to fill a full-size question" looks like the right
-rule and is not: it strands a quarter of the corpus at 5% new words.
+"Every passage must be able to fill a full-size question" (eligible ≥
+`MAX_BLANKS`) looked like the rule this should be, and stranded a quarter of
+the corpus at 5% new words.
+
+**That argument no longer applies to the corpus as it stands, and the rule is
+kept anyway.** Every passage now marks 10, so a third and `eligible ≥ 7` mean
+the identical thing — at most 3 unlearned — and the same sweep re-run on the
+rewritten corpus shows the two columns matching exactly:
+
+| new words | buildable | ≤1/3 | ≤1/4 | eligible ≥ 7 |
+|-----------|-----------|------|------|--------------|
+| 5%        | 42.0      | 41.9 | 41.3 | 41.9         |
+| 10%       | 42.0      | 41.4 | 38.9 | 41.4         |
+| 30%       | 41.9      | 26.6 | 15.4 | 26.6         |
+
+The ratio is still the better *form*. It is the one that degrades gracefully
+if a future passage marks fewer than 10, and the 7-mark measurement is exactly
+what that failure looks like when it happens.
 
 When nothing clears the gate, the whole buildable set is used instead. A
 passage thick with unlearned words still beats the empty state.
