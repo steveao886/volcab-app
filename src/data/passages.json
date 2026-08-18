@@ -780,6 +780,281 @@
         "reticent",
         "unpretentious"
       ]
+    },
+    {
+      "id": "failing-popup-restaurant",
+      "title": "厨房里的闹剧",
+      "en": [
+        "Their core {{proposition}} was straightforward: serve complex molecular gastronomy out of a converted food truck.",
+        "But the chef's insistence on using tweezers for every garnish soon became their most {{blatant}} bottleneck.",
+        "Customers found the menu {{bewildering}}, filled with {{pretentious}} descriptions of foams and edible dirt.",
+        "By the second week, the line down the street had completely vanished.",
+        "They failed to secure any real {{foothold}} in the neighborhood, and online reviews were turning increasingly hostile.",
+        "Several diners made {{vehement}} complaints about discovering hair in their food, exposing the {{unsavory}} reality behind the shiny exterior.",
+        "Rather than trying to {{overturn}} this negative public opinion, the initial investors decided to {{pull-the-plug|pull the plug}} entirely.",
+        "The truck was sold the very next morning, leaving the whole experiment as nothing but a minor {{footnote}} in the local culinary history."
+      ],
+      "zh": [
+        "他们的核心方案很直白：在改装的餐车里卖复杂的分子料理。",
+        "然而主厨非要用镊子摆盘，这很快成了他们最明显的效率瓶颈。",
+        "顾客们对菜单感到一头雾水，上面充斥着对泡沫和可食用泥土故作高深的描述。",
+        "到了第二周，街上排队的人就彻底不见了。",
+        "他们始终没能在这个街区站稳脚跟，网上的评价也一天比一天刻薄。",
+        "几位食客强烈投诉说菜里吃出了头发，暴露出光鲜外表下令人反感的卫生状况。",
+        "最初的投资人没有试图去扭转这种负面的公众印象，而是决定直接彻底撤资止损。",
+        "那辆餐车第二天一早就被卖掉了，这场实验仅仅成了当地餐饮史上的一段小插曲。"
+      ],
+      "exclude": [
+        "abrogate",
+        "ardent",
+        "countermand",
+        "pompous",
+        "presumptuous"
+      ]
+    },
+    {
+      "id": "desert-excavation-dispute",
+      "title": "沙漠里的发掘争议",
+      "en": [
+        "The expedition leader claimed he had found the lost tomb, presenting evidence that seemed fairly {{plausible}} at first glance.",
+        "He easily persuaded several {{gullible}} sponsors to finance the dig, even though his theories completely contradicted all {{canonical}} historical records.",
+        "Upon arriving at the site, the team spent their first week merely collecting surface pottery shards as obvious {{low-hanging-fruit|low-hanging fruit}}.",
+        "But as weeks passed, the deeper trenches revealed absolutely nothing but barren rock.",
+        "When a visiting inspector pointed this out, it provoked an incredibly {{uncalled-for}} and screaming outburst from the frustrated leader.",
+        "This erratic behavior began to rapidly {{alienate}} his most loyal researchers, who quietly started packing their bags.",
+        "By the time the most {{eminent}} scholar in the field arrived to evaluate the situation, the camp was nearly abandoned.",
+        "The ensuing scandal triggered a catastrophic {{race-to-the-bottom|race to the bottom}} for government grants among rival archaeological institutes.",
+        "Beneath his intellectual {{veneer}}, the leader was merely a fraud whose actions would ultimately {{inflict}} lasting damage on the field."
+      ],
+      "zh": [
+        "探险队长声称自己找到了那座失落的陵墓，并出示了乍看之下颇为可信的证据。",
+        "他轻而易举地说服了几位耳根软的赞助商为发掘提供资金，尽管他的理论与所有权威史料完全相悖。",
+        "抵达现场后，团队第一周只是在收集地表的陶片，尽捡些唾手可得的便宜。",
+        "但随着几周过去，挖得更深的探沟里除了贫瘠的岩石外一无所获。",
+        "一位来访的视察员当面点破了这一点，换来的是队长一通极其过分、毫无必要的咆哮。",
+        "这种阴晴不定的做派很快就把最忠心的研究员一个个推远，他们默不作声地收拾起了行李。",
+        "等到业内最杰出的学者赶来评估情况时，营地几乎已经空无一人。",
+        "随之而来的丑闻在相互竞争的考古机构之间引发了一场争夺政府拨款的灾难性逐底竞争。",
+        "褪去知识分子的伪装，这位队长不过是个骗子，其所作所为最终会对整个行业造成持久的损害。"
+      ],
+      "exclude": [
+        "artless",
+        "malleable",
+        "preeminent",
+        "slippery-slope"
+      ]
+    },
+    {
+      "id": "polar-station-conflict",
+      "title": "极地风暴中的争执",
+      "en": [
+        "The research station's heating system was incredibly {{primitive}}, barely keeping the indoor temperature above freezing during the long winter.",
+        "Whenever the generator coughed and died, the junior technicians had to {{bear-the-brunt|bear the brunt}} of the manual restart process outside in the blizzard.",
+        "Their new commander developed an unhealthy {{fixation}} on fuel consumption, checking the dials every half hour.",
+        "He instituted a set of {{regressive}} rationing rules that penalized the field workers who needed warmth the most.",
+        "They tried to explain the true {{criticality}} of staying warm, but his {{uncompromising}} stance shut down all discussion.",
+        "One afternoon, a biologist joked about his terrible management style in the mess hall.",
+        "This minor slight sparked a deeply {{vindictive}} reaction, and he forced her to wear that {{hideous}} neon-orange survival suit indoors as punishment.",
+        "Nobody could gather enough evidence to officially {{substantiate}} their complaints to headquarters before the satellite uplink finally went down.",
+        "By then, the entire crew shared a strong {{aversion}} to the commander, actively avoiding the common area whenever possible."
+      ],
+      "zh": [
+        "考察站的供暖系统极其简陋，在漫长的冬季里勉强维持室内温度在冰点以上。",
+        "每当发电机发出几声异响后罢工，初级技术员们就不得不首当其冲，在暴风雪中去手动重启它。",
+        "他们的新站长对燃料消耗产生了一种病态的执念，每半个小时就要去查看一次仪表盘。",
+        "他制定了一套倒退的配给规定，使得最需要取暖的野外工作人员反而受到了惩罚。",
+        "他们试图讲清楚保暖这件事到底有多性命攸关，可他寸步不让的态度让所有讨论都戛然而止。",
+        "一天下午，一位生物学家在食堂里拿他糟糕的管理风格开了句玩笑。",
+        "这点小小的冒犯换来了他极其记仇的报复：作为惩罚，他逼那位生物学家在室内也得套着那件丑得刺眼的荧光橙救生服。",
+        "在卫星线路彻底中断之前，谁也无法收集到足够的证据来向总部正式证实他们的投诉。",
+        "到那时，全体人员都对站长产生了强烈的反感，尽可能地避开公共休息区。"
+      ],
+      "exclude": [
+        "implacable",
+        "inexorable",
+        "intractable",
+        "obdurate",
+        "obstinate",
+        "prominence",
+        "steadfast",
+        "tenacious"
+      ]
+    },
+    {
+      "id": "abyssal-vessel-tensions",
+      "title": "深海密闭舱的暗流",
+      "en": [
+        "The veteran deep-sea pilot was initially quite {{agreeable}} during the shallow test dives near the sunny coastline.",
+        "But as they descended deeper into the dark ocean, his cheerful demeanor completely vanished.",
+        "He ordered the scientists to dump their backup oxygen tanks, dismissing them as entirely {{superfluous}} weight.",
+        "One researcher's dedication to safety was {{commendable}}, yet the captain ignored her warnings with a truly {{callous}} wave of his hand.",
+        "The atmosphere in the cramped cabin grew toxic, and widespread {{discontent}} soon replaced the initial excitement.",
+        "Someone anonymously typed a highly {{defamatory}} entry into the shared logbook, accusing the pilot of being dangerously incompetent.",
+        "When the sonar suddenly failed shortly after, everyone stared at the blank screen in absolute {{bewilderment}}.",
+        "Instead of surfacing immediately to fix the issue, the stubborn captain decided to {{kick-the-can-down-the-road|kick the can down the road}} and keep diving blind.",
+        "This reckless move abruptly ended their brief {{interlude}} of peace, forcing two engineers to physically {{subdue}} him and trigger the emergency ascent."
+      ],
+      "zh": [
+        "在阳光明媚的海岸线附近进行浅水试潜时，这位资深深海驾驶员起初相当和蔼可亲。",
+        "但随着他们潜入更深的黑暗海洋，他那愉快的举止消失得无影无踪。",
+        "他命令科学家们丢掉备用氧气罐，不以为然地称其为完全多余的重量。",
+        "一位研究员对安全的较真本来值得称道，船长却冷漠无情地一挥手，把她的警告挡了回去。",
+        "狭窄船舱里的气氛变得令人窒息，普遍的不满情绪很快取代了最初的兴奋。",
+        "有人在共享日志中匿名敲下了一条极具诽谤性的记录，指控这名驾驶员极度不称职。",
+        "不久后声纳突然失灵，所有人都盯着那块空白的屏幕，一脸茫然不知所措。",
+        "固执的船长没有立即浮出水面去解决问题，而是决定把难题往后推，继续盲目下潜。",
+        "这个鲁莽的决定生生掐断了他们那段短暂的平静间隙，逼得两名工程师动手把他制服，触发了紧急上浮。"
+      ],
+      "exclude": [
+        "alienation",
+        "animosity",
+        "apathetic",
+        "genial",
+        "grievance",
+        "obscene",
+        "turmoil"
+      ]
+    },
+    {
+      "id": "coastal-beacon-broadcast",
+      "title": "守塔人的深夜电台",
+      "en": [
+        "The new lighthouse keeper was unusually {{sociable}} for someone who had deliberately chosen to live on an isolated rock.",
+        "Every night, he hosted a pirate radio show using his {{inconspicuous}} antenna hidden behind the main lamp room.",
+        "His core audience consisted of lonely sailors who were highly {{susceptible}} to the soothing stories he told over the crackling waves.",
+        "The routine broadcast quickly became the shared highlight of the long, dark winter.",
+        "Over time, his voice gained massive {{prominence}} among the entire coastal {{populace}}.",
+        "The keeper spoke naturally and warmly, treating every listener as a friend without any intellectual {{pretension}}.",
+        "However, maritime authorities were naturally {{averse}} to such unregulated channels, arguing that he might {{conflate}} dangerous myths with real meteorology.",
+        "They finally tracked him down using a barely {{perceptible}} mechanical hum buried in the background of his audio signal.",
+        "Shutting down the beloved station did not {{move-the-needle|move the needle}} on regional accident rates, but it certainly left the dark waters feeling much emptier."
+      ],
+      "zh": [
+        "对于一个有意选择住在与世隔绝的礁石上的人来说，这位新任守塔人异乎寻常地好交际。",
+        "每天夜里，他都会用隐藏在主灯室后面的不显眼的天线，主持一档海盗电台节目。",
+        "他的铁杆听众是一群孤独的水手：电波噼啪作响，他讲的那些抚慰人心的故事，他们最容易被打动。",
+        "这档常规广播很快成了漫长而黑暗的冬季里大家共同的期盼。",
+        "久而久之，他的声音在整个沿海民众中获得了巨大的知名度。",
+        "这位守塔人说话自然而温暖，把每位听众都当成朋友，完全没有任何知识分子式的矫饰。",
+        "然而，海事当局自然对这种不受监管的频道感到反感，理由是他可能会把危险的神话和真正的气象学混为一谈。",
+        "他的音频信号底下埋着一丝几乎察觉不到的机械嗡鸣，当局最终就是循着这个找到了他。",
+        "关停这座备受喜爱的电台，对区域事故率没起到任何实质作用，只是让黑暗的海面显得更空荡了。"
+      ],
+      "exclude": [
+        "genial",
+        "unpretentious"
+      ]
+    },
+    {
+      "id": "botanical-archive-dispute",
+      "title": "种子库的紧急干预",
+      "en": [
+        "The town council argued that upgrading the seed vault's security was an entirely {{unwarranted}} expense during the economic downturn.",
+        "Their fatal inaction rested on the flawed {{premise}} that the invading pests would simply freeze when winter arrived.",
+        "Meanwhile, those {{voracious}} insects were actively devastating the surrounding farmlands at a terrifying pace.",
+        "The head botanist meticulously took {{copious}} notes on the destruction, realizing that waiting for frost was pure administrative {{myopia}}.",
+        "She knew her team had to act decisively before the regional harvest was lost forever.",
+        "To effectively {{preempt}} this looming agricultural disaster, she ordered highly toxic chemical sprays around the reinforced entrance.",
+        "This aggressive {{preemptive}} strike was executed strictly {{pursuant}} to a forgotten ecological protocol from a decade ago.",
+        "Local farming families felt a profound sense of {{alienation}} from their elected politicians who had completely ignored the threat.",
+        "In the end, the embarrassed committee had no choice but to quietly {{rubber-stamp}} the botanist's unauthorized defensive measures."
+      ],
+      "zh": [
+        "镇议会辩称，经济下行的当口给种子库升级安保，是一笔完全没有道理的开支。",
+        "他们致命的不作为建立在一个错误的前提上，即只要冬天一到，入侵的害虫就会直接冻死。",
+        "与此同时，那些贪婪的昆虫正以惊人的速度肆意破坏着周围的农田。",
+        "首席植物学家一丝不苟地记下了大量关于破坏情况的笔记，她意识到指望霜冻纯粹是行政短视。",
+        "她深知自己的团队必须在地区庄稼彻底绝收之前果断采取行动。",
+        "为了赶在这场迫在眉睫的农业灾难落地之前先下手，她下令在加固过的入口一圈喷洒剧毒药剂。",
+        "这次激进的先发制人的行动，严格依照的是十年前一份早被遗忘的生态条例。",
+        "当地务农家庭对完全无视威胁的民选政客产生了一种深深的疏离感。",
+        "最后，尴尬的委员会别无选择，只能悄悄走个过场，追认了植物学家这套未经授权的防御措施。"
+      ],
+      "exclude": [
+        "agog",
+        "discontent",
+        "insularity",
+        "unquenchable"
+      ]
+    },
+    {
+      "id": "clockmaker-guild-feud",
+      "title": "钟表匠行会的暗算",
+      "en": [
+        "The veteran watchmakers shared a deep {{subconscious}} distrust of anyone using computerized measuring tools in their traditional workshop.",
+        "They stubbornly believed in this {{trickle-down}} theory of learning, wrongly assuming apprentices would absorb skills simply by sweeping the wooden floors.",
+        "This highly {{insular}} community rarely admitted outsiders, tightly guarding their historical family secrets from the rest of the town.",
+        "However, one particularly {{industrious}} young woman spent her isolated nights quietly rebuilding delicate chronographs with microscopic precision.",
+        "Jealous older rivals soon maliciously spread {{slanderous}} rumors, claiming she was secretly outsourcing the complex gear cutting to a factory.",
+        "Instead of arguing, she introduced strict {{sterilization}} procedures to protect her delicate work, answering their vicious accusations with genuine {{modesty}}.",
+        "But the social damage was already done, and the once-quiet workshop atmosphere became permanently toxic.",
+        "Their fierce mutual {{antipathy}} finally boiled over publicly during the highly anticipated annual spring exhibition.",
+        "The frantic guild master tried to {{appease}} both factions with a fragile compromise, which would sadly {{foreshadow}} the eventual splitting of the centuries-old organization."
+      ],
+      "zh": [
+        "对于任何在传统工坊里动用电脑测量工具的人，几位资深钟表匠都怀着一种深埋在潜意识里的不信任。",
+        "他们固执地相信这种涓滴式的学习理论，错误地认为学徒们只要扫扫木地板就能吸收技能。",
+        "这个高度封闭的圈子极少接纳外人，严密地向镇上其他人保守着他们的历史家族秘密。",
+        "偏偏有一位格外勤奋的年轻女子，把一个个独处的夜晚都花在了重修精密计时码表上，精度细到要在显微镜下才看得出来。",
+        "几个心生嫉妒的老前辈很快恶意散布起诽谤性的谣言，说她私底下把复杂的齿轮切削活儿外包给了工厂。",
+        "她没有争辩，而是立了一套严格的灭菌流程来护住自己那些精细的活计，只以一份实实在在的谦逊回应那些恶毒的指控。",
+        "但人情上的裂痕已经落下了，曾经安静的工坊从此变得令人窒息。",
+        "他们之间强烈的相互反感最终在备受期待的年度春季展览期间公开爆发了。",
+        "手忙脚乱的行会会长想用一个脆弱的折中方案安抚两派，而这恰恰预示了这个几百年的组织终将一分为二。"
+      ],
+      "exclude": [
+        "animosity",
+        "assuage",
+        "conscientious",
+        "malevolent",
+        "painstaking",
+        "propriety"
+      ]
+    },
+    {
+      "id": "linguistic-decoding-puzzle",
+      "title": "破解死语的执念",
+      "en": [
+        "There remained one highly {{conspicuous}} physical gap in the clay tablet right where the central text had been chipped away.",
+        "A deeply {{tenacious}} linguist spent twelve exhausting years relentlessly comparing those faded symbols against forgotten desert dialects.",
+        "Her academic colleagues remained remarkably {{nonchalant}} about the missing fragment, lazily assuming it was just another boring tax receipt.",
+        "She completely ignored their skepticism.",
+        "Even after delivering a rather {{rambling}} presentation that bored the symposium audience, she continued her research despite the university's {{capricious}} funding cuts.",
+        "Her luck changed when she discovered another vast hidden {{corpus}} of untouched tablets buried beneath a ruined temple.",
+        "The absolute {{crux}} of her new phonetic theory depended entirely on proving that a tiny bird symbol represented a continuous vowel sound.",
+        "When the final puzzle piece finally fell into place, she joyfully abandoned all professional {{decorum}} to shout in pure triumph.",
+        "The deciphered poem seemed to perfectly {{embody}} the tragic history of a drought-stricken civilization, taking her team weeks to safely {{extricate}} the remaining fragile documents from the hardened mud."
+      ],
+      "zh": [
+        "泥板正中的文字被磕掉了一块，留下一处格外扎眼的空缺。",
+        "一位极其顽强的语言学家为此熬了十二年，把那些褪色的符号一个个比对早已失传的沙漠方言。",
+        "同行们对那块缺失的残片却出奇地满不在乎，想当然地认为那不过又是一张无聊的税单。",
+        "她完全无视了他们的质疑。",
+        "她在研讨会上做过一场相当不着边际的报告，把听众讲得昏昏欲睡；即便如此，即便校方的经费说砍就砍、毫无定准，她也没有停下。",
+        "转机出现在一座废弃神庙底下：她在那里挖到了另一批数量庞大、从未有人动过的泥板语料。",
+        "她那套新语音理论的关键所在，全押在一件事上——证明那个小小的鸟形符号代表的是一个连续的元音。",
+        "当最后一块拼图终于归位，她把学者的体面全抛到了脑后，纯粹出于胜利的喜悦大喊了一声。",
+        "那首被破译的诗，仿佛把一个被旱灾拖垮的文明的悲惨历史整个装了进去；而余下那些脆弱的文书，她的团队又花了好几周才从板结的泥里安全起取出来。"
+      ],
+      "exclude": [
+        "circuitous",
+        "extrication",
+        "headstrong",
+        "implacable",
+        "inexorable",
+        "intractable",
+        "intransigent",
+        "manumit",
+        "obdurate",
+        "obstinate",
+        "perceptible",
+        "perverse",
+        "recalcitrant",
+        "refractory",
+        "sedulous",
+        "spasmodic",
+        "uncompromising"
+      ]
     }
   ]
 }
