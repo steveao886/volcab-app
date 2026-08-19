@@ -326,3 +326,67 @@ sees. Budget for editing it, not for prompting it.
 
 The division that worked: Gemini drafts English prose; the validator gates
 structure; a person writes the Chinese and reads every distractor pool.
+
+
+## The 38-word round, and what a second model was actually good for (2026-08-19)
+
+`gemini` the standalone CLI **no longer works on this account** — it exits with
+`IneligibleTierError: This client is no longer supported for Gemini Code Assist
+for individuals`, pointing at Antigravity. `~/repos/antigravity-run.js` is now
+the only path to a Gemini model from this machine, and it still works: two runs
+this round, `--wait-file` both times, 95s and ~4min.
+
+The division from the passage round held, and gained a second lane:
+
+- **Lane 1, drafting.** Gemini wrote the English half of the eight multi-word
+  phrase entries; the Chinese was written here. Unchanged from 2026-08-17 and
+  still the right split.
+- **Lane 2, adversarial review.** Gemini was given all 190 finished example
+  sentences and asked for four categories of defect. It flagged 7. **Five were
+  real** — `plausibilities` used as a count noun, "the ministry repressed the
+  language" where a language is suppressed, "surveying students about
+  belonging" without *a sense of*, and two blanks that genuinely admitted a
+  library word as a second answer.
+- **The two false flags share one cause, and it generalises**: both were "ten
+  other words fit this blank", and the words it named (*assume*, *suppose*,
+  *despondent*) are not in the library, so the app can never offer them as
+  options. **A prose reviewer that cannot see the option pool over-reports
+  ambiguity.** Either hand it the headword list or discount that whole
+  category by hand.
+
+**Precomputed surface forms beat instructions again.** Multi-word headwords
+match contiguously and only the first word inflects, which no model derives.
+A table of literally allowed forms per phrase (`fell through` yes, `fall right
+through` no) produced **zero locate failures across 8 phrases × 5 sentences**,
+where the passage round needed the same trick in the shape of a banned-prefix
+table.
+
+**Fan-out shape that worked**: 5 agents × 6 words for entries, one central
+pre-check, then the pair diff as the single barrier, then 4 agents × ~10 pairs
+for notes. 38 entries passed the central pre-check with **zero blocking
+problems on the first pass**. The one hazard that had to be named in the
+prompts was **sibling forms** — `prominent`/`prominently`,
+`interchange`/`interchangeable` — where one entry's example containing the
+other's form would blank the wrong word.
+
+**A new word breaks existing sense groups in two directions, not one.**
+`68e7d2f` recorded the second only:
+
+1. **A member gets deleted.** Three groups here referenced words the user had
+   removed in-app. One lost a ranked member and had to take outside
+   distractors to stay above the three-authored-options floor; one was re-cut
+   for a different part of speech; one was deleted, because its only member
+   was gone and nothing left in the library carried the sense.
+2. **A distractor becomes a library word.** Four groups here — `culmination`,
+   `expressionless`, `assignable`, `dearth`/`scarcity` all arrived as
+   headwords while sitting in some group's `extra`. The validator says exactly
+   what to do: promote them into `order`.
+
+Run `npm run validate-sense-groups` after **any** word addition or deletion,
+not just after editing the groups file.
+
+**A spurious contrast pair is better fixed at the synonym, not papered over
+with a note.** `estrangement` listing `breach` paired it with `contravene`;
+`belonging` listing `acceptance` paired it with `credence`. Both pairs are
+nonsense, and the honest fix is to drop the one loose synonym — a note
+explaining two unrelated words is worse content than no pair at all.
