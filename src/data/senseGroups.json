@@ -5213,6 +5213,130 @@
         "ominous"
       ],
       "why": "forbidding 说的是外表看着冷硬、让人不敢靠近，纯粹是观感，跟里面装着什么无关；formidable 指实力强大、值得敬畏，评价的是能耐，被形容的对象往往真的难对付；ominous 是不祥，暗示接下来要出事，重点在预兆。这栋楼既不厉害，也没有坏事要发生，只是长得吓人。"
+    },
+    {
+      "zh": "他午饭一顿没吃，整个下午对谁都没好气，吃完就好了。",
+      "target": "没好气",
+      "en": "He skipped lunch and was cranky with everyone all afternoon; ten minutes after he finally ate, he was fine again.",
+      "order": [
+        "cranky",
+        "irritable",
+        "testy"
+      ],
+      "extra": [
+        "peevish"
+      ],
+      "why": "cranky 是口语，专指因为饿、困、不舒服而一时脾气坏，诱因一消失人就恢复正常，句尾『吃完就好了』正是它的标志；irritable 说的是秉性，这个人平时就一点小事上火，不会吃顿饭就好；testy 是被人惹到之后不耐烦地呛回去，必须有人先招惹他；peevish 是为小事憋着一股怨气、爱挑刺抱怨。"
+    },
+    {
+      "zh": "他不是累了才这样，是天生动辄发火，同事都躲着走。",
+      "target": "动辄发火",
+      "en": "It is not tiredness; he is simply irritable by nature, and his colleagues have learned to keep their distance.",
+      "order": [
+        "irritable",
+        "cranky",
+        "petulant"
+      ],
+      "extra": [
+        "surly"
+      ],
+      "why": "irritable 说的是脾气秉性，动不动就上火，是长期状态；句中『不是累了才这样』恰恰排除了 cranky——cranky 是口语，只形容因困、饿、不适而一时暴躁，诱因消失就好；petulant 是像小孩那样为小事使性子、闹别扭，形容的是某一次的语气或动作，不是一辈子的性子；surly 是阴沉着脸、态度恶劣不搭理人，重点在不友善而不在一点就着。"
+    },
+    {
+      "zh": "连着两季销售创新高，团队开始自满，没人注意到流失率在爬。",
+      "target": "自满",
+      "en": "Two quarters of record sales made the team complacent, and nobody noticed the churn rate climbing until January.",
+      "order": [
+        "complacent",
+        "nonchalant",
+        "insouciant"
+      ],
+      "extra": [
+        "smug"
+      ],
+      "why": "complacent 的要害是因为自己成绩好而心满意足、于是放松了警惕，后面往往跟着一个没人看见的风险；nonchalant 是对本该紧张的事表现得从容不在意，说的是当下的神态，与自我感觉良好无关；insouciant 是书面语，指一贯无忧无虑、什么都不往心里去；smug 只是得意写在脸上，未必因此松懈。"
+    },
+    {
+      "zh": "一条房租暴涨的帖子被两百万人读到，她成了住房议题上举足轻重的人物。",
+      "target": "举足轻重",
+      "en": "A single thread about her rent increase reached two million readers and made her a prominent voice in the housing debate.",
+      "order": [
+        "prominent",
+        "eminent",
+        "preeminent",
+        "conspicuous"
+      ],
+      "why": "prominent 说的是广为人知又有分量，这个位置可以一夜之间因为一件事拿到，跟资历无关；eminent 要求在某个专业领域长年积累、德高望重，靠一条帖子成不了；preeminent 是同行里拔尖的第一人，隐含跟别人比出来的名次，这里没有在排名；conspicuous 只说显眼、想不注意都难，回答不了「重不重要」。"
+    },
+    {
+      "zh": "他缺席全员会这件事太扎眼，有三个人分别跑来问我。",
+      "target": "扎眼",
+      "en": "His absence from the all-hands was conspicuous enough that three people asked me about it separately.",
+      "order": [
+        "conspicuous",
+        "prominent",
+        "perceptible"
+      ],
+      "extra": [
+        "obtrusive"
+      ],
+      "why": "conspicuous 的落点是想不注意都难，而且可以形容缺席、沉默这类「不存在」的东西，这是它独有的用法；prominent 说的是地位重要或版面位置显要，必须有个实实在在的人或东西摆在那里，形容不了没出现的人；perceptible 只是勉强能察觉，刚过感知门槛，程度正好相反；obtrusive 指硬闯进视线、碍眼讨嫌，缺席谈不上碍眼。"
+    },
+    {
+      "zh": "那场雨一刻不停地下了九天，门口的沙袋到周四已经不管用了。",
+      "target": "一刻不停",
+      "en": "The rain was relentless for nine days, and the sandbags at the front door stopped mattering by Thursday.",
+      "order": [
+        "relentless",
+        "inexorable",
+        "tenacious"
+      ],
+      "extra": [
+        "dogged"
+      ],
+      "why": "relentless 说的是一刻不减弱地持续下去，主语正是雨、压力、批评这类东西，落点在「不停」；inexorable 修饰的是拦不住、注定推进到底的趋势或进程，如房租上涨、期限逼近，一场雨并不朝任何结局推进；tenacious 是褒义的死咬不放，得有个主动坚持的人或抓握的动作；dogged 同样只形容人埋头硬扛，雨做不了它的主语。"
+    },
+    {
+      "zh": "四点二星的均分掩盖了顾客的不满，留言全在说结账排四十分钟。",
+      "target": "不满",
+      "en": "The 4.2-star average buried customer dissatisfaction, but the written comments all named the same 40-minute checkout queue.",
+      "order": [
+        "dissatisfaction",
+        "discontent",
+        "disaffection"
+      ],
+      "extra": [
+        "displeasure"
+      ],
+      "why": "dissatisfaction 是拿实际得到的东西去比原本该得到的，落差有具体出处——这里就是那四十分钟的队；discontent 是对自己所处境况的一股郁闷情绪，不必对着谁，也不必说得出哪一项不合格；disaffection 更窄，指对当权者收回拥护、不再买账，顾客对一家店谈不上拥护；displeasure 是一时的不悦，通常是有身份的人当场表露出来的。"
+    },
+    {
+      "zh": "错过的生日一年年积起来，母女之间的隔阂再没消解过。",
+      "target": "隔阂",
+      "en": "Years of missed birthdays hardened into an estrangement between mother and daughter that neither of them ever undid.",
+      "order": [
+        "estrangement",
+        "alienation"
+      ],
+      "extra": [
+        "detachment",
+        "aloofness"
+      ],
+      "why": "estrangement 说的是两个本来亲近的人断了往来，落点在这一对具体的关系上，主语常是母女、兄弟、夫妻；alienation 是个人融不进群体、与周遭格格不入的感受，对面不是某一个人，而是一群人或整个社会；detachment 指自己主动抽身、不再动感情，是单方面的姿态；aloofness 只是待人冷淡疏远的做派，未必有过亲近，也就谈不上断。"
+    },
+    {
+      "zh": "冰箱里那团东西的气味恶心极了，四楼再没人敢吃午饭。",
+      "target": "恶心",
+      "en": "The smell of whatever was growing in the office fridge was repulsive, and nobody on the fourth floor would eat lunch again.",
+      "order": [
+        "repulsive",
+        "hideous",
+        "abhorrent"
+      ],
+      "extra": [
+        "grotesque"
+      ],
+      "why": "repulsive 是生理层面的排斥，闻到看到就本能地往后退，与美丑和道德都无关；hideous 只管外观，说的是丑得吓人，气味无从丑起；abhorrent 是道德上的深恶痛绝，宾语得是行为或观念，一团发霉的东西没有道德可言；grotesque 指怪诞扭曲的形状，同样只落在样子上。"
     }
   ]
 }
