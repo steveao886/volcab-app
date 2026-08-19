@@ -47,6 +47,7 @@ const KNOWN = new Set([
   'transfer', 'transport', 'upset', 'compound', 'discount', 'escort', 'exploit',
   'extract', 'ferment', 'import', 'export', 'imprint', 'perfect', 'pervert',
   'recount', 'segment', 'torment', 'attribute', 'digest', 'entrance', 'incense',
+  'interchange',
   'console', 'content', 'refuse', 'indent', 'presage', 'invalid',
   // the vowel itself changes
   'lead', 'live', 'close', 'use', 'abuse', 'excuse', 'house', 'wound', 'bow',

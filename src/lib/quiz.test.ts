@@ -849,7 +849,7 @@ describe('full-library regression — antonymPick', () => {
       }
     }
     expect(failed).toEqual([])
-    expect(built).toBe(138)
+    expect(built).toBe(188)
   })
 
   it('no question over the real library offers a second valid answer', async () => {

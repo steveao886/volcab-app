@@ -407,10 +407,17 @@ describe('parse guards', () => {
   // 476, and then the vocabulary changed (5 words removed upstream, the repo copy aligned to match) and the test went
   // red even though parsing itself had no problem -- that kind of assertion only restates the vocabulary's current
   // size, it doesn't test any behavior.
+  // The second assertion used to name one word (`interchangeability`) as a
+  // canary for "the parser kept the entries, not just the count". That word
+  // was then deleted in-app, and the test went red for the same reason the
+  // comment above describes -- an assertion that restates today's vocabulary
+  // instead of testing behavior. Comparing the id lists says the stronger
+  // thing (nothing dropped, nothing reordered, every id survived the parse)
+  // and never needs editing when the library changes.
   it('the vocabulary in this repo can be fully parsed by parseWords', () => {
     const parsed = parseWords(JSON.stringify(realLibrary))
     expect(parsed).toHaveLength(realLibrary.words.length)
-    expect(parsed.some(w => w.id === 'interchangeability')).toBe(true)
+    expect(parsed.map(w => w.id)).toEqual(realLibrary.words.map(w => w.id))
   })
 })
 

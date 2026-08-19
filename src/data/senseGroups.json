@@ -209,10 +209,13 @@
       "en": "The British accent is pure affectation; he grew up in Ohio.",
       "order": [
         "affectation",
-        "pretense",
-        "pantomime"
+        "pretense"
       ],
-      "why": "affectation 指为了显得高级而刻意养成的做派、口音或习惯，是长期的姿态；pretense 是假装处于某种状态或有某种理由，常用于以某某为借口；pantomime 只指不出声的手势表演。"
+      "why": "affectation 指为了显得高级而刻意养成的做派、口音或习惯，是长期的姿态；pretense 是假装处于某种状态或有某种理由，常用于以某某为借口；mannerism 只是本人未必自知的习惯性小动作；posturing 指摆姿态给人看，重在场面而非风格。",
+      "extra": [
+        "mannerism",
+        "posturing"
+      ]
     },
     {
       "zh": "夕阳的金光洒满了整间办公室。",
@@ -2158,11 +2161,11 @@
       "zh": "筹备了三年的计划终于在上个月开花结果。",
       "target": "开花结果",
       "order": [
-        "fruition"
+        "fruition",
+        "culmination"
       ],
       "extra": [
         "realization",
-        "culmination",
         "payoff"
       ],
       "en": "Three years of planning came to fruition last month.",
@@ -3502,10 +3505,10 @@
       "zh": "听完判决,他始终面无表情。",
       "target": "面无表情",
       "order": [
-        "impassive"
+        "impassive",
+        "expressionless"
       ],
       "extra": [
-        "expressionless",
         "stone-faced",
         "deadpan"
       ],
@@ -3625,18 +3628,18 @@
       "why": "invigilator 是英式英语里的监考人员;proctor 是美式对应词,在英国另指大学纪律官;exam supervisor 是描述性说法;invigilating staff 指承担这项工作的一组人。"
     },
     {
-      "zh": "这几个零件的互换性让维修快了一倍。",
-      "target": "互换性",
+      "zh": "这几个零件是可互换的，维修因此快了一倍。",
+      "target": "可互换",
       "order": [
-        "interchangeability"
+        "interchangeable"
       ],
       "extra": [
-        "substitutability",
-        "drop-in compatibility",
-        "cross-fit"
+        "substitutable",
+        "compatible",
+        "drop-in"
       ],
-      "en": "The interchangeability of these parts halved the repair time.",
-      "why": "interchangeability 指同规格部件可彼此替换的工程属性;substitutability 更多用于经济学里商品的可替代性;drop-in compatibility 强调无需改动即可换上;cross-fit 不是标准术语。"
+      "en": "These parts are interchangeable, so the repair took half as long.",
+      "why": "interchangeable 指同规格的东西可以彼此顶替而不影响使用；substitutable 多用于经济学里商品的可替代性；compatible 只说彼此不冲突、配合得上，不等于能互换；drop-in 强调无需改动即可直接换上，是工程口语。"
     },
     {
       "zh": "数据入库前要先做一次规范化,统一大小写和顺序。",
@@ -3656,10 +3659,10 @@
       "zh": "这项权限是可委托的,可以指定他人代行。",
       "target": "可委托的",
       "order": [
-        "delegable"
+        "delegable",
+        "assignable"
       ],
       "extra": [
-        "assignable",
         "transferable",
         "able to be deputed"
       ],
@@ -3754,11 +3757,11 @@
       "zh": "这批样品的短缺让实验只能推迟。",
       "target": "短缺",
       "order": [
-        "paucity"
+        "paucity",
+        "dearth",
+        "scarcity"
       ],
       "extra": [
-        "dearth",
-        "scarcity",
         "thin supply"
       ],
       "en": "A paucity of samples pushed the experiment back.",
@@ -3791,20 +3794,6 @@
       ],
       "en": "Those odd transfers presaged the collapse that followed.",
       "why": "presage 指某事成为后来事件的预兆,正式,多为坏事;portend 语气更重,近乎凶兆;foreshadow 常用于叙事中的伏笔;bode 几乎只用在 bode well 或 bode ill 里。"
-    },
-    {
-      "zh": "那种互相起外号的做法在董事会上显得很幼稚。",
-      "target": "幼稚",
-      "order": [
-        "puerile"
-      ],
-      "extra": [
-        "juvenile",
-        "infantile",
-        "sophomoric"
-      ],
-      "en": "The name-calling looked puerile in a board meeting.",
-      "why": "puerile 指成年人做出与年龄不符的孩子气行为,书面且带鄙夷;juvenile 意思接近但更常用,也指法律上的未成年;infantile 程度最重,近乎婴儿般;sophomoric 特指自以为高明的浅薄。"
     },
     {
       "zh": "她那身礼服在灯光下艳丽动人。",
