@@ -1,6 +1,7 @@
-import { antonymIndex } from './antonym'
+import { antonymAnswerIndex } from './antonym'
 import { buildContrastPairs, confusableIndex } from './contrast'
 import { headwordPattern } from './headword'
+import { isShapeGiveaway } from './shapeGiveaway'
 // MISS_RECENCY_DAYS is imported rather than restated: it is one fact — how
 // long a practice miss stays relevant — and two copies would silently drift
 // the day the drill's window changes.
@@ -91,8 +92,25 @@ export interface QuizQuestion {
   /** Carried only by antonymPick questions: the id of the **answer** word, i.e. the opposite.
    *  `wordId` is the prompt word, so the reveal needs this to name the other half of the pair.
    *  Kept separate from contrastId rather than merged into one `partnerId`: that would rename a
-   *  field discrimination mode already depends on, in exchange for one identifier. */
+   *  field discrimination mode already depends on, in exchange for one identifier.
+   *  **Absent when the answer is a word the library has no entry for**, which since
+   *  2026-08-19 is the common case — the reveal then shows the prompt's side alone. */
   antonymId?: string
+  /**
+   * Carried only by antonymPick questions: the part of speech the prompt is being asked
+   * under, printed beside it.
+   *
+   * It exists because `antonyms` is a **word-level** array, not a per-meaning one, and
+   * 22.8% of askable directions come from a polysemous word. `agnostic` alone on screen
+   * with `platform-specific` as its opposite is unanswerable for a learner thinking about
+   * 不可知论; naming the part of speech points at the right sense without handing over the
+   * gloss, which the question type deliberately withholds.
+   *
+   * Always the *provable* one: the answer word's when the answer is in the library, the
+   * prompt's own when it is not — and in that second case the question is skipped
+   * altogether unless the prompt's meanings agree on one.
+   */
+  promptPos?: string
 }
 
 /**
@@ -345,30 +363,58 @@ function questionPool(words: Word[], progress: Progress): Word[] | null {
  * question would make generation O(n²).
  */
 export interface AntonymIndices {
-  /** id → every library word that is an opposite of it */
-  antonyms: Map<string, Set<string>>
+  /** id → every string that is an opposite of it, normalized → authored spelling. Answers *and* exclusions. */
+  answers: Map<string, Map<string, string>>
   /** id → every library word it is confusable with, read off the contrast graph */
   confusable: Map<string, Set<string>>
+  /**
+   * Part of speech → every antonym string authored under a word of that
+   * part of speech, paired with the id of the word that authored it.
+   *
+   * The distractor pool for an external answer. External strings carry no
+   * part of speech of their own, so the source word's stands in: an
+   * opposite of an adjective is an adjective. Grouped once per quiz for the
+   * same reason `sharedSynonymsCache` is hoisted — walking the library per
+   * question would make generation O(n²).
+   */
+  external: Map<string, { text: string; from: string }[]>
 }
 
 export function buildAntonymIndices(words: Word[]): AntonymIndices {
-  return { antonyms: antonymIndex(words), confusable: confusableIndex(words) }
+  const external = new Map<string, { text: string; from: string }[]>()
+  for (const w of words) {
+    const pos = w.meanings[0]?.pos
+    if (pos === undefined) continue
+    for (const raw of w.antonyms) {
+      const text = raw.trim()
+      if (text === '') continue
+      const list = external.get(pos)
+      if (list) list.push({ text, from: w.id })
+      else external.set(pos, [{ text, from: w.id }])
+    }
+  }
+  return { answers: antonymAnswerIndex(words), confusable: confusableIndex(words), external }
 }
 
 /**
  * One "pick the opposite" question, or null when it can't be built cleanly.
  *
  * Exported so the full-library regression can force a direction and assert
- * that every one of the 138 askable directions survives the exclusions.
+ * that every one of the 1116 askable directions survives the exclusions.
  *
- * Three things are kept out of the distractors, and all three are the same
+ * ## What the options may not contain
+ *
+ * Four things are kept out of the distractors, and all four are the same
  * failure wearing different clothes — **a four-choice question with two
  * correct answers**, which is what `sharedSynonyms` was introduced to stop
  * (see its comment above):
  *
  * 1. *Every* opposite of the prompt word, not just the one drawn as the
- *    answer. 25 of the library's 106 antonym-paired words carry more than
- *    one; antagonize and agreeable carry four.
+ *    answer. 38 of the library's 135 antonym-paired words carry more than
+ *    one; antagonize and agreeable carry four. Polysemy makes this sharper
+ *    than it looks — `antonyms` is a word-level array, so `agnostic` lists
+ *    `believer` for its 不可知论者 sense and `platform-specific` for its
+ *    技术中立 sense, and each is correct under a prompt that names neither.
  * 2. Anything confusable with the answer. A word sharing a synonym with the
  *    answer is very likely an opposite of the prompt as well — nobody wrote
  *    it into the `antonyms` array, which is precisely why absence there
@@ -377,12 +423,29 @@ export function buildAntonymIndices(words: Word[]): AntonymIndices {
  *    don't filter on POS and don't need to; here, three verbs standing
  *    beside one adjective hand the answer over without the learner reading
  *    a single word.
+ * 4. **A different population from the answer.** An external answer takes
+ *    external distractors and a library answer takes library headwords,
+ *    because otherwise "the one I have never studied" answers every
+ *    question. That is rule 3's defect again — an option dimension that
+ *    correlates perfectly with correctness — except a learner can exploit
+ *    this one without knowing any English at all.
  *
- * Rule 3 is a hard requirement rather than a preference. Falling back to
- * mixed-POS distractors when the same-POS pool runs dry would quietly turn
+ * Rules 3 and 4 are hard requirements rather than preferences. Falling back
+ * to mixed distractors when the matching pool runs dry would quietly turn
  * the thin cases — the ones most likely to hit it — into free questions;
  * returning null instead lets the caller move to the next candidate word,
  * which is how every other branch in generateQuiz handles a dead end.
+ *
+ * ## What may not be the answer
+ *
+ * Anything `isShapeGiveaway` accepts. `fallible` → `infallible` is answered
+ * by spelling, not by meaning.
+ *
+ * **The filter narrows the answer candidates and nothing else.** Pushing it
+ * down into `antonym.ts` would look like one filter in one place and would
+ * re-open rule 1: with prompt `conspicuous` and answer `unobtrusive`, a
+ * deleted `conspicuous — inconspicuous` edge makes `inconspicuous` an
+ * eligible distractor while it is still a correct answer.
  */
 export function generateAntonymQuestion(
   w: Word,
@@ -390,43 +453,48 @@ export function generateAntonymQuestion(
   pool: Word[],
   indices: AntonymIndices,
   rng: () => number,
-  forcedAnswerId?: string,
+  forcedAnswer?: string,
 ): QuizQuestion | null {
-  const opposites = indices.antonyms.get(w.id)
+  const norm = (s: string) => s.trim().toLowerCase()
+  // Answers *and* exclusions. Read the two uses below as one set that is
+  // narrowed for the first purpose only.
+  const opposites = indices.answers.get(w.id)
   if (opposites === undefined || opposites.size === 0) return null
 
-  const byId = new Map(words.map(x => [x.id, x]))
-  const answerId = forcedAnswerId ?? [...opposites][Math.floor(rng() * opposites.size)]
-  const answer = byId.get(answerId)
-  if (answer === undefined || !opposites.has(answerId)) return null
+  const askable = [...opposites.keys()].filter(k => !isShapeGiveaway(w.headword, k))
+  if (askable.length === 0) return null
 
-  const answerPos = answer.meanings[0]?.pos
-  if (answerPos === undefined) return null
-  const nearAnswer = indices.confusable.get(answerId)
+  const answerKey = forcedAnswer === undefined
+    ? askable[Math.floor(rng() * askable.length)]
+    : norm(forcedAnswer)
+  if (!askable.includes(answerKey)) return null
+  const answerText = opposites.get(answerKey)
+  if (answerText === undefined) return null
 
-  const eligible = (x: Word) =>
-    x.id !== w.id
-    && x.id !== answerId
-    && !opposites.has(x.id)
-    && !(nearAnswer?.has(x.id) ?? false)
-    && x.meanings[0]?.pos === answerPos
+  const byHeadword = new Map(words.map(x => [norm(x.headword), x]))
+  const answerWord = byHeadword.get(answerKey)
 
-  const seen = new Set<string>([answer.headword, w.headword])
-  const distractors: string[] = []
-  const collect = (list: Word[]) => {
-    for (const cand of shuffle(list.filter(eligible), rng)) {
-      if (distractors.length >= 3) break
-      if (seen.has(cand.headword)) continue
-      seen.add(cand.headword)
-      distractors.push(cand.headword)
-    }
-  }
-  // Pool first, then the whole library — the same fallback order
-  // pickDistractorLabels uses. A word the learner hasn't met yet is still a
-  // perfectly good wrong option.
-  collect(pool)
-  if (distractors.length < 3) collect(words)
-  if (distractors.length < 3) return null
+  /**
+   * The part of speech the prompt is being asked under, and it has to be
+   * one we can prove. A library answer states its own; an external answer
+   * states nothing, so the prompt's own stands in — which is only honest
+   * while the prompt has a single one.
+   *
+   * The 33 words whose meanings span parts of speech are therefore skipped
+   * for external answers (71 directions). Tagging `underhand (adj.)` when
+   * the answer is `overhand`, which opposes the 下手投球 sense, would print
+   * a fabricated label on a study surface; that is worse than a hard
+   * question, and worse than no question.
+   */
+  const promptPos = answerWord === undefined
+    ? (new Set(w.meanings.map(m => m.pos)).size > 1 ? undefined : w.meanings[0]?.pos)
+    : answerWord.meanings[0]?.pos
+  if (promptPos === undefined) return null
+
+  const distractors = answerWord === undefined
+    ? externalDistractors(w, answerKey, promptPos, words, byHeadword, opposites, indices, rng)
+    : libraryDistractors(w, answerWord, promptPos, words, pool, opposites, indices, rng)
+  if (distractors === null) return null
 
   return {
     type: 'antonymPick',
@@ -435,10 +503,114 @@ export function generateAntonymQuestion(
     // would let a miss demote a word the scheduler never selected.
     wordId: w.id,
     prompt: w.headword,
-    options: shuffle([answer.headword, ...distractors], rng),
-    answer: answer.headword,
-    antonymId: answer.id,
+    promptPos,
+    options: shuffle([answerText, ...distractors], rng),
+    answer: answerText,
+    // Absent for an external answer: there is no entry to open, so the
+    // reveal card shows the prompt's side alone. Optional from the day it
+    // was added, which is what makes that possible without a migration.
+    antonymId: answerWord?.id,
   }
+}
+
+/** Rules 1–3 with the answer inside the library — the original path, now reading its exclusion set off strings. */
+function libraryDistractors(
+  w: Word,
+  answer: Word,
+  answerPos: string,
+  words: Word[],
+  pool: Word[],
+  opposites: Map<string, string>,
+  indices: AntonymIndices,
+  rng: () => number,
+): string[] | null {
+  const norm = (s: string) => s.trim().toLowerCase()
+  const nearAnswer = indices.confusable.get(answer.id)
+
+  const eligible = (x: Word) =>
+    x.id !== w.id
+    && x.id !== answer.id
+    && !opposites.has(norm(x.headword))
+    && !(nearAnswer?.has(x.id) ?? false)
+    && x.meanings[0]?.pos === answerPos
+
+  const seen = new Set<string>([answer.headword, w.headword])
+  const picked: string[] = []
+  const collect = (list: Word[]) => {
+    for (const cand of shuffle(list.filter(eligible), rng)) {
+      if (picked.length >= 3) break
+      if (seen.has(cand.headword)) continue
+      seen.add(cand.headword)
+      picked.push(cand.headword)
+    }
+  }
+  // Pool first, then the whole library — the same fallback order
+  // pickDistractorLabels uses. A word the learner hasn't met yet is still a
+  // perfectly good wrong option.
+  collect(pool)
+  if (picked.length < 3) collect(words)
+  return picked.length < 3 ? null : picked
+}
+
+/**
+ * Rules 1–4 with the answer outside the library, where the contrast graph
+ * has no node for the answer and the three original exclusions have to be
+ * re-derived around the *prompt* instead.
+ *
+ * The middle exclusion is the one that earns its place. Prompt
+ * `garrulous`, answer `taciturn`: a distractor lifted from `loquacious` —
+ * a confusable partner — would be `reticent` or `quiet`, and both are also
+ * correct. A confusable partner's opposites are the prompt's opposites,
+ * and nobody wrote them into the prompt's own array, which is exactly why
+ * absence there can't be trusted. Same inference `contrast.ts` makes,
+ * pointed the other way.
+ *
+ * `sharedSynonyms` is deliberately **not** consulted. It exists because a
+ * string naming two entries makes two options correct when the string is
+ * the *prompt*; when it is the *answer* that inference doesn't run, and
+ * `praise` opposing both `disparage` and `belittle` costs nothing here.
+ */
+function externalDistractors(
+  w: Word,
+  answerKey: string,
+  promptPos: string,
+  words: Word[],
+  byHeadword: Map<string, Word>,
+  opposites: Map<string, string>,
+  indices: AntonymIndices,
+  rng: () => number,
+): string[] | null {
+  const norm = (s: string) => s.trim().toLowerCase()
+  const byId = new Map(words.map(x => [x.id, x]))
+
+  // Every opposite of the prompt, its own synonyms, and itself.
+  const banned = new Set<string>([...opposites.keys(), norm(w.headword), answerKey])
+  for (const s of w.synonyms) banned.add(norm(s))
+  // A confusable partner's opposites are the prompt's opposites.
+  for (const id of indices.confusable.get(w.id) ?? []) {
+    for (const s of byId.get(id)?.antonyms ?? []) banned.add(norm(s))
+  }
+  // A synonym of the prompt's opposite is an opposite of the prompt. No
+  // library counterpart — the library path gets this from the contrast
+  // graph around the answer, which an external answer isn't in.
+  for (const k of opposites.keys()) {
+    for (const s of byHeadword.get(k)?.synonyms ?? []) banned.add(norm(s))
+  }
+
+  const seen = new Set<string>()
+  const picked: string[] = []
+  for (const cand of shuffle(indices.external.get(promptPos) ?? [], rng)) {
+    if (picked.length >= 3) break
+    const k = norm(cand.text)
+    if (cand.from === w.id || banned.has(k) || seen.has(k)) continue
+    // Rule 4: a library headword among external options would put the
+    // answer alone on the wrong side of the membership line.
+    if (byHeadword.has(k)) continue
+    if (isShapeGiveaway(w.headword, k)) continue
+    seen.add(k)
+    picked.push(cand.text)
+  }
+  return picked.length < 3 ? null : picked
 }
 
 export function generateQuiz(
@@ -480,10 +652,12 @@ export function generateQuiz(
     }
 
     if (type === 'antonymPick') {
-      // Only 106 of 566 words have a library-internal opposite, so most
-      // candidates fall straight through here. That is fine: the slot index
-      // doesn't advance on a `continue`, so the next candidate is tried for
-      // the same type rather than the type being skipped.
+      // 475 of 599 words can be asked now that the answer no longer has to
+      // be a library headword — up from 135, which is why this branch used
+      // to fall through far more often than it does. It can still fall
+      // through, and that is fine: the slot index doesn't advance on a
+      // `continue`, so the next candidate is tried for the same type
+      // rather than the type being skipped.
       const q = antonymIndices === null ? null : generateAntonymQuestion(w, words, pool, antonymIndices, rng)
       if (q === null) continue
       questions.push(q)
@@ -516,9 +690,17 @@ export function generateQuiz(
       // unreachable, and the same word always asked with the same hint.
       // The shared-synonym exclusion stays: a hint shared by two entries
       // makes two options correct.
-      const syns = w.synonyms.filter(notShared)
-      const hints = [...syns, ...w.antonyms.filter(notShared)]
-      if (hints.length === 0) continue // This word's synonyms and antonyms are all shared with other entries — move to the next candidate word
+      //
+      // The shape exclusion is the other half, added 2026-08-19: a hint the
+      // answer can be spelled out of tests nothing. 28 of this type's 1964
+      // reachable hints were flips of their own headword — `infallible` for
+      // `fallible`, `unsociable` for `sociable` — and five more on the
+      // synonym side contained the answer outright (`topple over` for
+      // `topple`, `quagmire` for `mire`).
+      const usable = (s: string) => notShared(s) && !isShapeGiveaway(w.headword, s)
+      const syns = w.synonyms.filter(usable)
+      const hints = [...syns, ...w.antonyms.filter(usable)]
+      if (hints.length === 0) continue // This word's synonyms and antonyms are all shared with other entries or all spell out the answer — move to the next candidate word
       const hint = hints[Math.floor(rng() * hints.length)]
       const distractors = pickDistractorLabels(w, w.headword, headwordLabel, pool, words, rng)
       if (!distractors) continue

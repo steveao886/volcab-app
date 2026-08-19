@@ -259,8 +259,8 @@ was made optional in the first place.
 
 ```
                         before        after
-askable directions         188         1117      ×5.9
-askable words              135          476      ×3.5
+askable directions         188         1116      ×5.9
+askable words              135          475      ×3.5
 
   excluded: shape giveaway (Part 1)      55
             mixed-POS prompt + external  71
@@ -270,10 +270,19 @@ askable words              135          476      ×3.5
 against a bigger source, not a new surface, so `QUIZ_TYPES` and
 `QUIZ_METRIC_KEYS` are untouched for the reasons the original spec gives.
 
-At 476 of 599 words (79.5%) the type now over-fills its 14.3% share
+At 475 of 599 words (79.3%) the type now over-fills its 14.3% share
 instead of only just filling it, and a 20-question mixed quiz draws its
-~3 antonym questions from 1,117 rather than 138. The repetition ceiling
+~3 antonym questions from 1,116 rather than 138. The repetition ceiling
 the original spec recorded is gone.
+
+Three of those directions cannot actually be built, and the reason is
+worth writing down because it is the rules working rather than failing.
+`in the wake of` is one of **two** `prep.` entries in the library, and
+`prep.` carries five antonym strings in total — three of which are its
+own, and therefore its opposites rather than its distractors. Two
+candidates cannot fill three slots, so the question is skipped exactly as
+a thin same-POS pool has always been skipped. The regression names those
+three rather than subtracting them from the count.
 
 ## Not doing: an obscurity filter
 
@@ -303,11 +312,16 @@ the defect.
 Checked one by one, the strings that first looked wrong are right:
 `agnostic → platform-specific` opposes meaning 2, `underhand → overhand`
 opposes meaning 2, `myopia → farsightedness` and
-`connotation → denotation` are exact. **One** is genuinely invented —
+`connotation → denotation` are exact. **One** was genuinely invented —
 `race to the bottom → upward convergence`, which is not an English
-phrase — and clause 3 of the shape rule already removes the sibling
-`race to the top`. Data quality belongs to the `word-content` refresh,
-not to a runtime filter.
+phrase — and it is deleted from `data/words.json` here rather than
+filtered at runtime. The entry keeps `race to the top`, which is real,
+renders on the card, and is unaskable under clause 3 of the shape rule.
+One bad row is a data fix; it does not justify a filter.
+
+**The live library is authoritative and this repo's copy has diverged
+before** (`f53adb9`). The same row has to be removed there or it will come
+back on the next sync.
 
 ## Not doing: the synonym direction
 
@@ -341,9 +355,10 @@ gets none (`CLAUDE.md`). `rng` is injected.
 - the same seed reproduces the same question
 
 Full-library regression, in the spirit of `headword.test.ts`: every one of
-the 1,117 askable directions builds a complete question, and any that
-cannot is **reported by name**. If it ever fails, the fix is to find why
-the distractor pool ran dry — not to relax an exclusion.
+the 1,116 askable directions builds a complete question except the three
+`prep.` ones above, and every failure is **reported by name**. If a fourth
+appears, the fix is to find why that pool ran dry — not to relax an
+exclusion.
 
 ## Stale numbers retired
 

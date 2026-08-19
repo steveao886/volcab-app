@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { QUIZ_TYPES, buildAntonymIndices, clozeCollocation, clozeExample, contrastPairKey, generateAntonymQuestion, generateAudioQuiz, generateContrastQuiz, generateQuiz, pickCloze, pickMeaning, sharedSynonyms, difficultyWeight, weightedShuffle} from './quiz'
-import { buildAntonymPairs } from './antonym'
+import { isShapeGiveaway } from './shapeGiveaway'
 import { MISS_RECENCY_DAYS } from './queue'
 import { addDays } from './srs'
 import { emptyProgress } from '../types'
@@ -10,15 +10,28 @@ import type { Meaning, Progress, Word } from '../types'
 const TODAY = '2026-08-08'
 
 
+/**
+ * A per-word stem for synonym and antonym strings that is unique to the
+ * word without **containing** it.
+ *
+ * Reversal rather than the obvious `${id}-syn1`, because since 2026-08-19 a
+ * hint the answer can be spelled out of is filtered before it is drawn
+ * (`isShapeGiveaway`), and `alpha` sits inside `alpha-syn1`. Prefixing with
+ * the id would leave every fixture word with zero usable hints and
+ * synonymHint would never fire — the rule working exactly as intended,
+ * against a fixture that was never meant to exercise it.
+ */
+const stem = (id: string) => [...id].reverse().join('')
+
 // These fields cover everything the six question types need: examples/collocations contain
 // the base headword form (the cloze question must be able to locate it), synonyms/antonyms
-// are prefixed with the id so they're naturally distinct and never shared with other fixture
+// are keyed to the id so they're naturally distinct and never shared with other fixture
 // words (otherwise sharedSynonyms would exclude them and synonymHint could never come up).
 const word = (id: string, zh: string): Word => ({
   id, headword: id, phonetic: `/${id}/`, meanings: [{ pos: 'v.', en: `def of ${id}`, zh }],
   examples: [`We ${id} things daily.`, `They ${id} it again.`],
-  synonyms: [`${id}-syn1`, `${id}-syn2`, `${id}-syn3`],
-  antonyms: [`${id}-ant1`, `${id}-ant2`],
+  synonyms: [`${stem(id)}-syn1`, `${stem(id)}-syn2`, `${stem(id)}-syn3`],
+  antonyms: [`${stem(id)}-ant1`, `${stem(id)}-ant2`],
   collocations: [`${id} a plan`, `${id} the rules`],
   relatedForms: [], sourceNote: 't', addedAt: '2026-07-01',
 })
@@ -711,7 +724,7 @@ describe('weightedShuffle', () => {
 const anto = (id: string, antonyms: string[], pos = 'adj.'): Word => ({
   id, headword: id, phonetic: `/${id}/`, meanings: [{ pos, en: `def of ${id}`, zh: `${id}义` }],
   examples: [`We saw ${id} things.`, `It was ${id} again.`],
-  synonyms: [`${id}-syn`], antonyms, collocations: [`${id} thing`],
+  synonyms: [`${stem(id)}-syn`], antonyms, collocations: [`${id} thing`],
   relatedForms: [], sourceNote: 't', addedAt: '2026-07-01',
 })
 
@@ -827,49 +840,216 @@ describe('generateQuiz — antonymPick', () => {
 })
 
 describe('full-library regression — antonymPick', () => {
+  const loadLibrary = async () => {
+    const lib = (await import('../../data/words.json')).default as unknown as { words: Word[] }
+    return lib.words
+  }
+
+  /**
+   * Every direction the generator is allowed to ask: each word paired with
+   * each of its opposites that is not spelled out of the prompt, minus the
+   * ones whose part of speech cannot be named honestly.
+   *
+   * Derived here rather than hardcoded so that the assertions below stay
+   * true statements about *the current library* when words are added — only
+   * the counts need re-measuring, which is the point.
+   */
+  const askableDirections = (words: Word[]) => {
+    const indices = buildAntonymIndices(words)
+    const byId = new Map(words.map(w => [w.id, w]))
+    const byHeadword = new Map(words.map(w => [w.headword.trim().toLowerCase(), w]))
+    const out: { from: Word; to: string; external: boolean }[] = []
+    for (const [id, opposites] of indices.answers) {
+      const from = byId.get(id)
+      if (from === undefined) continue
+      const mixedPos = new Set(from.meanings.map(m => m.pos)).size > 1
+      for (const key of opposites.keys()) {
+        if (isShapeGiveaway(from.headword, key)) continue
+        const external = !byHeadword.has(key)
+        if (external && mixedPos) continue
+        out.push({ from, to: key, external })
+      }
+    }
+    return out
+  }
+
   /**
    * The counterpart to headword.test.ts's two full-library assertions: pin
    * down that the exclusion rules leave a buildable question for **every**
    * direction, over the real library rather than fixtures. If this ever
-   * fails, the fix is to look at why that word's same-POS distractor pool
-   * ran dry — not to relax an exclusion, since each one is there to stop a
-   * question shipping with two correct answers.
+   * fails, the fix is to look at why that word's distractor pool ran dry —
+   * not to relax an exclusion, since each one is there to stop a question
+   * shipping with two correct answers.
+   *
+   * Failures are reported **by name**: a bare count tells you the pool ran
+   * dry somewhere and nothing about where.
    */
   it('every askable direction over the real library builds a complete question', async () => {
-    const lib = (await import('../../data/words.json')).default as unknown as { words: Word[] }
-    const indices = buildAntonymIndices(lib.words)
-    const byId = new Map(lib.words.map(w => [w.id, w]))
+    const words = await loadLibrary()
+    const indices = buildAntonymIndices(words)
+    const directions = askableDirections(words)
     const failed: string[] = []
-    let built = 0
-    for (const { a, b } of buildAntonymPairs(lib.words)) {
-      for (const [from, to] of [[a, b], [b, a]]) {
-        const q = generateAntonymQuestion(byId.get(from)!, lib.words, lib.words, indices, mulberry(1), to)
-        if (q === null) failed.push(`${from} → ${to}`)
-        else built++
+    for (const { from, to } of directions) {
+      if (generateAntonymQuestion(from, words, words, indices, mulberry(1), to) === null) {
+        failed.push(`${from.headword} → ${to}`)
       }
     }
-    expect(failed).toEqual([])
-    expect(built).toBe(188)
+    /**
+     * The only directions the rules allow that the library cannot fill,
+     * and the reason is visible in one number: `prep.` carries **5**
+     * antonym strings library-wide, three of which belong to this very
+     * word and are therefore its opposites, not its distractors. Two
+     * candidates cannot fill three slots.
+     *
+     * Named rather than subtracted from the count. A fourth line appearing
+     * here means some *other* pool ran dry, which is worth a look — the
+     * skip itself is correct behaviour (see "skipped, not downgraded"
+     * above), but it should never happen silently.
+     */
+    expect(failed).toEqual([
+      'in the wake of → in the run-up to',
+      'in the wake of → ahead of',
+      'in the wake of → in anticipation of',
+    ])
+    expect(directions).toHaveLength(1116)
+    // 938 answer with a word the library has no entry for; the other 178 are
+    // the library-internal pairs, 188 directions less the 10 the shape rule takes.
+    expect(directions.filter(d => d.external)).toHaveLength(938)
+    expect(new Set(directions.map(d => d.from.id)).size).toBe(475)
+  })
+
+  /**
+   * The five pairs the shape rule removes, named so the count above can't
+   * quietly absorb a regression that puts them back.
+   */
+  it('never answers with a word spelled out of the prompt', async () => {
+    const words = await loadLibrary()
+    const indices = buildAntonymIndices(words)
+    const leaked: string[] = []
+    for (const w of words) {
+      for (let seed = 0; seed < 6; seed++) {
+        const q = generateAntonymQuestion(w, words, words, indices, mulberry(seed))
+        if (q === null) continue
+        for (const opt of q.options) {
+          if (isShapeGiveaway(q.prompt, opt)) leaked.push(`${q.prompt} → ${opt}`)
+        }
+      }
+    }
+    expect(leaked).toEqual([])
+
+    const byId = new Map(words.map(w => [w.id, w]))
+    for (const [prompt, giveaway] of [
+      ['fallible', 'infallible'], ['conspicuous', 'inconspicuous'],
+      ['opportune', 'inopportune'], ['pretentious', 'unpretentious'],
+      ['artful', 'artless'],
+    ]) {
+      const w = byId.get(prompt)
+      expect(w, `${prompt} left the library — re-measure this test`).toBeDefined()
+      expect(generateAntonymQuestion(w!, words, words, indices, mulberry(1), giveaway)).toBeNull()
+    }
   })
 
   it('no question over the real library offers a second valid answer', async () => {
-    const lib = (await import('../../data/words.json')).default as unknown as { words: Word[] }
-    const indices = buildAntonymIndices(lib.words)
-    const byId = new Map(lib.words.map(w => [w.id, w]))
-    const byHeadword = new Map(lib.words.map(w => [w.headword, w.id]))
+    const words = await loadLibrary()
+    const indices = buildAntonymIndices(words)
+    const norm = (s: string) => s.trim().toLowerCase()
+    const byId = new Map(words.map(w => [w.id, w]))
+    const byHeadword = new Map(words.map(w => [norm(w.headword), w]))
     const bad: string[] = []
-    for (const { a, b } of buildAntonymPairs(lib.words)) {
-      for (const [from, to] of [[a, b], [b, a]]) {
-        const q = generateAntonymQuestion(byId.get(from)!, lib.words, lib.words, indices, mulberry(1), to)
-        if (q === null) continue
-        for (const opt of q.options) {
-          if (opt === q.answer) continue
-          const id = byHeadword.get(opt)!
-          if (indices.antonyms.get(from)?.has(id)) bad.push(`${from} → ${to}: ${opt} is also an opposite`)
-          if (indices.confusable.get(to)?.has(id)) bad.push(`${from} → ${to}: ${opt} is confusable with the answer`)
+
+    for (const { from, to } of askableDirections(words)) {
+      const q = generateAntonymQuestion(from, words, words, indices, mulberry(1), to)
+      if (q === null) continue
+      const opposites = indices.answers.get(from.id)!
+      const answerWord = byHeadword.get(to)
+      for (const opt of q.options) {
+        if (opt === q.answer) continue
+        const k = norm(opt)
+        const where = `${from.headword} → ${to}: ${opt}`
+        if (opposites.has(k)) bad.push(`${where} is also an opposite`)
+        const optWord = byHeadword.get(k)
+        if (answerWord !== undefined && optWord !== undefined
+          && (indices.confusable.get(answerWord.id)?.has(optWord.id) ?? false)) {
+          bad.push(`${where} is confusable with the answer`)
+        }
+        // The external path's own two exclusions: a confusable partner's
+        // opposites, and the synonyms of the prompt's opposites.
+        if (answerWord === undefined) {
+          for (const id of indices.confusable.get(from.id) ?? []) {
+            if ((byId.get(id)?.antonyms ?? []).some(s => norm(s) === k)) {
+              bad.push(`${where} is an opposite of a confusable partner`)
+            }
+          }
+          for (const oppKey of opposites.keys()) {
+            if ((byHeadword.get(oppKey)?.synonyms ?? []).some(s => norm(s) === k)) {
+              bad.push(`${where} is a synonym of another opposite`)
+            }
+          }
         }
       }
     }
     expect(bad).toEqual([])
+  })
+
+  /**
+   * Rule 4. An external answer standing among three library headwords is
+   * answerable by "the one I have never studied" — no English required.
+   */
+  it('never mixes library headwords with external strings in one question', async () => {
+    const words = await loadLibrary()
+    const indices = buildAntonymIndices(words)
+    const inLibrary = new Set(words.map(w => w.headword.trim().toLowerCase()))
+    const mixed: string[] = []
+    for (const { from, to } of askableDirections(words)) {
+      const q = generateAntonymQuestion(from, words, words, indices, mulberry(1), to)
+      if (q === null) continue
+      const kinds = new Set(q.options.map(o => inLibrary.has(o.trim().toLowerCase())))
+      if (kinds.size > 1) mixed.push(`${from.headword} → ${to}: ${q.options.join(' / ')}`)
+    }
+    expect(mixed).toEqual([])
+  })
+
+  /** The part-of-speech tag must be provable, never inferred. */
+  it('tags every prompt with a part of speech it can prove', async () => {
+    const words = await loadLibrary()
+    const indices = buildAntonymIndices(words)
+    const byHeadword = new Map(words.map(w => [w.headword.trim().toLowerCase(), w]))
+    const wrong: string[] = []
+    for (const { from, to } of askableDirections(words)) {
+      const q = generateAntonymQuestion(from, words, words, indices, mulberry(1), to)
+      if (q === null) continue
+      const answerWord = byHeadword.get(to)
+      const expected = answerWord === undefined ? from.meanings[0].pos : answerWord.meanings[0].pos
+      if (q.promptPos !== expected) wrong.push(`${from.headword} → ${to}: ${q.promptPos} ≠ ${expected}`)
+    }
+    expect(wrong).toEqual([])
+  })
+
+  /**
+   * The 33 mixed-part-of-speech words. `underhand` opposes `aboveboard`
+   * under 不正当的 and `overhand` under 下手投球, and nothing in the data says
+   * which sense an external string belongs to — so there is no honest tag
+   * and the question is skipped rather than labelled with a guess.
+   */
+  it('skips an external answer when the prompt spans parts of speech', async () => {
+    const words = await loadLibrary()
+    const indices = buildAntonymIndices(words)
+    const underhand = words.find(w => w.id === 'underhand')
+    expect(underhand, 'underhand left the library — re-measure this test').toBeDefined()
+    expect(new Set(underhand!.meanings.map(m => m.pos)).size).toBeGreaterThan(1)
+    expect(generateAntonymQuestion(underhand!, words, words, indices, mulberry(1), 'aboveboard')).toBeNull()
+  })
+})
+
+describe('full-library regression — synonymHint', () => {
+  it('never hints with a word the answer can be spelled out of', async () => {
+    const lib = (await import('../../data/words.json')).default as unknown as { words: Word[] }
+    const leaked: string[] = []
+    for (let seed = 0; seed < 25; seed++) {
+      for (const q of generateQuiz(lib.words, allStudied(lib.words), TODAY, 40, mulberry(seed), ['synonymHint'])) {
+        if (isShapeGiveaway(q.answer, q.prompt)) leaked.push(`${q.prompt} → ${q.answer}`)
+      }
+    }
+    expect(leaked).toEqual([])
   })
 })

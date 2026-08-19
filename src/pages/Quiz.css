@@ -31,6 +31,15 @@
   margin-top: var(--sp-3);
 }
 
+/* The part of speech under an antonymPick prompt: which sense of a
+   polysemous word is being asked about. Sits directly under the headword
+   with no gap of its own — it's a qualifier on that word, not a second
+   line of prompt, and reads as one unit with it. Inherits .pos for color
+   and weight so it matches every other part-of-speech label in the app. */
+.quiz-q__prompt-pos {
+  margin-top: var(--sp-1);
+}
+
 .quiz-options {
   display: grid;
   gap: var(--sp-2);

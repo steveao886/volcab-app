@@ -160,24 +160,43 @@ function ContrastCard({ answerId, otherId }: { answerId: string; otherId: string
  * **No authored note row, unlike ContrastCard.** Discrimination mode needs
  * one because near-synonyms produce sentences where either word fits and
  * only a human can say what separates them. Opposites don't have that
- * problem: the two glosses side by side *are* the explanation, and 69
- * hand-written notes saying "one is the reverse of the other" would be the
- * kind of padding validate-word-notes exists to keep out.
+ * problem: the two glosses side by side *are* the explanation, and a
+ * hand-written note per pair saying "one is the reverse of the other" would
+ * be the kind of padding validate-word-notes exists to keep out.
  *
  * Prompt word first and untagged, answer second and tagged: the question
  * was "what is the opposite of X", so reading top to bottom replays it.
+ *
+ * **Most answers now have no entry to show.** Since 2026-08-19 the answer
+ * may be any string in the prompt's `antonyms`, and 1055 of 1172 of those
+ * name a word the library has never held — there is no gloss to render, so
+ * the answer appears as the bare word under the same 本题答案 tag. That is
+ * what `synonymHint` has always done with its external prompts; showing a
+ * looked-up definition instead would mean inventing one, which
+ * `Word.etymology` already establishes is worse than showing nothing.
  */
-function AntonymCard({ promptId, answerId }: { promptId: string; answerId: string }) {
+function AntonymCard(
+  { promptId, answerId, answerText }: { promptId: string; answerId?: string; answerText: string },
+) {
   const { words } = useApp()
   const asked = words.find(w => w.id === promptId)
-  const opposite = words.find(w => w.id === answerId)
-  if (asked === undefined || opposite === undefined) return null
+  const opposite = answerId === undefined ? undefined : words.find(w => w.id === answerId)
+  if (asked === undefined) return null
 
   return (
     <div className="quiz-contrast">
       <p className="quiz-q__label">这对反义词</p>
       <ContrastSide word={asked} isAnswer={false} />
-      <ContrastSide word={opposite} isAnswer />
+      {opposite === undefined ? (
+        <div className="quiz-contrast__side quiz-contrast__side--answer">
+          <p className="quiz-contrast__head">
+            <span className="word" lang="en">{answerText}</span>
+            <span className="quiz-option__tag">本题答案</span>
+          </p>
+        </div>
+      ) : (
+        <ContrastSide word={opposite} isAnswer />
+      )}
     </div>
   )
 }
@@ -353,6 +372,14 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
           {isCloze ? renderBlanked(question.prompt) : question.prompt}
         </p>
       )}
+      {/* Which sense of a polysemous prompt is being asked about. `antonyms`
+          is word-level, so `agnostic` opposes both `believer` and
+          `platform-specific` and the headword alone cannot say which one is
+          on the table. The gloss stays withheld — that is the question — but
+          the part of speech narrows it for free. */}
+      {question.type === 'antonymPick' && question.promptPos !== undefined ? (
+        <p className="quiz-q__prompt-pos pos">{question.promptPos}</p>
+      ) : null}
 
       <div className="quiz-options" role="group" aria-label="选项">
         {question.options.map((opt, i) => {
@@ -397,8 +424,12 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
           detail={
             question.type === 'contrast' && question.contrastId !== undefined ? (
               <ContrastCard answerId={question.wordId} otherId={question.contrastId} />
-            ) : question.type === 'antonymPick' && question.antonymId !== undefined ? (
-              <AntonymCard promptId={question.wordId} answerId={question.antonymId} />
+            ) : question.type === 'antonymPick' ? (
+              <AntonymCard
+                promptId={question.wordId}
+                answerId={question.antonymId}
+                answerText={question.answer}
+              />
             ) : null
           }
         />
