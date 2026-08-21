@@ -126,56 +126,76 @@ src/
 
 ---
 
-## ⏳ Open follow-up: re-measure retention on or after 2026-08-20
+## ⏳ Open follow-up: re-measure retention on or after 2026-09-10
 
-**Set 2026-07-30. Nothing else in this file is pending; this is.**
+**Checked 2026-08-20 (the 07-30 follow-up). Answer: inconclusive by construction —
+the measurement describes 1.3, but the live setting is now 1.6.** Re-armed for
+2026-09-10, when the first words scheduled under 1.5/1.6 come due.
 
-`settings.intervalModifier` was set to **1.3** on 2026-07-30 because measured
-retention was far above the 90% that SM-2's defaults aim for. That decision
-was made on **six days of data and seven lapses**, which is thin. It has to be
-checked against real data before it is either trusted or pushed further.
+### What the 2026-08-20 check found
 
-Baseline at the time of the change:
+| | 2026-07-30 | 2026-08-20 |
+|---|---|---|
+| Retention on scheduled reviews | 97.8% (7 / ~317) | **94.7%** (61 misses / 1151) |
+| 95% CI | 95.5 – 98.9% | 93.3 – 95.9% |
+| Words tracked | 113 | 526 |
+| Median interval | 4d | 16d |
+| Words with `lapses > 0` | — | 125 (23.8%), 166 lapses all-time |
+| `intervalModifier` | 1.0 → 1.3 | **1.6** |
 
-| | |
-|---|---|
-| Retention on scheduled reviews | **97.8%** (7 lapses / ~317 real reviews) |
-| 95% CI on that | 95.5% – 98.9% |
-| Headline "accuracy" (the misleading one) | 90.8% |
-| Words tracked | 113 |
-| Median interval | 4d |
-| `intervalModifier` before → after | unset (1.0) → 1.3 |
+**The sample is big enough (1151 ≫ 150) but it does not measure the current
+setting.** `intervalModifier` was raised twice more after the 07-30 change, by
+the user, without a measurement in between:
 
-**Why the two percentages differ, and why it matters:** `reviewed`/`correct`
-count every card view, including the two learning-step grades each new word
-costs before graduating. That number ran 7 points *below* true retention.
-Tuning intervals against it would have moved them the wrong way — it nearly
-did. `reviewPhase`/`reviewPhaseCorrect` were added in the same change to
-measure the real thing; the stats page prints it as 真实留存率.
+- 2026-07-30 — 1.0 → **1.3**
+- 2026-08-12 — 1.3 → **1.5**
+- 2026-08-18 — 1.5 → **1.6**
 
-**How to re-measure** (needs `gh` as steveao886):
+Retention on a given day tests the interval assigned at the *previous* grading,
+not the modifier in force that day. With a 16-day median interval, essentially
+every review in the 1151 was serving an interval set under 1.3 or earlier. Do
+not read the per-day dip around 08-11..08-16 as the 1.5 change landing — it
+cannot be; 1.5 was only set on 08-12.
+
+**391 of 526 words (74%) currently carry an interval assigned under 1.5 or 1.6,
+and not one of them is due yet.** That cohort lands 08-22 -> 09-14. Until it is
+graded, the 1.5/1.6 decision rests on no evidence at all.
+
+### Verdict on 1.3
+
+**94.7%, straddling the boundary.** Per the 07-30 rubric that is "90-94%, leave
+it alone" by a hair, or ">=95%, raise toward 1.5" within the CI. Raising to 1.5
+was defensible. The further nudge to 1.6 was not evidence-backed, but it is not
+obviously wrong either — pushing 94.7% down to a 90% target plausibly wants
+something in the 1.5-1.6 range.
+
+**Recommendation made 2026-08-20: hold at 1.6, raise nothing, re-check 09-10.**
+Tuning further now would be tuning on data that describes a setting no longer in
+use.
+
+### Re-check on 2026-09-10
+
+Same command as before, but **the all-time sum is no longer the right number** —
+it is now dominated by the 1.3 era and will mask the change. Restrict to days on
+or after 2026-08-22, when the 1.5/1.6 cohort starts coming due:
 
 ```bash
 gh api repos/steveao886/volcab-data/contents/progress.json --jq '.content' | base64 -d > /tmp/p.json
-node -e "const p=require('/tmp/p.json');let r=0,c=0;for(const s of Object.values(p.dailyStats)){r+=s.reviewPhase??0;c+=s.reviewPhaseCorrect??0}console.log(c+'/'+r,'=',(c/r*100).toFixed(1)+'%')"
+node -e "const p=require('/tmp/p.json');let r=0,c=0;for(const [d,s] of Object.entries(p.dailyStats)){if(d<'2026-08-22')continue;r+=s.reviewPhase??0;c+=s.reviewPhaseCorrect??0}console.log(c+'/'+r,'=',(c/r*100).toFixed(1)+'%')"
 ```
 
-Only days recorded after 2026-07-30 carry those fields, so this is a clean
-post-change measurement — no need to exclude anything by hand.
+Target is still 90%. **>=95%** -> 1.6 still too gentle. **90-94%** -> correct, stop
+touching it. **<88%** -> overshot; drop toward 1.4 and expect the lapse list to
+grow before the percentage recovers.
 
-**What to do with the answer.** The target is 90%.
+**The knob compounds — always say the multiplier out loud before changing it.**
+1.3 is 3.71x after five reviews; 1.5 is 7.59x; 1.6 is **10.49x**. Going 1.3 -> 1.6
+did not lengthen intervals by 23%, it lengthened them by **2.8x** over five
+reviews. Also check `settings.intervalModifier` on the live data before trusting
+any prompt or doc that states its value — this run's own brief said 1.3.
 
-- **Still ≥ 95%** — 1.3 wasn't enough. Raise toward 1.5 and check again. Say
-  the new number out loud rather than nudging silently; the knob compounds
-  (1.3 is ≈3.7× after five reviews, not 30%).
-- **90–94%** — working as intended. Leave it alone.
-- **< 88%** — overshot. Drop back toward 1.15. Expect this to show up as more
-  words in the lapse list before it shows up in the percentage.
-- **Fewer than ~150 scheduled reviews recorded** — the sample is still too
-  small to act on, exactly as it was on 2026-07-30. Wait longer; do not
-  split the difference on noise.
-
-Delete this section once the check has been made and the outcome recorded.
+Delete this section once retention has been measured against a modifier that was
+actually in force for the intervals being tested.
 
 ---
 
