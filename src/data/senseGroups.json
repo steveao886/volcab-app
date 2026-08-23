@@ -5336,6 +5336,148 @@
         "grotesque"
       ],
       "why": "repulsive 是生理层面的排斥，闻到看到就本能地往后退，与美丑和道德都无关；hideous 只管外观，说的是丑得吓人，气味无从丑起；abhorrent 是道德上的深恶痛绝，宾语得是行为或观念，一团发霉的东西没有道德可言；grotesque 指怪诞扭曲的形状，同样只落在样子上。"
+    },
+    {
+      "zh": "她把公寓挂到短租平台出租,明显违反了去年签的租约。",
+      "target": "违反",
+      "order": [
+        "contravene",
+        "infringe",
+        "impinge"
+      ],
+      "extra": [
+        "encroach"
+      ],
+      "en": "Renting the apartment out on a short-term rental site plainly contravenes the lease she signed last year.",
+      "why": "contravene 的宾语就是规则本身,合同、条例、政策都行,说的是把白纸黑字定下的东西做反了;infringe 偏向侵犯版权、商标或某项权利,拿来接一份租约就走了味;impinge 必须接 on,讲的是挤占别人的时间和空间,跟条文不发生关系;encroach 同样只能接 on,而且是一点点蚕食地界。"
+    },
+    {
+      "zh": "跨时区的消息整天弹个不停,一点点挤占了原本完整的午休。",
+      "target": "挤占",
+      "order": [
+        "impinge",
+        "infringe"
+      ],
+      "extra": [
+        "usurp",
+        "preclude"
+      ],
+      "en": "Pings from another time zone kept impinging on what used to be an actual lunch break.",
+      "why": "impinge 只跟 on,说的是一件事挤进来占掉了另一件事的时间、空间或专注力,不牵涉谁违了规;infringe on 侵的是权利、自由、隐私这类受保护的东西,午休算不上一项权利;usurp 要接职位或权力,是把别人的位子夺过来;preclude 是彻底堵死、让某事无法发生,消息再多午休也还在。"
+    },
+    {
+      "zh": "工作室认定那款粉丝自制的游戏侵犯了自家版权,限期两周下架。",
+      "target": "侵犯",
+      "order": [
+        "infringe",
+        "contravene"
+      ],
+      "extra": [
+        "plagiarize",
+        "counterfeit"
+      ],
+      "en": "The studio says the fan-made game infringes its copyright, and has given the two students two weeks to take it down.",
+      "why": "infringe 正对版权、商标、专利,是知识产权语境里的固定说法;contravene 的宾语得是一条规则或条文,说违反著作权法可以,说违反它的版权就错位了;plagiarize 是抄袭,重点在冒充成自己的作品,与授权无关;counterfeit 指仿造实物商品,一款粉丝游戏谈不上仿冒。"
+    },
+    {
+      "zh": "三个牌子的安全座椅,加上一本机器翻译的德文说明书,新手爸妈彻底晕头转向。",
+      "target": "晕头转向",
+      "order": [
+        "bewilder",
+        "perplex"
+      ],
+      "extra": [
+        "fluster",
+        "disconcert"
+      ],
+      "en": "Three brands of car seat and a manual machine-translated from German leave new parents completely bewildered.",
+      "why": "bewilder 说的是东西多到、怪到让人失去方向,整个懵住,不知从哪下手;perplex 得有一个具体想不通的疑点,人还在琢磨它为什么会这样;fluster 是被催得手忙脚乱,慌,不是不懂;disconcert 指心里被硌了一下、乱了阵脚,与看不看得懂无关。"
+    },
+    {
+      "zh": "舞裙轻薄如纱,旋转时被灯光照得像拖着一缕烟。",
+      "target": "轻薄如纱",
+      "order": [
+        "diaphanous",
+        "translucent"
+      ],
+      "extra": [
+        "opaque",
+        "iridescent"
+      ],
+      "en": "The dancer's diaphanous costume caught the stage lights so that every spin looked like it was trailing smoke.",
+      "why": "diaphanous 几乎只形容布料,落点是轻、薄、飘,透光只是顺带的结果;translucent 说的是材质透光却看不清后面,配的是磨砂玻璃、洋葱、鱿鱼这类东西,与轻不轻、飘不飘无关;opaque 正相反,完全不透光;iridescent 讲的是随角度变色的光泽,不涉及厚薄。"
+    },
+    {
+      "zh": "那条山脊从停车场看去平平无奇,一起雾,碎石路段就暗藏凶险。",
+      "target": "暗藏凶险",
+      "en": "From the parking lot the ridge looks like nothing much, but once the fog comes in, the loose scree underfoot turns treacherous.",
+      "order": [
+        "treacherous"
+      ],
+      "extra": [
+        "perilous",
+        "hazardous",
+        "deceptive"
+      ],
+      "sense": 0,
+      "why": "treacherous 说的是危险藏在看不出来的地方,或者状况说变就变,主语正是路面、水流、天气这类东西;perilous 只讲危险大、九死一生,凶险是明摆着的,不含藏这一层;hazardous 指存在某种具体的危害源,多见于规章和安全告示;deceptive 只说外表骗人、容易看走眼,本身不含任何危险。"
+    },
+    {
+      "zh": "那套房源的照片刻意挡住了洗衣机后面的霉斑,广告写得存心骗人。",
+      "target": "存心骗人",
+      "en": "The photos in the listing had been framed to hide the mold behind the washing machine, and the whole advertisement was plainly deceitful.",
+      "order": [
+        "deceitful"
+      ],
+      "extra": [
+        "duplicitous",
+        "disingenuous",
+        "mendacious"
+      ],
+      "sense": 0,
+      "why": "deceitful 说的是靠假话或隐瞒真相去换好处,可以形容人,也可以形容广告、措辞、照片这类替人开口的东西;duplicitous 必须有两副面孔,当面一套背后一套,只能形容人;disingenuous 是装傻装无辜,话面上多半没错,只是刻意说得让人会错意;mendacious 指真的说出了假话,评的是陈述本身,而这里的照片一句话没说,只是把该看见的挡住了。"
+    },
+    {
+      "zh": "谁也没请他来,他却对着别组的幻灯片格式一页页指手画脚。",
+      "target": "指手画脚",
+      "en": "Nobody had asked him, yet there he was, officious about the formatting on another team's slides, marking up every single page.",
+      "order": [
+        "officious",
+        "overbearing",
+        "domineering"
+      ],
+      "extra": [
+        "high-handed"
+      ],
+      "why": "officious 的要害是没人请他,他却在鸡毛蒜皮的小事上热心插手、发号施令,而他本人并没有管你的权;overbearing 强调压得人喘不过气、不给对方留余地,做的人往往自认是好意,但那份压迫感来自他本就压过你的身份;domineering 说的是一贯要把别人管住、按自己的意思来,前提是先有一层支配关系;high-handed 指手里有权却蛮横地不跟人商量就定下来,他连定的资格都没有。"
+    },
+    {
+      "zh": "这份报告里全是粗心造成的错误,两处日期写错,客户名字也拼错了。",
+      "target": "粗心",
+      "en": "The report was full of careless mistakes, two wrong dates and a client's name misspelled, so my manager sent it straight back.",
+      "order": [
+        "careless",
+        "haphazard",
+        "oblivious"
+      ],
+      "extra": [
+        "inattentive"
+      ],
+      "why": "careless 说的是做事不上心,出错正是不上心的直接结果,可以直接修饰 mistake、error 这类词;haphazard 批评的是毫无章法、想到哪做到哪,落点在做事的组织方式,本身不谈对错;oblivious 只形容人对眼前正在发生的事浑然不觉,主语必须是人,修饰不了一处错误;inattentive 同样只说人当下不专心,不能用来形容错误本身。"
+    },
+    {
+      "zh": "裁员的消息根本捂不住,到中午整层楼都看过那张截图了。",
+      "target": "捂不住",
+      "en": "Word of the layoffs proved uncontainable; by lunchtime everyone on the floor had seen a screenshot of the spreadsheet.",
+      "order": [
+        "uncontainable",
+        "irrepressible"
+      ],
+      "extra": [
+        "irreversible",
+        "impervious"
+      ],
+      "why": "uncontainable 说的是东西冲出了原本圈住它的那道界线,消息、火势、悲痛都是「关不住了」,落点在没守住;irrepressible 压不住的是人身上那股活力或情绪,主语得是人,或是人的热情、笑声、乐观,一条消息没有这种劲头可压;irreversible 指木已成舟、无法回头,说的是能不能撤销,不是能不能关住;impervious 是任凭外界怎么作用都不为所动,方向正好相反。"
     }
   ]
 }
