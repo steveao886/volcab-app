@@ -3439,44 +3439,6 @@
       "addedAt": "2026-07-24"
     },
     {
-      "id": "rabble",
-      "headword": "rabble",
-      "phonetic": "/ˈræbl/",
-      "meanings": [
-        {
-          "pos": "n.",
-          "en": "a disorderly crowd of people, often used disparagingly",
-          "zh": "乌合之众;暴民"
-        }
-      ],
-      "examples": [
-        "Concert security called us a rabble the moment we surged toward the barricade when the encore lights came on.",
-        "The comment section turned into a rabble within minutes of the app's price hike announcement, flooding the App Store with one-star reviews.",
-        "He dismissed the protesters outside the earnings call as an unruly rabble, which only made the video clip go more viral.",
-        "Airport gate agents muttered about the rabble of standby passengers pushing toward the counter the moment the delay was announced.",
-        "The council chamber turned into a rabble when residents realized the zoning vote had already happened behind closed doors."
-      ],
-      "synonyms": [
-        "mob",
-        "horde",
-        "throng",
-        "riffraff"
-      ],
-      "antonyms": [
-        "elite",
-        "order"
-      ],
-      "collocations": [
-        "unruly rabble",
-        "rabble-rouser",
-        "the rabble outside"
-      ],
-      "relatedForms": [],
-      "usageScore": 3,
-      "sourceNote": "20-23",
-      "addedAt": "2026-07-24"
-    },
-    {
       "id": "repudiate",
       "headword": "repudiate",
       "phonetic": "/rɪˈpjuːdieɪt/",
@@ -19488,42 +19450,6 @@
       "addedAt": "2026-07-24"
     },
     {
-      "id": "foible",
-      "headword": "foible",
-      "phonetic": "/ˈfɔɪbəl/",
-      "meanings": [
-        {
-          "pos": "n.",
-          "en": "a minor fault or quirk in someone's character",
-          "zh": "(性格上的)小缺点;怪癖"
-        }
-      ],
-      "examples": [
-        "Sure, he alphabetizes his spice rack and refuses to send voice memos, but those foibles are part of why she loves him.",
-        "The performance review politely listed her foibles — chronic lateness, a weakness for reply-all — right under three glowing paragraphs.",
-        "Every roommate has a foible you learn to live with; hers was leaving one single dish unwashed by the sink, always.",
-        "Everyone at the office has learned to work around his one real foible: he can't start a meeting without a coffee refill first.",
-        "Among her many foibles, forgetting where she parked was the one that cost the most time every single week."
-      ],
-      "synonyms": [
-        "quirk",
-        "eccentricity",
-        "weakness",
-        "peculiarity"
-      ],
-      "antonyms": [],
-      "collocations": [
-        "personal foibles",
-        "human foibles",
-        "tolerate someone's foibles"
-      ],
-      "relatedForms": [],
-      "usageScore": 4,
-      "etymology": "古法语 feble(弱,即 feeble) → 弱的那一处 → 小毛病",
-      "sourceNote": "101-103",
-      "addedAt": "2026-07-24"
-    },
-    {
       "id": "humdrum",
       "headword": "humdrum",
       "phonetic": "/ˈhʌmdrʌm/",
@@ -20300,51 +20226,6 @@
       ],
       "usageScore": 6,
       "etymology": "intra-(内部) → 本来就在里面 → 内在固有",
-      "sourceNote": "104-106",
-      "addedAt": "2026-07-24"
-    },
-    {
-      "id": "invigilator",
-      "headword": "invigilator",
-      "phonetic": "/ɪnˈvɪdʒɪleɪtər/",
-      "meanings": [
-        {
-          "pos": "n.",
-          "en": "(chiefly British) a person who supervises students during an examination to prevent cheating",
-          "zh": "(英)监考官"
-        }
-      ],
-      "examples": [
-        "The invigilator confiscated his phone the moment it buzzed on the desk during the final exam.",
-        "Two invigilators patrolled the hall, one checking ID cards while the other watched for wandering eyes.",
-        "The invigilator paced silently between the desks, pausing just long enough to make everyone paranoid about their own hands.",
-        "A nervous invigilator accidentally started the exam timer five minutes early, and half the hall didn't notice until it was too late.",
-        "Students grumbled that the new invigilator checked bags so thoroughly that the exam started ten minutes behind schedule."
-      ],
-      "synonyms": [
-        "proctor",
-        "exam supervisor"
-      ],
-      "antonyms": [],
-      "collocations": [
-        "exam invigilator",
-        "chief invigilator",
-        "invigilator on duty"
-      ],
-      "relatedForms": [
-        {
-          "form": "invigilate",
-          "pos": "v.",
-          "zh": "监考"
-        },
-        {
-          "form": "invigilation",
-          "pos": "n.",
-          "zh": "监考"
-        }
-      ],
-      "usageScore": 4,
-      "etymology": "in-(在旁) + vigilare(守夜警醒) → 在旁盯着 → 监考官",
       "sourceNote": "104-106",
       "addedAt": "2026-07-24"
     },

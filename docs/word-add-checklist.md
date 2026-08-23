@@ -385,7 +385,7 @@ alone.
 | File | What it is | Authoritative for |
 |---|---|---|
 | `volcab-data/words.json` (private repo) | **The live library.** What the app reads at runtime (`src/state/sync.ts:19`, `store.tsx:367`) | **The user's actual vocabulary.** Any question of "does this word exist / did the user delete it". |
-| `data/words.json` (repo, 622 words, 1021 KB — CRLF, so fatter than the live copy) | Repo copy. Feeds dev demo mode (`src/state/store.tsx:342`, DEV-only) and the full-library regression tests (`src/lib/headword.test.ts:83,101`; `src/state/sync.test.ts:11`) | **Every validation gate.** Validators 2, 4 and 5 read this path *hardcoded* (`validate-passages.ts:37`, `validate-contrast-notes.ts:19`, `validate-word-notes.ts:17`). A note is judged against this file, not the live one. |
+| `data/words.json` (repo, 619 words, 1017 KB — CRLF, so fatter than the live copy despite holding the same words) | Repo copy. Feeds dev demo mode (`src/state/store.tsx:342`, DEV-only) and the full-library regression tests (`src/lib/headword.test.ts:83,101`; `src/state/sync.test.ts:11`) | **Every validation gate.** Validators 2, 4 and 5 read this path *hardcoded* (`validate-passages.ts:37`, `validate-contrast-notes.ts:19`, `validate-word-notes.ts:17`). A note is judged against this file, not the live one. |
 | `data/wordlist.json` (431 entries) | Frozen import manifest from `scripts/parse-enex.ts` | **Nothing.** Referenced by no code. Ignore it. |
 
 ### File size: measured once, so it does not need re-deciding
@@ -427,6 +427,26 @@ different masters, and the checklist has to write **both**.
 - After a *deletion* the same logic runs in reverse: prune the repo copy, then
   re-run validators 4 and 5 — they will hard-fail on any note still keyed to
   the removed id. That failure is the feature.
+
+**It has now happened three times** — `f53adb9` (5 words), `bf74fc9` (4), and
+2026-08-22 (`rabble / foible / invigilator`, dating from the original
+2026-07-24 import and unnoticed for a month). The pattern is always the same:
+the user deletes a word in the app, the live copy loses it, the repo copy does
+not, and **nothing reports it** — every gate reads the repo copy, so a word
+that exists only there looks perfectly valid to all seven of them. The
+divergence is only ever visible by diffing the two id sets, which the promotion
+step does anyway when it pulls the live file. **Do that diff in both directions
+and print it**, rather than only checking that the additions landed.
+
+What the 2026-08-22 prune cost, as a guide to the real work: the three words
+had no contrast note, no 要点, no rendering and no passage marker, but each was
+the sole member of a sense group. Those three groups could not be repaired —
+`order[0]` is the answer and must be a library word, and `extra` may only hold
+words the library does *not* carry, so a pruned word cannot be demoted into a
+distractor slot to save the question. Nothing else in the library could take
+over the scenarios (乌合之众 / 小毛病 / 监考老师 have no second candidate), so
+all three groups were deleted. It also moved a pinned full-library count:
+`antonymPick` directions 1180 → 1178, because `rabble` carried two antonyms.
 
 ---
 

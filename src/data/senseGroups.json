@@ -3446,20 +3446,6 @@
       "why": "ineptitude 指缺乏胜任所需的能力与判断,书面且刺耳;incompetence 是最通用的不称职;bungling 强调把事情办砸的过程;mismanagement 特指管理方式不当,不评价个人能力。"
     },
     {
-      "zh": "他有个改不掉的小毛病,开会永远迟到五分钟。",
-      "target": "小毛病",
-      "order": [
-        "foible"
-      ],
-      "extra": [
-        "quirk",
-        "idiosyncrasy",
-        "little failing"
-      ],
-      "en": "He has one foible: he is always five minutes late.",
-      "why": "foible 指无伤大雅、甚至有点可爱的性格弱点,语气宽容;quirk 强调与众不同的怪癖,不含缺点意味;idiosyncrasy 更正式,指个人独有的习性;little failing 是描述性的说法。"
-    },
-    {
       "zh": "那个倒霉的司机刚好停在树倒下的位置。",
       "target": "倒霉的",
       "order": [
@@ -3612,20 +3598,6 @@
       ],
       "en": "The violin has a mellifluous tone you can date by ear.",
       "why": "mellifluous 字面是流蜜般的,专形容声音悦耳顺滑,正式;dulcet 更旧且常带戏谑,如 dulcet tones;honeyed 多形容言语甜腻、别有用心;silky 侧重顺滑的质感,也可形容布料。"
-    },
-    {
-      "zh": "监考老师在开考前收走了所有的手机。",
-      "target": "监考老师",
-      "order": [
-        "invigilator"
-      ],
-      "extra": [
-        "proctor",
-        "exam supervisor",
-        "invigilating staff"
-      ],
-      "en": "The invigilator collected every phone before the paper started.",
-      "why": "invigilator 是英式英语里的监考人员;proctor 是美式对应词,在英国另指大学纪律官;exam supervisor 是描述性说法;invigilating staff 指承担这项工作的一组人。"
     },
     {
       "zh": "这几个零件是可互换的，维修因此快了一倍。",
@@ -3919,20 +3891,6 @@
       ],
       "en": "A plaintive bird call carried from somewhere far off.",
       "why": "plaintive 指声音里带着诉苦般的哀怨,专形容声音与曲调;mournful 强调哀悼式的悲伤;doleful 更沉重压抑;wistful 侧重怅然若失的向往,不那么悲。"
-    },
-    {
-      "zh": "门口聚了一群乌合之众,谁也说不清诉求。",
-      "target": "乌合之众",
-      "order": [
-        "rabble"
-      ],
-      "extra": [
-        "mob",
-        "riffraff",
-        "unruly crowd"
-      ],
-      "en": "A rabble gathered at the gate with no demand anyone could name.",
-      "why": "rabble 指杂乱无组织的下层人群,含轻蔑,常说 rouse the rabble;mob 强调情绪失控、可能施暴的群体;riffraff 直指身份低贱的人,骂意更重;unruly crowd 是中性描述。"
     },
     {
       "zh": "两人来回的机智应答成了整场访谈的亮点。",
