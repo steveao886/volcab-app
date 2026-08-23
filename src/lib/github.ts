@@ -12,6 +12,19 @@ function statusTag(res: Response): string {
   return `HTTP ${res.status}${limited ? ', rate-limited' : ''}`
 }
 
+/**
+ * The `message` field of a GitHub error body, or null when the body is not JSON or carries no
+ * message. Consumes the response, so it may only be called on a path that is already failing.
+ */
+async function errorMessage(res: Response): Promise<string | null> {
+  try {
+    const body = (await res.json()) as { message?: unknown }
+    return typeof body.message === 'string' ? body.message : null
+  } catch {
+    return null
+  }
+}
+
 export class GitHubClient {
   private token: string
   private owner: string
@@ -49,12 +62,12 @@ export class GitHubClient {
 
   /**
    * Reads a file. **Must use the raw media type**: the default
-   * `application/vnd.github+json` only returns the base64 body for files under 1 MB, and
-   * leaves content blank above that — and words.json now sits at 96.5% of that cap
-   * (2026-08-22: 619 words, 1,012,363 bytes live, ~1,635 bytes/word, 22 words of room). When
-   * that limit gets hit, the failure mode is nasty: old devices keep working off their local
-   * cache, **new devices can never log in**, and the error message never mentions "file too
-   * large" anywhere. raw's cap is 100 MB.
+   * `application/vnd.github+json` returns the base64 body only for files under 1 MB and
+   * leaves `content` blank above that, and words.json passes 1 MiB during 2026-08
+   * (2026-08-22: 619 words, 1,012,363 bytes live, ~1,635 bytes each). Had this stayed on the
+   * JSON media type the failure would have been nasty: old devices keep working off their
+   * local cache, **new devices can never log in**, and no error anywhere says "file too
+   * large". raw's documented cap is 100 MB, so crossing 1 MiB is a non-event here.
    *
    * The cost is that the response body no longer carries a sha (needed for putFile's
    * optimistic concurrency). Measured: GitHub returns exactly the blob sha in the raw
@@ -63,6 +76,12 @@ export class GitHubClient {
    * documented guarantee, so if the ETag doesn't have the expected shape, this falls back to
    * a separate JSON request just for the sha. **Better to send one extra request than to
    * write with a guessed sha** — that would make every single push collide with a conflict.
+   *
+   * **The fallback survives above 1 MiB, which was the real question.** The worry was that
+   * the JSON media type would *error* over the cap and take getSha down with it, stranding
+   * exactly the new-device login this comment exists to protect. Measured 2026-08-22 at 1.1,
+   * 2, 10 and 25 MB: it returns **200 with the correct sha** and simply blanks `content`.
+   * Both paths hold. See docs/superpowers/specs/2026-08-22-contents-api-size-limits-design.md.
    */
   async getFile(path: string): Promise<RemoteFile | null> {
     const res = await fetch(`${API}/repos/${this.owner}/${this.repo}/contents/${path}`, {
@@ -86,14 +105,47 @@ export class GitHubClient {
     return (await res.json()).sha as string
   }
 
-  /** Returns 'conflict' when the sha doesn't match (another client already pushed); the caller is responsible for merging and retrying */
+  /**
+   * Returns 'conflict' when someone else already pushed; the caller is responsible for merging
+   * and retrying.
+   *
+   * **Two different statuses mean that, and one of them also means something else entirely.**
+   * Measured 2026-08-22 against a throwaway repo
+   * (`docs/superpowers/specs/2026-08-22-contents-api-size-limits-design.md`):
+   *
+   * - **409** `"<path> does not match <sha>"` — a stale sha. A conflict.
+   * - **422** `Invalid request. "sha" wasn't supplied.` — we thought the file was new and it
+   *   exists. Also a conflict, and the reason 422 is mapped here at all.
+   * - **422** `Sorry, the file is too large to be processed.` — GitHub refuses to write the
+   *   file. **Not** a conflict, and the distinction is load-bearing: `pushWords` answers a
+   *   conflict by re-pulling the whole remote file, replaying, and pushing again, which walks
+   *   straight into the same refusal and then reports 云端刚被其他设备改写…稍后会自动重试 —
+   *   false in every clause, and promising a retry that can never succeed. Throwing instead
+   *   costs one request and says what happened.
+   *
+   * The size that triggers it is undocumented — GitHub publishes read tiers for this endpoint
+   * and no write limit. Measured through this very function against the live API: 40 MB writes
+   * fine, 46 MB is refused. That ceiling is about 24,000 words at the current 1,635 bytes each,
+   * against a library of 619.
+   *
+   * An unparseable 422 falls back to 'conflict', i.e. to the older behaviour — a garbled body
+   * is not evidence of a size problem, and a conflict is the recoverable reading.
+   */
   async putFile(path: string, content: string, message: string, sha?: string): Promise<{ sha: string } | 'conflict'> {
     const res = await fetch(`${API}/repos/${this.owner}/${this.repo}/contents/${path}`, {
       method: 'PUT',
       headers: { ...this.headers(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ message, content: toBase64(content), ...(sha ? { sha } : {}) }),
     })
-    if (res.status === 409 || res.status === 422) return 'conflict'
+    if (res.status === 409) return 'conflict'
+    if (res.status === 422) {
+      // Matched against the `message` field alone, never the whole body: a path or a commit
+      // message could contain these words, and the response echoes both back.
+      if (/too large/i.test((await errorMessage(res)) ?? '')) {
+        throw new Error(`写入 ${path} 失败:文件已超过 GitHub 接口的体积上限,本次改动没有保存,重试也不会成功 (${statusTag(res)})`)
+      }
+      return 'conflict'
+    }
     if (!res.ok) throw new Error(`写入 ${path} 失败 (${statusTag(res)})`)
     return { sha: (await res.json()).content.sha as string }
   }

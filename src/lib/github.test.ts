@@ -67,6 +67,32 @@ describe('GitHubClient', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonRes(409, {})))
     expect(await client.putFile('p.json', '{}', 'msg', 'oldsha')).toBe('conflict')
   })
+  /**
+   * The two 422s are not the same event, and the difference is only in the
+   * message. Measured 2026-08-22 against a throwaway repo (see
+   * docs/superpowers/specs/2026-08-22-contents-api-size-limits-design.md):
+   * a stale sha is 409, an omitted sha on an existing file is 422, and a
+   * file GitHub refuses to write is *also* 422 — at 50 MB, though not at 25.
+   *
+   * Calling the last one a conflict is what sync.ts then acts on: it
+   * re-pulls the whole remote file, replays, pushes again into the same
+   * refusal, and tells the user 云端刚被其他设备改写…稍后会自动重试, every
+   * clause of which is false and the last of which can never come true.
+   */
+  it('putFile: 422 "too large" throws instead of reporting a conflict — a conflict is retried, and this can never succeed', async () => {
+    const body = { message: 'Sorry, the file is too large to be processed. Consider creating/updating the file in a local clone and pushing it to GitHub.' }
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonRes(422, body)))
+    await expect(client.putFile('words.json', '{}', 'msg', 'sha')).rejects.toThrow(/words\.json.*体积上限.*HTTP 422/s)
+  })
+  it('putFile: 422 for an omitted sha is still a conflict — that one the retry does fix', async () => {
+    const body = { message: 'Invalid request.\n\n"sha" wasn\'t supplied.' }
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonRes(422, body)))
+    expect(await client.putFile('p.json', '{}', 'msg')).toBe('conflict')
+  })
+  it('putFile: an unparseable 422 stays a conflict — a garbled body is not evidence of a size problem', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('<html>502</html>', { status: 422 })))
+    expect(await client.putFile('p.json', '{}', 'msg', 'sha')).toBe('conflict')
+  })
   it('putFile: returns the new sha on success', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonRes(200, { content: { sha: 'new' } })))
     expect(await client.putFile('p.json', '{}', 'msg')).toEqual({ sha: 'new' })

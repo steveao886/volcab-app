@@ -385,8 +385,25 @@ alone.
 | File | What it is | Authoritative for |
 |---|---|---|
 | `volcab-data/words.json` (private repo) | **The live library.** What the app reads at runtime (`src/state/sync.ts:19`, `store.tsx:367`) | **The user's actual vocabulary.** Any question of "does this word exist / did the user delete it". |
-| `data/words.json` (repo, 498 words, 803 KB) | Repo copy. Feeds dev demo mode (`src/state/store.tsx:342`, DEV-only) and the full-library regression tests (`src/lib/headword.test.ts:83,101`; `src/state/sync.test.ts:11`) | **Every validation gate.** Validators 2, 4 and 5 read this path *hardcoded* (`validate-passages.ts:37`, `validate-contrast-notes.ts:19`, `validate-word-notes.ts:17`). A note is judged against this file, not the live one. |
+| `data/words.json` (repo, 622 words, 1021 KB — CRLF, so fatter than the live copy) | Repo copy. Feeds dev demo mode (`src/state/store.tsx:342`, DEV-only) and the full-library regression tests (`src/lib/headword.test.ts:83,101`; `src/state/sync.test.ts:11`) | **Every validation gate.** Validators 2, 4 and 5 read this path *hardcoded* (`validate-passages.ts:37`, `validate-contrast-notes.ts:19`, `validate-word-notes.ts:17`). A note is judged against this file, not the live one. |
 | `data/wordlist.json` (431 entries) | Frozen import manifest from `scripts/parse-enex.ts` | **Nothing.** Referenced by no code. Ignore it. |
+
+### File size: measured once, so it does not need re-deciding
+
+The live copy passes **1 MiB** during 2026-08 (1,012,363 bytes at 619
+words, ~1,635 bytes each). **This is not a cliff and no batch needs to stop
+for it.** Measured 2026-08-22 against a throwaway repo
+(`docs/superpowers/specs/2026-08-22-contents-api-size-limits-design.md`):
+
+- 1 MiB governs only whether the **JSON** media type returns `content`.
+  `getFile` reads with `raw` (documented cap 100 MB), and the JSON fallback
+  that fetches the sha keeps returning **200 with the sha** above the cap.
+- **Writes are not capped at 1 MiB either** — 40 MB writes fine. The real
+  ceiling is between 40 MB and 46 MB, i.e. roughly **24,000 words**, and
+  GitHub documents no write limit at all.
+
+So the size to watch is 40 MB, not 1 MiB. What a batch *should* still avoid
+is adding bulk per entry, since every word costs ~1,635 bytes forever.
 
 **What the divergence means for this checklist**: the two copies serve
 different masters, and the checklist has to write **both**.

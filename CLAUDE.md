@@ -40,7 +40,7 @@ When editing a file that mixes them, translate the comment and leave the string 
 
 Everything under `src/state/` that touches sync is **data-safety logic, not wiring** — per-path mutexes, catch-up flags, session-invalidation checks, and reconciling a server response against local state *at the moment it returns*. `store.test.tsx` is the one file in the repo allowed to have component tests, and its header explains why. Read that header before changing anything there.
 
-`words.json` is **989 KB — 96.5% of 1 MiB** (2026-08-22, 619 words, ~1,635 bytes each: room for about 22 more). Reads clear the cap already, because `getFile` asks for `application/vnd.github.raw` (100 MB); **writes still base64 through the Contents API and have not been tested above 1 MiB**. **Do not add bulk to it**, and treat the next word batch as the one that has to deal with this.
+`words.json` is **989 KB** (2026-08-22, 619 words, ~1,635 bytes each) and crosses 1 MiB during the next word batch. **That crossing is a non-event and was measured, so don't re-panic about it**: 1 MiB governs only whether the JSON media type returns `content`, and `getFile` asks for `application/vnd.github.raw` (100 MB). The write path is not capped there either — a 40 MB file writes fine, ~24,000 words away. **Still do not add bulk to it**: the real ceiling is between 40 MB and 46 MB, GitHub documents no write limit at all, and above it `putFile` gets a 422 that used to be indistinguishable from a merge conflict. See `docs/superpowers/specs/2026-08-22-contents-api-size-limits-design.md`.
 
 ### Bundled content is not synced data
 
