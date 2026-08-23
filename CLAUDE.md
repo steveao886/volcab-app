@@ -40,7 +40,7 @@ When editing a file that mixes them, translate the comment and leave the string 
 
 Everything under `src/state/` that touches sync is **data-safety logic, not wiring** — per-path mutexes, catch-up flags, session-invalidation checks, and reconciling a server response against local state *at the moment it returns*. `store.test.tsx` is the one file in the repo allowed to have component tests, and its header explains why. Read that header before changing anything there.
 
-`words.json` is around 750 KB. The GitHub Contents API only returns file content inline below 1 MB. **Do not add bulk to it.**
+`words.json` is **989 KB — 96.5% of 1 MiB** (2026-08-22, 619 words, ~1,635 bytes each: room for about 22 more). Reads clear the cap already, because `getFile` asks for `application/vnd.github.raw` (100 MB); **writes still base64 through the Contents API and have not been tested above 1 MiB**. **Do not add bulk to it**, and treat the next word batch as the one that has to deal with this.
 
 ### Bundled content is not synced data
 

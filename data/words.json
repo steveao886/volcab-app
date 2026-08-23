@@ -27520,6 +27520,1076 @@
       "usageScore": 7,
       "sourceNote": "manual",
       "addedAt": "2026-08-19"
+    },
+    {
+      "id": "intermittent",
+      "headword": "intermittent",
+      "phonetic": "/ˌɪntərˈmɪtənt/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "stopping and starting again at irregular intervals rather than continuing steadily",
+          "zh": "间歇性的，断断续续的"
+        }
+      ],
+      "examples": [
+        "The wifi in the basement office is intermittent, so my video calls freeze every few minutes and clients think I hung up.",
+        "Intermittent rain all Saturday ruined the outdoor wedding, forcing guests to shuttle between the marquee and their cars with drinks in hand.",
+        "The mechanic could not reproduce the fault, because the warning light on my dashboard is intermittent and never appears inside his garage.",
+        "Doctors traced her intermittent chest pain to too much coffee rather than her heart, a relief after three weeks of sleepless worrying.",
+        "Power in the village has been intermittent since the storm, so the bakery runs its ovens off a generator between midnight and dawn."
+      ],
+      "synonyms": [
+        "sporadic",
+        "fitful",
+        "periodic",
+        "on-and-off"
+      ],
+      "antonyms": [
+        "continuous",
+        "constant",
+        "steady"
+      ],
+      "collocations": [
+        "intermittent rain",
+        "intermittent fasting",
+        "intermittent fault"
+      ],
+      "relatedForms": [],
+      "usageScore": 7,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "inter-(之间) + mittere(送) → 间歇的"
+    },
+    {
+      "id": "conversely",
+      "headword": "conversely",
+      "phonetic": "/kənˈvɜːrsli/",
+      "meanings": [
+        {
+          "pos": "adv.",
+          "en": "used to introduce a statement that reverses or is the opposite of the one just made",
+          "zh": "相反地；反过来说"
+        }
+      ],
+      "examples": [
+        "Cheap flights to Rome fill up months ahead in July; conversely, in February you can book a window seat the night before.",
+        "Praising the team publicly costs nothing and lifts morale; conversely, one sarcastic line in the group chat can sour a whole quarter.",
+        "Our older customers still phone the branch to move money; conversely, nobody under thirty in the survey had ever walked into one.",
+        "Adding engineers to a late project usually slows it further; conversely, cutting three features from the list can ship it a month early.",
+        "Heavy rain in April fattened the harvest; conversely, the dry spell that followed left the reservoir low enough to expose the old bridge."
+      ],
+      "synonyms": [
+        "on the other hand",
+        "in contrast",
+        "by contrast",
+        "the other way round"
+      ],
+      "antonyms": [
+        "similarly",
+        "likewise"
+      ],
+      "collocations": [
+        "conversely, if",
+        "conversely, when",
+        "and conversely"
+      ],
+      "relatedForms": [],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "com-(一起) + vertere(转) → 反过来说"
+    },
+    {
+      "id": "repugnant",
+      "headword": "repugnant",
+      "phonetic": "/rɪˈpʌɡnənt/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "so offensive to your moral sense or your taste that it fills you with disgust",
+          "zh": "令人厌恶的，令人反感的"
+        }
+      ],
+      "examples": [
+        "The idea of charging refugees for blankets struck the volunteers as morally repugnant, and two of them resigned before the shift ended.",
+        "I find the whole industry of fake sympathy cards repugnant, yet the shelf at the supermarket keeps growing every single year.",
+        "Her boss's habit of reading employees' private messages was repugnant enough that she photographed the screen and forwarded it to the union.",
+        "Most viewers found the show's mockery of grieving parents repugnant, and three advertisers pulled out within forty-eight hours of the broadcast.",
+        "He was raised to think debt repugnant, so he paid for the entire kitchen renovation in cash saved over eleven years."
+      ],
+      "synonyms": [
+        "abhorrent",
+        "revolting",
+        "odious",
+        "distasteful"
+      ],
+      "antonyms": [
+        "appealing",
+        "agreeable",
+        "admirable"
+      ],
+      "collocations": [
+        "morally repugnant",
+        "deeply repugnant",
+        "find the idea repugnant"
+      ],
+      "relatedForms": [],
+      "usageScore": 5,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "re-(反) + pugnare(战斗) → 令人厌恶的"
+    },
+    {
+      "id": "culminate",
+      "headword": "culminate",
+      "phonetic": "/ˈkʌlməneɪt/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to reach the highest or final point of a long process, usually ending in a particular result",
+          "zh": "以…告终；达到顶点"
+        }
+      ],
+      "examples": [
+        "Three years of weekend rehearsals culminated in a single sold-out night at the town hall, and the choir wept through the encore.",
+        "The pay negotiations culminate on Friday, when the two sides either sign the deal or the drivers walk out at midnight.",
+        "Months of quiet resentment about the new seating plan culminated in a shouting match at the office Christmas party.",
+        "Her research on sleep and shift work will culminate in a book that several hospital managers are already dreading.",
+        "The festival culminates with a firework display over the harbour, drawing families who camp along the seawall from early afternoon."
+      ],
+      "synonyms": [
+        "climax",
+        "peak",
+        "end in",
+        "conclude"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "culminate in",
+        "culminated in a",
+        "culminating event"
+      ],
+      "relatedForms": [],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "culmen(顶峰) + -ate → 达到顶点，告终"
+    },
+    {
+      "id": "perplex",
+      "headword": "perplex",
+      "phonetic": "/pərˈpleks/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to make someone feel confused and slightly worried because they cannot understand something",
+          "zh": "使困惑，使费解"
+        }
+      ],
+      "examples": [
+        "What perplexes me is how the parcel reached my neighbour's shed when the tracking page still says it left the depot.",
+        "The sudden drop in weekend orders perplexed the whole marketing team, since nothing about the menu or the prices had changed.",
+        "Rising sea temperatures off the coast continue to perplex the biologists who have counted the same reef every spring since 1998.",
+        "It perplexes my grandmother that anyone would pay monthly for a television channel she can already watch for free through the aerial.",
+        "The missing hour on the timesheet perplexed the auditor, who called three times before someone admitted the factory clock ran slow."
+      ],
+      "synonyms": [
+        "baffle",
+        "puzzle",
+        "bewilder",
+        "confound"
+      ],
+      "antonyms": [
+        "clarify",
+        "enlighten"
+      ],
+      "collocations": [
+        "continue to perplex",
+        "perplex the experts",
+        "the question perplexes me"
+      ],
+      "relatedForms": [],
+      "usageScore": 5,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "per-(彻底) + plexus(缠绕) → 使困惑"
+    },
+    {
+      "id": "perplexed",
+      "headword": "perplexed",
+      "phonetic": "/pərˈplekst/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "feeling confused and unsure what is happening or what you should do next",
+          "zh": "困惑的，不知所措的"
+        }
+      ],
+      "examples": [
+        "She stared at the parking ticket with a perplexed frown, since the sign clearly said residents could park there until seven.",
+        "The plumber looked genuinely perplexed by the knocking noise in the wall and admitted he had never heard anything quite like it.",
+        "Perplexed by the new expenses system, half the department simply stopped claiming for taxis and paid out of their own pockets.",
+        "My students were perplexed when the exam asked about a chapter I had promised, twice in writing, would not appear.",
+        "He came home to find his flatmates perplexed, standing around a suitcase nobody had ordered and nobody was willing to open."
+      ],
+      "synonyms": [
+        "baffled",
+        "bewildered",
+        "puzzled",
+        "mystified"
+      ],
+      "antonyms": [
+        "unfazed"
+      ],
+      "collocations": [
+        "a perplexed expression",
+        "look perplexed",
+        "perplexed by the news"
+      ],
+      "relatedForms": [],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "per-(彻底) + plexus(缠绕) → 困惑不解的"
+    },
+    {
+      "id": "revolting",
+      "headword": "revolting",
+      "phonetic": "/rɪˈvoʊltɪŋ/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "extremely unpleasant, in a way that makes you feel sick or morally offended",
+          "zh": "令人作呕的；令人厌恶的"
+        }
+      ],
+      "examples": [
+        "The office fridge had been unplugged over the long weekend, and the revolting smell drove everyone back into the corridor.",
+        "My nephew mixed ketchup, orange juice and cold noodles into one bowl, then dared me to taste the revolting result.",
+        "Reviewers called the hotel revolting, posting photos of hair in the sink and a mattress stained by the previous guest.",
+        "What I find revolting is not the mistake itself, but the way management blamed the intern in a company-wide email.",
+        "The documentary showed revolting conditions in the slaughterhouse, and three of my classmates quietly gave up meat that same week."
+      ],
+      "synonyms": [
+        "disgusting",
+        "sickening",
+        "nauseating",
+        "vile"
+      ],
+      "antonyms": [
+        "delightful",
+        "appetizing",
+        "pleasant"
+      ],
+      "collocations": [
+        "a revolting smell",
+        "absolutely revolting",
+        "find it revolting"
+      ],
+      "relatedForms": [],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "re-(向后) + volvere(滚动) → 令人反胃"
+    },
+    {
+      "id": "repulse",
+      "headword": "repulse",
+      "phonetic": "/rɪˈpʌls/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to drive back an attacking force or an advancing crowd by fighting or resisting",
+          "zh": "击退，打退（进攻）",
+          "share": 60
+        },
+        {
+          "pos": "v.",
+          "en": "to firmly reject an offer, a request, or someone's romantic approach",
+          "zh": "断然拒绝，回绝（提议或求爱）",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "The defenders repulsed three separate assaults on the bridge before dawn, then radioed for ammunition that never arrived.",
+        "Our security team repulsed a crowd of ticketless fans at the north gate, and the concert started only twenty minutes late.",
+        "The bank's engineers repulsed the attack for six hours, but customers still could not log in until Tuesday morning.",
+        "She repulsed every attempt her landlord made to renegotiate the lease, forwarding each message straight to the tenants' association.",
+        "He kept sending flowers to the front desk, but Maya repulsed him so coldly that the receptionist stopped signing for them."
+      ],
+      "synonyms": [
+        "repel",
+        "beat back",
+        "fend off",
+        "rebuff"
+      ],
+      "antonyms": [
+        "welcome",
+        "embrace",
+        "yield"
+      ],
+      "collocations": [
+        "repulse an attack",
+        "repulse the invaders",
+        "repulse an advance"
+      ],
+      "relatedForms": [],
+      "usageScore": 4,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "re-(向后) + pellere(推) → 击退"
+    },
+    {
+      "id": "estranged",
+      "headword": "estranged",
+      "phonetic": "/ɪˈstreɪndʒd/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "no longer close to or in contact with a relative or friend, usually after a quarrel",
+          "zh": "断绝往来的，形同陌路的",
+          "share": 60
+        },
+        {
+          "pos": "adj.",
+          "en": "no longer living with your husband or wife, though not necessarily divorced",
+          "zh": "分居的（但未离婚的配偶）",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "After the argument over their mother's house, my two uncles stayed estranged for eleven years and missed every family wedding.",
+        "The obituary listed an estranged son in Vancouver whom none of the neighbors had ever seen at the house.",
+        "She flew home for the surgery and sat beside her estranged father, neither of them mentioning the twelve silent years.",
+        "Court records show his estranged wife had already moved to Denver with the children when the company filed for bankruptcy.",
+        "They remained legally married but estranged, splitting the mortgage by bank transfer and communicating only through a shared parenting app."
+      ],
+      "synonyms": [
+        "alienated",
+        "distant",
+        "separated"
+      ],
+      "antonyms": [
+        "close",
+        "reconciled",
+        "inseparable"
+      ],
+      "collocations": [
+        "estranged wife",
+        "estranged from his family",
+        "become estranged"
+      ],
+      "relatedForms": [
+        {
+          "form": "estrange",
+          "pos": "v.",
+          "zh": "使疏远，使感情破裂"
+        }
+      ],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "extraneus(外部的) → 变成外人 → 疏远"
+    },
+    {
+      "id": "unprecedented",
+      "headword": "unprecedented",
+      "phonetic": "/ʌnˈpresɪdentɪd/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "never having happened or existed before, and therefore without an earlier case to compare with",
+          "zh": "前所未有的，史无前例的"
+        }
+      ],
+      "examples": [
+        "Ticket prices hit an unprecedented four hundred dollars, and fans still emptied the arena's online queue in ninety seconds.",
+        "The heat wave brought unprecedented power demand, so the utility cut supply to factories before it touched a single household.",
+        "Granting a summer intern access to the payroll database was unprecedented, and the audit team wanted to know who approved it.",
+        "The small studio's film took three top awards in one night, an unprecedented sweep for a company founded two years ago.",
+        "Doctors described the recovery as unprecedented: the patient walked out of the ward six weeks after surgeons rebuilt his spine."
+      ],
+      "synonyms": [
+        "unparalleled",
+        "unheard-of",
+        "record-breaking",
+        "unmatched"
+      ],
+      "antonyms": [
+        "routine",
+        "commonplace",
+        "ordinary"
+      ],
+      "collocations": [
+        "unprecedented levels",
+        "an unprecedented move",
+        "on an unprecedented scale"
+      ],
+      "relatedForms": [
+        {
+          "form": "precedent",
+          "pos": "n.",
+          "zh": "先例，前例"
+        }
+      ],
+      "usageScore": 9,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "un-(无) + prae-(先前) + cedere(行走) → 前所未有"
+    },
+    {
+      "id": "uncontainable",
+      "headword": "uncontainable",
+      "phonetic": "/ˌʌnkənˈteɪnəbəl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "impossible to hold back, control, or keep within limits",
+          "zh": "无法抑制的；控制不住的"
+        }
+      ],
+      "examples": [
+        "When the adoption papers finally cleared, her joy was uncontainable and she hugged the case worker in the parking lot.",
+        "The fire jumped the highway by noon, and the chief admitted on camera that it was now uncontainable.",
+        "Rumors about the layoffs proved uncontainable; by lunchtime the entire third floor had seen a screenshot of the spreadsheet.",
+        "The puppy's energy was uncontainable in the small apartment, so we started walking him twice before breakfast.",
+        "Halfway through the eulogy his grief became uncontainable, and his brother stepped up to finish reading the last two pages."
+      ],
+      "synonyms": [
+        "unstoppable",
+        "irrepressible",
+        "overwhelming"
+      ],
+      "antonyms": [
+        "controllable",
+        "manageable",
+        "restrained"
+      ],
+      "collocations": [
+        "uncontainable joy",
+        "uncontainable excitement",
+        "prove uncontainable"
+      ],
+      "relatedForms": [
+        {
+          "form": "contain",
+          "pos": "v.",
+          "zh": "抑制，控制住"
+        }
+      ],
+      "usageScore": 3,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "un-(不) + con-(共同) + tenere(握住) → 无法抑制"
+    },
+    {
+      "id": "monotonous",
+      "headword": "monotonous",
+      "phonetic": "/məˈnɑːtənəs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "boring because it never changes and offers no variety",
+          "zh": "单调乏味的，千篇一律的",
+          "share": 70
+        },
+        {
+          "pos": "adj.",
+          "en": "spoken or sounded in one unchanging pitch, so that it is tiring to listen to",
+          "zh": "（声音）单调无起伏的",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "Packing identical boxes for nine hours a day was so monotonous that I started memorizing podcast episodes to stay awake.",
+        "After a monotonous week of spreadsheets, she booked a night train just to watch different scenery through the window.",
+        "The suburb's monotonous rows of beige houses made deliveries hard, and the driver circled twice before finding our number.",
+        "Hospital food here is monotonous: boiled chicken, boiled carrots, and the same beige soup at every single lunch.",
+        "He read the safety briefing in such a monotonous voice that half the row was asleep before takeoff."
+      ],
+      "synonyms": [
+        "tedious",
+        "repetitive",
+        "humdrum",
+        "dull"
+      ],
+      "antonyms": [
+        "varied",
+        "lively",
+        "eventful"
+      ],
+      "collocations": [
+        "a monotonous voice",
+        "monotonous work",
+        "monotonous routine"
+      ],
+      "relatedForms": [
+        {
+          "form": "monotony",
+          "pos": "n.",
+          "zh": "单调，千篇一律"
+        },
+        {
+          "form": "monotonously",
+          "pos": "adv.",
+          "zh": "单调地"
+        }
+      ],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "mono-(单一) + tonos(音调) → 单调乏味"
+    },
+    {
+      "id": "mundane",
+      "headword": "mundane",
+      "phonetic": "/mʌnˈdeɪn/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "ordinary and dull, lacking anything interesting or exciting",
+          "zh": "平凡的，单调乏味的",
+          "share": 80
+        },
+        {
+          "pos": "adj.",
+          "en": "belonging to the everyday material world rather than to spiritual or higher concerns",
+          "zh": "世俗的，尘世的",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "Most of my new job is mundane: resetting passwords, chasing invoices, and reformatting the same spreadsheet every Monday morning.",
+        "She quit a mundane office role in Shenzhen to run a diving school, and has never once regretted the pay cut.",
+        "The documentary makes even mundane details — a parking receipt, a half-eaten sandwich — feel like clues in a murder case.",
+        "Behind the glamorous launch video lies the mundane work of testing every button on four hundred different phone models.",
+        "The abbot told visitors to leave mundane concerns at the gate, since the monastery measures time in prayers, not quarterly targets."
+      ],
+      "synonyms": [
+        "ordinary",
+        "humdrum",
+        "banal",
+        "workaday"
+      ],
+      "antonyms": [
+        "extraordinary",
+        "exotic",
+        "remarkable"
+      ],
+      "collocations": [
+        "mundane tasks",
+        "mundane details",
+        "the mundane world"
+      ],
+      "relatedForms": [],
+      "usageScore": 7,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "mundus(世界) → 尘世的、平凡的"
+    },
+    {
+      "id": "exhortation",
+      "headword": "exhortation",
+      "phonetic": "/ˌeɡzɔːrˈteɪʃən/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "a speech or message that strongly urges someone to do something",
+          "zh": "劝诫（的话），勉励（的言辞）"
+        }
+      ],
+      "examples": [
+        "The coach's half-time exhortation lasted ninety seconds and sent eleven exhausted players back onto the field like a different team.",
+        "Her inbox is full of exhortations to 'circle back' and 'own the outcome', none of which explain who fixes the bug.",
+        "The pastor ended with an exhortation to feed the neighbors nobody sees, and forty people signed up to deliver meals.",
+        "No amount of managerial exhortation will make people answer emails at midnight if the pay stays exactly the same.",
+        "Posters in the stairwell carry cheerful exhortations to take the stairs, while the elevator arrives every twelve seconds anyway."
+      ],
+      "synonyms": [
+        "urging",
+        "admonition",
+        "pep talk",
+        "appeal"
+      ],
+      "antonyms": [
+        "discouragement"
+      ],
+      "collocations": [
+        "a stirring exhortation",
+        "exhortations to action",
+        "despite repeated exhortations"
+      ],
+      "relatedForms": [
+        {
+          "form": "exhort",
+          "pos": "v.",
+          "zh": "力劝，勉励"
+        }
+      ],
+      "usageScore": 4,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "ex-(向外) + hortari(激励) → 劝诫的话"
+    },
+    {
+      "id": "infringe",
+      "headword": "infringe",
+      "phonetic": "/ɪnˈfrɪndʒ/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to break a law or an agreement, especially one protecting someone's creative work",
+          "zh": "侵犯（版权、专利）；违反（法规）",
+          "share": 60
+        },
+        {
+          "pos": "v.",
+          "en": "to gradually limit or intrude on someone's rights, freedom, or privacy",
+          "zh": "侵害，侵扰（权利、自由）",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "The studio claims the fan game infringes its copyright, and has given the two students fourteen days to take it down.",
+        "Any restaurant that copies our sauce recipe and our logo infringes the trademark, our lawyer said before sending forty letters.",
+        "A karaoke bar in Chengdu was fined because its playlist infringed music licenses the owner had never bothered to buy.",
+        "Reading employees' private messages to measure productivity clearly infringes on their privacy, whatever the handbook says about company devices.",
+        "Residents argue that the new curfew infringes on their right to walk home safely after a late night shift."
+      ],
+      "synonyms": [
+        "violate",
+        "breach",
+        "contravene",
+        "encroach on"
+      ],
+      "antonyms": [
+        "comply with",
+        "observe",
+        "respect"
+      ],
+      "collocations": [
+        "infringe copyright",
+        "infringe a patent",
+        "infringe on someone's rights"
+      ],
+      "relatedForms": [
+        {
+          "form": "infringement",
+          "pos": "n.",
+          "zh": "侵犯；违反"
+        }
+      ],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "in-(向内) + frangere(打破) → 侵犯、违反"
+    },
+    {
+      "id": "laborious",
+      "headword": "laborious",
+      "phonetic": "/ləˈbɔːriəs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "needing a lot of time, effort, and patience to finish",
+          "zh": "费力的，繁重耗时的",
+          "share": 80
+        },
+        {
+          "pos": "adj.",
+          "en": "(of writing or speech) heavy and awkward, showing the effort that went into it",
+          "zh": "（文章、言辞）生硬吃力的",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "Sorting twelve years of receipts into folders is laborious, but the accountant refuses to touch the shoebox until it is done.",
+        "Restoring the mural was laborious: two conservators spent nine months lifting soot off with cotton swabs the size of matchsticks.",
+        "Before the script existed, checking each order by hand was a laborious ritual that ate the whole of every Friday.",
+        "Learning to write Chinese characters felt laborious for months, until my hand finally stopped fighting the stroke order.",
+        "The novel's opening chapter is so laborious that most readers give up long before the body is even found."
+      ],
+      "synonyms": [
+        "arduous",
+        "painstaking",
+        "grueling",
+        "toilsome"
+      ],
+      "antonyms": [
+        "effortless",
+        "easy"
+      ],
+      "collocations": [
+        "a laborious process",
+        "laborious task",
+        "slow and laborious"
+      ],
+      "relatedForms": [
+        {
+          "form": "laboriously",
+          "pos": "adv.",
+          "zh": "费力地，辛苦地"
+        }
+      ],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "labor(劳苦) + -ous(充满…的) → 费力的"
+    },
+    {
+      "id": "declaim",
+      "headword": "declaim",
+      "phonetic": "/dɪˈkleɪm/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to speak or recite something loudly and dramatically, as if performing to an audience",
+          "zh": "高声朗诵，慷慨陈词",
+          "share": 70
+        },
+        {
+          "pos": "v.",
+          "en": "to speak out passionately against something you disapprove of",
+          "zh": "痛斥，抨击",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "He climbed onto a crate outside the station and declaimed his poem to commuters who mostly kept walking.",
+        "The drama teacher makes every student declaim four lines of Shakespeare from the back row until the front row hears them.",
+        "At the wedding my uncle declaimed a twenty-minute toast in the voice of a nineteenth-century preacher, and the soup went cold.",
+        "Tour guides now declaim the founding myth through headsets, so forty tourists hear the same thunderous speech in total silence.",
+        "The columnist declaims against smartphones every week, then posts each column to three social networks before lunch."
+      ],
+      "synonyms": [
+        "orate",
+        "hold forth",
+        "recite",
+        "rail"
+      ],
+      "antonyms": [
+        "mumble",
+        "mutter",
+        "whisper"
+      ],
+      "collocations": [
+        "declaim against",
+        "declaim a poem",
+        "declaim from the stage"
+      ],
+      "relatedForms": [
+        {
+          "form": "declamation",
+          "pos": "n.",
+          "zh": "朗诵；慷慨陈词"
+        }
+      ],
+      "usageScore": 3,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "de-(加强) + clamare(呼喊) → 高声演说"
+    },
+    {
+      "id": "gourmet",
+      "headword": "gourmet",
+      "phonetic": "/ɡʊrˈmeɪ/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "of a very high quality, as food or drink prepared for people with refined taste",
+          "zh": "（食品、餐厅）精致高档的",
+          "share": 70
+        },
+        {
+          "pos": "n.",
+          "en": "a person who knows a great deal about fine food and drink and enjoys them",
+          "zh": "美食家",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "The gas station now sells gourmet doughnuts at four dollars each, filled with salted caramel and dusted with gold flakes.",
+        "The airline promises a gourmet menu in business class, though the pasta still arrives in a foil tray at thirty thousand feet.",
+        "She turned her kitchen into a gourmet cat-food business after her tabby refused everything sold in the supermarket.",
+        "My father is a gourmet who can name the region of an olive oil, yet he happily eats instant noodles on Sundays.",
+        "The restaurant seats twelve, and the gourmets who fly in for it book their tables eleven months ahead."
+      ],
+      "synonyms": [
+        "epicure",
+        "connoisseur",
+        "foodie",
+        "high-end"
+      ],
+      "antonyms": [
+        "fast-food"
+      ],
+      "collocations": [
+        "gourmet coffee",
+        "a gourmet meal",
+        "gourmet restaurant"
+      ],
+      "relatedForms": [],
+      "usageScore": 7,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22",
+      "etymology": "法语 gourmet(品酒侍者) → 美食家"
+    },
+    {
+      "id": "officious",
+      "headword": "officious",
+      "phonetic": "/əˈfɪʃəs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "annoyingly eager to give orders or to offer help that nobody asked for, especially over small matters",
+          "zh": "好管闲事的;爱指手画脚的"
+        }
+      ],
+      "examples": [
+        "The officious security guard made me sign three separate forms before he would let me carry a birthday cake into my own office.",
+        "An officious neighbor measured our hedge with a tape and posted the photos in the building group chat that same evening.",
+        "Our team lead is so officious about formatting that he rewrites every slide deck at midnight and emails the changes at dawn.",
+        "A waiter hovered by our table all evening, officious to the point of refilling water glasses that nobody had even touched.",
+        "The clerk at the passport office turned officious the moment she noticed my form lacked a middle initial, and sent me home."
+      ],
+      "synonyms": [
+        "meddlesome",
+        "interfering",
+        "bossy",
+        "self-important",
+        "overbearing"
+      ],
+      "antonyms": [
+        "unobtrusive",
+        "self-effacing",
+        "easygoing"
+      ],
+      "collocations": [
+        "an officious bureaucrat",
+        "officious manner",
+        "officious little man"
+      ],
+      "relatedForms": [
+        {
+          "form": "officiously",
+          "pos": "adv.",
+          "zh": "多管闲事地;爱摆架子地"
+        },
+        {
+          "form": "officiousness",
+          "pos": "n.",
+          "zh": "好管闲事;越权多管"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "officium(职责,效劳) → 过分热心帮忙 → 多管闲事",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22"
+    },
+    {
+      "id": "treacherous",
+      "headword": "treacherous",
+      "phonetic": "/ˈtretʃərəs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "dangerous in a way that is not obvious, because the risk is hidden or the conditions can change suddenly",
+          "zh": "(路面、天气等)暗藏危险的;凶险的",
+          "share": 60
+        },
+        {
+          "pos": "adj.",
+          "en": "willing to betray someone who trusts you, or involving such a betrayal",
+          "zh": "背信弃义的;奸诈的",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "Black ice made the mountain pass treacherous, and the delivery van slid into a ditch two miles from the depot.",
+        "The trail looks gentle from the parking lot, but loose scree makes the final ridge treacherous once the fog rolls in.",
+        "Divers avoid that wreck in August, when treacherous currents pull even strong swimmers under before the boat can reach them.",
+        "His treacherous business partner copied the client list, registered a rival company, and sent the pitch deck out the same week.",
+        "Only a treacherous friend would forward those private messages to a reporter after ten years of shared holidays and borrowed money."
+      ],
+      "synonyms": [
+        "perilous",
+        "hazardous",
+        "perfidious",
+        "disloyal",
+        "duplicitous"
+      ],
+      "antonyms": [
+        "safe",
+        "loyal",
+        "faithful",
+        "trustworthy"
+      ],
+      "collocations": [
+        "treacherous conditions",
+        "treacherous waters",
+        "a treacherous ally"
+      ],
+      "relatedForms": [
+        {
+          "form": "treachery",
+          "pos": "n.",
+          "zh": "背叛;背信弃义"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "trichier(欺骗) → 背信弃义 → 暗藏危险",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22"
+    },
+    {
+      "id": "deceitful",
+      "headword": "deceitful",
+      "phonetic": "/dɪˈsiːtfəl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "behaving dishonestly, especially by telling lies or hiding the truth in order to get something",
+          "zh": "欺骗的;不诚实的"
+        }
+      ],
+      "examples": [
+        "The listing was deceitful: the photos hid the mold behind the washing machine, which we only found after signing the lease.",
+        "Her ex kept a deceitful second calendar on his phone so the weekend trips would look like client visits to accounting.",
+        "Investors called the founder deceitful after learning the demo video had been filmed with actors and a product that did not exist.",
+        "It felt deceitful to praise his cooking all evening and then order noodles on the way home, but nobody wanted an argument.",
+        "The subscription page uses deceitful wording, hiding the annual charge in gray text under a bright button that says try free."
+      ],
+      "synonyms": [
+        "dishonest",
+        "duplicitous",
+        "underhanded",
+        "mendacious",
+        "misleading"
+      ],
+      "antonyms": [
+        "honest",
+        "truthful",
+        "candid",
+        "straightforward"
+      ],
+      "collocations": [
+        "deceitful behavior",
+        "deliberately deceitful",
+        "a deceitful practice"
+      ],
+      "relatedForms": [
+        {
+          "form": "deceit",
+          "pos": "n.",
+          "zh": "欺骗;骗术"
+        },
+        {
+          "form": "deceive",
+          "pos": "v.",
+          "zh": "欺骗;蒙蔽"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "de-(离开) + capere(抓取) → decipere(诱人上钩) → 欺骗",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22"
+    },
+    {
+      "id": "translucent",
+      "headword": "translucent",
+      "phonetic": "/trænsˈluːsənt/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "letting light pass through, but not clear enough to see objects on the other side distinctly",
+          "zh": "半透明的(透光但看不清)"
+        }
+      ],
+      "examples": [
+        "The bathroom door has a translucent panel, so you can see a shape moving behind it but never who is actually inside.",
+        "She printed the logo on translucent paper and laid it over the photograph to check how the two layers lined up.",
+        "Fresh squid is almost translucent, and the chef sends back any box where the flesh has already turned chalky and white.",
+        "Simmer the onions until they go soft and translucent, then add the garlic so that it does not burn in the pan.",
+        "The new phone case is translucent enough to show the charging coil, which the design team spent four months making pretty."
+      ],
+      "synonyms": [
+        "semi-transparent",
+        "frosted",
+        "diaphanous"
+      ],
+      "antonyms": [
+        "opaque",
+        "transparent"
+      ],
+      "collocations": [
+        "translucent glass",
+        "a translucent panel",
+        "cook until translucent"
+      ],
+      "relatedForms": [
+        {
+          "form": "translucency",
+          "pos": "n.",
+          "zh": "半透明;透光性"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "trans-(穿过) + lucere(发光) → 光能透过 → 半透明",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22"
+    },
+    {
+      "id": "careless",
+      "headword": "careless",
+      "phonetic": "/ˈkerləs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "not giving enough attention to what you are doing, so that you make mistakes or cause damage",
+          "zh": "粗心的;疏忽的;不当心的"
+        }
+      ],
+      "examples": [
+        "One careless click on a fake invoice link, and the whole finance team spent the weekend resetting passwords and calling the bank.",
+        "He is careless with borrowed things: my drill came back with the case cracked and two bits missing from the tray.",
+        "The report was full of careless mistakes, including two wrong dates and a client's name misspelled, so my manager sent it back.",
+        "A careless driver left the van in neutral on the slope, and it rolled through the fence into the neighbor's flower beds.",
+        "It was careless of me to mention her salary at dinner, and the table went quiet for a very long ten seconds."
+      ],
+      "synonyms": [
+        "sloppy",
+        "negligent",
+        "thoughtless",
+        "slapdash",
+        "inattentive"
+      ],
+      "antonyms": [
+        "careful",
+        "meticulous",
+        "attentive",
+        "thorough"
+      ],
+      "collocations": [
+        "a careless mistake",
+        "careless driving",
+        "careless with money"
+      ],
+      "relatedForms": [
+        {
+          "form": "carelessly",
+          "pos": "adv.",
+          "zh": "粗心地;疏忽地"
+        },
+        {
+          "form": "carelessness",
+          "pos": "n.",
+          "zh": "粗心;疏忽"
+        }
+      ],
+      "usageScore": 9,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-22"
     }
   ]
 }

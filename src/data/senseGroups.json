@@ -1629,10 +1629,10 @@
       "zh": "那种做法在她看来令人憎恶,她当场就退出了项目。",
       "target": "令人憎恶",
       "order": [
-        "abhorrent"
+        "abhorrent",
+        "repugnant"
       ],
       "extra": [
-        "repugnant",
         "odious",
         "repellent"
       ],
@@ -1713,15 +1713,15 @@
       "zh": "那段路又陡又长,是全程最艰苦的一截。",
       "target": "艰苦",
       "order": [
-        "arduous"
+        "arduous",
+        "laborious"
       ],
       "extra": [
         "grueling",
-        "laborious",
         "punishing"
       ],
       "en": "That stretch is steep and long, the most arduous part of the route.",
-      "why": "arduous 指需要持续投入大量体力或心力,正式;grueling 强调把人榨干的折磨感;laborious 侧重繁琐费工、进展缓慢;punishing 突出对身体的摧残。"
+      "why": "arduous 指需要持续投入大量体力或心力,正式;laborious 侧重繁琐费工、进展缓慢,累在耗时而非强度;grueling 强调把人榨干的折磨感;punishing 突出对身体的摧残。"
     },
     {
       "zh": "这一点他已经说得够多了,再讲下去只会拖慢会议。",
@@ -3477,11 +3477,11 @@
       "zh": "那份工作单调乏味,他做了七年。",
       "target": "单调乏味",
       "order": [
-        "humdrum"
+        "humdrum",
+        "monotonous",
+        "mundane"
       ],
       "extra": [
-        "monotonous",
-        "mundane",
         "run-of-the-mill"
       ],
       "en": "The job was humdrum and he stayed seven years.",
@@ -3872,12 +3872,11 @@
         "epicure"
       ],
       "extra": [
-        "gourmet",
         "gastronome",
         "foodie"
       ],
       "en": "An epicure to the core, he will drive three hours for one stock.",
-      "why": "epicure 指对饮食品味极为挑剔并从中获得享受的人,略古雅;gourmet 更常用,强调懂行会点;gastronome 偏学究,研究饮食之道;foodie 是当代口语,门槛低得多。"
+      "why": "epicure 指对饮食品味极为挑剔并从中获得享受的人,略古雅;gastronome 偏学究,研究饮食之道;foodie 是当代口语,门槛低得多。"
     },
     {
       "zh": "这条路自古以来就是两地之间唯一的通道。",

@@ -50,7 +50,8 @@ export class GitHubClient {
   /**
    * Reads a file. **Must use the raw media type**: the default
    * `application/vnd.github+json` only returns the base64 body for files under 1 MB, and
-   * leaves content blank above that — and words.json already sits at 55% of that cap. When
+   * leaves content blank above that — and words.json now sits at 96.5% of that cap
+   * (2026-08-22: 619 words, 1,012,363 bytes live, ~1,635 bytes/word, 22 words of room). When
    * that limit gets hit, the failure mode is nasty: old devices keep working off their local
    * cache, **new devices can never log in**, and the error message never mentions "file too
    * large" anywhere. raw's cap is 100 MB.
