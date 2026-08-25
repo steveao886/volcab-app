@@ -6,7 +6,7 @@ import type { QuizMetricKey } from '../lib/quiz'
 import { demoteWord, gradeWord, todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
 import { emptyProgress, emptyStat } from '../types'
-import type { DailyStat, Grade, Progress, ProgressEntry, StagingItem, Word } from '../types'
+import type { DailyStat, Grade, Progress, ProgressEntry, RecallRating, StagingItem, Word } from '../types'
 import { classifySyncFailure, friendlyError, httpStatus, logoutDiscarded, ownerSwitched } from './errors'
 import {
   appendPendingOp, appendPendingStaging, bootSnapshot, cachedProgress, carryOverFor,
@@ -92,6 +92,8 @@ export interface AppActions {
   recordQuiz(correct: number, total: number, wrongIds: string[], mode: QuizMetricKey): void
   /** 回想 production record. Writes ProgressEntry.recall and nothing the scheduler owns. */
   recordRecall(results: { id: string; correct: boolean }[]): void
+  /** The user's manual 回想 rating — 太简单 / 要多考, or 'none' to clear. Writes ProgressEntry.recallRating and nothing the scheduler owns. */
+  rateRecall(id: string, level: RecallRating['level']): void
   /** 回想's 巩固 button: declare a quiz miss a real forget — missedAt stamped, lapses counted, nothing else moves */
   consolidateWord(id: string): void
   /** Sprint settlement: stamps missedAt and, unlike recordQuiz, never demotes — a miss under a 60-second clock is as likely to be timing as memory. Plus the personal best. */
@@ -899,6 +901,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [commitProgress, flushProgress])
 
   /**
+   * The user's own verdict on a word in 回想 — 太简单 / 要多考, or 'none' to
+   * clear.
+   *
+   * **Written the moment it is tapped**, not batched into settlement the
+   * way recordRecall is. A rating is intent, not a round result: quitting a
+   * round halfway must not discard it, and the word detail page — the only
+   * place all three states are one tap apart, and the only way back to a
+   * word marked 太简单 — has no settlement to wait for at all.
+   *
+   * Touches nothing the scheduler owns, exactly as recordRecall does not.
+   * That boundary is the entire reason the 回想 axis exists separately.
+   */
+  const rateRecall = useCallback((id: string, level: RecallRating['level']) => {
+    const cur = stateRef.current.progress
+    const prev = cur.words[id]
+    // A word deleted on another device: skip rather than resurrect an entry
+    // for it, the same call recordRecall and practiceGrade make.
+    if (prev === undefined) return
+    commitProgress({
+      ...cur,
+      words: { ...cur.words, [id]: { ...prev, recallRating: { level, at: new Date().toISOString() } } },
+    })
+    void flushProgress()
+  }, [commitProgress, flushProgress])
+
+  /**
    * The 巩固 button on 回想's results page: the user declaring "count this
    * miss as a real forget". Due today, lapses incremented, lastReviewedAt
    * stamped — nothing else.
@@ -1071,11 +1099,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AppContextValue>(() => ({
     ...state,
-    login, logout, grade, recordLapseDrill, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
+    login, logout, grade, recordLapseDrill, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, rateRecall, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll,
     ...(import.meta.env.DEV ? { enterDemoMode } : {}),
   }), [
-    state, login, logout, grade, recordLapseDrill, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
+    state, login, logout, grade, recordLapseDrill, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, rateRecall, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll, enterDemoMode,
   ])
 

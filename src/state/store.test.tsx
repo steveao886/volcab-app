@@ -1048,6 +1048,46 @@ describe('quiz demotion: a miss halves the interval, and only the sprint is exem
     expect(app().progress.words['nowhere']).toBeUndefined()
   })
 
+  /**
+   * Same contract as recordRecall's, and for the same reason: the manual
+   * rating is read by 回想's draw and by nothing in srs.ts. Asserted field
+   * by field rather than with a snapshot so a newly added scheduler field
+   * fails here too.
+   */
+  it('rateRecall writes the rating and nothing the scheduler owns', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.words['alpha']
+
+    await step(() => { app().rateRecall('alpha', 'easy') })
+
+    const after = app().progress.words['alpha']
+    const { recallRating: _a, ...afterSched } = after
+    const { recallRating: _b, ...beforeSched } = before
+    expect(afterSched).toEqual(beforeSched)
+    expect(after.recallRating?.level).toBe('easy')
+    expect(after.recallRating?.at).toEqual(expect.any(String))
+  })
+
+  it('clearing writes a value rather than removing the field', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().rateRecall('alpha', 'hard') })
+    expect(app().progress.words['alpha'].recallRating?.level).toBe('hard')
+
+    await step(() => { app().rateRecall('alpha', 'none') })
+    // Not deleted: 'none' carries a timestamp, which is what lets the clear
+    // beat a device still holding the old rating. See mergeRating.
+    expect(app().progress.words['alpha'].recallRating?.level).toBe('none')
+  })
+
+  it('rateRecall skips a word deleted on another device mid-session', async () => {
+    await bootAsAlice()
+    await step(() => { app().rateRecall('nowhere', 'easy') })
+    expect(app().progress.words['nowhere']).toBeUndefined()
+  })
+
   it('the sprint never demotes — a miss under the clock is as likely to be timing as memory', async () => {
     await bootAsAlice()
     await step(() => { app().grade('alpha', 'easy') })
