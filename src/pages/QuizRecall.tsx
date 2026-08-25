@@ -64,6 +64,18 @@ const MISS_TAG: Record<Miss, string> = {
   'hint-miss': '提示后仍错',
 }
 
+/**
+ * The two directions the user can push a word, printed in full.
+ *
+ * The selected state changes the whole label rather than only the colour —
+ * same rule the quiz options follow, and for the same reason: state must
+ * never be carried by colour alone.
+ */
+const RATING_LABEL: Record<'easy' | 'hard', { set: string; unset: string }> = {
+  easy: { unset: '太简单', set: '已标记为太简单 · 取消' },
+  hard: { unset: '要多考', set: '已标记为要多考 · 取消' },
+}
+
 interface RecallQuestionViewProps {
   question: RecallQuestion
   onAnswered: (correct: boolean, wrongIds: string[], miss: Miss | null) => void
@@ -77,11 +89,29 @@ interface RecallQuestionViewProps {
 function RecallQuestionView({
   question, onAnswered, onNext, nextLabel, onReinforce, reinforced,
 }: RecallQuestionViewProps) {
-  const { progress } = useApp()
+  const { progress, rateRecall } = useApp()
   const soundEnabled = isSoundEnabled(progress.settings)
   const [stage, setStage] = useState<Stage>('commit')
   const [correct, setCorrect] = useState(false)
   const [miss, setMiss] = useState<Miss | null>(null)
+  const answerId = question.orderIds[0]
+  const rated = progress.words[answerId]?.recallRating?.level
+  /**
+   * One button, not two.
+   *
+   * An existing rating always shows itself, so a mark can never become
+   * invisible and therefore unchangeable — which matters most for 太简单,
+   * drawn once per ~540 rounds, which will not come back on its own to
+   * offer you the chance to undo it. Only an unrated word gets the button
+   * its own answer suggests.
+   *
+   * It sits on the question rather than the results page for the same
+   * reason 巩固 does: the moment you know a word is too easy is the moment
+   * you just answered it without thinking, not ten questions later while
+   * reconstructing which was which.
+   */
+  const ratingShown: 'easy' | 'hard' =
+    rated === 'easy' || rated === 'hard' ? rated : (correct ? 'easy' : 'hard')
   /** 唤词: the one option picked. 排序: the tap sequence so far. */
   const [picked, setPicked] = useState<string[]>([])
   const answeredRef = useRef(false)
@@ -370,6 +400,14 @@ function RecallQuestionView({
               {reinforced ? '本轮结束后再想一遍' : '巩固 · 再想一遍'}
             </Button>
           ) : null}
+          <Button
+            variant="secondary"
+            block
+            aria-pressed={rated === ratingShown}
+            onClick={() => rateRecall(answerId, rated === ratingShown ? 'none' : ratingShown)}
+          >
+            {rated === ratingShown ? RATING_LABEL[ratingShown].set : RATING_LABEL[ratingShown].unset}
+          </Button>
           <Button ref={nextRef} className="quiz-q__next" variant="primary" block onClick={onNext}>
             {nextLabel}
           </Button>
@@ -396,7 +434,7 @@ export function RecallSession({
   sentences: RecallSentence[]
   onRestart: () => void
 }) {
-  const { progress, recordQuiz, recordRecall, consolidateWord } = useApp()
+  const { progress, recordQuiz, recordRecall, rateRecall, consolidateWord } = useApp()
   // Pinned once, alongside the question set: difficultyWeight's recent-miss
   // window reads it, and a session must not change meaning midway because
   // the clock rolled past midnight.
@@ -450,6 +488,18 @@ export function RecallSession({
     // scores the word that had to come first — the same word wrongIdsFor
     // treats as the subject.
     setProduced(prev => [...prev, { id: q.orderIds[0], correct }])
+    // A miss refutes 太简单, so the mark retracts itself — here, in the tap
+    // that produced the miss, rather than batched into recordRecall at
+    // settlement. Batching would be tidier and would produce a visibly
+    // wrong screen: the reveal would still show 太简单 selected and flip it
+    // silently when 下一题 is pressed.
+    //
+    // 要多考 is never retracted this way, and the asymmetry is the point:
+    // 太简单 is a claim of fact and a miss refutes it, while 要多考 is a
+    // wish and three correct answers are not grounds to overrule it.
+    if (!correct && progress.words[q.orderIds[0]]?.recallRating?.level === 'easy') {
+      rateRecall(q.orderIds[0], 'none')
+    }
     if (correct) {
       // Answering it right is the only thing that clears the debt — that is
       // what "巩固" was asking for in the first place.
@@ -460,7 +510,7 @@ export function RecallSession({
     }
     setWrongIds(prev => [...new Set([...prev, ...ids])])
     if (miss !== null) setMisses(prev => ({ ...prev, [q.orderIds[0]]: miss }))
-  }, [])
+  }, [progress, rateRecall])
 
   /**
    * 巩固: practise this **direction** again, which is the one thing pulling
