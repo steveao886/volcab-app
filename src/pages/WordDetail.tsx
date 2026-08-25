@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { CaptureChips } from '../components/CaptureChips'
+import { Chip } from '../components/Chip'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ExampleSentence } from '../components/ExampleSentence'
 import { Icon } from '../components/Icon'
@@ -16,17 +17,30 @@ import { senseVoices } from '../lib/sensePronounce'
 import { wordNote } from '../lib/wordNotes'
 import type { WordNotesFile } from '../lib/wordNotes'
 import { useApp } from '../state/store'
-import type { Word, WordState } from '../types'
+import type { RecallRating, Word, WordState } from '../types'
 import { wordState } from './libraryFilter'
 import { WordEditForm } from './WordEditForm'
 import './WordDetail.css'
 
 const STATE_LABEL: Record<WordState, string> = { new: '未学', learning: '学习中', review: '已掌握' }
 
+/**
+ * The 回想 rating's three states, in the order they read as a scale.
+ *
+ * `'none'` and an absent rating are the same thing here, exactly as they
+ * are to the weighting — the tombstone exists for mergeRating, not for the
+ * user. See RecallRating.
+ */
+const RECALL_RATINGS: [level: RecallRating['level'], label: string][] = [
+  ['easy', '太简单'],
+  ['none', '默认'],
+  ['hard', '要多考'],
+]
+
 /** Task 19 implementation: full entry + pronunciation + learning stats + edit form + delete. */
 export function WordDetail() {
   const { id } = useParams()
-  const { words, progress, saveWord, deleteWords, syncStatus, syncError, syncNow } = useApp()
+  const { words, progress, saveWord, deleteWords, rateRecall, syncStatus, syncError, syncNow } = useApp()
   const navigate = useNavigate()
 
   const [editing, setEditing] = useState(false)
@@ -309,6 +323,33 @@ export function WordDetail() {
                 <p className="stat__label">
                   回想说出{entry.recall.streak >= 3 ? ` · 连对 ${entry.recall.streak}` : ''}
                 </p>
+              </div>
+            )}
+            {/* The user's own verdict, and the only place all three states
+                are one tap apart. It is also the only way back to a word
+                marked 太简单: at 0.05 it is drawn once per ~540 rounds and
+                will not come back on its own to offer the chance.
+
+                Shown whenever the word has a progress entry, unlike the
+                回想说出 tile above, which needs reps > 0 — that one reports
+                a measurement and has nothing to say before the first
+                answer, while a rating is an opinion the user can hold about
+                a word 回想 has not asked yet. A word with no entry at all
+                has never been studied, so 回想 cannot reach it and
+                rateRecall would no-op; no control beats a dead one. */}
+            {entry !== undefined && (
+              <div className="stat worddetail-stat--wide">
+                <div className="worddetail-chiprow worddetail-rating" role="group" aria-label="回想出题难度">
+                  {RECALL_RATINGS.map(([level, label]) => (
+                    <Chip
+                      key={level}
+                      label={label}
+                      selected={(entry.recallRating?.level ?? 'none') === level}
+                      onClick={() => rateRecall(word.id, level)}
+                    />
+                  ))}
+                </div>
+                <p className="stat__label">回想出题</p>
               </div>
             )}
           </Card>

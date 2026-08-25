@@ -193,3 +193,11 @@
    .confirm-dialog, the fallback state for a nonexistent entry goes through
    .empty-state, and the sync-failure notice goes through SyncStatus /
    .sync-note. This page defines none of its own for these. */
+
+/* The rating row sits where a .stat's value normally does, so it needs the
+   same gap under it that .stat__value carries. The row's own --sp-3 comes
+   from .worddetail-chiprow and is load-bearing: tappable chips expand their
+   hit area 6px each way, and 8px would let two wrapped lines overlap. */
+.worddetail-rating {
+  margin-block-end: var(--sp-2);
+}
