@@ -1,4 +1,4 @@
-import type { BestRecord, DailyStat, Progress, RecallStat } from '../types'
+import type { BestRecord, DailyStat, Progress, RecallRating, RecallStat } from '../types'
 
 /**
  * Two devices' 回想 records for one word.
@@ -28,6 +28,25 @@ function mergeRecall(a: RecallStat | undefined, b: RecallStat | undefined): Reca
     streak: latest.streak,
     lastAt: latest.lastAt,
   }
+}
+
+/**
+ * The user's manual 回想 rating for one word: later `at` wins, full stop.
+ *
+ * One rule covers setting, changing **and** clearing, because clearing
+ * writes `'none'` rather than removing the field. Had it removed the field,
+ * this would have had to pick between "the side holding a value wins" —
+ * which resurrects a rating the user just cleared on the other device, the
+ * mirror of what unionDismissed exists to prevent — and dropping a rating
+ * the moment one side has not synced it yet.
+ *
+ * Unlike mergeRecall there is nothing to split by field: a rating is one
+ * indivisible statement of intent, not a state plus a ledger.
+ */
+function mergeRating(a: RecallRating | undefined, b: RecallRating | undefined): RecallRating | undefined {
+  if (a === undefined) return b
+  if (b === undefined) return a
+  return a.at >= b.at ? a : b
 }
 
 /**
@@ -131,18 +150,27 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
     const re = words[id]
     if (!re || le.lastReviewedAt >= re.lastReviewedAt) words[id] = le
   }
-  // **`recall` cannot ride the wholesale pick above.** That pick resolves an
-  // entry by `lastReviewedAt`, which only the scheduler stamps — 回想
-  // deliberately writes nothing the scheduler owns. So a phone that
+  // **Neither of these can ride the wholesale pick above.** That pick
+  // resolves an entry by `lastReviewedAt`, which only the scheduler stamps
+  // — 回想 deliberately writes nothing the scheduler owns. So a phone that
   // practised 回想 and a laptop that graded the same word in /review would
-  // resolve to the laptop's entry, and every rep of that practice would
-  // vanish on the next sync, silently and for good. Merged on its own
-  // timestamp instead.
+  // resolve to the laptop's entry, and every rep of that practice, plus any
+  // rating the user set, would vanish on the next sync, silently and for
+  // good. Each is merged on its own timestamp instead.
   for (const id of new Set([...Object.keys(local.words), ...Object.keys(remote.words)])) {
-    const merged = mergeRecall(local.words[id]?.recall, remote.words[id]?.recall)
     const entry = words[id]
-    if (entry === undefined || merged === undefined) continue
-    words[id] = { ...entry, recall: merged }
+    if (entry === undefined) continue
+    const recall = mergeRecall(local.words[id]?.recall, remote.words[id]?.recall)
+    const recallRating = mergeRating(local.words[id]?.recallRating, remote.words[id]?.recallRating)
+    // Spread conditionally rather than assigning undefined: absent on both
+    // sides has to stay absent. An explicit `undefined` key survives every
+    // in-memory comparison the tests make, even though JSON.stringify would
+    // later drop it.
+    words[id] = {
+      ...entry,
+      ...(recall === undefined ? {} : { recall }),
+      ...(recallRating === undefined ? {} : { recallRating }),
+    }
   }
 
   const dailyStats: Progress['dailyStats'] = {}

@@ -372,3 +372,68 @@ describe("mergeProgress's recall", () => {
     expect(mergedSched).toEqual(originalSched)
   })
 })
+
+describe("mergeProgress's recallRating", () => {
+  const entry = (over: Partial<ProgressEntry> = {}): ProgressEntry => ({
+    state: 'review', ease: 2.5, intervalDays: 10, due: '2026-08-20',
+    stepIndex: 0, reps: 5, lapses: 0, lastReviewedAt: '2026-08-01T00:00:00Z', ...over,
+  })
+  const withEntry = (e: ProgressEntry): Progress => {
+    const p = emptyProgress()
+    p.words.alpha = e
+    return p
+  }
+  const rating = (level: 'easy' | 'hard' | 'none', at: string) => ({ level, at })
+
+  /**
+   * Same failure the recall record is merged on its own timestamp to avoid,
+   * one field over: the phone rated the word, the laptop graded it in
+   * /review afterwards. The wholesale pick resolves by `lastReviewedAt`,
+   * which only the scheduler stamps, so the laptop's entry would win and
+   * the rating would disappear silently and for good.
+   */
+  it('survives when the other device graded the word more recently', () => {
+    const rated = withEntry(entry({ lastReviewedAt: '2026-08-01T00:00:00Z', recallRating: rating('hard', '2026-08-20T00:00:00Z') }))
+    const graded = withEntry(entry({ lastReviewedAt: '2026-08-24T00:00:00Z' }))
+    expect(mergeProgress(rated, graded).words.alpha.recallRating).toEqual(rating('hard', '2026-08-20T00:00:00Z'))
+    expect(mergeProgress(graded, rated).words.alpha.recallRating).toEqual(rating('hard', '2026-08-20T00:00:00Z'))
+  })
+
+  it('the later rating wins, whichever side it is on', () => {
+    const a = withEntry(entry({ recallRating: rating('easy', '2026-08-20T00:00:00Z') }))
+    const b = withEntry(entry({ recallRating: rating('hard', '2026-08-22T00:00:00Z') }))
+    expect(mergeProgress(a, b).words.alpha.recallRating).toEqual(rating('hard', '2026-08-22T00:00:00Z'))
+    expect(mergeProgress(b, a).words.alpha.recallRating).toEqual(rating('hard', '2026-08-22T00:00:00Z'))
+  })
+
+  /**
+   * The whole reason clearing writes 'none' instead of deleting the key.
+   * With absence meaning "cleared", the only rules available are "the side
+   * holding a value wins" — which undoes the clear on every sync, the
+   * mirror of what unionDismissed prevents — and "absence wins", which
+   * loses a rating the other device has not synced yet.
+   */
+  it('a clear beats an older rating instead of being resurrected by it', () => {
+    const stale = withEntry(entry({ recallRating: rating('easy', '2026-08-20T00:00:00Z') }))
+    const cleared = withEntry(entry({ recallRating: rating('none', '2026-08-23T00:00:00Z') }))
+    expect(mergeProgress(stale, cleared).words.alpha.recallRating?.level).toBe('none')
+    expect(mergeProgress(cleared, stale).words.alpha.recallRating?.level).toBe('none')
+  })
+
+  it('one side missing takes the other, and absent on both stays absent', () => {
+    const rated = withEntry(entry({ recallRating: rating('hard', '2026-08-20T00:00:00Z') }))
+    expect(mergeProgress(withEntry(entry()), rated).words.alpha.recallRating).toEqual(rating('hard', '2026-08-20T00:00:00Z'))
+    expect(mergeProgress(rated, withEntry(entry())).words.alpha.recallRating).toEqual(rating('hard', '2026-08-20T00:00:00Z'))
+    expect(mergeProgress(withEntry(entry()), withEntry(entry())).words.alpha).not.toHaveProperty('recallRating')
+  })
+
+  it('a rating and a recall record both survive the same merge', () => {
+    // They are merged in one loop and each has its own timestamp; a rewrite
+    // that folded them together would drop whichever came second.
+    const a = withEntry(entry({ recallRating: rating('hard', '2026-08-22T00:00:00Z') }))
+    const b = withEntry(entry({ recall: { reps: 4, correct: 3, streak: 1, lastAt: '2026-08-23T00:00:00Z' } }))
+    const m = mergeProgress(a, b)
+    expect(m.words.alpha.recallRating?.level).toBe('hard')
+    expect(m.words.alpha.recall?.reps).toBe(4)
+  })
+})
