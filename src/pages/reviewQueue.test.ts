@@ -214,3 +214,68 @@ describe('remaining', () => {
     expect(remaining(q)).toBe(1)
   })
 })
+
+describe('advance —— 困难 brings a review-phase card back', () => {
+  /**
+   * User-reported: only 重来 actually re-shows a card, and it does so as a
+   * side effect of relapsing the word to `learning`. 困难 keeps the word in
+   * `review` with a future `due`, so it could never satisfy the recycle
+   * condition — and it lengthens the interval on top of that. When a card
+   * is re-shown inside a session was never the scheduler's decision, so
+   * this is fixed here and srs.ts is untouched.
+   *
+   * See docs/superpowers/specs/2026-08-25-hard-requeue-design.md.
+   */
+  const reviewed = (over: Partial<ProgressEntry> = {}): ProgressEntry =>
+    entry({ state: 'review', intervalDays: 12, due: '2026-08-06', ...over })
+
+  it('goes to the tail of the whole queue, behind the fresh words', () => {
+    const q = buildSessionQueue(['a', 'b'], ['c'])
+    const next = advance(q, 'a', reviewed(), TODAY, true, 'hard')
+    expect(next.ids).toEqual(['b', 'c', 'a'])
+    expect(next.total).toBe(4)
+  })
+
+  it('良好 and 简单 dequeue it for good', () => {
+    const q = buildSessionQueue(['a', 'b'], [])
+    expect(advance(q, 'a', reviewed(), TODAY, true, 'good').ids).toEqual(['b'])
+    expect(advance(q, 'a', reviewed(), TODAY, true, 'easy').ids).toEqual(['b'])
+  })
+
+  it('re-queues once per card per session, never twice', () => {
+    // Uncapped, each extra showing could be graded 困难 again — and every
+    // press runs the review-phase branch again, interval x1.2 over a "+1
+    // day" floor with ease -0.15. Before this rule a session could apply
+    // that once, because the card never came back; compounding it without
+    // limit would be a harm this change introduced rather than inherited.
+    const first = advance(buildSessionQueue(['a', 'b'], []), 'a', reviewed(), TODAY, true, 'hard')
+    expect(first.ids).toEqual(['b', 'a'])
+    const second = advance({ ...first, ids: ['a'] }, 'a', reviewed(), TODAY, true, 'hard')
+    expect(second.ids).toEqual([])
+    expect(second.total).toBe(first.total)
+  })
+
+  it('a learning-phase 困难 still recycles by the old rule, and keeps its allowance', () => {
+    // srs.ts sets due = today and leaves state at learning, so the original
+    // condition already covers it. It must not also spend the once-per-
+    // session allowance, or the word would stop recycling mid-learning.
+    const q = buildSessionQueue(['a', 'b'], [])
+    const next = advance(q, 'a', entry({ state: 'learning', due: TODAY }), TODAY, true, 'hard')
+    expect(next.ids).toEqual(['b', 'a'])
+    expect(next.hardRecycled).toEqual([])
+  })
+
+  it('allowRecycle=false suppresses it, like every other recycle', () => {
+    const q = buildSessionQueue(['a', 'b'], [])
+    expect(advance(q, 'a', reviewed(), TODAY, false, 'hard').ids).toEqual(['b'])
+  })
+
+  it('the real scheduler output for 困难 is a card this rule has to catch', () => {
+    // Guards the premise rather than the code: if gradeWord ever stopped
+    // leaving a 困难-graded review word in `review` with a future due, the
+    // rule above would be solving a problem that no longer exists.
+    const graded = gradeWord(entry({ state: 'review', intervalDays: 12, due: '2026-08-06' }), 'hard', new Date(`${TODAY}T12:00:00Z`), noFuzz)
+    expect(graded.state).toBe('review')
+    expect(graded.due > TODAY).toBe(true)
+  })
+})

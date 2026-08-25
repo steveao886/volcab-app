@@ -101,7 +101,11 @@ export function Review() {
   // the comment on reviewQueue.advance) — this ref just tracks which card
   // is being waited on during that read, to keep the same card from being
   // graded twice by a double click.
-  const pendingRef = useRef<string | undefined>(undefined)
+  // Carries the grade as well as the id: advance() needs it to decide
+  // whether a 困难 on a review-phase card earns another showing, and the
+  // committed entry cannot say — after 困难 the word is still `review` with
+  // a future `due`, exactly like a card answered well.
+  const pendingRef = useRef<{ id: string; grade: Grade } | undefined>(undefined)
   const pendingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   // The session-complete sound must only ever play once: while finished
   // stays true, this component can re-render many times for unrelated
@@ -151,7 +155,7 @@ export function Review() {
       // gesture, and this is the single, earliest point where sound plays
       // for a grade (see lib/sound.ts).
       playGrade(g, soundEnabled)
-      pendingRef.current = curId
+      pendingRef.current = { id: curId, grade: g }
       // Fallback: the effect below relies on the cross-module contract
       // that "progress is guaranteed to become a new reference once
       // grade() commits" (see the note on that effect). If that contract
@@ -160,7 +164,7 @@ export function Review() {
       // all — so if it isn't resolved within 2s, unlock it and leave a
       // trace.
       pendingTimeoutRef.current = setTimeout(() => {
-        if (pendingRef.current === curId) {
+        if (pendingRef.current?.id === curId) {
           console.error(
             `[Review] No new progress arrived within ${PENDING_STUCK_TIMEOUT_MS}ms of grading "${curId}". ` +
               'Force-releasing pendingRef, otherwise the grade buttons stay dead for the rest of this session. ' +
@@ -208,15 +212,16 @@ export function Review() {
   // contract has no compile-time guarantee — the timeout in handleGrade
   // above exists specifically to guard against it being silently broken.
   useEffect(() => {
-    const pendingId = pendingRef.current
-    if (pendingId === undefined) return
+    const pending = pendingRef.current
+    if (pending === undefined) return
+    const pendingId = pending.id
     pendingRef.current = undefined
     if (pendingTimeoutRef.current !== undefined) {
       clearTimeout(pendingTimeoutRef.current)
       pendingTimeoutRef.current = undefined
     }
     const entry = progress.words[pendingId]
-    setQueue((q) => advance(q, pendingId, entry, today, mode === 'due'))
+    setQueue((q) => advance(q, pendingId, entry, today, mode === 'due', pending.grade))
     // The head of the queue has moved on to "the next showing" — even if
     // the card reinserted at the tail happens to have the same id
     // (reappearing within this session), the manual flip record must
