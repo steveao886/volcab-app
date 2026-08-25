@@ -183,10 +183,14 @@ A three-segment control — `太简单 · 默认 · 要多考` — beside the ex
 tap, and **the only place a 太简单 word can be found again**: at 0.05 it will
 not come back on its own.
 
-Shown for every word, unlike the 回想说出 tile next to it, which appears
-only once `recall.reps > 0`. That tile reports a measurement and has nothing
-to say before the first answer; a rating is an opinion, and the user can
-hold one about a word 回想 has never asked.
+Shown for any word with a progress entry, unlike the 回想说出 tile next to
+it, which appears only once `recall.reps > 0`. That tile reports a
+measurement and has nothing to say before the first answer; a rating is an
+opinion, and the user can hold one about a word 回想 has never asked.
+
+A word with **no** progress entry has never been studied at all, so 回想
+cannot reach it and `rateRecall` would no-op on it. That case shows no
+control rather than a dead one.
 
 The selected segment is ink, not vermilion. Vermilion is reserved for
 annotation and destructive actions.
