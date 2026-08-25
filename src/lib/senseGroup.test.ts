@@ -5,7 +5,7 @@ import {
 } from './senseGroup'
 import type { RecallQuestion, SenseGroup } from './senseGroup'
 import { emptyProgress } from '../types'
-import type { Progress, Word } from '../types'
+import type { Progress, RecallRating, Word } from '../types'
 
 /** Fixed date for difficultyWeight's recent-miss window. Fixtures below carry no missedAt unless a test sets one, so this only matters where one does. */
 const TODAY = '2026-08-08'
@@ -442,5 +442,70 @@ describe('one round, distinct words', () => {
       const qs = generateRecallSession([], byId, smallProg, '2026-08-10', new Set(), new Set(), 8, rngFrom(s), smallSentences)
       expect(new Set(qs.map(q => q.prompt)).size).toBe(qs.length)
     }
+  })
+})
+
+describe('the manual rating steers the draw', () => {
+  const word = (id: string): Word => ({
+    id, headword: id, phonetic: `/${id}/`,
+    meanings: [{ pos: 'adj.', en: `def of ${id}`, zh: `${id}义` }],
+    examples: [`It felt ${id} today.`, `Another ${id} day.`],
+    synonyms: [], antonyms: [], collocations: [], relatedForms: [],
+    sourceNote: 't', addedAt: '2026-07-01',
+  })
+  const ids = ['alpha', 'bravo', 'carol', 'delta', 'echo', 'fox']
+  const ws = ids.map(word)
+  const byId = new Map(ws.map(w => [w.id, w]))
+  const bare = {
+    state: 'review' as const, ease: 2.5, intervalDays: 5, due: '2026-08-10',
+    stepIndex: 0, reps: 3, lapses: 0, lastReviewedAt: '2026-08-01T00:00:00Z',
+  }
+  const prog = (ratings: Record<string, RecallRating>): Progress => {
+    const p = emptyProgress()
+    for (const w of ws) {
+      p.words[w.id] = { ...bare, ...(ratings[w.id] ? { recallRating: ratings[w.id] } : {}) }
+    }
+    return p
+  }
+  const sentences = ids.map((id, i) => ({ id, i: 0, zh: `第${i}个句子在这里。`, target: `第${i}个` }))
+  const rngFrom = (seed: number) => () => {
+    seed = (seed * 1103515245 + 12345) % 2147483648
+    return seed / 2147483648
+  }
+  const drawOrder = (p: Progress) => {
+    const counts = new Map<string, number>()
+    for (let s = 1; s <= 200; s++) {
+      const qs = generateRecallSession([], byId, p, '2026-08-10', new Set(), new Set(), 2, rngFrom(s), sentences)
+      for (const q of qs) counts.set(q.orderIds[0], (counts.get(q.orderIds[0]) ?? 0) + 1)
+    }
+    return counts
+  }
+  const AT = '2026-08-20T00:00:00Z'
+
+  it('要多考 outdraws an identical unrated word', () => {
+    const counts = drawOrder(prog({ alpha: { level: 'hard', at: AT } }))
+    expect(counts.get('alpha') ?? 0).toBeGreaterThan(counts.get('carol') ?? 0)
+  })
+
+  it('太简单 is pushed far down but never excluded', () => {
+    // The rule that has to survive every future "optimisation": this is a
+    // weight, not a filter. weightedShuffle's own comment is the contract —
+    // heavier items tend toward the front *without ever excluding the light
+    // ones* — and at 0.05 the word is once per ~540 rounds, not gone.
+    const counts = drawOrder(prog({ alpha: { level: 'easy', at: AT } }))
+    expect(counts.get('alpha') ?? 0).toBeLessThan(counts.get('carol') ?? 0)
+    // Last candidate standing, it still has to be asked. A filter would
+    // hand back an empty round here however light the weight got.
+    const rated = prog({ alpha: { level: 'easy', at: AT } })
+    const onlyAlpha = sentences.filter(s => s.id === 'alpha')
+    const round = generateRecallSession([], byId, rated, '2026-08-10', new Set(), new Set(), 2, rngFrom(7), onlyAlpha)
+    expect(round.map(q => q.orderIds[0])).toEqual(['alpha'])
+  })
+
+  it("'none' draws like an absent rating — the tombstone is for the merge, not the runtime", () => {
+    const counts = drawOrder(prog({ alpha: { level: 'none', at: AT } }))
+    const alpha = counts.get('alpha') ?? 0
+    const carol = counts.get('carol') ?? 0
+    expect(Math.abs(alpha - carol)).toBeLessThan(alpha)
   })
 })

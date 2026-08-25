@@ -2,7 +2,7 @@ import { confusableIndex } from './contrast'
 import { difficultyWeight, shuffle, weightedShuffle } from './quiz'
 import { buildSentenceQuestion, usableSentences } from './recallSentence'
 import type { RecallSentence } from './recallSentence'
-import type { Progress, RecallStat, Word } from '../types'
+import type { Progress, RecallRating, RecallStat, Word } from '../types'
 
 /**
  * One drawable unit inside a 回想 session — either an authored sense group
@@ -198,6 +198,44 @@ const recallWeight = (r: RecallStat | undefined): number => {
   // Produced correctly and on a streak: it has earned a rest, but not
   // exclusion — the floor stays above zero so it can still be drawn.
   return r.streak >= 3 ? 0.5 : 1
+}
+
+/**
+ * The user's own verdict, as a third multiplier beside the two automatic
+ * ones.
+ *
+ * Both automatic signals are after the fact: `recallWeight` above cannot
+ * call a word easy until it has been answered right three times running,
+ * and cannot call it hard until it has been missed. The user knows on
+ * sight, and until this existed the app had no way to hear it.
+ *
+ * **The two ends are deliberately asymmetric.** recallWeight already tops
+ * out at 2.5 on the hard end, so manual intent only has to push further; on
+ * the easy end its floor is 0.5, and that floor is the thing being
+ * complained about. Measured 2026-08-25 over the bundled content — 412
+ * sense groups + 1155 sentence renderings = 1567 candidates, 10 questions a
+ * round, 20000 rounds simulated through weightedShuffle's own formula, a
+ * well-covered word owning 6 candidates — 0.5 still puts a word in front of
+ * the user every 48 rounds, against 26 for an untouched one. 0.05 makes it
+ * every 540. That gap is why the easy lever is an order of magnitude
+ * stronger than the hard one.
+ *
+ * 6 rather than something larger: at 6 a marked word arrives every 6 rounds
+ * and fifteen marked words take 2.7 of a 10-question round — clearly
+ * tilted toward what the user flagged, without turning 回想 into the fixed
+ * list the stubborn-word drill already produced once.
+ *
+ * **A weight, never a filter.** 0.05 is rare, not absent. The sentence that
+ * has to stay true across this whole app is weightedShuffle's own: heavier
+ * items tend toward the front without ever excluding the light ones.
+ */
+const ratingWeight = (r: RecallRating | undefined): number => {
+  if (r === undefined) return 1
+  if (r.level === 'easy') return 0.05
+  if (r.level === 'hard') return 6
+  // 'none' is an explicitly cleared rating and weighs exactly what never
+  // having been rated weighs. It exists for mergeRating, not for here.
+  return 1
 }
 
 /**
@@ -446,10 +484,19 @@ export function generateRecallSession(
     ...eligibleGroups(groups, words, progress).map((g): RecallCandidate => ({ group: g, key: g.zh, ids: g.order })),
     ...usableSentences(sentences, words, progress).map((s): RecallCandidate => ({ sentence: s, key: s.zh, ids: [s.id] })),
   ]
+  // Three signals, one product: can I recognise it (the scheduler's own
+  // estimate), can I produce it (the 回想 record), and what did the user
+  // say. No cap on the product — the first pass below takes at most one
+  // question per word, so even a very heavy word cannot take more than 1
+  // of the round's slots.
   const weight = (c: RecallCandidate) =>
     Math.max(...c.ids.map(id => {
       const w = words.get(id)
-      return w === undefined ? 1 : difficultyWeight(w, progress, today) * recallWeight(progress.words[id]?.recall)
+      if (w === undefined) return 1
+      const e = progress.words[id]
+      return difficultyWeight(w, progress, today)
+        * recallWeight(e?.recall)
+        * ratingWeight(e?.recallRating)
     }))
   const drawn = weightedShuffle(candidates, weight, rng)
   // Stable partition into the three buckets above; each keeps its weighted
