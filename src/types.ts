@@ -165,6 +165,55 @@ export interface ProgressEntry {
    * "never practised in 回想", not a rejected merge.
    */
   recall?: RecallStat
+  /**
+   * The user's manual 回想 rating. See RecallRating.
+   *
+   * Optional like every added field: another device on an older build
+   * pushes entries without it, and the correct reading of its absence is
+   * "never rated", not a rejected merge.
+   */
+  recallRating?: RecallRating
+}
+
+/**
+ * The user's own verdict on a word in 回想, set by hand — 太简单 / 要多考 /
+ * neither.
+ *
+ * **Read by `generateRecallSession` and by nothing else.** Not the
+ * scheduler, not the other quiz modes, not the drills. Production and
+ * recognition come apart — the whole premise of `RecallStat` below — so
+ * "easy to produce from Chinese" implies "easy to recognise" but "hard to
+ * produce" implies nothing about recognition, and a rating collected in one
+ * direction must not be silently spent in the other.
+ *
+ * It exists because both automatic signals are after the fact.
+ * `recallWeight` cannot call a word easy until it has been answered right
+ * three times running, and cannot call it hard until it has been missed.
+ * The user knows on sight, and until this field the app had no way to hear
+ * it.
+ *
+ * `'none'` is **"I cleared this"**, distinct from the field being absent,
+ * which is "never rated". The runtime treats them identically — both weigh
+ * 1 — and the distinction exists only for the merge: if clearing removed
+ * the field, mergeProgress would have to choose between resurrecting a
+ * rating the user just cleared on the other device (the mirror of what
+ * unionDismissed prevents) and dropping one the moment either side had not
+ * synced it yet. A tombstone carries a timestamp, so "later `at` wins"
+ * covers setting, changing and clearing with a single rule.
+ *
+ * See docs/superpowers/specs/2026-08-25-recall-rating-design.md.
+ */
+export interface RecallRating {
+  level: 'easy' | 'hard' | 'none'
+  /**
+   * ISO timestamp of the rating. The merge key.
+   *
+   * Deliberately its own field rather than reusing `RecallStat.lastAt`,
+   * which means "the last 回想 *answer*" — a rating set from the word detail
+   * page involves no answer, so writing it there would make that sentence
+   * false about the very field the recall record is merged on.
+   */
+  at: string
 }
 
 /**
