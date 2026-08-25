@@ -64,7 +64,9 @@ Everything under `src/state/` that touches sync is **data-safety logic, not wiri
 
 Everything else still holds: a practice miss stamps `missedAt` and nothing more. **Never pull `due` forward while leaving `intervalDays` alone** — `gradeWord` computes `next = intervalDays * ease` knowing nothing about elapsed time, so a word yanked back early and graded "good" grows as if the full interval had been served. That was a real bug (`71fba29`); the demotion above avoids it by changing the interval itself.
 
-See `docs/superpowers/specs/2026-08-09-quiz-demotion-design.md`.
+The manual 回想 rating (`ProgressEntry.recallRating`, 太简单 / 要多考) is **not** a second door. It is read only by `generateRecallSession`, as a third multiplier on the draw beside `difficultyWeight` and `recallWeight`, and reaches nothing in `srs.ts`. Its two levels are 0.05 and 6 and both numbers were measured — re-measure before changing either.
+
+See `docs/superpowers/specs/2026-08-09-quiz-demotion-design.md` and `docs/superpowers/specs/2026-08-25-recall-rating-design.md`.
 
 ## Conventions
 
