@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { advance, buildSessionQueue, currentId, dropCurrent, isDone, remaining } from './reviewQueue'
+import { advance, buildSessionQueue, currentId, dropCurrent, isDone, isHardConfirm, remaining } from './reviewQueue'
 import { gradeWord } from '../lib/srs'
 import type { ProgressEntry } from '../types'
 
@@ -277,5 +277,66 @@ describe('advance —— 困难 brings a review-phase card back', () => {
     const graded = gradeWord(entry({ state: 'review', intervalDays: 12, due: '2026-08-06' }), 'hard', new Date(`${TODAY}T12:00:00Z`), noFuzz)
     expect(graded.state).toBe('review')
     expect(graded.due > TODAY).toBe(true)
+  })
+})
+
+describe('isHardConfirm —— the second showing bought by 困难 is confirm-only', () => {
+  /**
+   * User-reported two days after the requeue shipped: the re-shown card's
+   * previews were computed over the entry the first 困难 press had already
+   * committed, and grading it stacked a second full gradeWord in the same
+   * minute — 困难-then-良好 scheduled a word *further out* than plain 良好
+   * (28 vs 25 days on a 10-day word). The second showing therefore grades
+   * nothing: 重来 stays (a failed second look is a genuine relapse), the
+   * only other action dismisses via a plain advance() with no grade.
+   * See docs/superpowers/specs/2026-08-27-hard-requeue-confirm-design.md.
+   */
+  const now = new Date(2026, 6, 25, 9, 0, 0) // 2026-07-25 local time, corresponding to TODAY
+  const reviewed = (over: Partial<ProgressEntry> = {}): ProgressEntry =>
+    entry({ state: 'review', intervalDays: 12, due: '2026-08-06', ...over })
+
+  /** The queue state at the moment the hard-recycled card reaches the head again, plus the entry its 困难 press committed. */
+  const atSecondShowing = () => {
+    const q0 = buildSessionQueue(['a', 'b'], [])
+    const committed = gradeWord(reviewed(), 'hard', now, noFuzz)
+    const q1 = advance(q0, 'a', committed, TODAY, true, 'hard')
+    const q2 = advance(q1, 'b', gradeWord(reviewed(), 'good', now, noFuzz), TODAY, true, 'good')
+    return { q: q2, committed }
+  }
+
+  it('false on the first showing, before any 困难 press', () => {
+    const q = buildSessionQueue(['a'], [])
+    expect(isHardConfirm(q, 'a', reviewed())).toBe(false)
+  })
+
+  it('true when the hard-recycled card reaches the head again', () => {
+    const { q, committed } = atSecondShowing()
+    expect(currentId(q)).toBe('a')
+    expect(isHardConfirm(q, 'a', committed)).toBe(true)
+  })
+
+  it('a confirm dismissal is a plain advance with no grade: dequeued for good', () => {
+    const { q, committed } = atSecondShowing()
+    const next = advance(q, 'a', committed, TODAY, true)
+    expect(isDone(next)).toBe(true)
+    expect(next.seen).toBe(3)
+  })
+
+  it('重来 on the confirm showing relapses to learning, and the learning steps grade normally from then on', () => {
+    // The state check is what makes this work: after the relapse the id is
+    // still in hardRecycled, and membership alone would mark every
+    // learning-step showing confirm-only for the rest of the session.
+    const { q, committed } = atSecondShowing()
+    const relapsed = gradeWord(committed, 'again', now, noFuzz)
+    expect(relapsed.state).toBe('learning')
+    const next = advance(q, 'a', relapsed, TODAY, true, 'again')
+    expect(currentId(next)).toBe('a') // recycled through the learning rule, not dequeued
+    expect(isHardConfirm(next, 'a', relapsed)).toBe(false)
+  })
+
+  it('undefined id or entry → false', () => {
+    const { q, committed } = atSecondShowing()
+    expect(isHardConfirm(q, undefined, committed)).toBe(false)
+    expect(isHardConfirm(q, 'a', undefined)).toBe(false)
   })
 })

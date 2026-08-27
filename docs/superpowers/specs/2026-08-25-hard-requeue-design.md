@@ -1,7 +1,10 @@
 # 困难 brings the card back — a queue change, and only a queue change
 
 **Date:** 2026-08-25
-**Status:** approved
+**Status:** approved; the "second showing is graded again" residue was
+revised two days later — the analysis below only considered 困难 twice, and
+missed that 困难-then-良好 schedules a word further out than plain 良好.
+See 2026-08-27-hard-requeue-confirm-design.md.
 
 **What is being built**: grading a review-phase card 困难 puts it back at the
 end of the session queue, to be seen once more before the session ends.

@@ -145,8 +145,8 @@ function graduate(e: ProgressEntry, days: number, today: string, rng: () => numb
   e.due = addDays(today, e.intervalDays)
 }
 
-/** Calendar-day difference between two YYYY-MM-DD strings, parsed as local dates (same convention as addDays). */
-function diffDays(from: string, to: string): number {
+/** Calendar-day difference between two YYYY-MM-DD strings, parsed as local dates (same convention as addDays). Exported for the review page's confirm showing, which prints the already-scheduled distance instead of grade previews. */
+export function diffDays(from: string, to: string): number {
   const [fy, fm, fd] = from.split('-').map(Number)
   const [ty, tm, td] = to.split('-').map(Number)
   return Math.round((new Date(ty, tm - 1, td).getTime() - new Date(fy, fm - 1, fd).getTime()) / 86400_000)

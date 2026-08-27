@@ -22,14 +22,21 @@ export interface SessionQueue {
   total: number
   /**
    * Review-phase cards already sent back to the tail by a 困难 grade this
-   * session — the once-per-card cap, and the only reason this field exists.
+   * session. Two jobs:
    *
-   * Each 困难 press runs the review-phase branch of gradeWord again:
-   * interval `× 1.2` over a "must grow by at least a day" floor, ease
-   * `− 0.15`. Before the card could come back, a session could apply that
-   * once and no more. Letting the second showing be graded 困难 and
-   * re-queued again would compound it without limit — a harm the re-queue
-   * rule would have introduced, not one it inherited.
+   * **Marks the second showing as confirm-only** (see isHardConfirm). Each
+   * 困难 press runs the review-phase branch of gradeWord: interval `× 1.2`
+   * over a "must grow by at least a day" floor, ease `− 0.15` — and that
+   * commit lands *before* the card comes back. Letting the second showing
+   * grade again stacked a second full gradeWord over an interval that had
+   * served zero days: 困难-then-良好 scheduled a word further out than
+   * plain 良好 (28 vs 25 days on a 10-day word) — a partial miss promoted
+   * the word. See the 2026-08-27 hard-requeue-confirm spec.
+   *
+   * **Caps the re-queue at once per card per session** in advance().
+   * Confirm-only showings have no 困难 button, so the cap can't trigger
+   * through the UI any more; it stays as defence-in-depth for any caller
+   * that passes grade:'hard' for an already-recycled card.
    *
    * Learning-phase recycling does not touch this: it goes through the
    * original condition, is uncapped by design (that is what a learning step
@@ -125,6 +132,27 @@ export function advance(
     // steps are done.
     hardRecycled: recycle && hard ? [...q.hardRecycled, id] : q.hardRecycled,
   }
+}
+
+/**
+ * Is this showing the second look bought by an earlier 困难 press — the one
+ * that must confirm rather than grade?
+ *
+ * Membership in hardRecycled is exact ("sent back by 困难 this session",
+ * and an id sits in `ids` at most once), but it is permanent for the
+ * session, so it cannot answer this alone: 重来 on the confirm showing
+ * relapses the word to `learning`, and its learning-step showings must
+ * grade like any other card's. The `state === 'review'` check is what
+ * scopes the mark to the one showing it belongs to — after graduating back
+ * out of the relapse, `due` is at least a day out, so no third
+ * review-phase showing can occur within the session.
+ */
+export function isHardConfirm(
+  q: SessionQueue,
+  id: string | undefined,
+  entry: ProgressEntry | undefined,
+): boolean {
+  return id !== undefined && entry !== undefined && entry.state === 'review' && q.hardRecycled.includes(id)
 }
 
 /**

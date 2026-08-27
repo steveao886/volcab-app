@@ -256,6 +256,13 @@
   gap: var(--sp-2);
 }
 
+/* The confirm showing (a card sent back by 困难, see reviewQueue.ts's
+   isHardConfirm) has two actions instead of four. Stretching them across
+   the same row keeps 重来 in its usual leftmost slot. */
+.review-grades--confirm {
+  grid-template-columns: repeat(2, 1fr);
+}
+
 .review-grades .btn {
   padding-inline: var(--sp-2);
   flex-direction: column;

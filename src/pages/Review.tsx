@@ -11,10 +11,10 @@ import { isEditableTarget } from '../lib/keys'
 import { buildConsolidateQueue, buildLapseQueue, buildQueue, CONSOLIDATE_DELAY_HOURS, strugglingPracticePool } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { storage } from '../lib/storage'
-import { previewIntervals, todayStr } from '../lib/srs'
+import { diffDays, previewIntervals, todayStr } from '../lib/srs'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
 import { ReviewCardBack } from './ReviewCard'
-import { advance, buildSessionQueue, currentId, dropCurrent, isDone, remaining } from './reviewQueue'
+import { advance, buildSessionQueue, currentId, dropCurrent, isDone, isHardConfirm, remaining } from './reviewQueue'
 import type { SessionQueue } from './reviewQueue'
 import { useApp } from '../state/store'
 import type { Grade } from '../types'
@@ -121,6 +121,14 @@ export function Review() {
   const isNewCard = curId !== undefined && (!curEntry || curEntry.state === 'new')
   const flipped = curId !== undefined && manualFlip?.id === curId ? manualFlip.value : isNewCard
   const finished = isDone(queue)
+  // The second showing bought by an earlier 困难 press this session. It
+  // confirms rather than grades: that press already committed its schedule
+  // change (interval ×1.2, ease −0.15), so grading here would stack a
+  // second gradeWord over an interval that has served zero days —
+  // 困难-then-良好 scheduled a word further out than plain 良好 (28 vs 25
+  // days on a 10-day word). 重来 stays a real grade: failing the second
+  // look is a genuine relapse. See the 2026-08-27 hard-requeue-confirm spec.
+  const confirmShowing = isHardConfirm(queue, curId, curEntry)
 
   // Only the scheduled review shows interval previews. Drill grades
   // deliberately don't reschedule (recordLapseDrill / recordConsolidation),
@@ -183,6 +191,22 @@ export function Review() {
     },
     [curId, flipped, grade, recordLapseDrill, recordConsolidation, lapseMode, consolidateMode, soundEnabled],
   )
+
+  // Dismisses the confirm showing: the queue moves on and nothing is
+  // written — no grade, no daily stat, which is the whole point of the
+  // showing (see confirmShowing above). Advances directly instead of going
+  // through pendingRef + the progress effect, because there is no commit
+  // to wait for; the currentId guard makes a double-tap advance once, not
+  // twice.
+  const handleConfirmKnown = useCallback(() => {
+    if (pendingRef.current !== undefined) return
+    if (curId === undefined || !flipped) return
+    playGrade('good', soundEnabled)
+    const id = curId
+    const entry = curEntry
+    setQueue((q) => (currentId(q) === id ? advance(q, id, entry, today, true) : q))
+    setManualFlip(null)
+  }, [curId, curEntry, flipped, today, soundEnabled])
 
   // Review session complete sound: fires exactly once, at the moment
   // finished transitions from false to true. queue.total === 0 (there was
@@ -301,6 +325,15 @@ export function Review() {
         return
       }
       if (!flipped) return
+      if (confirmShowing) {
+        // Two actions, both printed on their buttons: 1 = 重来, 3 = 记住了
+        // (the muscle-memory "got it" key). 2 and 4 are deliberately inert
+        // here rather than remapped — a key that does something other than
+        // what it does everywhere else is worse than one that does nothing.
+        if (e.key === '1') { e.preventDefault(); handleGrade('again') }
+        else if (e.key === '3') { e.preventDefault(); handleConfirmKnown() }
+        return
+      }
       const g = GRADE_KEYS[e.key]
       if (g) {
         e.preventDefault()
@@ -309,7 +342,7 @@ export function Review() {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [curId, flipped, toggleFlip, handleGrade])
+  }, [curId, flipped, toggleFlip, handleGrade, confirmShowing, handleConfirmKnown])
 
   const reviewedToday = progress.dailyStats[today]?.reviewed ?? 0
   // The extra-practice pool can be non-empty while today's drill queue is
@@ -424,6 +457,16 @@ export function Review() {
         <p className="faint review-drill-note">这是练习:答错会把词提前到今天重新排队,答对不改变复习间隔。</p>
       )}
 
+      {/* Same placement rule as the drill note: the disclosure has to be
+          read before acting, and the misreading that prompted this feature
+          was "the schedule got scrambled" — so it prints the actual
+          recorded distance, not just a reassurance. */}
+      {confirmShowing && curEntry !== undefined && (
+        <p className="faint review-drill-note">
+          刚才按的「困难」已经记入排期(<span className="num">{diffDays(today, curEntry.due)}</span> 天后)。这一遍只是再看一眼,不再改变排期;还想不起来就按重来。
+        </p>
+      )}
+
       {/* Above the card, not below it. It was a sticky bar under the card,
           and with a long back the user still reported scrolling to grade —
           and the bar sat overlaying the tail of the card's own content. Up
@@ -431,32 +474,51 @@ export function Review() {
           card flips, and covers nothing. The 1-4 keys are unchanged. */}
       <div className="review-actions">
         {flipped ? (
-          <div className="review-grades">
-            <Button variant="grade-again" onClick={() => handleGrade('again')}>
-              <span className="review-grade__label">
-                重来<span className="review-grade__key">1</span>
-              </span>
-              {previews !== null && <span className="num review-grade__interval">{previews.again}</span>}
-            </Button>
-            <Button variant="grade-hard" onClick={() => handleGrade('hard')}>
-              <span className="review-grade__label">
-                困难<span className="review-grade__key">2</span>
-              </span>
-              {previews !== null && <span className="num review-grade__interval">{previews.hard}</span>}
-            </Button>
-            <Button variant="grade-good" onClick={() => handleGrade('good')}>
-              <span className="review-grade__label">
-                良好<span className="review-grade__key">3</span>
-              </span>
-              {previews !== null && <span className="num review-grade__interval">{previews.good}</span>}
-            </Button>
-            <Button variant="grade-easy" onClick={() => handleGrade('easy')}>
-              <span className="review-grade__label">
-                简单<span className="review-grade__key">4</span>
-              </span>
-              {previews !== null && <span className="num review-grade__interval">{previews.easy}</span>}
-            </Button>
-          </div>
+          confirmShowing ? (
+            <div className="review-grades review-grades--confirm">
+              <Button variant="grade-again" onClick={() => handleGrade('again')}>
+                <span className="review-grade__label">
+                  重来<span className="review-grade__key">1</span>
+                </span>
+                {previews !== null && <span className="num review-grade__interval">{previews.again}</span>}
+              </Button>
+              <Button variant="grade-good" onClick={handleConfirmKnown}>
+                <span className="review-grade__label">
+                  记住了<span className="review-grade__key">3</span>
+                </span>
+                {curEntry !== undefined && (
+                  <span className="num review-grade__interval">维持 {diffDays(today, curEntry.due)} 天</span>
+                )}
+              </Button>
+            </div>
+          ) : (
+            <div className="review-grades">
+              <Button variant="grade-again" onClick={() => handleGrade('again')}>
+                <span className="review-grade__label">
+                  重来<span className="review-grade__key">1</span>
+                </span>
+                {previews !== null && <span className="num review-grade__interval">{previews.again}</span>}
+              </Button>
+              <Button variant="grade-hard" onClick={() => handleGrade('hard')}>
+                <span className="review-grade__label">
+                  困难<span className="review-grade__key">2</span>
+                </span>
+                {previews !== null && <span className="num review-grade__interval">{previews.hard}</span>}
+              </Button>
+              <Button variant="grade-good" onClick={() => handleGrade('good')}>
+                <span className="review-grade__label">
+                  良好<span className="review-grade__key">3</span>
+                </span>
+                {previews !== null && <span className="num review-grade__interval">{previews.good}</span>}
+              </Button>
+              <Button variant="grade-easy" onClick={() => handleGrade('easy')}>
+                <span className="review-grade__label">
+                  简单<span className="review-grade__key">4</span>
+                </span>
+                {previews !== null && <span className="num review-grade__interval">{previews.easy}</span>}
+              </Button>
+            </div>
+          )
         ) : (
           <p className="muted review-hint">点击卡片或按空格键翻面</p>
         )}
