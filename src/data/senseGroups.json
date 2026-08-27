@@ -5434,6 +5434,118 @@
         "impervious"
       ],
       "why": "uncontainable 说的是东西冲出了原本圈住它的那道界线,消息、火势、悲痛都是「关不住了」,落点在没守住;irrepressible 压不住的是人身上那股活力或情绪,主语得是人,或是人的热情、笑声、乐观,一条消息没有这种劲头可压;irreversible 指木已成舟、无法回头,说的是能不能撤销,不是能不能关住;impervious 是任凭外界怎么作用都不为所动,方向正好相反。"
+    },
+    {
+      "zh": "两杯酒下肚他就变得爱抬杠,跟只想吃甜点的人掰扯停车规定。",
+      "target": "爱抬杠",
+      "en": "Two glasses of wine and he turns argumentative, picking apart the parking policy with people who only wanted dessert.",
+      "order": [
+        "argumentative",
+        "disputatious",
+        "belligerent"
+      ],
+      "why": "argumentative 说的是人的脾性——鸡毛蒜皮也要辩到底,场合越日常越贴;disputatious 意思相近但书卷气重,像在描述论辩派的作风,放在酒桌上过于正式;belligerent 已经带敌意和攻击性,可能动手,而他只是在掰扯规定。"
+    },
+    {
+      "zh": "教练一再叮嘱年轻投手让手臂歇一歇,他们大多不听。",
+      "target": "一再叮嘱",
+      "en": "Coaches admonish young pitchers to rest their arms, and most of them, being nineteen, simply do not listen.",
+      "order": [
+        "admonish",
+        "reprove",
+        "rebuke"
+      ],
+      "sense": 1,
+      "why": "这里不是在责备,而是为对方好、反复劝他去做一件事,只有 admonish 兼有告诫与劝导这一层;reprove 同样温和,但它只能指出对方做错了,劝不动一件还没发生的事;rebuke 是严厉当面斥责,分量最重,方向也反了。"
+    },
+    {
+      "zh": "那条公路顺着海岸线一路弯弯绕绕,开起来慢,却好看。",
+      "target": "弯弯绕绕",
+      "en": "The road follows the coast in long meandering curves, slow to drive but worth the view.",
+      "order": [
+        "meandering",
+        "circuitous",
+        "discursive"
+      ],
+      "why": "路顺着海岸线自己弯,慢而不赶,正是 meandering;circuitous 强调绕远、比直路多走,重点在效率低,而这条路并没有绕开谁;discursive 只能说话或文章离题散漫,形容不了一条真实的公路。"
+    },
+    {
+      "zh": "票价涨到四百美元,史无前例,球迷还是在九十秒内把票抢空。",
+      "target": "史无前例",
+      "en": "Ticket prices hit an unprecedented four hundred dollars, and fans still emptied the online queue in ninety seconds.",
+      "order": [
+        "unprecedented",
+        "unparalleled",
+        "inimitable"
+      ],
+      "why": "要点是从来没有过,unprecedented 说的正是史无前例;unparalleled 说的是无人能比,强调的是高度而不是头一回,票价再高也可能有人比过;inimitable 是学不来、模仿不了,多带欣赏语气,与价格无关。"
+    },
+    {
+      "zh": "停火名义上还在,零星的枪声却把车队困在检查站两天。",
+      "target": "零星",
+      "en": "Sporadic gunfire kept the convoy parked at the checkpoint for two days, though the ceasefire officially held.",
+      "order": [
+        "sporadic",
+        "intermittent",
+        "erratic"
+      ],
+      "why": "枪声总量很少、间隔毫无规律,这是 sporadic;intermittent 强调断了还会再来、有来有去,常配信号与降雨,它预设一种反复恢复的节奏;erratic 说的是忽强忽弱、毫无准头,落点在不稳定而不是稀少。"
+    },
+    {
+      "zh": "遗产的事一提,表弟们就开始觊觎那间家族小木屋。",
+      "target": "觊觎",
+      "en": "The younger cousins turned covetous about the family cabin the moment their grandmother mentioned the will.",
+      "order": [
+        "covetous",
+        "envious",
+        "acquisitive"
+      ],
+      "why": "盯着的是别人名下一件具体的东西,而且想要归自己,covetous 正是这一层;envious 更宽,可以只是心里难受地羡慕,未必想据为己有;acquisitive 说的是一贯贪求财物的性子,不针对某一件东西。"
+    },
+    {
+      "zh": "总统的一道法令在午夜关了边境,两边跑了几十年的人被困住。",
+      "target": "法令",
+      "en": "A presidential decree closed the border at midnight, stranding families who had crossed it for decades.",
+      "order": [
+        "decree",
+        "fiat",
+        "promulgation"
+      ],
+      "why": "这是发出来的那一道命令本身,decree 既指命令也可作动词;fiat 强调的是凭权力一句话说了算这层性质,多见于 by fiat,不用来指某一份具体文件;promulgation 只是把法令公之于众的那个动作,不是命令本身。"
+    },
+    {
+      "zh": "连着两晚没睡好会削弱判断力,程度超出多数司机的想象。",
+      "target": "削弱",
+      "en": "Two nights of bad sleep impair judgment more than most drivers realize.",
+      "order": [
+        "impair",
+        "incapacitate",
+        "vitiate"
+      ],
+      "why": "判断力还在,只是变差了,这种部分削弱是 impair 的本行;incapacitate 是彻底丧失行动或工作能力,程度过头;vitiate 更书面,对象是效力与品质,还常指使协议无效,搭不上判断力。"
+    },
+    {
+      "zh": "大巴在山路发卡弯上一路摇晃,摇得人直反胃,座位空了一半。",
+      "target": "直反胃",
+      "en": "The bus lurched through the mountain switchbacks with a sickening roll that emptied half the seats by the first rest stop.",
+      "order": [
+        "sickening",
+        "revolting",
+        "repulsive"
+      ],
+      "sense": 1,
+      "why": "晃得人生理上想吐,sickening 正好覆盖这层反胃义;revolting 也说令人作呕,但落点在东西本身够恶心——气味、食物、画面,而不是晃动带来的反应;repulsive 强调让人想躲开,多形容外表与举止,形容不了摇晃。"
+    },
+    {
+      "zh": "法院认定房东失职:栏杆松动的投诉他收到过六次,一直没管。",
+      "target": "失职",
+      "en": "The court found the landlord negligent after six written complaints about the loose railing went unanswered.",
+      "order": [
+        "negligent",
+        "careless",
+        "unwary"
+      ],
+      "why": "房东本有照管义务却一再不管,追责场合用 negligent;careless 只是粗心,可轻可重,不预设谁欠谁一份责任;unwary 说的是对危险没提防,常指被坑的那一方,主语站错了位置。"
     }
   ]
 }
