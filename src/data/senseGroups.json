@@ -1811,10 +1811,10 @@
       "zh": "他要求的薪酬与这个岗位的责任并不相称。",
       "target": "相称",
       "order": [
-        "commensurate"
+        "commensurate",
+        "proportionate"
       ],
       "extra": [
-        "proportionate",
         "in line with",
         "befitting"
       ],
@@ -3323,10 +3323,10 @@
       "zh": "那伙人用假合同骗走了二十多个老人的养老钱。",
       "target": "骗走",
       "order": [
-        "swindle"
+        "swindle",
+        "defraud"
       ],
       "extra": [
-        "defraud",
         "con",
         "fleece"
       ],
@@ -4791,12 +4791,10 @@
       "en": "The site engineer was hired to superintend the bridge from the foundation pour to final inspection.",
       "order": [
         "superintend",
+        "oversee",
         "wrangle"
       ],
-      "extra": [
-        "oversee"
-      ],
-      "why": "superintend 是正式的监督管理：有职责在身，从头盯到尾，主语常是工程师、监理、主管；wrangle 的日常主力义其实是激烈争论，作管理时也带着费劲驾驭的意味。"
+      "why": "superintend 是正式的监督管理:有职责在身,从头盯到尾,主语常是工程师、监理、主管;oversee 意思最接近,但它只是日常通用的「负责盯着做成」,不带这份受聘履职的正式分量;wrangle 的日常主力义其实是激烈争论,作管理时也带着费劲驾驭的意味。"
     },
     {
       "zh": "总裁辞职，半个领导层跟着走，公司经历了一场剧变。",
@@ -5370,10 +5368,10 @@
       "target": "暗藏凶险",
       "en": "From the parking lot the ridge looks like nothing much, but once the fog comes in, the loose scree underfoot turns treacherous.",
       "order": [
-        "treacherous"
+        "treacherous",
+        "perilous"
       ],
       "extra": [
-        "perilous",
         "hazardous",
         "deceptive"
       ],

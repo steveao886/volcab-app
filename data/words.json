@@ -28471,6 +28471,821 @@
       "usageScore": 9,
       "sourceNote": "manual",
       "addedAt": "2026-08-22"
+    },
+    {
+      "id": "unparalleled",
+      "headword": "unparalleled",
+      "phonetic": "/ʌnˈperəleld/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "so great or so good that nothing else can be compared with it",
+          "zh": "无与伦比的;空前的"
+        }
+      ],
+      "examples": [
+        "The tiny museum has unparalleled access to the family archive, so researchers fly in from three continents just to read letters.",
+        "Her second album sold four million copies in a month, an unparalleled run for a singer who was busking two years earlier.",
+        "Streaming gave the studio unparalleled data about which scene made viewers reach for the remote, down to the exact second.",
+        "The blackout caused unparalleled damage to the regional grid, and engineers still argue about which substation gave way first.",
+        "He speaks six languages and reads two more, an unparalleled asset in a newsroom that has to cover half the planet."
+      ],
+      "synonyms": [
+        "unprecedented",
+        "unrivaled",
+        "matchless",
+        "unequaled",
+        "incomparable"
+      ],
+      "antonyms": [
+        "ordinary",
+        "commonplace",
+        "unremarkable"
+      ],
+      "collocations": [
+        "unparalleled access",
+        "unparalleled success",
+        "an unparalleled opportunity"
+      ],
+      "relatedForms": [],
+      "usageScore": 7,
+      "etymology": "un-(无) + parallel(匹敌) → 无可匹敌",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
+    },
+    {
+      "id": "negligent",
+      "headword": "negligent",
+      "phonetic": "/ˈneɡlɪdʒənt/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "failing to give something the care or attention that a duty requires, so that harm results",
+          "zh": "玩忽职守的;失职的;疏忽的"
+        }
+      ],
+      "examples": [
+        "The court found the landlord negligent for ignoring six written complaints about the loose railing before the child fell.",
+        "A single negligent nurse left the drug cabinet unlocked overnight, and the whole ward spent Monday morning counting ampoules.",
+        "Insurers refused the claim, calling the driver negligent for texting at a junction he crossed twice a day.",
+        "He has been negligent about backups for years, then lost eleven months of client files to a dead drive on a Friday.",
+        "The report named three negligent inspectors who had signed off on welds they never actually looked at."
+      ],
+      "synonyms": [
+        "careless",
+        "remiss",
+        "neglectful",
+        "lax",
+        "slipshod"
+      ],
+      "antonyms": [
+        "conscientious",
+        "diligent",
+        "attentive",
+        "meticulous"
+      ],
+      "collocations": [
+        "grossly negligent",
+        "negligent driving",
+        "negligent in his duties"
+      ],
+      "relatedForms": [
+        {
+          "form": "negligence",
+          "pos": "n.",
+          "zh": "疏忽;过失"
+        },
+        {
+          "form": "negligently",
+          "pos": "adv.",
+          "zh": "疏忽地"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "neg-(不) + legere(留意) → 不加留意 → 失职",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
+    },
+    {
+      "id": "sporadic",
+      "headword": "sporadic",
+      "phonetic": "/spəˈrædɪk/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "happening now and then at irregular intervals, rather than steadily or predictably",
+          "zh": "零星的;偶发的;时断时续的"
+        }
+      ],
+      "examples": [
+        "Sporadic gunfire kept the aid convoy parked at the checkpoint for two days, even though the ceasefire was officially holding.",
+        "The app has sporadic outages every few weeks, always at lunchtime, and support blames a cache nobody will admit to owning.",
+        "Her attendance was sporadic after January, three classes one week and none the next, so the tutor finally called home.",
+        "Sporadic rain all afternoon ruined the outdoor tasting, and the caterers moved eighty guests into a garage full of bicycles.",
+        "We got sporadic updates from the expedition, a satellite message on Tuesday and then nothing until the following Sunday."
+      ],
+      "synonyms": [
+        "intermittent",
+        "occasional",
+        "irregular",
+        "erratic",
+        "infrequent"
+      ],
+      "antonyms": [
+        "constant",
+        "continuous",
+        "steady",
+        "incessant"
+      ],
+      "collocations": [
+        "sporadic fighting",
+        "sporadic outbreaks",
+        "sporadic contact"
+      ],
+      "relatedForms": [
+        {
+          "form": "sporadically",
+          "pos": "adv.",
+          "zh": "零星地;偶尔"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "希腊 sporas(散落的) → 零星散布",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
+    },
+    {
+      "id": "decree",
+      "headword": "decree",
+      "phonetic": "/dɪˈkriː/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "an official order issued by a ruler, government, or court that has the force of law",
+          "zh": "法令;政令;(法院)判令",
+          "share": 70
+        },
+        {
+          "pos": "v.",
+          "en": "to order something officially, using the authority of law",
+          "zh": "颁令;裁定",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "A presidential decree closed the border at midnight, and families who had shopped across it for decades were suddenly stuck.",
+        "The judge's decree gave her the house and him the vineyard, ending a divorce that had run for four years.",
+        "By decree, every street sign in the capital had to be repainted blue, a job that outlasted the mayor who ordered it.",
+        "Only a monarch could decree a public holiday at such short notice, and the shops had eleven hours to get ready.",
+        "The council decreed that no building on the harbor front may rise above four floors, and the developer sued that same week."
+      ],
+      "synonyms": [
+        "edict",
+        "ordinance",
+        "proclamation",
+        "fiat",
+        "ruling"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "a royal decree",
+        "by decree",
+        "issue a decree"
+      ],
+      "relatedForms": [],
+      "usageScore": 6,
+      "etymology": "de-(向下) + cernere(裁断) → 自上而下的裁令",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
+    },
+    {
+      "id": "promulgation",
+      "headword": "promulgation",
+      "phonetic": "/ˌprɑːməlˈɡeɪʃn/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "the formal act of announcing a law or regulation so that it officially comes into force",
+          "zh": "颁布;公布(法令)",
+          "share": 70
+        },
+        {
+          "pos": "n.",
+          "en": "the act of spreading a belief or doctrine so that it becomes widely known",
+          "zh": "宣扬;传播(学说、信仰)",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "The promulgation of the new privacy rules gave companies ninety days to rewrite consent forms they had used since 2015.",
+        "Nothing changed on the ground for a year after the promulgation of the labor code, because no inspector was ever hired.",
+        "Historians date the modern state to the promulgation of the 1947 constitution, not to the surrender that came before it.",
+        "The ministry timed the promulgation for a Friday evening, hoping the weekend would swallow the coverage entirely.",
+        "The order's whole purpose was the promulgation of one idea, and its monks carried it across four kingdoms on foot."
+      ],
+      "synonyms": [
+        "proclamation",
+        "enactment",
+        "dissemination",
+        "publication"
+      ],
+      "antonyms": [
+        "repeal",
+        "suppression"
+      ],
+      "collocations": [
+        "the promulgation of a law",
+        "since its promulgation",
+        "promulgation of the constitution"
+      ],
+      "relatedForms": [
+        {
+          "form": "promulgate",
+          "pos": "v.",
+          "zh": "颁布;宣扬"
+        }
+      ],
+      "usageScore": 4,
+      "etymology": "pro-(向前) + vulgus(民众) → 推向民众 → 公布",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
+    },
+    {
+      "id": "perilous",
+      "headword": "perilous",
+      "phonetic": "/ˈperələs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "full of danger, so that serious harm or failure is a real possibility",
+          "zh": "危险的;艰险的"
+        }
+      ],
+      "examples": [
+        "The last mile to the summit is perilous in April, when meltwater loosens rock the guidebooks still describe as solid.",
+        "Crossing the strait in a rubber boat is perilous even in summer, and the coast guard logs a rescue most weekends.",
+        "The company's cash position looked perilous by October: two months of payroll left and a client who paid at ninety days.",
+        "She took a perilous shortcut through the quarry to make her shift, and her bike came home with a bent fork.",
+        "Reporting from the border turned perilous once both sides began treating a press vest as a target rather than protection."
+      ],
+      "synonyms": [
+        "treacherous",
+        "hazardous",
+        "precarious",
+        "risky",
+        "fraught"
+      ],
+      "antonyms": [
+        "safe",
+        "secure",
+        "harmless"
+      ],
+      "collocations": [
+        "a perilous journey",
+        "perilous conditions",
+        "a perilous state"
+      ],
+      "relatedForms": [
+        {
+          "form": "peril",
+          "pos": "n.",
+          "zh": "危险;险境"
+        },
+        {
+          "form": "perilously",
+          "pos": "adv.",
+          "zh": "危险地"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "拉丁 periculum(危险) → 充满危险",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
+    },
+    {
+      "id": "similarly",
+      "headword": "similarly",
+      "phonetic": "/ˈsɪmələrli/",
+      "meanings": [
+        {
+          "pos": "adv.",
+          "en": "in almost the same way, or used to introduce a second case that resembles the first",
+          "zh": "同样地;类似地;同理"
+        }
+      ],
+      "examples": [
+        "The London office cut its travel budget in March; the Berlin team similarly grounded everyone except two account leads.",
+        "Chili flakes bloom better in hot oil, and dried herbs behave similarly, so add them before the tomatoes go in.",
+        "Her first novel took nine years; the second, written on trains between hospital visits, arrived similarly slowly.",
+        "The old model overheated after twenty minutes of video, and the replacement performs similarly once the room passes thirty degrees.",
+        "Free shipping lifted weekend orders by a fifth. Similarly, the loyalty discount moved Tuesday sales, though only for coffee."
+      ],
+      "synonyms": [
+        "likewise",
+        "correspondingly",
+        "comparably",
+        "equally"
+      ],
+      "antonyms": [
+        "conversely",
+        "differently",
+        "otherwise"
+      ],
+      "collocations": [
+        "similarly placed",
+        "similarly priced",
+        "behave similarly"
+      ],
+      "relatedForms": [
+        {
+          "form": "similar",
+          "pos": "adj.",
+          "zh": "相似的"
+        },
+        {
+          "form": "similarity",
+          "pos": "n.",
+          "zh": "相似;相似之处"
+        }
+      ],
+      "usageScore": 9,
+      "etymology": "similis(相像) → 以相像的方式",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
+    },
+    {
+      "id": "sickening",
+      "headword": "sickening",
+      "phonetic": "/ˈsɪkənɪŋ/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "so shocking or morally offensive that it disgusts you",
+          "zh": "令人作呕的;令人愤慨的",
+          "share": 70
+        },
+        {
+          "pos": "adj.",
+          "en": "making you feel physically ill or about to vomit",
+          "zh": "令人恶心的;使人反胃的",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "There was a sickening thud from the stairwell, and every phone in the office came out at once.",
+        "The documentary shows sickening conditions at the shelter: forty dogs, one volunteer, and a vet bill nobody had paid since spring.",
+        "He read the group chat and felt a sickening drop in his stomach; they had been planning the trip without him for weeks.",
+        "The bus lurched around the mountain switchbacks with a sickening roll that emptied half the seats at the first rest stop.",
+        "It is sickening to hear a company call eleven hundred layoffs a rebalancing while the chairman collects a record bonus."
+      ],
+      "synonyms": [
+        "repulsive",
+        "revolting",
+        "nauseating",
+        "appalling",
+        "repugnant"
+      ],
+      "antonyms": [
+        "delightful",
+        "wholesome",
+        "agreeable"
+      ],
+      "collocations": [
+        "a sickening thud",
+        "sickening violence",
+        "a sickening feeling"
+      ],
+      "relatedForms": [
+        {
+          "form": "sicken",
+          "pos": "v.",
+          "zh": "使厌恶;使恶心"
+        },
+        {
+          "form": "sickeningly",
+          "pos": "adv.",
+          "zh": "令人作呕地"
+        }
+      ],
+      "usageScore": 7,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
+    },
+    {
+      "id": "proportionate",
+      "headword": "proportionate",
+      "phonetic": "/prəˈpɔːrʃənət/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "matching something else in size, degree, or seriousness, so that the two stay in balance",
+          "zh": "成比例的;相称的;适度的"
+        }
+      ],
+      "examples": [
+        "The fine has to be proportionate to the harm done, so a lost password and a leaked medical file cannot cost the same.",
+        "Tenants pay a proportionate share of the heating bill, worked out by floor area rather than by how many radiators they own.",
+        "Police called the response proportionate; the video, watched forty million times by Sunday, persuaded very few people of that.",
+        "Give each region a proportionate number of delegates, or the smallest province will keep vetoing budgets it barely funds.",
+        "Her workload grew every quarter without any proportionate rise in pay, so she left for a competitor in October."
+      ],
+      "synonyms": [
+        "commensurate",
+        "proportional",
+        "corresponding",
+        "equitable"
+      ],
+      "antonyms": [
+        "disproportionate",
+        "excessive",
+        "arbitrary"
+      ],
+      "collocations": [
+        "a proportionate response",
+        "proportionate to the risk",
+        "a proportionate share"
+      ],
+      "relatedForms": [
+        {
+          "form": "proportion",
+          "pos": "n.",
+          "zh": "比例;份额"
+        },
+        {
+          "form": "proportionately",
+          "pos": "adv.",
+          "zh": "成比例地"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "pro-(依照) + portio(份额) → 按份额相称",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
+    },
+    {
+      "id": "meandering",
+      "headword": "meandering",
+      "phonetic": "/miˈændərɪŋ/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "following a slow, winding course instead of a direct line",
+          "zh": "蜿蜒曲折的;迂回的",
+          "share": 50
+        },
+        {
+          "pos": "adj.",
+          "en": "going on at length without a clear direction or point",
+          "zh": "散漫的;东拉西扯的",
+          "share": 50
+        }
+      ],
+      "examples": [
+        "A meandering stream cuts the field into three awkward pieces, which is why the farm has never sold well at auction.",
+        "His meandering answer took four minutes and never once touched the question the reporter had actually asked.",
+        "We took the meandering coast road instead of the motorway and arrived three hours late with a car full of sand.",
+        "The novel opens with sixty pages of meandering childhood memory before anything resembling a plot finally arrives.",
+        "Their meandering Sunday walks always ended at the same bakery, whatever route the dog had chosen on the way."
+      ],
+      "synonyms": [
+        "winding",
+        "rambling",
+        "circuitous",
+        "serpentine",
+        "digressive"
+      ],
+      "antonyms": [
+        "direct",
+        "straight",
+        "concise"
+      ],
+      "collocations": [
+        "a meandering river",
+        "a meandering conversation",
+        "meandering prose"
+      ],
+      "relatedForms": [
+        {
+          "form": "meander",
+          "pos": "v.",
+          "zh": "蜿蜒而行;漫谈"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "希腊 Maiandros(以曲折著称的河) → 蜿蜒",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
+    },
+    {
+      "id": "defraud",
+      "headword": "defraud",
+      "phonetic": "/dɪˈfrɔːd/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to take money or property from someone by deceiving them",
+          "zh": "诈骗;骗取"
+        }
+      ],
+      "examples": [
+        "Prosecutors say the pair set up nine shell companies to defraud elderly clients of nearly two million dollars.",
+        "He was jailed for four years after defrauding the pension fund he had managed since leaving the navy.",
+        "The scheme was simple enough to defraud a bank twice: the same invoice, two branches, three weeks apart.",
+        "She realized her landlord had defrauded her when the deposit protection service had no record of the account.",
+        "Anyone who tries to defraud the disaster fund will be prosecuted, the governor said, even for amounts under a hundred dollars."
+      ],
+      "synonyms": [
+        "swindle",
+        "cheat",
+        "dupe",
+        "bilk",
+        "fleece"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "defraud investors",
+        "conspiracy to defraud",
+        "defraud the taxpayer"
+      ],
+      "relatedForms": [
+        {
+          "form": "fraud",
+          "pos": "n.",
+          "zh": "欺诈;骗子"
+        },
+        {
+          "form": "fraudulent",
+          "pos": "adj.",
+          "zh": "欺诈的"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "de-(夺去) + fraus(欺骗) → 骗走",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
+    },
+    {
+      "id": "envious",
+      "headword": "envious",
+      "phonetic": "/ˈenviəs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "unhappily wanting something that someone else has, such as their success or possessions",
+          "zh": "嫉妒的;艳羡的"
+        }
+      ],
+      "examples": [
+        "She posted the promotion at midnight and woke to forty congratulations, three of which were plainly envious.",
+        "I am envious of anyone who can sleep on a plane; I arrive after eleven hours looking like a hostage.",
+        "The team was less envious than baffled that a junior hire got the corner desk in her second week.",
+        "He shot an envious look at the neighbor's new greenhouse, then spent the whole weekend rebuilding his own cold frame.",
+        "Being envious of a friend's marriage is a poor guide to your own; you only ever see the parts they publish."
+      ],
+      "synonyms": [
+        "jealous",
+        "covetous",
+        "resentful",
+        "begrudging"
+      ],
+      "antonyms": [
+        "content",
+        "generous",
+        "magnanimous"
+      ],
+      "collocations": [
+        "envious glances",
+        "envious of her success",
+        "make someone envious"
+      ],
+      "relatedForms": [
+        {
+          "form": "envy",
+          "pos": "n./v.",
+          "zh": "嫉妒;羡慕"
+        },
+        {
+          "form": "enviously",
+          "pos": "adv.",
+          "zh": "嫉妒地"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "in-(朝) + videre(看) → 斜眼盯着 → 嫉妒",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
+    },
+    {
+      "id": "argumentative",
+      "headword": "argumentative",
+      "phonetic": "/ˌɑːrɡjuˈmentətɪv/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "inclined to disagree and to keep debating, often in a way others find tiring",
+          "zh": "好争辩的;爱抬杠的"
+        }
+      ],
+      "examples": [
+        "Two glasses of wine and he turns argumentative, picking apart the parking policy with people who only wanted dessert.",
+        "The teacher's note called him argumentative, which his mother read as a compliment and his father read as a warning.",
+        "Reviewers found the book argumentative rather than persuasive, as if the author expected a fight on every page.",
+        "She is argumentative in meetings and unfailingly kind afterwards, which confuses everyone who has only seen her at work.",
+        "An argumentative comment thread under a recipe for banana bread ran to four hundred replies before the site shut it."
+      ],
+      "synonyms": [
+        "contentious",
+        "disputatious",
+        "quarrelsome",
+        "combative",
+        "fractious"
+      ],
+      "antonyms": [
+        "agreeable",
+        "accommodating",
+        "conciliatory",
+        "docile"
+      ],
+      "collocations": [
+        "an argumentative tone",
+        "get argumentative",
+        "an argumentative child"
+      ],
+      "relatedForms": [
+        {
+          "form": "argue",
+          "pos": "v.",
+          "zh": "争论;主张"
+        },
+        {
+          "form": "argument",
+          "pos": "n.",
+          "zh": "争论;论点"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "arguere(辩明,论证) → 事事要辩",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
+    },
+    {
+      "id": "admonish",
+      "headword": "admonish",
+      "phonetic": "/ədˈmɑːnɪʃ/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to tell someone firmly that you disapprove of what they have done",
+          "zh": "训诫;责备",
+          "share": 60
+        },
+        {
+          "pos": "v.",
+          "en": "to urge someone earnestly to do something, as a warning for their own good",
+          "zh": "告诫;力劝",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "The judge admonished the lawyer for checking his phone during testimony, then let the hearing continue as if nothing had happened.",
+        "Her grandmother would admonish anyone who left the tap running, including guests who had driven four hours to visit.",
+        "The memo admonishes staff to log every visitor, a rule invented after a stranger spent a whole afternoon in the server room.",
+        "He was admonished twice in one shift, once for the uniform and once for a joke the supervisor overheard in the corridor.",
+        "Coaches admonish young pitchers to rest their arms, and young pitchers, being nineteen, mostly ignore them until something tears."
+      ],
+      "synonyms": [
+        "rebuke",
+        "reprimand",
+        "reprove",
+        "chide",
+        "caution"
+      ],
+      "antonyms": [
+        "praise",
+        "commend",
+        "applaud"
+      ],
+      "collocations": [
+        "admonish someone for",
+        "gently admonish",
+        "admonish against"
+      ],
+      "relatedForms": [
+        {
+          "form": "admonition",
+          "pos": "n.",
+          "zh": "告诫;警告"
+        },
+        {
+          "form": "admonitory",
+          "pos": "adj.",
+          "zh": "告诫的"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "ad-(向) + monere(提醒) → 提醒并责备",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
+    },
+    {
+      "id": "oversee",
+      "headword": "oversee",
+      "phonetic": "/ˌoʊvərˈsiː/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to be in charge of work or a process and make sure it is done properly",
+          "zh": "监督;主管"
+        }
+      ],
+      "examples": [
+        "She was hired to oversee the move to the new warehouse, and finished it three weeks early with the same crew.",
+        "Two auditors now oversee every payment above ten thousand euros, a rule the board added after the invoice scandal.",
+        "Nobody wanted to oversee the summer interns, so the job went to whoever came back from lunch last on Monday.",
+        "The agency oversees eleven hundred kilometers of track and cannot say how many bridges it has actually inspected this decade.",
+        "He will oversee quality on the factory floor, which mostly means walking the line twice a day and asking blunt questions."
+      ],
+      "synonyms": [
+        "supervise",
+        "superintend",
+        "administer",
+        "monitor"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "oversee a project",
+        "oversee the transition",
+        "oversee day-to-day operations"
+      ],
+      "relatedForms": [
+        {
+          "form": "oversight",
+          "pos": "n.",
+          "zh": "监督;监管"
+        },
+        {
+          "form": "overseer",
+          "pos": "n.",
+          "zh": "监工;工头"
+        }
+      ],
+      "usageScore": 8,
+      "etymology": "over-(在上) + see(看) → 在上面看管",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
+    },
+    {
+      "id": "impair",
+      "headword": "impair",
+      "phonetic": "/ɪmˈper/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to weaken something or make it work less well than it should",
+          "zh": "损害;削弱(能力、功能)"
+        }
+      ],
+      "examples": [
+        "Two nights of bad sleep impair judgment more than most drivers realize, which is why the haulage firm now tracks rest hours.",
+        "The infection can impair hearing permanently if antibiotics start more than a week late.",
+        "Salt from the winter roads impairs the sensors, so the car brakes for shadows until someone hoses out the wheel arches.",
+        "Nothing in the contract may impair the tenant's right to quiet enjoyment, however the clause about noise is worded.",
+        "A cracked lens impaired the telescope for eight months, and the repair mission cost more than the original build."
+      ],
+      "synonyms": [
+        "weaken",
+        "undermine",
+        "diminish",
+        "incapacitate",
+        "vitiate"
+      ],
+      "antonyms": [
+        "enhance",
+        "strengthen",
+        "restore",
+        "bolster"
+      ],
+      "collocations": [
+        "impair judgment",
+        "visually impaired",
+        "impair performance"
+      ],
+      "relatedForms": [
+        {
+          "form": "impairment",
+          "pos": "n.",
+          "zh": "损伤;缺陷"
+        },
+        {
+          "form": "impaired",
+          "pos": "adj.",
+          "zh": "受损的"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "im-(使) + pejor(更坏) → 使变坏",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
     }
   ]
 }
