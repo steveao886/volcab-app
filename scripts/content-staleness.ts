@@ -64,9 +64,12 @@ const uncoveredAnchors = anchors.filter(id => !grouped.has(id))
 // Reported as growth, not a required gap, on purpose. Every added word would
 // otherwise flip the library to STALE the moment it lands, and "FRESH is a
 // real verdict" is the property that keeps a refresh run from inventing work.
-// Note which words land here: **none of them are anchors** (an anchor by
-// definition has the partners a sense group needs), so this backlog can only
-// ever be cleared by authoring renderings, never by authoring groups.
+// This used to add that **none of them are anchors**, so the backlog could
+// only ever be cleared by authoring renderings. That held while every anchor
+// already had a group, and stopped holding the first time a batch landed
+// faster than the groups did: re-measured 2026-08-26 over 635 words, 10 of
+// the 12 words here are anchors, and a group would clear them. Read the two
+// lists together — the overlap is which half of the backlog has a choice.
 const inGroup = new Set(senseGroups.flatMap(g => g.order))
 const inRecall = new Set(recallSentences.map(s => s.id))
 const noRecallQuestion = words.map(w => w.id).filter(id => !inGroup.has(id) && !inRecall.has(id))
