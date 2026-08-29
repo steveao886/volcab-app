@@ -911,11 +911,11 @@ describe('full-library regression — antonymPick', () => {
       'in the wake of → ahead of',
       'in the wake of → in anticipation of',
     ])
-    expect(directions).toHaveLength(1226)
-    // 1014 answer with a word the library has no entry for; the other 212 are
-    // the library-internal pairs, 222 directions less the 10 the shape rule takes.
-    expect(directions.filter(d => d.external)).toHaveLength(1014)
-    expect(new Set(directions.map(d => d.from.id)).size).toBe(508)
+    expect(directions).toHaveLength(1222)
+    // 1012 answer with a word the library has no entry for; the other 210 are
+    // the library-internal pairs, 220 directions less the 10 the shape rule takes.
+    expect(directions.filter(d => d.external)).toHaveLength(1012)
+    expect(new Set(directions.map(d => d.from.id)).size).toBe(507)
   })
 
   /**

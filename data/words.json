@@ -22715,60 +22715,6 @@
       "addedAt": "2026-08-09"
     },
     {
-      "id": "cosmopolitanism",
-      "headword": "cosmopolitanism",
-      "phonetic": "/ˌkɑːzməˈpɑːlɪtənɪzəm/",
-      "meanings": [
-        {
-          "pos": "n.",
-          "en": "the belief that all human beings belong to one community, above nation or tribe",
-          "zh": "世界主义(视全人类为一个共同体的思想)",
-          "share": 60
-        },
-        {
-          "pos": "n.",
-          "en": "the quality of being at ease among many cultures; the international character of a place",
-          "zh": "国际化气息;见多识广的世界性",
-          "share": 40
-        }
-      ],
-      "examples": [
-        "The seminar traced cosmopolitanism from Diogenes calling himself a citizen of the world to today's climate treaties.",
-        "Critics argue that cosmopolitanism asks people to love humanity in general while neglecting the neighbors they actually have.",
-        "A wave of nationalist politics has made cosmopolitanism sound naive to voters who once found it obvious.",
-        "Her cosmopolitanism was learned in airport lounges, and it showed in how quickly she could read a room.",
-        "The city sells its cosmopolitanism in tourism ads, then argues about immigration at every council meeting."
-      ],
-      "synonyms": [
-        "internationalism",
-        "globalism",
-        "universalism",
-        "worldliness"
-      ],
-      "antonyms": [
-        "nationalism",
-        "parochialism",
-        "insularity",
-        "provincialism"
-      ],
-      "collocations": [
-        "rooted cosmopolitanism",
-        "cultural cosmopolitanism",
-        "a spirit of cosmopolitanism"
-      ],
-      "relatedForms": [
-        {
-          "form": "cosmopolitan",
-          "pos": "adj.",
-          "zh": "世界性的;见多识广的"
-        }
-      ],
-      "usageScore": 3,
-      "etymology": "kosmos(世界) + polites(公民) → 世界公民 → 世界主义",
-      "sourceNote": "manual",
-      "addedAt": "2026-08-09"
-    },
-    {
       "id": "intercession",
       "headword": "intercession",
       "phonetic": "/ˌɪntərˈseʃən/",

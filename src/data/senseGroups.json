@@ -4293,19 +4293,6 @@
       "why": "insular 的字面是『岛』，形容一个圈子与外界隔绝、对外来的人和想法一概排斥，可修饰部门、社区、文化，重点是封闭本身。"
     },
     {
-      "zh": "这门课把世界主义一路追溯到古希腊的犬儒学派。",
-      "target": "世界主义",
-      "en": "The seminar traced cosmopolitanism back to a Greek who called himself a citizen of the world.",
-      "order": [
-        "cosmopolitanism"
-      ],
-      "extra": [
-        "internationalism",
-        "universalism"
-      ],
-      "why": "cosmopolitanism 指把全人类看作一个共同体、超越国族的主张，是一套政治哲学立场；它也可以指一座城市的国际化气息，但学术语境里几乎总是前者。"
-    },
-    {
       "zh": "全靠大使私下出面说情，两国代表才没在半夜散场。",
       "target": "出面说情",
       "en": "Only the ambassador's quiet intercession kept the two delegations at the table past midnight.",
