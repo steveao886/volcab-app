@@ -29232,6 +29232,1198 @@
       "etymology": "im-(使) + pejor(更坏) → 使变坏",
       "sourceNote": "manual",
       "addedAt": "2026-08-26"
+    },
+    {
+      "id": "obnoxious",
+      "headword": "obnoxious",
+      "phonetic": "/əbˈnɑːkʃəs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "extremely unpleasant or annoying, especially in a rude, loud, or offensive way",
+          "zh": "令人讨厌的;可憎的;粗鲁烦人的"
+        }
+      ],
+      "examples": [
+        "The new sales hire seemed friendly on Zoom, but in the office he turned obnoxious, shouting into his headset and mocking everyone's lunch.",
+        "Our upstairs neighbor plays obnoxious bass-heavy music until two in the morning, then leaves passive-aggressive notes when the baby cries at seven.",
+        "The free version of the app is unusable now, with obnoxious full-screen ads popping up between every level of the game.",
+        "One obnoxious passenger held up the whole boarding line, filming himself arguing with the gate agent about his oversized carry-on.",
+        "Mute the group chat during election week; a few relatives get so obnoxious that even the family peacemaker stops replying."
+      ],
+      "synonyms": [
+        "insufferable",
+        "odious",
+        "objectionable",
+        "loathsome",
+        "annoying"
+      ],
+      "antonyms": [
+        "pleasant",
+        "agreeable",
+        "charming",
+        "likable"
+      ],
+      "collocations": [
+        "obnoxious behavior",
+        "downright obnoxious",
+        "loud and obnoxious"
+      ],
+      "relatedForms": [
+        {
+          "form": "obnoxiously",
+          "pos": "adv.",
+          "zh": "令人讨厌地"
+        },
+        {
+          "form": "obnoxiousness",
+          "pos": "n.",
+          "zh": "惹人厌;可憎"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "ob-(对着) + noxa(伤害) → 招人厌恶",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-26"
+    },
+    {
+      "id": "conspire",
+      "headword": "conspire",
+      "phonetic": "/kənˈspaɪər/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to secretly plan with other people to do something harmful, illegal, or sneaky",
+          "zh": "密谋;合谋",
+          "share": 60
+        },
+        {
+          "pos": "v.",
+          "en": "(of events or circumstances) to combine as if by design to produce a bad result",
+          "zh": "(事情)凑到一起(造成不良后果)",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "Prosecutors say the three executives conspired over encrypted chats to fix prices before the merger was even announced.",
+        "Her roommates conspired for weeks to plan the surprise party, deleting messages whenever she borrowed anyone's phone.",
+        "Two moderators conspired with a seller to bury negative reviews, and the forum's entire ranking system lost credibility overnight.",
+        "A canceled train, a dead phone battery, and a sudden downpour conspired to make her miss the only interview she cared about.",
+        "Rising rents and shrinking grants conspire against small theaters, closing three of them in our neighborhood this year alone."
+      ],
+      "synonyms": [
+        "plot",
+        "scheme",
+        "collude",
+        "connive"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "conspire against",
+        "conspire to defraud",
+        "events conspire"
+      ],
+      "relatedForms": [
+        {
+          "form": "conspiracy",
+          "pos": "n.",
+          "zh": "阴谋;共谋"
+        },
+        {
+          "form": "conspirator",
+          "pos": "n.",
+          "zh": "共谋者"
+        },
+        {
+          "form": "conspiratorial",
+          "pos": "adj.",
+          "zh": "阴谋的;心照不宣的"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "con-(共同) + spirare(呼吸) → 同声共气,密谋",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-28"
+    },
+    {
+      "id": "undermine",
+      "headword": "undermine",
+      "phonetic": "/ˌʌndərˈmaɪn/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to gradually weaken someone's authority, confidence, or the success of an effort, often in a hidden way",
+          "zh": "暗中破坏;逐渐削弱",
+          "share": 90
+        },
+        {
+          "pos": "v.",
+          "en": "to dig beneath something or wear away its base so that it may collapse",
+          "zh": "在……底下挖掘;侵蚀……的基础",
+          "share": 10
+        }
+      ],
+      "examples": [
+        "By publicly questioning each decision in meetings, the deputy slowly undermined the new manager without ever raising his voice.",
+        "Leaked screenshots of the deleted safety report undermine the company's claim that it knew nothing before the recall.",
+        "Constant comparison with filtered photos can undermine a teenager's confidence long before anyone says a single unkind word.",
+        "Skipping the cheap maintenance now will undermine everything the migration achieved, and we will be back to weekend outages by December.",
+        "Decades of storm waves have undermined the cliff path, so the council moved the fence ten meters inland this spring."
+      ],
+      "synonyms": [
+        "weaken",
+        "sabotage",
+        "erode",
+        "subvert",
+        "impair"
+      ],
+      "antonyms": [
+        "bolster",
+        "strengthen",
+        "reinforce",
+        "support"
+      ],
+      "collocations": [
+        "undermine confidence",
+        "undermine authority",
+        "undermine efforts",
+        "quietly undermine"
+      ],
+      "relatedForms": [],
+      "usageScore": 7,
+      "etymology": "under(下面) + mine(挖坑道) → 挖空根基",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-28"
+    },
+    {
+      "id": "diminish",
+      "headword": "diminish",
+      "phonetic": "/dɪˈmɪnɪʃ/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to become smaller or less, or to make something smaller or less",
+          "zh": "减少;缩小;减弱",
+          "share": 70
+        },
+        {
+          "pos": "v.",
+          "en": "to make someone or something seem less important or valuable than they really are",
+          "zh": "贬低;轻视",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "Battery capacity diminishes a little every winter, and by year four the car barely covers the school run without a midday charge.",
+        "The painkillers diminish the swelling within an hour, but the physio warned him not to train on a numb ankle.",
+        "Streaming did not kill radio, but it steadily diminished the audience until the station cut the morning show to two hours.",
+        "As the wildfire smoke cleared, the crowd's fear diminished, and vendors began reopening their stalls along the waterfront.",
+        "Calling her promotion luck diminishes ten years of unpaid overtime, and she finally said so in front of the whole team."
+      ],
+      "synonyms": [
+        "decrease",
+        "lessen",
+        "dwindle",
+        "reduce",
+        "belittle"
+      ],
+      "antonyms": [
+        "increase",
+        "grow",
+        "amplify",
+        "enhance"
+      ],
+      "collocations": [
+        "diminishing returns",
+        "diminish the value",
+        "gradually diminish"
+      ],
+      "relatedForms": [
+        {
+          "form": "diminished",
+          "pos": "adj.",
+          "zh": "减少的;被削弱的"
+        },
+        {
+          "form": "diminishing",
+          "pos": "adj.",
+          "zh": "递减的"
+        },
+        {
+          "form": "diminution",
+          "pos": "n.",
+          "zh": "减少;缩减"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "di-(向下,即de-) + minuere(变小) → 减少",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-28"
+    },
+    {
+      "id": "baffled",
+      "headword": "baffled",
+      "phonetic": "/ˈbæfəld/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "unable to understand or explain something; completely confused",
+          "zh": "困惑的;被难住的"
+        }
+      ],
+      "examples": [
+        "Engineers were baffled for a week by the server crashing at 3 a.m. daily, until someone noticed the backup job's timezone.",
+        "The vet admitted she was baffled: the dog's bloodwork looked perfect, yet he refused every meal for five straight days.",
+        "Economists remain baffled that prices keep climbing while warehouses sit full, and every forecast this quarter has missed badly.",
+        "My grandmother stared at the QR-code menu, utterly baffled, until the waiter quietly brought her a laminated paper copy.",
+        "Detectives were openly baffled by the museum theft; the alarms never tripped, and the cameras recorded nothing but an empty hallway."
+      ],
+      "synonyms": [
+        "puzzled",
+        "perplexed",
+        "mystified",
+        "bewildered",
+        "stumped"
+      ],
+      "antonyms": [
+        "enlightened",
+        "informed"
+      ],
+      "collocations": [
+        "completely baffled",
+        "baffled by",
+        "leave someone baffled",
+        "baffled look"
+      ],
+      "relatedForms": [
+        {
+          "form": "baffle",
+          "pos": "v.",
+          "zh": "使困惑;难住"
+        },
+        {
+          "form": "baffling",
+          "pos": "adj.",
+          "zh": "令人费解的"
+        },
+        {
+          "form": "bafflement",
+          "pos": "n.",
+          "zh": "困惑"
+        }
+      ],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-28"
+    },
+    {
+      "id": "relegate",
+      "headword": "relegate",
+      "phonetic": "/ˈrelɪɡeɪt/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to move someone or something down to a lower rank, or to a less important position or role",
+          "zh": "把…降级;使贬至次要地位",
+          "share": 60
+        },
+        {
+          "pos": "v.",
+          "en": "(mainly British) to move a sports team down to a lower division after a poor season",
+          "zh": "使(球队)降入低级别联赛",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "After the merger, the redesign that had consumed her whole year was relegated to a footnote in the investor deck.",
+        "The settings menu relegates the privacy controls to a third-level submenu, which critics say is no accident.",
+        "Once the baby arrived, the treadmill was relegated to the garage, where it now serves as a coat rack.",
+        "Two losses in the final week were enough to relegate the club to the second division for the first time in forty years.",
+        "Fans stormed the boardroom meeting after the team was relegated on the season's last day, blaming the owner's refusal to spend in January."
+      ],
+      "synonyms": [
+        "demote",
+        "downgrade",
+        "sideline",
+        "consign",
+        "banish"
+      ],
+      "antonyms": [
+        "promote",
+        "elevate",
+        "upgrade"
+      ],
+      "collocations": [
+        "relegate to the sidelines",
+        "be relegated to a footnote",
+        "relegated to the bench"
+      ],
+      "relatedForms": [
+        {
+          "form": "relegation",
+          "pos": "n.",
+          "zh": "降级;降职"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "re-(远离) + legare(派遣) → 打发到次要位置",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-28"
+    },
+    {
+      "id": "understated",
+      "headword": "understated",
+      "phonetic": "/ˌʌndərˈsteɪtɪd/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "expressed or styled in a deliberately restrained way, avoiding show or exaggeration",
+          "zh": "低调的;克制的;不张扬的"
+        }
+      ],
+      "examples": [
+        "The hotel lobby is all understated luxury: pale oak, soft lamps, and not a single logo in sight.",
+        "Her acceptance speech was so understated that half the audience missed the announcement that she was retiring.",
+        "The watch costs more than a car, but its understated dial looks like something you might find at a flea market.",
+        "Reviewers praised the actor's understated performance, saying a single tired glance carried more grief than any monologue could.",
+        "The startup's understated launch — one blog post, no press tour — somehow generated more buzz than its rivals' stadium events."
+      ],
+      "synonyms": [
+        "restrained",
+        "subtle",
+        "low-key",
+        "muted",
+        "unobtrusive"
+      ],
+      "antonyms": [
+        "flashy",
+        "ostentatious",
+        "showy",
+        "exaggerated"
+      ],
+      "collocations": [
+        "understated elegance",
+        "understated luxury",
+        "an understated performance"
+      ],
+      "relatedForms": [
+        {
+          "form": "understate",
+          "pos": "v.",
+          "zh": "轻描淡写;少报"
+        },
+        {
+          "form": "understatement",
+          "pos": "n.",
+          "zh": "保守的说法;轻描淡写"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "under-(不足) + state(陈述) → 说得轻、不张扬",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-28"
+    },
+    {
+      "id": "ordinance",
+      "headword": "ordinance",
+      "phonetic": "/ˈɔːrdənəns/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "a law or rule made by a city or local government, applying only within its area",
+          "zh": "(市镇的)地方法规,条例",
+          "share": 90
+        },
+        {
+          "pos": "n.",
+          "en": "a religious ceremony or practice that a church directs its members to observe, such as baptism",
+          "zh": "(教会规定的)礼仪,圣礼",
+          "share": 10
+        }
+      ],
+      "examples": [
+        "The city council passed an ordinance banning gas-powered leaf blowers, and landscapers have until March to switch to electric.",
+        "A noise ordinance shuts the patio speakers off at ten, so the bar moved its live music indoors.",
+        "Short-term rentals exploded downtown until a zoning ordinance capped them at ninety nights a year per host.",
+        "He got a ticket for feeding pigeons, and only then learned the ordinance had been on the books since 1987.",
+        "The mayor vetoed the sidewalk-vending ordinance, arguing it would push food carts into neighborhoods with no foot traffic."
+      ],
+      "synonyms": [
+        "regulation",
+        "bylaw",
+        "statute",
+        "decree",
+        "edict"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "city ordinance",
+        "zoning ordinance",
+        "pass an ordinance",
+        "violate an ordinance"
+      ],
+      "relatedForms": [
+        {
+          "form": "ordain",
+          "pos": "v.",
+          "zh": "规定;任命(神职)"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "ordin-(秩序) + -ance(名词) → 定秩序的法令",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-28"
+    },
+    {
+      "id": "meander",
+      "headword": "meander",
+      "phonetic": "/miˈændər/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to follow a winding, indirect course, or to wander slowly with no fixed direction",
+          "zh": "蜿蜒曲折;漫步,闲逛",
+          "share": 50
+        },
+        {
+          "pos": "v.",
+          "en": "(of talk, writing, or thought) to drift from topic to topic without a clear point",
+          "zh": "(讲话、文章)东拉西扯,漫无主题",
+          "share": 30
+        },
+        {
+          "pos": "n.",
+          "en": "a bend or winding curve in a river, path, or road",
+          "zh": "(河流、道路的)弯曲,曲流",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "The trail meanders along the river for six kilometers, so runners chasing a fast time take the highway path instead.",
+        "We had no itinerary in Lisbon, just three days to meander through the old quarters and follow whatever smelled like fresh bread.",
+        "Delivery drivers hate the new suburb because its streets meander in loops designed to slow traffic, adding ten minutes per drop.",
+        "The keynote meandered from supply chains to the speaker's sailing trip, and by minute forty nobody remembered the product being launched.",
+        "From the drone, each meander of the river showed as a bright loop, with old cut-off bends fading into marsh beside it."
+      ],
+      "synonyms": [
+        "wander",
+        "wind",
+        "ramble",
+        "drift",
+        "zigzag",
+        "roam"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "meander through the streets",
+        "a meandering river",
+        "the conversation meanders"
+      ],
+      "relatedForms": [
+        {
+          "form": "meandering",
+          "pos": "adj.",
+          "zh": "蜿蜒的;漫无边际的"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "Maiandros(古河名,河道极曲折) → 蜿蜒",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-28"
+    },
+    {
+      "id": "admonition",
+      "headword": "admonition",
+      "phonetic": "/ˌædməˈnɪʃn/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "a serious piece of advice or a mild warning telling someone how they should or should not behave",
+          "zh": "告诫;警告;规劝"
+        }
+      ],
+      "examples": [
+        "The onboarding deck ends with a stern admonition never to share credentials over chat, which someone violates in week one every single cohort.",
+        "Despite the judge's admonition to stay off social media, the defendant posted about the trial before the jury even left the building.",
+        "Her grandmother's admonition about saving three months of rent felt quaint until the layoffs hit and it suddenly sounded like prophecy.",
+        "The lifeguard's whistle came with an admonition to stop diving in the shallow end, delivered loudly enough for the whole pool to hear.",
+        "Analysts read the central bank's statement as an admonition against reckless lending, though it named no bank in particular."
+      ],
+      "synonyms": [
+        "warning",
+        "caution",
+        "reprimand",
+        "rebuke",
+        "exhortation"
+      ],
+      "antonyms": [
+        "praise",
+        "commendation"
+      ],
+      "collocations": [
+        "a stern admonition",
+        "an admonition against",
+        "heed an admonition"
+      ],
+      "relatedForms": [
+        {
+          "form": "admonish",
+          "pos": "v.",
+          "zh": "告诫;警告"
+        },
+        {
+          "form": "admonitory",
+          "pos": "adj.",
+          "zh": "告诫的;警告性的"
+        }
+      ],
+      "usageScore": 4,
+      "etymology": "ad-(向) + monere(警告) → 告诫",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-28"
+    },
+    {
+      "id": "proclamation",
+      "headword": "proclamation",
+      "phonetic": "/ˌprɑːkləˈmeɪʃn/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "an official public announcement about something important, or the act of making one",
+          "zh": "公告;宣言;正式宣布"
+        }
+      ],
+      "examples": [
+        "The mayor signed a proclamation declaring June bike-to-work month, then rode home in a downpour that delighted the photographers.",
+        "The CEO's return-to-office proclamation landed at 4:59 on a Friday, and the reply-all thread kept HR busy through the weekend.",
+        "Visitors line up to see the yellowed proclamation that freed the state's last enslaved people, displayed under glass beside the governor's pen.",
+        "Every diet he starts arrives with a proclamation on Instagram, and every quiet burger afterward goes unphotographed.",
+        "The governor's emergency proclamation released flood funds hours before the river crested behind the elementary school."
+      ],
+      "synonyms": [
+        "declaration",
+        "announcement",
+        "decree",
+        "edict",
+        "pronouncement"
+      ],
+      "antonyms": [
+        "retraction"
+      ],
+      "collocations": [
+        "issue a proclamation",
+        "sign a proclamation",
+        "emergency proclamation",
+        "royal proclamation"
+      ],
+      "relatedForms": [
+        {
+          "form": "proclaim",
+          "pos": "v.",
+          "zh": "宣布;宣告"
+        },
+        {
+          "form": "proclaimed",
+          "pos": "adj.",
+          "zh": "公开宣称的"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "pro-(向前) + clamare(呼喊) → 公开宣告",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-28"
+    },
+    {
+      "id": "detestable",
+      "headword": "detestable",
+      "phonetic": "/dɪˈtestəbl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "so bad, cruel, or offensive that it deserves to be hated",
+          "zh": "可憎的;令人厌恶的"
+        }
+      ],
+      "examples": [
+        "The landlord's habit of showing the apartment without notice was detestable, but the below-market rent kept everyone politely silent.",
+        "Charging families extra to sit with their own children on a flight struck even the airline's staff as detestable.",
+        "He plays a detestable tech founder so convincingly that strangers scold him in coffee shops between seasons.",
+        "Scam calls that target grandparents with fake arrest warrants are detestable in a way ordinary spam never quite manages.",
+        "The comment section turned detestable within an hour of the verdict, so the editor closed it and logged off early."
+      ],
+      "synonyms": [
+        "abhorrent",
+        "loathsome",
+        "odious",
+        "repugnant",
+        "despicable"
+      ],
+      "antonyms": [
+        "admirable",
+        "lovable",
+        "delightful"
+      ],
+      "collocations": [
+        "detestable behavior",
+        "detestable practice",
+        "utterly detestable"
+      ],
+      "relatedForms": [
+        {
+          "form": "detest",
+          "pos": "v.",
+          "zh": "憎恶;厌恶"
+        },
+        {
+          "form": "detestation",
+          "pos": "n.",
+          "zh": "憎恶;痛恨"
+        }
+      ],
+      "usageScore": 4,
+      "etymology": "de-(向下) + testari(作证) → 立誓诅咒→可憎",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-28"
+    },
+    {
+      "id": "investigative",
+      "headword": "investigative",
+      "phonetic": "/ɪnˈvestəɡeɪtɪv/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "involving careful digging into facts and evidence, especially to expose wrongdoing",
+          "zh": "调查性的;侦查的"
+        }
+      ],
+      "examples": [
+        "An investigative reporter spent eight months tracing the charity's donations to a shell company registered above a vape shop.",
+        "The podcast's investigative series on nursing-home staffing forced the state to audit forty facilities before the season even ended.",
+        "She left corporate law for investigative work at a consumer watchdog, trading billable hours for freedom-of-information requests.",
+        "The insurer's investigative unit flagged the claim after noticing the stolen laptop still pinging a café's Wi-Fi every morning.",
+        "The documentary crew took an investigative approach, filing records requests instead of accepting the ministry's carefully guided factory tour."
+      ],
+      "synonyms": [
+        "probing",
+        "fact-finding",
+        "inquisitorial"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "investigative journalism",
+        "investigative reporter",
+        "investigative unit"
+      ],
+      "relatedForms": [
+        {
+          "form": "investigate",
+          "pos": "v.",
+          "zh": "调查"
+        },
+        {
+          "form": "investigation",
+          "pos": "n.",
+          "zh": "调查"
+        },
+        {
+          "form": "investigator",
+          "pos": "n.",
+          "zh": "调查员"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "in-(进入) + vestigium(足迹) → 循足迹追查",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-29"
+    },
+    {
+      "id": "banter",
+      "headword": "banter",
+      "phonetic": "/ˈbæntər/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "light, playful talk in which people tease each other in a friendly way",
+          "zh": "（善意的）玩笑;打趣;调侃",
+          "share": 80
+        },
+        {
+          "pos": "v.",
+          "en": "to exchange playful, teasing remarks with someone",
+          "zh": "开玩笑;互相打趣",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "The morning stand-up runs on ten minutes of banter before anyone mentions a ticket, and honestly the team ships faster for it.",
+        "Their podcast is mostly banter about lunch orders and video games, with the actual film review squeezed into the last five minutes.",
+        "New hires mistake the kitchen banter for a real argument until they notice both engineers grinning over their coffee.",
+        "The broadcast lost its charm once the two commentators dropped their banter and started reading sponsor scripts at each other.",
+        "The barber and his oldest customer banter about the same three headlines every visit, and neither would change a word of it."
+      ],
+      "synonyms": [
+        "teasing",
+        "repartee",
+        "badinage",
+        "wisecracks"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "friendly banter",
+        "witty banter",
+        "exchange banter",
+        "locker-room banter"
+      ],
+      "relatedForms": [
+        {
+          "form": "bantering",
+          "pos": "adj.",
+          "zh": "打趣的;戏谑的"
+        }
+      ],
+      "usageScore": 7,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-29"
+    },
+    {
+      "id": "debonair",
+      "headword": "debonair",
+      "phonetic": "/ˌdebəˈner/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "confident, stylish, and charming in an easy, polished way, usually said of men",
+          "zh": "温文尔雅的；潇洒迷人的(多形容男子)"
+        }
+      ],
+      "examples": [
+        "The hotel concierge stayed debonair through the fire alarm, guiding guests outside as if he were hosting a garden party.",
+        "Investors expected a nervous founder, but he walked into the pitch debonair in a linen suit, cracking jokes about his own burn rate.",
+        "My grandfather looks impossibly debonair in the 1962 photo, tilted hat and thin tie, waiting outside the dance hall.",
+        "The airline's new ads feature a debonair pilot winking at the camera, a throwback style the marketing team calls the golden age of travel.",
+        "Even on a video call from a messy kitchen, the actor managed to seem debonair, scarf knotted just so."
+      ],
+      "synonyms": [
+        "suave",
+        "urbane",
+        "dashing",
+        "dapper",
+        "charming"
+      ],
+      "antonyms": [
+        "awkward",
+        "unkempt",
+        "boorish",
+        "gauche"
+      ],
+      "collocations": [
+        "debonair charm",
+        "a debonair air",
+        "effortlessly debonair"
+      ],
+      "relatedForms": [],
+      "usageScore": 4,
+      "etymology": "de(从) + bon(好) + aire(出身、性情) → 风度翩翩",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-29"
+    },
+    {
+      "id": "promiscuous",
+      "headword": "promiscuous",
+      "phonetic": "/prəˈmɪskjuəs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "having or involving many casual sexual partners",
+          "zh": "滥交的；性关系随意的",
+          "share": 70
+        },
+        {
+          "pos": "adj.",
+          "en": "mixing things together carelessly, without choosing or selecting; indiscriminate",
+          "zh": "混杂的；不加选择的",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "The documentary follows dating-app culture without judging anyone as promiscuous, though the comment section had no such restraint.",
+        "Public-health workers stress that the outbreak spreads through networks, not morals, and that labeling patients promiscuous only keeps them from getting tested.",
+        "Tabloids painted the young singer as promiscuous over a few blurry club photos, and her lawyers responded within a day.",
+        "Set the network card to promiscuous mode and it captures every packet on the segment, not just traffic addressed to it.",
+        "Critics called the museum's new wing a promiscuous jumble of styles, Gothic arches crashing into glass curtain walls."
+      ],
+      "synonyms": [
+        "licentious",
+        "libertine",
+        "indiscriminate",
+        "unselective"
+      ],
+      "antonyms": [
+        "chaste",
+        "monogamous",
+        "selective",
+        "discriminating"
+      ],
+      "collocations": [
+        "sexually promiscuous",
+        "promiscuous behavior",
+        "promiscuous mode",
+        "a promiscuous mix"
+      ],
+      "relatedForms": [
+        {
+          "form": "promiscuity",
+          "pos": "n.",
+          "zh": "滥交；杂乱"
+        },
+        {
+          "form": "promiscuously",
+          "pos": "adv.",
+          "zh": "杂乱地；不加选择地"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "pro-(向前) + miscere(混合) → 混杂不加选择",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-29"
+    },
+    {
+      "id": "mournful",
+      "headword": "mournful",
+      "phonetic": "/ˈmɔrnfəl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "looking or sounding very sad, as if grieving; often used of sounds, faces, and places",
+          "zh": "哀伤的；(声音、神情、气氛)凄婉的"
+        }
+      ],
+      "examples": [
+        "The last freight train crosses at midnight, and its mournful whistle carries across the whole valley when the air is cold.",
+        "The shelter posted a photo of the old beagle's mournful eyes, and applications to adopt him tripled overnight.",
+        "A lone busker played something slow and mournful on the cello, and the whole subway platform went quiet for a minute.",
+        "Wind through the abandoned lighthouse makes a low, mournful sound that tour guides swear is not part of the recording.",
+        "The goalkeeper gave one mournful look at the scoreboard before trudging off, and the cameras stayed on him the whole way."
+      ],
+      "synonyms": [
+        "sorrowful",
+        "doleful",
+        "plaintive",
+        "melancholy",
+        "elegiac"
+      ],
+      "antonyms": [
+        "cheerful",
+        "joyful",
+        "upbeat"
+      ],
+      "collocations": [
+        "a mournful sound",
+        "mournful eyes",
+        "a mournful tune",
+        "a mournful wail"
+      ],
+      "relatedForms": [
+        {
+          "form": "mourn",
+          "pos": "v.",
+          "zh": "哀悼"
+        },
+        {
+          "form": "mournfully",
+          "pos": "adv.",
+          "zh": "哀伤地"
+        },
+        {
+          "form": "mourning",
+          "pos": "n.",
+          "zh": "哀悼；服丧(期)"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "mourn(哀悼) + -ful(充满……的) → 哀伤的",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-29"
+    },
+    {
+      "id": "sorrowful",
+      "headword": "sorrowful",
+      "phonetic": "/ˈsɑroʊfəl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "full of deep sadness or grief; a literary word for profound, personal sorrow",
+          "zh": "悲痛的；哀切的(多用于书面语)"
+        }
+      ],
+      "examples": [
+        "Her memoir's final chapter is openly sorrowful, written the winter her brother's chair at the table finally stood empty.",
+        "The war photographer said the hardest shot was not the rubble but one sorrowful mother sorting school uniforms that no one would wear.",
+        "The novel ends on a sorrowful note: the letters arrive a week after the funeral, still smelling of her tobacco.",
+        "Museum visitors linger longest at the sorrowful last diary entry, three lines a girl wrote the night before the ship went down.",
+        "He kept his father's watch wound for years, a small sorrowful ritual he never mentioned to anyone at work."
+      ],
+      "synonyms": [
+        "grief-stricken",
+        "mournful",
+        "woeful",
+        "heartbroken",
+        "doleful"
+      ],
+      "antonyms": [
+        "joyful",
+        "elated",
+        "lighthearted"
+      ],
+      "collocations": [
+        "a sorrowful tale",
+        "a sorrowful expression",
+        "deeply sorrowful"
+      ],
+      "relatedForms": [
+        {
+          "form": "sorrow",
+          "pos": "n.",
+          "zh": "悲伤；哀痛"
+        },
+        {
+          "form": "sorrowfully",
+          "pos": "adv.",
+          "zh": "悲痛地"
+        }
+      ],
+      "usageScore": 4,
+      "etymology": "sorrow(悲伤) + -ful(充满……的) → 哀痛的",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-29"
+    },
+    {
+      "id": "sympathetic",
+      "headword": "sympathetic",
+      "phonetic": "/ˌsɪmpəˈθetɪk/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "showing kindness and understanding toward someone who is suffering or having a hard time",
+          "zh": "同情的;体恤的",
+          "share": 60
+        },
+        {
+          "pos": "adj.",
+          "en": "inclined to approve of and support a person, idea, or cause",
+          "zh": "(对想法、事业、人)支持的,赞同的",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "The nurse gave him a sympathetic look and stayed past her shift so he wouldn't hear the test results alone.",
+        "When my flight got cancelled, the gate agent was sympathetic but honest: nothing was leaving that airport before morning.",
+        "Her manager was sympathetic about the burnout, cutting her meeting load in half instead of just recommending a meditation app.",
+        "Several board members are sympathetic to the four-day-week proposal, though none will say so publicly before the pilot data comes in.",
+        "The judge seemed sympathetic to the startup's argument that the patent was too vague to enforce against anyone."
+      ],
+      "synonyms": [
+        "compassionate",
+        "understanding",
+        "empathetic",
+        "supportive",
+        "receptive"
+      ],
+      "antonyms": [
+        "indifferent",
+        "callous",
+        "unmoved",
+        "hostile"
+      ],
+      "collocations": [
+        "sympathetic to the idea",
+        "a sympathetic ear",
+        "sympathetic look"
+      ],
+      "relatedForms": [
+        {
+          "form": "sympathy",
+          "pos": "n.",
+          "zh": "同情;支持"
+        },
+        {
+          "form": "sympathize",
+          "pos": "v.",
+          "zh": "同情;(与…)有同感"
+        },
+        {
+          "form": "sympathetically",
+          "pos": "adv.",
+          "zh": "同情地"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "sym-(共同) + path(感受) → 感同身受",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-29"
+    },
+    {
+      "id": "receptive",
+      "headword": "receptive",
+      "phonetic": "/rɪˈseptɪv/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "willing to listen to and consider new ideas, suggestions, or offers",
+          "zh": "乐于接受的;愿意倾听(新想法、建议)的"
+        }
+      ],
+      "examples": [
+        "Pitch the redesign on Friday afternoon; the director is far more receptive once the week's fires are already out.",
+        "Investors were surprisingly receptive to the founder's admission that the first product had failed, reading it as honesty rather than weakness.",
+        "Teenagers are more receptive to advice from a coach they respect than to the same words repeated by their parents.",
+        "The city council proved receptive to the bike-lane petition after 3,000 residents signed it in a single weekend.",
+        "Keep the demo short: an audience stays receptive for about ten minutes, then every extra slide costs you goodwill."
+      ],
+      "synonyms": [
+        "open-minded",
+        "amenable",
+        "responsive",
+        "approachable",
+        "willing"
+      ],
+      "antonyms": [
+        "resistant",
+        "closed-minded",
+        "dismissive",
+        "unresponsive"
+      ],
+      "collocations": [
+        "receptive to feedback",
+        "receptive to new ideas",
+        "a receptive audience"
+      ],
+      "relatedForms": [
+        {
+          "form": "receptiveness",
+          "pos": "n.",
+          "zh": "乐于接受;善于领会"
+        },
+        {
+          "form": "receptivity",
+          "pos": "n.",
+          "zh": "接受能力;感受性"
+        },
+        {
+          "form": "receive",
+          "pos": "v.",
+          "zh": "接收;收到"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "re-(回) + cept(拿取) → 愿意接纳",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-29"
+    },
+    {
+      "id": "cosmopolitan",
+      "headword": "cosmopolitan",
+      "phonetic": "/ˌkɑːzməˈpɑːlətən/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "made up of people and influences from many different countries; international in character",
+          "zh": "国际化的;汇聚多元文化的",
+          "share": 60
+        },
+        {
+          "pos": "adj.",
+          "en": "(of a person) at home in many cultures through wide travel and experience, free of narrow local attitudes",
+          "zh": "见多识广的;四海为家的",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "Lisbon has grown so cosmopolitan that my street now has a Nepali grocery, a Brazilian bakery, and three coworking spaces full of remote workers.",
+        "The airline's ads sell Dubai as a cosmopolitan hub where forty nationalities share one office tower and nobody counts as a foreigner.",
+        "Compared with the capital's cosmopolitan food scene, this town offers two diners and a gas station that closes at nine.",
+        "Years of postings in Nairobi, Seoul, and Lima made her genuinely cosmopolitan, able to read a room in any language.",
+        "He cultivates a cosmopolitan image online, but his passport shows one stamp and his palate stops at pizza."
+      ],
+      "synonyms": [
+        "international",
+        "multicultural",
+        "worldly",
+        "sophisticated",
+        "well-traveled"
+      ],
+      "antonyms": [
+        "provincial",
+        "parochial",
+        "insular",
+        "narrow-minded"
+      ],
+      "collocations": [
+        "cosmopolitan city",
+        "cosmopolitan atmosphere",
+        "cosmopolitan outlook"
+      ],
+      "relatedForms": [
+        {
+          "form": "cosmopolitanism",
+          "pos": "n.",
+          "zh": "世界主义;四海一家的观念"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "cosmo(世界) + polites(公民) → 世界公民般的",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-29"
+    },
+    {
+      "id": "mediation",
+      "headword": "mediation",
+      "phonetic": "/ˌmiːdiˈeɪʃn/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "the attempt to settle a dispute by having a neutral third party help both sides reach an agreement",
+          "zh": "调解;调停"
+        }
+      ],
+      "examples": [
+        "The landlord and tenants agreed to mediation after six months of certified letters had produced nothing but thicker files.",
+        "HR proposed mediation between the two engineers before their feud could split the whole platform team into camps.",
+        "Divorce mediation cost them a tenth of what a courtroom battle would have, and the kids never had to testify to anyone.",
+        "Qatar's mediation between the two governments produced a ceasefire draft that neither side loved and both could sign.",
+        "The contract sends every billing dispute to mediation first, so nobody sees a judge until a neutral has tried for thirty days."
+      ],
+      "synonyms": [
+        "conciliation",
+        "arbitration",
+        "intercession",
+        "peacemaking"
+      ],
+      "antonyms": [
+        "litigation",
+        "escalation"
+      ],
+      "collocations": [
+        "go to mediation",
+        "mediation session",
+        "court-ordered mediation"
+      ],
+      "relatedForms": [
+        {
+          "form": "mediate",
+          "pos": "v.",
+          "zh": "调解;斡旋"
+        },
+        {
+          "form": "mediator",
+          "pos": "n.",
+          "zh": "调解人;中间人"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "medi(中间) + -ation(行为) → 居中调停",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-29"
     }
   ]
 }
