@@ -61,15 +61,23 @@ const uncoveredAnchors = anchors.filter(id => !grouped.has(id))
 // this line existed nothing said so — measured on 2026-08-17, 36 words were
 // in that state while the scan printed FRESH.
 //
-// Reported as growth, not a required gap, on purpose. Every added word would
-// otherwise flip the library to STALE the moment it lands, and "FRESH is a
-// real verdict" is the property that keeps a refresh run from inventing work.
-// This used to add that **none of them are anchors**, so the backlog could
-// only ever be cleared by authoring renderings. That held while every anchor
-// already had a group, and stopped holding the first time a batch landed
-// faster than the groups did: re-measured 2026-08-26 over 635 words, 10 of
-// the 12 words here are anchors, and a group would clear them. Read the two
-// lists together — the overlap is which half of the backlog has a choice.
+// The "grow" label states whose debt this is, not whether it counts: GAP
+// lines are coverage the word-adding session owes before it ships; grow
+// lines are pool growth left to the scheduled refresh. Both hold the
+// verdict at STALE, deliberately — "FRESH — stop here" stops a refresh run
+// before it reads any list, so a backlog that spared the verdict would be
+// invisible to the only session meant to clear it. That is the very bug
+// this line fixed (2026-08-17, commit 85226f0: FRESH printed while 36
+// words had no 回想 question). An earlier version of this paragraph
+// claimed growth was meant not to flip the verdict; the code has never
+// worked that way (gap() flips on any non-empty list since f0be0c9), and
+// the one list that truly must not hold the verdict — passage coverage —
+// bypasses gap() entirely below.
+//
+// Re-measured 2026-08-29 over 659 words: 14 of the 25 words here are
+// anchors, and a sense group would clear them; the other 11 can only be
+// cleared by authoring renderings. Read the two grow lists together — the
+// overlap is which half of the backlog has a choice.
 const inGroup = new Set(senseGroups.flatMap(g => g.order))
 const inRecall = new Set(recallSentences.map(s => s.id))
 const noRecallQuestion = words.map(w => w.id).filter(id => !inGroup.has(id) && !inRecall.has(id))
