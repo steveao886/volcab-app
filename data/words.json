@@ -30424,6 +30424,145 @@
       "etymology": "medi(中间) + -ation(行为) → 居中调停",
       "sourceNote": "manual",
       "addedAt": "2026-08-29"
+    },
+    {
+      "id": "disorganized",
+      "headword": "disorganized",
+      "phonetic": "/dɪsˈɔrɡənaɪzd/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "badly planned or messy, with no clear order or system",
+          "zh": "杂乱无章的;缺乏条理的"
+        }
+      ],
+      "examples": [
+        "The onboarding was so disorganized that three new hires spent their first week without laptops, badges, or a manager who knew they existed.",
+        "Her desk looks disorganized, yet she can pull any receipt from the pile in under ten seconds.",
+        "Investors walked out early because the pitch was disorganized, jumping from pricing to hiring before anyone explained the product.",
+        "The relief effort stayed disorganized for days, with two agencies delivering water to the same town while a third got nothing.",
+        "He is brilliant but disorganized, so his calendar is triple-booked and his tax documents live in a shoebox."
+      ],
+      "synonyms": [
+        "chaotic",
+        "haphazard",
+        "messy",
+        "cluttered"
+      ],
+      "antonyms": [
+        "orderly",
+        "methodical",
+        "systematic",
+        "tidy"
+      ],
+      "collocations": [
+        "hopelessly disorganized",
+        "a disorganized mess",
+        "disorganized thinking"
+      ],
+      "relatedForms": [
+        {
+          "form": "disorganization",
+          "pos": "n.",
+          "zh": "混乱;无条理"
+        }
+      ],
+      "usageScore": 7,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-29"
+    },
+    {
+      "id": "entreaty",
+      "headword": "entreaty",
+      "phonetic": "/ɪnˈtriti/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "an earnest, often emotional request that someone do something",
+          "zh": "恳求;哀求"
+        }
+      ],
+      "examples": [
+        "Despite the drivers' repeated entreaties, the company kept the routing algorithm that sent them through flooded streets.",
+        "Her final entreaty to the landlord, a handwritten letter about twelve years of on-time rent, went unanswered for a month.",
+        "The coach ignored every entreaty to rest the injured striker, and the decision ended the team's season by November.",
+        "Fans flooded the studio with entreaties to keep the show's original composer after the reboot trailer dropped.",
+        "He made one last entreaty at the border office, holding up photos of the family he had not seen in years."
+      ],
+      "synonyms": [
+        "plea",
+        "appeal",
+        "supplication",
+        "petition"
+      ],
+      "antonyms": [
+        "demand",
+        "command"
+      ],
+      "collocations": [
+        "ignore someone's entreaties",
+        "a desperate entreaty",
+        "repeated entreaties"
+      ],
+      "relatedForms": [
+        {
+          "form": "entreat",
+          "pos": "v.",
+          "zh": "恳求"
+        }
+      ],
+      "usageScore": 4,
+      "sourceNote": "manual",
+      "addedAt": "2026-08-29"
+    },
+    {
+      "id": "advocacy",
+      "headword": "advocacy",
+      "phonetic": "/ˈædvəkəsi/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "public support for a cause, policy, or group, argued for actively",
+          "zh": "倡导;声援"
+        }
+      ],
+      "examples": [
+        "Years of advocacy by cyclists finally convinced the council to protect the bike lanes with concrete instead of paint.",
+        "The nonprofit's advocacy shifted from street protests to drafting model legislation that three states later adopted almost word for word.",
+        "Her advocacy for plain-language contracts began after watching her parents sign a loan they never understood.",
+        "The hospital hired a patient advocacy team after complaints that billing questions took months to resolve.",
+        "His advocacy of remote work predates the pandemic by a decade, back when it cost him a promotion."
+      ],
+      "synonyms": [
+        "championing",
+        "support",
+        "promotion",
+        "endorsement"
+      ],
+      "antonyms": [
+        "opposition"
+      ],
+      "collocations": [
+        "advocacy group",
+        "patient advocacy",
+        "advocacy work"
+      ],
+      "relatedForms": [
+        {
+          "form": "advocate",
+          "pos": "v.",
+          "zh": "倡导;主张"
+        },
+        {
+          "form": "advocate",
+          "pos": "n.",
+          "zh": "倡导者;拥护者"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "ad-(向) + vocare(呼喊) → 替人发声",
+      "sourceNote": "manual",
+      "addedAt": "2026-08-29"
     }
   ]
 }
