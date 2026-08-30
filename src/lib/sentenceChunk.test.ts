@@ -83,8 +83,8 @@ describe('resolveSentence', () => {
 
   it('cuts the sentence at the annotated token indices', () => {
     const r = resolveSentence(ann(), words, [])
-    expect(r?.raw).toEqual([
-      'The new CEO', 'abrogated', 'the remote-work policy', 'over a single', 'Slack message.',
+    expect(r?.plain).toEqual([
+      'the new CEO', 'abrogated', 'the remote-work policy', 'over a single', 'Slack message',
     ])
   })
 
@@ -176,7 +176,7 @@ describe('pickDistractor', () => {
     const [r0, r1] = [resolveSentence(a0, words, [])!, resolveSentence(a1, words, [])!]
     const d = pickDistractor(r0, [r0, r1], rng)
     expect(d).not.toBeNull()
-    expect(r1.raw).toContain(d)
+    expect(r1.plain).toContain(d)
   })
 
   it('never returns a chunk containing the target word in any form', () => {
@@ -196,7 +196,35 @@ describe('pickDistractor', () => {
     const r0 = resolveSentence(a0, words, [])!
     for (let k = 0; k < 40; k++) {
       const d = pickDistractor(r0, [r0, rt], seq(k))
-      if (d !== null) expect(r0.raw).not.toContain(d)
+      if (d !== null) expect(r0.plain).not.toContain(d)
+    }
+  })
+
+  it('rejects a candidate nested inside a real chunk, or containing one', () => {
+    // `in rents` beside the real `the rise in rents` asks which slice was
+    // meant, not which meaning fits.
+    const near = word({
+      id: 'nearby', headword: 'nearby',
+      examples: ['Nothing has slowed the nearby climb in rents since the subway opened.'],
+    })
+    const rn = resolveSentence(
+      ann({ id: 'nearby', i: 0, cuts: [3, 6, 8], blank: 4, answer: 'nearby' }),
+      map([word(), near]), [],
+    )
+    const host = word({ id: 'host', headword: 'host', examples: ['Since the new line opened the rise in rents around the station has been steep.'] })
+    const rh = resolveSentence(
+      ann({ id: 'host', i: 0, cuts: [5, 9, 12, 14], blank: 14, answer: 'steep' }),
+      map([word(), host]), [],
+    )!
+    for (let k = 0; k < 40; k++) {
+      const d = pickDistractor(rh, [rh, ...(rn === null ? [] : [rn])], seq(k))
+      if (d !== null) {
+        const n = d.trim().toLowerCase()
+        for (const c of rh.plain) {
+          const cn = c.trim().toLowerCase()
+          expect(cn.includes(n) || n.includes(cn)).toBe(false)
+        }
+      }
     }
   })
 

@@ -12,11 +12,13 @@ import type { QuizMetricKey, QuizQuestion } from '../lib/quiz'
 import type { Passage } from '../lib/passage'
 import type { RecallSentence } from '../lib/recallSentence'
 import type { SenseGroup } from '../lib/senseGroup'
+import type { ChunkAnnotation } from '../lib/sentenceChunk'
 import { useApp } from '../state/store'
 import type { Progress, Word } from '../types'
 import { agoLabel, modeOverview, recommendMode } from './statsDerive'
 import type { ModeOverviewRow } from './statsDerive'
 import { QuizQuestionView } from './QuizQuestion'
+import { ComposeSession } from './QuizCompose'
 import { PassageSession } from './QuizPassage'
 import { RecallSession } from './QuizRecall'
 import { SprintSession } from './QuizSprint'
@@ -25,7 +27,7 @@ import './Quiz.css'
 const QUESTION_COUNT = 10
 
 /**
- * The seven practice surfaces. `?mode=` drives which one renders,
+ * The eight practice surfaces. `?mode=` drives which one renders,
  * consistent with `/review?mode=lapses`; `/quiz` with no (or an unknown)
  * mode renders the hub.
  *
@@ -33,7 +35,7 @@ const QUESTION_COUNT = 10
  * That comment was written at four modes; at seven, the chip row had
  * stopped carrying information — no descriptions, no per-mode stats,
  * nothing marking a neglected mode. Sketch 002 (winner B) trades exactly
- * one tap for making the seven modes comparable at a glance; the mixed
+ * one tap for making the modes comparable at a glance; the mixed
  * card spans full width at the top so the every-day default stays the
  * largest, first target.
  */
@@ -45,6 +47,7 @@ const MODES = [
   { key: 'sprint', label: '极速', desc: '60 秒,能答多少答多少' },
   { key: 'passage', label: '短文', desc: '整段文章挖空填词' },
   { key: 'antonym', label: '反义', desc: '给一个词,选出它的反义词' },
+  { key: 'compose', label: '组句', desc: '拼出整句,并补上空缺的词' },
 ] as const
 
 type QuizMode = (typeof MODES)[number]['key']
@@ -54,7 +57,7 @@ const MODE_LABEL: Record<QuizMode, string> = Object.fromEntries(MODES.map(m => [
 const isMode = (v: string | null): v is QuizMode => MODES.some(m => m.key === v)
 
 /** Explanation for when no questions can be generated: each mode is missing something different, and one generic message would leave people not knowing what to do. */
-const EMPTY_HINT: Record<Exclude<QuizMode, 'sprint' | 'passage' | 'recall'>, string> = {
+const EMPTY_HINT: Record<Exclude<QuizMode, 'sprint' | 'passage' | 'recall' | 'compose'>, string> = {
   mixed: '需要至少 4 个词条才能测试。当前词库还不够,先去添加或多学几个单词吧。',
   contrast: '你学过的词里还凑不出易混的一对。辨析只考已经学过的词 —— 拿两个没见过的词问「该用哪个」没有意义。再学一阵子,这里的题会自己多起来。',
   audio: '需要至少 4 个词条才能开始听音练习。当前词库还不够,先去添加或多学几个单词吧。',
@@ -78,7 +81,7 @@ function QuizSession({
   onRestart,
 }: {
   words: Word[]
-  mode: Exclude<QuizMode, 'sprint' | 'passage' | 'recall'>
+  mode: Exclude<QuizMode, 'sprint' | 'passage' | 'recall' | 'compose'>
   onRestart: () => void
 }) {
   const { progress, recordQuiz } = useApp()
@@ -353,9 +356,11 @@ function QuizSessionPage({ mode }: { mode: QuizMode }) {
   }, [mode, passages])
 
   // Sense groups get the same treatment and the same reasoning as passages.
+  // Read by two modes now: 回想 draws questions from them, and 组句 takes
+  // the English sentence a chunk annotation points into.
   const [groups, setGroups] = useState<SenseGroup[] | null>(null)
   useEffect(() => {
-    if (mode !== 'recall' || groups !== null) return
+    if ((mode !== 'recall' && mode !== 'compose') || groups !== null) return
     let alive = true
     void import('../data/senseGroups.json').then(m => {
       if (alive) setGroups((m.default as { groups: SenseGroup[] }).groups)
@@ -363,18 +368,31 @@ function QuizSessionPage({ mode }: { mode: QuizMode }) {
     return () => { alive = false }
   }, [mode, groups])
 
-  // 回想's second source. Loaded beside the groups rather than bundled into
-  // them: it is a separate authored file with its own validator, and only
-  // this one mode reads either.
+  // 回想's second source, and where 组句 finds the Chinese prompt for an
+  // `ex` annotation. Loaded beside the groups rather than bundled into them:
+  // it is a separate authored file with its own validator.
   const [sentences, setSentences] = useState<RecallSentence[] | null>(null)
   useEffect(() => {
-    if (mode !== 'recall' || sentences !== null) return
+    if ((mode !== 'recall' && mode !== 'compose') || sentences !== null) return
     let alive = true
     void import('../data/recallSentences.json').then(m => {
       if (alive) setSentences((m.default as { sentences: RecallSentence[] }).sentences)
     })
     return () => { alive = false }
   }, [mode, sentences])
+
+  // The chunk boundaries. Its own file for the same reason it is not a field
+  // on recallSentences.json: 回想 loads that file every session and must not
+  // download a mode it does not use.
+  const [annotations, setAnnotations] = useState<ChunkAnnotation[] | null>(null)
+  useEffect(() => {
+    if (mode !== 'compose' || annotations !== null) return
+    let alive = true
+    void import('../data/sentenceChunks.json').then(m => {
+      if (alive) setAnnotations((m.default as { chunks: ChunkAnnotation[] }).chunks)
+    })
+    return () => { alive = false }
+  }, [mode, annotations])
 
   const restart = useCallback(() => setSession(s => s + 1), [])
 
@@ -394,6 +412,19 @@ function QuizSessionPage({ mode }: { mode: QuizMode }) {
           <RecallSession
             key={`recall-${session}`}
             words={words}
+            groups={groups}
+            sentences={sentences}
+            onRestart={restart}
+          />
+        )
+      ) : mode === 'compose' ? (
+        annotations === null || groups === null || sentences === null ? (
+          <Card className="quiz-empty"><p className="muted">正在加载句子…</p></Card>
+        ) : (
+          <ComposeSession
+            key={`compose-${session}`}
+            words={words}
+            annotations={annotations}
             groups={groups}
             sentences={sentences}
             onRestart={restart}

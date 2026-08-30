@@ -28,6 +28,7 @@ const KEYS = {
   // a 回想 failure is meaning→headword and has to come back in that
   // direction to have been practised at all.
   recallDebt: 'volcab.recallDebt',
+  recentCompose: 'volcab.recentCompose', // Chinese prompts of recently answered 组句 questions, windowed the same way
   recentContrast: 'volcab.recentContrast', // Pair keys (id|id, sorted) of recently answered 辨析 questions — the surface the repetition audit found going stale first
 
   // The day (YYYY-MM-DD) each practice drill was last completed, so it

@@ -31,14 +31,14 @@ export type QuizType =
  * section conditionally, so it costs one line here and nothing on screen.
  */
 export const QUIZ_METRIC_KEYS = [
-  'mixed', 'recall', 'contrast', 'audio', 'sprint', 'passage', 'guess', 'antonym',
+  'mixed', 'recall', 'contrast', 'audio', 'sprint', 'passage', 'guess', 'antonym', 'compose',
 ] as const
 export type QuizMetricKey = (typeof QUIZ_METRIC_KEYS)[number]
 
 /** The label each surface shows on the stats page. Kept beside the keys so a new mode can't be added to one and forgotten in the other. */
 export const QUIZ_METRIC_LABELS: Record<QuizMetricKey, string> = {
   mixed: '综合', recall: '回想', contrast: '辨析', audio: '听音',
-  sprint: '极速', passage: '短文', guess: '猜词', antonym: '反义',
+  sprint: '极速', passage: '短文', guess: '猜词', antonym: '反义', compose: '组句',
 }
 
 /**

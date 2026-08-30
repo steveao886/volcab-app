@@ -28,6 +28,7 @@ const wordNotes = JSON.parse(readFileSync('src/data/wordNotes.json', 'utf8')).no
 const senseGroups = JSON.parse(readFileSync('src/data/senseGroups.json', 'utf8')).groups as { order: string[] }[]
 const passages = JSON.parse(readFileSync('src/data/passages.json', 'utf8')).passages as { en: string[] }[]
 const recallSentences = JSON.parse(readFileSync('src/data/recallSentences.json', 'utf8')).sentences as { id: string }[]
+const sentenceChunks = JSON.parse(readFileSync('src/data/sentenceChunks.json', 'utf8')).chunks as { id: string }[]
 
 const pairs = buildContrastPairs(words as never)
 const posOf = new Map(words.map(w => [w.id, w.meanings[0]?.pos ?? '']))
@@ -98,6 +99,26 @@ gap('contrastNotes missing (required)', missingContrast, true)
 gap('wordNotes missing (required)', missingNotes, true)
 gap('sense-group anchors uncovered (pool growth)', uncoveredAnchors, false)
 gap('words with no 回想 question at all (pool growth)', noRecallQuestion, false)
+
+// 组句 coverage is printed, never a STALE trigger, and for the same reason
+// the passage line below bypasses gap(). Its ceiling is a subset of the
+// library by construction: a word can only be asked once some sentence of
+// it has authored chunk boundaries, and the pool it draws from is itself
+// bounded by which sentences carry a Chinese rendering. A line that can
+// never reach zero would hold the scan at STALE permanently, and a
+// permanently red scan stops being read — which is the failure the 回想
+// coverage line above was added to fix, in the other direction.
+//
+// Depth is reported beside breadth because they buy different things.
+// Breadth is whether a word can be asked at all; depth is whether a word
+// the difficulty draw wants three times can be asked three times without
+// repeating a sentence, and a repeated sentence tests the sentence.
+const chunked = new Set(sentenceChunks.map(c => c.id))
+const perChunkWord = new Map<string, number>()
+for (const c of sentenceChunks) perChunkWord.set(c.id, (perChunkWord.get(c.id) ?? 0) + 1)
+const deep = [...perChunkWord.values()].filter(n => n >= 3).length
+console.log(`
+组句: ${sentenceChunks.length} annotations covering ${chunked.size}/${words.length} words, ${deep} of them 3+ sentences deep — grow with the content batches; no required floor`)
 
 // Passage coverage is printed, never a STALE trigger. Covering every word
 // three times over needs roughly 200 passages, so a coverage line here would

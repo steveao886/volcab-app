@@ -110,8 +110,17 @@ export interface ResolvedSentence {
   en: string
   /** Display chunks in reference order: opener lowercased, blank rendered, tail removed. */
   chunks: string[]
-  /** The same chunks before the blank is rendered — what a distractor is drawn from. */
-  raw: string[]
+  /**
+   * The same chunks with the word left in — what a distractor is drawn from.
+   *
+   * **Display-normalised, not raw.** Drawing from the untouched sentence
+   * shipped a distractor that announced itself: every real chunk has had the
+   * sentence-final period lifted out and the opening capital dropped, so a
+   * candidate carrying either was identifiable without reading it. Caught in
+   * the browser on the first question ever rendered — `a rival skincare
+   * brand.` sitting among five chunks that all ended bare.
+   */
+  plain: string[]
   /** Which chunk carries the blank. */
   blankChunk: number
   /** Sentence-final punctuation, shown after the last slot rather than inside a chunk. */
@@ -186,13 +195,13 @@ export function resolveSentence(
   if (tail !== '') shown[lastIdx] = shown[lastIdx].slice(0, -tail.length)
 
   const bounds = [0, ...cuts, tokens.length]
-  const raw: string[] = []
+  const plain: string[] = []
   const chunks: string[] = []
   let blankChunk = -1
   for (let k = 0; k + 1 < bounds.length; k++) {
     const from = bounds[k]
     const to = bounds[k + 1]
-    raw.push(tokens.slice(from, to).join(' '))
+    plain.push(shown.slice(from, to).join(' '))
     const piece = shown.slice(from, to)
     if (a.blank >= from && a.blank < to) {
       blankChunk = k
@@ -205,7 +214,7 @@ export function resolveSentence(
   if (chunks.some(c => c.trim() === '')) return null
   if (blankChunk === -1) return null
 
-  return { a, en, chunks, raw, blankChunk, tail }
+  return { a, en, chunks, plain, blankChunk, tail }
 }
 
 const isLearned = (id: string, progress: Progress): boolean => {
@@ -261,8 +270,8 @@ export function pickDistractor(
   pool: ResolvedSentence[],
   rng: () => number,
 ): string | null {
-  const own = new Set(target.raw.map(normalizeChunk))
-  const want = median(target.raw.map(c => c.split(/\s+/).length))
+  const own = new Set(target.plain.map(normalizeChunk))
+  const want = median(target.plain.map(c => c.split(/\s+/).length))
   const key = annotationKey(target.a)
   // Four characters is enough to catch the inflections that matter
   // (abrogate/abrogated/abrogating) and short enough not to need a stemmer.
@@ -275,12 +284,19 @@ export function pickDistractor(
   for (const group of [sameWord, other]) {
     const candidates: string[] = []
     for (const r of shuffle(group, rng)) {
-      for (let k = 0; k < r.raw.length; k++) {
+      for (let k = 0; k < r.plain.length; k++) {
         // The chunk holding that sentence's own blank contains this word by
         // construction — using it would print the answer on the screen.
         if (r.a.id === target.a.id && k === r.blankChunk) continue
-        const text = r.raw[k]
-        if (own.has(normalizeChunk(text))) continue
+        const text = r.plain[k]
+        const norm = normalizeChunk(text)
+        // Not just "identical to a real chunk" but "nested either way".
+        // `in rents` offered beside the real `the rise in rents` reads as an
+        // ambiguous question rather than a hard one — the learner is being
+        // asked to guess which slice was meant, which is not what the mode
+        // tests. Seen in the browser on inexorable, whose two sentences are
+        // near-paraphrases.
+        if ([...own].some(c => c === norm || c.includes(norm) || norm.includes(c))) continue
         const toks = text.split(/\s+/)
         if (Math.abs(toks.length - want) > 2) continue
         if (toks.some(t => normalizeToken(t).startsWith(stem))) continue

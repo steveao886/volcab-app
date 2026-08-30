@@ -310,7 +310,7 @@ describe('modeOverview', () => {
   // still on the server, so the key stays and `antonym` was appended after it.
   it('returns every metric key in fixed order, played or not — including the retired one', () => {
     const rows = modeOverview(emptyProgress())
-    expect(rows.map(r => r.mode)).toEqual(['mixed', 'recall', 'contrast', 'audio', 'sprint', 'passage', 'guess', 'antonym'])
+    expect(rows.map(r => r.mode)).toEqual(['mixed', 'recall', 'contrast', 'audio', 'sprint', 'passage', 'guess', 'antonym', 'compose'])
     expect(rows[0]).toMatchObject({ asked: 0, correct: 0, rate: null, lastPlayed: null })
   })
 

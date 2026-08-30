@@ -548,3 +548,146 @@
   justify-content: center;
   margin-top: var(--sp-4);
 }
+
+/* --- 组句 -------------------------------------------------------------- */
+
+/* The answer row. Slots wrap, because a five-chunk sentence does not fit one
+   line at 375px and shrinking the chunks to make it would make them
+   unreadable. An empty slot is a dashed outline rather than a filled box: it
+   has to read as somewhere to put something, not as a disabled control. */
+.compose-slots {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--sp-2);
+  margin: var(--sp-5) 0 0;
+  padding: var(--sp-3);
+  border-radius: var(--r-sm);
+  background: var(--surface-sunken);
+  list-style: none;
+  counter-reset: none;
+}
+
+.compose-slot__item {
+  display: flex;
+}
+
+.compose-slot {
+  min-width: 56px;
+  min-height: var(--tap);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px dashed var(--rule-control);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-faint);
+  font: inherit;
+  line-height: var(--lh-body);
+  text-align: start;
+}
+
+.compose-slot--filled {
+  border-style: solid;
+  border-color: var(--rule-control);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* After the submit. The colour is never the only signal — the reference
+   sentence is printed in full below, and a misplaced chunk is struck
+   through as well as tinted. */
+.compose-slot--right {
+  border-color: var(--success);
+  color: var(--success);
+  cursor: default;
+}
+
+.compose-slot--wrong {
+  border-color: var(--danger);
+  color: var(--danger);
+  text-decoration: line-through;
+  cursor: default;
+}
+
+/* The sentence-final punctuation. Out of the chunks so it cannot mark which
+   chunk goes last, but inside the final slot so it does not orphan onto a
+   line of its own once the slots wrap one to a row. */
+.compose-tail {
+  color: var(--text-muted);
+}
+
+.compose-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin: var(--sp-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A chunk is several words, so it must be allowed to wrap — the base .chip is
+   nowrap, which would push a four-word chunk off the 375px canvas. */
+.compose-chunk {
+  max-width: 100%;
+  min-height: var(--tap);
+  padding-block: var(--sp-2);
+  white-space: normal;
+  text-align: start;
+  line-height: var(--lh-body);
+}
+
+.compose-chunk--used {
+  opacity: 0.4;
+}
+
+/* The printed shortcut. Same treatment as the quiz options' 1–4: a shortcut
+   that is not on the control it triggers does not exist. */
+.compose-chunk__key {
+  flex: none;
+  color: var(--text-faint);
+  font-size: var(--fs-sm);
+}
+
+.compose-word {
+  display: block;
+  margin-top: var(--sp-5);
+}
+
+.compose-word .input {
+  margin-top: var(--sp-2);
+}
+
+/* Why a form miss is not simply "wrong": the word was there. */
+.compose-note {
+  margin-top: var(--sp-3);
+  color: var(--text-muted);
+  line-height: var(--lh-body);
+}
+
+/* The two verdicts, side by side. Each spells its result out — 正确 / 错误 /
+   词形错了 — so the tint is a second channel and never the only one. */
+.compose-verdicts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+}
+
+.compose-verdict {
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.compose-verdict--ok {
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.compose-verdict--bad {
+  border-color: var(--danger);
+  color: var(--danger);
+}
