@@ -747,10 +747,10 @@
       "zh": "两家供应商私下勾结,把投标价抬高了三成。",
       "target": "勾结",
       "order": [
-        "collude"
+        "collude",
+        "conspire"
       ],
       "extra": [
-        "conspire",
         "connive",
         "scheme"
       ],
@@ -1408,12 +1408,11 @@
         "malign"
       ],
       "extra": [
-        "slander",
         "vilify",
         "smear"
       ],
       "en": "He was maligned for a year until the recording surfaced.",
-      "why": "malign 作动词指说人坏话、败坏名声,不限口头或书面;slander 特指口头诽谤,法律上与书面的诽谤相区分;vilify 强调把人说得极其不堪;smear 指有组织地泼脏水。"
+      "why": "malign 作动词指说人坏话、败坏名声,不限口头或书面;vilify 强调把人说得极其不堪;smear 指有组织地泼脏水。"
     },
     {
       "zh": "改版之后界面好看多了,但注册量没有任何起色。",
@@ -1630,10 +1629,10 @@
       "target": "令人憎恶",
       "order": [
         "abhorrent",
-        "repugnant"
+        "repugnant",
+        "odious"
       ],
       "extra": [
-        "odious",
         "repellent"
       ],
       "en": "She found the practice abhorrent and left the project that day.",
@@ -2178,12 +2177,11 @@
         "haphazard"
       ],
       "extra": [
-        "disorganized",
         "slapdash",
         "hit-or-miss"
       ],
       "en": "The file is haphazard: nothing follows anything else.",
-      "why": "haphazard 指没有章法、全凭偶然地拼凑,重点在缺乏计划;disorganized 强调本该有序却乱了;slapdash 侧重做得草率马虎;hit-or-miss 指效果时好时坏、不稳定。"
+      "why": "haphazard 指没有章法、全凭偶然地拼凑,重点在缺乏计划;slapdash 侧重做得草率马虎;hit-or-miss 指效果时好时坏、不稳定。"
     },
     {
       "zh": "谈判在第三轮陷入僵局,双方都不肯先让步。",
@@ -2301,10 +2299,10 @@
       "zh": "一场大火把那片老街区彻底抹平了。",
       "target": "彻底抹平",
       "order": [
-        "obliteration"
+        "obliteration",
+        "annihilation"
       ],
       "extra": [
-        "annihilation",
         "eradication",
         "wiping out"
       ],
@@ -2651,10 +2649,10 @@
       "zh": "两个部门为那笔预算的归属争了整整六周。",
       "target": "争",
       "order": [
-        "wrangle"
+        "wrangle",
+        "squabble"
       ],
       "extra": [
-        "squabble",
         "haggle",
         "tussle"
       ],
@@ -2693,15 +2691,14 @@
       "zh": "没人会不情愿给她这份荣誉,她确实做到了。",
       "target": "不情愿给",
       "order": [
-        "begrudge"
+        "begrudge",
+        "resent"
       ],
       "extra": [
-        "resent",
-        "grudge",
         "hold against"
       ],
       "en": "Nobody would begrudge her the recognition; she earned it.",
-      "why": "begrudge 指心里不情愿地让别人得到某物,常用于否定句表示欣然认可;resent 是对某事怀恨在心;grudge 作名词指积怨;hold against 强调把某事记在对方账上。"
+      "why": "begrudge 指心里不情愿地让别人得到某物,常用于否定句表示欣然认可;resent 是对某事怀恨在心;hold against 强调把某事记在对方账上。"
     },
     {
       "zh": "这三章的论证前后连贯,读下来一气呵成。",
@@ -2738,12 +2735,11 @@
         "consign"
       ],
       "extra": [
-        "relegate",
         "banish",
         "pack off"
       ],
       "en": "The old files were consigned to a storeroom three floors down.",
-      "why": "consign 指把某物正式交付或打发到某处,常用被动且带弃置意味;relegate 强调降到更低的位置或等级;banish 侧重驱逐出去;pack off 是口语的打发走人。"
+      "why": "consign 指把某物正式交付或打发到某处,常用被动且带弃置意味;banish 侧重驱逐出去;pack off 是口语的打发走人。"
     },
     {
       "zh": "调查认定承包商在这起事故里应受谴责。",
@@ -3882,10 +3878,10 @@
       "zh": "远处传来一声哀伤的鸟叫,叫了很久。",
       "target": "哀伤的",
       "order": [
-        "plaintive"
+        "plaintive",
+        "mournful"
       ],
       "extra": [
-        "mournful",
         "doleful",
         "wistful"
       ],
@@ -3896,10 +3892,10 @@
       "zh": "两人来回的机智应答成了整场访谈的亮点。",
       "target": "机智应答",
       "order": [
-        "repartee"
+        "repartee",
+        "banter"
       ],
       "extra": [
-        "banter",
         "badinage",
         "quick comebacks"
       ],
@@ -3966,12 +3962,12 @@
       "zh": "他谈吐温文尔雅,却把该说的都说了。",
       "target": "温文尔雅",
       "order": [
-        "urbane"
+        "urbane",
+        "debonair"
       ],
       "extra": [
         "suave",
-        "polished",
-        "debonair"
+        "polished"
       ],
       "en": "He was urbane throughout and still said everything that needed saying.",
       "why": "urbane 指见多识广而从容得体的谈吐风度,褒义;suave 强调圆滑讨喜,有时暗示不太真诚;polished 侧重经过打磨的老练;debonair 更偏潇洒有魅力的外在气质。"
@@ -4297,13 +4293,13 @@
       "target": "出面说情",
       "en": "Only the ambassador's quiet intercession kept the two delegations at the table past midnight.",
       "order": [
-        "intercession"
-      ],
-      "extra": [
-        "mediation",
+        "intercession",
         "advocacy"
       ],
-      "why": "intercession 是替第三方出面向有权者说情、求情，重心在『为别人开口』；它也用于宗教中的代祷，同样是替他人向更高一方陈情。"
+      "extra": [
+        "arbitration"
+      ],
+      "why": "intercession 是替第三方出面向有权者说情、求情，重心在『为别人开口』；advocacy 是公开为某主张站台，不针对具体某个人；arbitration 是受托作出有约束力的裁断，与私下说情正相反。"
     },
     {
       "zh": "一场火灾让二十多户人家一无所有，只能睡在学校体育馆。",
