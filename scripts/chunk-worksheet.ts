@@ -41,11 +41,33 @@ const renderings = JSON.parse(readFileSync('src/data/recallSentences.json', 'utf
 }[]
 
 const OUT = 'src/data/sentenceChunks.json'
-const done = new Set<string>(
-  existsSync(OUT)
-    ? (JSON.parse(readFileSync(OUT, 'utf8')).chunks as { src: string; id: string; i: number }[])
-      .map(c => `${c.src}:${c.id}:${c.i}`)
-    : [],
+const existing = existsSync(OUT)
+  ? (JSON.parse(readFileSync(OUT, 'utf8')).chunks as { src: string; id: string; i: number }[])
+  : []
+const done = new Set<string>(existing.map(c => `${c.src}:${c.id}:${c.i}`))
+/**
+ * Words that already have an annotation from either pool.
+ *
+ * Breadth before depth is the default: a word with no annotation cannot be
+ * asked at all, while a second sentence only changes how often a word the
+ * difficulty draw wants three times can repeat without repeating itself. Pass
+ * `--depth` to sweep the words that are already covered.
+ */
+const coveredWords = new Set<string>(existing.map(c => c.id))
+const depth = args.includes('--depth')
+
+/**
+ * English already annotated, whichever pool it came from.
+ *
+ * A handful of sentences appear verbatim in both files — `conspicuous`'s
+ * first example is also sense group 396 — and annotating both would build the
+ * same puzzle twice, differing only in which Chinese rendering introduced it.
+ */
+const annotatedEn = new Set<string>(
+  existing.map(c => {
+    const en = c.src === 'sg' ? groups[c.i]?.en : byId.get(c.id)?.examples[c.i]
+    return (en ?? '').trim().toLowerCase()
+  }).filter(x => x !== ''),
 )
 
 /** Shortest English token count that can carry the floor at ~2.5 tokens a chunk. */
@@ -93,6 +115,8 @@ if (pool === 'sg') {
     if (tokens.length < MIN_TOKENS.sg) return
     if (byId.get(id) === undefined) return
     if (isPhrase(id, g.en)) return
+    if (annotatedEn.has(g.en.trim().toLowerCase())) return
+    if (!depth && coveredWords.has(id)) return
     if (done.has(`sg:${id}:${i}`)) return
     const blank = findBlank(tokens, id)
     if (blank === -1) return
@@ -109,6 +133,8 @@ if (pool === 'sg') {
     const tokens = w.examples[s.i].trim().split(/\s+/)
     if (tokens.length < MIN_TOKENS.ex) continue
     if (isPhrase(s.id, w.examples[s.i])) continue
+    if (annotatedEn.has(w.examples[s.i].trim().toLowerCase())) continue
+    if (!depth && coveredWords.has(s.id)) continue
     const blank = findBlank(tokens, s.id)
     if (blank === -1) continue
     taken.add(s.id)

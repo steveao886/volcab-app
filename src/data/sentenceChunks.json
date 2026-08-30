@@ -3918,6 +3918,1014 @@
    ],
    "blank": 5,
    "answer": "negligent"
+  },
+  {
+   "src": "ex",
+   "id": "abrogate",
+   "i": 0,
+   "cuts": [
+    3,
+    4,
+    7,
+    12,
+    16
+   ],
+   "blank": 3,
+   "answer": "abrogated"
+  },
+  {
+   "src": "ex",
+   "id": "acquiesce",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    9,
+    13
+   ],
+   "blank": 8,
+   "answer": "acquiesced"
+  },
+  {
+   "src": "ex",
+   "id": "acquisitive",
+   "i": 0,
+   "cuts": [
+    3,
+    5,
+    9,
+    13,
+    17
+   ],
+   "blank": 1,
+   "answer": "acquisitive"
+  },
+  {
+   "src": "ex",
+   "id": "acrid",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    11,
+    15
+   ],
+   "blank": 1,
+   "answer": "acrid"
+  },
+  {
+   "src": "ex",
+   "id": "adroit",
+   "i": 0,
+   "cuts": [
+    3,
+    8,
+    12,
+    16,
+    18
+   ],
+   "blank": 1,
+   "answer": "adroit"
+  },
+  {
+   "src": "ex",
+   "id": "affected",
+   "i": 0,
+   "cuts": [
+    4,
+    6,
+    9,
+    11
+   ],
+   "blank": 1,
+   "answer": "affected"
+  },
+  {
+   "src": "ex",
+   "id": "affinity",
+   "i": 0,
+   "cuts": [
+    3,
+    5,
+    7,
+    11,
+    15
+   ],
+   "blank": 4,
+   "answer": "affinity"
+  },
+  {
+   "src": "ex",
+   "id": "alienate",
+   "i": 0,
+   "cuts": [
+    4,
+    5,
+    8,
+    11
+   ],
+   "blank": 4,
+   "answer": "alienated"
+  },
+  {
+   "src": "ex",
+   "id": "antagonize",
+   "i": 0,
+   "cuts": [
+    3,
+    7,
+    9,
+    12
+   ],
+   "blank": 8,
+   "answer": "antagonize"
+  },
+  {
+   "src": "ex",
+   "id": "antipathy",
+   "i": 0,
+   "cuts": [
+    2,
+    5,
+    8,
+    13,
+    16
+   ],
+   "blank": 4,
+   "answer": "antipathy"
+  },
+  {
+   "src": "ex",
+   "id": "ardent",
+   "i": 0,
+   "cuts": [
+    4,
+    8,
+    11,
+    13
+   ],
+   "blank": 2,
+   "answer": "ardent"
+  },
+  {
+   "src": "ex",
+   "id": "artful",
+   "i": 0,
+   "cuts": [
+    3,
+    7,
+    10,
+    12,
+    15
+   ],
+   "blank": 1,
+   "answer": "artful"
+  },
+  {
+   "src": "ex",
+   "id": "aspirant",
+   "i": 0,
+   "cuts": [
+    4,
+    7,
+    9,
+    13,
+    16
+   ],
+   "blank": 3,
+   "answer": "aspirant"
+  },
+  {
+   "src": "ex",
+   "id": "assiduous",
+   "i": 0,
+   "cuts": [
+    3,
+    7,
+    11,
+    14,
+    17
+   ],
+   "blank": 2,
+   "answer": "assiduous"
+  },
+  {
+   "src": "ex",
+   "id": "austere",
+   "i": 0,
+   "cuts": [
+    4,
+    8,
+    10,
+    14
+   ],
+   "blank": 1,
+   "answer": "austere"
+  },
+  {
+   "src": "ex",
+   "id": "averse",
+   "i": 0,
+   "cuts": [
+    2,
+    5,
+    9,
+    12,
+    15
+   ],
+   "blank": 3,
+   "answer": "averse"
+  },
+  {
+   "src": "ex",
+   "id": "barefaced",
+   "i": 0,
+   "cuts": [
+    4,
+    6,
+    12,
+    16,
+    21
+   ],
+   "blank": 14,
+   "answer": "barefaced"
+  },
+  {
+   "src": "ex",
+   "id": "beguile",
+   "i": 0,
+   "cuts": [
+    4,
+    6,
+    8,
+    11
+   ],
+   "blank": 4,
+   "answer": "beguiled"
+  },
+  {
+   "src": "ex",
+   "id": "belittle",
+   "i": 0,
+   "cuts": [
+    4,
+    6,
+    7,
+    10
+   ],
+   "blank": 6,
+   "answer": "belittled"
+  },
+  {
+   "src": "ex",
+   "id": "benevolent",
+   "i": 0,
+   "cuts": [
+    2,
+    4,
+    8,
+    12
+   ],
+   "blank": 3,
+   "answer": "benevolent"
+  },
+  {
+   "src": "ex",
+   "id": "bewilderment",
+   "i": 0,
+   "cuts": [
+    4,
+    7,
+    9,
+    13
+   ],
+   "blank": 8,
+   "answer": "bewilderment"
+  },
+  {
+   "src": "ex",
+   "id": "bifurcation",
+   "i": 0,
+   "cuts": [
+    3,
+    5,
+    9,
+    14,
+    17
+   ],
+   "blank": 4,
+   "answer": "bifurcation"
+  },
+  {
+   "src": "ex",
+   "id": "callous",
+   "i": 0,
+   "cuts": [
+    5,
+    8,
+    10,
+    13
+   ],
+   "blank": 11,
+   "answer": "callous"
+  },
+  {
+   "src": "ex",
+   "id": "capitulate",
+   "i": 0,
+   "cuts": [
+    3,
+    8,
+    10,
+    13
+   ],
+   "blank": 9,
+   "answer": "capitulated"
+  },
+  {
+   "src": "ex",
+   "id": "cataclysmic",
+   "i": 0,
+   "cuts": [
+    3,
+    5,
+    7,
+    12
+   ],
+   "blank": 4,
+   "answer": "cataclysmic"
+  },
+  {
+   "src": "ex",
+   "id": "circuitous",
+   "i": 0,
+   "cuts": [
+    4,
+    8,
+    11,
+    14
+   ],
+   "blank": 6,
+   "answer": "circuitous"
+  },
+  {
+   "src": "ex",
+   "id": "commendable",
+   "i": 0,
+   "cuts": [
+    4,
+    7,
+    9,
+    13,
+    16
+   ],
+   "blank": 8,
+   "answer": "commendable"
+  },
+  {
+   "src": "ex",
+   "id": "congenial",
+   "i": 0,
+   "cuts": [
+    3,
+    7,
+    9,
+    13,
+    16
+   ],
+   "blank": 8,
+   "answer": "congenial"
+  },
+  {
+   "src": "ex",
+   "id": "contemptible",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    12,
+    17
+   ],
+   "blank": 15,
+   "answer": "contemptible"
+  },
+  {
+   "src": "ex",
+   "id": "contravene",
+   "i": 0,
+   "cuts": [
+    3,
+    5,
+    7,
+    9
+   ],
+   "blank": 6,
+   "answer": "contravenes"
+  },
+  {
+   "src": "ex",
+   "id": "credulity",
+   "i": 0,
+   "cuts": [
+    4,
+    6,
+    8,
+    12,
+    16
+   ],
+   "blank": 5,
+   "answer": "credulity"
+  },
+  {
+   "src": "ex",
+   "id": "credulous",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    8,
+    11
+   ],
+   "blank": 7,
+   "answer": "credulous"
+  },
+  {
+   "src": "ex",
+   "id": "criticality",
+   "i": 0,
+   "cuts": [
+    3,
+    7,
+    9,
+    13
+   ],
+   "blank": 15,
+   "answer": "criticality"
+  },
+  {
+   "src": "ex",
+   "id": "deify",
+   "i": 0,
+   "cuts": [
+    2,
+    5,
+    6,
+    9
+   ],
+   "blank": 4,
+   "answer": "deify"
+  },
+  {
+   "src": "ex",
+   "id": "depraved",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    10,
+    14,
+    17
+   ],
+   "blank": 8,
+   "answer": "depraved"
+  },
+  {
+   "src": "ex",
+   "id": "detrimental",
+   "i": 0,
+   "cuts": [
+    4,
+    6,
+    10,
+    15
+   ],
+   "blank": 5,
+   "answer": "detrimental"
+  },
+  {
+   "src": "ex",
+   "id": "devious",
+   "i": 0,
+   "cuts": [
+    4,
+    7,
+    9,
+    12
+   ],
+   "blank": 5,
+   "answer": "devious"
+  },
+  {
+   "src": "ex",
+   "id": "diffident",
+   "i": 0,
+   "cuts": [
+    3,
+    7,
+    10,
+    12,
+    16
+   ],
+   "blank": 2,
+   "answer": "diffident"
+  },
+  {
+   "src": "ex",
+   "id": "disaffect",
+   "i": 0,
+   "cuts": [
+    5,
+    9,
+    11,
+    13,
+    18
+   ],
+   "blank": 12,
+   "answer": "disaffect"
+  },
+  {
+   "src": "ex",
+   "id": "discursive",
+   "i": 0,
+   "cuts": [
+    3,
+    7,
+    9,
+    11,
+    15
+   ],
+   "blank": 13,
+   "answer": "discursive"
+  },
+  {
+   "src": "ex",
+   "id": "dispassionate",
+   "i": 0,
+   "cuts": [
+    2,
+    4,
+    8,
+    13
+   ],
+   "blank": 3,
+   "answer": "dispassionate"
+  },
+  {
+   "src": "ex",
+   "id": "disreputable",
+   "i": 0,
+   "cuts": [
+    3,
+    5,
+    8,
+    12
+   ],
+   "blank": 9,
+   "answer": "disreputable"
+  },
+  {
+   "src": "ex",
+   "id": "domineering",
+   "i": 0,
+   "cuts": [
+    3,
+    7,
+    11,
+    15,
+    18
+   ],
+   "blank": 1,
+   "answer": "domineering"
+  },
+  {
+   "src": "ex",
+   "id": "dovetail",
+   "i": 0,
+   "cuts": [
+    3,
+    5,
+    9,
+    13,
+    15
+   ],
+   "blank": 3,
+   "answer": "dovetailed"
+  },
+  {
+   "src": "ex",
+   "id": "embody",
+   "i": 0,
+   "cuts": [
+    3,
+    4,
+    8,
+    11
+   ],
+   "blank": 3,
+   "answer": "embodies"
+  },
+  {
+   "src": "ex",
+   "id": "engross",
+   "i": 0,
+   "cuts": [
+    4,
+    6,
+    8,
+    11,
+    14
+   ],
+   "blank": 4,
+   "answer": "engrossed"
+  },
+  {
+   "src": "ex",
+   "id": "entanglement",
+   "i": 0,
+   "cuts": [
+    3,
+    7,
+    11,
+    14
+   ],
+   "blank": 2,
+   "answer": "entanglement"
+  },
+  {
+   "src": "ex",
+   "id": "entreat",
+   "i": 0,
+   "cuts": [
+    2,
+    4,
+    8,
+    11,
+    14
+   ],
+   "blank": 1,
+   "answer": "entreated"
+  },
+  {
+   "src": "ex",
+   "id": "erratic",
+   "i": 0,
+   "cuts": [
+    3,
+    7,
+    9,
+    13,
+    17
+   ],
+   "blank": 5,
+   "answer": "erratic"
+  },
+  {
+   "src": "ex",
+   "id": "exigent",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    10,
+    13,
+    15
+   ],
+   "blank": 4,
+   "answer": "exigent"
+  },
+  {
+   "src": "ex",
+   "id": "extenuate",
+   "i": 0,
+   "cuts": [
+    3,
+    5,
+    9,
+    12,
+    17
+   ],
+   "blank": 3,
+   "answer": "extenuating"
+  },
+  {
+   "src": "ex",
+   "id": "extricate",
+   "i": 0,
+   "cuts": [
+    4,
+    7,
+    10,
+    13,
+    16
+   ],
+   "blank": 8,
+   "answer": "extricate"
+  },
+  {
+   "src": "ex",
+   "id": "extrication",
+   "i": 0,
+   "cuts": [
+    2,
+    6,
+    9,
+    13,
+    16,
+    19
+   ],
+   "blank": 1,
+   "answer": "extrication"
+  },
+  {
+   "src": "ex",
+   "id": "fervent",
+   "i": 0,
+   "cuts": [
+    4,
+    8,
+    12,
+    15,
+    17
+   ],
+   "blank": 2,
+   "answer": "fervent"
+  },
+  {
+   "src": "ex",
+   "id": "fiat",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    8,
+    11,
+    15
+   ],
+   "blank": 7,
+   "answer": "fiat"
+  },
+  {
+   "src": "ex",
+   "id": "foreshadow",
+   "i": 0,
+   "cuts": [
+    3,
+    7,
+    8,
+    10,
+    14
+   ],
+   "blank": 7,
+   "answer": "foreshadowed"
+  },
+  {
+   "src": "ex",
+   "id": "fractious",
+   "i": 0,
+   "cuts": [
+    2,
+    4,
+    7,
+    10,
+    14
+   ],
+   "blank": 3,
+   "answer": "fractious"
+  },
+  {
+   "src": "ex",
+   "id": "grandiose",
+   "i": 0,
+   "cuts": [
+    3,
+    8,
+    11,
+    13,
+    16
+   ],
+   "blank": 1,
+   "answer": "grandiose"
+  },
+  {
+   "src": "ex",
+   "id": "grouse",
+   "i": 0,
+   "cuts": [
+    3,
+    8,
+    11,
+    15
+   ],
+   "blank": 2,
+   "answer": "groused"
+  },
+  {
+   "src": "ex",
+   "id": "harangue",
+   "i": 0,
+   "cuts": [
+    3,
+    5,
+    8,
+    11,
+    15
+   ],
+   "blank": 7,
+   "answer": "harangue"
+  },
+  {
+   "src": "ex",
+   "id": "headstrong",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    8,
+    11,
+    13
+   ],
+   "blank": 1,
+   "answer": "headstrong"
+  },
+  {
+   "src": "ex",
+   "id": "heterogeneous",
+   "i": 0,
+   "cuts": [
+    4,
+    8,
+    9,
+    12,
+    16
+   ],
+   "blank": 6,
+   "answer": "heterogeneous"
+  },
+  {
+   "src": "ex",
+   "id": "hindrance",
+   "i": 0,
+   "cuts": [
+    2,
+    6,
+    10,
+    13
+   ],
+   "blank": 9,
+   "answer": "hindrance"
+  },
+  {
+   "src": "ex",
+   "id": "ignominious",
+   "i": 0,
+   "cuts": [
+    5,
+    7,
+    11,
+    16,
+    20
+   ],
+   "blank": 2,
+   "answer": "ignominious"
+  },
+  {
+   "src": "ex",
+   "id": "impetuous",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    10,
+    15,
+    19
+   ],
+   "blank": 4,
+   "answer": "impetuous"
+  },
+  {
+   "src": "ex",
+   "id": "incriminate",
+   "i": 0,
+   "cuts": [
+    5,
+    7,
+    10,
+    13,
+    18
+   ],
+   "blank": 17,
+   "answer": "incriminating"
+  },
+  {
+   "src": "ex",
+   "id": "indelible",
+   "i": 0,
+   "cuts": [
+    3,
+    8,
+    12,
+    15,
+    18
+   ],
+   "blank": 4,
+   "answer": "indelible"
+  },
+  {
+   "src": "ex",
+   "id": "inert",
+   "i": 0,
+   "cuts": [
+    4,
+    8,
+    10,
+    13,
+    15
+   ],
+   "blank": 3,
+   "answer": "inert"
+  },
+  {
+   "src": "ex",
+   "id": "ingratiate",
+   "i": 0,
+   "cuts": [
+    2,
+    5,
+    9,
+    11,
+    15
+   ],
+   "blank": 3,
+   "answer": "ingratiate"
+  },
+  {
+   "src": "ex",
+   "id": "intricacy",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    10,
+    13,
+    16
+   ],
+   "blank": 5,
+   "answer": "intricacies"
+  },
+  {
+   "src": "ex",
+   "id": "irreducible",
+   "i": 0,
+   "cuts": [
+    3,
+    5,
+    7,
+    10,
+    15
+   ],
+   "blank": 6,
+   "answer": "irreducible"
+  },
+  {
+   "src": "ex",
+   "id": "juxtapose",
+   "i": 0,
+   "cuts": [
+    3,
+    5,
+    8,
+    10
+   ],
+   "blank": 2,
+   "answer": "juxtaposes"
+  },
+  {
+   "src": "ex",
+   "id": "loquacious",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    9,
+    13,
+    17
+   ],
+   "blank": 5,
+   "answer": "loquacious"
+  },
+  {
+   "src": "ex",
+   "id": "machination",
+   "i": 0,
+   "cuts": [
+    4,
+    7,
+    10,
+    15,
+    19
+   ],
+   "blank": 14,
+   "answer": "machinations"
   }
  ]
 }
