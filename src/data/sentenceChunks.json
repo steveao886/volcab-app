@@ -4926,6 +4926,393 @@
    ],
    "blank": 14,
    "answer": "machinations"
+  },
+  {
+   "src": "ex",
+   "id": "malevolent",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    10,
+    14,
+    18
+   ],
+   "blank": 8,
+   "answer": "malevolent"
+  },
+  {
+   "src": "ex",
+   "id": "mime",
+   "i": 0,
+   "cuts": [
+    3,
+    5,
+    9,
+    13,
+    16
+   ],
+   "blank": 12,
+   "answer": "mimed"
+  },
+  {
+   "src": "ex",
+   "id": "monolithic",
+   "i": 0,
+   "cuts": [
+    2,
+    6,
+    10,
+    12
+   ],
+   "blank": 3,
+   "answer": "monolithic"
+  },
+  {
+   "src": "ex",
+   "id": "morbid",
+   "i": 0,
+   "cuts": [
+    2,
+    5,
+    10,
+    13
+   ],
+   "blank": 3,
+   "answer": "morbid"
+  },
+  {
+   "src": "ex",
+   "id": "myopia",
+   "i": 0,
+   "cuts": [
+    4,
+    7,
+    9,
+    11
+   ],
+   "blank": 10,
+   "answer": "myopia"
+  },
+  {
+   "src": "ex",
+   "id": "oblivious",
+   "i": 0,
+   "cuts": [
+    4,
+    7,
+    10,
+    12
+   ],
+   "blank": 3,
+   "answer": "oblivious"
+  },
+  {
+   "src": "ex",
+   "id": "occlude",
+   "i": 0,
+   "cuts": [
+    4,
+    10,
+    13,
+    16
+   ],
+   "blank": 15,
+   "answer": "occluded"
+  },
+  {
+   "src": "ex",
+   "id": "opportune",
+   "i": 0,
+   "cuts": [
+    4,
+    7,
+    12,
+    16,
+    20
+   ],
+   "blank": 14,
+   "answer": "opportune"
+  },
+  {
+   "src": "ex",
+   "id": "overturn",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    10,
+    13
+   ],
+   "blank": 3,
+   "answer": "overturned"
+  },
+  {
+   "src": "ex",
+   "id": "penchant",
+   "i": 0,
+   "cuts": [
+    3,
+    5,
+    8,
+    11,
+    15
+   ],
+   "blank": 4,
+   "answer": "penchant"
+  },
+  {
+   "src": "ex",
+   "id": "perfunctory",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    9,
+    12,
+    15
+   ],
+   "blank": 2,
+   "answer": "perfunctory"
+  },
+  {
+   "src": "ex",
+   "id": "permeate",
+   "i": 0,
+   "cuts": [
+    2,
+    6,
+    7,
+    10,
+    13
+   ],
+   "blank": 6,
+   "answer": "permeated"
+  },
+  {
+   "src": "ex",
+   "id": "pervade",
+   "i": 0,
+   "cuts": [
+    2,
+    5,
+    9,
+    14,
+    17
+   ],
+   "blank": 5,
+   "answer": "pervaded"
+  },
+  {
+   "src": "ex",
+   "id": "philanthropic",
+   "i": 0,
+   "cuts": [
+    3,
+    5,
+    8,
+    11
+   ],
+   "blank": 3,
+   "answer": "philanthropic"
+  },
+  {
+   "src": "ex",
+   "id": "pious",
+   "i": 0,
+   "cuts": [
+    2,
+    5,
+    8,
+    12
+   ],
+   "blank": 4,
+   "answer": "pious"
+  },
+  {
+   "src": "ex",
+   "id": "pompous",
+   "i": 0,
+   "cuts": [
+    3,
+    5,
+    10,
+    14
+   ],
+   "blank": 3,
+   "answer": "pompous"
+  },
+  {
+   "src": "ex",
+   "id": "precipitous",
+   "i": 0,
+   "cuts": [
+    4,
+    8,
+    12,
+    14
+   ],
+   "blank": 6,
+   "answer": "precipitous"
+  },
+  {
+   "src": "ex",
+   "id": "preempt",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    8,
+    12
+   ],
+   "blank": 9,
+   "answer": "preempt"
+  },
+  {
+   "src": "ex",
+   "id": "preemptive",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    9,
+    11
+   ],
+   "blank": 4,
+   "answer": "preemptive"
+  },
+  {
+   "src": "ex",
+   "id": "premeditated",
+   "i": 0,
+   "cuts": [
+    3,
+    7,
+    10,
+    13
+   ],
+   "blank": 6,
+   "answer": "premeditated"
+  },
+  {
+   "src": "ex",
+   "id": "preside",
+   "i": 0,
+   "cuts": [
+    3,
+    7,
+    10,
+    14
+   ],
+   "blank": 2,
+   "answer": "presided"
+  },
+  {
+   "src": "ex",
+   "id": "pretense",
+   "i": 0,
+   "cuts": [
+    3,
+    5,
+    8,
+    10,
+    13
+   ],
+   "blank": 4,
+   "answer": "pretense"
+  },
+  {
+   "src": "ex",
+   "id": "pretension",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    10,
+    13
+   ],
+   "blank": 5,
+   "answer": "pretension"
+  },
+  {
+   "src": "ex",
+   "id": "primitive",
+   "i": 0,
+   "cuts": [
+    2,
+    5,
+    8,
+    12,
+    16
+   ],
+   "blank": 6,
+   "answer": "primitive"
+  },
+  {
+   "src": "ex",
+   "id": "prodigal",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    11,
+    16
+   ],
+   "blank": 1,
+   "answer": "prodigal"
+  },
+  {
+   "src": "ex",
+   "id": "profuse",
+   "i": 0,
+   "cuts": [
+    2,
+    4,
+    8,
+    12
+   ],
+   "blank": 2,
+   "answer": "profuse"
+  },
+  {
+   "src": "ex",
+   "id": "promulgate",
+   "i": 0,
+   "cuts": [
+    3,
+    4,
+    7,
+    10,
+    13
+   ],
+   "blank": 3,
+   "answer": "promulgated"
+  },
+  {
+   "src": "ex",
+   "id": "propriety",
+   "i": 0,
+   "cuts": [
+    2,
+    4,
+    6,
+    10
+   ],
+   "blank": 5,
+   "answer": "propriety"
+  },
+  {
+   "src": "ex",
+   "id": "protract",
+   "i": 0,
+   "cuts": [
+    3,
+    6,
+    9,
+    12
+   ],
+   "blank": 2,
+   "answer": "protracted"
   }
  ]
 }

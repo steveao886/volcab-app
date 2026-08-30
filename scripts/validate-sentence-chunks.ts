@@ -143,6 +143,26 @@ data.chunks.forEach((c: unknown, n: number) => {
   if (!tok.startsWith(id.slice(0, Math.min(4, id.length)))) {
     errors.push(`${at} (${key}): blanked token "${tok}" does not look like a form of ${id}`)
   }
+  // A second form of the same word elsewhere in the sentence hands the answer
+  // over. `placate` has an example reading "…to placate passengers stranded
+  // overnight, which placated almost no one" — blank either one and the other
+  // is still on screen.
+  //
+  // **One word must be a prefix of the other**, not merely share a prefix
+  // with it. A shared-first-five-characters rule flagged `interceded` against
+  // `intern,` on its first run, which are unrelated words that happen to open
+  // the same way. The length gap is capped at four so a prefix relation
+  // between genuinely different words (`preside` inside `president…`) does
+  // not fire either.
+  const inflection = (a: string, b: string): boolean => {
+    if (a === b) return true
+    const [short, long] = a.length <= b.length ? [a, b] : [b, a]
+    return short.length >= 4 && long.length - short.length <= 4 && long.startsWith(short)
+  }
+  const leak = tokens.findIndex((t, k) => k !== blank && inflection(answer, normalize(t)))
+  if (leak !== -1) {
+    errors.push(`${at} (${key}): token ${leak} ("${tokens[leak]}") is another form of the answer — the blank gives itself away`)
+  }
 })
 
 if (errors.length > 0) {
