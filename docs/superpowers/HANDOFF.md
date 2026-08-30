@@ -410,3 +410,41 @@ with a note.** `estrangement` listing `breach` paired it with `contravene`;
 `belonging` listing `acceptance` paired it with `credence`. Both pairs are
 nonsense, and the honest fix is to drop the one loose synonym — a note
 explaining two unrelated words is worse content than no pair at all.
+
+## 组句 (2026-08-30)
+
+**Two measurements killed two of the three input forms before any of them was
+designed.** The user proposed full typing, half typing, or Duolingo-style word
+ordering. Measuring the corpus first — example sentences run 19 tokens at the
+median, only 5 of 1215 under 12 — ruled out both word-level ordering (does not
+fit 375px) and full typing (the friction that retired 猜词) without a single
+line of code. **Measure the content before designing the interaction it has to
+carry.**
+
+**A heuristic that is 90% right is worth measuring before trusting.** A
+splitter cutting only at punctuation and coordinators/subordinators landed
+**1.0%** of the 1215 sentences in the 5–6 chunk range, at median block length
+8 tokens. That number is what turned "we could derive chunk boundaries" into
+"chunk boundaries are authored", and it took one script to get.
+
+**Store indices into content, not copies of it.** The annotations are token
+offsets into sentences that live in `words.json` and `senseGroups.json`.
+That kept the file at 37 KB (7.6 KB gzipped) instead of ~150 KB, and — more
+importantly — left the English with exactly one home, so it cannot drift. The
+price is that nothing about an annotation is self-describing, which is paid
+by a checksum field (`answer`) that both the validator and the runtime
+re-derive.
+
+**Two bugs here were only findable in the browser, and both were about what a
+distractor looks like rather than what it says.** Drawing distractors from the
+untouched sentence shipped one carrying its source's final period, among five
+chunks that had all had theirs lifted out — it identified itself without being
+read. Then a gate that rejected only exact duplicates offered `in rents`
+beside the real `the rise in rents`. Unit tests asserted the rules that were
+written; the screen showed the rules that were missing.
+
+**The stem heuristics in this area need a prefix relation, not a shared
+prefix.** Both the answer-leak check and the distractor gate first used
+"shares the first N characters", which flagged `interceded` against `intern,`.
+Requiring one string to be a *prefix* of the other, with a bounded length gap,
+separates inflections from words that merely open the same way.

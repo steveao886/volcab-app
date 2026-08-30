@@ -170,15 +170,29 @@ a rating collected in one direction must not be silently spent in the other.
 The user asked for "普通词1个，难词3题". The app already knows which words are
 hard, on three axes that all multiply into the one `weightedShuffle`:
 
-| multiplier | where | measures |
-|---|---|---|
-| `difficultyWeight` | `quiz.ts` | recognition, from the scheduler's own numbers |
-| `recallWeight` | `senseGroup.ts` | production, from `RecallStat` — 2.5 on a live miss streak, 0.5 after three straight |
-| `ratingWeight` | `senseGroup.ts` | the manual 要多考 / 太简单 — 6 and 0.05 |
+| multiplier | where | measures | 组句 |
+|---|---|---|---|
+| `difficultyWeight` | `quiz.ts` | recognition, from the scheduler's own numbers | **reads it** |
+| `recallWeight` | `senseGroup.ts` | production, from `RecallStat` — 2.5 on a live miss streak, 0.5 after three straight | no |
+| `ratingWeight` | `senseGroup.ts` | the manual 要多考 / 太简单 — 6 and 0.05 | **hard end only** |
 
-组句 draws through the same three. Nothing new is invented, and
-`senseGroup.ts`'s rule holds: **a weight, never a filter** — heavy items tend
-toward the front, light ones are never excluded.
+`senseGroup.ts`'s rule holds throughout: **a weight, never a filter** — heavy
+items tend toward the front, light ones are never excluded.
+
+The two exclusions are the same judgement twice. **组句 asks for strictly more
+than 回想 does** — the right inflection, in the right collocation, inside a
+frame you build — so every signal that means "this is *easy*" in 回想 says
+nothing about 组句, while the signals that mean "this is hard" carry over
+intact.
+
+- `RecallStat` is not read, because 组句 does not write it either and its
+  easy end (0.5 after three straight correct) is a claim about retrieval
+  alone. A recent miss on any surface still reaches 组句 — through
+  `difficultyWeight`'s own `missedAt` term.
+- `recallRating` is read at 6 for 要多考 and **1, not 0.05, for 太简单**
+  (`composeRatingWeight`). Marking a word too easy to retrieve is not a claim
+  that you can build a sentence with it, and 0.05 would all but remove it
+  from a harder task the user never said anything about.
 
 **The allocation cannot live in the content.** Difficulty sits in
 `progress.json`: synced, and different every day. Chunk annotations are
@@ -297,8 +311,19 @@ changes how often a hard word can repeat without repeating a sentence.
 
 | batch | annotations | effect |
 |---|---|---|
-| v1 | `ex` 243 (1/word) + `sg` 325 | 501 words askable, **zero new Chinese** |
-| later | `ex` +486 (to 3/word) | hard words reach 3 questions without repeating |
+| **v1, shipped** | **`sg` 311 + `ex` 189 = 500** | **478 words askable (69.2%), zero new Chinese** |
+| later | +~950 (to 3/word) | hard words reach 3 questions without repeating |
+
+Both pools are exhausted at 500: every sense-group sentence at or above 10
+tokens and every rendered example that clears the filters now carries
+boundaries. The shortfall against the 501 estimated above is the filters
+themselves — multi-word idiom entries (`smoking-gun`, `move-the-needle`),
+sentences whose English is already annotated from the other pool, and
+`placate`'s first example, which contains the answer word twice.
+
+**456 of the 478 carry a single sentence**, so the repeat that
+`MAX_PER_WORD` allows is currently reachable for 22 words. That is the whole
+of what the depth batch buys, and the scan prints it.
 
 ## Files
 

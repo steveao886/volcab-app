@@ -179,12 +179,19 @@ export interface ProgressEntry {
  * The user's own verdict on a word in 回想, set by hand — 太简单 / 要多考 /
  * neither.
  *
- * **Read by `generateRecallSession` and by nothing else.** Not the
- * scheduler, not the other quiz modes, not the drills. Production and
- * recognition come apart — the whole premise of `RecallStat` below — so
- * "easy to produce from Chinese" implies "easy to recognise" but "hard to
- * produce" implies nothing about recognition, and a rating collected in one
- * direction must not be silently spent in the other.
+ * **Read only by the two Chinese-to-English surfaces.** Not the scheduler,
+ * not the recognition quiz modes, not the drills. Production and recognition
+ * come apart — the whole premise of `RecallStat` below — so "easy to produce
+ * from Chinese" implies "easy to recognise" but "hard to produce" implies
+ * nothing about recognition, and a rating collected in one direction must
+ * not be silently spent in the other.
+ *
+ * `generateRecallSession` reads both levels. 组句
+ * (`composeRatingWeight` in `sentenceChunk.ts`) reads **only the hard end**:
+ * it is the same direction, which is what makes 要多考 transferable, but it
+ * asks for strictly more than 回想 does — the right inflection, in the right
+ * collocation, inside a frame you build — so 太简单, which means "I can
+ * retrieve this word", says nothing about it and weighs 1 there.
  *
  * It exists because both automatic signals are after the fact.
  * `recallWeight` cannot call a word easy until it has been answered right
