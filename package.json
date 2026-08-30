@@ -15,7 +15,9 @@
     "validate-contrast-notes": "tsx scripts/validate-contrast-notes.ts",
     "validate-word-notes": "tsx scripts/validate-word-notes.ts",
     "validate-sense-groups": "tsx scripts/validate-sense-groups.ts",
-    "validate-recall-sentences": "tsx scripts/validate-recall-sentences.ts"
+    "validate-recall-sentences": "tsx scripts/validate-recall-sentences.ts",
+    "validate-sentence-chunks": "tsx scripts/validate-sentence-chunks.ts",
+    "chunk-worksheet": "tsx scripts/chunk-worksheet.ts"
   },
   "dependencies": {
     "react": "^19.2.7",
