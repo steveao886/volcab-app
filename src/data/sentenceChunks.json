@@ -746,6 +746,2203 @@
    ],
    "blank": 1,
    "answer": "animosity"
+  },
+  {
+   "src": "sg",
+   "id": "caveat",
+   "i": 64,
+   "cuts": [
+    2,
+    6,
+    8
+   ],
+   "blank": 1,
+   "answer": "caveat"
+  },
+  {
+   "src": "sg",
+   "id": "collude",
+   "i": 65,
+   "cuts": [
+    3,
+    4,
+    10
+   ],
+   "blank": 3,
+   "answer": "colluded"
+  },
+  {
+   "src": "sg",
+   "id": "disparity",
+   "i": 66,
+   "cuts": [
+    2,
+    6,
+    9
+   ],
+   "blank": 1,
+   "answer": "disparity"
+  },
+  {
+   "src": "sg",
+   "id": "dubious",
+   "i": 67,
+   "cuts": [
+    2,
+    4,
+    7,
+    11
+   ],
+   "blank": 5,
+   "answer": "dubious"
+  },
+  {
+   "src": "sg",
+   "id": "exacerbate",
+   "i": 68,
+   "cuts": [
+    3,
+    4,
+    7
+   ],
+   "blank": 3,
+   "answer": "exacerbated"
+  },
+  {
+   "src": "sg",
+   "id": "gratuitous",
+   "i": 69,
+   "cuts": [
+    4,
+    5,
+    8
+   ],
+   "blank": 1,
+   "answer": "gratuitous"
+  },
+  {
+   "src": "sg",
+   "id": "grievance",
+   "i": 70,
+   "cuts": [
+    2,
+    6,
+    7
+   ],
+   "blank": 5,
+   "answer": "grievances"
+  },
+  {
+   "src": "sg",
+   "id": "imminent",
+   "i": 71,
+   "cuts": [
+    4,
+    7,
+    9
+   ],
+   "blank": 3,
+   "answer": "imminent"
+  },
+  {
+   "src": "sg",
+   "id": "impromptu",
+   "i": 72,
+   "cuts": [
+    2,
+    6,
+    9
+   ],
+   "blank": 4,
+   "answer": "impromptu"
+  },
+  {
+   "src": "sg",
+   "id": "circumspect",
+   "i": 77,
+   "cuts": [
+    3,
+    6,
+    8
+   ],
+   "blank": 5,
+   "answer": "circumspect"
+  },
+  {
+   "src": "sg",
+   "id": "incumbent",
+   "i": 82,
+   "cuts": [
+    2,
+    5,
+    7
+   ],
+   "blank": 1,
+   "answer": "incumbent"
+  },
+  {
+   "src": "sg",
+   "id": "systemic",
+   "i": 86,
+   "cuts": [
+    3,
+    6,
+    7
+   ],
+   "blank": 8,
+   "answer": "systemic"
+  },
+  {
+   "src": "sg",
+   "id": "adaptability",
+   "i": 88,
+   "cuts": [
+    3,
+    4,
+    7
+   ],
+   "blank": 3,
+   "answer": "adaptability"
+  },
+  {
+   "src": "sg",
+   "id": "adversity",
+   "i": 89,
+   "cuts": [
+    2,
+    6,
+    8
+   ],
+   "blank": 5,
+   "answer": "adversity"
+  },
+  {
+   "src": "sg",
+   "id": "amenity",
+   "i": 90,
+   "cuts": [
+    3,
+    4,
+    6,
+    9
+   ],
+   "blank": 2,
+   "answer": "amenities"
+  },
+  {
+   "src": "sg",
+   "id": "autocracy",
+   "i": 92,
+   "cuts": [
+    2,
+    4,
+    7
+   ],
+   "blank": 6,
+   "answer": "autocracy"
+  },
+  {
+   "src": "sg",
+   "id": "belligerent",
+   "i": 94,
+   "cuts": [
+    3,
+    6,
+    10
+   ],
+   "blank": 5,
+   "answer": "belligerent"
+  },
+  {
+   "src": "sg",
+   "id": "contingency",
+   "i": 95,
+   "cuts": [
+    2,
+    4,
+    7,
+    9
+   ],
+   "blank": 8,
+   "answer": "contingency"
+  },
+  {
+   "src": "sg",
+   "id": "delve",
+   "i": 97,
+   "cuts": [
+    3,
+    8,
+    11,
+    14
+   ],
+   "blank": 4,
+   "answer": "delve"
+  },
+  {
+   "src": "sg",
+   "id": "dissent",
+   "i": 99,
+   "cuts": [
+    3,
+    6,
+    8
+   ],
+   "blank": 2,
+   "answer": "dissent"
+  },
+  {
+   "src": "sg",
+   "id": "efficacy",
+   "i": 100,
+   "cuts": [
+    3,
+    7,
+    11
+   ],
+   "blank": 6,
+   "answer": "efficacy"
+  },
+  {
+   "src": "sg",
+   "id": "elude",
+   "i": 101,
+   "cuts": [
+    2,
+    4,
+    7
+   ],
+   "blank": 1,
+   "answer": "eluded"
+  },
+  {
+   "src": "sg",
+   "id": "endemic",
+   "i": 102,
+   "cuts": [
+    2,
+    4,
+    8
+   ],
+   "blank": 3,
+   "answer": "endemic"
+  },
+  {
+   "src": "sg",
+   "id": "equitable",
+   "i": 103,
+   "cuts": [
+    3,
+    7,
+    8
+   ],
+   "blank": 6,
+   "answer": "equitable"
+  },
+  {
+   "src": "sg",
+   "id": "foothold",
+   "i": 104,
+   "cuts": [
+    3,
+    5,
+    7
+   ],
+   "blank": 6,
+   "answer": "foothold"
+  },
+  {
+   "src": "sg",
+   "id": "formidable",
+   "i": 105,
+   "cuts": [
+    2,
+    5,
+    9
+   ],
+   "blank": 3,
+   "answer": "formidable"
+  },
+  {
+   "src": "sg",
+   "id": "humility",
+   "i": 106,
+   "cuts": [
+    4,
+    6,
+    9
+   ],
+   "blank": 5,
+   "answer": "humility"
+  },
+  {
+   "src": "sg",
+   "id": "lucid",
+   "i": 110,
+   "cuts": [
+    2,
+    5,
+    7,
+    10
+   ],
+   "blank": 3,
+   "answer": "lucid"
+  },
+  {
+   "src": "sg",
+   "id": "malign",
+   "i": 112,
+   "cuts": [
+    3,
+    6,
+    7
+   ],
+   "blank": 2,
+   "answer": "maligned"
+  },
+  {
+   "src": "sg",
+   "id": "ominous",
+   "i": 114,
+   "cuts": [
+    3,
+    6,
+    9
+   ],
+   "blank": 1,
+   "answer": "ominous"
+  },
+  {
+   "src": "sg",
+   "id": "persecute",
+   "i": 117,
+   "cuts": [
+    2,
+    4,
+    7
+   ],
+   "blank": 3,
+   "answer": "persecuted"
+  },
+  {
+   "src": "sg",
+   "id": "precarious",
+   "i": 118,
+   "cuts": [
+    2,
+    4,
+    8
+   ],
+   "blank": 3,
+   "answer": "precarious"
+  },
+  {
+   "src": "sg",
+   "id": "precursor",
+   "i": 119,
+   "cuts": [
+    3,
+    4,
+    6
+   ],
+   "blank": 5,
+   "answer": "precursor"
+  },
+  {
+   "src": "sg",
+   "id": "unilateral",
+   "i": 127,
+   "cuts": [
+    2,
+    5,
+    8
+   ],
+   "blank": 3,
+   "answer": "unilateral"
+  },
+  {
+   "src": "sg",
+   "id": "abhorrent",
+   "i": 128,
+   "cuts": [
+    2,
+    5,
+    9
+   ],
+   "blank": 4,
+   "answer": "abhorrent"
+  },
+  {
+   "src": "sg",
+   "id": "affront",
+   "i": 129,
+   "cuts": [
+    2,
+    5,
+    7
+   ],
+   "blank": 4,
+   "answer": "affront"
+  },
+  {
+   "src": "sg",
+   "id": "ambivalence",
+   "i": 130,
+   "cuts": [
+    2,
+    5,
+    7
+   ],
+   "blank": 1,
+   "answer": "ambivalence"
+  },
+  {
+   "src": "sg",
+   "id": "analogous",
+   "i": 131,
+   "cuts": [
+    2,
+    6,
+    9
+   ],
+   "blank": 7,
+   "answer": "analogous"
+  },
+  {
+   "src": "sg",
+   "id": "apprehensive",
+   "i": 133,
+   "cuts": [
+    3,
+    5,
+    8
+   ],
+   "blank": 7,
+   "answer": "apprehensive"
+  },
+  {
+   "src": "sg",
+   "id": "arduous",
+   "i": 134,
+   "cuts": [
+    2,
+    6,
+    10
+   ],
+   "blank": 8,
+   "answer": "arduous"
+  },
+  {
+   "src": "sg",
+   "id": "belabor",
+   "i": 135,
+   "cuts": [
+    3,
+    5,
+    9,
+    12
+   ],
+   "blank": 6,
+   "answer": "belabor"
+  },
+  {
+   "src": "sg",
+   "id": "brevity",
+   "i": 136,
+   "cuts": [
+    2,
+    6,
+    8
+   ],
+   "blank": 7,
+   "answer": "brevity"
+  },
+  {
+   "src": "sg",
+   "id": "candor",
+   "i": 137,
+   "cuts": [
+    2,
+    7,
+    10,
+    13
+   ],
+   "blank": 1,
+   "answer": "candor"
+  },
+  {
+   "src": "sg",
+   "id": "canonical",
+   "i": 138,
+   "cuts": [
+    2,
+    6,
+    8
+   ],
+   "blank": 4,
+   "answer": "canonical"
+  },
+  {
+   "src": "sg",
+   "id": "clamor",
+   "i": 139,
+   "cuts": [
+    4,
+    6,
+    9
+   ],
+   "blank": 5,
+   "answer": "clamor"
+  },
+  {
+   "src": "sg",
+   "id": "collate",
+   "i": 140,
+   "cuts": [
+    2,
+    4,
+    7
+   ],
+   "blank": 1,
+   "answer": "collated"
+  },
+  {
+   "src": "sg",
+   "id": "commensurate",
+   "i": 141,
+   "cuts": [
+    2,
+    4,
+    7
+   ],
+   "blank": 6,
+   "answer": "commensurate"
+  },
+  {
+   "src": "sg",
+   "id": "complacency",
+   "i": 142,
+   "cuts": [
+    4,
+    5,
+    7
+   ],
+   "blank": 6,
+   "answer": "complacency"
+  },
+  {
+   "src": "sg",
+   "id": "conducive",
+   "i": 144,
+   "cuts": [
+    2,
+    5,
+    7
+   ],
+   "blank": 4,
+   "answer": "conducive"
+  },
+  {
+   "src": "sg",
+   "id": "connotation",
+   "i": 147,
+   "cuts": [
+    2,
+    5,
+    8
+   ],
+   "blank": 7,
+   "answer": "connotation"
+  },
+  {
+   "src": "sg",
+   "id": "contrived",
+   "i": 148,
+   "cuts": [
+    2,
+    4,
+    7
+   ],
+   "blank": 3,
+   "answer": "contrived"
+  },
+  {
+   "src": "sg",
+   "id": "deft",
+   "i": 151,
+   "cuts": [
+    4,
+    5,
+    7
+   ],
+   "blank": 2,
+   "answer": "deft"
+  },
+  {
+   "src": "sg",
+   "id": "egregious",
+   "i": 155,
+   "cuts": [
+    2,
+    5,
+    8
+   ],
+   "blank": 3,
+   "answer": "egregious"
+  },
+  {
+   "src": "sg",
+   "id": "enormity",
+   "i": 157,
+   "cuts": [
+    2,
+    5,
+    8
+   ],
+   "blank": 7,
+   "answer": "enormity"
+  },
+  {
+   "src": "sg",
+   "id": "extrapolate",
+   "i": 158,
+   "cuts": [
+    4,
+    6,
+    9,
+    12
+   ],
+   "blank": 5,
+   "answer": "extrapolate"
+  },
+  {
+   "src": "sg",
+   "id": "fallacy",
+   "i": 159,
+   "cuts": [
+    3,
+    6,
+    7
+   ],
+   "blank": 9,
+   "answer": "fallacy"
+  },
+  {
+   "src": "sg",
+   "id": "perjury",
+   "i": 160,
+   "cuts": [
+    2,
+    4,
+    7
+   ],
+   "blank": 1,
+   "answer": "perjury"
+  },
+  {
+   "src": "sg",
+   "id": "deposition",
+   "i": 161,
+   "cuts": [
+    2,
+    5,
+    8
+   ],
+   "blank": 1,
+   "answer": "deposition"
+  },
+  {
+   "src": "sg",
+   "id": "fallible",
+   "i": 162,
+   "cuts": [
+    3,
+    6,
+    9
+   ],
+   "blank": 2,
+   "answer": "fallible"
+  },
+  {
+   "src": "sg",
+   "id": "fervor",
+   "i": 163,
+   "cuts": [
+    2,
+    5,
+    8
+   ],
+   "blank": 7,
+   "answer": "fervor"
+  },
+  {
+   "src": "sg",
+   "id": "fidelity",
+   "i": 164,
+   "cuts": [
+    2,
+    3,
+    6
+   ],
+   "blank": 5,
+   "answer": "fidelity"
+  },
+  {
+   "src": "sg",
+   "id": "fixation",
+   "i": 165,
+   "cuts": [
+    2,
+    6,
+    10
+   ],
+   "blank": 1,
+   "answer": "fixation"
+  },
+  {
+   "src": "sg",
+   "id": "impasse",
+   "i": 168,
+   "cuts": [
+    2,
+    4,
+    8
+   ],
+   "blank": 3,
+   "answer": "impasse"
+  },
+  {
+   "src": "sg",
+   "id": "indignant",
+   "i": 169,
+   "cuts": [
+    3,
+    4,
+    6
+   ],
+   "blank": 3,
+   "answer": "indignant"
+  },
+  {
+   "src": "sg",
+   "id": "infallible",
+   "i": 170,
+   "cuts": [
+    2,
+    4,
+    7
+   ],
+   "blank": 3,
+   "answer": "infallible"
+  },
+  {
+   "src": "sg",
+   "id": "ingenuity",
+   "i": 171,
+   "cuts": [
+    3,
+    6,
+    9
+   ],
+   "blank": 10,
+   "answer": "ingenuity"
+  },
+  {
+   "src": "sg",
+   "id": "introspection",
+   "i": 173,
+   "cuts": [
+    3,
+    5,
+    8
+   ],
+   "blank": 4,
+   "answer": "introspection"
+  },
+  {
+   "src": "sg",
+   "id": "malleable",
+   "i": 174,
+   "cuts": [
+    2,
+    4,
+    9
+   ],
+   "blank": 3,
+   "answer": "malleable"
+  },
+  {
+   "src": "sg",
+   "id": "mercenary",
+   "i": 175,
+   "cuts": [
+    3,
+    5,
+    7
+   ],
+   "blank": 4,
+   "answer": "mercenaries"
+  },
+  {
+   "src": "sg",
+   "id": "oscillate",
+   "i": 177,
+   "cuts": [
+    2,
+    3,
+    7
+   ],
+   "blank": 2,
+   "answer": "oscillated"
+  },
+  {
+   "src": "sg",
+   "id": "ostensible",
+   "i": 178,
+   "cuts": [
+    3,
+    6,
+    8
+   ],
+   "blank": 1,
+   "answer": "ostensible"
+  },
+  {
+   "src": "sg",
+   "id": "panacea",
+   "i": 179,
+   "cuts": [
+    2,
+    5,
+    8
+   ],
+   "blank": 4,
+   "answer": "panacea"
+  },
+  {
+   "src": "sg",
+   "id": "platitude",
+   "i": 180,
+   "cuts": [
+    3,
+    7,
+    11
+   ],
+   "blank": 6,
+   "answer": "platitudes"
+  },
+  {
+   "src": "sg",
+   "id": "precipitously",
+   "i": 181,
+   "cuts": [
+    3,
+    5,
+    7
+   ],
+   "blank": 4,
+   "answer": "precipitously"
+  },
+  {
+   "src": "sg",
+   "id": "prowess",
+   "i": 183,
+   "cuts": [
+    2,
+    6,
+    9
+   ],
+   "blank": 1,
+   "answer": "prowess"
+  },
+  {
+   "src": "sg",
+   "id": "prudence",
+   "i": 184,
+   "cuts": [
+    2,
+    5,
+    7
+   ],
+   "blank": 1,
+   "answer": "prudence"
+  },
+  {
+   "src": "sg",
+   "id": "quintessential",
+   "i": 185,
+   "cuts": [
+    2,
+    6,
+    7
+   ],
+   "blank": 4,
+   "answer": "quintessential"
+  },
+  {
+   "src": "sg",
+   "id": "reclusive",
+   "i": 187,
+   "cuts": [
+    3,
+    4,
+    6
+   ],
+   "blank": 3,
+   "answer": "reclusive"
+  },
+  {
+   "src": "sg",
+   "id": "repudiate",
+   "i": 188,
+   "cuts": [
+    3,
+    5,
+    8
+   ],
+   "blank": 2,
+   "answer": "repudiated"
+  },
+  {
+   "src": "sg",
+   "id": "veer",
+   "i": 192,
+   "cuts": [
+    3,
+    6,
+    9
+   ],
+   "blank": 2,
+   "answer": "veered"
+  },
+  {
+   "src": "sg",
+   "id": "subdue",
+   "i": 193,
+   "cuts": [
+    2,
+    4,
+    8
+   ],
+   "blank": 1,
+   "answer": "subdued"
+  },
+  {
+   "src": "sg",
+   "id": "trickle-down",
+   "i": 195,
+   "cuts": [
+    3,
+    5,
+    7,
+    9
+   ],
+   "blank": 3,
+   "answer": "trickle-down"
+  },
+  {
+   "src": "sg",
+   "id": "corroborate",
+   "i": 196,
+   "cuts": [
+    3,
+    6,
+    8
+   ],
+   "blank": 7,
+   "answer": "corroborate"
+  },
+  {
+   "src": "sg",
+   "id": "corpus",
+   "i": 197,
+   "cuts": [
+    2,
+    5,
+    7
+   ],
+   "blank": 1,
+   "answer": "corpus"
+  },
+  {
+   "src": "sg",
+   "id": "anesthesia",
+   "i": 198,
+   "cuts": [
+    4,
+    5,
+    7
+   ],
+   "blank": 6,
+   "answer": "anesthesia"
+  },
+  {
+   "src": "sg",
+   "id": "impurity",
+   "i": 199,
+   "cuts": [
+    2,
+    5,
+    8
+   ],
+   "blank": 0,
+   "answer": "impurity"
+  },
+  {
+   "src": "sg",
+   "id": "wrangle",
+   "i": 201,
+   "cuts": [
+    3,
+    4,
+    8
+   ],
+   "blank": 3,
+   "answer": "wrangled"
+  },
+  {
+   "src": "sg",
+   "id": "abridge",
+   "i": 202,
+   "cuts": [
+    2,
+    3,
+    5,
+    8
+   ],
+   "blank": 2,
+   "answer": "abridges"
+  },
+  {
+   "src": "sg",
+   "id": "amorphous",
+   "i": 203,
+   "cuts": [
+    2,
+    5,
+    9
+   ],
+   "blank": 4,
+   "answer": "amorphous"
+  },
+  {
+   "src": "sg",
+   "id": "cohere",
+   "i": 205,
+   "cuts": [
+    3,
+    6,
+    8
+   ],
+   "blank": 3,
+   "answer": "cohere"
+  },
+  {
+   "src": "sg",
+   "id": "concoct",
+   "i": 206,
+   "cuts": [
+    2,
+    4,
+    7
+   ],
+   "blank": 1,
+   "answer": "concocted"
+  },
+  {
+   "src": "sg",
+   "id": "consign",
+   "i": 207,
+   "cuts": [
+    3,
+    5,
+    8
+   ],
+   "blank": 4,
+   "answer": "consigned"
+  },
+  {
+   "src": "sg",
+   "id": "dilapidated",
+   "i": 211,
+   "cuts": [
+    2,
+    5,
+    8
+   ],
+   "blank": 3,
+   "answer": "dilapidated"
+  },
+  {
+   "src": "sg",
+   "id": "disaggregate",
+   "i": 212,
+   "cuts": [
+    3,
+    6,
+    7
+   ],
+   "blank": 0,
+   "answer": "disaggregate"
+  },
+  {
+   "src": "sg",
+   "id": "elective",
+   "i": 214,
+   "cuts": [
+    2,
+    4,
+    7
+   ],
+   "blank": 2,
+   "answer": "elective"
+  },
+  {
+   "src": "sg",
+   "id": "epitomize",
+   "i": 216,
+   "cuts": [
+    2,
+    3,
+    6,
+    9
+   ],
+   "blank": 2,
+   "answer": "epitomizes"
+  },
+  {
+   "src": "sg",
+   "id": "erudite",
+   "i": 217,
+   "cuts": [
+    3,
+    7,
+    10
+   ],
+   "blank": 2,
+   "answer": "erudite"
+  },
+  {
+   "src": "sg",
+   "id": "gratify",
+   "i": 220,
+   "cuts": [
+    3,
+    5,
+    8
+   ],
+   "blank": 1,
+   "answer": "gratified"
+  },
+  {
+   "src": "sg",
+   "id": "gregarious",
+   "i": 221,
+   "cuts": [
+    3,
+    6,
+    9
+   ],
+   "blank": 2,
+   "answer": "gregarious"
+  },
+  {
+   "src": "sg",
+   "id": "inferential",
+   "i": 225,
+   "cuts": [
+    3,
+    5,
+    9
+   ],
+   "blank": 3,
+   "answer": "inferential"
+  },
+  {
+   "src": "sg",
+   "id": "interjection",
+   "i": 227,
+   "cuts": [
+    2,
+    6,
+    9
+   ],
+   "blank": 1,
+   "answer": "interjection"
+  },
+  {
+   "src": "sg",
+   "id": "interlude",
+   "i": 228,
+   "cuts": [
+    3,
+    6,
+    9
+   ],
+   "blank": 5,
+   "answer": "interlude"
+  },
+  {
+   "src": "sg",
+   "id": "interpolation",
+   "i": 229,
+   "cuts": [
+    2,
+    7,
+    9
+   ],
+   "blank": 9,
+   "answer": "interpolation"
+  },
+  {
+   "src": "sg",
+   "id": "leniency",
+   "i": 232,
+   "cuts": [
+    3,
+    4,
+    7
+   ],
+   "blank": 3,
+   "answer": "leniency"
+  },
+  {
+   "src": "sg",
+   "id": "mystique",
+   "i": 233,
+   "cuts": [
+    3,
+    6,
+    8
+   ],
+   "blank": 5,
+   "answer": "mystique"
+  },
+  {
+   "src": "sg",
+   "id": "odyssey",
+   "i": 234,
+   "cuts": [
+    2,
+    6,
+    9
+   ],
+   "blank": 8,
+   "answer": "odyssey"
+  },
+  {
+   "src": "sg",
+   "id": "insomniac",
+   "i": 236,
+   "cuts": [
+    3,
+    6,
+    9
+   ],
+   "blank": 2,
+   "answer": "insomniac"
+  },
+  {
+   "src": "sg",
+   "id": "dyslexia",
+   "i": 239,
+   "cuts": [
+    4,
+    7,
+    9
+   ],
+   "blank": 2,
+   "answer": "dyslexia"
+  },
+  {
+   "src": "sg",
+   "id": "outmoded",
+   "i": 240,
+   "cuts": [
+    3,
+    6,
+    10
+   ],
+   "blank": 4,
+   "answer": "outmoded"
+  },
+  {
+   "src": "sg",
+   "id": "provenance",
+   "i": 244,
+   "cuts": [
+    3,
+    6,
+    8
+   ],
+   "blank": 2,
+   "answer": "provenance"
+  },
+  {
+   "src": "sg",
+   "id": "pursuant",
+   "i": 245,
+   "cuts": [
+    2,
+    4,
+    7
+   ],
+   "blank": 0,
+   "answer": "pursuant"
+  },
+  {
+   "src": "sg",
+   "id": "surmount",
+   "i": 248,
+   "cuts": [
+    3,
+    5,
+    7
+   ],
+   "blank": 6,
+   "answer": "surmount"
+  },
+  {
+   "src": "sg",
+   "id": "veneer",
+   "i": 251,
+   "cuts": [
+    2,
+    5,
+    9
+   ],
+   "blank": 4,
+   "answer": "veneer"
+  },
+  {
+   "src": "sg",
+   "id": "wastefulness",
+   "i": 252,
+   "cuts": [
+    1,
+    4,
+    7
+   ],
+   "blank": 0,
+   "answer": "wastefulness"
+  },
+  {
+   "src": "sg",
+   "id": "yearn",
+   "i": 253,
+   "cuts": [
+    3,
+    6,
+    7
+   ],
+   "blank": 6,
+   "answer": "yearned"
+  },
+  {
+   "src": "sg",
+   "id": "convalescent",
+   "i": 254,
+   "cuts": [
+    4,
+    7,
+    9
+   ],
+   "blank": 3,
+   "answer": "convalescent"
+  },
+  {
+   "src": "sg",
+   "id": "denominate",
+   "i": 255,
+   "cuts": [
+    2,
+    4,
+    6
+   ],
+   "blank": 3,
+   "answer": "denominated"
+  },
+  {
+   "src": "sg",
+   "id": "hapless",
+   "i": 258,
+   "cuts": [
+    3,
+    6,
+    9
+   ],
+   "blank": 1,
+   "answer": "hapless"
+  },
+  {
+   "src": "sg",
+   "id": "inimitable",
+   "i": 266,
+   "cuts": [
+    2,
+    4,
+    7
+   ],
+   "blank": 3,
+   "answer": "inimitable"
+  },
+  {
+   "src": "sg",
+   "id": "neophyte",
+   "i": 267,
+   "cuts": [
+    2,
+    4,
+    7,
+    9
+   ],
+   "blank": 1,
+   "answer": "neophyte"
+  },
+  {
+   "src": "sg",
+   "id": "mellifluous",
+   "i": 268,
+   "cuts": [
+    3,
+    6,
+    9
+   ],
+   "blank": 4,
+   "answer": "mellifluous"
+  },
+  {
+   "src": "sg",
+   "id": "interchangeable",
+   "i": 269,
+   "cuts": [
+    2,
+    4,
+    8
+   ],
+   "blank": 3,
+   "answer": "interchangeable"
+  },
+  {
+   "src": "sg",
+   "id": "delegable",
+   "i": 271,
+   "cuts": [
+    2,
+    4,
+    8
+   ],
+   "blank": 3,
+   "answer": "delegable"
+  },
+  {
+   "src": "sg",
+   "id": "purebred",
+   "i": 275,
+   "cuts": [
+    2,
+    4,
+    6
+   ],
+   "blank": 3,
+   "answer": "purebred"
+  },
+  {
+   "src": "sg",
+   "id": "interpolate",
+   "i": 276,
+   "cuts": [
+    1,
+    6,
+    8
+   ],
+   "blank": 0,
+   "answer": "interpolate"
+  },
+  {
+   "src": "sg",
+   "id": "feckless",
+   "i": 277,
+   "cuts": [
+    4,
+    7,
+    8
+   ],
+   "blank": 7,
+   "answer": "feckless"
+  },
+  {
+   "src": "sg",
+   "id": "perturb",
+   "i": 279,
+   "cuts": [
+    3,
+    5,
+    8
+   ],
+   "blank": 3,
+   "answer": "perturbed"
+  },
+  {
+   "src": "sg",
+   "id": "tantalizing",
+   "i": 282,
+   "cuts": [
+    2,
+    4,
+    7
+   ],
+   "blank": 3,
+   "answer": "tantalizing"
+  },
+  {
+   "src": "sg",
+   "id": "abashed",
+   "i": 285,
+   "cuts": [
+    5,
+    8,
+    10
+   ],
+   "blank": 7,
+   "answer": "abashed"
+  },
+  {
+   "src": "sg",
+   "id": "epicure",
+   "i": 286,
+   "cuts": [
+    2,
+    5,
+    8,
+    10
+   ],
+   "blank": 1,
+   "answer": "epicure"
+  },
+  {
+   "src": "sg",
+   "id": "immemorial",
+   "i": 287,
+   "cuts": [
+    2,
+    4,
+    7
+   ],
+   "blank": 9,
+   "answer": "immemorial"
+  },
+  {
+   "src": "sg",
+   "id": "solicitude",
+   "i": 292,
+   "cuts": [
+    2,
+    6,
+    7
+   ],
+   "blank": 1,
+   "answer": "solicitude"
+  },
+  {
+   "src": "sg",
+   "id": "urbane",
+   "i": 295,
+   "cuts": [
+    3,
+    4,
+    7
+   ],
+   "blank": 2,
+   "answer": "urbane"
+  },
+  {
+   "src": "sg",
+   "id": "abjuration",
+   "i": 296,
+   "cuts": [
+    2,
+    6,
+    8
+   ],
+   "blank": 1,
+   "answer": "abjuration"
+  },
+  {
+   "src": "sg",
+   "id": "apophasis",
+   "i": 297,
+   "cuts": [
+    4,
+    6,
+    10
+   ],
+   "blank": 11,
+   "answer": "apophasis"
+  },
+  {
+   "src": "sg",
+   "id": "oxidization",
+   "i": 301,
+   "cuts": [
+    1,
+    4,
+    7
+   ],
+   "blank": 0,
+   "answer": "oxidization"
+  },
+  {
+   "src": "sg",
+   "id": "voluptuous",
+   "i": 306,
+   "cuts": [
+    2,
+    5,
+    7
+   ],
+   "blank": 6,
+   "answer": "voluptuous"
+  },
+  {
+   "src": "sg",
+   "id": "appease",
+   "i": 307,
+   "cuts": [
+    3,
+    5,
+    8,
+    13
+   ],
+   "blank": 2,
+   "answer": "appeased"
+  },
+  {
+   "src": "sg",
+   "id": "blatant",
+   "i": 308,
+   "cuts": [
+    2,
+    5,
+    7,
+    14,
+    18
+   ],
+   "blank": 3,
+   "answer": "blatant"
+  },
+  {
+   "src": "sg",
+   "id": "agreeable",
+   "i": 309,
+   "cuts": [
+    4,
+    7,
+    9
+   ],
+   "blank": 3,
+   "answer": "agreeable"
+  },
+  {
+   "src": "sg",
+   "id": "sociable",
+   "i": 310,
+   "cuts": [
+    3,
+    6,
+    9
+   ],
+   "blank": 4,
+   "answer": "sociable"
+  },
+  {
+   "src": "sg",
+   "id": "inconspicuous",
+   "i": 311,
+   "cuts": [
+    2,
+    5,
+    8,
+    13
+   ],
+   "blank": 12,
+   "answer": "inconspicuous"
+  },
+  {
+   "src": "sg",
+   "id": "uncalled-for",
+   "i": 312,
+   "cuts": [
+    3,
+    7,
+    9,
+    12
+   ],
+   "blank": 8,
+   "answer": "uncalled-for"
+  },
+  {
+   "src": "sg",
+   "id": "unwarranted",
+   "i": 313,
+   "cuts": [
+    3,
+    5,
+    8
+   ],
+   "blank": 6,
+   "answer": "unwarranted"
+  },
+  {
+   "src": "sg",
+   "id": "antipathetic",
+   "i": 314,
+   "cuts": [
+    3,
+    6,
+    9,
+    11,
+    15
+   ],
+   "blank": 2,
+   "answer": "antipathetic"
+  },
+  {
+   "src": "sg",
+   "id": "copious",
+   "i": 315,
+   "cuts": [
+    4,
+    8,
+    12,
+    15
+   ],
+   "blank": 2,
+   "answer": "copious"
+  },
+  {
+   "src": "sg",
+   "id": "nonchalant",
+   "i": 316,
+   "cuts": [
+    5,
+    7,
+    10,
+    14
+   ],
+   "blank": 8,
+   "answer": "nonchalant"
+  },
+  {
+   "src": "sg",
+   "id": "unsavory",
+   "i": 317,
+   "cuts": [
+    2,
+    4,
+    7,
+    12
+   ],
+   "blank": 5,
+   "answer": "unsavory"
+  },
+  {
+   "src": "sg",
+   "id": "aversion",
+   "i": 318,
+   "cuts": [
+    2,
+    5,
+    9,
+    13,
+    16
+   ],
+   "blank": 1,
+   "answer": "aversion"
+  },
+  {
+   "src": "sg",
+   "id": "insular",
+   "i": 319,
+   "cuts": [
+    2,
+    6,
+    10,
+    13
+   ],
+   "blank": 5,
+   "answer": "insular"
+  },
+  {
+   "src": "sg",
+   "id": "intercession",
+   "i": 320,
+   "cuts": [
+    3,
+    5,
+    9,
+    12
+   ],
+   "blank": 4,
+   "answer": "intercession"
+  },
+  {
+   "src": "sg",
+   "id": "destitute",
+   "i": 321,
+   "cuts": [
+    3,
+    7,
+    12,
+    16
+   ],
+   "blank": 6,
+   "answer": "destitute"
+  },
+  {
+   "src": "sg",
+   "id": "acquiescence",
+   "i": 322,
+   "cuts": [
+    3,
+    5,
+    7,
+    11,
+    14
+   ],
+   "blank": 6,
+   "answer": "acquiescence"
+  },
+  {
+   "src": "sg",
+   "id": "alleviate",
+   "i": 323,
+   "cuts": [
+    4,
+    7,
+    10,
+    14,
+    18
+   ],
+   "blank": 12,
+   "answer": "alleviated"
+  },
+  {
+   "src": "sg",
+   "id": "decorum",
+   "i": 324,
+   "cuts": [
+    4,
+    7,
+    10,
+    12
+   ],
+   "blank": 11,
+   "answer": "decorum"
+  },
+  {
+   "src": "sg",
+   "id": "gratify",
+   "i": 325,
+   "cuts": [
+    3,
+    5,
+    7,
+    11
+   ],
+   "blank": 1,
+   "answer": "gratified"
+  },
+  {
+   "src": "sg",
+   "id": "debase",
+   "i": 326,
+   "cuts": [
+    4,
+    5,
+    8
+   ],
+   "blank": 4,
+   "answer": "debased"
+  },
+  {
+   "src": "sg",
+   "id": "vindicate",
+   "i": 327,
+   "cuts": [
+    3,
+    4,
+    6,
+    8
+   ],
+   "blank": 3,
+   "answer": "vindicated"
+  },
+  {
+   "src": "sg",
+   "id": "obdurate",
+   "i": 328,
+   "cuts": [
+    3,
+    6,
+    9,
+    11
+   ],
+   "blank": 10,
+   "answer": "obdurate"
+  },
+  {
+   "src": "sg",
+   "id": "percolate",
+   "i": 329,
+   "cuts": [
+    3,
+    6,
+    9
+   ],
+   "blank": 2,
+   "answer": "percolated"
+  },
+  {
+   "src": "sg",
+   "id": "voracious",
+   "i": 330,
+   "cuts": [
+    2,
+    5,
+    8,
+    10
+   ],
+   "blank": 3,
+   "answer": "voracious"
+  },
+  {
+   "src": "sg",
+   "id": "vehement",
+   "i": 331,
+   "cuts": [
+    2,
+    6,
+    9,
+    14
+   ],
+   "blank": 7,
+   "answer": "vehement"
+  },
+  {
+   "src": "sg",
+   "id": "astute",
+   "i": 332,
+   "cuts": [
+    3,
+    7,
+    10
+   ],
+   "blank": 1,
+   "answer": "astute"
+  },
+  {
+   "src": "sg",
+   "id": "deft",
+   "i": 333,
+   "cuts": [
+    4,
+    8,
+    10
+   ],
+   "blank": 2,
+   "answer": "deft"
+  },
+  {
+   "src": "sg",
+   "id": "genial",
+   "i": 334,
+   "cuts": [
+    3,
+    6,
+    9,
+    12
+   ],
+   "blank": 1,
+   "answer": "genial"
+  },
+  {
+   "src": "sg",
+   "id": "artifice",
+   "i": 335,
+   "cuts": [
+    3,
+    6,
+    9,
+    13
+   ],
+   "blank": 5,
+   "answer": "artifice"
+  },
+  {
+   "src": "sg",
+   "id": "artless",
+   "i": 336,
+   "cuts": [
+    4,
+    8,
+    12
+   ],
+   "blank": 2,
+   "answer": "artless"
+  },
+  {
+   "src": "sg",
+   "id": "belligerent",
+   "i": 337,
+   "cuts": [
+    3,
+    6,
+    10
+   ],
+   "blank": 5,
+   "answer": "belligerent"
+  },
+  {
+   "src": "sg",
+   "id": "ruinous",
+   "i": 338,
+   "cuts": [
+    5,
+    8,
+    13
+   ],
+   "blank": 12,
+   "answer": "ruinous"
+  },
+  {
+   "src": "sg",
+   "id": "intercede",
+   "i": 339,
+   "cuts": [
+    3,
+    7,
+    10,
+    12
+   ],
+   "blank": 10,
+   "answer": "interceded"
+  },
+  {
+   "src": "sg",
+   "id": "delineate",
+   "i": 340,
+   "cuts": [
+    3,
+    5,
+    8,
+    11
+   ],
+   "blank": 3,
+   "answer": "delineates"
+  },
+  {
+   "src": "sg",
+   "id": "overbearing",
+   "i": 341,
+   "cuts": [
+    3,
+    7,
+    11
+   ],
+   "blank": 1,
+   "answer": "overbearing"
+  },
+  {
+   "src": "sg",
+   "id": "precarious",
+   "i": 342,
+   "cuts": [
+    2,
+    4,
+    8,
+    11,
+    13
+   ],
+   "blank": 6,
+   "answer": "precarious"
+  },
+  {
+   "src": "sg",
+   "id": "exacting",
+   "i": 343,
+   "cuts": [
+    5,
+    6,
+    9
+   ],
+   "blank": 2,
+   "answer": "exacting"
+  },
+  {
+   "src": "sg",
+   "id": "impromptu",
+   "i": 344,
+   "cuts": [
+    3,
+    5,
+    9,
+    14
+   ],
+   "blank": 7,
+   "answer": "impromptu"
+  },
+  {
+   "src": "sg",
+   "id": "grumble",
+   "i": 345,
+   "cuts": [
+    2,
+    5,
+    8,
+    10
+   ],
+   "blank": 1,
+   "answer": "grumbled"
+  },
+  {
+   "src": "sg",
+   "id": "petulant",
+   "i": 346,
+   "cuts": [
+    2,
+    5,
+    9,
+    13
+   ],
+   "blank": 3,
+   "answer": "petulant"
+  },
+  {
+   "src": "sg",
+   "id": "intransigent",
+   "i": 347,
+   "cuts": [
+    2,
+    4,
+    6,
+    9
+   ],
+   "blank": 3,
+   "answer": "intransigent"
+  },
+  {
+   "src": "sg",
+   "id": "impediment",
+   "i": 348,
+   "cuts": [
+    3,
+    5,
+    9,
+    11
+   ],
+   "blank": 4,
+   "answer": "impediment"
   }
  ]
 }

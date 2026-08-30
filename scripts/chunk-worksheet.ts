@@ -66,6 +66,23 @@ const findBlank = (tokens: string[], id: string): number => {
   return tokens.findIndex(t => normalize(t).startsWith(stem))
 }
 
+/**
+ * Multi-word idiom entries, which cannot host a blank.
+ *
+ * `smoking-gun`, `move-the-needle`, `pull-the-plug` — blanking one token of a
+ * phrase asks for a word with no single defensible answer (`the ___ gun`
+ * takes half a dozen), and a defensible answer marked wrong is the one
+ * failure this mode must not have. Detected rather than listed: an idiom id's
+ * later segments appear in the sentence as separate words, while a genuinely
+ * hyphenated single word like `self-esteem` never does.
+ */
+const isPhrase = (id: string, en: string): boolean => {
+  const parts = id.split('-')
+  if (parts.length < 2) return false
+  const hay = ` ${en.toLowerCase().replace(/[^a-z\s-]/g, '')} `
+  return parts.slice(1).every(seg => hay.includes(` ${seg} `))
+}
+
 interface Row { key: string; id: string; tokens: string[]; blank: number }
 
 const rows: Row[] = []
@@ -75,6 +92,7 @@ if (pool === 'sg') {
     const tokens = g.en.trim().split(/\s+/)
     if (tokens.length < MIN_TOKENS.sg) return
     if (byId.get(id) === undefined) return
+    if (isPhrase(id, g.en)) return
     if (done.has(`sg:${id}:${i}`)) return
     const blank = findBlank(tokens, id)
     if (blank === -1) return
@@ -90,6 +108,7 @@ if (pool === 'sg') {
     if (taken.has(s.id) || done.has(`ex:${s.id}:${s.i}`)) continue
     const tokens = w.examples[s.i].trim().split(/\s+/)
     if (tokens.length < MIN_TOKENS.ex) continue
+    if (isPhrase(s.id, w.examples[s.i])) continue
     const blank = findBlank(tokens, s.id)
     if (blank === -1) continue
     taken.add(s.id)
