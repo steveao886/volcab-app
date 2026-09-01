@@ -94,7 +94,7 @@ Keyboard shortcuts must be printed on the control they trigger. An undocumented 
 ## Gotchas
 
 - **vitest excludes `.claude/worktrees/`** (see `vite.config.ts`). Background tasks check out the whole repo there; without the exclusion the suite runs twice and another branch's failures are attributed to yours.
-- `tsconfig.app.json` does not enable `strict` or `noUncheckedIndexedAccess`. Indexed access is typed as present.
+- `tsconfig.app.json` enables `strict` (measured clean on 2026-09-01) but **not** `noUncheckedIndexedAccess` (503 errors on the same day). Indexed access is typed as present; guard it by hand.
 - `noUnusedLocals` is on: an unused import fails the build, including a type-only one.
 - Chinese full-width punctuation inside a PowerShell here-string is fine, but double quotes in a commit message body will break `git commit -m @'...'@`.
 
