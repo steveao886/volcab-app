@@ -63,6 +63,59 @@ describe('GitHubClient', () => {
     await client.getFile('words.json')
     expect(fetchMock).toHaveBeenCalledTimes(1)
   })
+  // Measured 2026-09-01 against the live repo: the raw media type honours
+  // `If-None-Match: "<blob sha>"` with a 304 and an empty body, the CORS
+  // preflight for api.github.com lists If-None-Match in
+  // access-control-allow-headers, and GitHub documents that a 304 does not
+  // count against the rate limit. Every cold open was re-downloading ~1.4 MB
+  // (1,179,748 + 207,275 bytes) it almost always already had.
+  describe('getFileIfChanged', () => {
+    // A 304 may not carry a body, and undici enforces it at construction
+    const notModified = () => new Response(null, { status: 304 })
+
+    it('sends the stored blob sha as a quoted If-None-Match, on the raw media type', async () => {
+      const fetchMock = vi.fn().mockResolvedValue(notModified())
+      vi.stubGlobal('fetch', fetchMock)
+      await client.getFileIfChanged('progress.json', SHA)
+      const init = fetchMock.mock.calls[0][1] as RequestInit
+      const headers = init.headers as Record<string, string>
+      expect(headers['If-None-Match']).toBe(`"${SHA}"`)
+      expect(headers.Accept).toBe('application/vnd.github.raw')
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+    })
+    it('304 → unchanged, and nothing else is fetched', async () => {
+      const fetchMock = vi.fn().mockResolvedValue(notModified())
+      vi.stubGlobal('fetch', fetchMock)
+      expect(await client.getFileIfChanged('progress.json', SHA)).toBe('unchanged')
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+    })
+    it('200 → the file, sha from the ETag exactly as getFile does', async () => {
+      const NEW = 'a'.repeat(40)
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(rawRes(200, '{"a":2}', `"${NEW}"`)))
+      expect(await client.getFileIfChanged('progress.json', SHA)).toEqual({ content: '{"a":2}', sha: NEW })
+    })
+    it('200 with a malformed ETag falls back to the JSON request for the sha, like getFile', async () => {
+      const fetchMock = vi.fn()
+        .mockResolvedValueOnce(rawRes(200, '{"a":2}', '"not-a-sha"'))
+        .mockResolvedValueOnce(jsonRes(200, { sha: 'fallback' }))
+      vi.stubGlobal('fetch', fetchMock)
+      expect(await client.getFileIfChanged('progress.json', SHA)).toEqual({ content: '{"a":2}', sha: 'fallback' })
+      expect(fetchMock).toHaveBeenCalledTimes(2)
+    })
+    it('404 → null', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(rawRes(404, '')))
+      expect(await client.getFileIfChanged('progress.json', SHA)).toBeNull()
+    })
+    it('500 throws with the status in the message, so errors.ts can classify it', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(rawRes(500, 'boom')))
+      await expect(client.getFileIfChanged('progress.json', SHA)).rejects.toThrow(/progress\.json.*HTTP 500/)
+    })
+    it('getFile itself never returns unchanged -- it sends no validator, so a 304 there is a server fault and fails closed', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(notModified()))
+      await expect(client.getFile('progress.json')).rejects.toThrow(/HTTP 304/)
+    })
+  })
+
   it('putFile: 409/422 → conflict', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonRes(409, {})))
     expect(await client.putFile('p.json', '{}', 'msg', 'oldsha')).toBe('conflict')

@@ -30,6 +30,13 @@ export const STAGING_PATH = 'staging.json'
 
 export interface SyncClient {
   getFile(path: string): Promise<{ content: string; sha: string } | null>
+  /**
+   * The same read, told which blob this device already holds; 'unchanged'
+   * on a 304. Only boot uses it: the three conflict paths below re-pull
+   * without a sha and go through getFile, so they never meet the third
+   * value. See GitHubClient.getFileIfChanged for the measurement.
+   */
+  getFileIfChanged(path: string, sha: string): Promise<{ content: string; sha: string } | null | 'unchanged'>
   putFile(path: string, content: string, message: string, sha?: string): Promise<{ sha: string } | 'conflict'>
 }
 
@@ -215,12 +222,23 @@ export function mergeStaging(a: StagingItem[], b: StagingItem[]): StagingItem[] 
  * "can't log in" or "progress isn't syncing". The push path doesn't use this
  * function; there, "absent" and "corrupted" must be distinguished (see
  * pushStaging).
+ *
+ * With `knownSha` (boot, holding a valid staging cache) the read is
+ * conditional and a 304 comes back as 'unchanged'. The overloads keep that
+ * third value out of the one-argument form login uses: without a sha it can
+ * never arrive, and the caller should not have to handle it.
  */
+export interface StagingRead { items: StagingItem[]; sha: string }
+export function loadStaging(client: SyncClient): Promise<StagingRead | null>
+export function loadStaging(client: SyncClient, knownSha: string | undefined): Promise<StagingRead | null | 'unchanged'>
 export async function loadStaging(
-  client: SyncClient,
-): Promise<{ items: StagingItem[]; sha: string } | null> {
+  client: SyncClient, knownSha?: string,
+): Promise<StagingRead | null | 'unchanged'> {
   try {
-    const f = await client.getFile(STAGING_PATH)
+    const f = knownSha === undefined
+      ? await client.getFile(STAGING_PATH)
+      : await client.getFileIfChanged(STAGING_PATH, knownSha)
+    if (f === 'unchanged') return f
     return f ? { items: parseStaging(f.content), sha: f.sha } : null
   } catch {
     return null

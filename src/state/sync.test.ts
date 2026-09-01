@@ -23,12 +23,21 @@ function fakeClient(script: {
 }) {
   const putCalls: PutCall[] = []
   const getCalls: string[] = []
+  const conditionalCalls: { path: string; sha: string }[] = []
   let i = 0
   const client: SyncClient = {
     async getFile(path) {
       getCalls.push(path)
       if (script.getThrows) throw script.getThrows
       return script.files?.[path] ?? null
+    },
+    // Mirrors GitHub: a 304 exactly when the caller's sha is the current blob's
+    async getFileIfChanged(path, sha) {
+      conditionalCalls.push({ path, sha })
+      if (script.getThrows) throw script.getThrows
+      const f = script.files?.[path]
+      if (f === undefined) return null
+      return f.sha === sha ? 'unchanged' : f
     },
     async putFile(path, content, message, sha) {
       putCalls.push({ path, content, message, sha })
@@ -38,7 +47,7 @@ function fakeClient(script: {
       return r
     },
   }
-  return { client, putCalls, getCalls }
+  return { client, putCalls, getCalls, conditionalCalls }
 }
 
 const entry = (lastReviewedAt: string, reps: number): ProgressEntry => ({
@@ -174,6 +183,7 @@ describe('pushProgress', () => {
     let resolvePut: (r: { sha: string }) => void = () => {}
     const client: SyncClient = {
       async getFile() { return null },
+      async getFileIfChanged() { return null },
       putFile: () => new Promise(res => { resolvePut = res }),
     }
     const pending = pushProgress(client, emptyProgress())
@@ -516,6 +526,29 @@ describe('loadStaging: the least important of the three files, treats an unreada
     await expect(loadStaging(client)).resolves.toBeNull()
   })
 
+  // The conditional form boot uses once it holds a cache and a sha. Same
+  // leniency: a failed conditional read is "absent", never a thrown error.
+  it('given the sha this device holds, reads conditionally and passes a 304 through as unchanged', async () => {
+    const { client, getCalls, conditionalCalls } = fakeClient({
+      puts: [], files: { 'staging.json': { content: stagingFile([item('ostensible')]), sha: 'st-1' } },
+    })
+    await expect(loadStaging(client, 'st-1')).resolves.toBe('unchanged')
+    expect(getCalls).toEqual([])
+    expect(conditionalCalls).toEqual([{ path: 'staging.json', sha: 'st-1' }])
+  })
+
+  it('a stale sha gets the file back through the conditional read, parsed as usual', async () => {
+    const { client } = fakeClient({
+      puts: [], files: { 'staging.json': { content: stagingFile([item('ostensible')]), sha: 'st-2' } },
+    })
+    await expect(loadStaging(client, 'st-1')).resolves.toEqual({ items: [item('ostensible')], sha: 'st-2' })
+  })
+
+  it('a failing conditional read is swallowed exactly like the unconditional one', async () => {
+    const { client } = fakeClient({ puts: [], getThrows: new Error('读取 staging.json 失败 (HTTP 500)') })
+    await expect(loadStaging(client, 'st-1')).resolves.toBeNull()
+  })
+
   // This one watches the easiest mistake to make when wiring in the third
   // file: dropping it into boot's Promise.all, where one rejection drags
   // words / progress down into the catch with it -- the user would see
@@ -527,6 +560,7 @@ describe('loadStaging: the least important of the three files, treats an unreada
         if (path === 'staging.json') throw new Error('读取 staging.json 失败 (HTTP 500)')
         return { content: path === 'words.json' ? wordsFile(['alpha']) : JSON.stringify(emptyProgress()), sha: path }
       },
+      async getFileIfChanged() { throw new Error('this test case reads unconditionally') },
       async putFile() { throw new Error('this test case should not push') },
     }
 

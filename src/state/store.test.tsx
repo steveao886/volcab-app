@@ -37,7 +37,7 @@ import type { Progress, StagingItem, Word } from '../types'
  * paired with React 19's built-in act().
  * The remote always goes through a **plain-object fake client** (same
  * approach as sync.test.ts) -- no module mocking, no network touched;
- * GitHubClient's four methods are rewired to the fake client in beforeEach
+ * GitHubClient's five methods are rewired to the fake client in beforeEach
  * and restored as-is in afterEach.
  */
 
@@ -55,6 +55,7 @@ interface PutCall { path: string; content: string; message: string; sha?: string
 function fakeRemote() {
   const putCalls: PutCall[] = []
   const getCalls: string[] = []
+  const conditionalCalls: { path: string; sha: string }[] = []
   const files: Record<string, { content: string; sha: string } | undefined> = {}
   const getThrows: Record<string, Error | undefined> = {}
   /** Preset put results queued per path; once exhausted, returns an auto-generated new sha */
@@ -76,6 +77,15 @@ function fakeRemote() {
       if (boom) throw boom
       return files[path] ?? null
     },
+    // Mirrors GitHub: 'unchanged' exactly when the sha the device holds is the current blob's
+    async getFileIfChanged(path, sha) {
+      conditionalCalls.push({ path, sha })
+      const boom = getThrows[path]
+      if (boom) throw boom
+      const f = files[path]
+      if (f === undefined) return null
+      return f.sha === sha ? 'unchanged' : f
+    },
     putFile(path, content, message, sha) {
       const call: PutCall = { path, content, message, sha }
       putCalls.push(call)
@@ -90,7 +100,7 @@ function fakeRemote() {
   }
 
   return {
-    client, putCalls, getCalls, files, getThrows, scripted, hold, held,
+    client, putCalls, getCalls, conditionalCalls, files, getThrows, scripted, hold, held,
     putsTo: (path: string) => putCalls.filter(c => c.path === path),
     /** Releases the earliest pending put (optionally for a specific path); uses the preset/auto sha if no result is given */
     release(result?: PutResult | Error, path?: string) {
@@ -175,6 +185,7 @@ const original = {
   whoAmI: GitHubClient.whoAmI,
   validate: GitHubClient.prototype.validate,
   getFile: GitHubClient.prototype.getFile,
+  getFileIfChanged: GitHubClient.prototype.getFileIfChanged,
   putFile: GitHubClient.prototype.putFile,
 }
 
@@ -187,6 +198,7 @@ beforeEach(() => {
   GitHubClient.whoAmI = () => identity()
   GitHubClient.prototype.validate = () => validate()
   GitHubClient.prototype.getFile = path => remote.client.getFile(path)
+  GitHubClient.prototype.getFileIfChanged = (path, sha) => remote.client.getFileIfChanged(path, sha)
   GitHubClient.prototype.putFile = (path, content, message, sha) =>
     remote.client.putFile(path, content, message, sha)
 })
@@ -199,6 +211,7 @@ afterEach(async () => {
   GitHubClient.whoAmI = original.whoAmI
   GitHubClient.prototype.validate = original.validate
   GitHubClient.prototype.getFile = original.getFile
+  GitHubClient.prototype.getFileIfChanged = original.getFileIfChanged
   GitHubClient.prototype.putFile = original.putFile
 })
 
@@ -591,6 +604,97 @@ describe('boot: three files', () => {
     expect(storage.get('token')).toBe('tok-alice')
     expect(storage.get('progressSha')).toBeNull()
     expect(app().loginError).toContain('备份')
+  })
+})
+
+// === 4b. Boot: conditional reads ================================================
+// Every cold open used to re-download all three files with cache: 'no-store'
+// -- about 1.4 MB (1,179,748 + 207,275 bytes, measured 2026-09-01) it almost
+// always already had. A device holding a valid cache *and* the blob sha for a
+// file now sends If-None-Match and keeps its copy on a 304. The rule is per
+// file: a cache without a sha (a device from before shas were stored) and a
+// sha without a cache (a lost cache) both read in full, because a 304 is
+// only worth anything when there is a copy to serve from.
+
+describe('boot: conditional reads', () => {
+  const reviewed = (reps: number, lastReviewedAt: string): Progress['words'][string] => ({
+    state: 'review', ease: 2.5, intervalDays: 3, due: '2026-07-30',
+    stepIndex: 0, reps, lapses: 0, lastReviewedAt,
+  })
+  const cachedProgress = (): Progress => {
+    const p = emptyProgress()
+    p.words['alpha'] = reviewed(4, '2026-07-25T01:00:00Z')
+    return p
+  }
+  /** A device that has booted before: all three caches valid, all three shas stored, remote unchanged since */
+  function seedCurrentDevice() {
+    storage.set('token', 'tok-alice'); storage.set('owner', 'alice')
+    storage.set('words', [word('alpha'), word('beta')]); storage.set('wordsSha', 'w-remote')
+    storage.set('progress', cachedProgress()); storage.set('progressSha', 'p-remote')
+    storage.set('staging', [item('ostensible')]); storage.set('stagingSha', 's-remote')
+    remote.files['words.json'] = { content: wordsFile(['alpha', 'beta']), sha: 'w-remote' }
+    remote.files['progress.json'] = { content: JSON.stringify(cachedProgress()), sha: 'p-remote' }
+    remote.files['staging.json'] = { content: stagingFile([item('ostensible')]), sha: 's-remote' }
+  }
+
+  it('a current device sends three conditional reads, downloads nothing, and is ready from its cache', async () => {
+    seedCurrentDevice()
+    remote.client.getFile = async path => { throw new Error(`unconditional read of ${path}`) }
+    await mount()
+
+    expect(app().phase).toBe('ready')
+    expect(remote.getCalls).toEqual([])
+    expect(remote.conditionalCalls.map(c => c.path).sort()).toEqual(['progress.json', 'staging.json', 'words.json'])
+    expect(app().words).toEqual([word('alpha'), word('beta')])
+    expect(app().progress.words['alpha'].reps).toBe(4)
+    expect(heads(app().staging)).toEqual(['ostensible'])
+    expect(app().syncStatus).toBe('synced')
+    expect(app().syncError).toBeNull()
+    expect(remote.putCalls).toEqual([])
+  })
+
+  it('a cache without a stored wordsSha (a device from before shas were kept) reads words in full, the other two conditionally', async () => {
+    seedCurrentDevice()
+    storage.remove('wordsSha')
+    await mount()
+
+    expect(app().phase).toBe('ready')
+    expect(remote.getCalls).toEqual(['words.json'])
+    expect(remote.conditionalCalls.map(c => c.path).sort()).toEqual(['progress.json', 'staging.json'])
+    expect(storage.get('wordsSha')).toBe('w-remote')        // stored now, so the next boot is fully conditional
+  })
+
+  it('a sha without a cache reads in full: a 304 is worthless with nothing to serve from', async () => {
+    storage.set('token', 'tok-alice'); storage.set('owner', 'alice')
+    storage.set('wordsSha', 'w-remote'); storage.set('progressSha', 'p-remote'); storage.set('stagingSha', 's-remote')
+    remote.files['words.json'] = { content: wordsFile(['alpha']), sha: 'w-remote' }
+    remote.files['progress.json'] = { content: JSON.stringify(emptyProgress()), sha: 'p-remote' }
+    remote.files['staging.json'] = { content: stagingFile([]), sha: 's-remote' }
+    await mount()
+
+    expect(app().phase).toBe('ready')
+    expect(remote.conditionalCalls).toEqual([])
+    expect(remote.getCalls.sort()).toEqual(['progress.json', 'staging.json', 'words.json'])
+    expect(ids(app().words)).toEqual(['alpha'])
+  })
+
+  it('a changed remote still arrives through the conditional read and is merged exactly as before', async () => {
+    seedCurrentDevice()
+    const remoteProgress = emptyProgress()
+    remoteProgress.words['beta'] = reviewed(2, '2026-07-26T01:00:00Z')
+    remote.files['progress.json'] = { content: JSON.stringify(remoteProgress), sha: 'p-newer' }
+    remote.files['words.json'] = { content: wordsFile(['alpha', 'beta', 'gamma']), sha: 'w-newer' }
+    await mount()
+
+    expect(app().phase).toBe('ready')
+    expect(remote.getCalls).toEqual([])
+    expect(ids(app().words)).toEqual(['alpha', 'beta', 'gamma'])
+    expect(app().progress.words['alpha'].reps).toBe(4)      // the local entry survives the merge
+    expect(app().progress.words['beta'].reps).toBe(2)       // the other device's entry arrives
+    expect(storage.get('wordsSha')).toBe('w-newer')
+    expect(storage.get('progressSha')).toBe('p-newer')
+    expect(heads(app().staging)).toEqual(['ostensible'])    // the file that did answer 304 is kept as is
+    expect(storage.get('stagingSha')).toBe('s-remote')
   })
 })
 

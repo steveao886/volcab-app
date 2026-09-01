@@ -9,7 +9,7 @@ import { emptyProgress, emptyStat } from '../types'
 import type { DailyStat, Grade, Progress, ProgressEntry, RecallRating, StagingItem, Word } from '../types'
 import { classifySyncFailure, friendlyError, httpStatus, logoutDiscarded, ownerSwitched, STORAGE_FULL } from './errors'
 import {
-  appendPendingOp, appendPendingStaging, bootSnapshot, cachedProgress, carryOverFor,
+  appendPendingOp, appendPendingStaging, bootSnapshot, cachedProgress, cachedStaging, carryOverFor,
   pendingOps, pendingStaging, setPendingOps, setPendingStaging,
 } from './session'
 import {
@@ -567,16 +567,44 @@ export function AppProvider({ children }: { children: ReactNode }) {
     clientRef.current = client
     const session = sessionRef.current
     try {
+      // A file this device holds a valid cache of *and* a blob sha for is
+      // read conditionally; a 304 keeps the local copy. Measured 2026-09-01
+      // against the live repo: `If-None-Match: "<blob sha>"` on the raw
+      // media type returns 304 with an empty body, the CORS preflight allows
+      // the header, and a 304 does not count against the rate limit. Before
+      // this, every cold open re-downloaded ~1.4 MB (1,179,748 + 207,275
+      // bytes) it almost always already had.
+      //
+      // Both halves of the condition are load-bearing. A sha without a cache
+      // (fresh device, lost cache) must read in full: a 304 is worthless
+      // with nothing to serve from. A cache without a sha (a device from
+      // before shas were stored) cannot ask. For words and progress the
+      // cache is in state: bootSnapshot only goes ready when both are valid,
+      // so "ready before the first network call" is exactly "state holds the
+      // cached copies plus whatever the user did since". (W1.3: that boolean
+      // becomes the result of the IndexedDB read; nothing below changes.)
+      // Staging is judged on its own -- it never gates readiness, and a
+      // corrupt cache leaves [] in state, which is not a copy worth keeping.
+      const fromCache = stateRef.current.phase === 'ready'
+      const wordsSha = storage.get<string>('wordsSha')
+      const progressSha = storage.get<string>('progressSha')
+      const stagingSha = storage.get<string>('stagingSha')
+      const read = (path: string, have: boolean, sha: string | null) =>
+        have && sha ? client.getFileIfChanged(path, sha) : client.getFile(path)
       // loadStaging swallows every failure itself, so it can never make this
       // whole Promise.all reject — a missing or corrupted staging.json must
       // not drag the words/progress boot path down into the catch with it.
       const [wf, pf, sf] = await Promise.all([
-        client.getFile(WORDS_PATH), client.getFile(PROGRESS_PATH), loadStaging(client),
+        read(WORDS_PATH, fromCache, wordsSha),
+        read(PROGRESS_PATH, fromCache, progressSha),
+        loadStaging(client, cachedStaging() !== null && stagingSha ? stagingSha : undefined),
       ])
       if (session !== sessionRef.current) return
 
       let words = stateRef.current.words
-      if (wf) {
+      // On 'unchanged' there is nothing to do: the cache already includes any
+      // pending ops (applied at save time), so nothing to replay or re-store.
+      if (wf !== null && wf !== 'unchanged') {
         // Vocabulary defers to the remote, but any add/delete that failed to
         // push last time needs replaying first, or overwriting with this
         // cache would erase the user's edits — the queue is persisted, so
@@ -584,12 +612,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         words = applyWordOps(parseWords(wf.content), pendingOps())
         cacheWords(words)
         storage.set('wordsSha', wf.sha)
-      } else if (words.length === 0) {
+      } else if (wf === null && words.length === 0) {
         throw new Error(`${owner}/${DATA_REPO} 里没有 words.json —— 请先初始化数据仓库。`)
       }
 
       let progress = stateRef.current.progress
-      if (pf) {
+      // On 'unchanged', merging with a remote equal to what the cache was last merged from is a no-op
+      if (pf !== null && pf !== 'unchanged') {
         progress = mergeProgress(progress, parseProgress(pf.content))
         storage.set('progressSha', pf.sha)
       }
@@ -598,9 +627,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // that failed to push. If the remote can't be read (missing/corrupt/
       // read failure), keep using this device's copy — only that way do
       // entries the completion flow removed from the remote actually stay
-      // gone, instead of getting merged back in by the local cache.
-      const staging = mergeStaging(sf ? sf.items : stateRef.current.staging, pendingStaging())
-      if (sf) storage.set('stagingSha', sf.sha)
+      // gone, instead of getting merged back in by the local cache. A 304
+      // takes the same branch, minus the doubt.
+      const remoteStaging = sf !== null && sf !== 'unchanged' ? sf : null
+      const staging = mergeStaging(remoteStaging ? remoteStaging.items : stateRef.current.staging, pendingStaging())
+      if (remoteStaging) storage.set('stagingSha', remoteStaging.sha)
       cacheStaging(staging)
 
       const persisted = cacheProgress(progress)

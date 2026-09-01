@@ -84,10 +84,35 @@ export class GitHubClient {
    * Both paths hold. See docs/superpowers/specs/2026-08-22-contents-api-size-limits-design.md.
    */
   async getFile(path: string): Promise<RemoteFile | null> {
+    const f = await this.readRaw(path)
+    // No validator was sent, so a 304 here is a server fault. Failing closed
+    // beats pretending this device holds a copy it may not have.
+    if (f === 'unchanged') throw new Error(`读取 ${path} 失败 (HTTP 304)`)
+    return f
+  }
+
+  /**
+   * Same read as getFile, but tells GitHub which blob this device already
+   * holds. Measured 2026-09-01 against the live repo: the raw media type
+   * honours `If-None-Match: "<blob sha>"` with a 304 and an empty body, the
+   * CORS preflight lists If-None-Match in access-control-allow-headers, and
+   * GitHub documents that a 304 does not count against the rate limit.
+   *
+   * A separate method rather than an optional parameter on getFile, so the
+   * three conflict paths in sync.ts that re-pull without a sha never see a
+   * value they cannot receive.
+   */
+  async getFileIfChanged(path: string, sha: string): Promise<RemoteFile | null | 'unchanged'> {
+    return this.readRaw(path, { 'If-None-Match': `"${sha}"` })
+  }
+
+  /** The one raw-media-type read behind both getters; `extra` is the conditional header or nothing. */
+  private async readRaw(path: string, extra: Record<string, string> = {}): Promise<RemoteFile | null | 'unchanged'> {
     const res = await fetch(`${API}/repos/${this.owner}/${this.repo}/contents/${path}`, {
-      headers: { ...this.headers(), Accept: 'application/vnd.github.raw' },
+      headers: { ...this.headers(), Accept: 'application/vnd.github.raw', ...extra },
       cache: 'no-store',
     })
+    if (res.status === 304) return 'unchanged'
     if (res.status === 404) return null
     if (!res.ok) throw new Error(`读取 ${path} 失败 (${statusTag(res)})`)
     const content = await res.text()
