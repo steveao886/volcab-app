@@ -1,7 +1,11 @@
+// `volcab.words` used to live here too. The words cache moved to IndexedDB on
+// 2026-09-01 (src/lib/wordsCache.ts): at 840,626 UTF-16 code units it was
+// 86% of a footprint heading for WebKit's 5 MiB quota, and the one payload
+// that only grows. boot() removes the leftover key once so the space is
+// actually reclaimed. Do not reuse the name.
 const KEYS = {
   token: 'volcab.token',
   owner: 'volcab.owner',
-  words: 'volcab.words',
   wordsSha: 'volcab.wordsSha',
   progress: 'volcab.progress',
   progressSha: 'volcab.progressSha',

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
   appendPendingStaging, bootSnapshot, cachedProgress, cachedStaging, carryOverFor,
-  pendingOps, pendingStaging, setPendingOps, setPendingStaging,
+  pendingOps, pendingStaging, setPendingOps, setPendingStaging, validWords,
 } from './session'
 import { applyWordOps, mergeStaging, parseStaging, parseWords } from './sync'
 import type { WordsOp } from './sync'
@@ -186,44 +186,71 @@ describe('carryOverFor: which local debt can be carried over on re-login', () =>
   })
 })
 
+describe('validWords: the shape check the IndexedDB read goes through', () => {
+  it('accepts a non-empty array of well-formed words, returning the same array', () => {
+    const words = [word('a'), word('b')]
+    expect(validWords(words)).toBe(words)
+  })
+  // Read side lenient: whatever is in the cache, a bad shape means "no cache", never a throw
+  it.each([
+    ['null', null],
+    ['not an array', { words: [] }],
+    ['an empty array -- an empty library is not a state this app can be in', []],
+    ['a malformed entry among good ones', [word('a'), { id: 'b' }]],
+    ['a string', 'words'],
+  ])('rejects %s as null', (_label, raw) => {
+    expect(validWords(raw)).toBeNull()
+  })
+})
+
+// Since the words cache moved to IndexedDB (2026-09-01) the first frame can
+// never be 'ready': words are behind an async read, and boot() decides.
+// What bootSnapshot still does is carry this device's localStorage copies
+// (progress, staging) into state, so boot()'s merge starts from them.
 describe('bootSnapshot', () => {
   it('no token: stays on the login page', () => {
     expect(bootSnapshot(false).phase).toBe('login')
   })
 
-  it('token + complete cache: usable on the first frame, no flash of a loading state', () => {
+  it('token + cached progress: boot phase, with the cached progress and staging already in state', () => {
+    const p = dirtyProgress()
     storage.set('token', 't'); storage.set('owner', 'alice')
-    storage.set('words', [word('a')])
-    storage.set('progress', emptyProgress())
+    storage.set('progress', p)
     storage.set('staging', [item('ostensible')])
     const s = bootSnapshot(false)
-    expect(s.phase).toBe('ready')
+    expect(s.phase).toBe('boot')
     expect(s.owner).toBe('alice')
-    expect(s.words).toHaveLength(1)
+    expect(s.words).toEqual([])
+    // Not decorative: boot() merges the remote into stateRef.current.progress.
+    // A device whose words cache is gone (first boot after the move, an
+    // evicted IndexedDB) but whose progress carries unpushed grades would
+    // otherwise merge the remote into an empty progress and lose them.
+    expect(s.progress.words['a']).toBeDefined()
     expect(s.staging).toEqual([item('ostensible')])
   })
 
   // The third file gets no veto power: whether it's corrupted or missing, both just mean "the staging area is empty"
-  it('a missing or corrupted staging cache never blocks reaching ready -- it\'s the least important of the three files', () => {
+  it('a missing or corrupted staging cache only means an empty staging area -- it\'s the least important of the three files', () => {
     storage.set('token', 't'); storage.set('owner', 'alice')
-    storage.set('words', [word('a')])
     storage.set('progress', emptyProgress())
-    expect(bootSnapshot(false)).toMatchObject({ phase: 'ready', staging: [] })
+    expect(bootSnapshot(false)).toMatchObject({ phase: 'boot', staging: [] })
 
     localStorage.setItem('volcab.staging', '{oops')
-    expect(bootSnapshot(false)).toMatchObject({ phase: 'ready', staging: [] })
+    expect(bootSnapshot(false)).toMatchObject({ phase: 'boot', staging: [] })
   })
 
-  it('token present but cache missing: goes to boot first, waits for the remote fetch', () => {
+  it('token present but no cache at all: boot, with empty progress, waiting on the remote fetch', () => {
     storage.set('token', 't'); storage.set('owner', 'alice')
-    expect(bootSnapshot(false).phase).toBe('boot')
+    const s = bootSnapshot(false)
+    expect(s.phase).toBe('boot')
+    expect(s.progress).toEqual(emptyProgress())
   })
 
-  it('a malformed cache is treated as missing, without feeding bad data to the page', () => {
+  it('a malformed progress cache is treated as missing, without feeding bad data to the page', () => {
     storage.set('token', 't'); storage.set('owner', 'alice')
-    storage.set('words', [word('a')])
     storage.set('progress', { version: 1, words: {} })   // missing settings / dailyStats
     expect(bootSnapshot(false).phase).toBe('boot')
+    expect(bootSnapshot(false).progress).toEqual(emptyProgress())
     expect(cachedProgress()).toBeNull()
   })
 

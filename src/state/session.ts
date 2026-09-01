@@ -15,8 +15,10 @@ import type { WordsOp } from './sync'
  */
 
 export interface BootSnapshot {
-  phase: 'boot' | 'login' | 'ready'
+  /** Never 'ready' since 2026-09-01: words are behind an async IndexedDB read, so boot() makes that call */
+  phase: 'boot' | 'login'
   owner: string | null
+  /** Always empty here; see the phase note. Kept in the shape so the snapshot still spreads straight into AppState. */
   words: Word[]
   progress: Progress
   /** New-word staging area. **Does not factor into the phase decision** -- see the note inside bootSnapshot */
@@ -29,12 +31,18 @@ export function cachedProgress(): Progress | null {
   return isProgress(p) ? p : null
 }
 
-export function cachedWords(): Word[] | null {
-  const w = storage.get<unknown>('words')
-  return Array.isArray(w) && w.length > 0 && w.every(isWord) ? w : null
+/**
+ * The shape check for the words cache, which lives in IndexedDB
+ * (src/lib/wordsCache.ts) and is read asynchronously by boot(). Same
+ * predicate the localStorage read applied until 2026-09-01: a bad shape is
+ * "no cache", never a throw, and non-empty is required -- an empty library
+ * is not a state this app can be in.
+ */
+export function validWords(raw: unknown): Word[] | null {
+  return Array.isArray(raw) && raw.length > 0 && raw.every(isWord) ? raw : null
 }
 
-/** Same idea; the staging area can legitimately be an empty array ("nothing staged yet"), so unlike cachedWords it doesn't require non-empty */
+/** Same idea; the staging area can legitimately be an empty array ("nothing staged yet"), so unlike validWords it doesn't require non-empty */
 export function cachedStaging(): StagingItem[] | null {
   const s = storage.get<unknown>('staging')
   return Array.isArray(s) && s.every(isStagingItem) ? s : null
@@ -93,12 +101,23 @@ export function appendPendingStaging(it: StagingItem): StagingItem[] {
   return next
 }
 
-/** First-frame state: usable immediately if the cache is complete, remote fetch happens in the background */
+/**
+ * First-frame state. Until 2026-09-01 this reached 'ready' on its own when
+ * both caches were valid; now the words cache is in IndexedDB and behind an
+ * async read, so a device with a token renders the Booting gate until
+ * boot() has read it (tens of milliseconds for 717 words) and goes ready
+ * from cache there instead.
+ *
+ * Progress and staging are still read here, so state holds this device's
+ * localStorage copies from the first frame. That is not decorative: boot()
+ * merges the remote into stateRef.current.progress, and a device whose
+ * words cache is missing (the first boot after the move, an evicted
+ * IndexedDB) but whose progress carries unpushed grades would otherwise
+ * merge the remote into an empty progress and lose them.
+ */
 export function bootSnapshot(isDev: boolean): BootSnapshot {
-  // Staging doesn't factor into the phase decision: a missing or corrupted
-  // cache only means "the staging area is empty", and must never drag a
-  // device that has a complete vocabulary and progress back into boot state
-  // to wait on the network.
+  // Staging doesn't factor into any decision here: a missing or corrupted
+  // cache only means "the staging area is empty".
   const staging = cachedStaging() ?? []
   const idle: BootSnapshot = {
     phase: 'login', owner: null, words: [], progress: emptyProgress(), staging,
@@ -110,10 +129,7 @@ export function bootSnapshot(isDev: boolean): BootSnapshot {
   if (isDev && !token && owner === 'demo') return { ...idle, phase: 'boot', owner }
   if (!token || !owner) return idle
 
-  const words = cachedWords()
-  const progress = cachedProgress()
-  if (words && progress) return { phase: 'ready', owner, words, progress, staging }
-  return { ...idle, phase: 'boot', owner }
+  return { ...idle, phase: 'boot', owner, progress: cachedProgress() ?? emptyProgress() }
 }
 
 export interface CarryOver {

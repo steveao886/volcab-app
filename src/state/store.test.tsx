@@ -5,10 +5,12 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { AppProvider, useApp } from './store'
 import type { AppContextValue } from './store'
 import { FORBIDDEN, RATE_LIMITED, STORAGE_FULL, TOKEN_REVOKED, logoutDiscarded, ownerSwitched } from './errors'
-import { pendingOps, pendingStaging } from './session'
+import { pendingOps, pendingStaging, validWords } from './session'
 import type { SyncClient } from './sync'
 import { GitHubClient } from '../lib/github'
 import { storage } from '../lib/storage'
+import { createMemoryWordsCache } from '../lib/wordsCache'
+import type { WordsCache } from '../lib/wordsCache'
 import { todayStr } from '../lib/srs'
 import { emptyProgress } from '../types'
 import type { Progress, StagingItem, Word } from '../types'
@@ -134,12 +136,16 @@ async function flush(): Promise<void> {
   }
 }
 
-async function mount(): Promise<void> {
+/** The words cache the mounted Provider is using; seeded per test, never the module singleton (which would leak words between tests) */
+let cache: WordsCache
+
+async function mount(wordsCache: WordsCache = createMemoryWordsCache()): Promise<void> {
+  cache = wordsCache
   container = document.createElement('div')
   document.body.appendChild(container)
   const r = createRoot(container)
   root = r
-  await act(async () => { r.render(<AppProvider><Probe /></AppProvider>) })
+  await act(async () => { r.render(<AppProvider wordsCache={wordsCache}><Probe /></AppProvider>) })
   await flush()
 }
 
@@ -220,6 +226,7 @@ async function bootAsAlice(opts: {
   words?: string[]
   progress?: Progress
   staging?: StagingItem[]
+  cache?: WordsCache
 } = {}): Promise<void> {
   storage.set('token', 'tok-alice')
   storage.set('owner', 'alice')
@@ -228,7 +235,7 @@ async function bootAsAlice(opts: {
     content: JSON.stringify(opts.progress ?? emptyProgress()), sha: 'p-remote',
   }
   if (opts.staging) remote.files['staging.json'] = { content: stagingFile(opts.staging), sha: 's-remote' }
-  await mount()
+  await mount(opts.cache)
 }
 
 // === 0. First, prove this fixture setup actually works =======================
@@ -405,7 +412,7 @@ describe('session invalidation', () => {
     await release({ sha: 'w-late' })
 
     expect(storage.get('wordsSha')).toBeNull()
-    expect(storage.get('words')).toBeNull()
+    await expect(cache.read()).resolves.toBeNull()          // logout cleared the IndexedDB cache too, and the late response must not refill it
     expect(app().words).toEqual([])
   })
 
@@ -483,7 +490,7 @@ describe('reconciling once a push returns', () => {
 
     await release({ sha: 'w-1' })
     expect(ids(app().words)).toEqual(['alpha', 'beta', 'gamma', 'delta'])
-    expect(ids(storage.get<Word[]>('words') ?? [])).toContain('delta')
+    expect(ids(validWords(await cache.read()) ?? [])).toContain('delta')
     // the catch-up round's outgoing payload must carry it too, or the next boot would overwrite it with the remote and lose it
     expect(ids(JSON.parse(remote.putsTo('words.json')[1].content).words as Word[])).toContain('delta')
   })
@@ -580,11 +587,10 @@ describe('boot: three files', () => {
   it('words.json is corrupted, device has a cache: stays on ready using the cache, only flags the sync failure, still doesn\'t overwrite the remote', async () => {
     storage.set('token', 'tok-alice')
     storage.set('owner', 'alice')
-    storage.set('words', [word('cached')])
     storage.set('progress', emptyProgress())
     remote.files['words.json'] = { content: '{"version":1,"words":[{"id":"x"}]}', sha: 'w-bad' }
     remote.files['progress.json'] = { content: JSON.stringify(emptyProgress()), sha: 'p-remote' }
-    await mount()
+    await mount(createMemoryWordsCache([word('cached')]))
 
     expect(app().phase).toBe('ready')
     expect(ids(app().words)).toEqual(['cached'])
@@ -626,21 +632,22 @@ describe('boot: conditional reads', () => {
     p.words['alpha'] = reviewed(4, '2026-07-25T01:00:00Z')
     return p
   }
-  /** A device that has booted before: all three caches valid, all three shas stored, remote unchanged since */
-  function seedCurrentDevice() {
+  /** A device that has booted before: all three caches valid, all three shas stored, remote unchanged since. Returns the words cache to mount with. */
+  function seedCurrentDevice(): WordsCache {
     storage.set('token', 'tok-alice'); storage.set('owner', 'alice')
-    storage.set('words', [word('alpha'), word('beta')]); storage.set('wordsSha', 'w-remote')
+    storage.set('wordsSha', 'w-remote')
     storage.set('progress', cachedProgress()); storage.set('progressSha', 'p-remote')
     storage.set('staging', [item('ostensible')]); storage.set('stagingSha', 's-remote')
     remote.files['words.json'] = { content: wordsFile(['alpha', 'beta']), sha: 'w-remote' }
     remote.files['progress.json'] = { content: JSON.stringify(cachedProgress()), sha: 'p-remote' }
     remote.files['staging.json'] = { content: stagingFile([item('ostensible')]), sha: 's-remote' }
+    return createMemoryWordsCache([word('alpha'), word('beta')])
   }
 
   it('a current device sends three conditional reads, downloads nothing, and is ready from its cache', async () => {
-    seedCurrentDevice()
+    const seeded = seedCurrentDevice()
     remote.client.getFile = async path => { throw new Error(`unconditional read of ${path}`) }
-    await mount()
+    await mount(seeded)
 
     expect(app().phase).toBe('ready')
     expect(remote.getCalls).toEqual([])
@@ -654,9 +661,9 @@ describe('boot: conditional reads', () => {
   })
 
   it('a cache without a stored wordsSha (a device from before shas were kept) reads words in full, the other two conditionally', async () => {
-    seedCurrentDevice()
+    const seeded = seedCurrentDevice()
     storage.remove('wordsSha')
-    await mount()
+    await mount(seeded)
 
     expect(app().phase).toBe('ready')
     expect(remote.getCalls).toEqual(['words.json'])
@@ -679,12 +686,12 @@ describe('boot: conditional reads', () => {
   })
 
   it('a changed remote still arrives through the conditional read and is merged exactly as before', async () => {
-    seedCurrentDevice()
+    const seeded = seedCurrentDevice()
     const remoteProgress = emptyProgress()
     remoteProgress.words['beta'] = reviewed(2, '2026-07-26T01:00:00Z')
     remote.files['progress.json'] = { content: JSON.stringify(remoteProgress), sha: 'p-newer' }
     remote.files['words.json'] = { content: wordsFile(['alpha', 'beta', 'gamma']), sha: 'w-newer' }
-    await mount()
+    await mount(seeded)
 
     expect(app().phase).toBe('ready')
     expect(remote.getCalls).toEqual([])
@@ -695,6 +702,110 @@ describe('boot: conditional reads', () => {
     expect(storage.get('progressSha')).toBe('p-newer')
     expect(heads(app().staging)).toEqual(['ostensible'])    // the file that did answer 304 is kept as is
     expect(storage.get('stagingSha')).toBe('s-remote')
+  })
+})
+
+// === 4c. The words cache lives in IndexedDB =====================================
+// Words were 840,626 of the 977,624 UTF-16 code units the two caches took in
+// localStorage (86%, measured 2026-09-01) and the one payload that only
+// grows; see the 2026-09-01 spec §1b. The cost accepted there: the first
+// frame cannot know the words any more, so a device with a token renders
+// the Booting gate until the IndexedDB read resolves, then becomes ready
+// from cache while the network round continues exactly as before.
+
+describe('words cache', () => {
+  const alphaProgress = (): Progress => {
+    const p = emptyProgress()
+    p.words['alpha'] = {
+      state: 'review', ease: 2.5, intervalDays: 3, due: '2026-07-30',
+      stepIndex: 0, reps: 4, lapses: 0, lastReviewedAt: '2026-07-25T01:00:00Z',
+    }
+    return p
+  }
+
+  it('boots ready from the cache before the network answers, then finishes the network round as before', async () => {
+    storage.set('token', 'tok-alice'); storage.set('owner', 'alice')
+    storage.set('progress', alphaProgress()); storage.set('progressSha', 'p-remote')
+    storage.set('wordsSha', 'w-remote')
+    remote.files['words.json'] = { content: wordsFile(['alpha', 'beta']), sha: 'w-remote' }
+    remote.files['progress.json'] = { content: JSON.stringify(alphaProgress()), sha: 'p-remote' }
+    // Hold every remote *response* until told otherwise; the request itself is logged at once
+    let open: () => void = () => {}
+    const gate = new Promise<void>(r => { open = r })
+    const realGet = remote.client.getFile
+    const realCond = remote.client.getFileIfChanged
+    remote.client.getFile = async path => { const r = realGet(path); await gate; return r }
+    remote.client.getFileIfChanged = async (path, sha) => { const r = realCond(path, sha); await gate; return r }
+
+    await mount(createMemoryWordsCache([word('alpha'), word('beta')]))
+
+    expect(app().phase).toBe('ready')                       // from cache, with the network still pending
+    expect(ids(app().words)).toEqual(['alpha', 'beta'])
+    expect(app().progress.words['alpha'].reps).toBe(4)
+    // and the reads that are pending went out conditionally: the cache is valid and the shas are stored
+    expect(remote.conditionalCalls.map(c => c.path).sort()).toEqual(['progress.json', 'words.json'])
+
+    await act(async () => { open() })
+    await flush()
+    expect(app().phase).toBe('ready')
+    expect(app().syncStatus).toBe('synced')
+    expect(remote.getCalls).toEqual(['staging.json'])       // no staging cache, so that one was read in full
+  })
+
+  it('logout clears the words cache along with localStorage', async () => {
+    await bootAsAlice()
+    await expect(cache.read()).resolves.not.toBeNull()      // boot wrote it
+    await step(() => { app().logout() })
+    await expect(cache.read()).resolves.toBeNull()
+  })
+
+  it('login writes the words cache', async () => {
+    remote.files['words.json'] = { content: wordsFile(['alpha']), sha: 'w-remote' }
+    remote.files['progress.json'] = { content: JSON.stringify(emptyProgress()), sha: 'p-remote' }
+    await mount()
+    await expect(cache.read()).resolves.toBeNull()
+    await act(async () => { await app().login('tok-alice') })
+    await flush()
+    expect(ids(validWords(await cache.read()) ?? [])).toEqual(['alpha'])
+  })
+
+  it('first boot after the move: the legacy key is removed, words come from the network, and unpushed progress survives', async () => {
+    // An existing device the day the update lands: words still under the old
+    // localStorage key, a grade that never pushed, shas stored, and an
+    // IndexedDB that has never been written.
+    localStorage.setItem('volcab.words', JSON.stringify([word('alpha')]))
+    storage.set('token', 'tok-alice'); storage.set('owner', 'alice')
+    storage.set('progress', alphaProgress()); storage.set('progressSha', 'p-old'); storage.set('dirty', true)
+    storage.set('wordsSha', 'w-remote')
+    remote.files['words.json'] = { content: wordsFile(['alpha', 'beta']), sha: 'w-remote' }
+    remote.files['progress.json'] = { content: JSON.stringify(emptyProgress()), sha: 'p-remote' }
+    await mount()
+
+    expect(app().phase).toBe('ready')
+    expect(ids(app().words)).toEqual(['alpha', 'beta'])
+    expect(remote.getCalls).toContain('words.json')         // no words cache yet, so words read in full despite the stored sha
+    expect(remote.conditionalCalls.map(c => c.path)).toEqual(['progress.json'])
+    expect(localStorage.getItem('volcab.words')).toBeNull() // the space is actually reclaimed
+    expect(ids(validWords(await cache.read()) ?? [])).toEqual(['alpha', 'beta'])
+    // The unpushed grade lived only in localStorage, and the remote (a
+    // stale sha, so it came back in full) does not have it. Merging the
+    // remote into an empty progress would have dropped it; bootSnapshot
+    // carries the cached progress into state even when words are missing.
+    expect(app().progress.words['alpha'].reps).toBe(4)
+    const puts = remote.putsTo('progress.json')
+    expect(puts).toHaveLength(1)
+    expect((JSON.parse(puts[0].content) as Progress).words['alpha'].reps).toBe(4)
+  })
+
+  it('no cache and the remote has no words.json: falls to the login page with the initialise-the-repo message, keeping the token', async () => {
+    storage.set('token', 'tok-alice'); storage.set('owner', 'alice')
+    remote.files['progress.json'] = { content: JSON.stringify(emptyProgress()), sha: 'p-remote' }
+    await mount()
+
+    expect(app().phase).toBe('login')
+    expect(app().loginError).toContain('没有 words.json')
+    expect(storage.get('token')).toBe('tok-alice')
+    expect(remote.putCalls).toEqual([])
   })
 })
 
@@ -838,7 +949,6 @@ describe('login: handling this device\'s debt', () => {
       stepIndex: 0, reps: 4, lapses: 0, lastReviewedAt: '2026-07-25T01:00:00Z',
     }
     storage.set('owner', 'alice')                 // token has been revoked, owner stays
-    storage.set('words', [word('alpha')])
     storage.set('progress', p)
     storage.set('dirty', true)
     storage.set('wordOps', [{ kind: 'upsert', word: word('gamma') }])
@@ -847,11 +957,11 @@ describe('login: handling this device\'s debt', () => {
     remote.files['words.json'] = { content: wordsFile(['alpha']), sha: 'w-remote' }
     remote.files['progress.json'] = { content: JSON.stringify(emptyProgress()), sha: 'p-remote' }
     remote.files['staging.json'] = { content: stagingFile([]), sha: 's-remote' }
+    return createMemoryWordsCache([word('alpha')])   // the words this device had cached before the revocation
   }
 
   it('re-login with the same account: vocabulary, staging, and progress get pushed in turn, queues cleared', async () => {
-    seedUnsyncedAliceWork()
-    await mount()
+    await mount(seedUnsyncedAliceWork())
     expect(app().phase).toBe('login')
 
     await act(async () => { await app().login('tok-alice') })
@@ -870,8 +980,7 @@ describe('login: handling this device\'s debt', () => {
   })
 
   it('logging into a different account: all debt is discarded, reports who lost it, and none of it gets pushed into the new account\'s repo', async () => {
-    seedUnsyncedAliceWork()
-    await mount()
+    await mount(seedUnsyncedAliceWork())
 
     identity = async () => 'bob'
     remote.files['words.json'] = { content: wordsFile(['zeta']), sha: 'w-bob' }
@@ -968,7 +1077,7 @@ describe('storage full', () => {
     remote.files['words.json'] = { content: wordsFile(['alpha']), sha: 'w-remote' }
     remote.files['progress.json'] = { content: JSON.stringify(emptyProgress()), sha: 'p-remote' }
     await mount()
-    const restore = refuseWrites(['volcab.words', 'volcab.progress'])
+    const restore = refuseWrites(['volcab.progress'])   // words are in IndexedDB now; progress is the one payload still in localStorage
     try {
       await act(async () => { await app().login('tok-alice') })
       await flush()

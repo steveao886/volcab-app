@@ -149,3 +149,20 @@ it governs
 only whether the JSON media type returns `content`, which this app stopped
 reading. The number that would actually matter is the distance to the write
 ceiling, and that is the 40 MB in this document.
+
+## Addendum (2026-09-01): the nearer ceiling this document did not consider
+
+The 40 MB write limit above was not the nearest ceiling. The words cache
+also lived in localStorage, whose quota is 5 MiB on WebKit and Firefox
+(10 MiB on Chromium), counted in UTF-16 code units; measured 2026-09-01 the
+words + progress caches compact-serialised to 977,624 code units, 840,626 of
+them words, growing ~1,400 per word — about 1,900 words on an iPhone against
+717 in the library, roughly six months out at the recent pace. And the
+failure mode was silent loss: `storage.set` threw inside the click handler
+before setState. `docs/superpowers/specs/2026-09-01-architecture-hardening-design.md`
+§1 records the measurement and the decisions: `storage.set` returns false
+instead of throwing and the store reports a full device, and the words cache
+moved to IndexedDB (`src/lib/wordsCache.ts`), leaving progress alone in
+localStorage where at ~215 code units per entry the WebKit quota is reached
+around 12,000 words. GitHub's write limit is then the next ceiling again, as
+this document assumed all along.

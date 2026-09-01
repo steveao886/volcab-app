@@ -5,12 +5,14 @@ import { mergeProgress } from '../lib/merge'
 import type { QuizMetricKey } from '../lib/quiz'
 import { demoteWord, gradeWord, todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
+import { wordsCache } from '../lib/wordsCache'
+import type { WordsCache } from '../lib/wordsCache'
 import { emptyProgress, emptyStat } from '../types'
 import type { DailyStat, Grade, Progress, ProgressEntry, RecallRating, StagingItem, Word } from '../types'
 import { classifySyncFailure, friendlyError, httpStatus, logoutDiscarded, ownerSwitched, STORAGE_FULL } from './errors'
 import {
   appendPendingOp, appendPendingStaging, bootSnapshot, cachedProgress, cachedStaging, carryOverFor,
-  pendingOps, pendingStaging, setPendingOps, setPendingStaging,
+  pendingOps, pendingStaging, setPendingOps, setPendingStaging, validWords,
 } from './session'
 import {
   applyWordOps, cleanHeadword, loadStaging, mergeStaging, parseProgress, parseWords,
@@ -128,7 +130,8 @@ const AppContext = createContext<AppContextValue | null>(null)
 
 // --- Provider -------------------------------------------------------------
 
-export function AppProvider({ children }: { children: ReactNode }) {
+/** `wordsCache` is a prop only so store.test.tsx can seed a memory cache the way it seeds the fake remote; main.tsx never passes it. */
+export function AppProvider({ children, wordsCache: cache = wordsCache }: { children: ReactNode; wordsCache?: WordsCache }) {
   const [state, setState] = useState<AppState>(() => ({
     ...bootSnapshot(import.meta.env.DEV),
     syncStatus: navigator.onLine ? 'synced' : 'offline',
@@ -197,18 +200,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return persisted
   }, [])
 
-  /** In demo mode, the vocabulary is read fresh from the repo every time and never persisted, so we don't leave a stale 500KB copy sitting around locally */
+  /**
+   * Words are cached in IndexedDB (src/lib/wordsCache.ts), never in demo
+   * mode -- the vocabulary is read fresh from the repo every time, so no
+   * stale copy is left behind. The result is deliberately not read: a
+   * refused write costs one download next boot and the network copy is
+   * authoritative. Progress is the opposite case (a refused write there is
+   * a condition to report), which is why the two caches differ.
+   */
   const cacheWords = useCallback((words: Word[]) => {
-    if (demoRef.current) return
-    // Words are 86% of the footprint (840,626 of the 977,624 code units
-    // above), so this is the write most likely to be the first refused. The
-    // network copy is authoritative and nothing is lost; the ref is set so
-    // the notice reaches the page through markSettled as well as here.
-    if (!storage.set('words', words)) {
-      storageFullRef.current = true
-      update({ syncError: STORAGE_FULL })
-    }
-  }, [update])
+    if (!demoRef.current) void cache.write(words)
+  }, [cache])
 
   const cacheStaging = useCallback((items: StagingItem[]) => {
     if (demoRef.current) return
@@ -469,17 +471,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // the next push.
       const staging = mergeStaging(sf?.items ?? [], carry.staging)
 
+      // Written before the localStorage bookkeeping, and the session checked
+      // again after: a logout during this await must not be followed by
+      // writes into the storage it just cleared. The result is not read --
+      // a refused IndexedDB write costs one download next boot.
+      await cache.write(words)
+      if (session !== sessionRef.current) return
+
       storage.set('token', token)
       storage.set('owner', owner)
-      // The two payload writes may be refused on a full device, and that
-      // must not fail the login: the data is in memory and the network copy
-      // is authoritative. Before storage.set caught the quota error, this
-      // was where a fresh phone at the limit died -- the raw exception text
-      // became the login error, on a token that was perfectly valid.
-      const wordsCached = storage.set('words', words)
       storage.set('wordsSha', wf.sha)
-      const progressCached = storage.set('progress', progress)
-      storageFullRef.current = !(wordsCached && progressCached)
+      // The progress write may be refused on a full device, and that must
+      // not fail the login: the data is in memory and the network copy is
+      // authoritative. Before storage.set caught the quota error, this was
+      // where a fresh phone at the limit died -- the raw exception text
+      // became the login error, on a token that was perfectly valid.
+      storageFullRef.current = !storage.set('progress', progress)
       storage.set('staging', staging)
       if (progressSha) storage.set('progressSha', progressSha)
       else storage.remove('progressSha')
@@ -513,7 +520,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (session !== sessionRef.current) return
       update({ phase: 'login', loginError: friendlyError(e) })
     }
-  }, [flushProgress, flushStaging, flushWords, settleStatus, update])
+  }, [cache, flushProgress, flushStaging, flushWords, settleStatus, update])
 
   const logout = useCallback(() => {
     // Logging out means "wipe this account's data off this device"; anything unpushed just has to be dropped — but we need to say so
@@ -540,6 +547,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     stagingPushingRef.current = false
     storageFullRef.current = false  // clearAll below frees the space; the next login measures afresh
     storage.clearAll()
+    void cache.clear()              // the words cache is IndexedDB; same rule, "wipe this account's data off this device"
     // "What got discarded" is a data notice, not a login failure: it goes
     // through syncError, shown by the login page's neutral notice area.
     // Putting it in loginError would mark the token input aria-invalid —
@@ -553,7 +561,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         : null,
       syncStatus: navigator.onLine ? 'synced' : 'offline',
     })
-  }, [clearTimer, update])
+  }, [cache, clearTimer, update])
 
   // --- Boot -----------------------------------------------------------------
 
@@ -566,6 +574,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const client = new GitHubClient(token, owner, DATA_REPO)
     clientRef.current = client
     const session = sessionRef.current
+
+    // Words live in IndexedDB, so the first frame cannot know them: the
+    // Booting gate shows until this read resolves (tens of milliseconds for
+    // 717 words -- the cost the 2026-09-01 spec §1b accepted in place of a
+    // localStorage quota failure it measured as under a year away). If the
+    // cache plus the localStorage progress make a complete device, go ready
+    // from cache right here, exactly as bootSnapshot used to; the network
+    // round below then refreshes as before. Words alone still go into
+    // state, so the merge below starts from them; the phase turns only when
+    // progress is cached too. (bootSnapshot already carried progress and
+    // staging into state, so nothing else changes here.)
+    const cached = validWords(await cache.read())
+    if (session !== sessionRef.current) return
+    // A second parse of ~137 K characters, well under a millisecond; the
+    // snapshot already holds the value but not the fact that it was valid.
+    const progressCached = cachedProgress() !== null
+    if (cached && stateRef.current.phase === 'boot') {
+      update(progressCached ? { phase: 'ready', words: cached } : { words: cached })
+    }
+    // One-time cleanup of the pre-IndexedDB cache key (retired 2026-09-01),
+    // so the localStorage quota is actually reclaimed rather than merely no
+    // longer grown.
+    localStorage.removeItem('volcab.words')
+
     try {
       // A file this device holds a valid cache of *and* a blob sha for is
       // read conditionally; a 304 keeps the local copy. Measured 2026-09-01
@@ -578,14 +610,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // Both halves of the condition are load-bearing. A sha without a cache
       // (fresh device, lost cache) must read in full: a 304 is worthless
       // with nothing to serve from. A cache without a sha (a device from
-      // before shas were stored) cannot ask. For words and progress the
-      // cache is in state: bootSnapshot only goes ready when both are valid,
-      // so "ready before the first network call" is exactly "state holds the
-      // cached copies plus whatever the user did since". (W1.3: that boolean
-      // becomes the result of the IndexedDB read; nothing below changes.)
-      // Staging is judged on its own -- it never gates readiness, and a
-      // corrupt cache leaves [] in state, which is not a copy worth keeping.
-      const fromCache = stateRef.current.phase === 'ready'
+      // before shas were stored) cannot ask. For words the cache is the
+      // IndexedDB read above; for progress, the localStorage copy that
+      // bootSnapshot carried into state; in both cases state now holds the
+      // cached copy plus whatever the user did since. Staging is judged on
+      // its own -- it never gates readiness, and a corrupt cache leaves []
+      // in state, which is not a copy worth keeping.
       const wordsSha = storage.get<string>('wordsSha')
       const progressSha = storage.get<string>('progressSha')
       const stagingSha = storage.get<string>('stagingSha')
@@ -595,8 +625,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // whole Promise.all reject — a missing or corrupted staging.json must
       // not drag the words/progress boot path down into the catch with it.
       const [wf, pf, sf] = await Promise.all([
-        read(WORDS_PATH, fromCache, wordsSha),
-        read(PROGRESS_PATH, fromCache, progressSha),
+        read(WORDS_PATH, cached !== null, wordsSha),
+        read(PROGRESS_PATH, progressCached, progressSha),
         loadStaging(client, cachedStaging() !== null && stagingSha ? stagingSha : undefined),
       ])
       if (session !== sessionRef.current) return
@@ -655,7 +685,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       toLogin(friendlyError(e), false)
     }
   }, [
-    cacheProgress, cacheStaging, cacheWords, enterDemoMode, flushProgress, flushStaging, flushWords,
+    cache, cacheProgress, cacheStaging, cacheWords, enterDemoMode, flushProgress, flushStaging, flushWords,
     settleStatus, toLogin, update,
   ])
 
