@@ -56,6 +56,66 @@ const MODE_LABEL: Record<QuizMode, string> = Object.fromEntries(MODES.map(m => [
 
 const isMode = (v: string | null): v is QuizMode => MODES.some(m => m.key === v)
 
+/**
+ * Loads one bundled-content chunk on demand. Replaces four copies of the
+ * same effect, and adds the branch they all lacked: a rejected import()
+ * used to leave the page on 正在加载 forever, because the guard was
+ * `x !== null` and nothing ever set x. Now a failure renders a retry.
+ *
+ * `enabled` is the mode check; the chunk is never fetched for a mode that
+ * does not use it.
+ */
+function useLazyContent<T>(enabled: boolean, load: () => Promise<T>): { data: T | null; failed: boolean; retry: () => void } {
+  const [data, setData] = useState<T | null>(null)
+  const [failed, setFailed] = useState(false)
+  const [attempt, setAttempt] = useState(0)
+  useEffect(() => {
+    if (!enabled || data !== null) return
+    let alive = true
+    setFailed(false)
+    load().then(
+      v => { if (alive) setData(v) },
+      () => { if (alive) setFailed(true) },
+    )
+    return () => { alive = false }
+  }, [enabled, data, attempt, load])
+  const retry = useCallback(() => setAttempt(a => a + 1), [])
+  return { data, failed, retry }
+}
+
+// The content is only fetched once you actually enter passage mode. It's
+// static content shipped with the app, split into a separate chunk via
+// import() so the four everyday modes don't have to download an extra
+// few dozen KB for it.
+const loadPassages = () => import('../data/passages.json').then(m => (m.default as { passages: Passage[] }).passages)
+// Sense groups get the same treatment and the same reasoning as passages.
+// Read by two modes now: 回想 draws questions from them, and 组句 takes
+// the English sentence a chunk annotation points into.
+const loadGroups = () => import('../data/senseGroups.json').then(m => (m.default as { groups: SenseGroup[] }).groups)
+// 回想's second source, and where 组句 finds the Chinese prompt for an
+// `ex` annotation. Loaded beside the groups rather than bundled into them:
+// it is a separate authored file with its own validator.
+const loadSentences = () => import('../data/recallSentences.json').then(m => (m.default as { sentences: RecallSentence[] }).sentences)
+// The chunk boundaries. Its own file for the same reason it is not a field
+// on recallSentences.json: 回想 loads that file every session and must not
+// download a mode it does not use.
+const loadAnnotations = () => import('../data/sentenceChunks.json').then(m => (m.default as { chunks: ChunkAnnotation[] }).chunks)
+
+function ContentGate({ label, failed, retry }: { label: string; failed: boolean; retry: () => void }) {
+  return (
+    <Card className="quiz-empty">
+      {failed ? (
+        <>
+          <p className="muted">{label}加载失败，请检查网络后重试。</p>
+          <Button type="button" variant="secondary" onClick={retry}>重试</Button>
+        </>
+      ) : (
+        <p className="muted">正在加载{label}…</p>
+      )}
+    </Card>
+  )
+}
+
 /** Explanation for when no questions can be generated: each mode is missing something different, and one generic message would leave people not knowing what to do. */
 const EMPTY_HINT: Record<Exclude<QuizMode, 'sprint' | 'passage' | 'recall' | 'compose'>, string> = {
   mixed: '需要至少 4 个词条才能测试。当前词库还不够,先去添加或多学几个单词吧。',
@@ -341,58 +401,10 @@ function QuizSessionPage({ mode }: { mode: QuizMode }) {
   const { words } = useApp()
   const [session, setSession] = useState(0)
 
-  // The content is only fetched once you actually enter passage mode. It's
-  // static content shipped with the app, split into a separate chunk via
-  // import() so the four everyday modes don't have to download an extra
-  // few dozen KB for it.
-  const [passages, setPassages] = useState<Passage[] | null>(null)
-  useEffect(() => {
-    if (mode !== 'passage' || passages !== null) return
-    let alive = true
-    void import('../data/passages.json').then(m => {
-      if (alive) setPassages((m.default as { passages: Passage[] }).passages)
-    })
-    return () => { alive = false }
-  }, [mode, passages])
-
-  // Sense groups get the same treatment and the same reasoning as passages.
-  // Read by two modes now: 回想 draws questions from them, and 组句 takes
-  // the English sentence a chunk annotation points into.
-  const [groups, setGroups] = useState<SenseGroup[] | null>(null)
-  useEffect(() => {
-    if ((mode !== 'recall' && mode !== 'compose') || groups !== null) return
-    let alive = true
-    void import('../data/senseGroups.json').then(m => {
-      if (alive) setGroups((m.default as { groups: SenseGroup[] }).groups)
-    })
-    return () => { alive = false }
-  }, [mode, groups])
-
-  // 回想's second source, and where 组句 finds the Chinese prompt for an
-  // `ex` annotation. Loaded beside the groups rather than bundled into them:
-  // it is a separate authored file with its own validator.
-  const [sentences, setSentences] = useState<RecallSentence[] | null>(null)
-  useEffect(() => {
-    if ((mode !== 'recall' && mode !== 'compose') || sentences !== null) return
-    let alive = true
-    void import('../data/recallSentences.json').then(m => {
-      if (alive) setSentences((m.default as { sentences: RecallSentence[] }).sentences)
-    })
-    return () => { alive = false }
-  }, [mode, sentences])
-
-  // The chunk boundaries. Its own file for the same reason it is not a field
-  // on recallSentences.json: 回想 loads that file every session and must not
-  // download a mode it does not use.
-  const [annotations, setAnnotations] = useState<ChunkAnnotation[] | null>(null)
-  useEffect(() => {
-    if (mode !== 'compose' || annotations !== null) return
-    let alive = true
-    void import('../data/sentenceChunks.json').then(m => {
-      if (alive) setAnnotations((m.default as { chunks: ChunkAnnotation[] }).chunks)
-    })
-    return () => { alive = false }
-  }, [mode, annotations])
+  const passages = useLazyContent(mode === 'passage', loadPassages)
+  const groups = useLazyContent(mode === 'recall' || mode === 'compose', loadGroups)
+  const sentences = useLazyContent(mode === 'recall' || mode === 'compose', loadSentences)
+  const annotations = useLazyContent(mode === 'compose', loadAnnotations)
 
   const restart = useCallback(() => setSession(s => s + 1), [])
 
@@ -406,38 +418,50 @@ function QuizSessionPage({ mode }: { mode: QuizMode }) {
       {mode === 'sprint' ? (
         <SprintSession key={`sprint-${session}`} words={words} onRestart={restart} />
       ) : mode === 'recall' ? (
-        groups === null || sentences === null ? (
-          <Card className="quiz-empty"><p className="muted">正在加载题组…</p></Card>
+        groups.data === null || sentences.data === null ? (
+          <ContentGate
+            label="题组"
+            failed={groups.failed || sentences.failed}
+            retry={() => { groups.retry(); sentences.retry() }}
+          />
         ) : (
           <RecallSession
             key={`recall-${session}`}
             words={words}
-            groups={groups}
-            sentences={sentences}
+            groups={groups.data}
+            sentences={sentences.data}
             onRestart={restart}
           />
         )
       ) : mode === 'compose' ? (
-        annotations === null || groups === null || sentences === null ? (
-          <Card className="quiz-empty"><p className="muted">正在加载句子…</p></Card>
+        annotations.data === null || groups.data === null || sentences.data === null ? (
+          <ContentGate
+            label="句子"
+            failed={annotations.failed || groups.failed || sentences.failed}
+            retry={() => { annotations.retry(); groups.retry(); sentences.retry() }}
+          />
         ) : (
           <ComposeSession
             key={`compose-${session}`}
             words={words}
-            annotations={annotations}
-            groups={groups}
-            sentences={sentences}
+            annotations={annotations.data}
+            groups={groups.data}
+            sentences={sentences.data}
             onRestart={restart}
           />
         )
       ) : mode === 'passage' ? (
-        passages === null ? (
-          <Card className="quiz-empty"><p className="muted">正在加载短文…</p></Card>
+        passages.data === null ? (
+          <ContentGate
+            label="短文"
+            failed={passages.failed}
+            retry={() => passages.retry()}
+          />
         ) : (
           <PassageSession
             key={`passage-${session}`}
             words={words}
-            passages={passages}
+            passages={passages.data}
             onRestart={restart}
           />
         )
