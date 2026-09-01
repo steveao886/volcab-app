@@ -188,7 +188,7 @@ runs `npm ci`, `npm test`, `npm run lint`, `npm run validate`,
 
 | # | Script | Reads | Enforces (exit 1) | Merely reports |
 |---|---|---|---|---|
-| 1 | `npm run validate-words` | `argv[2] ?? data/words.json` (`validate-words.ts:6`) | id lowercase/no-whitespace + unique `:22-24`; headword `:25`; phonetic `/…/` `:26`; ≥1 meaning with pos/en/zh `:27-29`; per-meaning phonetic shape `:31`; **heteronym needs a per-sense phonetic** `:42-52`; share validity + descending order `:57-61`; **≥2 examples** `:62`; syn/ant/colloc are arrays not containing the headword `:63-66`; relatedForms `:67-70`; sourceNote `:71`; `addedAt` = `YYYY-MM-DD` `:72`; **`usageScore` required, integer 1–10** `:81-85`; etymology shape + ≤60 chars when present `:92-98` | entry count |
+| 1 | `npm run validate-words` | `argv[2] ?? data/words.json` | Every per-word rule lives in **`src/lib/wordValidate.ts`** (since 2026-09-01; its header carries the full rule table and is shared with both entry forms, so a rule you add there blocks in the app too): id lowercase/no-whitespace; headword; phonetic `/…/`; ≥1 meaning with pos/en/zh, blank-after-trim counts as missing; per-meaning phonetic shape and `speakAs` shape; **heteronym needs a per-sense phonetic** and a `speakAs`; share validity + descending order; **≥2 non-blank examples**; syn/ant/colloc are arrays not containing the headword (case-insensitive); relatedForms all-or-nothing; sourceNote; `addedAt` = `YYYY-MM-DD`; **`usageScore` required, integer 1–10**; etymology shape + ≤60 chars when present. The script itself keeps only the two *file*-level rules: `version` and duplicate ids | entry count |
 | 2 | `npm run validate-passages` | `data/words.json` **hardcoded** (`:37`) + `argv[2] ?? src/data/passages.json` (`:40`) | version/shape `:43-45`; id charset + uniqueness `:76-78`; en/zh 1:1 `:82`; malformed marker `:94`; **marker id must exist in the vocabulary** `:102-104`; surface must be an inflection `:106-108`; ≥6 distinct marks `:112`; **answer must not appear as plain text elsewhere** `:121-127` | word coverage `:150-153`; tier-1 distractor pool per passage `:156-165`; article-leak warnings `:168-171` (non-blocking) |
 | 3 | `npm run validate-suggestions` | `argv[2] ?? src/data/suggestions.json` (`:21`); **never reads words.json** | id shape + uniqueness `:37-41`; headword + duplicate-headword `:43-51`; kind enum `:53`; zh/en non-empty `:54-56`; zh must contain Chinese `:59`; usageScore 1–10 `:64`; example 12–30 words `:72`; **`headwordPattern` must locate the headword in its own example** `:73-75` | item count |
 | 4 | `npm run validate-contrast-notes` | `argv[2] ?? src/data/contrastNotes.json` (`:17`) + `data/words.json` **hardcoded** (`:19`) | key must be two ids joined by `\|` `:34`; **key must be sorted** `:38-40`; **both ids must exist in the vocabulary** `:42`; note non-empty `:44`; must contain Chinese `:47`; ≤160 chars `:48` | **coverage over quizzable pairs** `:65-72` — prints the missing keys |
@@ -261,8 +261,8 @@ Second-order cost, easy to miss: 猜词 loses a 2-point clue for that word
 
 ### 4.5 `usageScore` omitted
 
-**Not** silent at the repo gate — `scripts/validate-words.ts:81-85` fails with
-"missing usageScore". But if the entry is pushed straight to `volcab-data`,
+**Not** silent at the repo gate — `usageScore.missing` in `src/lib/wordValidate.ts`
+fails with "missing usageScore". But if the entry is pushed straight to `volcab-data`,
 `isWord` in `src/state/sync.ts:70-80` **does not check `usageScore`**, so it
 loads fine and then sorts last in the new-word queue forever:
 `src/lib/queue.ts:6-14` — "**Unscored doesn't mean high-frequency**, so the
@@ -278,8 +278,12 @@ The headword stays in 待补全 forever, and `checkCapture`
 
 ### 4.7 Heteronym entered with a single phonetic
 
-Blocked at the repo gate (`scripts/validate-words.ts:42-52`) — but only if the
-word reaches `data/words.json`. See 4.1.
+Blocked at the repo gate (`heteronym.phoneticRequired` in
+`src/lib/wordValidate.ts`) and, since 2026-09-01, in both entry forms as well:
+the forms have no per-sense phonetic input, so adding a second part of speech to
+a known heteronym in-app is refused with a message saying the fix has to happen
+in the word data. A word pushed straight to `volcab-data` still bypasses both.
+See 4.1.
 
 ---
 

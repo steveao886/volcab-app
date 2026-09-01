@@ -22,11 +22,13 @@ A vocabulary-learning PWA: SM-2 spaced repetition + four quiz modes + word-list 
 
 ⚠️ **`data/words.json` (in the app repo) is not the live word list.** It only feeds dev-mode demo data and two full-list regression tests; the app at runtime reads the copy in `volcab-data`. The two **have diverged before**: the user deleted 5 words in the app, and that only got written to `volcab-data` — the repo copy stayed frozen at the original 476-word import snapshot, and the drift went unnoticed for months (the demo data having 5 extra words throws no error).
 
-For list-wide bulk edits (backfilling fields, filling in data), **pull the current state of `volcab-data` and diff against it before making changes**:
+For list-wide bulk edits (backfilling fields, filling in data), **diff the repo copy against the live `volcab-data` before making changes**:
 
 ```bash
-gh api repos/steveao886/volcab-data/contents/words.json -H "Accept: application/vnd.github.raw" > /tmp/live.json
+npm run check-live
 ```
+
+It exits 1 on any difference (ids in either direction, or an entry whose content differs). `npm run check-live -- --write` realigns the repo copy to the live file using the app's own serialiser. Since 2026-09-01 this replaces the hand-typed `gh api … > /tmp/live.json` step; six of the 29 commits to `data/words.json` before it were repairs of drift nobody had noticed.
 
 Then **apply the change on top of the live copy, rather than overwriting it with the local copy** — the latter would resurrect words the user had deleted. This is exactly the failure condition noted in the word-entry spec for "overwrite the list directly, invalid if the user has already modified the list in-app" — and it really did trigger once.
 
