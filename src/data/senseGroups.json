@@ -723,11 +723,10 @@
       ],
       "extra": [
         "hostility",
-        "resentment",
         "enmity"
       ],
       "en": "The animosity between them ran deep enough that meetings had to seat them apart.",
-      "why": "animosity 是积累已久、指向具体某人的强烈反感;hostility 更外显,是摆在明面上的对立姿态;resentment 是因受委屈而生的怨,未必对抗;enmity 最正式,近乎世仇。"
+      "why": "animosity 是积累已久、指向具体某人的强烈反感;hostility 更外显,是摆在明面上的对立姿态;enmity 最正式,近乎世仇。"
     },
     {
       "zh": "审计报告里那条附带的告诫比结论本身更要紧。",
@@ -821,11 +820,10 @@
       ],
       "extra": [
         "complaint",
-        "gripe",
-        "resentment"
+        "gripe"
       ],
       "en": "He put three years of grievances into a single formal filing.",
-      "why": "grievance 是自认受了不公而产生的不满,可正式提交;complaint 泛指任何抱怨,轻重不限;gripe 是嘟囔式的小牢骚,口语;resentment 是憋在心里的怨,不指向具体诉求。"
+      "why": "grievance 是自认受了不公而产生的不满,可正式提交;complaint 泛指任何抱怨,轻重不限;gripe 是嘟囔式的小牢骚,口语。"
     },
     {
       "zh": "服务器崩溃迫在眉睫,运维在凌晨两点被叫醒。",
@@ -1603,12 +1601,11 @@
         "thwart"
       ],
       "extra": [
-        "foil",
         "derail",
         "scupper"
       ],
       "en": "A sudden downpour thwarted their moving plans.",
-      "why": "thwart 指在对方就要得手时把它拦下,宾语多是计划、企图;foil 意思接近,更多用于挫败阴谋;derail 强调让原本在轨道上的进程脱轨;scupper 是英式口语,指彻底搞砸。"
+      "why": "thwart 指在对方就要得手时把它拦下,宾语多是计划、企图;derail 强调让原本在轨道上的进程脱轨;scupper 是英式口语,指彻底搞砸。"
     },
     {
       "zh": "他们单方面改了条款,事先没跟任何合作方商量。",
@@ -2204,12 +2201,11 @@
         "indignant"
       ],
       "extra": [
-        "affronted",
         "aggrieved",
         "irate"
       ],
       "en": "She stood up, indignant at what had just been said.",
-      "why": "indignant 指因遭遇不公而生的正当愤怒,自认理直;affronted 强调觉得被当众冒犯;aggrieved 侧重觉得自己受了委屈,常用于正式申诉;irate 只讲怒气之盛,不含是非判断。"
+      "why": "indignant 指因遭遇不公而生的正当愤怒,自认理直;aggrieved 侧重觉得自己受了委屈,常用于正式申诉;irate 只讲怒气之盛,不含是非判断。"
     },
     {
       "zh": "没有任何流程是万无一失的,双签也不例外。",
@@ -3421,11 +3417,10 @@
         "prominence"
       ],
       "extra": [
-        "standing",
-        "renown"
+        "standing"
       ],
       "en": "His eminence in the field took decades to build.",
-      "why": "eminence 指因成就而获得的崇高地位,带敬意,正式;prominence 只说显眼、受关注,未必受尊敬;standing 强调在群体中的位置与声誉;renown 侧重名声传得广。"
+      "why": "eminence 指因成就而获得的崇高地位,带敬意,正式;prominence 只说显眼、受关注,未必受尊敬;standing 强调在群体中的位置与声誉。"
     },
     {
       "zh": "接连三次交付失败,暴露的是管理上的无能。",
