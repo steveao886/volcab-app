@@ -19,6 +19,7 @@
     "validate-recall-sentences": "tsx scripts/validate-recall-sentences.ts",
     "validate-sentence-chunks": "tsx scripts/validate-sentence-chunks.ts",
     "validate": "npm run validate-words && npm run validate-passages && npm run validate-suggestions && npm run validate-contrast-notes && npm run validate-word-notes && npm run validate-sense-groups && npm run validate-recall-sentences && npm run validate-sentence-chunks",
+    "check-live": "tsx scripts/check-live.ts",
     "chunk-worksheet": "tsx scripts/chunk-worksheet.ts"
   },
   "dependencies": {

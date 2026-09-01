@@ -229,6 +229,10 @@ exists with no note. Missing content is safe; dangling content is not.
   > "the repo copy stayed frozen at the original 476-word import snapshot, and
   > the drift went unnoticed for months (the demo data having 5 extra words
   > throws no error)."
+- Detect it with `npm run check-live`; when the live file is confirmed the
+  side to trust (no repo-only additions still pending a push), repair with
+  `npm run check-live -- --write`, which overwrites the repo copy from the
+  live file byte-for-byte.
 
 ### 4.2 Word added to repo copy only, never pushed to `volcab-data`
 
@@ -345,18 +349,26 @@ Steps marked **[BATCH]** should be done once for the whole batch, not per word.
 
 ### Phase D — the live library
 
-12. Pull the live copy fresh and **apply the additions on top of it** — never
-    overwrite it with the repo copy (`docs/superpowers/HANDOFF.md:25-31`):
+12. Pull the live copy and diff it against the repo copy:
     ```bash
-    gh api repos/steveao886/volcab-data/contents/words.json \
-      -H "Accept: application/vnd.github.raw" > /tmp/live.json
+    npm run check-live
     ```
+    It reports `only live` / `only repo` id sets and any entries whose
+    content differs, and exits 1 on any difference. The words just promoted
+    into the repo copy are expected under `only repo` until they are also
+    pushed to `volcab-data` — **apply them on top of the live copy, never
+    overwrite it with the repo copy** (`docs/superpowers/HANDOFF.md:25-31`).
+    `npm run check-live -- --write` runs the opposite direction — it
+    overwrites the *repo* copy from the *live* file — so it is **not** the
+    tool for pushing these additions; it is the repair for §4.1 below (repo
+    copy has drifted stale and the live file is the side to trust).
     > "**apply the change on top of the live copy, rather than overwriting it
     > with the local copy** — the latter would resurrect words the user had
     > deleted … and it really did trigger once."
 13. Remove **exactly the promoted entries** from `staging.json`, matched by
     headword.
-14. Verify the repo copy and the live copy now agree on the added ids.
+14. Verify the repo copy and the live copy now agree on the added ids:
+    `npm run check-live` again, expect exit 0.
 
 ### Phase E — ship
 

@@ -51,10 +51,13 @@ yourself.
    scenario from a member's real example sentence; **if no sentence makes
    one member clearly best, skip the group** — an arguable key is worse
    than no question.
-6. **Live library**: pull `volcab-data/words.json` fresh, apply additions on
-   top (never overwrite — resurrecting deleted words is a real recorded
-   failure, commit `f53adb9`), trim promoted entries from `staging.json` by
-   headword.
+6. **Live library**: `npm run check-live` to pull and diff against the repo
+   copy, apply additions on top of the live file (never overwrite it with
+   the repo copy — resurrecting deleted words is a real recorded failure,
+   commit `f53adb9`), trim promoted entries from `staging.json` by headword,
+   then `npm run check-live` again to confirm the two agree. (`--write` runs
+   the opposite direction — repo copy from live — and is the repair for a
+   stale repo copy, not for pushing new additions.)
 7. **Ship**: `npm test && npm run build && npx oxlint`, commit the word list
    and its notes together — they are one change.
 
