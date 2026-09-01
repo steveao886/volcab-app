@@ -7,7 +7,7 @@ import { demoteWord, gradeWord, todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
 import { emptyProgress, emptyStat } from '../types'
 import type { DailyStat, Grade, Progress, ProgressEntry, RecallRating, StagingItem, Word } from '../types'
-import { classifySyncFailure, friendlyError, httpStatus, logoutDiscarded, ownerSwitched } from './errors'
+import { classifySyncFailure, friendlyError, httpStatus, logoutDiscarded, ownerSwitched, STORAGE_FULL } from './errors'
 import {
   appendPendingOp, appendPendingStaging, bootSnapshot, cachedProgress, carryOverFor,
   pendingOps, pendingStaging, setPendingOps, setPendingStaging,
@@ -149,6 +149,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const stagingRerunRef = useRef(false)
   const sessionRef = useRef(0)               // incremented on login/logout: in-flight responses are invalidated against this
   const bootedRef = useRef(false)
+  // localStorage refused the last progress write. Remembered outside state
+  // so markSettled can tell "the last failure's explanation" (cleared by the
+  // next successful push) from "this device is full" (which a push cannot
+  // fix). Reset by the next progress write that succeeds.
+  const storageFullRef = useRef(false)
 
   const update = useCallback((patch: Partial<AppState>) => {
     stateRef.current = { ...stateRef.current, ...patch }
@@ -167,9 +172,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return owing ? 'pending' : 'synced'
   }, [])
 
-  /** Cleanup after a successful push: settle status, and clear whatever explanation the last failure left behind */
+  /** Cleanup after a successful push: settle status, and clear whatever explanation the last failure left behind -- unless the device is still full, which a push cannot fix */
   const markSettled = useCallback(() => {
-    update({ syncStatus: settleStatus(), syncError: null })
+    update({ syncStatus: settleStatus(), syncError: storageFullRef.current ? STORAGE_FULL : null })
   }, [settleStatus, update])
 
   const clearTimer = useCallback(() => {
@@ -179,14 +184,39 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  /** In demo mode, the vocabulary is read fresh from the repo every time and never persisted, so we don't leave a stale 500KB copy sitting around locally */
-  const cacheWords = useCallback((words: Word[]) => {
-    if (!demoRef.current) storage.set('words', words)
+  /**
+   * The one localStorage write that is data rather than bookkeeping, so it is
+   * the one whose result is read. Measured 2026-09-01: words + progress sit
+   * at 977,624 UTF-16 code units, ~37% of WebKit's 5 MiB quota. A refused
+   * write is not an error to throw -- the copy in memory is intact and the
+   * next push carries it -- it is a condition to report, via the ref above.
+   */
+  const cacheProgress = useCallback((progress: Progress): boolean => {
+    const persisted = storage.set('progress', progress)
+    storageFullRef.current = !persisted
+    return persisted
   }, [])
 
+  /** In demo mode, the vocabulary is read fresh from the repo every time and never persisted, so we don't leave a stale 500KB copy sitting around locally */
+  const cacheWords = useCallback((words: Word[]) => {
+    if (demoRef.current) return
+    // Words are 86% of the footprint (840,626 of the 977,624 code units
+    // above), so this is the write most likely to be the first refused. The
+    // network copy is authoritative and nothing is lost; the ref is set so
+    // the notice reaches the page through markSettled as well as here.
+    if (!storage.set('words', words)) {
+      storageFullRef.current = true
+      update({ syncError: STORAGE_FULL })
+    }
+  }, [update])
+
   const cacheStaging = useCallback((items: StagingItem[]) => {
-    if (!demoRef.current) storage.set('staging', items)
-  }, [])
+    if (demoRef.current) return
+    if (!storage.set('staging', items)) {
+      storageFullRef.current = true
+      update({ syncError: STORAGE_FULL })
+    }
+  }, [update])
 
   const toLogin = useCallback((loginError: string, clearToken: boolean) => {
     clearTimer()
@@ -236,7 +266,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
         const next = reconcileProgress(stateRef.current.progress, out.data)
         if (next !== stateRef.current.progress) {
-          storage.set('progress', next)
+          cacheProgress(next)
           update({ progress: next })
         }
         markSettled()
@@ -245,7 +275,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } finally {
       pushingRef.current = false
     }
-  }, [clearTimer, failSync, markSettled, settleStatus, update])
+  }, [cacheProgress, clearTimer, failSync, markSettled, settleStatus, update])
 
   const schedulePush = useCallback(() => {
     if (demoRef.current || !clientRef.current) return
@@ -352,10 +382,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   /** Persist locally + mark dirty + refresh state; push timing (debounced / immediate) is up to the caller */
   const commitProgress = useCallback((progress: Progress) => {
-    storage.set('progress', progress)
+    // The small flag is written before the large payload on purpose:
+    // replacing an existing 4-byte value never grows the store, so when the
+    // payload write below fails on quota, `dirty` has already landed and
+    // flushProgress still pushes the in-memory copy. That ordering is what
+    // turns "quota reached" into "this device cannot cache" rather than
+    // "this grade never happened".
     if (!demoRef.current) storage.set('dirty', true)   // demo mode never owes the remote anything
-    update({ progress, syncStatus: settleStatus() })
-  }, [settleStatus, update])
+    const persisted = cacheProgress(progress)
+    update({
+      progress,
+      syncStatus: settleStatus(),
+      ...(persisted ? {} : { syncError: STORAGE_FULL }),
+    })
+  }, [cacheProgress, settleStatus, update])
 
   // --- Session --------------------------------------------------------------
 
@@ -431,9 +471,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       storage.set('token', token)
       storage.set('owner', owner)
-      storage.set('words', words)
+      // The two payload writes may be refused on a full device, and that
+      // must not fail the login: the data is in memory and the network copy
+      // is authoritative. Before storage.set caught the quota error, this
+      // was where a fresh phone at the limit died -- the raw exception text
+      // became the login error, on a token that was perfectly valid.
+      const wordsCached = storage.set('words', words)
       storage.set('wordsSha', wf.sha)
-      storage.set('progress', progress)
+      const progressCached = storage.set('progress', progress)
+      storageFullRef.current = !(wordsCached && progressCached)
       storage.set('staging', staging)
       if (progressSha) storage.set('progressSha', progressSha)
       else storage.remove('progressSha')
@@ -450,10 +496,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // Whatever discard notice was left by the last logout ends here — the
       // two never stack, and never overwrite each other, since the latter
       // is only produced at this instant and the former only lives until
-      // the next successful login.
+      // the next successful login. A full device ranks below the discard
+      // notice: that one is said exactly once, while STORAGE_FULL comes
+      // back on the next grade regardless.
       update({
         phase: 'ready', owner, words, progress, staging, loginError: null,
-        syncError: carry.discardedOwner ? ownerSwitched(carry.discardedOwner) : null,
+        syncError: carry.discardedOwner
+          ? ownerSwitched(carry.discardedOwner)
+          : storageFullRef.current ? STORAGE_FULL : null,
         syncStatus: settleStatus(),
       })
       if (carry.ops.length > 0) await flushWords()
@@ -488,6 +538,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     pushingRef.current = false      // in case a request gets stuck and never returns, don't let the mutex block the next login's push too
     wordsPushingRef.current = false
     stagingPushingRef.current = false
+    storageFullRef.current = false  // clearAll below frees the space; the next login measures afresh
     storage.clearAll()
     // "What got discarded" is a data notice, not a login failure: it goes
     // through syncError, shown by the login page's neutral notice area.
@@ -552,8 +603,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (sf) storage.set('stagingSha', sf.sha)
       cacheStaging(staging)
 
-      storage.set('progress', progress)
-      update({ phase: 'ready', owner, words, progress, staging, loginError: null })
+      const persisted = cacheProgress(progress)
+      update({
+        phase: 'ready', owner, words, progress, staging, loginError: null,
+        ...(persisted ? {} : { syncError: STORAGE_FULL }),
+      })
 
       if (pendingOps().length > 0) await flushWords()
       if (pendingStaging().length > 0) await flushStaging()
@@ -570,7 +624,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       toLogin(friendlyError(e), false)
     }
   }, [
-    cacheStaging, cacheWords, enterDemoMode, flushProgress, flushStaging, flushWords,
+    cacheProgress, cacheStaging, cacheWords, enterDemoMode, flushProgress, flushStaging, flushWords,
     settleStatus, toLogin, update,
   ])
 

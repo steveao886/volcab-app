@@ -62,8 +62,25 @@ export const storage = {
     if (raw == null) return null
     try { return JSON.parse(raw) as T } catch { return null }
   },
-  set(key: StorageKey, value: unknown): void {
-    localStorage.setItem(KEYS[key], JSON.stringify(value))
+  /**
+   * Returns false instead of throwing when the browser refuses the write.
+   * localStorage is the nearest hard ceiling this app has: measured
+   * 2026-09-01, the words + progress caches sit at 977,624 UTF-16 code
+   * units, about 37% of WebKit's 5 MiB quota, and grow ~1,400 per word. The
+   * old `void` signature let a QuotaExceededError escape from inside a click
+   * handler, so at the limit every grade was lost before setState ran.
+   *
+   * Most callers ignore the result on purpose: recency lists, drill markers
+   * and the pending-op queues are conveniences whose loss costs a repeat.
+   * The store checks it for `progress`, the one write that is data.
+   */
+  set(key: StorageKey, value: unknown): boolean {
+    try {
+      localStorage.setItem(KEYS[key], JSON.stringify(value))
+      return true
+    } catch {
+      return false
+    }
   },
   remove(key: StorageKey): void {
     localStorage.removeItem(KEYS[key])

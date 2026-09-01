@@ -4,7 +4,7 @@ import type { Root } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { AppProvider, useApp } from './store'
 import type { AppContextValue } from './store'
-import { FORBIDDEN, RATE_LIMITED, TOKEN_REVOKED, logoutDiscarded, ownerSwitched } from './errors'
+import { FORBIDDEN, RATE_LIMITED, STORAGE_FULL, TOKEN_REVOKED, logoutDiscarded, ownerSwitched } from './errors'
 import { pendingOps, pendingStaging } from './session'
 import type { SyncClient } from './sync'
 import { GitHubClient } from '../lib/github'
@@ -797,6 +797,85 @@ describe('login: handling this device\'s debt', () => {
     expect(storage.get('progressSha')).toBe('progress.json#1')
     expect(app().phase).toBe('ready')
     expect(app().syncStatus).toBe('synced')
+  })
+})
+
+// === 9. A full device ===========================================================
+// localStorage is the nearest hard ceiling this app has (measured 2026-09-01:
+// the words + progress caches at 977,624 UTF-16 code units, ~37% of WebKit's
+// 5 MiB, growing ~1,400 per word -- about 1,900 words on an iPhone). Before
+// storage.set caught the QuotaExceededError, commitProgress threw inside the
+// click handler *before* setState, so at the limit every grade simply
+// vanished, and login on a fresh device failed on the words-cache write with
+// the raw exception as the error text. The contract now: the device cannot
+// cache, the cloud still gets everything, and the user is told.
+
+/**
+ * Makes setItem refuse exactly the keys named and lets every other write
+ * through; returns the function that undoes it. Patched with defineProperty
+ * on the instance because happy-dom's Storage proxy binds each method onto
+ * the target on first access and caches it, so neither a prototype patch
+ * nor a plain instance assignment is ever seen once a test has written.
+ */
+function refuseWrites(keys: string[]): () => void {
+  const original = localStorage.setItem
+  const refuse = (key: string, value: string) => {
+    if (keys.includes(key)) { const e = new Error('quota'); e.name = 'QuotaExceededError'; throw e }
+    original(key, value)
+  }
+  Object.defineProperty(localStorage, 'setItem', { value: refuse, configurable: true, writable: true })
+  return () => Object.defineProperty(localStorage, 'setItem', { value: original, configurable: true, writable: true })
+}
+
+describe('storage full', () => {
+  it('a grade the device cannot cache is kept in memory, reported, and still pushed to the cloud', async () => {
+    await bootAsAlice()
+    const restore = refuseWrites(['volcab.progress'])
+    try {
+      await step(() => { app().grade('alpha', 'good') })
+      expect(app().progress.words['alpha']).toBeDefined()   // the grade is not lost
+      expect(app().syncError).toBe(STORAGE_FULL)
+      expect(storage.get('dirty')).toBe(true)               // the small flag landed, so flushProgress still runs
+      expect(storage.get<Progress>('progress')?.words['alpha']).toBeUndefined()   // the cache is the stale boot-time copy: the payload write really was refused
+
+      // No fake timers anywhere in this file, so the 30 s debounce is stood
+      // in for by syncNow, exactly as every other push test here does.
+      await step(() => { void app().syncNow() })
+      const puts = remote.putsTo('progress.json')
+      expect(puts).toHaveLength(1)
+      expect((JSON.parse(puts[0].content) as Progress).words['alpha']).toBeDefined()
+      // The push succeeded, but a push cannot make room on the device: the
+      // notice must survive markSettled rather than be cleared as "the last
+      // failure's explanation".
+      expect(app().syncError).toBe(STORAGE_FULL)
+      expect(app().syncStatus).toBe('synced')
+    } finally {
+      restore()
+    }
+
+    await step(() => { app().grade('beta', 'good') })
+    await step(() => { void app().syncNow() })
+    expect(storage.get<Progress>('progress')?.words['beta']).toBeDefined()
+    expect(app().syncError).toBeNull()                      // room again: the notice goes away on its own
+    expect(app().syncStatus).toBe('synced')
+  })
+
+  it('login on a full device still succeeds -- the network copy is authoritative, the cache is a convenience', async () => {
+    remote.files['words.json'] = { content: wordsFile(['alpha']), sha: 'w-remote' }
+    remote.files['progress.json'] = { content: JSON.stringify(emptyProgress()), sha: 'p-remote' }
+    await mount()
+    const restore = refuseWrites(['volcab.words', 'volcab.progress'])
+    try {
+      await act(async () => { await app().login('tok-alice') })
+      await flush()
+    } finally {
+      restore()
+    }
+    expect(app().phase).toBe('ready')
+    expect(app().loginError).toBeNull()
+    expect(ids(app().words)).toEqual(['alpha'])
+    expect(storage.get('token')).toBe('tok-alice')          // the small writes went through
+    expect(app().syncError).toBe(STORAGE_FULL)
   })
 })
 

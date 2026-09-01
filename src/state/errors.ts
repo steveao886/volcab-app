@@ -26,6 +26,17 @@ export const TOKEN_REVOKED = '登录信息已失效或被撤销,请重新粘贴�
 
 export const NETWORK = '网络请求失败,请检查网络后重试。'
 
+/**
+ * localStorage refused a write. Not a sync failure in the usual sense -- the
+ * cloud copy is fine and keeps receiving pushes -- but it travels through
+ * syncError because that is the one channel a ready-phase page shows a
+ * sentence in. Measured 2026-09-01: the caches sit at 977,624 UTF-16 code
+ * units, ~37% of WebKit's 5 MiB quota, so this is the notice the user would
+ * have met within the year had storage.set kept throwing.
+ */
+export const STORAGE_FULL =
+  '本机存储空间已满,学习记录暂时只保存在内存里并直接同步到云端;请尽快到设置页导出备份。'
+
 export const ownerSwitched = (previousOwner: string) =>
   `本机上 ${previousOwner} 还有没同步完的改动,换账号登录后已被丢弃。`
 
