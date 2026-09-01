@@ -14,10 +14,11 @@ Core loops: spaced-repetition review (`/review`), quizzes in several modes (`/qu
 |---|---|
 | `npm test` | vitest, single run |
 | `npx vitest run src/lib/foo.test.ts` | one file |
-| `npm run build` | `tsc -b && vite build` — run this, not `tsc` alone |
-| `npx oxlint` | lint |
-| `npm run validate-words` | gate for `data/words.json` |
-| `npm run validate-passages` | gate for `src/data/passages.json` |
+| `npm run build` | `tsc -b && vite build` — run this, not `tsc` alone (`-b` also type-checks `scripts/`) |
+| `npm run lint` | oxlint; runs in CI |
+| `npm run validate` | all eight `validate-*` content gates in one go; runs in CI |
+| `npm run validate-words` | gate for `data/words.json`; the per-word rules live in `src/lib/wordValidate.ts`, shared with both entry forms |
+| `npm run check-live` | diff `data/words.json` against the live `volcab-data` copy through `gh`; `-- --write` realigns the repo copy |
 
 **Never start the dev server with a shell command.** Use the browser preview tooling (`preview_start` with the `volcab-dev` config in `.claude/launch.json`), then drive and verify the page with the same toolset.
 
@@ -40,13 +41,15 @@ When editing a file that mixes them, translate the comment and leave the string 
 
 Everything under `src/state/` that touches sync is **data-safety logic, not wiring** — per-path mutexes, catch-up flags, session-invalidation checks, and reconciling a server response against local state *at the moment it returns*. `store.test.tsx` is the one file in the repo allowed to have component tests, and its header explains why. Read that header before changing anything there.
 
-`words.json` is **989 KB** (2026-08-22, 619 words, ~1,635 bytes each) and crosses 1 MiB during the next word batch. **That crossing is a non-event and was measured, so don't re-panic about it**: 1 MiB governs only whether the JSON media type returns `content`, and `getFile` asks for `application/vnd.github.raw` (100 MB). The write path is not capped there either — a 40 MB file writes fine, ~24,000 words away. **Still do not add bulk to it**: the real ceiling is between 40 MB and 46 MB, GitHub documents no write limit at all, and above it `putFile` gets a 422 that used to be indistinguishable from a merge conflict. See `docs/superpowers/specs/2026-08-22-contents-api-size-limits-design.md`.
+`words.json` is **989 KB** (2026-08-22, 619 words, ~1,635 bytes each) and crosses 1 MiB during the next word batch. **That crossing is a non-event and was measured, so don't re-panic about it**: 1 MiB governs only whether the JSON media type returns `content`, and `getFile` asks for `application/vnd.github.raw` (100 MB). The write path is not capped there either — a 40 MB file writes fine, ~24,000 words away. **Still do not add bulk to it**: GitHub's ceiling is between 40 MB and 46 MB, GitHub documents no write limit at all, and above it `putFile` gets a 422 that used to be indistinguishable from a merge conflict. See `docs/superpowers/specs/2026-08-22-contents-api-size-limits-design.md`.
+
+**The nearer ceiling was localStorage, and nobody had measured it** until 2026-09-01: the words and progress caches sat at 977,624 UTF-16 code units, about 37% of WebKit's 5 MiB quota, roughly 1,900 words away at that month's pace. The words cache now lives in IndexedDB (`src/lib/wordsCache.ts`, async, falls back to memory when IndexedDB is unavailable); progress stays in localStorage and reaches the same quota around 12,000 words. `storage.set` returns `false` instead of throwing, and the store reports `STORAGE_FULL` through `syncError`. Boot reads each synced file with `If-None-Match` when it holds both a cache and a sha, and a 304 keeps the local copy. See `docs/superpowers/specs/2026-09-01-architecture-hardening-design.md`.
 
 ### Bundled content is not synced data
 
 `src/data/passages.json` ships inside the app bundle. It is read-only content the user never edits, so it does not belong in the sync schema and its types live in `src/lib/passage.ts`, deliberately not in `src/types.ts`. `src/types.ts` is the *synced* data model.
 
-`data/words.json` and `data/wordlist.json` at the repo root are copies used by the scripts. **They have diverged from the live library before** (see commit `f53adb9`). The live library is authoritative; code that reads a word by id must tolerate the id not existing.
+`data/words.json` and `data/wordlist.json` at the repo root are copies used by the scripts. **They have diverged from the live library before**: six of the first 29 commits to `data/words.json` were repairs of drift found by eye (`f53adb9` was the first). `npm run check-live` is that diff as one command; run it before any content work. The live library is authoritative; code that reads a word by id must tolerate the id not existing.
 
 ### Routing
 

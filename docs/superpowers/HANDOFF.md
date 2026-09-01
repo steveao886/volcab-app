@@ -37,8 +37,10 @@ Auth is a GitHub fine-grained PAT scoped to read/write on `volcab-data` Contents
 ## Verification commands (should all be green)
 
 ```bash
-npm test && npx tsc -b --noEmit && npm run build && npx oxlint && npm run validate-words
+npm test && npm run build && npm run lint && npm run validate && npm run check-live
 ```
+
+(`npm run build` runs `tsc -b`, which since 2026-09-01 also type-checks `scripts/`; `lint` and `validate` run in CI, `check-live` needs the authenticated `gh` and does not.)
 
 **To see the design system**: `npm run dev` → `#/dev` (dev mode only) — every state of every component is on that one page.
 **To see the UI without a real token**: the "Demo mode (dev only)" button at the bottom of the login page loads the local 476-word list with no network connection. Absent from the production build (verified: zero hits in `dist`).
@@ -450,3 +452,50 @@ prefix.** Both the answer-leak check and the distractor gate first used
 "shares the first N characters", which flagged `interceded` against `intern,`.
 Requiring one string to be a *prefix* of the other, with a bounded length gap,
 separates inflections from words that merely open the same way.
+
+## Architecture hardening round (2026-09-01)
+
+An architecture review (three read-only sweeps plus direct measurement) turned
+into eleven fixes, run as four parallel subagents on four different models in
+separate worktrees. Spec and plan: `docs/superpowers/specs/2026-09-01-architecture-hardening-design.md`,
+`docs/superpowers/plans/2026-09-01-architecture-hardening.md`.
+
+**The nearest ceiling is the one nobody measured.** The 08-22 size spec
+established GitHub's 40 MB write limit (~24,000 words) and CLAUDE.md called it
+"the real ceiling". localStorage was at 37% of WebKit's 5 MiB quota, about
+1,900 words away, and `storage.set` did not catch. A size analysis that names
+one limit is not finished until it names the next one too. The words cache is
+now in IndexedDB; the phone's actual quota is still unmeasured (the embedded
+browser here accepted 38 MiB without error, so it is not representative).
+
+**Two commits the review found by accident, both one-liners:** `antonym.ts`
+carried a raw NUL byte and git had treated the file as binary since `2d0a1de`
+(no diff, no blame); `--strict` compiled clean and was simply not on.
+
+**`If-None-Match` works against the raw media type** and passes the CORS
+preflight; measured before the design was written, which is the order to do it
+in. A resume-time pull is now cheap and is the obvious next spec.
+
+**happy-dom's `Storage` is a Proxy that caches bound methods.** A
+`Storage.prototype.setItem` patch made after any write is inert, and a plain
+instance assignment is swallowed by the proxy's `set` trap. Patch with
+`Object.defineProperty` on the instance (see `refuseWrites` in `store.test.tsx`).
+
+**Worktrees were checked out from a stale base again**, four commits behind,
+without `strict`. Tell every agent to `git merge master --no-edit` before its
+first commit; it was in the 08-07 notes above and still bit.
+
+**Subagents survive an account rate limit.** All three long-running agents were
+killed mid-task by a 429 on the account's session limit; their worktrees kept
+every uncommitted edit, and a `SendMessage` naming the exact stopping point
+resumed each with its context intact. Nothing was redone.
+
+**Cherry-pick, don't merge.** Each agent had merged master into its branch, so
+a `git merge` back would have put four merge commits in a history that has none.
+`git cherry-pick $(git rev-list --no-merges --reverse master..<branch>)` kept it
+linear and conflict-free because file ownership was disjoint by plan.
+
+**One behaviour change to know about:** both entry forms now run the same
+validator as the repo gate, including the heteronym rules, and neither form has
+a per-sense phonetic input. Adding a second part of speech to a known heteronym
+in-app is refused with a message saying the fix belongs in the word data.
