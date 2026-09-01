@@ -181,9 +181,10 @@ contrastNotes.
 
 ## 3. Every validation gate
 
-Five npm scripts (`package.json:12-16`). **None of them runs in CI** —
-`.github/workflows/deploy.yml:48-50` runs only `npm ci`, `npm test`,
-`npm run build`. These are manual gates.
+Eight npm scripts, chained by `npm run validate` (`package.json:11-21`), plus
+`npm run lint` (`oxlint`). Both run in CI: `.github/workflows/deploy.yml`
+runs `npm ci`, `npm test`, `npm run lint`, `npm run validate`,
+`npm run build`, in that order, on every push to `master`.
 
 | # | Script | Reads | Enforces (exit 1) | Merely reports |
 |---|---|---|---|---|
@@ -192,15 +193,18 @@ Five npm scripts (`package.json:12-16`). **None of them runs in CI** —
 | 3 | `npm run validate-suggestions` | `argv[2] ?? src/data/suggestions.json` (`:21`); **never reads words.json** | id shape + uniqueness `:37-41`; headword + duplicate-headword `:43-51`; kind enum `:53`; zh/en non-empty `:54-56`; zh must contain Chinese `:59`; usageScore 1–10 `:64`; example 12–30 words `:72`; **`headwordPattern` must locate the headword in its own example** `:73-75` | item count |
 | 4 | `npm run validate-contrast-notes` | `argv[2] ?? src/data/contrastNotes.json` (`:17`) + `data/words.json` **hardcoded** (`:19`) | key must be two ids joined by `\|` `:34`; **key must be sorted** `:38-40`; **both ids must exist in the vocabulary** `:42`; note non-empty `:44`; must contain Chinese `:47`; ≤160 chars `:48` | **coverage over quizzable pairs** `:65-72` — prints the missing keys |
 | 5 | `npm run validate-word-notes` | `argv[2] ?? src/data/wordNotes.json` (`:15`) + `data/words.json` **hardcoded** (`:17`) | **id must exist in the vocabulary** `:50-52`; note non-empty `:54`; must contain Chinese `:58`; ≤80 chars `:59`; **must not name another library headword** `:79-90` | **coverage over confusable words** `:98-108` |
+| 6 | `npm run validate-sense-groups` | `argv[2] ?? src/data/senseGroups.json` (`:31`) + `data/words.json` **hardcoded** (`:33`) | `zh` non-empty, ≤40 chars, must contain Chinese, **zero Latin letters allowed** `:75-81`; `zh` unique `:83-84`; `target` non-empty, ≤16 chars, no Latin, must locate exactly once in `zh` `:92-101`; `order` 1–4 unique ids, all in the vocabulary, same POS `:103-114`; `sense` in range when present `:121-128`; `extra` entries not library words, not English-less, no duplicates, no overlap with `order` `:134-156`; ≥3 authored options between `order` and `extra` `:161-163`; member set unique across groups `:165-167`; `why` non-empty and Chinese `:169-170`; `en` non-empty, ≤160 chars, no Chinese, **must contain the answer and must not contain a losing member or a distractor** `:175-202` | coverage over words `:214-215`; long-target tail over 5 chars `:227-234` |
+| 7 | `npm run validate-recall-sentences` | `argv[2] ?? src/data/recallSentences.json` (`:18`) + `data/words.json` **hardcoded** (`:20`) | **id must exist in the vocabulary** `:54`; `i` in range of that word's examples `:56-59`; `id#i` unique `:61-63`; `zh` non-empty, must contain Chinese, **zero Latin letters allowed** `:65-70`; `target` non-empty, ≤16 chars, no Latin, must locate exactly once in `zh` `:72-79` | coverage over words `:88-89`; long-target tail over 6 chars `:98-106` |
+| 8 | `npm run validate-sentence-chunks` | `argv[2] ?? src/data/sentenceChunks.json` (`:18`) + `data/words.json`, `src/data/senseGroups.json`, `src/data/recallSentences.json`, all **hardcoded** (`:20-31`) | `src` is `ex` or `sg` `:63`; `(src, id, i)` unique `:64-69`; **`ex` entries need a Chinese rendering in recallSentences.json** `:83-88`; **`sg` entries must blank the group's `order[0]`, never a ranked alternative** `:90-97`; `cuts` strictly increasing, in range, chunk floor per `src` `:103-118`; no chunk over 8 tokens `:120-126`; `blank` in range, `answer` matches the blanked token and looks like a form of `id` `:128-145`; **no other token in the sentence may be an inflection of the answer** `:146-165` | coverage over words `:174-177`; single-sentence-word tail `:187-190` |
 
-Plus a sixth, non-npm gate: **`npm test`** runs two full-library regression
+Plus a ninth, non-npm gate: **`npm test`** runs two full-library regression
 tests in `src/lib/headword.test.ts:81-118` against `data/words.json` —
 "every word has at least one example sentence where it can be located" and
 "no word is mismarked across the full library". `src/state/sync.test.ts:411`
 also parses the whole repo copy through `parseWords`.
 
-**Note the asymmetry**: the three coverage validators (2, 4, 5) *hard-fail* on
-a key pointing at a word that doesn't exist, but only *report* a word that
+**Note the asymmetry**: the coverage validators (2, 4, 5, 6, 7, 8) *hard-fail*
+on a key pointing at a word that doesn't exist, but only *report* a word that
 exists with no note. Missing content is safe; dangling content is not.
 
 ---
@@ -454,14 +458,12 @@ all three groups were deleted. It also moved a pinned full-library count:
 
 ```bash
 cd C:/Users/gaosi/repos/volcab
-npm run validate-words            # exit 1 on any schema break
-npm run validate-contrast-notes   # read the coverage line: must be X/X
-npm run validate-word-notes       # read the coverage line: must be X/X
-npm run validate-passages         # exit 1 on a dangling marker id
-npm run validate-suggestions      # exit 1 on an unlocatable example
+npm run validate                  # all eight, in order; exit 1 on the first that fails
 npm test && npx tsc -b --noEmit && npm run build && npx oxlint
 ```
 
-Coverage lines are **not** exit codes. Reading them is a manual step and there
-is no automation behind it — CI runs none of these
-(`.github/workflows/deploy.yml:48-50`).
+Coverage lines (validators 2, 4, 5, 6, 7, 8) are **not** exit codes — reading
+them is still a manual step. `npm run validate` and `npm run lint` (`oxlint`)
+now both run in CI on every push to `master` (`.github/workflows/deploy.yml`),
+so a schema break is caught there even if it was missed locally; the coverage
+numbers are not.

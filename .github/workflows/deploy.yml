@@ -1,6 +1,7 @@
 # 部署到 GitHub Pages。
 #
-# 触发:推送到 master 分支 → 安装依赖、跑测试、构建、发布 dist/ 到 Pages。
+# 触发:推送到 master 分支 → 安装依赖、跑测试、跑 lint、跑内容校验、构建、
+# 发布 dist/ 到 Pages。
 #
 # 最需要注意的一点:仓库的 Settings → Pages → Build and deployment → Source
 # 必须手动设为 "GitHub Actions"(默认是 "Deploy from a branch")。没设的话
@@ -47,6 +48,8 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npm test
+      - run: npm run lint
+      - run: npm run validate
       - run: npm run build
       - uses: actions/upload-pages-artifact@v5
         with: { path: dist }

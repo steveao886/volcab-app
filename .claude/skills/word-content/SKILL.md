@@ -22,8 +22,10 @@ grows the question pools. Evidence for every rule: `docs/word-add-checklist.md`.
 | `src/data/suggestions.json` | — | nothing — self-filters at runtime | `npm run validate-suggestions` |
 | `data/wordlist.json` | — | dead file, referenced by nothing. Do not touch | — |
 
-**None of these gates runs in CI.** Coverage lines are printed text, not exit
-codes — read them.
+All these gates run in CI (`npm run validate` chains all eight;
+`.github/workflows/deploy.yml` runs it, plus `npm run lint`, on every push to
+`master`). Coverage lines are still printed text, not exit codes — read them
+yourself.
 
 ## Adding words
 
