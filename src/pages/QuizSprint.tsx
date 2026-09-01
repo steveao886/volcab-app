@@ -243,6 +243,15 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
                     <span className="quiz-option__key">{i + 1}</span>
                     {opt}
                   </span>
+                  {/* The tag, not the colour, is what says which one was right:
+                      the 350 ms flash is exactly when a colourblind reader has
+                      nothing else to go on. Same markup as QuizQuestion. */}
+                  {chosen !== null && opt === q.answer ? (
+                    <span className="quiz-option__tag">正确答案</span>
+                  ) : null}
+                  {chosen !== null && opt === chosen && opt !== q.answer ? (
+                    <span className="quiz-option__tag">你的选择</span>
+                  ) : null}
                 </Button>
               )
             })}
