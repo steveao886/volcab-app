@@ -5,15 +5,16 @@ import { Field } from '../components/Field'
 import { Select } from '../components/Select'
 import { TextInput } from '../components/TextInput'
 import { Textarea } from '../components/Textarea'
-import { normalizeEtymology, validateEtymology } from '../lib/etymology'
+import { normalizeEtymology } from '../lib/etymology'
 import {
   SHARE_OPTIONS,
   USAGE_SCORE_OPTIONS,
   normalizeMeanings,
   shareSum,
-  validateShares,
 } from '../lib/senseShare'
+import { validateWordDraft } from '../lib/wordValidate'
 import type { Meaning, Word } from '../types'
+import { wordIssueMessage } from './wordIssueText'
 
 /**
  * Word entry edit form.
@@ -142,61 +143,21 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
         .filter(m => m.pos !== '' || m.en !== '' || m.zh !== ''),
     )
 
-    if (cleanedMeanings.length === 0) {
-      setError('至少需要保留一条释义(词性、英文、中文都要填写)。')
-      return
-    }
-    const incomplete = cleanedMeanings.findIndex(m => m.pos === '' || m.en === '' || m.zh === '')
-    if (incomplete !== -1) {
-      setError(`第 ${incomplete + 1} 条释义需要同时填写词性、英文与中文。`)
-      return
-    }
-
-    const shareErr = validateShares(cleanedMeanings)
-    if (shareErr) {
-      setError(shareErr)
-      return
-    }
-
-    if (usageScoreInput === '') {
-      setError('请选择当代遇见概率(1–10)。')
-      return
-    }
-
-    // Validation here must stay aligned with scripts/validate-words.ts,
-    // otherwise an entry saved from here would silently drift outside the
-    // schema of data/words.json — the app's own isWord check is more
-    // lenient and wouldn't catch it, so it would only surface when the
-    // validation script actually runs. The add-word page (AddWord)
-    // already does this; the edit page was written by a different agent,
-    // which missed these two checks at the time.
-    const cleanedExamples = examples.map(e => e.value.trim()).filter(v => v !== '')
-    if (cleanedExamples.length < 2) {
-      setError(`至少需要 2 句例句(当前 ${cleanedExamples.length} 句)。`)
-      return
-    }
-
-    // None of synonyms/antonyms/collocations should contain the entry itself
-    const synonyms = linesToArray(synonymsText, word.headword)
-    const antonyms = linesToArray(antonymsText, word.headword)
-    const collocations = linesToArray(collocationsText, word.headword)
-
-    const etymologyErr = validateEtymology(etymologyInput)
-    if (etymologyErr) {
-      setError(etymologyErr)
-      return
-    }
-
-    setError(null)
     const updated: Word = {
       ...word,
       meanings: cleanedMeanings,
-      examples: cleanedExamples,
-      synonyms,
-      antonyms,
-      collocations,
-      usageScore: Number(usageScoreInput),
+      examples: examples.map(e => e.value.trim()).filter(v => v !== ''),
+      // None of synonyms/antonyms/collocations should contain the entry itself
+      synonyms: linesToArray(synonymsText, word.headword),
+      antonyms: linesToArray(antonymsText, word.headword),
+      collocations: linesToArray(collocationsText, word.headword),
     }
+    // The empty <select> option means "not scored yet", which is the absence
+    // of the field, not the number 0 — and clearing it back to 请选择 has to
+    // remove the key rather than leave `usageScore: undefined` behind, for the
+    // same reason as etymology below.
+    if (usageScoreInput === '') delete updated.usageScore
+    else updated.usageScore = Number(usageScoreInput)
     // Clearing the input must actually delete the key, not leave behind an
     // `etymology: undefined`: that in-memory object would carry the key
     // along into the store and then into merge — JSON serialization would
@@ -206,6 +167,25 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
     if (etymology === undefined) delete updated.etymology
     else updated.etymology = etymology
 
+    // One validator, shared with the add form and with the repo gate
+    // (src/lib/wordValidate.ts). What this used to be was a hand-written copy
+    // that had already drifted: the comment here recorded that "the edit page
+    // was written by a different agent, which missed these two checks" — and
+    // it was still missing the phonetic and relatedForms rules that AddWord
+    // and the script both had. Those now apply here too, on the whole merged
+    // entry rather than only the fields this form renders, because that merged
+    // entry is what gets saved.
+    //
+    // Only the first issue is shown: this form has a single error slot, and
+    // wordValidate returns issues in entry order, so the first is the one
+    // nearest the top of the form.
+    const issues = validateWordDraft(updated)
+    if (issues.length > 0) {
+      setError(wordIssueMessage(issues[0]))
+      return
+    }
+
+    setError(null)
     void onSave(updated)
   }
 

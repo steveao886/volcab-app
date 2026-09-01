@@ -12,20 +12,22 @@ import { Select } from '../components/Select'
 import { SyncStatus } from '../components/SyncStatus'
 import { TextInput } from '../components/TextInput'
 import { Textarea } from '../components/Textarea'
-import { normalizeEtymology, validateEtymology } from '../lib/etymology'
+import { normalizeEtymology } from '../lib/etymology'
 import {
   SHARE_OPTIONS,
   USAGE_SCORE_OPTIONS,
   normalizeMeanings,
   shareSum,
-  validateShares,
 } from '../lib/senseShare'
 import { todayStr } from '../lib/srs'
+import { validateWordDraft } from '../lib/wordValidate'
+import type { WordField } from '../lib/wordValidate'
 import { useApp } from '../state/store'
 import type { Meaning, RelatedForm, Word } from '../types'
 import { lookupWord } from './dictionaryApi'
 import { checkCapture } from '../lib/stagingCapture'
 import type { CaptureCheck } from '../lib/stagingCapture'
+import { wordIssueMessage } from './wordIssueText'
 import './AddWord.css'
 
 /**
@@ -92,6 +94,37 @@ function splitTagList(raw: string, headword: string): string[] {
     out.push(v)
   }
   return out
+}
+
+/**
+ * Which error slot a rule's field renders in.
+ *
+ * Anything without a slot of its own falls through to `general`, which is
+ * rendered just above the save button. That default is the point: without it,
+ * a rule this form has no input for would block the save with its message
+ * nowhere on screen, and the button would just look broken.
+ *
+ * `id` is the one field deliberately dropped rather than defaulted. It is
+ * derived below from a non-empty trimmed headword by lowercasing and
+ * collapsing whitespace into hyphens, so it is non-empty, lowercase and
+ * whitespace-free by construction; the only way it can go wrong is an empty
+ * headword, which has its own slot and its own message. Showing both would put
+ * two sentences on screen for one empty box.
+ */
+function errorSlot(field: WordField): string | null {
+  switch (field) {
+    case 'id': return null
+    case 'share': return 'shares'
+    case 'headword':
+    case 'phonetic':
+    case 'meanings':
+    case 'examples':
+    case 'relatedForms':
+    case 'usageScore':
+    case 'etymology':
+      return field
+    default: return 'general'
+  }
 }
 
 /**
@@ -232,29 +265,28 @@ export function AddWord() {
   const removeRelated = (i: number) => setRelatedForms((rows) => rows.filter((_, idx) => idx !== i))
 
   /**
-   * Assemble and validate. The data/words.json schema is a lot stricter
-   * than what the dictionary lookup returns raw (scripts/validate-words.ts):
-   * phonetics must be in /.../ form, at least one complete meaning is
-   * required, and **at least 2 examples**. The validation rules are pulled
-   * forward into the form here rather than letting validation fail
-   * elsewhere after save — a saved entry must pass validate-words.ts, with
-   * no "save now, break later" loophole left open.
+   * Assemble, then validate the assembled entry with the same function the
+   * repo gate runs (src/lib/wordValidate.ts). The rules are pulled forward
+   * into the form rather than left to fail after save — a saved entry must
+   * pass validate-words.ts, with no "save now, break later" loophole open.
+   *
+   * **Three rules stay here**, because they are about this form rather than
+   * about a Word:
+   *  - the duplicate check, which is a property of the library, not of the
+   *    entry (validate-words.ts keeps its own file-level copy);
+   *  - how one text field is split into a tag list (splitTagList above);
+   *  - "the user has not picked a usageScore yet", which is the empty-string
+   *    state of a <select>. The draft simply carries no usageScore, and the
+   *    shared rule reports it missing.
    */
   function validate(): Word | null {
-    const errors: Record<string, string> = {}
-
-    if (!headword) errors.headword = '请输入单词'
-    else if (duplicate) errors.headword = '该词条已存在'
-
-    const phon = phonetic.trim()
-    if (!/^\/.+\/$/.test(phon)) errors.phonetic = '音标需形如 /ˈæbrəɡeɪt/(以斜杠包住)'
-
     // Normalize before validating: normalization strips the leftover share
     // when only one meaning remains. Otherwise, once the user clears the
     // second meaning (the whole row gets filtered out below), the remaining
     // one still carries a share value and trips the "a single-sense word
     // shouldn't have a meaning-share" error, which doesn't match what they
-    // actually did.
+    // actually did. It also sorts by share descending, which is what keeps
+    // the share-ordering rule from ever firing here.
     const meaningRows = normalizeMeanings(
       meanings
         .map((m) => {
@@ -264,50 +296,40 @@ export function AddWord() {
         })
         .filter((m) => m.pos || m.en || m.zh),
     )
-    if (meaningRows.length === 0) errors.meanings = '至少需要一条释义'
-    else if (meaningRows.some((m) => !(m.pos && m.en && m.zh)))
-      errors.meanings = '每条释义的词性、英文释义、中文释义都要填写完整'
-
-    const shareErr = validateShares(meaningRows)
-    if (shareErr) errors.shares = shareErr
-
-    const usageScore = Number(usageScoreInput)
-    if (usageScoreInput === '') errors.usageScore = '请选择当代遇见概率'
-
-    const exampleRows = examples.map((e) => e.value.trim()).filter(Boolean)
-    if (exampleRows.length < 2) errors.examples = `至少需要 2 句例句(当前 ${exampleRows.length} 句)`
-
-    const relatedRows = relatedForms
-      .map((r) => ({ form: r.form.trim(), pos: r.pos.trim(), zh: r.zh.trim() }))
-      .filter((r) => r.form || r.pos || r.zh)
-    if (relatedRows.some((r) => !(r.form && r.pos && r.zh)))
-      errors.relatedForms = '同根变形的写法、词性、中文释义要么都填,要么整行留空'
-
-    const etymologyErr = validateEtymology(etymologyInput)
-    if (etymologyErr) errors.etymology = etymologyErr
-
-    setFieldErrors(errors)
-    if (Object.keys(errors).length > 0) return null
 
     const word: Word = {
       id,
       headword,
-      phonetic: phon,
+      phonetic: phonetic.trim(),
       meanings: meaningRows,
-      examples: exampleRows,
+      examples: examples.map((e) => e.value.trim()).filter(Boolean),
       synonyms: splitTagList(synonymsText, headword),
       antonyms: splitTagList(antonymsText, headword),
       collocations: splitTagList(collocationsText, headword),
-      relatedForms: relatedRows,
+      relatedForms: relatedForms
+        .map((r) => ({ form: r.form.trim(), pos: r.pos.trim(), zh: r.zh.trim() }))
+        .filter((r) => r.form || r.pos || r.zh),
       sourceNote: 'manual',
       addedAt: todayStr(new Date()),
-      usageScore,
     }
+    if (usageScoreInput !== '') word.usageScore = Number(usageScoreInput)
     // Leave it blank and omit the key entirely, rather than writing an
     // empty string — an empty string would make the display layer treat it
     // as "has etymology" and render a section with a heading but no content.
     const etymology = normalizeEtymology(etymologyInput)
     if (etymology !== undefined) word.etymology = etymology
+
+    const errors: Record<string, string> = {}
+    for (const issue of validateWordDraft(word)) {
+      const slot = errorSlot(issue.field)
+      // First issue per slot wins: each slot renders one sentence, and the
+      // first is the one nearest the top of the entry.
+      if (slot !== null && errors[slot] === undefined) errors[slot] = wordIssueMessage(issue)
+    }
+    if (duplicate) errors.headword = '该词条已存在'
+
+    setFieldErrors(errors)
+    if (Object.keys(errors).length > 0) return null
     return word
   }
 
