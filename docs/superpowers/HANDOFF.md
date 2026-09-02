@@ -551,3 +551,48 @@ passing for the real thing. The slug is read from
 `~/.gemini/antigravity/conversations/<id>.db`; **the `-wal` must be read too**,
 because a short job finishes before SQLite checkpoints and until then the name
 exists only in the WAL. The transcript never carries the model at all.
+
+## A keydown handler that moves focus lets the keypress hit the new control
+
+组句 never showed a verdict when the answer was submitted with Enter — the card
+went straight to the next question, and the reported symptom was "right or
+wrong, nothing shows, no answer and no explanation, and it comes and goes."
+
+**Enter is not one event, and the button does not activate on the one you
+handled.** Chrome activates a focused button on the **keypress**, and keypress
+is delivered to whatever holds focus at the moment it is dispatched — not to
+the element that received the keydown. `QuizCompose` handled Enter on keydown;
+submitting disabled the word input and handed focus to 下一题 inside that same
+keydown, so the rest of the press landed on a button that did not exist when
+the key went down:
+
+    t=7080.6  keydown  Enter → INPUT        (submit; the reveal renders)
+    t=7089.1  focusout       → INPUT        (disabled)
+    t=7090.9  focusin        → BUTTON 下一题
+    t=7091.5  keypress Enter → BUTTON 下一题
+    t=7091.6  click          → BUTTON 下一题 (advance)
+    t=7105.4  keyup    Enter → BODY
+
+The two verdicts, the reference sentence and the gloss lived 0.7ms and were
+never painted. "时有时无" was the pointer: tapping 提交 produces no keypress and
+worked fine, so only keyboard answers lost the feedback — and 组句 is the one
+mode that prints the shortcut on its button (提交 · Enter), which is why it was
+the mode that got reported. The fix is one `e.preventDefault()` on the keydown,
+which suppresses the keypress it would otherwise produce.
+
+**The other two Enter surfaces are safe, and the reason is worth keeping.**
+拼写 submits through the form's *implicit submission*, which **is** the
+keypress's default action, so the keypress is spent on 提交 before focus moves;
+回想 chains three auto-focused buttons, but each consumes its own keypress
+before handing focus on. Both were driven with real key events and left alone.
+The rule to carry forward: **handling a key on keydown and moving focus in the
+same handler is the dangerous combination** — cancel the event you handled.
+
+**Two debugging notes, because this cost most of the session.** The first
+hypothesis was key auto-repeat, and it was wrong; what killed it was measuring
+a *single* trusted press and seeing it advance. And the in-app browser tool
+(`mcp__Claude_Browser__computer`) **cannot activate a button by keyboard at
+all** — its synthesized key events carry no default action, so a focused button
+scores zero clicks on Enter and on Space. Every negative result it gave here
+was an artifact. `mcp__chrome-devtools__press_key` dispatches the real thing;
+prove the tool can reproduce the mechanism before trusting it to disprove one.
