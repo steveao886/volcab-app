@@ -499,3 +499,45 @@ linear and conflict-free because file ownership was disjoint by plan.
 validator as the repo gate, including the heteronym rules, and neither form has
 a per-sense phonetic input. Adding a second part of speech to a known heteronym
 in-app is refused with a message saying the fix belongs in the word data.
+
+
+## The Antigravity CLI cannot pick a model or a thinking level (2026-09-02)
+
+Asked to run Gemini jobs on 3.8 at high effort. **The headless path cannot ask
+for either**, and this is the measurement, not a guess:
+
+`~/repos/antigravity-run.js` shells out to `agentapi new-conversation`, whose
+`--model` is a **tier**, not a model id. Only `flash_lite | flash | pro` are
+accepted; `pro_high`, `high`, `pro-high` and `gemini-3.8-pro` each come back
+`no available models found for tier <x>`. The server picks the model inside the
+tier. On this account that day:
+
+| asked for | actually ran |
+|---|---|
+| `--model pro` | `gemini-3.1-pro-low` |
+| `--model flash` | `gemini-3.7-flash-tiered` |
+| no `--model` | `gemini-3.7-flash-tiered` |
+
+So `flash` is **not** a shortcut to the newest flash — it was still 3.7 — and
+`pro` has been buying the **Low** thinking variant all along, including for
+every content round in the notes above. The `(High)` variants exist in the same
+build (`gemini-3.1-pro-high`, `gemini-3.7-flash-high`, seen in 33 and 10 local
+conversations) but only the IDE's model picker reaches them.
+
+**Nothing on this machine knows a Gemini 3.8 at all** — not the installed
+Antigravity (2026-08-26 build: its strings stop at 3.7 Flash and 3.1 Pro), not
+the IDE's cached state, not the tier mapping. Update Antigravity and re-check
+before assuming a headless job is on 3.8; a specific model or high thinking has
+to be run by hand in the IDE.
+
+**The standalone `gemini` CLI is still dead here** (0.55.1, re-tested the same
+day): `IneligibleTierError: This client is no longer supported for Gemini Code
+Assist for individuals`. Antigravity remains the only path.
+
+**The runner now says which model it got.** It prints `running on <slug>` and
+takes `--require-model <substring>`, which exits 3 when the tier hands back
+something else — a job silently served by a weaker model now fails instead of
+passing for the real thing. The slug is read from
+`~/.gemini/antigravity/conversations/<id>.db`; **the `-wal` must be read too**,
+because a short job finishes before SQLite checkpoints and until then the name
+exists only in the WAL. The transcript never carries the model at all.
