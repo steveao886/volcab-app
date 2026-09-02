@@ -524,11 +524,15 @@ every content round in the notes above. The `(High)` variants exist in the same
 build (`gemini-3.1-pro-high`, `gemini-3.7-flash-high`, seen in 33 and 10 local
 conversations) but only the IDE's model picker reaches them.
 
-**Nothing on this machine knows a Gemini 3.8 at all** — not the installed
-Antigravity (2026-08-26 build: its strings stop at 3.7 Flash and 3.1 Pro), not
-the IDE's cached state, not the tier mapping. Update Antigravity and re-check
-before assuming a headless job is on 3.8; a specific model or high thinking has
-to be run by hand in the IDE.
+**The picker having 3.8 does not mean a headless job can get it.** The IDE's
+model list showed *Gemini 3.8 Flash High*, selected — and with that selected and
+the hub restarted, the `flash` tier still handed back `gemini-3.7-flash-tiered`
+on the re-measure. The picker's list comes from the server; the tier resolves
+out of the build's own table, and the installed binary (2026-08-26) has no 3.8
+string anywhere in it — newest is `gemini-3.7-flash`. So updating Antigravity is
+the thing to try, but **re-measure after updating instead of assuming**: one
+throwaway job and read the `running on` line. A specific model or high thinking
+still has to be run by hand in the IDE until that line says otherwise.
 
 **The standalone `gemini` CLI is still dead here** (0.55.1, re-tested the same
 day): `IneligibleTierError: This client is no longer supported for Gemini Code
