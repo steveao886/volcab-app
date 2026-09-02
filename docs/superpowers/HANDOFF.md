@@ -518,6 +518,12 @@ tier. On this account that day:
 | `--model flash` | `gemini-3.7-flash-tiered` |
 | no `--model` | `gemini-3.7-flash-tiered` |
 
+**The standing choice is `flash`** (the runner's default since this round, so
+pass no `--model` at all): 3.7 Flash is a generation ahead of what the `pro`
+tier actually delivers, and `pro` is pinned to Low thinking on top of that.
+Reach for `pro` only if a job turns out to need something 3.7 Flash can't do —
+and say why in the same breath.
+
 So `flash` is **not** a shortcut to the newest flash — it was still 3.7 — and
 `pro` has been buying the **Low** thinking variant all along, including for
 every content round in the notes above. The `(High)` variants exist in the same
