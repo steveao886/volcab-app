@@ -207,7 +207,36 @@ function ComposeQuestionView({ question, onAnswered, onNext, nextLabel }: Compos
           disabled={revealed}
           placeholder="把空缺处的英文词打出来"
           onChange={e => setTyped(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter') submit() }}
+          /**
+           * `preventDefault` is not decoration — without it one Enter both
+           * submits and dismisses the answer.
+           *
+           * Chrome activates a button on the **keypress**, and keypress is
+           * delivered to whatever holds focus at that moment. Submitting
+           * disables this input and hands focus to 下一题, all inside the
+           * keydown, so the rest of that same press lands on a button that
+           * did not exist when the key went down. Measured in the browser:
+           *
+           *     t=7080.6  keydown  Enter → INPUT        (submit; reveal renders)
+           *     t=7089.1  focusout       → INPUT        (disabled)
+           *     t=7090.9  focusin        → BUTTON 下一题
+           *     t=7091.5  keypress Enter → BUTTON 下一题
+           *     t=7091.6  click          → BUTTON 下一题 (advance)
+           *     t=7105.4  keyup    Enter → BODY
+           *
+           * The two verdicts, the reference sentence and the gloss existed
+           * for 0.7ms and were never painted, so the mode's whole payload was
+           * invisible to anyone answering with the keyboard — which the
+           * button advertises (提交 · Enter). Cancelling the keydown
+           * suppresses the keypress it would otherwise produce, so the press
+           * that submitted cannot also advance. A second, deliberate Enter
+           * still does, which is the walkthrough QuizQuestion.tsx documents.
+           */
+          onKeyDown={e => {
+            if (e.key !== 'Enter') return
+            e.preventDefault()
+            submit()
+          }}
         />
       </label>
 
