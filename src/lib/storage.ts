@@ -56,6 +56,11 @@ const KEYS = {
   // as the two above: a second device re-offering the advice costs far less
   // than a synced field, and being wrong here only delays a suggestion.
   intervalTunedOn: 'volcab.intervalTunedOn',
+  // The batch size last chosen at the start of a free-practice session — a
+  // number, or 'all'. Local for the same reason as everything above it: the
+  // synced alternative is a schema addition on progress.json plus a push on
+  // every tap, and the cost of losing this is one tap. See lib/practiceSize.ts.
+  practiceSize: 'volcab.practiceSize',
 } as const
 
 export type StorageKey = keyof typeof KEYS

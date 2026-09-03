@@ -6,7 +6,9 @@ import { Card } from '../components/Card'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { isEditableTarget } from '../lib/keys'
-import { buildMixedPractice, mixedPracticePool, nextStrugglingBatch, PRACTICE_DRAW_SIZE, samplePractice } from '../lib/practice'
+import { buildMixedPractice, mixedPracticePool, nextStrugglingBatch, samplePractice } from '../lib/practice'
+import { practiceSizeOptions, preferredOption, readPracticeSize, writePracticeSize } from '../lib/practiceSize'
+import type { PracticeSizeOption } from '../lib/practiceSize'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
 import { strugglingPracticePool } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
@@ -24,7 +26,8 @@ import './Review.css'
 import './Practice.css'
 
 /**
- * Free practice: a slice of the library, shuffled, twenty at a time.
+ * Free practice: a slice of the library, shuffled, a batch at a time — the
+ * batch sized by the user before the first card (lib/practiceSize.ts).
  *
  * Not a mode of Review.tsx, though it shares that page's card. The two
  * `?mode=` drills there are the review page with a different queue — same
@@ -97,14 +100,27 @@ export function Practice() {
   // One draw, whichever mode this is. The deck is only ever produced here,
   // so the two modes can't drift on size or exclusion handling.
   const draw = useCallback(
-    (exclude?: ReadonlySet<string>) =>
+    (size: number, exclude?: ReadonlySet<string>) =>
       struggling
-        ? nextStrugglingBatch(pool, PRACTICE_DRAW_SIZE, { exclude })
+        ? nextStrugglingBatch(pool, size, { exclude })
         : mixed
-          ? buildMixedPractice(words, progress, today, PRACTICE_DRAW_SIZE, { exclude })
-          : samplePractice(pool, PRACTICE_DRAW_SIZE, { exclude }),
+          ? buildMixedPractice(words, progress, today, size, { exclude })
+          : samplePractice(pool, size, { exclude }),
     [struggling, mixed, words, progress, today, pool],
   )
+
+  // The batch-size step. Practice used to draw on mount at a fixed twenty;
+  // it was never actually capped there (再来一批 walks further down the pool
+  // without repeating), so what was missing was the choice of how much to
+  // commit to up front. See the 2026-09-03 practice-batch-size spec.
+  //
+  // `batchSize` doubles as "has a session started" — null means the step is
+  // still on screen and there is no deck.
+  const sizeOptions = useMemo(() => practiceSizeOptions(pool.length), [pool.length])
+  // Read once: the value is rewritten the moment a chip is tapped, and the
+  // highlight must not move under the finger.
+  const [remembered] = useState(readPracticeSize)
+  const [batchSize, setBatchSize] = useState<number | null>(null)
 
   // The deck holds Word objects rather than ids, unlike Review.tsx's queue.
   // A word deleted from another device mid-session then just stays on its
@@ -112,7 +128,7 @@ export function Practice() {
   // recordPractice finds no progress entry. That removes the whole
   // "the head of the queue points at a word that no longer exists"
   // transitional state the review page has to render around.
-  const [deck, setDeck] = useState<Word[]>(() => draw())
+  const [deck, setDeck] = useState<Word[]>([])
   const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set())
   // The words answered 不认识 this sitting, accumulated across redraws. The
   // done screen used to say only "这一批练完了" — you could miss six words
@@ -167,22 +183,33 @@ export function Practice() {
     [cur, flipped, recordPractice, soundEnabled, struggling],
   )
 
+  // Tapping a size chip *is* pressing start — there is no second button, so
+  // the step costs one tap over the old draw-on-mount, and the highlighted
+  // chip makes "same as last time" that one tap.
+  const start = useCallback((opt: PracticeSizeOption) => {
+    writePracticeSize(opt.choice)
+    setBatchSize(opt.size)
+    setDeck(draw(opt.size))
+  }, [draw])
+
   const redraw = useCallback(() => {
+    if (batchSize === null) return
     setSeen(drawn)
-    setDeck(draw(drawn))
+    setDeck(draw(batchSize, drawn))
     setIdx(0)
     setFlipped(false)
-  }, [drawn, draw])
+  }, [batchSize, drawn, draw])
 
   // 从头再练: the "unlimited" in unlimited practice. Resets the walk and the
   // recap — a word missed in two walks must not appear twice in one list.
   const restart = useCallback(() => {
+    if (batchSize === null) return
     setSeen(new Set())
-    setDeck(draw(new Set()))
+    setDeck(draw(batchSize, new Set()))
     setIdx(0)
     setFlipped(false)
     setMissed([])
-  }, [draw])
+  }, [batchSize, draw])
 
   const handleCardKeyDown = useCallback(
     (e: ReactKeyboardEvent<HTMLDivElement>) => {
@@ -218,6 +245,51 @@ export function Practice() {
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [cur, flipped, toggleFlip, answer])
+
+  // Digit shortcuts for the size step, on their own listener rather than as
+  // a branch of the one above: that one is guarded on a card being on
+  // screen, which is exactly when these must not fire.
+  useEffect(() => {
+    if (batchSize !== null || sizeOptions.length === 0) return
+    function onKeyDown(e: KeyboardEvent) {
+      if (isEditableTarget(document.activeElement)) return
+      const n = Number(e.key)
+      if (!Number.isInteger(n) || n < 1 || n > sizeOptions.length) return
+      e.preventDefault()
+      start(sizeOptions[n - 1])
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [batchSize, sizeOptions, start])
+
+  // An empty pool falls through to the done screen below, which already says
+  // 没有可练的词 in each mode's own words.
+  if (batchSize === null && sizeOptions.length > 0) {
+    const preferred = preferredOption(sizeOptions, remembered)
+    return (
+      <Page eyebrow="Practice" title={struggling ? '顽固词加练' : '自由练习'} back={backTo}>
+        <div className="practice-size">
+          <p className="practice-size__pool">
+            {struggling ? '顽固词' : '可练的词'}还有 <strong>{pool.length}</strong> 个,这一批练多少?
+          </p>
+          <div className="practice-size__options">
+            {sizeOptions.map((o, i) => (
+              <Button
+                key={String(o.choice)}
+                variant={o === preferred ? 'primary' : 'secondary'}
+                size="lg"
+                onClick={() => start(o)}
+              >
+                {o.label}
+                <span className="practice-size__key">{i + 1}</span>
+              </Button>
+            ))}
+          </div>
+          <p className="muted">练完还能再来一批,这里不记进度。</p>
+        </div>
+      </Page>
+    )
+  }
 
   if (finished) {
     const neverStarted = deck.length === 0 && seen.size === 0

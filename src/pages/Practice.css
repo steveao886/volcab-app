@@ -8,9 +8,59 @@
    mean two stylesheets drifting apart on a shared component
    (ReviewCardBack emits .review-back and everything under it).
 
-   What's genuinely different is the answer row: two buttons where the
-   review page has four.
+   What's genuinely different is the answer row (two buttons where the
+   review page has four) and the batch-size step, which the review page has
+   no equivalent of at all.
    ========================================================================== */
+
+/* --- Batch-size step -------------------------------------------------------
+   Stands in front of the first deck. Laid out like the done screen it
+   replaces on the way in — centred, generous top padding — because both are
+   full-page moments between sessions rather than something beside a card. */
+
+.practice-size {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-4);
+  padding-block: var(--sp-10) var(--sp-6);
+  text-align: center;
+}
+
+.practice-size__pool {
+  margin: 0;
+}
+
+/* Wraps rather than sitting in a fixed grid: the number of chips depends on
+   the pool (a pool of 14 gets two, a pool of 100 gets five), and 全部 47 is
+   wider than 10. A row that wraps handles every count without overflowing
+   375px. */
+.practice-size__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  justify-content: center;
+}
+
+/* Label over digit hint, the same stack as .review-grades and
+   .practice-answers — a shortcut that isn't printed on its own control does
+   not exist. */
+.practice-size__options .btn {
+  flex-direction: column;
+  gap: 2px;
+  min-width: 4.5rem;
+}
+
+.practice-size__key {
+  color: var(--text-faint);
+  font-family: var(--font-num);
+  font-size: var(--fs-xs);
+}
+
+/* On the highlighted chip the faint gray would fall off the ink slab. */
+.practice-size__options .btn--primary .practice-size__key {
+  color: inherit;
+  opacity: 0.75;
+}
 
 .practice-answers {
   display: grid;
