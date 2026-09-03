@@ -5523,6 +5523,179 @@
         "unwary"
       ],
       "why": "房东本有照管义务却一再不管,追责场合用 negligent;careless 只是粗心,可轻可重,不预设谁欠谁一份责任;unwary 说的是对危险没提防,常指被坑的那一方,主语站错了位置。"
+    },
+    {
+      "zh": "三位工程师查了整整一周日志，仍然毫无头绪。",
+      "target": "毫无头绪",
+      "en": "Three engineers spent a week in the logs and came away baffled, with nothing that explained the outage.",
+      "order": [
+        "baffled",
+        "perplexed",
+        "puzzled"
+      ],
+      "why": "baffled 是彻底被难住、连怎么解释都想不出来，程度最重；perplexed 侧重困惑之下不知道下一步该往哪走，人还在打转；puzzled 只是一般的想不通，程度最轻，常常就写在脸上、脱口而出。"
+    },
+    {
+      "zh": "那家小面馆靠一锅熬了三十年的汤底远近闻名。",
+      "target": "远近闻名",
+      "en": "The little noodle shop is renowned for a broth the owner has kept simmering for thirty years.",
+      "order": [
+        "renowned",
+        "celebrated",
+        "illustrious"
+      ],
+      "why": "renowned 说的是因某一样专长而广为人知，最常搭 renowned for；celebrated 也有名，但重心在被公开称颂、被当成名家来讲，多用于人和作品；illustrious 指一生功绩累累、声名显赫，形容的是生涯与家世，落不到一家面馆头上。"
+    },
+    {
+      "zh": "邻桌那人整晚大声嘲笑服务员，吵闹又讨人厌。",
+      "target": "讨人厌",
+      "en": "The man at the next table spent the whole evening being loudly obnoxious to the waiter.",
+      "order": [
+        "obnoxious",
+        "insufferable",
+        "disagreeable"
+      ],
+      "why": "obnoxious 的讨厌是外放的——吵、粗鲁、当众冒犯别人；insufferable 也让人受不了，但根子在自负傲慢，是那种不停显摆的人；disagreeable 语气最轻，只说令人不快或脾气差不好相处，够不上当众撒野这一层。"
+    },
+    {
+      "zh": "他把募来的善款挪去买了游艇，这事可恨透了。",
+      "target": "可恨透了",
+      "en": "Diverting the charity's donations into a yacht is detestable, and the board said so in one line.",
+      "order": [
+        "detestable",
+        "loathsome"
+      ],
+      "extra": [
+        "despicable",
+        "abominable"
+      ],
+      "why": "detestable 说的是这件事恶劣到该被憎恨，落点在道德上应受谴责；loathsome 也是极度厌恶，但更偏生理与情感上的反胃，常形容气味、样貌、场面；despicable 强调卑劣下作、让人看不起；abominable 语气最重且偏书面，带着骇人听闻的味道。"
+    },
+    {
+      "zh": "她自己也失去过孩子，听人倾诉时格外感同身受。",
+      "target": "感同身受",
+      "en": "Having lost a child herself, she is unusually empathetic when someone finally starts talking.",
+      "order": [
+        "empathetic",
+        "sympathetic",
+        "compassionate"
+      ],
+      "why": "empathetic 是从内部体会到对方的感受，往往因为自己经历过同一件事；sympathetic 站在外面替对方难过、表示体恤，并不要求自己有过同样的经历；compassionate 的重心落在怜悯之后想去帮忙，说的是善意与行动，不是共感本身。"
+    },
+    {
+      "zh": "主持人当众问她多大年纪，她当场就觉得受了羞辱。",
+      "target": "受了羞辱",
+      "en": "She was visibly affronted when the host asked her age in front of the whole room.",
+      "order": [
+        "affronted",
+        "outraged",
+        "resentful"
+      ],
+      "why": "affronted 是被当面无礼对待而觉得受了轻慢，针对具体一次失礼，反应就在当场；outraged 是震惊之下的义愤，冲着严重不公或道德上的越界去，程度重得多；resentful 说的是事后长期积着的怨气，不是当场那一下。"
+    },
+    {
+      "zh": "他第三次开口说想帮忙，对方一句话就把他顶了回去。",
+      "target": "顶了回去",
+      "en": "He offered to help a third time and was rebuffed with a single sentence.",
+      "order": [
+        "rebuff",
+        "repulse",
+        "repel"
+      ],
+      "sense": 0,
+      "why": "rebuff 的宾语是别人递过来的提议、请求或善意，被干脆地回绝或冷落；repulse 也能指回绝提议与示爱，但本义是打退进攻，用在一句拒绝上过重且书面；repel 的核心是把人或东西驱开、击退，或让人生理上反感，不用来说回绝一份好意。"
+    },
+    {
+      "zh": "出发前教练留下一句告诫：前半程别冲太猛。",
+      "target": "告诫",
+      "en": "The coach left them with one admonition before the start: do not burn the first half of the race.",
+      "order": [
+        "admonition",
+        "exhortation",
+        "entreaty"
+      ],
+      "why": "admonition 是带着轻微责备的提醒，重点在告诉对方别做什么，说话人站在指导的位置；exhortation 是激励式的敦促，推着人去做，语气向上而不是拦着；entreaty 是低姿态的恳求哀求，说话人有求于对方，位置正好反过来。"
+    },
+    {
+      "zh": "通胀连着三年，把那笔退休金的购买力一点点磨掉了。",
+      "target": "磨掉",
+      "en": "Three years of inflation slowly eroded the purchasing power of that pension.",
+      "order": [
+        "erode",
+        "diminish",
+        "undermine"
+      ],
+      "sense": 0,
+      "why": "erode 说的是价值、信任这类存量被长期一点点耗掉，过程缓慢且难以回头，正对上购买力被磨薄；diminish 只说变少变小，可以是一次性的，缺了长年耗损这一层；undermine 是从根基上暗中削弱，宾语通常是权威、信心、努力，配不上一笔钱的购买力。"
+    },
+    {
+      "zh": "这个读书会的报名人数越来越少，第五届只剩七个人。",
+      "target": "越来越少",
+      "en": "Sign-ups for the reading group dwindled until the fifth season drew seven people.",
+      "order": [
+        "dwindle",
+        "diminish",
+        "abate"
+      ],
+      "why": "dwindle 是主语自己一路减少到所剩无几，不带宾语，落点在越来越少直到快没了；diminish 只说变少变小，可以带宾语，也不含最后只剩一点点这层意思；abate 说的是坏事的强度减弱——风暴、疼痛、争议缓下来，配不上人数这种数得清的东西。"
+    },
+    {
+      "zh": "劳资谈崩后请来中立第三方居中撮合，最后双方自己签了字。",
+      "target": "居中撮合",
+      "en": "After the talks collapsed, mediation by a neutral outsider got both sides to sign on their own terms.",
+      "order": [
+        "mediation",
+        "conciliation",
+        "arbitration"
+      ],
+      "why": "mediation 是中立第三方帮两边把协议谈出来，签不签仍由当事人自己决定；conciliation 同样是第三方促成的自愿和解，但重心在化解敌意、修复关系，常指劳资纠纷里那道法定的前置程序；arbitration 是第三方直接作出裁决，双方事先答应照办，和自己签字正好相反。"
+    },
+    {
+      "zh": "市议会上月通过一条地方法规，禁止午夜后在住宅区施工。",
+      "target": "地方法规",
+      "en": "The city council passed an ordinance last month banning construction in residential blocks after midnight.",
+      "order": [
+        "ordinance",
+        "decree",
+        "proclamation"
+      ],
+      "sense": 0,
+      "why": "ordinance 是市镇一级议会立的规矩，只在本辖区内有效，正是这条禁令的身份；decree 同样有法律效力，但出自统治者、政府或法院的一道命令，不是地方议会表决出来的；proclamation 只是把事情正式公之于众的公告，本身并不构成规则。"
+    },
+    {
+      "zh": "婚姻散场不是因为吵架，而是因为长年的隐瞒欺骗。",
+      "target": "隐瞒欺骗",
+      "en": "The marriage ended not in shouting but in years of quiet deceit.",
+      "order": [
+        "deceit",
+        "trickery",
+        "artifice"
+      ],
+      "why": "deceit 指蓄意让人相信假象的不诚实行为本身，也用来说一个人的品性，最贴长年隐瞒；trickery 的落点在具体的花招与骗术，是手法，通常一次一次地使；artifice 更书面，说的是精心设计的巧计与伪装，还能指技艺上的匠心，语气偏中性。"
+    },
+    {
+      "zh": "那封没有署名的信勾起好奇，她连着几晚都在猜是谁写的。",
+      "target": "勾起好奇",
+      "en": "The unsigned letter intrigued her enough that she spent several nights guessing who had written it.",
+      "order": [
+        "intrigue",
+        "engross",
+        "beguile"
+      ],
+      "sense": 0,
+      "why": "intrigue 是勾起好奇、让人想弄明白，注意力还在往外探；engross 是被完全吸进去、全神贯注，说的是投入的程度而不是好奇；beguile 带着魅惑甚至哄骗的意味，是被迷住而看不清，和一封信引出的疑问不是一回事。"
+    },
+    {
+      "zh": "二十年前分家产那笔账，他到现在还记着，年节都不肯来。",
+      "target": "还记着",
+      "en": "He has held a grudge over the division of the estate for twenty years and still skips the holidays.",
+      "order": [
+        "grudge",
+        "resentment",
+        "animosity"
+      ],
+      "sense": 0,
+      "why": "grudge 是把某一件具体旧事记在心里、长年不放，常搭 hold a grudge；resentment 是因为觉得受了不公而生的一股怨气，说的是情绪本身，不必绑定某一件事；animosity 是明摆着的敌意与仇视，程度更重也更外显，已经到了针锋相对那一步。"
     }
   ]
 }
