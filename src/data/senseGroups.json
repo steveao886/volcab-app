@@ -843,10 +843,10 @@
       "zh": "散会前她做了一段即兴的总结,没看任何稿子。",
       "target": "即兴的",
       "order": [
-        "impromptu"
+        "impromptu",
+        "spontaneous"
       ],
       "extra": [
-        "spontaneous",
         "improvised",
         "unrehearsed"
       ],
@@ -1207,10 +1207,10 @@
       "zh": "三位诺奖得主联名公开谴责了那项禁令。",
       "target": "公开谴责",
       "order": [
-        "denounce"
+        "denounce",
+        "condemn"
       ],
       "extra": [
-        "condemn",
         "decry",
         "censure"
       ],
@@ -1751,10 +1751,10 @@
       "zh": "她那份坦率在董事会上并不讨喜,却没人反驳得了。",
       "target": "坦率",
       "order": [
-        "candor"
+        "candor",
+        "frankness"
       ],
       "extra": [
-        "frankness",
         "bluntness",
         "plain speaking"
       ],
@@ -2198,10 +2198,10 @@
       "zh": "听到那句评价,她当场愤愤不平地站了起来。",
       "target": "愤愤不平",
       "order": [
-        "indignant"
+        "indignant",
+        "aggrieved"
       ],
       "extra": [
-        "aggrieved",
         "irate"
       ],
       "en": "She stood up, indignant at what had just been said.",
@@ -4148,10 +4148,10 @@
       "target": "都点头",
       "en": "If everyone is agreeable, I can send the client the revised schedule tonight.",
       "order": [
-        "agreeable"
+        "agreeable",
+        "amenable"
       ],
       "extra": [
-        "amenable",
         "willing"
       ],
       "why": "be agreeable to something 表示点头答应、不反对，是 agreeable 除『令人愉快』之外的第二个活跃义；这一层只出现在人做主语、后接 to 的句式里。",
@@ -4289,11 +4289,10 @@
       "en": "Only the ambassador's quiet intercession kept the two delegations at the table past midnight.",
       "order": [
         "intercession",
-        "advocacy"
-      ],
-      "extra": [
+        "advocacy",
         "arbitration"
       ],
+      "extra": [],
       "why": "intercession 是替第三方出面向有权者说情、求情，重心在『为别人开口』；advocacy 是公开为某主张站台，不针对具体某个人；arbitration 是受托作出有约束力的裁断，与私下说情正相反。"
     },
     {
