@@ -532,6 +532,14 @@ function libraryDistractors(
     && x.id !== answer.id
     && !opposites.has(norm(x.headword))
     && !(nearAnswer?.has(x.id) ?? false)
+    // The same exclusion externalDistractors applies to its own candidates:
+    // an option the prompt spells out is answerable without reading either
+    // word. It was missing here only because nothing in the library had
+    // reached it — the 2026-09-03 batch added `approachable`, which names
+    // `congenial` as a synonym, and the very next run offered `genial`
+    // against the prompt `congenial`. Caught by the full-library assertion
+    // below, which is the whole reason that test walks every word and seed.
+    && !isShapeGiveaway(w.headword, x.headword)
     && x.meanings[0]?.pos === answerPos
 
   const seen = new Set<string>([answer.headword, w.headword])
