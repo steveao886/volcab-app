@@ -1,3 +1,4 @@
+import { MAX_SPACING_GAP, orderFreshWords } from './freshOrder'
 import { addDays, INITIAL_EASE, todayStr } from './srs'
 import type { Progress, Word } from '../types'
 
@@ -40,14 +41,25 @@ export function buildQueue(words: Word[], progress: Progress, today: string): Da
   // order. Only newPerDay words get learned each day, so which ones get picked directly
   // decides the return on that investment — whether formidable (8 points) or criticality
   // (2 points) gets learned first shouldn't be decided by which entered the word list
-  // first. When scores tie, the word list's original order is preserved (via a stable sort
-  // on index below), with no gratuitous shuffling.
-  const fresh = words
-    .filter(w => !progress.words[w.id] || progress.words[w.id].state === 'new')
-    .map((w, i) => ({ w, i }))
-    .sort((a, b) => score(b.w) - score(a.w) || a.i - b.i)
-    .slice(0, budget)
-    .map(x => x.w.id)
+  // first.
+  //
+  // Ties used to fall back to the word list's own order, defended here as "no gratuitous
+  // shuffling". That order carries something worse than nothing: it is capture order, and
+  // words are captured by tapping synonyms, so the queue served whole synonym families in
+  // one sitting — 11 of 12 simulated days over the library's last 60 words held a related
+  // pair. orderFreshWords replaces the tiebreak and spaces related words apart; see
+  // docs/superpowers/specs/2026-09-03-new-word-spacing-design.md.
+  //
+  // The gap is one day's intake, so it keeps its meaning when newPerDay changes: two
+  // related words can't share a window of newPerDay slots if more than that many words
+  // separate them. Capped because too large a gap makes the constraint unsatisfiable and
+  // lands worse than a small one (see MAX_SPACING_GAP).
+  const fresh = orderFreshWords(
+    words.filter(w => !progress.words[w.id] || progress.words[w.id].state === 'new'),
+    new Map(words.map((w, i) => [w.id, i])),
+    Math.min(progress.settings.newPerDay, MAX_SPACING_GAP),
+    budget,
+  ).map(w => w.id)
 
   return { due, fresh }
 }

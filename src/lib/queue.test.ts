@@ -61,9 +61,11 @@ describe('buildQueue — prioritized by encounter probability', () => {
     expect(buildQueue(ws, p(2), '2026-07-24').fresh).toEqual(['common', 'mid'])
   })
 
-  it('ties keep the word list\'s original order (stable sort), no pointless shuffling', () => {
-    const ws = [word('a', 5), word('b', 5), word('c', 5)]
-    expect(buildQueue(ws, p(3), '2026-07-24').fresh).toEqual(['a', 'b', 'c'])
+  it('ties are broken by a hash of the id, not by word-list position — that position is capture order, i.e. a synonym walk', () => {
+    const ws = [word('alpha', 5), word('bravo', 5), word('carol', 5)]
+    const reversed = [...ws].reverse()
+    expect(buildQueue(ws, p(3), '2026-07-24').fresh)
+      .toEqual(buildQueue(reversed, p(3), '2026-07-24').fresh)
   })
 
   it('words missing usageScore sort last — unscored does not mean high-frequency, it should not jump the queue', () => {
