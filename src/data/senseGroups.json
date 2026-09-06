@@ -885,11 +885,11 @@
       "zh": "档案泡了水,那批照片的损失无法弥补。",
       "target": "无法弥补",
       "order": [
-        "irreparable"
+        "irreparable",
+        "unfixable"
       ],
       "extra": [
         "irreversible",
-        "unfixable",
         "permanent"
       ],
       "en": "The flood did irreparable damage to the photographic archive.",
@@ -1305,10 +1305,10 @@
       "zh": "对手是一支实力强劲的队伍,过去两年没输过。",
       "target": "实力强劲",
       "order": [
-        "formidable"
+        "formidable",
+        "daunting"
       ],
       "extra": [
-        "daunting",
         "redoubtable",
         "imposing"
       ],
@@ -1375,10 +1375,10 @@
       "zh": "他的解释明白易懂,连没学过的人都听懂了。",
       "target": "明白易懂",
       "order": [
-        "lucid"
+        "lucid",
+        "coherent"
       ],
       "extra": [
-        "coherent",
         "intelligible",
         "crystal clear"
       ],
@@ -2700,10 +2700,10 @@
       "zh": "这三章的论证前后连贯,读下来一气呵成。",
       "target": "前后连贯",
       "order": [
-        "cohere"
+        "cohere",
+        "hold-together"
       ],
       "extra": [
-        "hold together",
         "hang together",
         "be consistent"
       ],
@@ -3357,11 +3357,11 @@
       "zh": "这条流水线上的浪费比返工成本还高。",
       "target": "浪费",
       "order": [
-        "wastefulness"
+        "wastefulness",
+        "profligacy",
+        "extravagance"
       ],
       "extra": [
-        "extravagance",
-        "profligacy",
         "squandering"
       ],
       "en": "Wastefulness on that line costs more than the rework does.",
