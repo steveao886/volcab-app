@@ -58,6 +58,53 @@ function fuzz(days: number, rng: () => number): number {
   return Math.min(MAX_INTERVAL_DAYS, Math.max(1, Math.round(days * factor)))
 }
 
+/**
+ * The floor below which a related-word collision is left alone, and the
+ * furthest the date may be pushed.
+ *
+ * The floor is `fuzz`'s own threshold above, for the same reason: at one or
+ * two days the word is still consolidating and a day's delay is a 50–100%
+ * change. From three days up a one-day push is at most a third, and falls
+ * away fast. Reusing the number also keeps the nudge out of the learning
+ * steps and the lapse path (`again` sets `due = today`, interval 0) without
+ * either needing a special case.
+ */
+const NUDGE_MIN_INTERVAL_DAYS = 3
+const MAX_NUDGE_DAYS = 2
+
+/**
+ * Moves `due` forward off a date a related word already occupies.
+ *
+ * **Forward only, and `intervalDays` is deliberately not moved with it.**
+ * Both halves of that are the same argument, and it is the mirror of the one
+ * `demoteWord` below is built on. `gradeWord` computes `next = intervalDays
+ * * ease` knowing nothing about elapsed time, so:
+ *
+ * - pulling `due` *backward* makes the next interval grow as if the full one
+ *   had been served when it had not — a systematic over-estimate, and the
+ *   bug `71fba29` was;
+ * - pushing it *forward* means slightly more time was served than the
+ *   interval claims, so the next interval is if anything under-estimated,
+ *   which is the safe direction to be wrong in;
+ * - adding the nudge to `intervalDays` as well would compound it through
+ *   every future review, turning a one-day courtesy into a growing one.
+ *
+ * Fails open: when every date in reach is also taken, the honest date wins.
+ * Spacing is a nicety and the schedule is not.
+ */
+function nudgePastRelatives(
+  due: string,
+  intervalDays: number,
+  dueTaken: ((due: string) => boolean) | undefined,
+): string {
+  if (dueTaken === undefined || intervalDays < NUDGE_MIN_INTERVAL_DAYS) return due
+  for (let d = 0; d <= MAX_NUDGE_DAYS; d++) {
+    const candidate = addDays(due, d)
+    if (!dueTaken(candidate)) return candidate
+  }
+  return due
+}
+
 export const MIN_INTERVAL_MODIFIER = 0.5
 export const MAX_INTERVAL_MODIFIER = 3
 
@@ -95,6 +142,7 @@ export function gradeWord(
   now: Date,
   rng: () => number = Math.random,
   intervalModifier = 1,
+  dueTaken?: (due: string) => boolean,
 ): ProgressEntry {
   const e = prev && prev.state !== 'new' ? { ...prev } : freshEntry(now)
   e.reps += 1
@@ -104,9 +152,9 @@ export function gradeWord(
   if (e.state === 'learning') {
     if (grade === 'again') { e.stepIndex = 0; e.due = today }
     else if (grade === 'hard') { e.due = today }
-    else if (grade === 'easy') graduate(e, EASY_GRADUATE_DAYS, today, rng)
+    else if (grade === 'easy') graduate(e, EASY_GRADUATE_DAYS, today, rng, dueTaken)
     else if (e.stepIndex + 1 < LEARNING_STEPS) { e.stepIndex += 1; e.due = today }
-    else graduate(e, GRADUATE_DAYS, today, rng)
+    else graduate(e, GRADUATE_DAYS, today, rng, dueTaken)
     return e
   }
 
@@ -134,15 +182,21 @@ export function gradeWord(
   // and the fuzz, so a modifier below 1 can still shorten an interval while
   // never letting one stand still.
   e.intervalDays = fuzz(Math.max(e.intervalDays + 1, Math.round(next * clampIntervalModifier(intervalModifier))), rng)
-  e.due = addDays(today, e.intervalDays)
+  e.due = nudgePastRelatives(addDays(today, e.intervalDays), e.intervalDays, dueTaken)
   return e
 }
 
-function graduate(e: ProgressEntry, days: number, today: string, rng: () => number) {
+function graduate(
+  e: ProgressEntry,
+  days: number,
+  today: string,
+  rng: () => number,
+  dueTaken?: (due: string) => boolean,
+) {
   e.state = 'review'
   e.stepIndex = 0
   e.intervalDays = fuzz(days, rng)
-  e.due = addDays(today, e.intervalDays)
+  e.due = nudgePastRelatives(addDays(today, e.intervalDays), e.intervalDays, dueTaken)
 }
 
 /** Calendar-day difference between two YYYY-MM-DD strings, parsed as local dates (same convention as addDays). Exported for the review page's confirm showing, which prints the already-scheduled distance instead of grade previews. */
@@ -175,12 +229,13 @@ export function previewIntervals(
   prev: ProgressEntry | undefined,
   now: Date,
   intervalModifier = 1,
+  dueTaken?: (due: string) => boolean,
 ): Record<Grade, string> {
   const today = todayStr(now)
   const out = {} as Record<Grade, string>
   for (const g of ['again', 'hard', 'good', 'easy'] as const) {
     // gradeWord copies before mutating, so prev itself is never touched.
-    const next = gradeWord(prev, g, now, () => 0.5, intervalModifier)
+    const next = gradeWord(prev, g, now, () => 0.5, intervalModifier, dueTaken)
     out[g] = next.due <= today ? '稍后' : `${diffDays(today, next.due)} 天`
   }
   return out

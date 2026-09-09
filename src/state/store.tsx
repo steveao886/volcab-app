@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { GitHubClient } from '../lib/github'
 import { mergeProgress } from '../lib/merge'
 import type { QuizMetricKey } from '../lib/quiz'
+import { relatedDueGuard } from '../lib/related'
 import { demoteWord, gradeWord, todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
 import { wordsCache } from '../lib/wordsCache'
@@ -723,7 +724,16 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
     }
     commitProgress({
       ...cur,
-      words: { ...cur.words, [wordId]: gradeWord(prev, g, now, undefined, cur.settings.intervalModifier) },
+      words: {
+        ...cur.words,
+        // The last argument spaces this word off any due date one of its
+        // synonyms or same-stem relatives already holds — forward only, see
+        // nudgePastRelatives in srs.ts.
+        [wordId]: gradeWord(
+          prev, g, now, undefined, cur.settings.intervalModifier,
+          relatedDueGuard(wordId, stateRef.current.words, cur.words),
+        ),
+      },
       dailyStats: { ...cur.dailyStats, [day]: stat },
     })
     schedulePush()

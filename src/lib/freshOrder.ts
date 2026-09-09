@@ -1,3 +1,4 @@
+import { declaredLinks, isRelated, spaceApart } from './related'
 import type { Word } from '../types'
 
 /** Encounter likelihood, defaulting to 0 — the same rule and the same reasoning as `score` in queue.ts. */
@@ -20,21 +21,6 @@ const score = (w: Word): number => w.usageScore ?? 0
  * word is deleted.
  */
 const CAPTURE_WINDOW = 3
-
-/** Longest common prefix at which two ids count as the same word family, and how much may hang off the end of it. */
-const STEM_MIN = 5
-const STEM_MAX_TAIL = 4
-
-/**
- * How far ahead the spacing pass may reach for a word that fits.
- *
- * Bounds the work, and bounds the damage: a word can jump ahead of at most
- * 20 better-scoring words, never the whole tail. Measured over the live
- * library, the largest usageScore actually crossed to defer a word is 1
- * point on a 120- or 240-word unlearned pool (3 on a 60-word one, where the
- * pass has fewer legal moves).
- */
-const LOOKAHEAD = 20
 
 /**
  * The ceiling on the spacing gap, in words.
@@ -69,50 +55,6 @@ function hash(id: string): number {
 }
 
 /**
- * Whether two ids are built on the same stem — resent / resentful /
- * resentment, renown / renowned, deceive / deceit, advocate / advocacy.
- *
- * Fires on 75 pairs across the 717-word library, of which about 5 are false
- * positives (impasse / impassive, intrinsic / intrigue, interlude /
- * intercede, underhand / undermine). **Loose on purpose**: the cost of a
- * false positive is that two unrelated words end up a few queue positions
- * apart, which costs nothing. This is the opposite of the `etymology` rule,
- * where a wrong guess plants a false memory anchor, and the two must not be
- * reasoned about the same way.
- */
-function sharesStem(a: string, b: string): boolean {
-  let n = 0
-  while (n < a.length && n < b.length && a[n] === b[n]) n++
-  return n >= STEM_MIN && a.length - n <= STEM_MAX_TAIL && b.length - n <= STEM_MAX_TAIL
-}
-
-/**
- * Symmetric synonym / antonym / related-form links **within the pool**.
- *
- * This is the rule that reaches across capture sessions, where the array
- * distance says nothing: a word added in July and its synonym added in
- * August sit hundreds of entries apart. Over the repo copy the library
- * carries 509 in-library synonym pointers, 202 antonym and 130 related-form,
- * with 413 of 717 words holding at least one.
- *
- * Built from the pool rather than the whole library because only relations
- * between two words being ordered can affect the ordering.
- */
-function declaredLinks(pool: readonly Word[]): Map<string, Set<string>> {
-  const links = new Map<string, Set<string>>(pool.map(w => [w.id, new Set<string>()]))
-  for (const w of pool) {
-    for (const raw of [...w.synonyms, ...w.antonyms, ...w.relatedForms.map(r => r.form)]) {
-      const id = raw.toLowerCase()
-      const target = links.get(id)
-      if (id === w.id || target === undefined) continue
-      links.get(w.id)!.add(id)
-      target.add(w.id)
-    }
-  }
-  return links
-}
-
-/**
  * Today's new words, ordered so that related ones don't arrive together.
  *
  * `usageScore` still decides who gets learned — only `newPerDay` words are
@@ -141,31 +83,18 @@ export function orderFreshWords(
   limit: number,
 ): Word[] {
   const sorted = [...pool].sort((a, b) => score(b) - score(a) || hash(a.id) - hash(b.id))
-  const take = Math.min(Math.max(limit, 0), sorted.length)
-  if (gap <= 0) return sorted.slice(0, take)
 
   const links = declaredLinks(pool)
+  // The intake rule is the review rule (isRelated) **plus** capture
+  // proximity, which is only meaningful here: this pool is a capture batch,
+  // so neighbours in the array really were tapped one after the other. See
+  // the note at the top of related.ts for why it does not generalise.
   const related = (a: Word, b: Word): boolean => {
     const ia = index.get(a.id)
     const ib = index.get(b.id)
     if (ia !== undefined && ib !== undefined && Math.abs(ia - ib) <= CAPTURE_WINDOW) return true
-    if (links.get(a.id)?.has(b.id) === true) return true
-    return sharesStem(a.id, b.id)
+    return isRelated(a.id, b.id, links)
   }
 
-  const out: Word[] = []
-  while (out.length < take) {
-    const recent = out.slice(-gap)
-    // Fail open: when nothing in reach fits, take the head. The pass must
-    // never drop a word, never return fewer than asked and never loop —
-    // a queue that silently shrinks is a far worse bug than two synonyms
-    // landing on one day.
-    let pick = 0
-    const ceiling = Math.min(LOOKAHEAD, sorted.length)
-    for (let i = 0; i < ceiling; i++) {
-      if (!recent.some(w => related(w, sorted[i]))) { pick = i; break }
-    }
-    out.push(sorted.splice(pick, 1)[0])
-  }
-  return out
+  return spaceApart(sorted, related, gap, limit)
 }

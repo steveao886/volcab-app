@@ -11,6 +11,7 @@ import { isEditableTarget } from '../lib/keys'
 import { buildConsolidateQueue, buildLapseQueue, buildQueue, CONSOLIDATE_DELAY_HOURS, strugglingPracticePool } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { storage } from '../lib/storage'
+import { relatedDueGuard } from '../lib/related'
 import { diffDays, previewIntervals, todayStr } from '../lib/srs'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
 import { ReviewCardBack } from './ReviewCard'
@@ -137,9 +138,14 @@ export function Review() {
   const previews = useMemo(
     () =>
       mode === 'due' && curId !== undefined
-        ? previewIntervals(curEntry, new Date(), progress.settings.intervalModifier)
+        ? previewIntervals(
+            curEntry, new Date(), progress.settings.intervalModifier,
+            relatedDueGuard(curId, words, progress.words),
+          )
         : null,
-    [mode, curId, curEntry, progress.settings.intervalModifier],
+    // The guard is rebuilt whenever the schedule changes, so the label can
+    // never promise a date the write would nudge off.
+    [mode, curId, curEntry, words, progress.words, progress.settings.intervalModifier],
   )
 
   // Warm the recording as soon as the card is on screen, so the speak tap

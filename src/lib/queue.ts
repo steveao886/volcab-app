@@ -1,4 +1,5 @@
 import { MAX_SPACING_GAP, orderFreshWords } from './freshOrder'
+import { declaredLinks, isRelated, SESSION_SPACING_GAP, spaceApart } from './related'
 import { addDays, INITIAL_EASE, todayStr } from './srs'
 import type { Progress, Word } from '../types'
 
@@ -16,11 +17,11 @@ const score = (w: Word): number => w.usageScore ?? 0
 
 export function buildQueue(words: Word[], progress: Progress, today: string): DailyQueue {
   const byId = new Map(words.map(w => [w.id, w]))
-  const due = words
-    .filter(w => {
-      const e = progress.words[w.id]
-      return e && e.state !== 'new' && e.due <= today
-    })
+  const dueWords = words.filter(w => {
+    const e = progress.words[w.id]
+    return e && e.state !== 'new' && e.due <= today
+  })
+  const sortedDue = dueWords
     .map(w => w.id)
     .sort((a, b) => {
       const ea = progress.words[a], eb = progress.words[b]
@@ -34,6 +35,28 @@ export function buildQueue(words: Word[], progress: Progress, today: string): Da
       const d = score(byId.get(b)!) - score(byId.get(a)!)
       return d !== 0 ? d : a.localeCompare(b)  // Only fall back to alphabetical when scores also tie, to guarantee determinism
     })
+
+  // Space out the confusable pairs the sort above put next to each other.
+  // Two words that graduated together carry the same ease and march to the
+  // same date indefinitely, and fuzz cannot separate them: it is ±5% and
+  // blind to what else is scheduled. Measured over the live schedule, 16
+  // related pairs share a due date, 13 of them inside one week — see the
+  // 2026-09-09 schedule-spacing spec.
+  //
+  // **Learning and review are spaced separately**, so the pass can never
+  // reorder across the state boundary the comparator just established:
+  // learning-phase words are mid-consolidation and go first, whatever else
+  // is in the session. Within each block the pass may defer a word past a
+  // slightly better-scoring one — bounded by LOOKAHEAD, and measured at one
+  // usageScore point at most, the same cost orderFreshWords accepts.
+  const links = declaredLinks(dueWords)
+  const spaceBlock = (ids: string[]) =>
+    spaceApart(ids, (a, b) => isRelated(a, b, links), SESSION_SPACING_GAP)
+  const isLearning = (id: string) => progress.words[id].state === 'learning'
+  const due = [
+    ...spaceBlock(sortedDue.filter(isLearning)),
+    ...spaceBlock(sortedDue.filter(id => !isLearning(id))),
+  ]
 
   const learnedToday = progress.dailyStats[today]?.newLearned ?? 0
   const budget = Math.max(0, progress.settings.newPerDay - learnedToday)

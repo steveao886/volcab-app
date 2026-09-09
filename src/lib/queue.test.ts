@@ -43,6 +43,71 @@ describe('buildQueue', () => {
   })
 })
 
+describe('buildQueue spaces related words inside one session', () => {
+  const due = (id: string, usageScore: number, over: Partial<ProgressEntry> = {}): [Word, ProgressEntry] => [
+    { ...word(id, usageScore) },
+    { state: 'review', ease: 2.5, intervalDays: 8, due: '2026-07-24', stepIndex: 0, reps: 2, lapses: 0, lastReviewedAt: '2026-07-16T00:00:00Z', ...over },
+  ]
+  /** Everything due today, so the whole set lands in one session. */
+  const session = (rows: [Word, ProgressEntry][]): { ws: Word[]; p: Progress } => {
+    const p = emptyProgress()
+    p.settings.newPerDay = 0
+    for (const [w, e] of rows) p.words[w.id] = e
+    return { ws: rows.map(([w]) => w), p }
+  }
+  const gapBetween = (q: string[], a: string, b: string) => Math.abs(q.indexOf(a) - q.indexOf(b))
+
+  it('separates two words the usageScore sort would have served back to back', () => {
+    const alpha = { ...word('alpha', 9), synonyms: ['bravo'] }
+    const rows: [Word, ProgressEntry][] = [
+      [alpha, due('alpha', 9)[1]],
+      due('bravo', 9), due('carol', 8), due('delta', 7), due('echo', 6),
+      due('foxtrot', 5), due('golf', 4), due('hotel', 3),
+    ]
+    const { ws, p } = session(rows)
+    const q = buildQueue(ws, p, '2026-07-24')
+    expect(q.due).toHaveLength(8)
+    expect(gapBetween(q.due, 'alpha', 'bravo')).toBeGreaterThan(1)
+  })
+
+  it('separates a shared stem with no declared link between them', () => {
+    const rows: [Word, ProgressEntry][] = [
+      due('resent', 9), due('resentment', 9), due('carol', 8), due('delta', 7),
+      due('echo', 6), due('foxtrot', 5), due('golf', 4),
+    ]
+    const { ws, p } = session(rows)
+    const q = buildQueue(ws, p, '2026-07-24')
+    expect(gapBetween(q.due, 'resent', 'resentment')).toBeGreaterThan(1)
+  })
+
+  it('never reorders a review word ahead of a learning one — mid-consolidation still goes first', () => {
+    // alpha and bravo are synonyms, so the pass wants to separate them; it
+    // must do that inside the review block rather than by promoting a
+    // review word into the learning one.
+    const alpha = { ...word('alpha', 9), synonyms: ['bravo'] }
+    const rows: [Word, ProgressEntry][] = [
+      [alpha, due('alpha', 9)[1]],
+      due('bravo', 9),
+      due('carol', 1, { state: 'learning', intervalDays: 0 }),
+    ]
+    const { ws, p } = session(rows)
+    expect(buildQueue(ws, p, '2026-07-24').due[0]).toBe('carol')
+  })
+
+  it('returns every due word even when the session is too small to separate them', () => {
+    const alpha = { ...word('alpha', 9), synonyms: ['bravo'] }
+    const rows: [Word, ProgressEntry][] = [[alpha, due('alpha', 9)[1]], due('bravo', 9)]
+    const { ws, p } = session(rows)
+    expect(buildQueue(ws, p, '2026-07-24').due.sort()).toEqual(['alpha', 'bravo'])
+  })
+
+  it('leaves an unrelated session in strict usageScore order', () => {
+    const rows: [Word, ProgressEntry][] = [due('alpha', 9), due('bravo', 7), due('carol', 5)]
+    const { ws, p } = session(rows)
+    expect(buildQueue(ws, p, '2026-07-24').due).toEqual(['alpha', 'bravo', 'carol'])
+  })
+})
+
 describe('buildQueue — prioritized by encounter probability', () => {
   /**
    * Only newPerDay new words are learned each day, so which ones get picked determines the

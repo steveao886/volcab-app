@@ -255,3 +255,76 @@ describe('demoteWord: a quiz miss halves the interval, and only ever toward now'
     expect(reviewed.intervalDays).toBeGreaterThan(demoted.intervalDays)
   })
 })
+
+describe('nudging off a related word\'s due date', () => {
+  /** "Every date is free" and "this one date is taken" as predicates. */
+  const taken = (...dates: string[]) => (d: string) => dates.includes(d)
+
+  it('leaves the date alone when no related word is scheduled there', () => {
+    const e = gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken())
+    expect(e.due).toBe('2026-08-18') // 10 × 2.5 = 25 days
+  })
+
+  it('pushes one day forward when a related word already holds the date', () => {
+    const e = gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken('2026-08-18'))
+    expect(e.due).toBe('2026-08-19')
+  })
+
+  it('pushes a second day when the first is taken too, and stops there', () => {
+    const e = gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken('2026-08-18', '2026-08-19'))
+    expect(e.due).toBe('2026-08-20')
+  })
+
+  it('fails open when everything in reach is taken — the schedule outranks the spacing', () => {
+    const dates = ['2026-08-18', '2026-08-19', '2026-08-20']
+    expect(gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken(...dates)).due).toBe('2026-08-18')
+  })
+
+  it('never moves intervalDays with the date — that is what would compound', () => {
+    const clean = gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken())
+    const nudged = gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken('2026-08-18', '2026-08-19'))
+    expect(nudged.intervalDays).toBe(clean.intervalDays)
+  })
+
+  it('only ever pushes forward, never pulls back — the 71fba29 direction stays closed', () => {
+    const e = gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken('2026-08-18'))
+    expect(e.due > '2026-08-18').toBe(true)
+  })
+
+  it('leaves intervals under three days alone, the same floor fuzz uses', () => {
+    // 1 × 1.2 floors to 2 days under the "must grow by at least a day" rule.
+    const short = reviewEntry({ intervalDays: 1 })
+    const e = gradeWord(short, 'hard', now, noFuzz, 1, () => true)
+    expect(e.intervalDays).toBe(2)
+    expect(e.due).toBe(addDays('2026-07-24', 2))
+  })
+
+  it('does nothing on a lapse: again sends the word back to today, which is not negotiable', () => {
+    const e = gradeWord(reviewEntry(), 'again', now, noFuzz, 1, () => true)
+    expect(e.due).toBe('2026-07-24')
+  })
+
+  it('applies when a learning word graduates, since that lands a real review date', () => {
+    const learning: ProgressEntry = {
+      state: 'learning', ease: 2.5, intervalDays: 0, due: '2026-07-24',
+      stepIndex: 0, reps: 1, lapses: 0, lastReviewedAt: '2026-07-24T00:00:00Z',
+    }
+    // easy graduates at 4 days, which clears the three-day floor
+    const e = gradeWord(learning, 'easy', now, noFuzz, 1, taken('2026-07-28'))
+    expect(e.due).toBe('2026-07-29')
+    expect(e.intervalDays).toBe(4)
+  })
+
+  it('behaves exactly as before when no predicate is passed', () => {
+    const withOut = gradeWord(reviewEntry(), 'good', now, noFuzz, 1)
+    const legacy = gradeWord(reviewEntry(), 'good', now, noFuzz)
+    expect(withOut.due).toBe(legacy.due)
+  })
+
+  it('the grade preview shows the nudged date, so the label cannot promise a date the write will not produce', () => {
+    const plain = previewIntervals(reviewEntry(), now)
+    const nudged = previewIntervals(reviewEntry(), now, 1, taken('2026-08-18'))
+    expect(plain.good).toBe('25 天')
+    expect(nudged.good).toBe('26 天')
+  })
+})
