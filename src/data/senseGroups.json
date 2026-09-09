@@ -1444,11 +1444,11 @@
       "zh": "在这类手术里,时机比技术更为要紧。",
       "target": "更为要紧",
       "order": [
-        "paramount"
+        "paramount",
+        "foremost"
       ],
       "extra": [
         "overriding",
-        "foremost",
         "above all else"
       ],
       "en": "In this operation timing is paramount, ahead of technique.",
@@ -5346,11 +5346,11 @@
       "en": "From the parking lot the ridge looks like nothing much, but once the fog comes in, the loose scree underfoot turns treacherous.",
       "order": [
         "treacherous",
-        "perilous"
+        "perilous",
+        "deceptive"
       ],
       "extra": [
-        "hazardous",
-        "deceptive"
+        "hazardous"
       ],
       "sense": 0,
       "why": "treacherous 说的是危险藏在看不出来的地方,或者状况说变就变,主语正是路面、水流、天气这类东西;perilous 只讲危险大、九死一生,凶险是明摆着的,不含藏这一层;hazardous 指存在某种具体的危害源,多见于规章和安全告示;deceptive 只说外表骗人、容易看走眼,本身不含任何危险。"
@@ -5696,6 +5696,86 @@
       ],
       "sense": 0,
       "why": "grudge 是把某一件具体旧事记在心里、长年不放，常搭 hold a grudge；resentment 是因为觉得受了不公而生的一股怨气，说的是情绪本身，不必绑定某一件事；animosity 是明摆着的敌意与仇视，程度更重也更外显，已经到了针锋相对那一步。"
+    },
+    {
+      "zh": "护士一提到手术，他就明显慌乱不安，二十分钟才把血压压下来。",
+      "target": "慌乱不安",
+      "en": "He became agitated as soon as the nurse mentioned surgery, and it took twenty minutes to bring his blood pressure down.",
+      "order": [
+        "agitated",
+        "restless",
+        "fidgety"
+      ],
+      "why": "agitated 是被具体事情激起、明显失去平静，旁人一眼看得出，多见于医院和突发场合；restless 说的是待不住、想动想换，未必有情绪危机；fidgety 只描述小动作不断，程度最轻，和血压飙升不是一回事。"
+    },
+    {
+      "zh": "口罩连戴十二个小时，她颧骨上磨出一片红肿，一周才消下去。",
+      "target": "一片红肿",
+      "en": "Wearing the mask for twelve-hour shifts left an irritation along her cheekbones that took a week to fade.",
+      "order": [
+        "irritation",
+        "annoyance",
+        "aggravation"
+      ],
+      "sense": 1,
+      "why": "只有 irritation 兼有皮肤被磨得发炎、红肿这层生理义；annoyance 只说心里那股恼火，或惹人烦的那件事；aggravation 是口语里的窝火，也指情况加剧，都不能用来形容皮肤。"
+    },
+    {
+      "zh": "她的助理嘴严得出奇，同事早就不问她周四下午去哪儿了。",
+      "target": "嘴严得出奇",
+      "en": "Her assistant is discreet to the point that colleagues have stopped asking where she goes on Thursday afternoons.",
+      "order": [
+        "discreet",
+        "unobtrusive",
+        "inconspicuous"
+      ],
+      "why": "discreet 说人办事不声张、替人保密，主语是人，正对嘴严；unobtrusive 说的是不打扰、存在感低，多形容设计和服务；inconspicuous 只是客观上不显眼，说的是外观，不涉及守不守口。"
+    },
+    {
+      "zh": "审计报告称这种作风挥霍无度，二十分钟能讲完的会也要坐商务舱飞过去。",
+      "target": "挥霍无度",
+      "en": "The audit described a profligate culture of business-class flights for meetings that could have been a twenty-minute call.",
+      "order": [
+        "profligate",
+        "prodigal",
+        "lavish"
+      ],
+      "sense": 0,
+      "why": "profligate 一律贬义，可用于机构和公共开支，谴责的是不负责任地糟蹋资源；prodigal 因浪子回头的典故多说个人，还常带日后回头的意味；lavish 常是褒义的丰盛慷慨，形容排场本身，不含谴责。"
+    },
+    {
+      "zh": "副校长一进来，她说话的调子立刻恭顺了几分，满桌人都注意到了。",
+      "target": "恭顺了几分",
+      "en": "Her tone turned deferential the moment the vice-chancellor entered, which everyone at the table noticed.",
+      "order": [
+        "deferential",
+        "respectful",
+        "docile"
+      ],
+      "why": "deferential 预设了地位高低，是对权威主动退让一步的恭顺；respectful 是平等前提下的尊重，不会因为谁进门就突然变浓；docile 是听话不反抗、任人摆布，多形容孩子和动物，语气偏贬。"
+    },
+    {
+      "zh": "诊断结果让她如遭重击，在走廊坐了二十分钟才敢给哥哥打电话。",
+      "target": "如遭重击",
+      "en": "The diagnosis was devastating, and she sat in the corridor for twenty minutes before she could call her brother.",
+      "order": [
+        "devastating",
+        "disastrous",
+        "cataclysmic"
+      ],
+      "sense": 1,
+      "why": "devastating 能形容噩耗对个人的沉重打击，重在冲击力；disastrous 判定的是结果糟糕、彻底失败，多说决策和行动；cataclysmic 说的是天翻地覆的巨变规模，多用于历史和自然灾变，不用于一纸诊断。"
+    },
+    {
+      "zh": "整场抚养权庭审她都镇定自若，只在停车场里哭过一次。",
+      "target": "镇定自若",
+      "en": "She stayed serene through the whole custody hearing and cried only once, in the car park.",
+      "order": [
+        "serene",
+        "placid",
+        "untroubled"
+      ],
+      "why": "serene 强调风浪当前依然安详从容，带欣赏语气；placid 多形容天生性子沉静或湖面无波，说的是平淡少波澜，不是顶住压力；untroubled 只说没被扰到，可能只是不知情或不上心。"
     }
   ]
 }
