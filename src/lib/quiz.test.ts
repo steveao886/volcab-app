@@ -911,14 +911,14 @@ describe('full-library regression — antonymPick', () => {
       'in the wake of → ahead of',
       'in the wake of → in anticipation of',
     ])
-    // Re-measured 2026-09-09 over 816 words (was 1727 / 1275 / 657 at 796).
+    // Re-measured 2026-09-12 over 843 words (was 1789 / 1299 / 675 at 816).
     // These track the library's own shape, so a word batch moves them; what
     // must not move without explanation is the `failed` list above.
-    expect(directions).toHaveLength(1789)
-    // 1299 answer with a word the library has no entry for; the other 490 are
-    // the library-internal pairs, 508 directions less the 18 the shape rule takes.
-    expect(directions.filter(d => d.external)).toHaveLength(1299)
-    expect(new Set(directions.map(d => d.from.id)).size).toBe(675)
+    expect(directions).toHaveLength(1867)
+    // 1351 answer with a word the library has no entry for; the other 516 are
+    // the library-internal pairs, 536 directions less the 20 the shape rule takes.
+    expect(directions.filter(d => d.external)).toHaveLength(1351)
+    expect(new Set(directions.map(d => d.from.id)).size).toBe(702)
   })
 
   /**

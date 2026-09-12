@@ -788,10 +788,10 @@
       "zh": "新政策把本来就紧张的住房问题变得更糟。",
       "target": "变得更糟",
       "order": [
-        "exacerbate"
+        "exacerbate",
+        "aggravate"
       ],
       "extra": [
-        "aggravate",
         "compound",
         "intensify"
       ],
