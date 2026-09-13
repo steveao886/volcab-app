@@ -458,17 +458,37 @@
    first-class exit, and a cramped half-width button would say otherwise. */
 /* The 回想 range picker. A plain wrapped row: three chips at 375px fit on
    one line, and wrapping is the right answer if a fourth is ever added. */
-.recall-focus {
+.recall-options {
   margin-block-end: var(--sp-3);
 }
 
-.recall-focus__row {
+/* Label beside the chips, not above them. Two stacked rows each needing a
+   heading line of its own would cost two lines of the height the question
+   wants, and 范围/题数 are two characters — they fit in the margin. */
+.recall-options__row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.recall-options__hint + .recall-options__row {
+  margin-block-start: var(--sp-2);
+}
+
+.recall-options__label {
+  flex: none;
+  font-size: var(--fs-sm);
+}
+
+/* Wraps rather than overflows: at 375px both rows fit on one line, but the
+   design width is a floor, not a promise about every font size. */
+.recall-options__chips {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-2);
 }
 
-.recall-focus__hint {
+.recall-options__hint {
   margin-block-start: var(--sp-2);
   font-size: var(--fs-sm);
 }

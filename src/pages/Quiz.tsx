@@ -11,6 +11,7 @@ import { storage } from '../lib/storage'
 import type { QuizMetricKey, QuizQuestion } from '../lib/quiz'
 import type { Passage } from '../lib/passage'
 import type { RecallSentence } from '../lib/recallSentence'
+import { parseRecallCount } from '../lib/senseGroup'
 import type { SenseGroup } from '../lib/senseGroup'
 import type { ChunkAnnotation } from '../lib/sentenceChunk'
 import { useApp } from '../state/store'
@@ -411,6 +412,19 @@ function QuizSessionPage({ mode }: { mode: QuizMode }) {
   const setFocus = useCallback((f: RecallFocus) => {
     setParams(f === 'all' ? { mode: 'recall' } : { mode: 'recall', pick: f }, { replace: true })
   }, [setParams])
+  // The round length is remembered instead of URL-borne, unlike the range
+  // beside it, and the asymmetry is the point: a range is what you want
+  // *this* visit, so it resets to 普通; a length is what you want every
+  // visit, and re-tapping 30 daily is the friction that sends you back to
+  // 10. 练习 keeps its batch size the same way and for the same price — one
+  // tap if the value is lost. See lib/practiceSize.ts.
+  const [count, setCountState] = useState(() => parseRecallCount(storage.get<unknown>('recallCount')))
+  const setCount = useCallback((n: number) => {
+    // The write result is ignored on purpose: losing this costs one tap,
+    // unlike the progress write the store checks.
+    storage.set('recallCount', n)
+    setCountState(n)
+  }, [])
 
   const passages = useLazyContent(mode === 'passage', loadPassages)
   const groups = useLazyContent(mode === 'recall' || mode === 'compose', loadGroups)
@@ -437,12 +451,14 @@ function QuizSessionPage({ mode }: { mode: QuizMode }) {
           />
         ) : (
           <RecallSession
-            key={`recall-${focus}-${session}`}
+            key={`recall-${focus}-${count}-${session}`}
             words={words}
             groups={groups.data}
             sentences={sentences.data}
             focus={focus}
             onFocus={setFocus}
+            count={count}
+            onCount={setCount}
             onRestart={restart}
           />
         )

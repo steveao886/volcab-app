@@ -61,6 +61,13 @@ const KEYS = {
   // synced alternative is a schema addition on progress.json plus a push on
   // every tap, and the cost of losing this is one tap. See lib/practiceSize.ts.
   practiceSize: 'volcab.practiceSize',
+  // The round length last chosen in 回想. Exactly the same call as
+  // practiceSize above it, for the same reasons — a habit worth
+  // remembering, worth one tap if lost, and not worth a schema addition on
+  // the one file three devices write. Unlike 回想's range, which lives in
+  // the URL: a range is what you want *this* visit, a length is what you
+  // want every visit.
+  recallCount: 'volcab.recallCount',
 } as const
 
 export type StorageKey = keyof typeof KEYS

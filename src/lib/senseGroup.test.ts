@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   buildOrderQuestion, buildRecallQuestion, eligibleGroups, generateRecallSession,
-  inRecallFocus, isRankable, orderCorrect, wrongIdsFor,
+  inRecallFocus, isRankable, orderCorrect, parseRecallCount, RECALL_COUNTS, wrongIdsFor,
 } from './senseGroup'
 import type { RecallQuestion, SenseGroup } from './senseGroup'
 import { emptyProgress } from '../types'
@@ -660,5 +660,30 @@ describe('recall focus', () => {
     const withAll = generateRecallSession([], byId, p, TODAY, new Set(), new Set(), 4, rngFrom(5), sentences, 'all')
     const noArg = generateRecallSession([], byId, p, TODAY, new Set(), new Set(), 4, rngFrom(5), sentences)
     expect(noArg.map(q => q.prompt)).toEqual(withAll.map(q => q.prompt))
+  })
+})
+
+describe('parseRecallCount', () => {
+  it('falls back to the first tier when the round length is unset', () => {
+    expect(parseRecallCount(null)).toBe(RECALL_COUNTS[0])
+  })
+
+  it('accepts a tier written as a URL string', () => {
+    expect(parseRecallCount('30')).toBe(30)
+  })
+
+  it('accepts a tier written as a stored number', () => {
+    expect(parseRecallCount(50)).toBe(50)
+  })
+
+  // A number nobody can pick from the chips: an older build's value, or a
+  // hand-edited URL. Read side lenient — fall back rather than honour a
+  // length the picker cannot show as selected.
+  it('rejects a number that is not one of the tiers', () => {
+    expect(parseRecallCount('40')).toBe(RECALL_COUNTS[0])
+  })
+
+  it('rejects a value that is not a number at all', () => {
+    expect(parseRecallCount('abc')).toBe(RECALL_COUNTS[0])
   })
 })

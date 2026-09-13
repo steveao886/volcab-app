@@ -501,6 +501,32 @@ export function inRecallFocus(
 export const RECALL_RECENT_LIMIT = 300
 
 /**
+ * The round lengths 回想 offers; the first is what an unset round uses.
+ *
+ * Four tiers rather than an every-ten ladder because 375px fits four chips
+ * on one row beside a label and wraps at five. The top tier is safe on
+ * content grounds: the pool is 1,708 prompts over 843 words and the first
+ * pass below takes one question per word, so even 50 asks for a fraction of
+ * what the library can supply distinctly.
+ */
+export const RECALL_COUNTS = [10, 20, 30, 50] as const
+
+/**
+ * A round length arriving from outside, read leniently: anything that is
+ * not one of the tiers becomes the first one.
+ *
+ * Both callers need the leniency and neither input is trustworthy — the URL
+ * carries a hand-editable string, localStorage a number a differently-tiered
+ * build may have written. Honouring an off-tier value would leave the chip
+ * row with nothing pressed and no way back to a valid length.
+ */
+export function parseRecallCount(raw: unknown): number {
+  const n = typeof raw === 'string' ? Number(raw) : raw
+  if (typeof n !== 'number') return RECALL_COUNTS[0]
+  return RECALL_COUNTS.find(c => c === n) ?? RECALL_COUNTS[0]
+}
+
+/**
  * One session's worth of questions, alternating 唤词 / 排序 where the group
  * qualifies for both.
  *
@@ -558,8 +584,10 @@ export function generateRecallSession(
   // against 8 once normalised. The gap does not close all the way and the
   // remainder is content, not weighting — a one-prompt word cannot return
   // until its only prompt leaves the recency window, so it is capped at
-  // one appearance per RECALL_RECENT_LIMIT / 10 rounds. The mark is a claim
-  // about the word, so the word is what the weight has to attach to; how
+  // one appearance per RECALL_RECENT_LIMIT / count rounds — the window is
+  // measured in prompts, not rounds, so a 50-question round spends it five
+  // times as fast as a 10-question one. The mark is a claim about the word,
+  // so the word is what the weight has to attach to; how
   // many ways the content happens to ask it is an accident of which 253 of
   // the 843 words got renderings (2026-09-12).
   //
