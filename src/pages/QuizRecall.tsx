@@ -671,6 +671,20 @@ export function RecallSession({
           </p>
         </Card>
 
+        {/* Starting another round is the usual next move, so the controls sit
+            directly under the score. Below the wrong list they were off the
+            bottom of a 375px screen after any round longer than ten, and the
+            范围 / 题数 chips went with them. The list reads fine last. */}
+        <div className="quiz-result__actions">
+          <RecallOptions focus={focus} onFocus={onFocus} count={count} onCount={onCount} />
+          <Button variant="primary" size="lg" block onClick={onRestart}>
+            再测一轮
+          </Button>
+          <Link className="btn btn--secondary btn--block" to="/">
+            返回今日
+          </Link>
+        </div>
+
         {wrongWords.length > 0 ? (
           <Card pad="none">
             <p className="quiz-q__label quiz-wrong-title">错词 · {wrongWords.length}</p>
@@ -695,16 +709,6 @@ export function RecallSession({
             </ul>
           </Card>
         ) : null}
-
-        <div className="quiz-result__actions">
-          <RecallOptions focus={focus} onFocus={onFocus} count={count} onCount={onCount} />
-          <Button variant="primary" size="lg" block onClick={onRestart}>
-            再测一轮
-          </Button>
-          <Link className="btn btn--secondary btn--block" to="/">
-            返回今日
-          </Link>
-        </div>
       </>
     )
   }
