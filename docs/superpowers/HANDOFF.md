@@ -596,3 +596,28 @@ all** — its synthesized key events carry no default action, so a focused butto
 scores zero clicks on Enter and on Space. Every negative result it gave here
 was an artifact. `mcp__chrome-devtools__press_key` dispatches the real thing;
 prove the tool can reproduce the mechanism before trusting it to disprove one.
+
+## 回想 renderings: pick the example by sense, not by variety (2026-09-12)
+
+The first top-up batch after the original 253-word one — 30 words that had
+**zero** 回想 questions, two renderings each — and 9 of the 60 entries came
+back rendering a sense the app will not admit to. `apprehend` came back as
+领会, `reactive` as 化学性质活泼, `discretion` as 谨慎, `impairment` as 减值.
+
+Every one is a defensible translation of the English example it was handed.
+The problem is downstream: `buildSentenceQuestion` sets `hint` to
+`meanings[0].en` and nothing else, so the hint tier on a 领会 prompt reads
+"to catch and arrest someone suspected of a crime". The learner who takes
+the hint is told the answer is a different word than the one being asked.
+
+The cause is that the authoring instruction said "pick the two examples that
+show different situations", and a word's five examples are written to cover
+its senses — so "different situations" walks straight into the secondary
+sense on any polysemous word. 236 of 843 words carry more than one meaning,
+and the 15% hit rate matches.
+
+**The rule: render only the sense `meanings[0]` describes.** It is a content
+rule and not a validator rule because nothing in the data says which sense an
+example illustrates — `share` is per meaning, examples are not tagged. Give
+the authoring agent the gloss it must stay inside, and read the batch against
+it before merging; a sense mismatch passes every mechanical check there is.
