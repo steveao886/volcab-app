@@ -7,7 +7,7 @@ import { optionIndexFromKey } from '../lib/keys'
 import { pushRecent, recentWindow } from '../lib/passage'
 import { usableSentences } from '../lib/recallSentence'
 import type { RecallSentence } from '../lib/recallSentence'
-import { RECALL_RECENT_LIMIT, eligibleGroups, generateRecallSession, orderCorrect, wrongIdsFor } from '../lib/senseGroup'
+import { RECALL_COUNTS, RECALL_RECENT_LIMIT, eligibleGroups, generateRecallSession, orderCorrect, wrongIdsFor } from '../lib/senseGroup'
 import type { RecallFocus } from '../lib/senseGroup'
 import type { RecallQuestion, SenseGroup } from '../lib/senseGroup'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
@@ -15,8 +15,6 @@ import { storage } from '../lib/storage'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
 import { todayStr } from '../lib/srs'
-
-const QUESTION_COUNT = 10
 
 /**
  * 回想 — the Chinese-to-English direction. A scenario sentence appears
@@ -108,7 +106,7 @@ function RecallQuestionView({
    *
    * It sits on the question rather than the results page for the same
    * reason 巩固 does: the moment you know a word is too easy is the moment
-   * you just answered it without thinking, not ten questions later while
+   * you just answered it without thinking, not several questions later while
    * reconstructing which was which.
    */
   const ratingShown: 'easy' | 'hard' =
@@ -425,10 +423,11 @@ function RecallQuestionView({
  * markup with the four-choice flow.
  */
 /**
- * The three ways to start a round. Rendered before the first answer and
- * again on the results card — the two moments where switching costs
- * nothing. Deliberately not offered mid-round: picking one restarts the
- * session, and a stray tap on question seven would throw away six answers.
+ * The two things you set before a round: which words it may draw from, and
+ * how long it runs. Rendered before the first answer and again on the
+ * results card — the two moments where switching costs nothing.
+ * Deliberately not offered mid-round: either one restarts the session, and
+ * a stray tap on question seven would throw away six answers.
  */
 const FOCUSES: { key: RecallFocus; label: string; hint: string }[] = [
   { key: 'all', label: '普通', hint: '全部学过的词' },
@@ -436,27 +435,60 @@ const FOCUSES: { key: RecallFocus; label: string; hint: string }[] = [
   { key: 'fresh', label: '新词', hint: '近一个月加入词库' },
 ]
 
-function FocusChips({ focus, onFocus }: { focus: RecallFocus; onFocus: (f: RecallFocus) => void }) {
+function RecallOptions({
+  focus,
+  onFocus,
+  count,
+  onCount,
+}: {
+  focus: RecallFocus
+  onFocus: (f: RecallFocus) => void
+  count: number
+  onCount: (n: number) => void
+}) {
   return (
-    <div className="recall-focus">
-      <div className="recall-focus__row" role="group" aria-label="回想范围">
-        {FOCUSES.map(f => (
-          <button
-            key={f.key}
-            type="button"
-            className="chip"
-            aria-pressed={f.key === focus}
-            onClick={() => onFocus(f.key)}
-          >
-            {f.label}
-          </button>
-        ))}
+    <div className="recall-options">
+      {/* Both rows carry a visible label. One row could go without, because
+          the hint line underneath named what it was; two stacked rows of
+          bare chips cannot — 普通/失手过/新词 above 10/20/30/50 gives no clue
+          which is which. */}
+      <div className="recall-options__row">
+        <span className="muted recall-options__label">范围</span>
+        <div className="recall-options__chips" role="group" aria-label="回想范围">
+          {FOCUSES.map(f => (
+            <button
+              key={f.key}
+              type="button"
+              className="chip"
+              aria-pressed={f.key === focus}
+              onClick={() => onFocus(f.key)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
       </div>
       {/* The active range's rule, on screen rather than in a `title`. A
           tooltip is unreachable on a touch device, and as the button's
           accessible name it replaced the label outright — the chip read
           out as "回想断过连对、近一个月练习答错、或复习里忘掉过". */}
-      <p className="muted recall-focus__hint">{FOCUSES.find(f => f.key === focus)?.hint}</p>
+      <p className="muted recall-options__hint">{FOCUSES.find(f => f.key === focus)?.hint}</p>
+      <div className="recall-options__row">
+        <span className="muted recall-options__label">题数</span>
+        <div className="recall-options__chips" role="group" aria-label="每轮题数">
+          {RECALL_COUNTS.map(n => (
+            <button
+              key={n}
+              type="button"
+              className="chip num"
+              aria-pressed={n === count}
+              onClick={() => onCount(n)}
+            >
+              {n}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
@@ -467,6 +499,8 @@ export function RecallSession({
   sentences,
   focus,
   onFocus,
+  count,
+  onCount,
   onRestart,
 }: {
   words: Word[]
@@ -474,6 +508,8 @@ export function RecallSession({
   sentences: RecallSentence[]
   focus: RecallFocus
   onFocus: (f: RecallFocus) => void
+  count: number
+  onCount: (n: number) => void
   onRestart: () => void
 }) {
   const { progress, recordQuiz, recordRecall, rateRecall, consolidateWord } = useApp()
@@ -499,7 +535,7 @@ export function RecallSession({
     const recent = storage.get<string[]>('recentRecall') ?? []
     const seen = new Set(recent.slice(0, recentWindow(poolSize)))
     const debt = new Set(storage.get<string[]>('recallDebt') ?? [])
-    return generateRecallSession(groups, byId, progress, today, seen, debt, QUESTION_COUNT, Math.random, sentences, focus)
+    return generateRecallSession(groups, byId, progress, today, seen, debt, count, Math.random, sentences, focus)
   })
   const [index, setIndex] = useState(0)
   const [score, setScore] = useState(0)
@@ -510,7 +546,7 @@ export function RecallSession({
   const [reinforced, setReinforced] = useState<Set<string>>(new Set())
   /**
    * Questions to re-ask once the scored round is over. **Not scored** — the
-   * score is out of the ten questions the round actually asked, and a
+   * score is out of however many questions the round actually asked, and a
    * re-drill that could raise it would make 巩固 a way to buy points.
    */
   const [encore, setEncore] = useState<RecallQuestion[]>([])
@@ -661,7 +697,7 @@ export function RecallSession({
         ) : null}
 
         <div className="quiz-result__actions">
-          <FocusChips focus={focus} onFocus={onFocus} />
+          <RecallOptions focus={focus} onFocus={onFocus} count={count} onCount={onCount} />
           <Button variant="primary" size="lg" block onClick={onRestart}>
             再测一轮
           </Button>
@@ -680,7 +716,7 @@ export function RecallSession({
 
   return (
     <>
-      {index === 0 && !inEncore ? <FocusChips focus={focus} onFocus={onFocus} /> : null}
+      {index === 0 && !inEncore ? <RecallOptions focus={focus} onFocus={onFocus} count={count} onCount={onCount} /> : null}
       <div className="quiz-progress">
         <div
           className="progress"
