@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   buildOrderQuestion, buildRecallQuestion, eligibleGroups, generateRecallSession,
-  isRankable, orderCorrect, wrongIdsFor,
+  inRecallFocus, isRankable, orderCorrect, wrongIdsFor,
 } from './senseGroup'
 import type { RecallQuestion, SenseGroup } from './senseGroup'
 import { emptyProgress } from '../types'
@@ -578,5 +578,87 @@ describe('the draw is normalised per word, not per prompt', () => {
     expect(marked[0]).toBeGreaterThan(rich.get('carol') ?? 0)
     expect(marked[1]).toBeGreaterThan(poor.get('carol') ?? 0)
     expect(Math.abs(marked[0] - marked[1])).toBeLessThan(Math.min(...marked) / 2)
+  })
+})
+
+/**
+ * 回想's range picker. The contract that matters is the second test: a
+ * focus is a priority, not a filter, because the filter version of this
+ * idea is the stubborn-word drill — a list short enough that the user
+ * learns its order instead of the words.
+ */
+describe('recall focus', () => {
+  const word = (id: string, addedAt: string): Word => ({
+    id, headword: id, phonetic: `/${id}/`,
+    meanings: [{ pos: 'adj.', en: `def of ${id}`, zh: `${id}义` }],
+    examples: [`It felt ${id} today.`, `Another ${id} day.`],
+    synonyms: [], antonyms: [], collocations: [], relatedForms: [],
+    sourceNote: 't', addedAt,
+  })
+  const TODAY = '2026-09-12'
+  const OLD = '2026-06-01'
+  const NEW = '2026-09-01'
+  const ids = ['alpha', 'bravo', 'carol', 'delta', 'echo', 'fox']
+  // alpha and bravo are new; the rest came in months ago.
+  const ws = ids.map(id => word(id, id === 'alpha' || id === 'bravo' ? NEW : OLD))
+  const byId = new Map(ws.map(w => [w.id, w]))
+  const base = { state: 'review' as const, ease: 2.5, intervalDays: 5, due: '2026-09-20', stepIndex: 0, reps: 3, lapses: 0, lastReviewedAt: '2026-09-01T00:00:00Z' }
+  const prog = (): Progress => {
+    const p = emptyProgress()
+    for (const w of ws) p.words[w.id] = { ...base }
+    return p
+  }
+  const sentences = ids.flatMap(id => [0, 1].map(i => ({ id, i, zh: `${id}的第${i}句。`, target: `第${i}句` })))
+  const rngFrom = (seed: number) => () => {
+    seed = (seed * 1103515245 + 12345) % 2147483648
+    return seed / 2147483648
+  }
+
+  it('reads all three miss records, because no one of them sees the whole picture', () => {
+    const p = prog()
+    p.words.carol = { ...base, recall: { reps: 4, correct: 2, streak: 0, lastAt: '2026-09-10T00:00:00Z' } }
+    p.words.delta = { ...base, missedAt: '2026-09-05' }
+    p.words.echo = { ...base, lapses: 1 }
+    for (const id of ['carol', 'delta', 'echo']) {
+      expect(inRecallFocus('weak', id, byId, p, TODAY)).toBe(true)
+    }
+    expect(inRecallFocus('weak', 'fox', byId, p, TODAY)).toBe(false)
+    // A miss from two months ago is not "recently weak" — only lapses,
+    // which the review card owns, carry across the window.
+    p.words.fox = { ...base, missedAt: '2026-07-01' }
+    expect(inRecallFocus('weak', 'fox', byId, p, TODAY)).toBe(false)
+  })
+
+  it('fresh is about the word, not the record', () => {
+    const p = prog()
+    expect(inRecallFocus('fresh', 'alpha', byId, p, TODAY)).toBe(true)
+    expect(inRecallFocus('fresh', 'carol', byId, p, TODAY)).toBe(false)
+    expect(inRecallFocus('all', 'carol', byId, p, TODAY)).toBe(true)
+  })
+
+  it('leads with the focus, and still hands back a full round when the focus is one word', () => {
+    const p = prog()
+    p.words.carol = { ...base, lapses: 2 }
+    const qs = generateRecallSession([], byId, p, TODAY, new Set(), new Set(), 5, rngFrom(3), sentences, 'weak')
+    expect(qs).toHaveLength(5)
+    // The one weak word leads; the other four come from the rest of the
+    // library rather than the round being cut to a single question.
+    expect(qs[0].orderIds[0]).toBe('carol')
+    expect(new Set(qs.map(q => q.orderIds[0])).size).toBe(5)
+  })
+
+  it('puts every focused word first when there are enough of them', () => {
+    const p = prog()
+    for (const id of ['carol', 'delta', 'echo']) p.words[id] = { ...base, lapses: 1 }
+    const qs = generateRecallSession([], byId, p, TODAY, new Set(), new Set(), 3, rngFrom(9), sentences, 'weak')
+    expect(qs.map(q => q.orderIds[0]).sort()).toEqual(['carol', 'delta', 'echo'])
+  })
+
+  it("'all' is what shipped before the picker existed", () => {
+    const p = prog()
+    p.words.carol = { ...base, lapses: 5 }
+    const withAll = generateRecallSession([], byId, p, TODAY, new Set(), new Set(), 4, rngFrom(5), sentences, 'all')
+    const noArg = generateRecallSession([], byId, p, TODAY, new Set(), new Set(), 4, rngFrom(5), sentences)
+    expect(noArg.map(q => q.prompt)).toEqual(withAll.map(q => q.prompt))
   })
 })

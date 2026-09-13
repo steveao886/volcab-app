@@ -21,6 +21,7 @@ import { QuizQuestionView } from './QuizQuestion'
 import { ComposeSession } from './QuizCompose'
 import { PassageSession } from './QuizPassage'
 import { RecallSession } from './QuizRecall'
+import type { RecallFocus } from '../lib/senseGroup'
 import { SprintSession } from './QuizSprint'
 import './Quiz.css'
 
@@ -400,6 +401,16 @@ function QuizHub() {
 function QuizSessionPage({ mode }: { mode: QuizMode }) {
   const { words } = useApp()
   const [session, setSession] = useState(0)
+  // 回想's range lives in the URL beside the mode, like every other
+  // sub-mode in the app (`/review?mode=lapses`), and switches with
+  // replace: true so the system back gesture leaves 回想 instead of
+  // walking back through ranges.
+  const [params, setParams] = useSearchParams()
+  const raw = params.get('pick')
+  const focus: RecallFocus = raw === 'weak' || raw === 'fresh' ? raw : 'all'
+  const setFocus = useCallback((f: RecallFocus) => {
+    setParams(f === 'all' ? { mode: 'recall' } : { mode: 'recall', pick: f }, { replace: true })
+  }, [setParams])
 
   const passages = useLazyContent(mode === 'passage', loadPassages)
   const groups = useLazyContent(mode === 'recall' || mode === 'compose', loadGroups)
@@ -426,10 +437,12 @@ function QuizSessionPage({ mode }: { mode: QuizMode }) {
           />
         ) : (
           <RecallSession
-            key={`recall-${session}`}
+            key={`recall-${focus}-${session}`}
             words={words}
             groups={groups.data}
             sentences={sentences.data}
+            focus={focus}
+            onFocus={setFocus}
             onRestart={restart}
           />
         )
