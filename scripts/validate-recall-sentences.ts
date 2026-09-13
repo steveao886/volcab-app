@@ -21,6 +21,7 @@ const words = JSON.parse(readFileSync('data/words.json', 'utf8')).words as {
   id: string
   headword: string
   examples: string[]
+  meanings: { en: string }[]
 }[]
 const byId = new Map(words.map(w => [w.id, w]))
 const errors: string[] = []
@@ -43,7 +44,9 @@ const seen = new Set<string>()
 data.sentences.forEach((s: unknown, n: number) => {
   const at = `sentences[${n}]`
   if (typeof s !== 'object' || s === null) { errors.push(`${at}: not an object`); return }
-  const { id, i, zh, target } = s as { id?: unknown; i?: unknown; zh?: unknown; target?: unknown }
+  const { id, i, zh, target, sense } = s as {
+    id?: unknown; i?: unknown; zh?: unknown; target?: unknown; sense?: unknown
+  }
 
   if (typeof id !== 'string' || id === '') { errors.push(`${at}: id must be a non-empty string`); return }
   const w = byId.get(id)
@@ -77,6 +80,19 @@ data.sentences.forEach((s: unknown, n: number) => {
   if (target.length > MAX_TARGET) errors.push(`${at} (${key}): target is ${target.length} chars (max ${MAX_TARGET})`)
   const hits = zh.split(target).length - 1
   if (hits !== 1) errors.push(`${at} (${key}): target "${target}" appears ${hits}x in zh — must appear exactly once`)
+
+  // Which sense the example is about, driving the English hint. Dangling is
+  // the same class of fault as an id that is not in the library: the read
+  // side falls back to sense 0 and renders something plausible, so nothing
+  // downstream would ever report that this prompt points at a sense its word
+  // does not have.
+  if (sense !== undefined) {
+    if (!Number.isInteger(sense) || (sense as number) < 0) {
+      errors.push(`${at} (${key}): sense must be a non-negative integer, got ${JSON.stringify(sense)}`)
+    } else if ((sense as number) >= w.meanings.length) {
+      errors.push(`${at} (${key}): sense ${sense} but ${w.headword} has ${w.meanings.length} meaning(s) — the hint would silently fall back to sense 0`)
+    }
+  }
 })
 
 if (errors.length > 0) {
@@ -86,7 +102,8 @@ if (errors.length > 0) {
 }
 
 const covered = new Set(data.sentences.map((s: { id: string }) => s.id))
-console.log(`recallSentences: ${data.sentences.length} sentences OK, covering ${covered.size} words`)
+const tagged = data.sentences.filter((s: { sense?: number }) => (s.sense ?? 0) > 0).length
+console.log(`recallSentences: ${data.sentences.length} sentences OK, covering ${covered.size} words (${tagged} on a secondary sense)`)
 
 /**
  * The long-target tail, reported and never enforced — the same call
