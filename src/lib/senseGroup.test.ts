@@ -509,3 +509,74 @@ describe('the manual rating steers the draw', () => {
     expect(Math.abs(alpha - carol)).toBeLessThan(alpha)
   })
 })
+
+/**
+ * The draw is per word, not per prompt.
+ *
+ * Measured on the live content 2026-09-12: 253 of 843 words carry five
+ * renderings and 356 carry a single sense group, so before this an
+ * unnormalised pool handed a six-prompt word six tickets against a
+ * one-prompt word's one — 要多考 on `complacent` drew 50 rounds in 300
+ * where the same mark on `succumb` drew 6.
+ */
+describe('the draw is normalised per word, not per prompt', () => {
+  const word = (id: string): Word => ({
+    id, headword: id, phonetic: `/${id}/`,
+    meanings: [{ pos: 'adj.', en: `def of ${id}`, zh: `${id}义` }],
+    examples: [0, 1, 2, 3, 4].map(i => `A ${id} scene, number ${i}.`),
+    synonyms: [], antonyms: [], collocations: [], relatedForms: [],
+    sourceNote: 't', addedAt: '2026-07-01',
+  })
+  const ids = ['alpha', 'bravo', 'carol', 'delta', 'echo', 'fox']
+  const ws = ids.map(word)
+  const byId = new Map(ws.map(w => [w.id, w]))
+  // alpha owns five renderings; everyone else owns one. The live library's
+  // own split, in miniature.
+  const sentences = [
+    ...[0, 1, 2, 3, 4].map(i => ({ id: 'alpha', i, zh: `alpha的第${i}句。`, target: `第${i}句` })),
+    ...ids.slice(1).map(id => ({ id, i: 0, zh: `${id}的唯一一句。`, target: '唯一' })),
+  ]
+  const rngFrom = (seed: number) => () => {
+    seed = (seed * 1103515245 + 12345) % 2147483648
+    return seed / 2147483648
+  }
+  const prog = (ratings: Record<string, RecallRating>): Progress => {
+    const p = emptyProgress()
+    for (const w of ws) {
+      p.words[w.id] = {
+        state: 'review', ease: 2.5, intervalDays: 5, due: '2026-08-10',
+        stepIndex: 0, reps: 3, lapses: 0, lastReviewedAt: '2026-08-01T00:00:00Z',
+        ...(ratings[w.id] ? { recallRating: ratings[w.id] } : {}),
+      }
+    }
+    return p
+  }
+  // One question per round, so the round's own "distinct words" pass cannot
+  // flatten the difference the draw is being measured for.
+  const drawOrder = (p: Progress) => {
+    const counts = new Map<string, number>()
+    for (let s = 1; s <= 300; s++) {
+      const qs = generateRecallSession([], byId, p, '2026-08-10', new Set(), new Set(), 1, rngFrom(s), sentences)
+      for (const q of qs) counts.set(q.orderIds[0], (counts.get(q.orderIds[0]) ?? 0) + 1)
+    }
+    return counts
+  }
+
+  it('five renderings do not outdraw one, all else equal', () => {
+    const counts = drawOrder(prog({}))
+    const rich = counts.get('alpha') ?? 0
+    const poor = counts.get('bravo') ?? 0
+    // Unnormalised this was 5:1. Half the smaller count is loose enough for
+    // 300 rounds of noise and nowhere near loose enough to pass at 5:1.
+    expect(Math.abs(rich - poor)).toBeLessThan(poor / 2)
+  })
+
+  it('要多考 buys the same lift whether the word has five prompts or one', () => {
+    const rich = drawOrder(prog({ alpha: { level: 'hard', at: '2026-08-20T00:00:00Z' } }))
+    const poor = drawOrder(prog({ bravo: { level: 'hard', at: '2026-08-20T00:00:00Z' } }))
+    const marked = [rich.get('alpha') ?? 0, poor.get('bravo') ?? 0]
+    expect(marked[0]).toBeGreaterThan(rich.get('carol') ?? 0)
+    expect(marked[1]).toBeGreaterThan(poor.get('carol') ?? 0)
+    expect(Math.abs(marked[0] - marked[1])).toBeLessThan(Math.min(...marked) / 2)
+  })
+})
