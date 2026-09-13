@@ -8,6 +8,7 @@ import { pushRecent, recentWindow } from '../lib/passage'
 import { usableSentences } from '../lib/recallSentence'
 import type { RecallSentence } from '../lib/recallSentence'
 import { RECALL_RECENT_LIMIT, eligibleGroups, generateRecallSession, orderCorrect, wrongIdsFor } from '../lib/senseGroup'
+import type { RecallFocus } from '../lib/senseGroup'
 import type { RecallQuestion, SenseGroup } from '../lib/senseGroup'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
 import { storage } from '../lib/storage'
@@ -423,15 +424,56 @@ function RecallQuestionView({
  * the commit gate, the two question kinds and the re-drill share almost no
  * markup with the four-choice flow.
  */
+/**
+ * The three ways to start a round. Rendered before the first answer and
+ * again on the results card — the two moments where switching costs
+ * nothing. Deliberately not offered mid-round: picking one restarts the
+ * session, and a stray tap on question seven would throw away six answers.
+ */
+const FOCUSES: { key: RecallFocus; label: string; hint: string }[] = [
+  { key: 'all', label: '普通', hint: '全部学过的词' },
+  { key: 'weak', label: '失手过', hint: '回想断过连对、近一个月练习答错、或复习里忘掉过' },
+  { key: 'fresh', label: '新词', hint: '近一个月加入词库' },
+]
+
+function FocusChips({ focus, onFocus }: { focus: RecallFocus; onFocus: (f: RecallFocus) => void }) {
+  return (
+    <div className="recall-focus">
+      <div className="recall-focus__row" role="group" aria-label="回想范围">
+        {FOCUSES.map(f => (
+          <button
+            key={f.key}
+            type="button"
+            className="chip"
+            aria-pressed={f.key === focus}
+            onClick={() => onFocus(f.key)}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+      {/* The active range's rule, on screen rather than in a `title`. A
+          tooltip is unreachable on a touch device, and as the button's
+          accessible name it replaced the label outright — the chip read
+          out as "回想断过连对、近一个月练习答错、或复习里忘掉过". */}
+      <p className="muted recall-focus__hint">{FOCUSES.find(f => f.key === focus)?.hint}</p>
+    </div>
+  )
+}
+
 export function RecallSession({
   words,
   groups,
   sentences,
+  focus,
+  onFocus,
   onRestart,
 }: {
   words: Word[]
   groups: SenseGroup[]
   sentences: RecallSentence[]
+  focus: RecallFocus
+  onFocus: (f: RecallFocus) => void
   onRestart: () => void
 }) {
   const { progress, recordQuiz, recordRecall, rateRecall, consolidateWord } = useApp()
@@ -457,7 +499,7 @@ export function RecallSession({
     const recent = storage.get<string[]>('recentRecall') ?? []
     const seen = new Set(recent.slice(0, recentWindow(poolSize)))
     const debt = new Set(storage.get<string[]>('recallDebt') ?? [])
-    return generateRecallSession(groups, byId, progress, today, seen, debt, QUESTION_COUNT, Math.random, sentences)
+    return generateRecallSession(groups, byId, progress, today, seen, debt, QUESTION_COUNT, Math.random, sentences, focus)
   })
   const [index, setIndex] = useState(0)
   const [score, setScore] = useState(0)
@@ -619,6 +661,7 @@ export function RecallSession({
         ) : null}
 
         <div className="quiz-result__actions">
+          <FocusChips focus={focus} onFocus={onFocus} />
           <Button variant="primary" size="lg" block onClick={onRestart}>
             再测一轮
           </Button>
@@ -637,6 +680,7 @@ export function RecallSession({
 
   return (
     <>
+      {index === 0 && !inEncore ? <FocusChips focus={focus} onFocus={onFocus} /> : null}
       <div className="quiz-progress">
         <div
           className="progress"

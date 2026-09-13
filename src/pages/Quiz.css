@@ -456,6 +456,23 @@
 /* The commit gate: two full-width buttons, 我想好了 on top. Vertical rather
    than side-by-side so neither answer is the "small" one — 想不起来 is a
    first-class exit, and a cramped half-width button would say otherwise. */
+/* The 回想 range picker. A plain wrapped row: three chips at 375px fit on
+   one line, and wrapping is the right answer if a fourth is ever added. */
+.recall-focus {
+  margin-block-end: var(--sp-3);
+}
+
+.recall-focus__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.recall-focus__hint {
+  margin-block-start: var(--sp-2);
+  font-size: var(--fs-sm);
+}
+
 .recall-gate {
   display: grid;
   gap: var(--sp-3);

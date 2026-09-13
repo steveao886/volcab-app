@@ -1,6 +1,7 @@
 import { confusableIndex } from './contrast'
 import { hintFor } from './hint'
 import { difficultyWeight, shuffle, weightedShuffle } from './quiz'
+import { addDays } from './srs'
 import { buildSentenceQuestion, usableSentences } from './recallSentence'
 import type { RecallSentence } from './recallSentence'
 import type { Progress, RecallRating, RecallStat, Word } from '../types'
@@ -423,6 +424,61 @@ export function wrongIdsFor(q: RecallQuestion, pick: string[] | null): string[] 
 }
 
 /**
+ * Which slice of the library a 回想 round leans on. `?pick=` in the URL.
+ *
+ * **A priority, never a filter.** Each focus puts its own words in front of
+ * the round and leaves the rest behind them, so a round is always ten
+ * questions long and a focus that has run dry degrades into the ordinary
+ * draw instead of handing back three questions. The stubborn-word drill
+ * already showed what the filter version becomes — a fixed list the user
+ * has memorised the order of — and that is the failure this avoids.
+ */
+export type RecallFocus = 'all' | 'weak' | 'fresh'
+
+/** How far back 'weak' and 'fresh' look. */
+const FOCUS_DAYS = 30
+
+/**
+ * Does this word belong to the focus?
+ *
+ * **weak** — the union of the three places a miss is recorded, because no
+ * one of them sees the whole picture: `recall.streak` is 回想's own record
+ * and covers 123 words, `missedAt` is every other practice surface and
+ * covers the last 30 days only, and `lapses` is the review card, which is
+ * the only one of the three that can see a word forgotten at a 34-day
+ * interval. Measured 2026-09-12 over the live progress (635 askable
+ * words): 44 / 76 / 226 apiece, 282 in the union.
+ *
+ * **fresh** — added in the last 30 days, 144 words. Not a weakness signal
+ * and deliberately so: the July intake came in from an Evernote export of
+ * words the user had already written down once, while August and September
+ * were typed into the app as they were met. Same measurement day, the two
+ * cohorts differ by 0.08 of ease at matched reps — small — but the user
+ * reports the new ones as the hard ones, and this is the slice that lets
+ * them be practised as a group.
+ */
+export function inRecallFocus(
+  focus: RecallFocus,
+  id: string,
+  words: Map<string, Word>,
+  progress: Progress,
+  today: string,
+): boolean {
+  if (focus === 'all') return true
+  const cutoff = addDays(today, -FOCUS_DAYS)
+  if (focus === 'fresh') {
+    const w = words.get(id)
+    return w !== undefined && w.addedAt >= cutoff
+  }
+  const e = progress.words[id]
+  if (e === undefined) return false
+  const r = e.recall
+  return (r !== undefined && r.reps > 0 && r.streak === 0)
+    || (e.missedAt !== undefined && e.missedAt >= cutoff)
+    || e.lapses > 0
+}
+
+/**
  * How many answered 回想 prompts the recency record keeps.
  *
  * Deliberately not `RECENT_LIMIT` (60), which belongs to the passage
@@ -476,6 +532,7 @@ export function generateRecallSession(
   count: number,
   rng: () => number,
   sentences: RecallSentence[] = [],
+  focus: RecallFocus = 'all',
 ): RecallQuestion[] {
   // The two sources are drawn from one pool rather than one after the other.
   // Measured 2026-08-16: 147 learned words have no sense group at all, so
@@ -524,11 +581,16 @@ export function generateRecallSession(
   const drawn = weightedShuffle(candidates, weight, rng)
   // Stable partition into the three buckets above; each keeps its weighted
   // order within the bucket.
-  const ordered = [
-    ...drawn.filter(c => debt.has(c.key)),
-    ...drawn.filter(c => !debt.has(c.key) && !seen.has(c.key)),
-    ...drawn.filter(c => !debt.has(c.key) && seen.has(c.key)),
-  ]
+  // Four ranks, stable within each so the weighted order survives: 巩固
+  // debt, then the focus unseen, then the focus already seen, then
+  // everything else — which is what keeps a focused round ten questions
+  // long when the focus itself cannot fill one.
+  const rank = (c: RecallCandidate): number => {
+    if (debt.has(c.key)) return 0
+    const focused = inRecallFocus(focus, c.ids[0], words, progress, today)
+    return (focused ? 1 : 3) + (seen.has(c.key) ? 1 : 0)
+  }
+  const ordered = [0, 1, 2, 3, 4].flatMap(r => drawn.filter(c => rank(c) === r))
 
   const fillerPool = [...words.values()].filter(w => {
     const e = progress.words[w.id]
