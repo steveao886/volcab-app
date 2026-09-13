@@ -141,3 +141,44 @@ describe('buildSentenceQuestion', () => {
       .toEqual(buildSentenceQuestion(one, map(ws), fillers, idx, seq(7)))
   })
 })
+
+/**
+ * The hint is the only thing `sense` touches, and getting it wrong is not
+ * cosmetic: 107 of the 1,325 shipped renderings were built from a
+ * secondary-sense example, so `acrid` asked 尖刻 and offered "sharp, bitter
+ * smell or taste" as the help — pointing at a different word than the one
+ * being asked.
+ */
+describe('sense drives the English hint', () => {
+  const polysemous: Word = {
+    id: 'acrid', headword: 'acrid', phonetic: '/acrid/',
+    meanings: [
+      { pos: 'adj.', en: 'sharp and bitter in smell or taste', zh: '(气味、味道)刺鼻的' },
+      { pos: 'adj.', en: 'bitter and cutting in tone', zh: '(言辞)尖刻的' },
+    ],
+    examples: ['The acrid smoke reached the third floor.', 'His acrid remark ended the lunch.'],
+    synonyms: [], antonyms: [], collocations: [], relatedForms: [],
+    sourceNote: 't', addedAt: '2026-07-01',
+  }
+  const fillers = ['alpha', 'bravo', 'carol', 'delta'].map(id => w(id, 'adj.'))
+  const words = new Map([polysemous, ...fillers].map(x => [x.id, x]))
+  const rng = () => 0.5
+  const ask = (sense?: number) => buildSentenceQuestion(
+    { id: 'acrid', i: 1, zh: '他那句尖刻的评论让午餐不欢而散。', target: '尖刻', ...(sense === undefined ? {} : { sense }) },
+    words, fillers, new Map(), rng,
+  )
+
+  it('reads the tagged sense, not always the first', () => {
+    expect(ask(1)?.hint).toBe('bitter and cutting in tone')
+  })
+
+  it('defaults to sense 0 when untagged — every rendering authored before the field', () => {
+    expect(ask()?.hint).toBe('sharp and bitter in smell or taste')
+  })
+
+  it('falls back to sense 0 rather than dropping the hint when the index dangles', () => {
+    // The gate rejects this on write; if one ever reaches the app, a
+    // slightly-off hint beats a question that renders without one.
+    expect(ask(7)?.hint).toBe('sharp and bitter in smell or taste')
+  })
+})

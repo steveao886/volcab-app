@@ -1,3 +1,4 @@
+import { hintFor } from './hint'
 import { shuffle } from './quiz'
 import type { RecallQuestion } from './senseGroup'
 import type { Progress, Word } from '../types'
@@ -34,6 +35,30 @@ export interface RecallSentence {
   zh: string
   /** The chunk of `zh` that is the word itself, shown under an emphasis mark. */
   target: string
+  /**
+   * Which of the word's senses this example is about — an index into its
+   * `meanings`. Drives the English hint and nothing else, exactly as
+   * `SenseGroup.sense` does, and defaults to 0.
+   *
+   * The field a sense group needed once in 329 is needed **107 times in
+   * 1,325** here, and the difference is structural rather than an authoring
+   * lapse. A group's scenario is written for the group; a rendering is
+   * written for an example the word entry already carries, and
+   * `docs/word-entry-spec.md` has those five examples covering the word's
+   * senses in proportion to `share`. Rendering "every example except the
+   * ones about a secondary sense" would throw away a fifth of the material
+   * and silently ban 30%-share senses from 回想 — the same trade the sense
+   * field was added to avoid, at a hundred times the scale.
+   *
+   * Measured 2026-09-12 over the shipped file: 107 renderings (58 words)
+   * were built from a secondary-sense example while the hint still read
+   * `meanings[0].en`, so `acrid` asked 尖刻 and offered "sharp, bitter smell
+   * or taste" as the help.
+   *
+   * Optional, range-checked by validate-recall-sentences, out-of-range
+   * falling back to sense 0 at runtime — write strict, read lenient.
+   */
+  sense?: number
 }
 
 export interface RecallSentencesFile { version: 1; sentences: RecallSentence[] }
@@ -133,7 +158,7 @@ export function buildSentenceQuestion(
     // The English original, read straight off the word entry. Storing a copy
     // beside the rendering would give it somewhere to drift to.
     en,
-    hint: w.meanings[0]?.en,
+    hint: hintFor(w, s.sense),
     // No `why`: a retrieval question has no ranking to explain, and
     // restating the gloss here would be the padding the content rules keep
     // out of the authored files.

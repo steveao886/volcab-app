@@ -1,4 +1,5 @@
 import { confusableIndex } from './contrast'
+import { hintFor } from './hint'
 import { difficultyWeight, shuffle, weightedShuffle } from './quiz'
 import { buildSentenceQuestion, usableSentences } from './recallSentence'
 import type { RecallSentence } from './recallSentence'
@@ -294,26 +295,6 @@ const usableTarget = (g: SenseGroup): string | undefined => {
   const t = g.target?.trim()
   if (t === undefined || t === '') return undefined
   return g.zh.split(t).length - 1 === 1 ? t : undefined
-}
-
-/**
- * The English definition offered after 想不起来 — the middle term in
- * `situation → concept → word`, which is the path production actually takes.
- *
- * It can be offered at all because `en` is authored to carry the load:
- * docs/word-entry-spec.md requires it to "stand on its own", against the
- * goal of understanding English in English. The Chinese ambiguity that makes
- * the first attempt unfair is absent here — 减轻 is three words in this
- * library (alleviate / assuage / extenuate), but "to make suffering or a
- * problem less severe" is one.
- *
- * Out of range falls back to sense 0 instead of throwing: the write-side
- * gate already rejects a dangling index, and if one ever reaches the app the
- * right outcome is a slightly-off hint, not a question that fails to render.
- */
-const hintFor = (w: Word, sense?: number): string | undefined => {
-  const en = w.meanings[sense ?? 0]?.en ?? w.meanings[0]?.en
-  return typeof en === 'string' && en.trim() !== '' ? en : undefined
 }
 
 /**
