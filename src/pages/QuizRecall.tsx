@@ -7,7 +7,7 @@ import { optionIndexFromKey } from '../lib/keys'
 import { pushRecent, recentWindow } from '../lib/passage'
 import { usableSentences } from '../lib/recallSentence'
 import type { RecallSentence } from '../lib/recallSentence'
-import { eligibleGroups, generateRecallSession, orderCorrect, wrongIdsFor } from '../lib/senseGroup'
+import { RECALL_RECENT_LIMIT, eligibleGroups, generateRecallSession, orderCorrect, wrongIdsFor } from '../lib/senseGroup'
 import type { RecallQuestion, SenseGroup } from '../lib/senseGroup'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
 import { storage } from '../lib/storage'
@@ -450,8 +450,10 @@ export function RecallSession({
     // Recently seen prompts are demoted behind unseen ones — the same
     // windowing the passage picker uses (the one surface the repetition
     // audit measured at 0% repeats). The window scales with the eligible
-    // pool so something always stays fresh to draw. Anything marked 巩固
-    // last time jumps ahead of both.
+    // pool so something always stays fresh to draw, and above a pool of
+    // ~450 prompts RECALL_RECENT_LIMIT is the tighter of the two: what the
+    // list holds is the window from there on. Anything marked 巩固 last
+    // time jumps ahead of both.
     const recent = storage.get<string[]>('recentRecall') ?? []
     const seen = new Set(recent.slice(0, recentWindow(poolSize)))
     const debt = new Set(storage.get<string[]>('recallDebt') ?? [])
@@ -481,8 +483,11 @@ export function RecallSession({
 
   const handleAnswered = useCallback((correct: boolean, ids: string[], miss: Miss | null, q: RecallQuestion) => {
     // Seen means answered, not generated: quitting a session halfway must
-    // not mark the unreached prompts as stale.
-    storage.set('recentRecall', pushRecent(storage.get<string[]>('recentRecall') ?? [], q.prompt))
+    // not mark the unreached prompts as stale. The explicit limit is the
+    // point of the call: pushRecent's default 60 is the passage picker's
+    // corpus size, and on a 1,708-prompt pool it silently truncated the
+    // window recentWindow had computed. See RECALL_RECENT_LIMIT.
+    storage.set('recentRecall', pushRecent(storage.get<string[]>('recentRecall') ?? [], q.prompt, RECALL_RECENT_LIMIT))
     // The production record, collected per answer and written once at
     // settlement. Keyed on the question's own answer word, so a 排序 question
     // scores the word that had to come first — the same word wrongIdsFor

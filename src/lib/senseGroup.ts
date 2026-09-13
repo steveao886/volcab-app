@@ -442,6 +442,28 @@ export function wrongIdsFor(q: RecallQuestion, pick: string[] | null): string[] 
 }
 
 /**
+ * How many answered 回想 prompts the recency record keeps.
+ *
+ * Deliberately not `RECENT_LIMIT` (60), which belongs to the passage
+ * picker: that corpus is 42 passages, so 60 stored ids cover it whole and
+ * `recentWindow` is what actually binds. 回想 draws from 1,708 prompts
+ * (1,265 renderings + 443 groups, 2026-09-12), where `recentWindow` asks
+ * for 1,138 — a 60-entry list answers only for the last six rounds, and a
+ * word marked 要多考 comes back about every fifth round, so its prompts
+ * left the window just as they came round again and the demotion never
+ * fired. Measured over 300 simulated rounds before this: `complacent`
+ * marked 要多考 appeared 50 times and spent 14 of them on a single one of
+ * its six prompts.
+ *
+ * 300 rather than the full 1,138: thirty rounds of memory already dwarfs
+ * any word's return cadence, and this list lives in localStorage, where
+ * the words cache once walked the quota down (CLAUDE.md). At a measured
+ * 31.4 characters per prompt, 300 entries cost ~10 KB of the 5 MiB quota
+ * and 1,138 would cost ~39 KB to demote prompts nobody was about to see.
+ */
+export const RECALL_RECENT_LIMIT = 300
+
+/**
  * One session's worth of questions, alternating 唤词 / 排序 where the group
  * qualifies for both.
  *
@@ -489,6 +511,26 @@ export function generateRecallSession(
   // say. No cap on the product — the first pass below takes at most one
   // question per word, so even a very heavy word cannot take more than 1
   // of the round's slots.
+  // **The draw is normalised per answer word, not per prompt.** A word owns
+  // between 0 and 6 prompts — five renderings plus a group it leads — and an
+  // unnormalised pool hands each prompt its own ticket, so the same 要多考
+  // mark bought `complacent` (6 prompts) six times the exposure it bought
+  // `succumb` (1 prompt, no renderings): measured over 300 simulated
+  // rounds, 50 appearances against 6 from an identical mark, and 18
+  // against 8 once normalised. The gap does not close all the way and the
+  // remainder is content, not weighting — a one-prompt word cannot return
+  // until its only prompt leaves the recency window, so it is capped at
+  // one appearance per RECALL_RECENT_LIMIT / 10 rounds. The mark is a claim
+  // about the word, so the word is what the weight has to attach to; how
+  // many ways the content happens to ask it is an accident of which 253 of
+  // the 843 words got renderings (2026-09-12).
+  //
+  // Keyed on `ids[0]` because that is the answer for both sources — a
+  // group's `order[0]`, a rendering's word — and the answer is what the
+  // learner is being asked to produce. A group's other members ride along
+  // as distractors and own no share of the draw.
+  const owned = new Map<string, number>()
+  for (const c of candidates) owned.set(c.ids[0], (owned.get(c.ids[0]) ?? 0) + 1)
   const weight = (c: RecallCandidate) =>
     Math.max(...c.ids.map(id => {
       const w = words.get(id)
@@ -497,7 +539,7 @@ export function generateRecallSession(
       return difficultyWeight(w, progress, today)
         * recallWeight(e?.recall)
         * ratingWeight(e?.recallRating)
-    }))
+    })) / (owned.get(c.ids[0]) ?? 1)
   const drawn = weightedShuffle(candidates, weight, rng)
   // Stable partition into the three buckets above; each keeps its weighted
   // order within the bucket.
