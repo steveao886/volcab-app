@@ -621,3 +621,16 @@ rule and not a validator rule because nothing in the data says which sense an
 example illustrates — `share` is per meaning, examples are not tagged. Give
 the authoring agent the gloss it must stay inside, and read the batch against
 it before merging; a sense mismatch passes every mechanical check there is.
+
+**It worked, and the number is worth keeping.** The next batch — 560 words,
+1,119 renderings, 56 agents — shipped each word's chunk with its
+`ONLY_THIS_SENSE` gloss and an `other_senses_DO_NOT_RENDER` list beside the
+five examples, and the drift detector flagged **one** entry, itself a false
+positive (犀利 for `incisive`, which shares 利 with the unused 锋利的 sense).
+15% to 0.09%, from one paragraph in the brief.
+
+The mechanical pre-check still earned its keep: one entry in 1,119 put its
+target in the sentence twice (`secretion` rendered 内分泌科 beside 胰岛素的分泌),
+which no reviewer would catch by eye. Both halves are needed — the brief
+stops the failure a script cannot see, the script stops the one a reader
+cannot.
