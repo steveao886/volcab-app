@@ -691,12 +691,12 @@
       "zh": "合并之后,整个部门经历了一场剧变。",
       "target": "剧变",
       "order": [
-        "upheaval"
+        "upheaval",
+        "convulsion"
       ],
       "extra": [
         "disruption",
-        "shake-up",
-        "convulsion"
+        "shake-up"
       ],
       "en": "The merger put the whole department through an upheaval that took a year to settle.",
       "why": "upheaval 指根基被掀翻式的巨大变动,常伴随痛苦;disruption 只说原有进程被打断,可大可小;shake-up 偏口语,多指人事或架构的重新洗牌;convulsion 更剧烈也更文学化。"
@@ -829,12 +829,12 @@
       "zh": "服务器崩溃迫在眉睫,运维在凌晨两点被叫醒。",
       "target": "迫在眉睫",
       "order": [
-        "imminent"
+        "imminent",
+        "forthcoming"
       ],
       "extra": [
         "looming",
-        "in the offing",
-        "forthcoming"
+        "in the offing"
       ],
       "en": "With a crash imminent, the on-call engineer was woken at two in the morning.",
       "why": "imminent 指马上就要发生,时间极近且多为坏事;looming 强调阴影般压过来的感觉,可以还很远;impending 也指将至的坏事,但语气比 imminent 缓;forthcoming 是中性的即将到来,常用于会议、报告。"
@@ -1126,12 +1126,11 @@
         "autocracy"
       ],
       "extra": [
-        "dictatorship",
         "despotism",
         "authoritarian rule"
       ],
       "en": "Under him the country slid into autocracy within a decade.",
-      "why": "autocracy 指权力集于一人的政体本身,偏中性的政治学术语;dictatorship 更常指个人以强力攫取的统治;despotism 强调暴虐;authoritarian rule 侧重压制自由,不一定只有一人说了算。"
+      "why": "autocracy 指权力集于一人的政体本身,偏中性的政治学术语;despotism 强调暴虐;authoritarian rule 侧重压制自由,不一定只有一人说了算。"
     },
     {
       "zh": "裁员消息一出,基层员工首当其冲。",
@@ -1151,12 +1150,12 @@
       "zh": "他喝了两杯之后变得好斗,见谁都要争两句。",
       "target": "好斗",
       "order": [
-        "belligerent"
+        "belligerent",
+        "pugnacious"
       ],
       "extra": [
         "combative",
-        "aggressive",
-        "pugnacious"
+        "aggressive"
       ],
       "en": "Two drinks in, he turned belligerent and picked a fight with everyone.",
       "why": "belligerent 指摆出要打架的姿态,言语和神情都在寻衅;combative 强调好辩、事事要争;aggressive 范围最宽,也可以是褒义的有闯劲;pugnacious 更书面,形容天性好斗。"
@@ -1573,12 +1572,11 @@
         "steadfast"
       ],
       "extra": [
-        "unwavering",
         "staunch",
         "immovable"
       ],
       "en": "When everyone else changed their story she remained steadfast.",
-      "why": "steadfast 强调长期不动摇的忠诚与坚持,带温度;unwavering 侧重丝毫不晃动,多修饰 support、belief;staunch 指立场鲜明的坚定拥护者;resolute 强调下定决心后的果断。"
+      "why": "steadfast 强调长期不动摇的忠诚与坚持,带温度;staunch 指立场鲜明的坚定拥护者;resolute 强调下定决心后的果断。"
     },
     {
       "zh": "办公室空调坏了三天,里面酷热难耐。",
@@ -2031,11 +2029,11 @@
       "zh": "没人愿意直视那件事的严重程度。",
       "target": "严重程度",
       "order": [
-        "enormity"
+        "enormity",
+        "magnitude"
       ],
       "extra": [
         "gravity",
-        "magnitude",
         "sheer scale"
       ],
       "en": "Nobody wanted to look straight at the enormity of what had happened.",
@@ -2323,10 +2321,10 @@
       "zh": "他表面上的理由是身体原因,真正的原因谁都清楚。",
       "target": "表面上的",
       "order": [
-        "ostensible"
+        "ostensible",
+        "purported"
       ],
       "extra": [
-        "purported",
         "professed",
         "stated"
       ],
@@ -3737,12 +3735,11 @@
         "perturb"
       ],
       "extra": [
-        "unsettle",
         "rattle",
         "throw off"
       ],
       "en": "The midnight call perturbed her for the rest of the night.",
-      "why": "perturb 指打乱原本平静的心绪或系统状态,正式,物理上也指轨道摄动;unsettle 强调让人心里没底;rattle 是口语,指被吓得慌了手脚;throw off 侧重打乱节奏。"
+      "why": "perturb 指打乱原本平静的心绪或系统状态,正式,物理上也指轨道摄动;rattle 是口语,指被吓得慌了手脚;throw off 侧重打乱节奏。"
     },
     {
       "zh": "账上那几笔异常挪动预示着后来的暴雷。",
@@ -4456,12 +4453,11 @@
       "en": "The genial bartender remembered your order after one visit and always asked about your week.",
       "order": [
         "genial",
-        "agreeable"
-      ],
-      "extra": [
+        "agreeable",
         "affable"
       ],
-      "why": "genial 形容待人的温度：热络、亲切，让人如沐春风，只能形容人；agreeable 范围宽得多，可以说事物令人愉快，也可以说某人点头答应，唯独说不出这种主动的热络。"
+      "extra": [],
+      "why": "genial 形容待人的温度：热络、亲切，让人如沐春风，只能形容人；agreeable 范围宽得多，可以说事物令人愉快，也可以说某人点头答应，唯独说不出这种主动的热络；affable 侧重好说话、易攀谈，门槛低，不等于主动的热情。"
     },
     {
       "zh": "限时特惠只是个花招，那个折扣码半年来天天有效。",
@@ -4782,9 +4778,9 @@
         "turmoil"
       ],
       "extra": [
-        "overhaul"
+        "restructuring"
       ],
-      "why": "upheaval 强调突如其来的巨大变动，格局被整个掀翻，是事件；turmoil 强调持续的纷乱与不安，是状态——收件箱可以陷入 turmoil，但那不是一场 upheaval。"
+      "why": "upheaval 强调突如其来的巨大变动，格局被整个掀翻，是事件；turmoil 强调持续的纷乱与不安，是状态——收件箱可以陷入 turmoil，但那不是一场 upheaval。restructuring 是有计划的重组，这里人是自己走的，没有谁在操盘。"
     },
     {
       "zh": "两年没涨薪之后，车间里那股离心情绪再也藏不住。",
