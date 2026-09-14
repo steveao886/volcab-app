@@ -148,7 +148,14 @@
         {
           "pos": "n.",
           "en": "an official order, decree, or authorization issued by a person or body in power",
-          "zh": "命令;法令;(权威)授权"
+          "zh": "命令;法令;(权威)授权",
+          "share": 50
+        },
+        {
+          "pos": "adj.",
+          "en": "(of money) declared legal tender by a government's authority rather than backed by a physical commodity such as gold",
+          "zh": "(货币)法定的,由政府宣布而非有实物支撑的",
+          "share": 50
         }
       ],
       "examples": [
@@ -16363,7 +16370,7 @@
         "HR weighed the extenuating factors — a family emergency, a broken-down car — before deciding not to fire him.",
         "The professor wouldn't extenuate the late submission, even after hearing about the hospital visit.",
         "The judge cited extenuating circumstances — a defaulted power bill and a sick child — before reducing the fine by half.",
-        "The property manager agreed to extenuate the late fee once she saw the hospital paperwork explaining the missed rent payment."
+        "The hospital paperwork extenuated the missed payment enough that the property manager dropped the late fee entirely."
       ],
       "synonyms": [
         "mitigate",
@@ -17254,8 +17261,8 @@
       "meanings": [
         {
           "pos": "adj.",
-          "en": "(economics) describing the theory that benefits given to businesses and the wealthy eventually spread to benefit everyone else",
-          "zh": "(经济学)涓滴的;惠及富人后逐渐惠及大众的"
+          "en": "passing downward from those at the top to everyone below, whether wealth in economic theory or an effect spreading through a hierarchy",
+          "zh": "自上而下逐层传导的;(经济学)涓滴的,惠及富人后逐渐惠及大众的"
         }
       ],
       "examples": [
@@ -18022,7 +18029,7 @@
       "examples": [
         "The landlord protracted the repair negotiations for two months, and we still don't have working heat.",
         "Both sides protracted the merger talks so long that the smaller company ran out of cash before signing.",
-        "The custody battle protracted for nearly two years, draining both parents' savings long before a judge ever ruled.",
+        "The lawyers protracted the custody battle for nearly two years, draining both parents' savings long before a judge ever ruled.",
         "Her visa renewal got protracted for months by a missing document nobody at the embassy could clearly explain.",
         "The neighbors protracted their fence-line lawsuit so long that the disputed strip of grass grew waist-high before it settled."
       ],
@@ -31461,8 +31468,8 @@
       "meanings": [
         {
           "pos": "adj.",
-          "en": "extremely annoying or unpleasant to be around, especially because of arrogance",
-          "zh": "令人无法忍受的;傲慢得讨厌的"
+          "en": "so unpleasant or extreme that it cannot be put up with, whether a person's manner or a physical condition",
+          "zh": "令人无法忍受的;(人)傲慢得讨厌的;(热、痛等)难以忍受的"
         }
       ],
       "examples": [
@@ -34031,7 +34038,14 @@
         {
           "pos": "n.",
           "en": "a condition in which a physical or mental function is weakened or damaged, or the process of such weakening",
-          "zh": "损伤;缺陷;(功能)障碍"
+          "zh": "损伤;缺陷;(功能)障碍",
+          "share": 60
+        },
+        {
+          "pos": "n.",
+          "en": "(accounting) a lasting reduction in the recorded value of an asset, recognised when what it could realise falls below its carrying value",
+          "zh": "(会计)资产减值",
+          "share": 40
         }
       ],
       "examples": [
