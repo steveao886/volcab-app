@@ -225,10 +225,10 @@ exists with no note. Missing content is safe; dangling content is not.
   `"<id>: not in the vocabulary — this note can never render"`
   (`scripts/validate-word-notes.ts:51`) — which reads as "your note is wrong"
   when the truth is "your word list is stale".
-- Precedent, `docs/superpowers/HANDOFF.md:23`:
-  > "the repo copy stayed frozen at the original 476-word import snapshot, and
-  > the drift went unnoticed for months (the demo data having 5 extra words
-  > throws no error)."
+- Precedent: the repo copy once stayed frozen at the original 476-word import
+  snapshot while the user's in-app deletions went only to `volcab-data`, and the
+  drift went unnoticed for months — the demo data carrying 5 extra words throws
+  no error. See "Data lives in three synced files" in `CLAUDE.md`.
 - Detect it with `npm run check-live`; when the live file is confirmed the
   side to trust (no repo-only additions still pending a push), repair with
   `npm run check-live -- --write`, which overwrites the repo copy from the
@@ -266,7 +266,9 @@ fails with "missing usageScore". But if the entry is pushed straight to `volcab-
 `isWord` in `src/state/sync.ts:70-80` **does not check `usageScore`**, so it
 loads fine and then sorts last in the new-word queue forever:
 `src/lib/queue.ts:6-14` — "**Unscored doesn't mean high-frequency**, so the
-default has to sort last". This is HANDOFF known-issue #5 in reverse.
+default has to sort last". Newly added words once sat out of the review queue
+for months because `buildQueue` ordered new words by array position; this is
+that bug in reverse.
 
 ### 4.6 `staging.json` not trimmed after promotion
 
@@ -309,7 +311,7 @@ Steps marked **[BATCH]** should be done once for the whole batch, not per word.
 4. `npm run validate-words` → expect `OK: N entries passed validation`.
 5. `npm test` → the two full-library regression tests now cover the new
    examples. **Do not loosen `src/lib/headword.ts` if one fails** — rewrite the
-   sentence instead (`docs/superpowers/HANDOFF.md:64`).
+   sentence instead (see "Content rules" in `CLAUDE.md`).
 
 ### Phase C — top up the authored content
 
@@ -361,7 +363,8 @@ Steps marked **[BATCH]** should be done once for the whole batch, not per word.
     content differs, and exits 1 on any difference. The words just promoted
     into the repo copy are expected under `only repo` until they are also
     pushed to `volcab-data` — **apply them on top of the live copy, never
-    overwrite it with the repo copy** (`docs/superpowers/HANDOFF.md:25-31`).
+    overwrite it with the repo copy** (see "Data lives in three synced files"
+    in `CLAUDE.md`).
     `npm run check-live -- --write` runs the opposite direction — it
     overwrites the *repo* copy from the *live* file — so it is **not** the
     tool for pushing these additions; it is the repair for §4.1 below (repo
@@ -376,8 +379,8 @@ Steps marked **[BATCH]** should be done once for the whole batch, not per word.
 
 ### Phase E — ship
 
-15. `npm test && npx tsc -b --noEmit && npm run build && npx oxlint`
-    (`docs/superpowers/HANDOFF.md:38`).
+15. `npm test && npm run build && npm run lint && npm run validate`
+    (the gates in `CLAUDE.md`; `npm run check-live` too, which needs `gh`).
 16. Commit `data/words.json` + the two `src/data/*.json` files together — the
     notes are meaningless without the word and the word is incomplete without
     the notes. Push; `deploy.yml` bundles `src/data/*` into the app.
