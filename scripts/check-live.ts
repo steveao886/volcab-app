@@ -8,7 +8,7 @@
  * valid because they all read the repo copy as ground truth. Each was found
  * by a person diffing by eye. This is that diff as one command.
  *
- * Reads through the authenticated gh CLI (the same call HANDOFF documents by
+ * Reads through the authenticated gh CLI (the same call CLAUDE.md documents by
  * hand), so it never runs in CI and needs no PAT in a secret.
  *
  *   npx tsx scripts/check-live.ts            report, exit 1 on any difference

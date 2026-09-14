@@ -4,8 +4,7 @@ An architecture review on 2026-09-01 (three read-only sweeps over `src/lib`,
 `src/pages` + `src/components`, and `scripts` + CI, plus direct measurement
 of the live data repo and the browser storage footprint) produced eleven
 items rated "must" or "should". This document records the decisions and
-tradeoffs for the ones that involve a design choice. The plan that
-implements them is `docs/superpowers/plans/2026-09-01-architecture-hardening.md`.
+tradeoffs for the ones that involve a design choice.
 
 Two items were done directly on master before the plan and need no design:
 the raw NUL byte in `antonym.ts` (git treated the file as binary since
