@@ -750,11 +750,10 @@
         "conspire"
       ],
       "extra": [
-        "connive",
-        "scheme"
+        "connive"
       ],
       "en": "The two suppliers colluded to push the bid price up by thirty percent.",
-      "why": "collude 特指双方私下串通合谋牟利,几乎总含不法意味;conspire 泛指共谋,对象可以是任何计划;connive 更偏睁一眼闭一眼地纵容;scheme 只说在盘算,不一定有同伙。"
+      "why": "collude 特指双方私下串通合谋牟利,几乎总含不法意味;conspire 泛指共谋,对象可以是任何计划;connive 更偏睁一眼闭一眼地纵容。"
     },
     {
       "zh": "最富的一成和最穷的一成之间的差距还在拉大。",
@@ -2002,10 +2001,10 @@
       "target": "极其恶劣",
       "order": [
         "egregious",
-        "blatant"
+        "blatant",
+        "flagrant"
       ],
       "extra": [
-        "flagrant",
         "glaring"
       ],
       "en": "It was an egregious breach, and the regulator pulled the licence outright.",
@@ -3201,10 +3200,10 @@
       "zh": "两台仪器之间的温差小到勉强可察觉。",
       "target": "勉强可察觉",
       "order": [
-        "perceptible"
+        "perceptible",
+        "discernible"
       ],
       "extra": [
-        "discernible",
         "detectable",
         "just noticeable"
       ],
@@ -5217,9 +5216,7 @@
       "order": [
         "relentless",
         "inexorable",
-        "tenacious"
-      ],
-      "extra": [
+        "tenacious",
         "dogged"
       ],
       "why": "relentless 说的是一刻不减弱地持续下去，主语正是雨、压力、批评这类东西，落点在「不停」；inexorable 修饰的是拦不住、注定推进到底的趋势或进程，如房租上涨、期限逼近，一场雨并不朝任何结局推进；tenacious 是褒义的死咬不放，得有个主动坚持的人或抓握的动作；dogged 同样只形容人埋头硬扛，雨做不了它的主语。"
