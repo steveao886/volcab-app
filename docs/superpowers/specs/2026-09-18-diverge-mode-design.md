@@ -70,6 +70,16 @@ at distance 2.
 **Edit distance 1 therefore cannot collide inside an answer set — measured, not
 assumed.** It is forgiven.
 
+**One edit includes a swap of two adjacent letters.** Found by playing the
+mode, not by a test: `grumbel` for `grumble` is the commonest slip there is,
+and plain Levenshtein scores a transposition as two edits (a delete plus an
+insert), so it fell straight through the tolerance this rule exists to
+provide — the first real typo tried against the finished screen was rejected.
+Re-measured with the transposition counted as one edit, the library yields
+**the same 14 pairs** at distance 1 and still **zero** inside any answer set:
+not one word in this library is a transposition of another. The looser rule
+costs nothing it was protecting against.
+
 The 14 library-wide distance-1 pairs (`swindle`/`dwindle`,
 `disparate`/`disparage`, `inert`/`inept`, `gratify`/`ratify`,
 `receptive`/`deceptive`, `condign`/`consign`, `imprudence`/`impudence`,

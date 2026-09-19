@@ -231,8 +231,25 @@ describe('gradeInput', () => {
     expect(grade('obdurrate')).toEqual({ kind: 'hit', form: 'obdurate', wordId: 'obdurate', typo: true })
   })
 
+  it('rule 5: two swapped letters are one edit, not two', () => {
+    // `grumbel` for `grumble` — the commonest slip there is, and plain
+    // Levenshtein scores it as a delete plus an insert. Measured over the
+    // library, counting it as one edit adds no colliding pair at all.
+    expect(grade('obdurtae')).toEqual({ kind: 'hit', form: 'obdurate', wordId: 'obdurate', typo: true })
+  })
+
   it('rule 5 stops at distance 1', () => {
     expect(grade('obdrrrate')).toEqual({ kind: 'outside' })
+  })
+
+  it('rule 5 does not take two separate substitutions for a swap', () => {
+    // o-b-d-u-r-a-t-e with positions 2 and 5 both wrong is two edits, however
+    // much it looks like one mangled word.
+    expect(grade('obxurbte')).toEqual({ kind: 'outside' })
+  })
+
+  it('rule 5 does not take a non-adjacent swap for one edit', () => {
+    expect(grade('obturade')).toEqual({ kind: 'outside' })
   })
 
   it('rule 5 reports an already-found word rather than a fresh hit', () => {

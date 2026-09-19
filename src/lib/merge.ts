@@ -1,4 +1,11 @@
-import type { BestRecord, DailyStat, Progress, RecallRating, RecallStat } from '../types'
+import type { BestRecord, DailyStat, DivergeStat, Progress, RecallRating, RecallStat } from '../types'
+
+/**
+ * Local rather than imported from sync.ts: merge.ts is pure and must not pull
+ * in the module that owns network I/O. Same predicate, three lines.
+ */
+const isRecord = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null && !Array.isArray(v)
 
 /**
  * Two devices' 回想 records for one word.
@@ -144,6 +151,40 @@ function unionDismissed(a: Progress['dismissed'], b: Progress['dismissed']): str
   return [...ids].sort()
 }
 
+/**
+ * 发散 history, merged **per key** rather than by picking a side.
+ *
+ * Two devices play different concepts, so their records are largely disjoint;
+ * a wholesale pick would throw one device's whole history away every time the
+ * other synced. Within a key the two fields resolve differently on purpose:
+ * `best` is a record and takes the maximum, like bestSprint, so it can only
+ * ever go up; `size` and `lastAt` are a snapshot of one attempt and come from
+ * whichever side attempted it later.
+ *
+ * Junk survives a hand-edited file the same way unionDismissed's does —
+ * isProgress deliberately does not check this field, so anything can arrive
+ * here, and a malformed entry is skipped rather than allowed to throw inside
+ * the boot path.
+ */
+function mergeDiverge(a: Progress['diverge'], b: Progress['diverge']): Progress['diverge'] {
+  if (a === undefined && b === undefined) return undefined
+  const out: Record<string, DivergeStat> = {}
+  for (const side of [a, b]) {
+    if (!isRecord(side)) continue
+    for (const [key, stat] of Object.entries(side)) {
+      if (!isRecord(stat) || typeof stat.lastAt !== 'string') continue
+      const best = typeof stat.best === 'number' ? stat.best : 0
+      const size = typeof stat.size === 'number' ? stat.size : 0
+      const cur = out[key]
+      if (!cur) { out[key] = { best, size, lastAt: stat.lastAt }; continue }
+      out[key] = stat.lastAt > cur.lastAt
+        ? { best: Math.max(best, cur.best), size, lastAt: stat.lastAt }
+        : { ...cur, best: Math.max(best, cur.best) }
+    }
+  }
+  return out
+}
+
 export function mergeProgress(local: Progress, remote: Progress): Progress {
   const words: Progress['words'] = { ...remote.words }
   for (const [id, le] of Object.entries(local.words)) {
@@ -207,6 +248,7 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
   const bestSprint = pickBest(local.bestSprint, remote.bestSprint)
   const bestGuess = pickBest(local.bestGuess, remote.bestGuess)
   const dismissed = unionDismissed(local.dismissed, remote.dismissed)
+  const diverge = mergeDiverge(local.diverge, remote.diverge)
 
   // When neither side has one of these, **omit the key entirely** rather than writing
   // `bestSprint: undefined`: the latter would make `Object.hasOwn(p, 'bestSprint')` true,
@@ -220,5 +262,6 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
     ...(bestSprint === undefined ? {} : { bestSprint }),
     ...(bestGuess === undefined ? {} : { bestGuess }),
     ...(dismissed === undefined ? {} : { dismissed }),
+    ...(diverge === undefined ? {} : { diverge }),
   }
 }

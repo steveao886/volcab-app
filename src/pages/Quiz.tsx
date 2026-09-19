@@ -14,6 +14,7 @@ import type { RecallSentence } from '../lib/recallSentence'
 import { parseRecallCount } from '../lib/senseGroup'
 import type { SenseGroup } from '../lib/senseGroup'
 import type { ChunkAnnotation } from '../lib/sentenceChunk'
+import type { Concept } from '../lib/diverge'
 import { useApp } from '../state/store'
 import type { Progress, Word } from '../types'
 import { agoLabel, modeOverview, recommendMode } from './statsDerive'
@@ -22,6 +23,7 @@ import { QuizQuestionView } from './QuizQuestion'
 import { ComposeSession } from './QuizCompose'
 import { PassageSession } from './QuizPassage'
 import { RecallSession } from './QuizRecall'
+import { QuizDiverge } from './QuizDiverge'
 import type { RecallFocus } from '../lib/senseGroup'
 import { SprintSession } from './QuizSprint'
 import './Quiz.css'
@@ -50,6 +52,7 @@ const MODES = [
   { key: 'passage', label: '短文', desc: '整段文章挖空填词' },
   { key: 'antonym', label: '反义', desc: '给一个词,选出它的反义词' },
   { key: 'compose', label: '组句', desc: '拼出整句,并补上空缺的词' },
+  { key: 'diverge', label: '发散', desc: '给一个中文概念,把一族词全写出来' },
 ] as const
 
 type QuizMode = (typeof MODES)[number]['key']
@@ -102,6 +105,9 @@ const loadSentences = () => import('../data/recallSentences.json').then(m => (m.
 // on recallSentences.json: 回想 loads that file every session and must not
 // download a mode it does not use.
 const loadAnnotations = () => import('../data/sentenceChunks.json').then(m => (m.default as { chunks: ChunkAnnotation[] }).chunks)
+// 发散's authored concepts, split out for the same reason as the four above:
+// eight of the nine modes never touch this file.
+const loadConcepts = () => import('../data/concepts.json').then(m => (m.default as { concepts: Concept[] }).concepts)
 
 function ContentGate({ label, failed, retry }: { label: string; failed: boolean; retry: () => void }) {
   return (
@@ -119,12 +125,12 @@ function ContentGate({ label, failed, retry }: { label: string; failed: boolean;
 }
 
 /** Explanation for when no questions can be generated: each mode is missing something different, and one generic message would leave people not knowing what to do. */
-const EMPTY_HINT: Record<Exclude<QuizMode, 'sprint' | 'passage' | 'recall' | 'compose'>, string> = {
+const EMPTY_HINT: Record<Exclude<QuizMode, 'sprint' | 'passage' | 'recall' | 'compose' | 'diverge'>, string> = {
   mixed: '需要至少 4 个词条才能测试。当前词库还不够,先去添加或多学几个单词吧。',
   contrast: '你学过的词里还凑不出易混的一对。辨析只考已经学过的词 —— 拿两个没见过的词问「该用哪个」没有意义。再学一阵子,这里的题会自己多起来。',
   audio: '需要至少 4 个词条才能开始听音练习。当前词库还不够,先去添加或多学几个单词吧。',
   // Narrower than the others by construction: an antonym question needs the
-  // *pair* to be in the library, and only 106 of 566 words have a
+  // *pair* to be in the library, and only 392 of 931 words have a
   // library-internal opposite. Say that plainly rather than leaving the
   // impression the mode is broken.
   antonym: '你学过的词里还凑不出一对反义词。反义题两边都得是库里的词 —— 只有词条的「反义词」里写着另一个词条时才成对。再学一阵子,或给已有词条补上反义词,题就会多起来。',
@@ -143,7 +149,7 @@ function QuizSession({
   onRestart,
 }: {
   words: Word[]
-  mode: Exclude<QuizMode, 'sprint' | 'passage' | 'recall' | 'compose'>
+  mode: Exclude<QuizMode, 'sprint' | 'passage' | 'recall' | 'compose' | 'diverge'>
   onRestart: () => void
 }) {
   const { progress, recordQuiz } = useApp()
@@ -430,6 +436,7 @@ function QuizSessionPage({ mode }: { mode: QuizMode }) {
   const groups = useLazyContent(mode === 'recall' || mode === 'compose', loadGroups)
   const sentences = useLazyContent(mode === 'recall' || mode === 'compose', loadSentences)
   const annotations = useLazyContent(mode === 'compose', loadAnnotations)
+  const concepts = useLazyContent(mode === 'diverge', loadConcepts)
 
   const restart = useCallback(() => setSession(s => s + 1), [])
 
@@ -476,6 +483,17 @@ function QuizSessionPage({ mode }: { mode: QuizMode }) {
             annotations={annotations.data}
             groups={groups.data}
             sentences={sentences.data}
+            onRestart={restart}
+          />
+        )
+      ) : mode === 'diverge' ? (
+        concepts.data === null ? (
+          <ContentGate label="概念" failed={concepts.failed} retry={() => concepts.retry()} />
+        ) : (
+          <QuizDiverge
+            key={`diverge-${session}`}
+            words={words}
+            concepts={concepts.data}
             onRestart={restart}
           />
         )

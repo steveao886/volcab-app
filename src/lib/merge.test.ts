@@ -437,3 +437,53 @@ describe("mergeProgress's recallRating", () => {
     expect(m.words.alpha.recall?.reps).toBe(4)
   })
 })
+
+describe('mergeProgress diverge', () => {
+  const stat = (best: number, size: number, lastAt: string) => ({ best, size, lastAt })
+
+  it('merges per key, so two devices playing different concepts keep both histories', () => {
+    const local = emptyProgress(), remote = emptyProgress()
+    local.diverge = { 'stubborn|synonym': stat(5, 8, '2026-09-18T10:00:00Z') }
+    remote.diverge = { 'diligent|opposite': stat(2, 3, '2026-09-18T09:00:00Z') }
+    const m = mergeProgress(local, remote)
+    expect(Object.keys(m.diverge!).sort()).toEqual(['diligent|opposite', 'stubborn|synonym'])
+  })
+
+  it('best takes the maximum, so a record can only ever go up', () => {
+    const local = emptyProgress(), remote = emptyProgress()
+    // The later attempt scored worse. The record still stands.
+    local.diverge = { k: stat(3, 8, '2026-09-18T12:00:00Z') }
+    remote.diverge = { k: stat(7, 8, '2026-09-18T09:00:00Z') }
+    expect(mergeProgress(local, remote).diverge!['k'].best).toBe(7)
+  })
+
+  it('size comes from the later attempt, because it is a snapshot and not a record', () => {
+    const local = emptyProgress(), remote = emptyProgress()
+    local.diverge = { k: stat(3, 9, '2026-09-18T12:00:00Z') }
+    remote.diverge = { k: stat(7, 8, '2026-09-18T09:00:00Z') }
+    const m = mergeProgress(local, remote).diverge!['k']
+    expect(m).toEqual({ best: 7, size: 9, lastAt: '2026-09-18T12:00:00Z' })
+  })
+
+  it('takes a shrinking set at face value — the user deletes words', () => {
+    const local = emptyProgress(), remote = emptyProgress()
+    local.diverge = { k: stat(4, 3, '2026-09-18T12:00:00Z') }
+    remote.diverge = { k: stat(4, 8, '2026-09-18T09:00:00Z') }
+    expect(mergeProgress(local, remote).diverge!['k'].size).toBe(3)
+  })
+
+  it('omits the key entirely when neither side has one', () => {
+    const m = mergeProgress(emptyProgress(), emptyProgress())
+    expect(Object.hasOwn(m, 'diverge')).toBe(false)
+  })
+
+  it('skips junk rather than throwing inside the boot path', () => {
+    const local = emptyProgress(), remote = emptyProgress()
+    // isProgress deliberately does not check this field, so a hand-edited
+    // file reaches here intact.
+    ;(local as unknown as { diverge: unknown }).diverge = { good: stat(1, 2, '2026-09-18T10:00:00Z'), bad: 7, worse: { best: 3 } }
+    remote.diverge = { other: stat(2, 2, '2026-09-18T10:00:00Z') }
+    const m = mergeProgress(local, remote)
+    expect(Object.keys(m.diverge!).sort()).toEqual(['good', 'other'])
+  })
+})

@@ -728,3 +728,114 @@
   border-color: var(--danger);
   color: var(--danger);
 }
+
+/* ── 发散 ───────────────────────────────────────────────────────────────
+   One Chinese concept, every English word around it. The layout has to
+   hold a set of up to twelve answers at 375px, so the slots are a plain
+   stacked list rather than a grid: a two-column grid puts `uncompromising`
+   and `recalcitrant` on one row and both of them wrap. */
+.diverge-q {
+  display: grid;
+  gap: var(--sp-2);
+}
+.diverge-q__axis {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+.diverge-q__prompt {
+  font-size: var(--fs-md);
+  line-height: var(--lh-snug);
+}
+.diverge-q__ask {
+  font-size: var(--fs-sm);
+}
+.diverge-q__count {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+.diverge-q__grown {
+  margin-left: var(--sp-2);
+  padding: 2px var(--sp-2);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: var(--fs-xs);
+}
+
+.diverge-q__slots {
+  display: grid;
+  gap: var(--sp-1);
+  margin: var(--sp-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.diverge-slot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  /* A word not yet produced is shown as dots, which must not read as text:
+     the tracking is what separates •••••••• from a redacted word. */
+  letter-spacing: 0.04em;
+}
+/* The answer face, deliberately **not** .word: that is the 34px headword
+   style, and a set of up to twelve answers rendered at headword size clips
+   `uncompromising` off the card at 375px. Same serif, body size. */
+.diverge-slot__word {
+  font-family: var(--font-word);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+.diverge-slot--got {
+  border-color: var(--success);
+  background: var(--success-soft);
+}
+.diverge-slot--missed {
+  border-style: dashed;
+  border-color: var(--rule-strong);
+}
+/* The state in words, never in colour alone — same rule and same reason as
+   .quiz-option__tag. */
+.diverge-slot__tag {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.diverge-q__form {
+  display: grid;
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+}
+.diverge-q__note {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+.diverge-q__note--hit { color: var(--success); }
+/* Vermilion here is annotation, not decoration: it is the one verdict the
+   learner has to read, because the prefix is the whole question. */
+.diverge-q__note--prefix { color: var(--accent); }
+.diverge-q__actions {
+  display: flex;
+  gap: var(--sp-2);
+}
+.diverge-q__actions > * {
+  flex: 1;
+}
+.diverge-q__done {
+  display: grid;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+  font-size: var(--fs-sm);
+}
+.diverge-q__progress {
+  font-size: var(--fs-sm);
+}

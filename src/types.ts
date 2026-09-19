@@ -301,6 +301,31 @@ export interface DailyStat {
  */
 export interface BestRecord { score: number; date: string }
 
+/**
+ * One 发散 question's history, keyed `<conceptId>|<axis>`.
+ *
+ * **`best` is not a score out of N, because N moves.** A concept's answer set
+ * is the words you have learned that carry its anchors, so it grows as the
+ * library is learned — measured 2026-09-18, finishing the 152 words already in
+ * the library and adding none takes the mode from 86 questions to 118 and
+ * ≥4-answer questions from 26 to 44. Storing "8/8" would make it false the day
+ * the concept reached nine members. So the record stored is the raw count, and
+ * `size` is what the set held last time, which is the only way to tell the
+ * user 「这题比上次多了 2 个词」 rather than silently changing the denominator
+ * under them.
+ *
+ * Sets shrink too — the user deletes words in the app — so a smaller `size`
+ * than last time is normal data, not corruption.
+ */
+export interface DivergeStat {
+  /** Most answers ever produced on this question without a hint. */
+  best: number
+  /** How many answers the set held the last time it was asked. */
+  size: number
+  /** ISO timestamp of the last attempt. The merge key. */
+  lastAt: string
+}
+
 export interface Progress {
   version: 1
   /**
@@ -370,6 +395,20 @@ export interface Progress {
    * would become one only if suggestions were ever rejected by the thousand.
    */
   dismissed?: string[]
+  /**
+   * 发散 history, keyed `<conceptId>|<axis>`. See DivergeStat.
+   *
+   * **Optional**, like bestSprint and dismissed: a device on an older build
+   * pushes progress without the key, and that has to read as "this build does
+   * not know about 发散", never as "the records were reset". mergeProgress
+   * merges per key rather than picking a side, because two devices playing
+   * different concepts have disjoint records and a wholesale pick would throw
+   * one device's away.
+   *
+   * Bounded by the number of authored concepts times four axes — a few
+   * hundred entries at most, which is nothing against progress.json's budget.
+   */
+  diverge?: Record<string, DivergeStat>
 }
 
 export const emptyProgress = (): Progress => ({
