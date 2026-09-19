@@ -1,0 +1,219 @@
+{
+  "version": 1,
+  "concepts": [
+    {
+      "id": "stubborn",
+      "zh": "怎么劝都不松口,认死了自己那套",
+      "anchors": ["stubborn", "obstinate", "unyielding", "intransigent", "inflexible", "willful", "unmanageable"],
+      "exclude": ["tenacious", "refractory", "inexorable"],
+      "negations": ["implacable", "intractable", "intransigent", "uncompromising"]
+    },
+    {
+      "id": "extravagant",
+      "zh": "花钱大手大脚,场面铺得又大又阔",
+      "anchors": ["extravagant", "lavish", "opulent", "profligate", "wasteful"],
+      "exclude": ["profuse"]
+    },
+    {
+      "id": "diligent",
+      "zh": "做事肯下功夫,每一处都不马虎",
+      "anchors": ["assiduous", "diligent", "meticulous", "painstaking", "scrupulous", "sedulous", "thorough"],
+      "exclude": ["exacting", "laborious"]
+    },
+    {
+      "id": "combative",
+      "zh": "脾气冲,动不动就跟人对上",
+      "anchors": ["combative", "contentious", "quarrelsome", "hostile"],
+      "exclude": ["inimical"]
+    },
+    {
+      "id": "censure",
+      "zh": "当面或公开地斥责、问罪",
+      "anchors": ["admonish", "censure", "chide", "rebuke", "reprimand", "scold", "decry"]
+    },
+    {
+      "id": "weaken",
+      "zh": "一点一点被磨薄、被掏空",
+      "anchors": ["diminish", "undermine", "wane"],
+      "exclude": ["belittle"]
+    },
+    {
+      "id": "arduous",
+      "zh": "干起来吃力,耗时又耗人",
+      "anchors": ["arduous", "grueling", "laborious", "strenuous", "taxing"]
+    },
+    {
+      "id": "irritable",
+      "zh": "一点小事就上火,脸说变就变",
+      "anchors": ["cranky", "irritable", "testy"],
+      "exclude": ["fractious"]
+    },
+    {
+      "id": "ecstatic",
+      "zh": "高兴到收不住,整个人飘起来",
+      "anchors": ["ecstatic", "elated", "euphoric", "rapturous", "exuberant"],
+      "exclude": ["upbeat", "irrepressible"]
+    },
+    {
+      "id": "unobtrusive",
+      "zh": "不张扬,待在那儿也不惹人注意",
+      "anchors": ["discreet", "unassuming"],
+      "exclude": ["diplomatic"],
+      "negations": ["inconspicuous", "unobtrusive", "unpretentious"]
+    },
+    {
+      "id": "alleviate",
+      "zh": "把难受的那股劲往下压一压",
+      "anchors": ["ease", "lessen", "reduce"]
+    },
+    {
+      "id": "blatant",
+      "zh": "明摆着来,一点都不遮掩",
+      "anchors": ["blatant", "brazen", "flagrant", "glaring"],
+      "exclude": ["presumptuous", "egregious"]
+    },
+    {
+      "id": "sporadic",
+      "zh": "时有时无,隔一阵冒一次",
+      "anchors": ["erratic", "fitful", "intermittent", "sporadic"],
+      "exclude": ["capricious"]
+    },
+    {
+      "id": "diverse",
+      "zh": "什么样的都掺在里头,不是一路货",
+      "anchors": ["diverse", "varied"]
+    },
+    {
+      "id": "winding",
+      "zh": "绕来绕去,不肯走直路",
+      "anchors": ["digressive", "meandering", "rambling", "serpentine", "winding"]
+    },
+    {
+      "id": "perfidious",
+      "zh": "背后捅刀,说好的全不算数",
+      "anchors": ["disloyal", "duplicitous", "faithless"],
+      "exclude": ["treacherous"]
+    },
+    {
+      "id": "eminent",
+      "zh": "名气响、地位高,行里人都认",
+      "anchors": ["acclaimed", "distinguished", "eminent", "illustrious", "notable", "renowned"]
+    },
+    {
+      "id": "pervade",
+      "zh": "一点点渗开,最后哪儿都是",
+      "anchors": ["diffuse", "infuse", "permeate", "pervade", "saturate"]
+    },
+    {
+      "id": "placate",
+      "zh": "把对方的火气按下去,人哄住",
+      "anchors": ["appease", "conciliate", "mollify", "pacify", "placate"]
+    },
+    {
+      "id": "apathetic",
+      "zh": "无所谓,提不起一点兴趣",
+      "anchors": ["apathetic", "indifferent"]
+    },
+    {
+      "id": "conspire",
+      "zh": "几个人背地里凑一块儿谋划",
+      "anchors": ["connive", "conspiracy", "plot", "scheme"],
+      "exclude": ["scheme"]
+    },
+    {
+      "id": "extol",
+      "zh": "大张旗鼓地称颂,捧得很高",
+      "anchors": ["glorify", "laud", "praise"]
+    },
+    {
+      "id": "grudge",
+      "zh": "心里憋着一股不服和怨气",
+      "anchors": ["resentment"]
+    },
+    {
+      "id": "lethargic",
+      "zh": "提不起劲,整个人发蔫",
+      "anchors": ["listless", "sluggish", "torpid"]
+    },
+    {
+      "id": "disastrous",
+      "zh": "一出事就收不了场,损失惨重",
+      "anchors": ["calamitous", "catastrophic", "devastating", "disastrous"]
+    },
+    {
+      "id": "scarcity",
+      "zh": "不够用,缺口摆在那儿",
+      "anchors": ["dearth", "insufficiency", "paucity", "scarcity", "shortage"]
+    },
+    {
+      "id": "domineering",
+      "zh": "爱发号施令,压着别人来",
+      "anchors": ["bossy", "overbearing"]
+    },
+    {
+      "id": "repugnant",
+      "zh": "让人从心里犯恶心",
+      "anchors": ["odious"]
+    },
+    {
+      "id": "abrogate",
+      "zh": "把已经生效的东西作废、撤回",
+      "anchors": ["annul", "rescind", "revoke"]
+    },
+    {
+      "id": "opportune",
+      "zh": "赶得正是时候,分寸也刚好",
+      "anchors": ["opportune"]
+    },
+    {
+      "id": "grumble",
+      "zh": "嘟嘟囔囔地发牢骚",
+      "anchors": ["complain", "gripe"]
+    },
+    {
+      "id": "nonchalant",
+      "zh": "一脸没事人,半点不上心",
+      "anchors": ["nonchalant", "unconcerned"]
+    },
+    {
+      "id": "preside",
+      "zh": "坐镇主持,管着整摊事",
+      "anchors": ["oversee"]
+    },
+    {
+      "id": "subtle",
+      "zh": "含着不点破,得细看才看出来",
+      "anchors": ["subtle"]
+    },
+    {
+      "id": "intolerable",
+      "zh": "忍不下去,再多一点都受不住",
+      "anchors": ["intolerable", "insufferable", "unbearable"],
+      "exclude": ["obnoxious"],
+      "negations": ["insufferable", "intolerable", "unbearable"]
+    },
+    {
+      "id": "unparalleled",
+      "zh": "从没有过,也找不出第二个能比",
+      "anchors": ["unparalleled", "incomparable", "matchless"],
+      "negations": ["inimitable", "unparalleled", "unprecedented"]
+    },
+    {
+      "id": "resolute",
+      "zh": "一路不松劲,压力再大也不改口",
+      "anchors": ["relentless", "resolute"],
+      "negations": ["implacable", "inexorable", "uncompromising", "unwavering"]
+    },
+    {
+      "id": "disaffection",
+      "zh": "对眼下的处境和上头攒着一肚子意见",
+      "anchors": ["discontent", "dissatisfaction"],
+      "negations": ["disaffection", "discontent", "dissatisfaction"]
+    },
+    {
+      "id": "capitulate",
+      "zh": "顶不住了,最后还是让了步",
+      "anchors": ["capitulate", "concede", "submit", "surrender", "yield"]
+    }
+  ]
+}
