@@ -56,8 +56,16 @@ const asIfLearned: Progress = {
  */
 const NEG_PREFIXES = ['dis', 'non', 'un', 'in', 'im', 'ir', 'il']
 
+/**
+ * Member-set overlap at which two concepts stop being two questions. See the
+ * measurement where it is used.
+ */
+const NEAR_DUPLICATE = 0.6
+const NEAR_DUPLICATE_WARN = 0.4
+
 const seenIds = new Set<string>()
-const seenMembers = new Map<string, string>()
+const seenMembers = new Map<string, Set<string>>()
+const warnings: string[] = []
 
 for (const [i, c] of data.concepts.entries()) {
   const at = `[${i}] ${c.id ?? '(no id)'}`
@@ -105,10 +113,25 @@ for (const [i, c] of data.concepts.entries()) {
   // prevent — 固执 splits into three heavily overlapping raw buckets
   // (stubborn 9, unyielding 8, obstinate 6), and authoring them separately
   // would put all three in the same round.
-  const key = members.join('|')
-  const twin = seenMembers.get(key)
-  if (twin) errors.push(`${at}: resolves to exactly the same members as ${twin}`)
-  else seenMembers.set(key, c.id)
+  //
+  // Identity is not a tight enough test at 82 concepts: two sets differing by
+  // one word are still one question asked twice, and a round of 8 can draw
+  // both. So the check is an overlap ratio. Measured over the 82 concepts as
+  // authored, only 24 pairs share a member at all and the highest overlap is
+  // 0.44 (congenial / approachable, four words shared and genuinely two
+  // different ideas — 和蔼可亲 against 好接近爱交际). NEAR_DUPLICATE sits above
+  // every real pair and below identity.
+  for (const [otherId, other] of seenMembers) {
+    const shared = members.filter(id => other.has(id)).length
+    const union = new Set([...members, ...other]).size
+    const overlap = shared / union
+    if (overlap >= NEAR_DUPLICATE) {
+      errors.push(`${at}: ${Math.round(overlap * 100)}% of its members are also ${otherId}'s — one question asked twice`)
+    } else if (overlap >= NEAR_DUPLICATE_WARN) {
+      warnings.push(`${at} and ${otherId} share ${shared} of ${union} members (${Math.round(overlap * 100)}%) — check the two prompts do not read as the same question`)
+    }
+  }
+  seenMembers.set(c.id, new Set(members))
 
   // An exclusion that no anchor ever drags in is a stale note about a word
   // that has since been deleted or had its synonyms rewritten.
@@ -137,6 +160,12 @@ for (const c of data.concepts) {
 }
 console.log(`concepts: ${data.concepts.length} concepts OK, covering ${covered.size} words`)
 console.log(`  askable with the whole library learned — ${[...reach].map(([a, n]) => `${a} ${n}`).join(', ')}`)
+
+if (warnings.length > 0) {
+  console.log(`
+${warnings.length} close pair(s) — below the error threshold, read the prompts:`)
+  for (const wmsg of warnings) console.log('  ' + wmsg)
+}
 
 const thin = data.concepts.filter(c => conceptMembers(c, index, everything).length === MIN_ANSWERS)
 if (thin.length > 0) {

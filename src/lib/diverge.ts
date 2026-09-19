@@ -403,9 +403,17 @@ export function gradeInput(
  *
  * The mixing **is** the exercise — eight 近义 questions in a row train one
  * path, and the user asked for "锻炼思维脑回路", which is the switching. So
- * this is a round-robin over the axes rather than a weighted draw: a weighted
- * draw can legally return eight of the same axis, and the one property the
- * round must have is the one it would not guarantee.
+ * every axis that can be asked gets at least one slot, which a weighted draw
+ * alone would not guarantee.
+ *
+ * **The remaining slots go by pool size, and that part is not decoration.**
+ * A flat round-robin was the first implementation, and measured over the 82
+ * authored concepts it misbehaves visibly: the axes hold 82 / 47 / 31 / 6
+ * questions, so equal slots spend a quarter of every round on the 6-question
+ * 加否定 pool — you see all six within three rounds while the 82 近义 questions
+ * rotate four times slower. Across 30 rounds a flat draw reached only **101 of
+ * the 166** askable questions. Proportional-after-the-floor keeps all four
+ * axes on screen and stops the thinnest one from dominating.
  */
 export function generateDivergeSession(
   concepts: Concept[],
@@ -424,13 +432,49 @@ export function generateDivergeSession(
   }
   for (const axis of DIVERGE_AXES) byAxis.set(axis, shuffle(byAxis.get(axis)!, rng))
 
+  const live = DIVERGE_AXES.filter(a => byAxis.get(a)!.length > 0)
+  if (live.length === 0) return []
+
+  // One each first, so a thin axis is never crowded out entirely.
+  const slots = new Map<DivergeAxis, number>(live.map(a => [a, 0]))
+  let spent = 0
+  for (const axis of live) {
+    if (spent >= count) break
+    slots.set(axis, 1)
+    spent += 1
+  }
+
+  // The rest by highest averages: each remaining slot goes to whichever axis
+  // has the largest pool per slot it already holds. An axis that has been
+  // handed its whole pool scores zero and drops out, so leftovers flow to the
+  // deep pools by the same rule rather than by a separate top-up — which is
+  // what an earlier largest-remainder version needed, and that top-up quietly
+  // did the proportioning while the apportionment itself was dead code.
+  while (spent < count) {
+    let pick: DivergeAxis | null = null
+    let best = 0
+    for (const axis of live) {
+      const room = byAxis.get(axis)!.length - slots.get(axis)!
+      if (room <= 0) continue
+      const score = byAxis.get(axis)!.length / (slots.get(axis)! + 1)
+      if (score > best) { best = score; pick = axis }
+    }
+    if (!pick) break
+    slots.set(pick, slots.get(pick)! + 1)
+    spent += 1
+  }
+
+  // Interleaved rather than grouped: the switching has to happen question to
+  // question, not in blocks of three.
   const out: DivergeQuestion[] = []
   let drained = false
   while (out.length < count && !drained) {
     drained = true
-    for (const axis of DIVERGE_AXES) {
+    for (const axis of live) {
+      if (slots.get(axis)! <= 0) continue
       const q = byAxis.get(axis)!.shift()
       if (!q) continue
+      slots.set(axis, slots.get(axis)! - 1)
       drained = false
       out.push(q)
       if (out.length === count) break
