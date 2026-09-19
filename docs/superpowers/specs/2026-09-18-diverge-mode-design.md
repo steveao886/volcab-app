@@ -101,15 +101,29 @@ Chinese prompt is authored.**
 
 ### The four axes have enough to ask
 
-Seeded from the auto-merged clusters (see "Clusters are authored, not merged"
-below), counting only learned members:
+The auto-merged clusters (see "Clusters are authored, not merged" below) offer
+86 candidates; **82 were authored**, the four dropped being clusters whose
+members do not actually share a sense — `outrageous` pulls in `obscene`, whose
+first sense is 淫秽, and so on. Questions those 82 can ask:
 
-| axis | questions available today | note |
+| axis | today (779 learned) | whole library (931) |
 |---|---|---|
-| 近义 | **86** (≥3 answers), 26 with ≥4, 17 with ≥5 | largest has 12 |
-| 反面 | **24** (≥3 answers), 37 with ≥2 | largest has 13 |
-| 换词性 | **43** | see "换词性 answers are not all library words" |
-| 加否定 | authoring-bound | see below |
+| 近义 | 81 | 82 |
+| 换词性 | 39 | 47 | 
+| 反面 | 24 | 31 |
+| 加否定 | 6 | 6 |
+| **total** | **150** | **166** |
+
+The gap between the columns is the design working: membership is derived from
+what has been learned, so the pool fills in as the library is learned rather
+than needing to be re-authored.
+
+**加否定 is the one axis that does not grow, and 6 is all there is.** It draws
+on a hand-vetted table, and across all 82 concepts no other reaches three
+prefix-carrying members — scanning the learned words for a negation prefix
+returns 132 candidates of which roughly half are false (below), and what
+survives does not clump into concepts. This is a content ceiling, not a bug,
+and the axis is the thinnest one every round.
 
 Underlying stock: 363 library-internal antonym pairs, 224 with both sides
 learned, covering 392 words; 740 words carry `relatedForms` (1,157 forms, 256
@@ -212,6 +226,19 @@ One round is 8 questions drawn across all four axes, each carrying a label
 naming what it asks. The switching **is** the exercise the user asked for —
 eight 近义 questions in a row trains one path. A label is mandatory: without
 it you cannot tell which direction is being asked.
+
+**Every askable axis gets one slot; the rest go by pool size.** The first
+implementation was a flat rotation, two slots per axis, and at 82 authored
+concepts it misbehaves visibly: the pools are 82 / 47 / 31 / 6, so a quarter of
+every round went to the 6-question 加否定 pool — all six seen within three
+rounds while the 82 近义 questions rotated four times slower. Measured over 30
+rounds, a flat draw reached **101 of the 166** askable questions against
+**122** for the proportional one. The remaining slots are apportioned by
+highest averages (pool ÷ slots already held), which drops an exhausted axis out
+automatically and sends its leftovers to the deep pools by the same rule — the
+largest-remainder version it replaced needed a separate top-up for that, and
+the top-up was quietly doing the proportioning while the apportionment itself
+was dead code that no test could see.
 
 The axes share one authored Chinese prompt:
 
@@ -369,8 +396,13 @@ modes do not download it.
 - `zh` carries no Latin letter (it is on screen before any answer — one letter
   is a leak, the same rule `SenseGroup.zh` already has)
 - each concept reaches ≥3 members at **full-library** scope
-- no two concepts resolve to the same member set (near-duplicate prompts are
-  the specific failure the anchor design exists to prevent)
+- **no two concepts overlap by 60% of their members or more.** Identity is not
+  a tight enough test at 82 concepts: two sets differing by one word are one
+  question asked twice, and a round of 8 can draw both. Measured over the 82 as
+  authored, only 24 pairs share a member at all and the highest overlap is 0.44
+  (`congenial` / `approachable` — four words shared, and genuinely two ideas:
+  和蔼可亲 against 好接近爱交际). Anything from 0.40 up is reported for a person
+  to read the two prompts.
 - every `negations` entry actually carries a negation prefix relative to a
   base — checked by hand at authoring time, asserted here as a spelling check
   so a typo cannot slip in

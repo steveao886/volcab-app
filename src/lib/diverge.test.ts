@@ -290,6 +290,43 @@ describe('generateDivergeSession', () => {
       .toEqual(key(generateDivergeSession(concepts, WORDS, progressOf(ALL), 8, () => 0.3)))
   })
 
+  it('gives every askable axis at least one slot', () => {
+    const s = generateDivergeSession(concepts, WORDS, progressOf(ALL), 8, () => 0.5)
+    const axes = new Set(s.map(q => q.axis))
+    // All four are askable for this fixture, and a thin pool must not be
+    // crowded out by a fat one.
+    expect([...axes].sort()).toEqual(['negation', 'opposite', 'pos', 'synonym'])
+  })
+
+  it('spends the slots left over on the bigger pools', () => {
+    // `docile` resolves to amenable/compliant/docile, which between them have
+    // only two library opposites, no relatedForms and no negations — so a
+    // clone of it can ask 近义 and nothing else. Six of those beside six
+    // four-axis concepts make the pools 12 / 6 / 6 / 6, and **every axis still
+    // has room**, so the split is decided by proportionality and not by one
+    // axis running out. A flat rotation would hand out 3 / 3 / 3 / 3.
+    const full = Array.from({ length: 6 }, (_, i) => ({ ...CONCEPT, id: `f${i}` }))
+    const synonymOnly = Array.from({ length: 6 }, (_, i) => ({ id: `s${i}`, zh: '温顺', anchors: ['docile'] }))
+    const s = generateDivergeSession([...full, ...synonymOnly], WORDS, progressOf(ALL), 12, () => 0.5)
+    const n = (a: string) => s.filter(q => q.axis === a).length
+    expect([n('synonym'), n('opposite'), n('pos'), n('negation')]).toEqual([6, 2, 2, 2])
+  })
+
+  it('alternates axes question to question rather than serving them in blocks', () => {
+    // Equal pools and 8 questions means two slots per axis, so a round that
+    // interleaves opens with all four axes before repeating any. Serving them
+    // in blocks would put two 近义 in the first two positions.
+    const many = Array.from({ length: 12 }, (_, i) => ({ ...CONCEPT, id: `c${i}` }))
+    const s = generateDivergeSession(many, WORDS, progressOf(ALL), 8, () => 0.5)
+    expect(new Set(s.slice(0, 4).map(q => q.axis)).size).toBe(4)
+    expect(new Set(s.slice(4, 8).map(q => q.axis)).size).toBe(4)
+  })
+
+  it('fills the round from whatever is left rather than coming up short', () => {
+    const many = Array.from({ length: 12 }, (_, i) => ({ ...CONCEPT, id: `c${i}` }))
+    expect(generateDivergeSession(many, WORDS, progressOf(ALL), 8, () => 0.5)).toHaveLength(8)
+  })
+
   it('stops at the requested count', () => {
     expect(generateDivergeSession(concepts, WORDS, progressOf(ALL), 3, () => 0.5)).toHaveLength(3)
   })
