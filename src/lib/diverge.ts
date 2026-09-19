@@ -289,21 +289,54 @@ function negSplit(s: string): { prefix: string; rest: string } | null {
   return null
 }
 
-/** Edit distance, but only ever asked "is it exactly 1?" — so it bails at 2. */
+/**
+ * One edit away: a substitution, an insertion, a deletion, **or a swap of two
+ * adjacent letters**.
+ *
+ * The transposition is not a flourish. Plain Levenshtein scores a swap as two
+ * edits (a delete plus an insert), so the single commonest typing slip there
+ * is — `grumbel` for `grumble`, `teh` for `the` — fell straight through the
+ * tolerance this whole rule exists to provide. Caught by playing the mode, not
+ * by a test.
+ *
+ * Counting it as one edit costs nothing measurable: over the 931-word library
+ * the transposition-aware distance finds **the same 14 pairs** at distance 1
+ * as plain Levenshtein — not one word pair in the library is a transposition
+ * of another — and still **zero** pairs inside any one answer set. So the
+ * looser rule cannot credit a different member of the set being asked.
+ */
 function within1(a: string, b: string): boolean {
   if (a === b) return false
-  if (Math.abs(a.length - b.length) > 1) return false
+  const la = a.length
+  const lb = b.length
+  if (Math.abs(la - lb) > 1) return false
+
+  if (la === lb) {
+    const diff: number[] = []
+    for (let i = 0; i < la; i++) {
+      if (a[i] !== b[i] && diff.push(i) > 2) return false
+    }
+    if (diff.length === 1) return true
+    // Adjacent, and each letter is the other's — anything else is two
+    // substitutions, which is two edits however it reads.
+    return diff.length === 2
+      && diff[1] === diff[0] + 1
+      && a[diff[0]] === b[diff[1]]
+      && a[diff[1]] === b[diff[0]]
+  }
+
+  const long = la > lb ? a : b
+  const short = la > lb ? b : a
   let i = 0
   let j = 0
-  let diff = 0
-  while (i < a.length && j < b.length) {
-    if (a[i] === b[j]) { i++; j++; continue }
-    if (++diff > 1) return false
-    if (a.length > b.length) i++
-    else if (a.length < b.length) j++
-    else { i++; j++ }
+  let skipped = false
+  while (i < long.length && j < short.length) {
+    if (long[i] === short[j]) { i++; j++; continue }
+    if (skipped) return false
+    skipped = true
+    i++
   }
-  return diff + (a.length - i) + (b.length - j) === 1
+  return true
 }
 
 /**

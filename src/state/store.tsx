@@ -95,6 +95,16 @@ export interface AppActions {
   recordQuiz(correct: number, total: number, wrongIds: string[], mode: QuizMetricKey): void
   /** 回想 production record. Writes ProgressEntry.recall and nothing the scheduler owns. */
   recordRecall(results: { id: string; correct: boolean }[]): void
+  /**
+   * 发散 settlement: one entry per question played, keyed `<conceptId>|<axis>`.
+   *
+   * Writes only Progress.diverge. The words produced go through recordRecall
+   * and the words the user marked 这个我真不会 go through recordPractice, both
+   * of which already exist and neither of which touches the scheduler — so
+   * this action has no door into srs.ts at all, not even the narrow one
+   * recordQuiz has.
+   */
+  recordDiverge(rounds: { key: string; produced: number; size: number }[]): void
   /** The user's manual 回想 rating — 太简单 / 要多考, or 'none' to clear. Writes ProgressEntry.recallRating and nothing the scheduler owns. */
   rateRecall(id: string, level: RecallRating['level']): void
   /** 回想's 巩固 button: declare a quiz miss a real forget — missedAt stamped, lapses counted, nothing else moves */
@@ -1026,6 +1036,42 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
   }, [commitProgress, flushProgress])
 
   /**
+   * 发散 settlement. See the declaration for why it cannot reach the
+   * scheduler.
+   *
+   * `best` only ever rises and `size` is overwritten every time, which is the
+   * split mergeDiverge enforces across devices: the record is a record, the
+   * set size is a snapshot of the library as it stood. Reading last round's
+   * `size` back is the whole point — it is the only way the page can say
+   * 「这题比上次多了 2 个词」 instead of silently moving the denominator.
+   */
+  const recordDiverge = useCallback((rounds: { key: string; produced: number; size: number }[]) => {
+    if (rounds.length === 0) return
+    const at = new Date().toISOString()
+    const cur = stateRef.current.progress
+    const next = { ...(cur.diverge ?? {}) }
+    let asked = 0
+    let got = 0
+    for (const { key, produced, size } of rounds) {
+      const prev = next[key]
+      next[key] = { best: Math.max(prev?.best ?? 0, produced), size, lastAt: at }
+      asked += size
+      got += produced
+    }
+    // The daily tally, so the hub card can show this mode beside the other
+    // eight. bumpMode and quizTaken only — **no markMissed and no demotion**,
+    // exactly as recordSprint does it: the words this round did not reach are
+    // not misses, they are words that were not produced, and the summary
+    // screen is where the user says which of those was real.
+    const day = todayStr(new Date())
+    const stat = { ...(cur.dailyStats[day] ?? emptyStat()) }
+    stat.quizTaken += 1
+    bumpMode(stat, 'diverge', asked, got)
+    commitProgress({ ...cur, diverge: next, dailyStats: { ...cur.dailyStats, [day]: stat } })
+    void flushProgress()
+  }, [commitProgress, flushProgress])
+
+  /**
    * The user's own verdict on a word in 回想 — 太简单 / 要多考, or 'none' to
    * clear.
    *
@@ -1224,11 +1270,11 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
 
   const value = useMemo<AppContextValue>(() => ({
     ...state,
-    login, logout, grade, recordLapseDrill, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, rateRecall, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
+    login, logout, grade, recordLapseDrill, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll,
     ...(import.meta.env.DEV ? { enterDemoMode } : {}),
   }), [
-    state, login, logout, grade, recordLapseDrill, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, rateRecall, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
+    state, login, logout, grade, recordLapseDrill, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll, enterDemoMode,
   ])
 
