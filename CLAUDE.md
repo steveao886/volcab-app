@@ -169,6 +169,18 @@ Keyboard shortcuts must be printed on the control they trigger. An undocumented 
 - **Handling a key on keydown and moving focus in the same handler is the dangerous combination.** Chrome activates a focused button on the **keypress**, delivered to whatever holds focus when it is dispatched — not to the element that got the keydown. 组句 submitted on keydown, disabled the input and focused 下一题 in that same handler, so the rest of the press clicked 下一题 and the verdict lived 0.7ms. The fix is one `e.preventDefault()` on the keydown. 拼写 is safe because it submits through the form's *implicit submission*, which **is** the keypress's default action; 回想 is safe because each auto-focused button consumes its own keypress before handing focus on.
 - **`mcp__Claude_Browser__computer` cannot activate a button by keyboard at all** — its synthesized key events carry no default action, so a focused button scores zero clicks on Enter and on Space. Every negative result it gives about keyboard activation is an artifact. `mcp__chrome-devtools__press_key` dispatches the real thing. **Prove the tool can reproduce a mechanism before trusting it to disprove one.**
 - **HMR lies.** When behavior does not change after an edit, force-refresh before concluding the fix did nothing.
+- **A shared class name is a layout contract, not a look.** `.quiz-progress` is a
+  grid container and reusing it for a one-line counter stacked 第 / 1 / 8 / 题 onto
+  four lines; `.word` is the 34px headword face and reusing it for a list of
+  answers clipped `apathetic` off the card at 375px. Both passed tsc, lint and
+  the whole suite, and both were visible in the first screenshot. **Screenshot
+  any new screen at 375px before calling it done** — no other check in this repo
+  looks at layout.
+- **Play the thing, with a wrong answer.** 发散's typo tolerance was measured,
+  specified and unit-tested, and the first real typo typed into the finished
+  screen was rejected: a swap of two adjacent letters is two edits under plain
+  Levenshtein, and a swap is the commonest slip there is. Tests written from the
+  same model as the code share the model's blind spot.
 - **happy-dom's `Storage` is a Proxy that caches bound methods.** A `Storage.prototype.setItem` patch made after any write is inert, and a plain instance assignment is swallowed by the proxy's `set` trap. Patch with `Object.defineProperty` on the instance (see `refuseWrites` in `store.test.tsx`).
 
 ### Worktrees
@@ -195,6 +207,14 @@ directory harder to search. Write the plan wherever you like and let it go.
 Only the spec survives: `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` — what is being built and **why each tradeoff was chosen**. Read the relevant one before changing a subsystem; the reasoning behind a decision is harder to recover than the code implementing it.
 
 **Lessons that outlive their round belong in this file, not in a separate handoff doc.** `docs/superpowers/HANDOFF.md` held them until 2026-09-14 and was deleted: it had drifted into an inventory of word counts, test counts and feature tables that rotted, nobody read it, and the one time it mattered it was found only by accident. Everything load-bearing in it is above. Add to the matching section here instead — and keep it to rules and measured numbers, never inventory.
+
+**Re-measure against the rule as written, not the proxy you measured with.** A
+feasibility count said an axis had 33 askable questions; the rule that actually
+shipped in the spec yielded **1**, because the quick count had allowed the
+dominant part of speech and the rule did not. The gap was invisible until the
+number was recomputed from the specified rule. Any figure that justified a
+design decision has to be re-derived from the decision's final wording before
+the spec is committed.
 
 **Review in two phases**: first whether the right thing was built, then whether it was built well — and read the code rather than trusting the implementer's report. **After a change, break the production code on purpose and confirm the matching test goes red.** That once caught three tests that an early-exit path made into no-ops while they still showed green.
 
