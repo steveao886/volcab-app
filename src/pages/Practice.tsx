@@ -59,7 +59,8 @@ export function Practice() {
   const [filter] = useState(() => paramsToFilter(searchParams))
   // `pick=mixed` is the Today-page row: half struggling, half steady.
   // `pick=struggling` is the unlimited walk down the stubborn pool, entered
-  // from the lapse drill's finish screens (2026-08-15 spec). Anything else
+  // where 专攻顽固词 goes (2026-08-15 spec; the capped drill that used to
+  // link here was retired into it on 2026-09-21). Anything else
   // — including a missing value — is the library-slice mode, read side
   // lenient as ever.
   const [pick] = useState(() => searchParams.get('pick'))

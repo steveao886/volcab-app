@@ -1098,9 +1098,9 @@ describe('storage full', () => {
 // must match merge.ts's "equal score keeps the earlier date" -- if the two
 // disagree, a sync round trip will keep rewriting the date back and forth.
 
-// recordLapseDrill shares the same "practice never reshapes the schedule"
+// practiceGrade shares the same "practice never reshapes the schedule"
 // contract, but is the one path that can be triggered repeatedly on a
-// single word in a single day (the drill ignores due dates on purpose).
+// single word in a single day (a drill ignores due dates on purpose).
 // That repetition is exactly what the old implementation got wrong -- it
 // went through grade(), so each pass multiplied the interval by ease -- so
 // the interval-stability assertion below is the whole point of this block,
@@ -1163,86 +1163,16 @@ describe('recordQuiz: a quiz miss may shorten the schedule but never lengthen it
   })
 })
 
-describe('recordLapseDrill: drilling never moves the schedule outward', () => {
-  it('a correct answer leaves ease, interval and due exactly where they were', async () => {
-    await bootAsAlice()
-    await step(() => { app().grade('alpha', 'easy') })   // graduate it so there is an interval to protect
-    const before = app().progress.words['alpha']
-
-    await step(() => { app().recordLapseDrill('alpha', 'good') })
-
-    const after = app().progress.words['alpha']
-    expect(after.ease).toBe(before.ease)
-    expect(after.intervalDays).toBe(before.intervalDays)
-    expect(after.due).toBe(before.due)
-    expect(after.state).toBe(before.state)
-    expect(after.lapses).toBe(before.lapses)
-    // Not even lastReviewedAt. mergeProgress takes the entry with the later
-    // timestamp whole, so stamping a word that didn't otherwise change
-    // would let this stale copy overwrite a real review from another
-    // device. "Done for today" is tracked locally instead -- see
-    // DONE_KEY in Review.tsx.
-    expect(after).toBe(before)
-  })
-
-  it('ten passes in one day leave the interval untouched — this is the bug that pushed a drilled word out to 2027', async () => {
-    await bootAsAlice()
-    await step(() => { app().grade('alpha', 'easy') })
-    const before = app().progress.words['alpha']
-
-    for (let i = 0; i < 10; i++) await step(() => { app().recordLapseDrill('alpha', 'good') })
-
-    expect(app().progress.words['alpha'].intervalDays).toBe(before.intervalDays)
-    expect(app().progress.words['alpha'].due).toBe(before.due)
-  })
-
-  it('a miss stamps missedAt and counts the lapse, leaving the schedule — due included — alone', async () => {
-    await bootAsAlice()
-    await step(() => { app().grade('alpha', 'easy') })
-    const before = app().progress.words['alpha']
-    expect(before.due > today).toBe(true)
-
-    await step(() => { app().recordLapseDrill('alpha', 'again') })
-
-    const after = app().progress.words['alpha']
-    // due used to be pulled to today here. That put the word in the review
-    // queue, where grading it multiplied intervalDays — practice reshaping
-    // the schedule through the back door. strugglingPracticePool reads
-    // missedAt instead, and it cannot reach an interval.
-    expect(after.missedAt).toBe(today)
-    expect(after.due).toBe(before.due)
-    expect(after.lapses).toBe(before.lapses + 1)
-    expect(after.ease).toBe(before.ease)
-    expect(after.intervalDays).toBe(before.intervalDays)
-    expect(after.state).toBe(before.state)               // never demoted back to learning
-  })
-
-  it('counts as a review, not a quiz, so a day spent only drilling still keeps the streak', async () => {
-    await bootAsAlice()
-    await step(() => { app().grade('alpha', 'easy') })   // a drill can only reach a word that already has a record
-    const before = app().progress.dailyStats[today]
-
-    await step(() => { app().recordLapseDrill('alpha', 'good') })
-    await step(() => { app().recordLapseDrill('alpha', 'again') })
-
-    const after = app().progress.dailyStats[today]
-    expect(after.reviewed - before.reviewed).toBe(2)
-    expect(after.correct - before.correct).toBe(1)
-    expect(after.quizTaken).toBe(0)
-    expect(after.newLearned).toBe(before.newLearned)   // a drill only ever holds words that graduated long ago
-  })
-
-  it('a word deleted from another device mid-session is a no-op, not a crash', async () => {
-    await bootAsAlice()
-    const before = app().progress.words
-    await step(() => { app().recordLapseDrill('does-not-exist', 'good') })
-    expect(app().progress.words).toBe(before)
-  })
-})
+/* The recordLapseDrill block stood here. 顽固词 moved to the endless walk
+   on 2026-09-21 and the method went with it; recordConsolidation is
+   practiceGrade's only caller now, so the two assertions that were unique
+   to this block moved into its describe below. The rest asserted what
+   'a correct answer writes nothing' and 'still counts as a review' already
+   assert there. */
 
 // recordPractice is the same "practice never reshapes the schedule"
 // contract minus two more writes, and the subtractions are the reason it
-// exists rather than reusing recordLapseDrill. Free practice has no daily
+// exists rather than reusing practiceGrade. Free practice has no daily
 // budget and no completion -- the user can open it over any slice of the
 // library, as many times an hour as they like -- so the dailyStats
 // assertions below are not hygiene. If a casual flip counted as a review,
@@ -1429,7 +1359,7 @@ describe('recordPractice: free practice writes less than any other surface', () 
 
     await step(() => { app().recordPractice('alpha', true) })
 
-    // Object identity, the same guarantee recordLapseDrill's correct path
+    // Object identity, the same guarantee practiceGrade's correct path
     // makes. It is what keeps "a clean pass writes nothing" checkable
     // instead of merely approximately true -- a fresh object with equal
     // fields would still mark progress dirty and push a diff for nothing.
@@ -1450,7 +1380,7 @@ describe('recordPractice: free practice writes less than any other surface', () 
     expect(after.ease).toBe(before.ease)
     expect(after.intervalDays).toBe(before.intervalDays)
     expect(after.state).toBe(before.state)
-    // Unlike recordLapseDrill, a miss here is not a lapse: a lapse means
+    // Like practiceGrade, a miss here is not a lapse: a lapse means
     // forgetting a word you had learned, established on a graded review
     // card. Flipping past one casually is not that.
     expect(after.lapses).toBe(before.lapses)
@@ -1622,12 +1552,12 @@ describe('grade: the retention measurement', () => {
     expect(app().progress.dailyStats[today]).toMatchObject({ reviewPhase: 1, reviewPhaseCorrect: 0 })
   })
 
-  it('practice drills stay out of it — they re-test the words you already struggle with', async () => {
+  it('practice stays out of it — it re-tests the words you already struggle with', async () => {
     await bootAsAlice()
     await step(() => { app().grade('alpha', 'easy') })
     const before = app().progress.dailyStats[today].reviewPhase
-    await step(() => { app().recordLapseDrill('alpha', 'again') })
     await step(() => { app().recordConsolidation('alpha', 'again') })
+    await step(() => { app().recordPractice('alpha', false) })
     expect(app().progress.dailyStats[today].reviewPhase).toBe(before)
   })
 })
@@ -1643,12 +1573,12 @@ describe('recordConsolidation: same contract, but a fumble is not a lapse', () =
     const after = app().progress.words['alpha']
     expect(after.missedAt).toBe(today)
     expect(after.due).toBe(before.due)
-    expect(after.lapses).toBe(before.lapses)     // the one difference from recordLapseDrill
+    expect(after.lapses).toBe(before.lapses)     // nothing outside a scheduled review counts one
     expect(after.ease).toBe(before.ease)
     expect(after.intervalDays).toBe(before.intervalDays)
   })
 
-  it('a correct answer writes nothing to the word, same as the lapse drill', async () => {
+  it('a correct answer writes nothing to the word at all, not even lastReviewedAt', async () => {
     await bootAsAlice()
     await step(() => { app().grade('alpha', 'easy') })
     const before = app().progress.words['alpha']
@@ -1664,6 +1594,29 @@ describe('recordConsolidation: same contract, but a fumble is not a lapse', () =
     const after = app().progress.dailyStats[today]
     expect(after.reviewed - before.reviewed).toBe(1)
     expect(after.correct - before.correct).toBe(1)
+    expect(after.quizTaken).toBe(0)
+    expect(after.newLearned).toBe(before.newLearned)
+  })
+
+  it('ten passes in one day leave the interval untouched — this is the bug that pushed a drilled word out to 2027', async () => {
+    // practiceGrade's whole reason for existing, and the assertion is not
+    // about consolidation specifically: it is about the grading path, which
+    // recordConsolidation is now the only caller of.
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    const before = app().progress.words['alpha']
+
+    for (let i = 0; i < 10; i++) await step(() => { app().recordConsolidation('alpha', 'good') })
+
+    expect(app().progress.words['alpha'].intervalDays).toBe(before.intervalDays)
+    expect(app().progress.words['alpha'].due).toBe(before.due)
+  })
+
+  it('a word deleted from another device mid-session is a no-op, not a crash', async () => {
+    await bootAsAlice()
+    const before = app().progress.words
+    await step(() => { app().recordConsolidation('does-not-exist', 'good') })
+    expect(app().progress.words).toBe(before)
   })
 })
 
