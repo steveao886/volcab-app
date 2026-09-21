@@ -17,7 +17,7 @@ import type { ChunkAnnotation } from '../lib/sentenceChunk'
 import type { Concept } from '../lib/diverge'
 import { useApp } from '../state/store'
 import type { Progress, Word } from '../types'
-import { agoLabel, modeOverview, recommendMode } from './statsDerive'
+import { agoLabel, modeOverview, orderByRecency, recommendMode } from './statsDerive'
 import type { ModeOverviewRow } from './statsDerive'
 import { QuizQuestionView } from './QuizQuestion'
 import { ComposeSession } from './QuizCompose'
@@ -31,7 +31,7 @@ import './Quiz.css'
 const QUESTION_COUNT = 10
 
 /**
- * The eight practice surfaces. `?mode=` drives which one renders,
+ * The nine practice surfaces. `?mode=` drives which one renders,
  * consistent with `/review?mode=lapses`; `/quiz` with no (or an unknown)
  * mode renders the hub.
  *
@@ -39,9 +39,14 @@ const QUESTION_COUNT = 10
  * That comment was written at four modes; at seven, the chip row had
  * stopped carrying information — no descriptions, no per-mode stats,
  * nothing marking a neglected mode. Sketch 002 (winner B) trades exactly
- * one tap for making the modes comparable at a glance; the mixed
- * card spans full width at the top so the every-day default stays the
- * largest, first target.
+ * one tap for making the modes comparable at a glance.
+ *
+ * **This array is the tie-break order, not the render order.** The hub
+ * sorts by recency (orderByRecency), so the biggest, first target is
+ * whatever was played last rather than 综合 by name — at nine modes the
+ * one you came back for beats the one that was the default at four. The
+ * order here still decides which of several modes played on the same day
+ * leads, and it must stay append-only for that reason.
  */
 const MODES = [
   { key: 'mixed', label: '综合', desc: '中英互认 + 例句填空,日常主力' },
@@ -365,17 +370,22 @@ function QuizHub() {
   const rows = useMemo(() => modeOverview(progress), [progress])
   const rec = useMemo(() => recommendMode(rows), [rows])
   const byKey = useMemo(() => new Map(rows.map(r => [r.mode, r])), [rows])
+  const ordered = useMemo(() => orderByRecency(MODES, rows), [rows])
 
   return (
     <Page eyebrow="Quiz" title="测试" back="/">
       <div className="quiz-hub">
-        {MODES.map(m => {
+        {/* The wide slot belongs to the position, not to a named mode: the
+            most recent card leads and spans both columns. That also keeps
+            the grid whole — nine cards is an odd count, and 1 + 4×2 fills
+            every row where 9×1-wide-plus-8 would leave an orphan. */}
+        {ordered.map((m, i) => {
           const row = byKey.get(m.key)
           return (
             <Link
               key={m.key}
               to={`/quiz?mode=${m.key}`}
-              className={`card card--interactive quiz-mode-card${m.key === 'mixed' ? ' quiz-mode-card--wide' : ''}`}
+              className={`card card--interactive quiz-mode-card${i === 0 ? ' quiz-mode-card--wide' : ''}`}
             >
               {rec === m.key && <span className="quiz-mode-card__badge">推荐</span>}
               <p className="quiz-mode-card__name">{m.label}</p>
