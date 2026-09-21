@@ -124,7 +124,7 @@ export interface LoadInputs {
   activeDays: number
   /** Steady-state cards a day from the schedule alone: the sum of 1/interval over every started word. */
   duePerDay: number
-  /** Cards the lapse drill costs on a day it is taken — the struggling words, capped at the session size. */
+  /** Cards a 顽固词加练 sitting costs on a day it is taken — the struggling words, capped at one sitting. */
   lapseDrill: number
   /** Words never started; when this hits zero, newPerDay stops meaning anything. */
   unlearned: number
@@ -154,8 +154,9 @@ const GRADES_PER_NEW_WORD = LEARNING_STEPS + 1
  * work reads as spare capacity for new words. It did, and the advice was
  * to more than double an intake that was already full.
  *
- * The lapse drill is a fixed daily cost that does not move with the
- * intake, so it comes off the top on both sides.
+ * A 顽固词加练 sitting is a fixed daily cost that does not move with the
+ * intake, so it comes off the top on both sides. The walk itself is
+ * endless, so what is modelled is a sitting, not the pool.
  *
  * Not modelled, on purpose: "again" re-shows, which are a property of the
  * day rather than of the setting; and the future reviews today's new words

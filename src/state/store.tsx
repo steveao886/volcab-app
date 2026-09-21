@@ -67,8 +67,7 @@ export interface AppActions {
   logout(): void
   grade(wordId: string, g: Grade): void
   /** Stubborn-word drill, graded one card at a time: practice only, so a miss stamps missedAt and nothing else moves */
-  recordLapseDrill(wordId: string, g: Grade): void
-  /** Same-day consolidation pass over today's new words. Practice, like recordLapseDrill, but a miss is not counted as a lapse */
+  /** Same-day consolidation pass over today's new words. Practice: a miss stamps missedAt and nothing the scheduler owns moves. */
   recordConsolidation(wordId: string, g: Grade): void
   /**
    * Free practice (`/practice`): the thinnest write in the app. A miss stamps
@@ -750,13 +749,10 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
   }, [commitProgress, schedulePush])
 
   /**
-   * Grading inside a stubborn-word drill. **Practice, not review.**
+   * Grading inside a drill that uses the review card. **Practice, not
+   * review.**
    *
-   * Same contract as recordQuiz — a missed word only gets its due date
-   * pulled forward, ease/intervalDays/state are never touched — but graded
-   * one card at a time, because the drill uses the review card UI.
-   *
-   * Why this can't just call grade(): the drill deliberately ignores due
+   * Why this can't just call grade(): a drill deliberately ignores due
    * dates, so the same word can be graded again and again on one day, and
    * every pass through gradeWord multiplies the interval by ease. Measured
    * on the live library before this change: the seven drilled words had
@@ -765,13 +761,12 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
    * whole library. Drilling the hardest words had scheduled them furthest
    * away, which is precisely backwards.
    *
-   * A miss still increments `lapses`: forgetting a word is a fact about
-   * the word, not about which screen you were on, and it is the signal
-   * that keeps a genuinely stubborn word at the top of tomorrow's list.
-   * That counter feeds ranking only — it is not part of the schedule.
-   */
-  /**
-   * The one grading path shared by both practice drills.
+   * It took a `countLapse` flag until 2026-09-21, because the stubborn-word
+   * drill counted a miss as a lapse while consolidation did not. 顽固词
+   * moved to the endless walk, which records through recordPractice, so
+   * consolidation is the only caller left and the flag went with the drill.
+   * A lapse is now written by exactly one thing, gradeWord on a failed
+   * scheduled review — which is what the word has always meant.
    *
    * A correct answer writes **nothing at all** to the word — not even
    * lastReviewedAt. mergeProgress takes whichever side's entry has the
@@ -786,7 +781,7 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
     return rest
   }
 
-  const practiceGrade = useCallback((wordId: string, g: Grade, countLapse: boolean) => {
+  const practiceGrade = useCallback((wordId: string, g: Grade) => {
     const now = new Date()
     const day = todayStr(now)
     const cur = stateRef.current.progress
@@ -813,7 +808,6 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
           ...prev,
           missedAt: day,
           lastReviewedAt: now.toISOString(),
-          ...(countLapse ? { lapses: prev.lapses + 1 } : {}),
         }
     commitProgress({
       ...cur,
@@ -823,15 +817,9 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
     schedulePush()
   }, [commitProgress, schedulePush])
 
-  const recordLapseDrill = useCallback(
-    (wordId: string, g: Grade) => practiceGrade(wordId, g, true),
-    [practiceGrade],
-  )
-
   /**
-   * Grading inside the same-day consolidation pass. Same practice contract
-   * as recordLapseDrill with one deliberate difference: a miss does **not**
-   * count a lapse.
+   * Grading inside the same-day consolidation pass. A miss stamps
+   * `missedAt` and does **not** count a lapse.
    *
    * A lapse means forgetting a word you had already learned. Every word in
    * this session was learned hours ago and is still on a one-day interval,
@@ -840,7 +828,7 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
    * list and drown the words that genuinely keep coming back.
    */
   const recordConsolidation = useCallback(
-    (wordId: string, g: Grade) => practiceGrade(wordId, g, false),
+    (wordId: string, g: Grade) => practiceGrade(wordId, g),
     [practiceGrade],
   )
 
@@ -1273,11 +1261,11 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
 
   const value = useMemo<AppContextValue>(() => ({
     ...state,
-    login, logout, grade, recordLapseDrill, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
+    login, logout, grade, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll,
     ...(import.meta.env.DEV ? { enterDemoMode } : {}),
   }), [
-    state, login, logout, grade, recordLapseDrill, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
+    state, login, logout, grade, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll, enterDemoMode,
   ])
 

@@ -157,8 +157,8 @@ export const CONSOLIDATE_MAX_INTERVAL_DAYS = 1
  *
  * Deliberately **not** a general "reopen review every few hours": mature
  * words gain almost nothing from being retested the same day, and drilling
- * them is what pushed a word out to a 273-day interval before
- * recordLapseDrill existed. This queue only ever contains words whose next
+ * them is what pushed a word out to a 273-day interval before drills
+ * stopped grading through the scheduler. This queue only ever contains words whose next
  * review is tomorrow or sooner — new words from today, plus any word that
  * lapsed back to square one today.
  *
