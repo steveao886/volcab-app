@@ -73,6 +73,9 @@ const WORDS: Word[] = [
   word('docile', { synonyms: ['compliant'] }),
   word('amenable', { synonyms: ['docile'], antonyms: ['intractable'] }),
   word('tractable', { antonyms: ['obdurate'] }),
+  // A fourth opposite so the axis can lose one to excludeOpposites and still
+  // clear MIN_ANSWERS — the real library's sets are larger than three.
+  word('pliable', { antonyms: ['implacable'] }),
   word('obdurates', {}),
 ]
 
@@ -129,12 +132,41 @@ describe('buildQuestion', () => {
   it('反面 collects the members’ opposites in both authoring directions', () => {
     // compliant is named by obstinate and intractable; amenable and tractable
     // name members themselves. A one-way pair is authoring, not meaning.
-    expect(ask('opposite')?.answers.map(a => a.form)).toEqual(['amenable', 'compliant', 'tractable'])
+    expect(ask('opposite')?.answers.map(a => a.form)).toEqual(['amenable', 'compliant', 'pliable', 'tractable'])
   })
 
   it('反面 never answers with a member of its own concept', () => {
     const members = new Set(['obstinate', 'obdurate', 'intractable', 'intransigent', 'implacable'])
     expect(ask('opposite')?.answers.some(a => members.has(a.wordId))).toBe(false)
+  })
+
+  it('反面 drops a hand-vetted stray, and leaves the rest of the set alone', () => {
+    // The shape of the real case: a member carries a second sense and its
+    // antonyms are written for that one. 一路不松劲 pulled in `relentless`
+    // through 坚定 and was answering with `intermittent`.
+    const q = ask('opposite', ALL, { ...CONCEPT, excludeOpposites: ['compliant'] })
+    expect(q?.answers.map(a => a.form)).toEqual(['amenable', 'pliable', 'tractable'])
+  })
+
+  it('反面 stops being asked once the strays take it below the floor', () => {
+    // Fail closed: three answers minus two is not a shorter question, it is
+    // not a question. Shipping one with a wrong answer is worse than nothing.
+    expect(ask('opposite', ALL, { ...CONCEPT, excludeOpposites: ['compliant', 'amenable'] })).toBeNull()
+  })
+
+  it('excludeOpposites bans an answer; exclude bans a member — and 近义 only feels the second', () => {
+    // The whole reason the field exists: `relentless` is a good synonym for
+    // 不松劲 and only misleads in the other direction, so banning it there
+    // must not cost the 近义 question a word.
+    //
+    // A member id in excludeOpposites is data the validator rejects (a member
+    // is never offered as its own concept's opposite). It is used here
+    // precisely because it is the only id whose presence in 近义 is
+    // observable — the read side is lenient and simply does nothing with it.
+    const banned = ask('synonym', ALL, { ...CONCEPT, excludeOpposites: ['obdurate'] })
+    const excluded = ask('synonym', ALL, { ...CONCEPT, exclude: ['obdurate'] })
+    expect(banned?.answers.map(a => a.form)).toContain('obdurate')
+    expect(excluded?.answers.map(a => a.form)).not.toContain('obdurate')
   })
 
   it('换词性 grades against relatedForms that are not library entries', () => {
