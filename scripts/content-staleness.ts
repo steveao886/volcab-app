@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs'
 import { buildContrastPairs } from '../src/lib/contrast.ts'
 import { contrastNoteKey } from '../src/lib/contrastNotes.ts'
+import { buildConceptIndex, conceptMembers } from '../src/lib/diverge.ts'
+import type { Concept } from '../src/lib/diverge.ts'
 
 /**
  * The staleness scan behind the periodic content refresh (see
@@ -22,16 +24,125 @@ import { contrastNoteKey } from '../src/lib/contrastNotes.ts'
 const words = JSON.parse(readFileSync('data/words.json', 'utf8')).words as {
   id: string
   meanings: { pos: string }[]
+  examples: string[]
+  antonyms: string[]
 }[]
 const contrastNotes = JSON.parse(readFileSync('src/data/contrastNotes.json', 'utf8')).notes as Record<string, string>
 const wordNotes = JSON.parse(readFileSync('src/data/wordNotes.json', 'utf8')).notes as Record<string, string>
 const senseGroups = JSON.parse(readFileSync('src/data/senseGroups.json', 'utf8')).groups as { order: string[] }[]
 const passages = JSON.parse(readFileSync('src/data/passages.json', 'utf8')).passages as { en: string[] }[]
-const recallSentences = JSON.parse(readFileSync('src/data/recallSentences.json', 'utf8')).sentences as { id: string }[]
+const recallSentences = JSON.parse(readFileSync('src/data/recallSentences.json', 'utf8')).sentences as { id: string; i: number }[]
 const sentenceChunks = JSON.parse(readFileSync('src/data/sentenceChunks.json', 'utf8')).chunks as { id: string }[]
+const concepts = JSON.parse(readFileSync('src/data/concepts.json', 'utf8')).concepts as Concept[]
+
+// 发散 is the one mode a new word joins with nothing authored: a concept lists
+// synonym *keys*, and its members are whatever words currently carry them. So
+// the membership of every concept shifts every time the library grows, and
+// nothing in this scan can tell a member that belongs from one that does not
+// — that judgment is what `exclude` records, and only a person can make it.
+// What a script can do is name the candidates, by diffing the membership
+// across the batch:
+//
+//   npx tsx scripts/content-staleness.ts --concepts > before.txt
+//   ...add the words...
+//   npx tsx scripts/content-staleness.ts --concepts | diff before.txt -
+//
+// Every `>` line is a membership this batch created and a person has to read.
+// Measured 2026-09-21 over 931 words: 82 concepts reach 325 words, so roughly
+// a third of the library is inside some answer set and an added word has a
+// real chance of landing in one.
+const conceptIndex = buildConceptIndex(words as never)
+const allIds = new Set(words.map(w => w.id))
+if (process.argv.includes('--concepts')) {
+  for (const c of concepts) {
+    for (const m of conceptMembers(c, conceptIndex, allIds)) console.log(`${c.id}	${m}`)
+  }
+  process.exit(0)
+}
 
 const pairs = buildContrastPairs(words as never)
 const posOf = new Map(words.map(w => [w.id, w.meanings[0]?.pos ?? '']))
+
+// --- --batch: what one batch of just-added words still owes -----------------
+//
+// The scan proper is stateless: it cannot tell a word added an hour ago from
+// one added in June, and that is exactly the distinction the add flow needs.
+// A new word's 回想 hole blocks its batch; the historical backlog below is the
+// monthly refresh's to clear, and merging the two would hide whether that
+// backlog is shrinking. So the batch names itself on the command line:
+//
+//   npx tsx scripts/content-staleness.ts --batch abrogate,rescind
+//
+// Exit 1 on any required hole, so the check can sit in front of a commit.
+if (process.argv.includes('--batch')) {
+  const arg = process.argv[process.argv.indexOf('--batch') + 1]
+  if (arg === undefined || arg.startsWith('--')) {
+    console.error('--batch needs a comma-separated list of word ids')
+    process.exit(2)
+  }
+  const ids = arg.split(',').map(x => x.trim()).filter(x => x !== '')
+  const byId = new Map(words.map(w => [w.id, w]))
+  const noted = new Set(Object.keys(wordNotes))
+  const renderings = new Map<string, Set<number>>()
+  for (const r of recallSentences) {
+    const set = renderings.get(r.id)
+    if (set) set.add(r.i)
+    else renderings.set(r.id, new Set([r.i]))
+  }
+  const inAnyGroup = new Set(senseGroups.flatMap(g => g.order))
+
+  let owed = 0
+  for (const id of ids) {
+    const w = byId.get(id)
+    console.log(id)
+    // The whole check reads data/words.json, so a missing id means the entry
+    // was never written there — the one ordering mistake that makes every
+    // other gate in the add flow silently pass on nothing.
+    if (w === undefined) {
+      console.log('  GAP  not in data/words.json — write the repo copy first')
+      owed++
+      continue
+    }
+
+    const mine = pairs.filter(pp => pp.a === id || pp.b === id)
+    const missingKeys = mine.map(pp => contrastNoteKey(pp.a, pp.b)).filter(k => !(k in contrastNotes))
+    if (missingKeys.length > 0) { owed++; console.log(`  GAP  contrastNotes: ${missingKeys.join(', ')}`) }
+    else console.log(`  ok   contrastNotes (${mine.length} pair(s))`)
+
+    // Both the word itself and any partner this batch just made confusable:
+    // a word that had no pair before owes a 要点 the moment it gains one, and
+    // that debt belongs to the batch that created the pair, not to its owner.
+    const owesNotes = [id, ...mine.map(pp => (pp.a === id ? pp.b : pp.a))]
+      .filter(x => mine.length > 0 && !noted.has(x))
+    if (owesNotes.length > 0) { owed++; console.log(`  GAP  wordNotes: ${[...new Set(owesNotes)].join(', ')}`) }
+    else console.log('  ok   wordNotes')
+
+    // 回想 is a required add-time top-up as of 2026-09-21. Two legs, not a
+    // choice between them: an anchor is covered by the sense group it joins,
+    // and an anchor whose group was skipped for being indefensible falls back
+    // to renderings like any other word. Five is `examples.length`, not a
+    // constant — the five-examples content rule is not enforced by any gate.
+    const have = renderings.get(id)?.size ?? 0
+    const want = w.examples?.length ?? 0
+    if (inAnyGroup.has(id)) console.log('  ok   回想 (in a sense group)')
+    else if (have >= want && want > 0) console.log(`  ok   回想 (${have}/${want} renderings)`)
+    else { owed++; console.log(`  GAP  回想: no sense group, ${have}/${want} renderings`) }
+
+    // 反义 never blocks. There is no file to top up — the mode reads the
+    // entry's own `antonyms` array — and 107 of 931 words carry no opposite
+    // at all (measured 2026-09-21). Inventing one to clear a line is the
+    // failure the fail-closed rule exists to prevent.
+    if ((w.antonyms?.length ?? 0) === 0) console.log('  note 反义: antonyms is empty — the word is unaskable there; fine if it has no opposite')
+    else console.log(`  ok   反义 (${w.antonyms.length} opposite(s))`)
+  }
+
+  console.log(owed === 0
+    ? `
+${ids.length} word(s): nothing owed`
+    : `
+${owed} required hole(s) across ${ids.length} word(s) — author them before committing`)
+  process.exit(owed === 0 ? 0 : 1)
+}
 
 // 1. Contrast notes: required coverage over every pair (see the validator's
 // comment on why every pair, not just tight ones, is quizzable).
@@ -119,6 +230,19 @@ for (const c of sentenceChunks) perChunkWord.set(c.id, (perChunkWord.get(c.id) ?
 const deep = [...perChunkWord.values()].filter(n => n >= 3).length
 console.log(`
 组句: ${sentenceChunks.length} annotations covering ${chunked.size}/${words.length} words, ${deep} of them 3+ sentences deep — grow with the content batches; no required floor`)
+
+// 发散 coverage is printed, never a STALE trigger, and for the third time for
+// the same reason: it cannot reach zero. A concept is a semantic cluster
+// keyed on synonym keys, and most of the library — concrete nouns, phrases,
+// anything with no near-synonyms authored — will never belong to one, so a
+// coverage line here would sit red forever and stop being read.
+//
+// Reach is printed instead of a gap because reach is the number that moves on
+// its own. It is the size of the surface a new word can silently land on, and
+// the only reason the --concepts diff above is worth running.
+const conceptReach = new Set(concepts.flatMap(c => conceptMembers(c, conceptIndex, allIds)))
+console.log(`
+发散: ${concepts.length} concepts reaching ${conceptReach.size}/${words.length} words — membership is derived, so a new word joins with nothing authored; diff --concepts across the batch and read every new line`)
 
 // Passage coverage is printed, never a STALE trigger. Covering every word
 // three times over needs roughly 200 passages, so a coverage line here would

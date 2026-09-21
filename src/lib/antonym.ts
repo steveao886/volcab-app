@@ -14,18 +14,21 @@ import type { Word } from '../types'
  * their opposite are synonyms of each other, which contrast.ts already
  * covers.
  *
- * Measured over the 599-word library: 94 pairs across 135 words (68 adj.,
- * 38 v., 29 n.). Only 23 pairs are authored on both sides; the other 71
- * name each other one-way. That asymmetry is authoring, not meaning, so a
- * one-sided pair counts and both directions are askable — 188 questions.
+ * Re-measured 2026-09-21 over the 931-word library: 364 pairs across 394
+ * words (242 adj., 75 n., 71 v., 6 adv.). Only 108 pairs are authored on both
+ * sides; the other 256 name each other one-way. That asymmetry is authoring,
+ * not meaning, so a one-sided pair counts and both directions are askable —
+ * 728 questions. (At 599 words this read 94 pairs across 135 words: the graph
+ * grew nearly four times as fast as the library, because every added word can
+ * name any existing headword as its opposite.)
  *
  * **The pair graph is no longer the whole story.** Since 2026-08-19 the
  * quiz may also answer with a string naming a word *outside* the library —
- * 1055 of 1172 antonym strings do, and requiring both sides to be
- * headwords was never a correctness rule, only what `buildAntonymPairs`
- * happened to produce. `antonymAnswerIndex` below is that wider question;
- * the pair graph stays because 辨析-style reasoning about two library
- * entries still needs it.
+ * 1705 of 2177 antonym strings do (2026-09-21; 1055 of 1172 when this was
+ * written), and requiring both sides to be headwords was never a correctness
+ * rule, only what `buildAntonymPairs` happened to produce.
+ * `antonymAnswerIndex` below is that wider question; the pair graph stays
+ * because 辨析-style reasoning about two library entries still needs it.
  */
 
 const norm = (s: string) => s.trim().toLowerCase()
