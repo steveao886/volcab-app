@@ -216,47 +216,61 @@ export function rankStrugglingWords(words: Word[], progress: Progress): Word[] {
 }
 
 /**
- * Every word currently worth extra practice, most urgent first: **what you
- * just got wrong, then what you keep getting wrong.**
+ * Every word currently worth extra practice, **hardest first**.
  *
- * The two halves answer different questions and only the second one is the
- * ranking above. `missedAt` words are a fresh observation from a quiz, the
- * sprint or 猜词; the ease ranking is an estimate accumulated over months.
- * Recent misses lead because they are the more actionable of the two, and
- * because this pool is now the only place a practice miss goes at all —
- * the surfaces that record one deliberately no longer touch `due` (see
- * ProgressEntry.missedAt).
+ * Membership is the union of two signals: `missedAt` is a fresh observation
+ * from a quiz, the sprint or 猜词, and the ease ranking above is an estimate
+ * accumulated over months. A word qualifies on either.
  *
- * **The miss half is added here and not to rankStrugglingWords**, which
- * feeds the stats leaderboard as well. That list is defined by the
+ * **The order used to be the union in that order** — every recent miss, then
+ * the durable strugglers — on the reasoning that the newer observation is
+ * the more actionable one. It reads wrong on a real library. Measured
+ * 2026-09-21 over 931 words: the pool held 212, of which 134 carried a
+ * miss, so the ease ranking began at position 135 and the four words on
+ * screen were `apathetic` (ease 2.15), `depose` (2.00), `cataclysmic`
+ * (2.65) and `debase` (2.50) — two of them at or *above* initial ease,
+ * leading only because they had been missed that day. A screen called
+ * 顽固词 was showing words that are not stubborn.
+ *
+ * So the pool is now one ranking, ease ascending, and a recent miss is a
+ * tiebreaker rather than a section. A missed word with healthy ease still
+ * belongs here — the miss is why it qualifies at all — it just no longer
+ * outranks a word the scheduler has been struggling with for months.
+ *
+ * **The miss half is membership here and not in rankStrugglingWords**,
+ * which feeds the stats leaderboard as well. That list is defined by the
  * scheduler's own signals, ease and interval, and consolidateWord already
  * refused to force entries into it for exactly this reason: a definition
  * the card and the queue share stops meaning anything once either can
  * inject rows.
  *
  * Uncapped and blind to what happened today: this is the whole stubborn
- * universe, in drill order. The daily drill below narrows it; the
- * unlimited walk (`/practice?pick=struggling`) consumes it as is — see
- * the 2026-08-15 struggling-free-practice spec.
+ * universe, in drill order, and the endless walk (`/practice?pick=struggling`)
+ * consumes it as is — see the 2026-08-15 struggling-free-practice spec.
  */
 export function strugglingPracticePool(words: Word[], progress: Progress, today: string): Word[] {
   const cutoff = addDays(today, -MISS_RECENCY_DAYS)
-  const missed = words
+  const ranked = new Set(rankStrugglingWords(words, progress).map(w => w.id))
+  return words
     .filter(w => {
       const e = progress.words[w.id]
-      return e && e.state !== 'new' && e.missedAt !== undefined && e.missedAt >= cutoff
+      if (!e || e.state === 'new') return false
+      return ranked.has(w.id) || (e.missedAt !== undefined && e.missedAt >= cutoff)
     })
-    // Most recent miss first; dates are YYYY-MM-DD, so string order is
-    // chronological. Ties break the same way the ranking above does.
     .sort((a, b) => {
-      const ma = progress.words[a.id].missedAt ?? '', mb = progress.words[b.id].missedAt ?? ''
+      const ea = progress.words[a.id], eb = progress.words[b.id]
+      // Ease first: the scheduler's own running estimate of how much trouble
+      // a word gives you, and the same signal rankStrugglingWords sorts by,
+      // so the two halves of the union cannot disagree about "hardest".
+      if (ea.ease !== eb.ease) return ea.ease - eb.ease
+      if (ea.lapses !== eb.lapses) return eb.lapses - ea.lapses
+      // Then the fresher observation. A word with no miss sorts after one
+      // that has any, rather than comparing '' against a date by accident.
+      const ma = ea.missedAt ?? '', mb = eb.missedAt ?? ''
       if (ma !== mb) return mb < ma ? -1 : 1
       const d = score(b) - score(a)
       return d !== 0 ? d : a.id.localeCompare(b.id)
     })
-
-  const seen = new Set(missed.map(w => w.id))
-  return [...missed, ...rankStrugglingWords(words, progress).filter(w => !seen.has(w.id))]
 }
 
 /**
