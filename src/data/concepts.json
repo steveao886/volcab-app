@@ -650,8 +650,8 @@
         "compassionate",
         "understanding"
       ],
-      "excludeOpposites": [
-        "benighted"
+      "exclude": [
+        "enlightenment"
       ]
     },
     {
