@@ -1207,8 +1207,8 @@ describe('recordLapseDrill: drilling never moves the schedule outward', () => {
     const after = app().progress.words['alpha']
     // due used to be pulled to today here. That put the word in the review
     // queue, where grading it multiplied intervalDays — practice reshaping
-    // the schedule through the back door. buildLapseQueue reads missedAt
-    // instead, and it cannot reach an interval.
+    // the schedule through the back door. strugglingPracticePool reads
+    // missedAt instead, and it cannot reach an interval.
     expect(after.missedAt).toBe(today)
     expect(after.due).toBe(before.due)
     expect(after.lapses).toBe(before.lapses + 1)
@@ -1454,9 +1454,9 @@ describe('recordPractice: free practice writes less than any other surface', () 
     // forgetting a word you had learned, established on a graded review
     // card. Flipping past one casually is not that.
     expect(after.lapses).toBe(before.lapses)
-    // And not lastReviewedAt. buildLapseQueue reads that field as "already
-    // dealt with today", so stamping it would hide this very miss from the
-    // drill the stamp exists to feed.
+    // And not lastReviewedAt: it is mergeProgress's key, so bumping it on a
+    // word whose content did not change lets a stale copy of this entry beat
+    // a real review done on another device.
     expect(after.lastReviewedAt).toBe(before.lastReviewedAt)
   })
 

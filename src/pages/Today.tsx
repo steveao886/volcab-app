@@ -116,7 +116,7 @@ export function Today() {
       {hasStruggling && (
         <Link to="/practice?pick=struggling" className="card card--interactive today-practice">
           <span className="today-practice__label">顽固词加练</span>
-          <span className="muted today-practice__meta">刚错过的和最难的排最前 · 不计成绩,想练几遍都行</span>
+          <span className="muted today-practice__meta">最难的排最前 · 不计成绩,想练几遍都行</span>
         </Link>
       )}
 

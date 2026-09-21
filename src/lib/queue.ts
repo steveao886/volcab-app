@@ -87,7 +87,20 @@ export function buildQueue(words: Word[], progress: Progress, today: string): Da
   return { due, fresh }
 }
 
-/** How many words a max a dedicated lapse-word session brings in at once. 20 is roughly what one sitting can clear. */
+/**
+ * How many stubborn words one sitting is — roughly what a person clears in
+ * a session.
+ *
+ * It no longer caps a queue. 顽固词 was a capped daily drill until
+ * 2026-09-21; it is now the endless walk, which draws in batches the user
+ * picks and never hides the rest. What survives is the estimate: tuning.ts
+ * needs a number for "what a day of stubborn-word practice costs you", and
+ * a sitting is the honest unit for that.
+ *
+ * Deliberately not merged with practice.ts's PRACTICE_DRAW_SIZE, which
+ * happens to be the same 20 — see the comment there for why the two stay
+ * independent.
+ */
 export const LAPSE_SESSION_SIZE = 20
 
 /**
@@ -273,33 +286,12 @@ export function strugglingPracticePool(words: Word[], progress: Progress, today:
     })
 }
 
-/**
- * The daily drill session: the pool above, minus anything already dealt
- * with today, capped to one sitting.
- *
- * The session ignores due dates by design, so without the reviewed-today
- * filter the same handful of words came back every single time the page
- * was opened, in an order that was fully deterministic down to the
- * tiebreakers. A pass through the list empties it for the day and the
- * entry point on the Today page disappears, which is the feedback the
- * mode never gave.
- *
- * Deriving from strugglingPracticePool rather than duplicating it is
- * load-bearing: the drill and the unlimited walk must never disagree
- * about what "stubborn" means.
- */
-export function buildLapseQueue(
-  words: Word[],
-  progress: Progress,
-  today: string,
-  limit = LAPSE_SESSION_SIZE,
-): string[] {
-  return strugglingPracticePool(words, progress, today)
-    // lastReviewedAt is an ISO instant; the day it belongs to is the
-    // user's local day, which is what `today` is. Comparing the raw UTC
-    // prefix would drop a word a few hours early or late depending on
-    // the offset.
-    .filter(w => todayStr(new Date(progress.words[w.id].lastReviewedAt)) !== today)
-    .slice(0, limit)
-    .map(w => w.id)
-}
+/* buildLapseQueue lived here: strugglingPracticePool minus anything
+   reviewed today, capped at LAPSE_SESSION_SIZE, feeding 顽固词 at
+   /review?mode=lapses. Both narrowings are gone with the screen
+   (2026-09-21). The cap threw away 90% of the pool - 20 of 212 on the live
+   library - and the reviewed-today filter existed so one pass could empty
+   the list and make the Today entry disappear, which an endless walk
+   answers differently: the walk marks the day done when a batch is
+   finished, and still has the rest of the pool behind it. */
+

@@ -858,21 +858,25 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
    * the accuracy rate) would stop describing anything. This is the user's
    * "不计入真的复习" in one line.
    *
-   * **lastReviewedAt is never stamped.** Not an omission: buildLapseQueue
-   * reads that field to decide which words have already been dealt with
-   * today, so writing it here would hide the miss from the stubborn-word
-   * drill this stamp exists to feed. Same reasoning markMissed records, and
-   * the same mergeProgress hazard clearMissed's comment names — a bumped
-   * timestamp lets this device's otherwise-stale copy beat a real review
-   * done elsewhere.
+   * **lastReviewedAt is never stamped.** Not an omission: it is the
+   * mergeProgress hazard clearMissed's comment names — that timestamp is
+   * the merge key, so bumping it on a word whose content did not change
+   * lets this device's otherwise-stale copy beat a real review done
+   * elsewhere. Same reasoning markMissed records.
+   *
+   * It had a second reason until 2026-09-21: the capped lapse drill read
+   * lastReviewedAt as "already dealt with today", so stamping it here hid
+   * the miss from the drill the stamp exists to feed. The endless walk
+   * narrows nothing, so that reason is gone and the merge one carries this
+   * alone.
    *
    * `lapses` stays untouched for the reason recordConsolidation gives: a
    * lapse means forgetting a word you had learned, established on a graded
    * review card. Flipping past one here is not that.
    *
    * Words still in the `new` state are skipped outright. missedAt is only
-   * ever read for words past `new` (buildLapseQueue filters on exactly
-   * that), so stamping one would push a sync diff for a field nothing will
+   * ever read for words past `new` (strugglingPracticePool filters on
+   * exactly that), so stamping one would push a sync diff for a field nothing will
    * read — the same no-op-write objection dismissSuggestion raises.
    */
   const recordPractice = useCallback((wordId: string, correct: boolean, opts: { settle?: boolean } = {}) => {
@@ -953,10 +957,9 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
    * measurement that ended it.
    *
    * `lastReviewedAt` is deliberately not stamped either: a quiz question is
-   * not a card reviewed, saying so was always a small lie, and
-   * buildLapseQueue reads that field to decide what has already been dealt
-   * with today — stamping it here would hide the miss from the very drill
-   * this exists to feed.
+   * not a card reviewed, saying so was always a small lie, and that field is
+   * mergeProgress's key — see the fuller note on recordPractice, which also
+   * records the reason that expired when the capped lapse drill did.
    */
   const markMissed = (
     words: Progress['words'],

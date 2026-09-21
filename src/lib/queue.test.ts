@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  buildConsolidateQueue, buildLapseQueue, buildQueue,
+  buildConsolidateQueue, buildQueue,
   CONSOLIDATE_DELAY_HOURS, CONSOLIDATE_MAX_INTERVAL_DAYS, LAPSE_SESSION_SIZE,
   MATURE_INTERVAL_DAYS, rankStrugglingWords, strugglingPracticePool,
 } from './queue'
@@ -224,7 +224,6 @@ describe('rankStrugglingWords', () => {
     const p = emptyProgress()
     p.words['drilledToday'] = strugglingEntry(1, { lastReviewedAt: '2026-07-24T09:00:00Z' })
     expect(ids(rankStrugglingWords([word('drilledToday')], p))).toEqual(['drilledToday'])
-    expect(buildLapseQueue([word('drilledToday')], p, '2026-07-24')).toEqual([])
   })
 
   it('words never reviewed are excluded (no record in progress)', () => {
@@ -239,8 +238,15 @@ describe('rankStrugglingWords', () => {
   })
 })
 
-describe('buildLapseQueue', () => {
+/* The buildLapseQueue block stood here. Both of its own rules - a cap of
+   twenty and "drop anything reviewed today" - went with 顽固词's capped
+   drill on 2026-09-21, and everything else it covered was membership,
+   which belongs to strugglingPracticePool and is asserted against it
+   below. */
+
+describe('strugglingPracticePool membership, inherited from the retired lapse drill', () => {
   const TODAY = '2026-07-24'
+  const ids = (ws: Word[]) => ws.map(w => w.id)
   const withLapses = (spec: Record<string, number>): Progress => {
     const p = emptyProgress()
     for (const [id, n] of Object.entries(spec)) p.words[id] = strugglingEntry(n)
@@ -251,93 +257,54 @@ describe('buildLapseQueue', () => {
     const p = emptyProgress()
     p.words['mild'] = strugglingEntry(1, { ease: 2.35 })
     p.words['worst'] = strugglingEntry(1, { ease: 1.5 })
-    expect(buildLapseQueue([word('mild'), word('worst')], p, TODAY)).toEqual(['worst', 'mild'])
+    expect(ids(strugglingPracticePool([word('mild'), word('worst')], p, TODAY))).toEqual(['worst', 'mild'])
   })
 
   it('a word missed in a quiz is drilled even though nothing about its schedule says it is hard', () => {
     // The case the whole field exists for: healthy ease, a long interval, so
-    // rankStrugglingWords will never see it — and before missedAt the only
+    // rankStrugglingWords will never see it - and before missedAt the only
     // way to surface it was to pull `due` forward, which is what inflated
     // the schedule.
     const p = emptyProgress()
     p.words['a'] = { state: 'review', ease: INITIAL_EASE, intervalDays: 90, due: '2026-10-20', stepIndex: 0, reps: 6, lapses: 0, lastReviewedAt: '2026-07-22T00:00:00Z', missedAt: TODAY }
     expect(rankStrugglingWords([word('a')], p)).toEqual([])
-    expect(buildLapseQueue([word('a')], p, TODAY)).toEqual(['a'])
+    expect(ids(strugglingPracticePool([word('a')], p, TODAY))).toEqual(['a'])
   })
 
-  it('a durable struggler leads a fresh miss — the screen is called 顽固词', () => {
-    // The reverse of what this asserted until 2026-09-21. On the live
-    // library the miss half was 134 of 212 words, so the ease ranking began
-    // at position 135 and two of the four words on screen sat at or above
-    // initial ease.
-    const p = emptyProgress()
-    p.words['struggler'] = strugglingEntry(3, { ease: 1.4 })
-    p.words['missed'] = { state: 'review', ease: INITIAL_EASE, intervalDays: 20, due: '2026-08-13', stepIndex: 0, reps: 4, lapses: 0, lastReviewedAt: '2026-07-20T00:00:00Z', missedAt: TODAY }
-    expect(buildLapseQueue([word('struggler'), word('missed')], p, TODAY)).toEqual(['struggler', 'missed'])
-  })
-
-  it('more recent misses lead older ones', () => {
+  it('more recent misses lead older ones, once ease and lapses have tied', () => {
     const p = emptyProgress()
     const missed = (missedAt: string) => ({ state: 'review' as const, ease: INITIAL_EASE, intervalDays: 20, due: '2026-08-13', stepIndex: 0, reps: 4, lapses: 0, lastReviewedAt: '2026-07-01T00:00:00Z', missedAt })
     p.words['old'] = missed('2026-07-20')
     p.words['new'] = missed('2026-07-23')
-    expect(buildLapseQueue([word('old'), word('new')], p, TODAY)).toEqual(['new', 'old'])
+    expect(ids(strugglingPracticePool([word('old'), word('new')], p, TODAY))).toEqual(['new', 'old'])
   })
 
-  it('a miss older than the recency window drops out — it is a ceiling, not a sentence', () => {
+  it('a miss older than the recency window drops out - it is a ceiling, not a sentence', () => {
     const at = (missedAt: string): Progress => {
       const q = emptyProgress()
       q.words['a'] = { state: 'review', ease: INITIAL_EASE, intervalDays: 20, due: '2026-08-13', stepIndex: 0, reps: 4, lapses: 0, lastReviewedAt: '2026-07-01T00:00:00Z', missedAt }
       return q
     }
-    expect(buildLapseQueue([word('a')], at('2026-07-18'), TODAY)).toEqual(['a'])   // 6 days ago
-    expect(buildLapseQueue([word('a')], at('2026-07-17'), TODAY)).toEqual(['a'])   // exactly MISS_RECENCY_DAYS
-    expect(buildLapseQueue([word('a')], at('2026-07-16'), TODAY)).toEqual([])      // one day past
+    expect(ids(strugglingPracticePool([word('a')], at('2026-07-18'), TODAY))).toEqual(['a'])   // 6 days ago
+    expect(ids(strugglingPracticePool([word('a')], at('2026-07-17'), TODAY))).toEqual(['a'])   // exactly MISS_RECENCY_DAYS
+    expect(ids(strugglingPracticePool([word('a')], at('2026-07-16'), TODAY))).toEqual([])      // one day past
   })
 
-  it('a word that is both recently missed and struggling appears once', () => {
-    const p = emptyProgress()
-    p.words['both'] = strugglingEntry(2, { ease: 1.6, missedAt: TODAY })
-    expect(buildLapseQueue([word('both')], p, TODAY)).toEqual(['both'])
-  })
-
-  it('a new word is never drilled on a miss — it has no schedule to protect yet', () => {
+  it('a new word is never drilled on a miss - it has no schedule to protect yet', () => {
     const p = emptyProgress()
     p.words['a'] = { state: 'new', ease: INITIAL_EASE, intervalDays: 0, due: TODAY, stepIndex: 0, reps: 0, lapses: 0, lastReviewedAt: '2026-07-01T00:00:00Z', missedAt: TODAY }
-    expect(buildLapseQueue([word('a')], p, TODAY)).toEqual([])
+    expect(strugglingPracticePool([word('a')], p, TODAY)).toEqual([])
   })
 
-  it('ignores the due date — struggling words are actively cleared, not waited on until due', () => {
+  it('ignores the due date - struggling words are actively cleared, not waited on until due', () => {
     // strugglingEntry() always gives due: 2099, so the normal queue would pick none of them
     const ws = [word('a')]
     expect(buildQueue(ws, withLapses({ a: 4 }), TODAY).due).toEqual([])
-    expect(buildLapseQueue(ws, withLapses({ a: 4 }), TODAY)).toEqual(['a'])
-  })
-
-  it('capped count', () => {
-    const ws = Array.from({ length: 30 }, (_, i) => word(`w${i}`))
-    const spec = Object.fromEntries(ws.map((w, i) => [w.id, i + 1]))
-    expect(buildLapseQueue(ws, withLapses(spec), TODAY)).toHaveLength(20)
-    expect(buildLapseQueue(ws, withLapses(spec), TODAY, 5)).toHaveLength(5)
+    expect(ids(strugglingPracticePool(ws, withLapses({ a: 4 }), TODAY))).toEqual(['a'])
   })
 
   it('returns empty when no word is struggling at all', () => {
-    expect(buildLapseQueue([word('a')], emptyProgress(), TODAY)).toEqual([])
-  })
-
-  it('a word genuinely reviewed today drops out until tomorrow — no point drilling what you just did', () => {
-    const p = emptyProgress()
-    p.words['a'] = strugglingEntry(2, { lastReviewedAt: '2026-07-24T09:00:00Z' })
-    expect(buildLapseQueue([word('a')], p, TODAY)).toEqual([])
-    expect(buildLapseQueue([word('a')], p, '2026-07-25')).toEqual(['a'])
-  })
-
-  it('"today" is the local day, not the UTC prefix of lastReviewedAt', () => {
-    // 2026-07-25T02:00Z is still the evening of the 24th anywhere west of
-    // Greenwich; slicing the ISO string would wrongly call it a new day.
-    const p = emptyProgress()
-    p.words['a'] = strugglingEntry(2, { lastReviewedAt: new Date(2026, 6, 24, 19, 0).toISOString() })
-    expect(buildLapseQueue([word('a')], p, TODAY)).toEqual([])
+    expect(strugglingPracticePool([word('a')], emptyProgress(), TODAY)).toEqual([])
   })
 })
 
@@ -428,18 +395,20 @@ describe('strugglingPracticePool: the drill queue before the daily narrowing', (
     expect(strugglingPracticePool(ws, p, TODAY).map(w => w.id)).toEqual(['missedToday', 'quiet'])
   })
 
-  it('is uncapped — the daily session size bounds the drill, not the pool', () => {
+  it('is uncapped — a sitting bounds what you do, not what qualifies', () => {
     const ws = Array.from({ length: LAPSE_SESSION_SIZE + 7 }, (_, i) => word(`w${i}`))
     const p = emptyProgress()
     ws.forEach((w, i) => { p.words[w.id] = strugglingEntry(i) })
     expect(strugglingPracticePool(ws, p, TODAY)).toHaveLength(LAPSE_SESSION_SIZE + 7)
   })
 
-  it('keeps words reviewed today — the unlimited walk may repeat them; the drill must not', () => {
+  it('keeps words reviewed today — the walk may repeat them, and nothing narrows it any more', () => {
+    // The capped drill filtered these out so that one pass could empty the
+    // list for the day. The walk has no such pass, so a word you drilled an
+    // hour ago is still stubborn and still in the pool.
     const p = emptyProgress()
     p.words['drilledToday'] = strugglingEntry(1, { lastReviewedAt: '2026-07-24T09:00:00Z' })
     expect(strugglingPracticePool([word('drilledToday')], p, TODAY).map(w => w.id)).toEqual(['drilledToday'])
-    expect(buildLapseQueue([word('drilledToday')], p, TODAY)).toEqual([])
   })
 
   it('a miss outside the recency window with healthy ease is not in the pool at all', () => {
