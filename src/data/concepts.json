@@ -713,7 +713,11 @@
       ],
       "excludeOpposites": [
         "obstinate",
-        "perverse"
+        "odious",
+        "perverse",
+        "repugnant",
+        "repulsive",
+        "sickening"
       ]
     },
     {
