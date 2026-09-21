@@ -4,7 +4,11 @@ Evidence-backed. Every claim cites `file:line` against
 `C:\Users\gaosi\repos\volcab` at commit `6eab211` (master, clean), audited
 2026-08-07. The sense-group entries were added the same day, when
 `src/data/senseGroups.json` landed (see
-`docs/superpowers/specs/2026-08-07-recall-mode-design.md`).
+`docs/superpowers/specs/2026-08-07-recall-mode-design.md`). §1.5, §1.6, row 9 of
+§3, and §5's step 6 and step 11 are from 2026-09-21 — the round that put
+发散 into this document and made 回想 a required top-up. Their line cites are
+against that date's master, not `6eab211`, and their measurements are over
+**931** words.
 
 The executable face of this document is the repo skill
 **`.claude/skills/word-content/SKILL.md`** — a session adding words should
@@ -28,16 +32,24 @@ Baseline measured while writing this (all validators green):
 
 A new word needs an entry in **`data/words.json`** (repo copy — this is what
 every validator reads) **and** in the live `volcab-data/words.json` (what the
-app reads). It then leaves a hole in exactly **two** authored, word-keyed
-files: `src/data/contrastNotes.json` (**median 1, up to 11** new entries) and
+app reads). It then leaves a hole in **three** places:
+`src/data/contrastNotes.json` (**median 1, up to 11** new entries),
 `src/data/wordNotes.json` (**1** entry, plus **0–3** for partners that just
-became confusable). `src/data/passages.json` and
-`src/data/senseGroups.json` are optional coverage — a word joining two or
-more same-POS confusable partners becomes a candidate for a new sense group
-(scenario + ranked order + why), gated by `npm run validate-sense-groups`.
-`src/data/suggestions.json` needs nothing — it self-filters at runtime.
+became confusable), and 回想 — which is one obligation across two files,
+cleared either by the word joining a sense group or by **five** renderings in
+`src/data/recallSentences.json` (§1.6, required since 2026-09-21). Which of
+the two clears it is not a preference: a word with ≥2 same-POS confusable
+partners can be covered by the sense group it joins (scenario + ranked order
++ why, gated by `npm run validate-sense-groups`), and every other word — plus
+any whose group was skipped for being indefensible — needs the renderings.
+`src/data/passages.json` and `src/data/sentenceChunks.json` are optional
+coverage. `src/data/suggestions.json` needs nothing — it self-filters at
+runtime.
 Everything else the app shows for that word is computed from `words.json` at
-runtime and needs no top-up.
+runtime and needs no top-up. **`src/data/concepts.json` is computed too, and
+that is the one place where "needs no top-up" is not the end of it**: the new
+word joins existing 发散 answer sets by itself, and whether it belongs in
+them is a judgment no validator makes (§1.5).
 
 ---
 
@@ -106,7 +118,78 @@ runtime and needs no top-up.
   pool entry is harmless dead weight, not an error. Removing it is optional
   tidying.
 
-### 1.5 `data/wordlist.json` — **dead; do not touch**
+### 1.5 `src/data/concepts.json` — **needs nothing, and that is the hazard**
+
+- **Key shape**: not a map, and not word-keyed at all. A concept lists synonym
+  *keys* in `anchors`, and its members are every word whose `synonyms` array
+  carries one (`src/lib/diverge.ts:167-181`), plus the anchor's own library
+  entry when it has one (`:174-179`, there so "the anchor word would [not] be
+  the one member silently missing from its own question"). The validator's
+  header states the consequence outright: this is what
+  > "lets a word added next month join three of the four axes with nothing
+  > re-authored — and it is also what makes a concept un-self-describing"
+  > — `scripts/validate-concepts.ts:13-16`
+- **On a new word**: nothing to author. Measured 2026-09-21 over 931 words,
+  82 concepts reach **325** words (`npm run validate-concepts`), so about a
+  third of the library sits inside some answer set and a new word has a real
+  chance of landing in one.
+- **What the gate catches** (all exit 1): id slug + uniqueness `:73-74`; `zh`
+  present and free of Latin letters `:80-81`; an anchor reaching fewer than 2
+  words `:91`; `exclude` or `negations` naming a non-library word `:96,:99`;
+  a `negations` entry carrying no negation prefix `:101`; a concept that
+  cannot reach `MIN_ANSWERS` even with the **whole library** learned `:107`;
+  **≥60% member overlap with another concept — one question asked twice**
+  `:129`; an `exclude` no anchor reaches, i.e. a stale note `:140`. It merely
+  *reports* 40–60% overlap `:131`, per-axis askable counts `:162`
+  (synonym 82, opposite 31, pos 47, negation 6 on 2026-09-21), and the
+  concepts sitting exactly on the 3-member floor `:172-173` (**32 of 82** —
+  for those, one deleted word stops the question being asked at all).
+- **What nothing catches**: a member that resolved correctly and does not
+  belong in the answer set. Recording that is exactly what `exclude` is for
+  (`src/lib/diverge.ts:49`, "Member ids the anchors drag in that do not
+  belong"), it is a judgment no script can make, and it is invisible unless
+  the membership is diffed across the batch:
+  `npx tsx scripts/content-staleness.ts --concepts` before and after, then
+  read every `>` line.
+- **What the app does when it goes wrong**: **not silent** — this is the one
+  file in §1 whose failure mode is loud and backwards. 发散 grades typed
+  input against the resolved answer set (`gradeInput`,
+  `src/lib/diverge.ts:364`), so an intruder in the set is *accepted* as
+  correct, and a set drifting away from its Chinese prompt tells a learner
+  who typed the right word that they are wrong. Everywhere else in §1 a
+  missing top-up costs a rendering; here there is no missing top-up to
+  forget, only a wrong one to inherit.
+
+### 1.6 `src/data/recallSentences.json` — **must be topped up**
+
+Required since 2026-09-21. Before that it was pool growth owed to the monthly
+refresh, and the deferral did not hold: on the day the rule changed the
+staleness scan read **79** words with no 回想 question at all, out of 931.
+
+- **Key shape**: `{ "id", "i", "zh", "target" }`, where `i` indexes that
+  word's own `examples` array — the rendering is that English sentence in
+  Chinese, not a new sentence. `id#i` must be unique
+  (`scripts/validate-recall-sentences.ts:61-63`).
+- **Coverage means**: 回想 draws from two pools and a word needs only one of
+  them — `senseGroups.json` takes words with confusable partners,
+  `recallSentences.json` takes the rest (`scripts/content-staleness.ts`, the
+  comment on `noRecallQuestion`). So the obligation is **askability**, not
+  this file: a word covered by a sense group owes nothing here. A word whose
+  group was *skipped* for being indefensible owes the renderings like any
+  other — the fail-closed rule protects the answer key, not the workload.
+- **Five, not one.** One rendering makes a word askable; the draw returns to
+  a word it finds difficult, and a repeated sentence tests the sentence
+  rather than the word. Five is `examples.length`, not a constant — the
+  five-examples content rule is in `CLAUDE.md` and no gate enforces it.
+- **Hard content rules**: `zh` must contain Chinese and **zero Latin
+  letters** `:65-70` — proper nouns carried over from the English (Slack, Q4,
+  CEO, PTA) are the usual leak; `target` Chinese, ≤16 chars, locating in
+  `zh` **exactly once** `:72-79`.
+- **What the app does when missing**: the word is simply never drawn in 回想.
+  **Silent**, and permanently — which is why it is a checked obligation now
+  rather than a coverage line someone reads.
+
+### 1.7 `data/wordlist.json` — **dead; do not touch**
 
 431 entries, the frozen Evernote-import manifest produced by
 `scripts/parse-enex.ts:36-37`. **Referenced by nothing in `scripts/` or
@@ -133,7 +216,9 @@ fine.
 ### 2.2 Authored — needs a **top-up**
 
 `contrastNotes.json` (required), `wordNotes.json` (required),
-`passages.json` (optional).
+**`senseGroups.json` / `recallSentences.json` (required as a pair — either
+clears 回想 for a word, §1.6)**, `passages.json` (optional),
+`sentenceChunks.json` (optional).
 
 ### 2.3 How many NEW contrastNotes does one added word force?
 
@@ -181,7 +266,7 @@ contrastNotes.
 
 ## 3. Every validation gate
 
-Eight npm scripts, chained by `npm run validate` (`package.json:11-21`), plus
+Nine npm scripts, chained by `npm run validate` (`package.json:13-22`), plus
 `npm run lint` (`oxlint`). Both run in CI: `.github/workflows/deploy.yml`
 runs `npm ci`, `npm test`, `npm run lint`, `npm run validate`,
 `npm run build`, in that order, on every push to `master`.
@@ -196,8 +281,9 @@ runs `npm ci`, `npm test`, `npm run lint`, `npm run validate`,
 | 6 | `npm run validate-sense-groups` | `argv[2] ?? src/data/senseGroups.json` (`:31`) + `data/words.json` **hardcoded** (`:33`) | `zh` non-empty, ≤40 chars, must contain Chinese, **zero Latin letters allowed** `:75-81`; `zh` unique `:83-84`; `target` non-empty, ≤16 chars, no Latin, must locate exactly once in `zh` `:92-101`; `order` 1–4 unique ids, all in the vocabulary, same POS `:103-114`; `sense` in range when present `:121-128`; `extra` entries not library words, not English-less, no duplicates, no overlap with `order` `:134-156`; ≥3 authored options between `order` and `extra` `:161-163`; member set unique across groups `:165-167`; `why` non-empty and Chinese `:169-170`; `en` non-empty, ≤160 chars, no Chinese, **must contain the answer and must not contain a losing member or a distractor** `:175-202` | coverage over words `:214-215`; long-target tail over 5 chars `:227-234` |
 | 7 | `npm run validate-recall-sentences` | `argv[2] ?? src/data/recallSentences.json` (`:18`) + `data/words.json` **hardcoded** (`:20`) | **id must exist in the vocabulary** `:54`; `i` in range of that word's examples `:56-59`; `id#i` unique `:61-63`; `zh` non-empty, must contain Chinese, **zero Latin letters allowed** `:65-70`; `target` non-empty, ≤16 chars, no Latin, must locate exactly once in `zh` `:72-79` | coverage over words `:88-89`; long-target tail over 6 chars `:98-106` |
 | 8 | `npm run validate-sentence-chunks` | `argv[2] ?? src/data/sentenceChunks.json` (`:18`) + `data/words.json`, `src/data/senseGroups.json`, `src/data/recallSentences.json`, all **hardcoded** (`:20-31`) | `src` is `ex` or `sg` `:63`; `(src, id, i)` unique `:64-69`; **`ex` entries need a Chinese rendering in recallSentences.json** `:83-88`; **`sg` entries must blank the group's `order[0]`, never a ranked alternative** `:90-97`; `cuts` strictly increasing, in range, chunk floor per `src` `:103-118`; no chunk over 8 tokens `:120-126`; `blank` in range, `answer` matches the blanked token and looks like a form of `id` `:128-145`; **no other token in the sentence may be an inflection of the answer** `:146-165` | coverage over words `:174-177`; single-sentence-word tail `:187-190` |
+| 9 | `npm run validate-concepts` | `argv[2] ?? src/data/concepts.json` (`:24`) + `data/words.json` **hardcoded** (`:26`) | id slug + uniqueness `:73-74`; `zh` present, **zero Latin letters** `:80-81`; an anchor reaching <2 words `:91`; `exclude`/`negations` naming a non-library word `:96,:99`; a `negations` entry with no negation prefix `:101`; **cannot reach `MIN_ANSWERS` with the whole library learned** `:107`; **≥60% member overlap with another concept** `:129`; an `exclude` no anchor reaches `:140` | 40–60% overlap warnings `:131`; per-axis askable counts `:162`; concepts on the 3-member floor `:172-173` |
 
-Plus a ninth, non-npm gate: **`npm test`** runs two full-library regression
+Plus a tenth, non-npm gate: **`npm test`** runs two full-library regression
 tests in `src/lib/headword.test.ts:81-118` against `data/words.json` —
 "every word has at least one example sentence where it can be located" and
 "no word is mismarked across the full library". `src/state/sync.test.ts:411`
@@ -206,6 +292,11 @@ also parses the whole repo copy through `parseWords`.
 **Note the asymmetry**: the coverage validators (2, 4, 5, 6, 7, 8) *hard-fail*
 on a key pointing at a word that doesn't exist, but only *report* a word that
 exists with no note. Missing content is safe; dangling content is not.
+
+**9 is not a coverage validator** and does not fit that shape. Nothing keys
+concepts by word, so there is no missing entry to report — the question is
+never "is this word covered" but "is this membership right", and the gate can
+only check the half of that a script can see (§1.5).
 
 ---
 
@@ -315,32 +406,24 @@ Steps marked **[BATCH]** should be done once for the whole batch, not per word.
 
 ### Phase C — top up the authored content
 
-6. **[BATCH]** Recompute the pair set and diff it against the pre-add set to
-   get the exact list of new keys. Run from the repo root, script in scratch
-   (`.mts` — the repo is CJS-resolving for loose `.ts`):
+6. **[BATCH]** Ask what the batch owes, naming the ids just added:
 
-   ```ts
-   import { readFileSync } from 'node:fs'
-   import { pathToFileURL } from 'node:url'
-   const R = 'C:/Users/gaosi/repos/volcab'
-   const { buildContrastPairs } = await import(pathToFileURL(`${R}/src/lib/contrast.ts`).href)
-   const { contrastNoteKey } = await import(pathToFileURL(`${R}/src/lib/contrastNotes.ts`).href)
-   const words = JSON.parse(readFileSync(`${R}/data/words.json`, 'utf8')).words
-   const NEW = new Set(['<id1>', '<id2>'])            // the ids just added
-   const before = new Set(buildContrastPairs(words.filter(w => !NEW.has(w.id)))
-     .map(p => contrastNoteKey(p.a, p.b)))
-   const after = buildContrastPairs(words)
-   const cn = JSON.parse(readFileSync(`${R}/src/data/contrastNotes.json`, 'utf8')).notes
-   const wn = JSON.parse(readFileSync(`${R}/src/data/wordNotes.json`, 'utf8')).notes
-   const newKeys = after.map(p => contrastNoteKey(p.a, p.b)).filter(k => !before.has(k))
-   console.log('new contrastNotes keys:', newKeys.filter(k => !(k in cn)))
-   const confusable = new Set(after.flatMap(p => [p.a, p.b]))
-   console.log('words now needing a 要点:', [...confusable].filter(id => !(id in wn)))
+   ```bash
+   npx tsx scripts/content-staleness.ts --batch <id1>,<id2>
    ```
+
+   Per id it prints the missing contrastNote keys, the ids that now need a
+   要点, whether 回想 is covered, and — as a note that never blocks — whether
+   the entry carries any 反义 at all. It exits 1 while anything required is
+   missing, so it can sit in front of the commit. (It replaced a hand-rolled
+   before/after pair diff that lived here until 2026-09-21; the computation
+   is the same, `buildContrastPairs` over `data/words.json`.)
 
    **Batching matters here**: two words added in the same batch can pair with
    *each other* — that pair exists only when both are present
    (`src/lib/contrast.ts:59-95`). A per-word incremental pass would miss it.
+   The same holds for 发散: two words in one batch can join the same concept,
+   which is why the membership diff in §1.5 is also run over the whole batch.
 7. **[BATCH]** Author one contrast note per new key. Sorted key, Chinese,
    ≤160 chars, states what separates the two.
 8. `npm run validate-contrast-notes` → read the `coverage: X/Y` line; X must
@@ -348,14 +431,28 @@ Steps marked **[BATCH]** should be done once for the whole batch, not per word.
 9. **[BATCH]** Author a 要点 for every id the script listed. Chinese, ≤80
    chars, **must not name any other library headword**.
 10. `npm run validate-word-notes` → `coverage: X/Y`, X must equal Y.
-11. *Optional*: mark the word in a passage → `npm run validate-passages`
+11. **[BATCH]** 回想: every added word must end up askable. Either it joins
+    a **sense group** (`src/data/senseGroups.json` — possible only when it
+    has ≥2 same-POS confusable partners, and skipped outright when no
+    scenario makes one member clearly best), or it gets **five renderings**
+    in `src/data/recallSentences.json`, one per example index. A skipped
+    group does **not** excuse the word; it falls back to renderings like any
+    other. Gates: `npm run validate-sense-groups` and
+    `npm run validate-recall-sentences`. Re-run step 6 and see `回想` read
+    `ok` for every id.
+
+    **Required since 2026-09-21.** Until then this was pool growth left to
+    the monthly refresh, and deferral demonstrably did not work: on the day
+    the rule changed the scan read **79** words with no 回想 question at
+    all, against a library of 931.
+12. *Optional*: mark the word in a passage → `npm run validate-passages`
     (≥6 distinct marks per passage; answer must not appear as plain text
     elsewhere). *Optional*: drop a now-redundant entry from
     `src/data/suggestions.json` → `npm run validate-suggestions`.
 
 ### Phase D — the live library
 
-12. Pull the live copy and diff it against the repo copy:
+13. Pull the live copy and diff it against the repo copy:
     ```bash
     npm run check-live
     ```
@@ -372,33 +469,35 @@ Steps marked **[BATCH]** should be done once for the whole batch, not per word.
     > "**apply the change on top of the live copy, rather than overwriting it
     > with the local copy** — the latter would resurrect words the user had
     > deleted … and it really did trigger once."
-13. Remove **exactly the promoted entries** from `staging.json`, matched by
+14. Remove **exactly the promoted entries** from `staging.json`, matched by
     headword.
-14. Verify the repo copy and the live copy now agree on the added ids:
+15. Verify the repo copy and the live copy now agree on the added ids:
     `npm run check-live` again, expect exit 0.
 
 ### Phase E — ship
 
-15. `npm test && npm run build && npm run lint && npm run validate`
+16. `npm test && npm run build && npm run lint && npm run validate`
     (the gates in `CLAUDE.md`; `npm run check-live` too, which needs `gh`).
-16. Commit `data/words.json` + the two `src/data/*.json` files together — the
-    notes are meaningless without the word and the word is incomplete without
-    the notes. Push; `deploy.yml` bundles `src/data/*` into the app.
+17. Re-run step 6 and see `nothing owed`, then commit `data/words.json` with
+    every `src/data/*.json` the batch touched — notes, and the sense group or
+    renderings — in one commit. The notes are meaningless without the word and
+    the word is incomplete without them. Push; `deploy.yml` bundles `src/data/*` into the app.
 
 ### Ordering constraints, condensed
 
 ```
 3 (data/words.json)  ──►  4, 5           validate-words + full-library tests
-                     ──►  6              pair diff needs the new word present
+                     ──►  6              --batch needs the new word present
 6  ──►  7  ──►  8                        author then validate contrast notes
 6  ──►  9  ──►  10                       author then validate word notes
-3  ──►  11                               passage validator resolves marker ids
-3, 7, 9  ──►  15, 16                     build and commit as one unit
-12 is independent of 6–11 but must come AFTER a fresh pull, never before
+6  ──►  11                               回想: a sense group or five renderings
+3  ──►  12                               passage validator resolves marker ids
+3, 7, 9, 11  ──►  16, 17                 build and commit as one unit
+13 is independent of 6–12 but must come AFTER a fresh pull, never before
 ```
 
-**Safe to batch**: steps 3, 6, 7, 9, 12, 13 — and step 6 is *only* correct in
-batch. **Not batchable**: nothing; there is no per-word step that must run
+**Safe to batch**: steps 3, 6, 7, 9, 11, 13, 14 — and step 6 is *only*
+correct in batch. **Not batchable**: nothing; there is no per-word step that must run
 alone.
 
 ---

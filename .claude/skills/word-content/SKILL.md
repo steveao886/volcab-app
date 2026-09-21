@@ -17,40 +17,75 @@ grows the question pools. Evidence for every rule: `docs/word-add-checklist.md`.
 | `volcab-data/words.json` (live) | — | **required** — what the app reads; merge onto a fresh pull, never overwrite | — |
 | `src/data/contrastNotes.json` | `idA\|idB` sorted | **required**: median 1, up to 11 new pair keys | `npm run validate-contrast-notes` |
 | `src/data/wordNotes.json` | word id | **required**: 1 + up to 3 for partners newly confusable | `npm run validate-word-notes` |
-| `src/data/senseGroups.json` | scenario `zh` | optional: word with ≥2 same-POS partners → candidate group | `npm run validate-sense-groups` |
+| `src/data/senseGroups.json` | scenario `zh` | **required, one of two legs**: a word with ≥2 same-POS partners is covered by the group it joins | `npm run validate-sense-groups` |
+| `src/data/recallSentences.json` | word id + example `i` | **required, the other leg**: 5 Chinese renderings for any word no group covers | `npm run validate-recall-sentences` |
+| `src/data/sentenceChunks.json` | `(src, id, i)` | optional coverage, no floor | `npm run validate-sentence-chunks` |
 | `src/data/passages.json` | `{{id}}` markers | optional coverage | `npm run validate-passages` |
+| `src/data/concepts.json` | derived from `synonyms` | **nothing to author** — but the word joins existing 发散 answer sets silently; diff and vet | `npm run validate-concepts` |
 | `src/data/suggestions.json` | — | nothing — self-filters at runtime | `npm run validate-suggestions` |
 | `data/wordlist.json` | — | dead file, referenced by nothing. Do not touch | — |
 
-All these gates run in CI (`npm run validate` chains all eight;
+All these gates run in CI (`npm run validate` chains all nine;
 `.github/workflows/deploy.yml` runs it, plus `npm run lint`, on every push to
 `master`). Coverage lines are still printed text, not exit codes — read them
 yourself.
+
+**`concepts.json` is the odd one and the easy one to forget.** A concept does
+not list its members: it lists synonym *keys*, and the members are whatever
+words currently carry them. So a word added today walks into existing 发散
+questions with nothing re-authored — which is the design working, right up
+until it drags in a word that does not belong in that answer set. That
+judgment is what the concept's `exclude` array records, no validator can make
+it, and nothing prompts for it unless the membership is diffed across the
+batch (step 2–3 below).
 
 ## Adding words
 
 1. **Author entries** per `docs/word-entry-spec.md` (authoritative): 5
    examples each containing a locatable headword form, `usageScore` 1–10,
    `share` only when polysemous, `etymology` omitted rather than guessed.
-2. **Repo copy first**: write `data/words.json`, run `validate-words`, then
-   `npm test` (full-library regression). If a headword can't be located in
-   its example, rewrite the sentence — never loosen `headword.ts`.
-3. **Diff the pair set** (whole batch at once — two words added together can
-   pair with *each other*; per-word passes miss it). The ready-made script
-   is in `docs/word-add-checklist.md` §5 step 6: it prints the new
-   contrastNote keys and the ids newly needing a 要点.
-4. **Author the top-ups**: contrast notes (Chinese, ≤160 chars, states what
-   separates the two), word notes (Chinese, ≤80 chars, **never names
+2. **Snapshot 发散 membership first, then write the repo copy.** Before
+   touching `data/words.json`:
+   `npx tsx scripts/content-staleness.ts --concepts > before.txt`. Then write
+   `data/words.json`, run `validate-words`, then `npm test` (full-library
+   regression). If a headword can't be located in its example, rewrite the
+   sentence — never loosen `headword.ts`.
+3. **Diff the concept membership** (发散, whole batch at once — two words
+   added together can join the same concept; per-word passes miss it):
+   `npx tsx scripts/content-staleness.ts --concepts | diff before.txt -`.
+   **Read every `>` line.** Each is a word this batch put into an existing
+   answer set; if it does not belong there, add it to that concept's
+   `exclude` and re-run `validate-concepts`. Usually the answer is "it
+   belongs" and there is nothing to do — the cost of the check is reading a
+   handful of lines, the cost of skipping it is a 发散 question that marks a
+   correct answer wrong, or accepts a wrong one.
+4. **Ask what the batch owes**, naming its ids:
+   `npx tsx scripts/content-staleness.ts --batch <id,id,…>`. It exits 1 while
+   anything required is missing, and reports 反义 without blocking. Then
+   author the two note files: contrast notes (Chinese, ≤160 chars, states
+   what separates the two), word notes (Chinese, ≤80 chars, **never names
    another library headword**). Run both validators; coverage must read X/X.
-5. **Sense groups**, if the new word has ≥2 same-POS confusable partners:
-   one scenario sentence (Chinese only — a single Latin letter is a leak,
-   the validator rejects it), a `target` (the chunk of the sentence being
-   asked — must appear in `zh` exactly once, ≤16 chars, no Latin; without
-   it the learner cannot tell which part of the sentence to express), the
-   ranked `order`, a `why` naming the deciding dimension. Adapt the
-   scenario from a member's real example sentence; **if no sentence makes
-   one member clearly best, skip the group** — an arguable key is worse
-   than no question.
+5. **回想 is required, and has two legs — either clears it.**
+
+   **A sense group**, when the word has ≥2 same-POS confusable partners: one
+   scenario sentence (Chinese only — a single Latin letter is a leak, the
+   validator rejects it), a `target` (the chunk of the sentence being asked
+   — must appear in `zh` exactly once, ≤16 chars, no Latin; without it the
+   learner cannot tell which part of the sentence to express), the ranked
+   `order`, a `why` naming the deciding dimension. Adapt the scenario from a
+   member's real example sentence; **if no sentence makes one member clearly
+   best, skip the group** — an arguable key is worse than no question.
+
+   **Or five renderings** in `recallSentences.json`, one per example index:
+   `{ "id": …, "i": 0, "zh": …, "target": … }`, `zh` with **zero Latin
+   letters** (proper nouns carried over from the English — Slack, Q4, CEO —
+   are the usual leak), `target` Chinese, ≤16 chars, appearing in `zh`
+   exactly once. Five, not one: the draw repeats a word, and a repeated
+   sentence tests the sentence.
+
+   A skipped group does **not** excuse the word — it falls back to
+   renderings like any other. The legs are alternatives, not a choice
+   between doing the work and not.
 6. **Live library**: `npm run check-live` to pull and diff against the repo
    copy, apply additions on top of the live file (never overwrite it with
    the repo copy — resurrecting deleted words is a real recorded failure,
@@ -58,8 +93,9 @@ yourself.
    then `npm run check-live` again to confirm the two agree. (`--write` runs
    the opposite direction — repo copy from live — and is the repair for a
    stale repo copy, not for pushing new additions.)
-7. **Ship**: `npm test && npm run build && npx oxlint`, commit the word list
-   and its notes together — they are one change.
+7. **Ship**: re-run `--batch` with the same ids and see `nothing owed`, then
+   `npm test && npm run build && npx oxlint`, and commit the word list with
+   its notes and renderings — they are one change.
 
 ## Batches of 6+ words: fan out the authoring
 
@@ -108,9 +144,14 @@ npx tsx scripts/content-staleness.ts
 ```
 
 It reports, in priority order: contrastNotes coverage gaps, wordNotes
-coverage gaps, same-POS candidate triples with no sense group, and the
-passage corpus size. Exit code 0 with `FRESH` means nothing is owed — stop
+coverage gaps, sense-group anchors not yet covered, words with no 回想
+question at all, then 组句, 发散 and passage lines that are printed and never
+hold the verdict. Exit code 0 with `FRESH` means nothing is owed — stop
 there, do not invent work.
+
+Since 2026-09-21 the 回想 line is **backlog only**: a new word's 回想 hole is
+the add flow's to fill before it ships (step 5 above), so this number should
+only ever fall. If it rises, a batch shipped without running `--batch`.
 
 For each gap it names, author under the same rules as steps 4–5 above, run
 the matching validator, and commit with a message that leads with the

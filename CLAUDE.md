@@ -16,7 +16,7 @@ Core loops: spaced-repetition review (`/review`), quizzes in several modes (`/qu
 | `npx vitest run src/lib/foo.test.ts` | one file |
 | `npm run build` | `tsc -b && vite build` — run this, not `tsc` alone (`-b` also type-checks `scripts/`) |
 | `npm run lint` | oxlint; runs in CI |
-| `npm run validate` | all eight `validate-*` content gates in one go; runs in CI |
+| `npm run validate` | all nine `validate-*` content gates in one go; runs in CI |
 | `npm run validate-words` | gate for `data/words.json`; the per-word rules live in `src/lib/wordValidate.ts`, shared with both entry forms |
 | `npm run check-live` | diff `data/words.json` against the live `volcab-data` copy through `gh`; `-- --write` realigns the repo copy |
 
