@@ -3,9 +3,11 @@ import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Field } from '../components/Field'
 import { TextInput } from '../components/TextInput'
-import { buildConceptIndex, gradeInput, generateDivergeSession, MIN_ANSWERS } from '../lib/diverge'
+import { buildConceptIndex, divergeKey, DIVERGE_RECENT_LIMIT, gradeInput, generateDivergeSession, MIN_ANSWERS } from '../lib/diverge'
 import type { Concept, ConceptIndex, DivergeAxis, DivergeQuestion, Verdict } from '../lib/diverge'
+import { pushRecent } from '../lib/passage'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
+import { storage } from '../lib/storage'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
 
@@ -230,11 +232,25 @@ export function QuizDiverge({ concepts, words, onRestart }: { concepts: Concept[
   // Lazy initialiser rather than a memo with an empty dependency list: the
   // round is drawn exactly once, and restarting swaps this whole component out
   // through `key`, so there is no session state to reset by hand.
-  const [questions] = useState(() => generateDivergeSession(concepts, words, progress, QUESTION_COUNT))
+  // The recency list is read once, with the round: questions answered during
+  // this round join it as they settle, and re-reading it here would let the
+  // round reorder itself underneath the person playing it.
+  const [questions] = useState(() => generateDivergeSession(
+    concepts, words, progress, QUESTION_COUNT, Math.random,
+    storage.get<string[]>('recentDiverge') ?? [],
+  ))
 
   const onSettle = useCallback((q: DivergeQuestion, landed: Landed[]) => {
+    // Seen means settled, not drawn — the same contract 回想 keeps. Quitting
+    // a round halfway must not mark the questions you never reached, and it
+    // must still mark the ones you did: recordDiverge below only fires on a
+    // finished round, which is exactly the gap this list closes. The write
+    // result is ignored on purpose; losing it costs a repeat.
+    storage.set('recentDiverge', pushRecent(
+      storage.get<string[]>('recentDiverge') ?? [], divergeKey(q), DIVERGE_RECENT_LIMIT,
+    ))
     setRounds(r => [...r, {
-      key: `${q.conceptId}|${q.axis}`,
+      key: divergeKey(q),
       produced: landed.filter(l => !l.hinted).length,
       size: q.answers.length,
     }])
@@ -293,7 +309,7 @@ export function QuizDiverge({ concepts, words, onRestart }: { concepts: Concept[
   }
 
   const q = questions[i]
-  const last = progress.diverge?.[`${q.conceptId}|${q.axis}`]
+  const last = progress.diverge?.[divergeKey(q)]
   return (
     <Card>
       {/* Not .quiz-progress: that class is a grid container elsewhere, and
@@ -302,7 +318,7 @@ export function QuizDiverge({ concepts, words, onRestart }: { concepts: Concept[
         第 <span className="num">{i + 1}</span> / <span className="num">{questions.length}</span> 题
       </p>
       <DivergeQuestionView
-        key={`${q.conceptId}|${q.axis}`}
+        key={divergeKey(q)}
         question={q}
         index={index}
         sound={isSoundEnabled(progress.settings)}

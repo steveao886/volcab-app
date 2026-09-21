@@ -5,6 +5,7 @@ import {
   conceptMembers,
   gradeInput,
   generateDivergeSession,
+  divergeKey,
   DIVERGE_AXES,
 } from './diverge'
 import type { Concept, DivergeAxis } from './diverge'
@@ -337,5 +338,67 @@ describe('generateDivergeSession', () => {
 
   it('covers every axis name it declares', () => {
     expect([...DIVERGE_AXES]).toEqual(['synonym', 'opposite', 'pos', 'negation'])
+  })
+})
+
+describe('generateDivergeSession recency', () => {
+  /** Twelve four-axis concepts: every axis has a pool of 12, so a window can be measured on any of them. */
+  const many = Array.from({ length: 12 }, (_, i) => ({ ...CONCEPT, id: `c${i}` }))
+  const synKeys = (n: number) => Array.from({ length: n }, (_, i) => `c${i}|synonym`)
+  const round = (recent: readonly string[], count = 8) =>
+    generateDivergeSession(many, WORDS, progressOf(ALL), count, () => 0.5, recent)
+
+  it('demotes a recently asked question behind the ones never asked', () => {
+    // Two 近义 slots out of a pool of 12, and the eight most recent 近义
+    // questions are inside the window - so the round must reach for the four
+    // that are not.
+    const asked = new Set(synKeys(8))
+    const served = round(synKeys(8)).filter(q => q.axis === 'synonym').map(divergeKey)
+    expect(served.length).toBeGreaterThan(0)
+    expect(served.some(k => asked.has(k))).toBe(false)
+  })
+
+  it('an empty list draws exactly as it did before the window existed', () => {
+    expect(round([]).map(divergeKey)).toEqual(
+      generateDivergeSession(many, WORDS, progressOf(ALL), 8, () => 0.5).map(divergeKey),
+    )
+  })
+
+  it('each axis gets its own window, so a long 近义 history cannot reorder 加否定', () => {
+    // The list is all 近义. If the window were taken off the front of the
+    // list without filtering by axis, 加否定 would see a window of entries
+    // that none of its questions and behave as if nothing had been asked -
+    // which is the same answer by accident. So assert the stronger thing:
+    // 加否定's own two recent entries still demote, with 12 近义 entries
+    // sitting in front of them in the same list.
+    const recent = [...synKeys(12), 'c0|negation', 'c1|negation']
+    const served = round(recent).filter(q => q.axis === 'negation').map(divergeKey)
+    expect(served).not.toContain('c0|negation')
+    expect(served).not.toContain('c1|negation')
+  })
+
+  it('the window is two thirds of the pool, so the oldest questions come back', () => {
+    // Pool of 12 - the window is 8, so entries 9 to 12 of this axis's history
+    // have aged out and rank as unseen again. Every 近义 question has been
+    // asked; the round must still prefer the two oldest.
+    const recent = synKeys(12)            // index 0 is the most recent
+    const served = round(recent).filter(q => q.axis === 'synonym').map(divergeKey)
+    const agedOut = new Set(recent.slice(8))
+    expect(served.every(k => agedOut.has(k))).toBe(true)
+  })
+
+  it('still fills the round when every question is inside the window', () => {
+    // Nothing is fresh, so the demotion has nothing to promote. A round that
+    // came up short here would punish you for playing.
+    const recent = DIVERGE_AXES.flatMap(a => many.map(c => `${c.id}|${a}`))
+    expect(round(recent)).toHaveLength(8)
+  })
+
+  it('ignores keys for questions that are not in the pool at all', () => {
+    // Concepts get retired and words get deleted, so a stale list is normal.
+    // It must not eat the window of the questions that do exist.
+    const recent = ['gone|synonym', 'alsogone|negation', ...synKeys(8)]
+    const served = round(recent).filter(q => q.axis === 'synonym').map(divergeKey)
+    expect(served.some(k => synKeys(8).includes(k))).toBe(false)
   })
 })

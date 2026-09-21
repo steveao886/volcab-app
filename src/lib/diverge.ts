@@ -1,6 +1,7 @@
 import { buildAntonymPairs } from './antonym'
 import { isInflectionOf } from './headword'
 import { shuffle } from './quiz'
+import { recentWindow } from './passage'
 import type { Progress, Word } from '../types'
 
 /**
@@ -399,6 +400,79 @@ export function gradeInput(
 }
 
 /**
+ * How many question keys the local recency list keeps.
+ *
+ * **Not pushRecent's default of 60**, which is the passage corpus size and
+ * would silently truncate a window computed over a larger pool - the bug
+ * RECALL_RECENT_LIMIT exists for. The windows this mode wants sum to about
+ * 100 today (54 + 26 + 16 + 4 over pools of 81 / 40 / 25 / 6), and the whole
+ * askable pool can never exceed one question per concept per axis - 328 at
+ * 82 concepts. 400 keeps the cap from ever being the binding constraint, and
+ * costs ~9 KB beside a progress cache measured at 190 KB.
+ */
+export const DIVERGE_RECENT_LIMIT = 400
+
+/**
+ * A question's identity: one per concept per axis, because buildQuestion
+ * yields at most one question for that pair (the pos axis picks a single
+ * part of speech, `candidates[0]`). The same string keys `Progress.diverge`
+ * and the local recency list, and it is exported so the three of them cannot
+ * drift apart by being spelled out separately.
+ */
+export const divergeKey = (q: { conceptId: string; axis: DivergeAxis }): string => `${q.conceptId}|${q.axis}`
+
+/**
+ * Shuffles one axis's pool, then sinks anything asked recently behind
+ * everything that was not.
+ *
+ * **发散 was the only content-pool mode with no memory of what it had
+ * asked.** Every round reshuffled all four pools and took the top slice, so
+ * repeats were pure chance — measured on the live library (152 askable
+ * questions, 931 words): over a 7-round sitting only 47 of the 56 questions
+ * asked were distinct, and 79% of rounds after the first contained a
+ * question already seen that sitting. 加否定 was worst at 37%, because its
+ * pool holds 6 and the allocation hands it a slot every round.
+ *
+ * The window is `recentWindow` — two thirds of the pool — and it is taken
+ * **per axis**, over this axis's own entries in the list. A shared window
+ * would be spent by 近义's 81 questions before 加否定's 6 saw any of it, and
+ * the allocation below is per axis, so the window has to be too.
+ *
+ * Two thirds rather than everything, for the reason recentWindow was
+ * written: the last third is where the shuffle still gets to choose, so a
+ * fully-played pool keeps cycling instead of locking into a fixed order.
+ *
+ * Re-measured over the same 7-round sitting with the window in place:
+ * repeats 16.7% -> 2.3%, distinct questions 47 -> 55 of 56, and rounds
+ * containing a repeat 75% -> 22%. 近义, 反面 and 词性 each reach 0%; the
+ * whole remainder is 加否定 at 19%, whose pool is 6 and whose window is
+ * therefore 4, so it wraps every three rounds. That one is a content
+ * shortage, not a draw defect - no ordering rule can make a seventh
+ * question out of six.
+ *
+ * Not `Progress.diverge[key].lastAt`, which records the same thing and is
+ * synced: recordDiverge only fires when a whole round is finished, so a
+ * round quit halfway leaves no trace. Measured on the live progress.json —
+ * 15 questions recorded against a day of play. A list written per question
+ * answered sees them all; the price is that it stays on one device, which
+ * is the trade every other recency list here already makes (lib/storage.ts).
+ */
+function demoteSeen(pool: DivergeQuestion[], recent: readonly string[], rng: () => number): DivergeQuestion[] {
+  const shuffled = shuffle(pool, rng)
+  if (pool.length === 0) return shuffled
+  const mine = new Set(pool.map(divergeKey))
+  // Keys for questions this axis cannot ask — a retired concept, a deleted
+  // word — are dropped before the window is measured, so a stale list never
+  // spends the window of the questions that still exist.
+  const window = new Set(recent.filter(k => mine.has(k)).slice(0, recentWindow(pool.length)))
+  if (window.size === 0) return shuffled
+  return [
+    ...shuffled.filter(q => !window.has(divergeKey(q))),
+    ...shuffled.filter(q => window.has(divergeKey(q))),
+  ]
+}
+
+/**
  * One round, axes mixed.
  *
  * The mixing **is** the exercise — eight 近义 questions in a row train one
@@ -421,6 +495,8 @@ export function generateDivergeSession(
   progress: Progress,
   count: number,
   rng: () => number = Math.random,
+  /** Question keys most recently asked, newest first — see demoteSeen. Empty draws exactly as this did before the window existed. */
+  recent: readonly string[] = [],
 ): DivergeQuestion[] {
   const index = buildConceptIndex(words)
   const byAxis = new Map<DivergeAxis, DivergeQuestion[]>(DIVERGE_AXES.map(a => [a, []]))
@@ -430,7 +506,7 @@ export function generateDivergeSession(
       if (q) byAxis.get(axis)!.push(q)
     }
   }
-  for (const axis of DIVERGE_AXES) byAxis.set(axis, shuffle(byAxis.get(axis)!, rng))
+  for (const axis of DIVERGE_AXES) byAxis.set(axis, demoteSeen(byAxis.get(axis)!, recent, rng))
 
   const live = DIVERGE_AXES.filter(a => byAxis.get(a)!.length > 0)
   if (live.length === 0) return []
