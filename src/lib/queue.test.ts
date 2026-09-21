@@ -265,11 +265,15 @@ describe('buildLapseQueue', () => {
     expect(buildLapseQueue([word('a')], p, TODAY)).toEqual(['a'])
   })
 
-  it('a fresh miss leads the durable strugglers — the newer observation first', () => {
+  it('a durable struggler leads a fresh miss — the screen is called 顽固词', () => {
+    // The reverse of what this asserted until 2026-09-21. On the live
+    // library the miss half was 134 of 212 words, so the ease ranking began
+    // at position 135 and two of the four words on screen sat at or above
+    // initial ease.
     const p = emptyProgress()
     p.words['struggler'] = strugglingEntry(3, { ease: 1.4 })
     p.words['missed'] = { state: 'review', ease: INITIAL_EASE, intervalDays: 20, due: '2026-08-13', stepIndex: 0, reps: 4, lapses: 0, lastReviewedAt: '2026-07-20T00:00:00Z', missedAt: TODAY }
-    expect(buildLapseQueue([word('struggler'), word('missed')], p, TODAY)).toEqual(['missed', 'struggler'])
+    expect(buildLapseQueue([word('struggler'), word('missed')], p, TODAY)).toEqual(['struggler', 'missed'])
   })
 
   it('more recent misses lead older ones', () => {
@@ -403,15 +407,25 @@ describe('buildConsolidateQueue', () => {
 describe('strugglingPracticePool: the drill queue before the daily narrowing', () => {
   const TODAY = '2026-07-24'
 
-  it('recent misses lead by recency, then the ease ranking, deduplicated', () => {
+  it('orders by ease, not by how recently the word was missed, and deduplicates', () => {
     const p = emptyProgress()
     p.words['struggler'] = strugglingEntry(3, { ease: 1.4 })
     p.words['both'] = strugglingEntry(2, { ease: 1.6, missedAt: TODAY })
     p.words['missed'] = { state: 'review', ease: INITIAL_EASE, intervalDays: 20, due: '2026-08-13', stepIndex: 0, reps: 4, lapses: 0, lastReviewedAt: '2026-07-20T00:00:00Z', missedAt: '2026-07-23' }
     const ws = [word('struggler'), word('both'), word('missed')]
-    // 'both' (missed today) before 'missed' (yesterday); 'struggler' enters
-    // via the ranking; 'both' appears exactly once despite qualifying twice.
-    expect(strugglingPracticePool(ws, p, TODAY).map(w => w.id)).toEqual(['both', 'missed', 'struggler'])
+    // Hardest first: 1.4, then 1.6, then the missed word sitting at initial
+    // ease — which under the old rule led the whole list because it had been
+    // missed. 'both' appears exactly once despite qualifying twice.
+    expect(strugglingPracticePool(ws, p, TODAY).map(w => w.id)).toEqual(['struggler', 'both', 'missed'])
+  })
+
+  it('a recent miss breaks a tie between two words the scheduler rates the same', () => {
+    // The miss did not stop being information — it stopped being a section.
+    const p = emptyProgress()
+    p.words['quiet'] = strugglingEntry(1, { ease: 1.9 })
+    p.words['missedToday'] = strugglingEntry(1, { ease: 1.9, missedAt: TODAY })
+    const ws = [word('quiet'), word('missedToday')]
+    expect(strugglingPracticePool(ws, p, TODAY).map(w => w.id)).toEqual(['missedToday', 'quiet'])
   })
 
   it('is uncapped — the daily session size bounds the drill, not the pool', () => {
