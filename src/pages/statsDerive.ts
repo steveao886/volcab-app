@@ -385,6 +385,36 @@ export function recommendMode(rows: ModeOverviewRow[]): QuizMetricKey | null {
   return bestMode
 }
 
+/**
+ * Mode cards ordered most-recently-played first, never-played last.
+ *
+ * Recency is only accurate to the day: `dailyStats` is keyed by date and
+ * records no clock time per mode, so every mode played yesterday ties.
+ * That is the same resolution the card itself prints — three cards all
+ * reading 昨天 are genuinely indistinguishable to the reader — and the tie
+ * falls back to the caller's own order through a stable sort (guaranteed
+ * since ES2019), so the grid cannot reshuffle between two renders of
+ * unchanged data.
+ *
+ * Generic over the card shape rather than taking ModeOverviewRow[] alone:
+ * the hub orders its own label/description entries, and `rows` only
+ * supplies the dates.
+ */
+export function orderByRecency<T extends { key: QuizMetricKey }>(
+  modes: readonly T[],
+  rows: readonly ModeOverviewRow[],
+): T[] {
+  const last = new Map(rows.map(r => [r.mode, r.lastPlayed]))
+  return [...modes].sort((a, b) => {
+    const la = last.get(a.key) ?? null
+    const lb = last.get(b.key) ?? null
+    if (la === lb) return 0
+    if (la === null) return 1
+    if (lb === null) return -1
+    return la < lb ? 1 : -1
+  })
+}
+
 /** Relative age for "last practised": 今天 / 昨天 / N 天前 / 未练过. */
 export function agoLabel(date: string | null, today: string): string {
   if (date === null) return '未练过'

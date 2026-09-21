@@ -3,7 +3,7 @@ import { emptyProgress, emptyStat } from '../types'
 import type { Progress, Word } from '../types'
 import {
   accuracySeries, accuracyStats, agoLabel, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
-  masteryBreakdown, modeAccuracy, modeOverview, recommendMode, retentionStats, shortDate,
+  masteryBreakdown, modeAccuracy, modeOverview, orderByRecency, recommendMode, retentionStats, shortDate,
   usageCoverage, windowSummary,
 } from './statsDerive'
 import type { DayPoint } from './statsDerive'
@@ -353,6 +353,51 @@ describe('recommendMode', () => {
       '2026-08-01': { recall: { asked: 10, correct: 6 }, audio: { asked: 10, correct: 6 } },
     }))
     expect(recommendMode(rows)).toBe('recall')
+  })
+})
+
+describe('orderByRecency', () => {
+  /** Stand-in for the hub's MODES: only `key` is read, and the array order is the tie-break. */
+  const cards = [
+    { key: 'mixed' }, { key: 'recall' }, { key: 'contrast' }, { key: 'audio' },
+  ] as const
+
+  it('puts the most recently played first and the never-played last', () => {
+    const rows = modeOverview(progWithModes({
+      '2026-08-01': { mixed: { asked: 10, correct: 8 } },
+      '2026-08-06': { contrast: { asked: 10, correct: 8 } },
+      '2026-08-03': { recall: { asked: 10, correct: 8 } },
+    }))
+    expect(orderByRecency(cards, rows).map(c => c.key)).toEqual(['contrast', 'recall', 'mixed', 'audio'])
+  })
+
+  it('ties keep the given order, so two renders of the same day cannot reshuffle the grid', () => {
+    // Three modes played on one day is the ordinary case, not a corner: the
+    // card only prints a day, and all three read 昨天.
+    const rows = modeOverview(progWithModes({
+      '2026-08-06': {
+        audio: { asked: 10, correct: 8 },
+        contrast: { asked: 10, correct: 8 },
+        recall: { asked: 10, correct: 8 },
+      },
+    }))
+    expect(orderByRecency(cards, rows).map(c => c.key)).toEqual(['recall', 'contrast', 'audio', 'mixed'])
+  })
+
+  it('never-played modes keep their own order among themselves', () => {
+    expect(orderByRecency(cards, modeOverview(emptyProgress())).map(c => c.key))
+      .toEqual(['mixed', 'recall', 'contrast', 'audio'])
+  })
+
+  it('does not mutate the array it was given', () => {
+    const rows = modeOverview(progWithModes({ '2026-08-06': { audio: { asked: 10, correct: 8 } } }))
+    const input = [...cards]
+    orderByRecency(input, rows)
+    expect(input.map(c => c.key)).toEqual(['mixed', 'recall', 'contrast', 'audio'])
+  })
+
+  it('a mode with no row at all sorts as never played, rather than throwing', () => {
+    expect(orderByRecency(cards, []).map(c => c.key)).toEqual(['mixed', 'recall', 'contrast', 'audio'])
   })
 })
 
