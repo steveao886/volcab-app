@@ -666,7 +666,7 @@ describe('difficultyWeight', () => {
     expect(difficultyWeight(word('a', '甲'), missedOn(addDays(TODAY, -(MISS_RECENCY_DAYS + 1))), TODAY)).toBe(1)
   })
 
-  it("the boundary day itself still counts, matching buildLapseQueue's cutoff", () => {
+  it("the boundary day itself still counts, matching strugglingPracticePool's cutoff", () => {
     expect(difficultyWeight(word('a', '甲'), missedOn(addDays(TODAY, -MISS_RECENCY_DAYS)), TODAY)).toBe(2)
   })
 

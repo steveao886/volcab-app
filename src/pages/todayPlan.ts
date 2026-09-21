@@ -1,11 +1,14 @@
 import {
-  buildConsolidateQueue, buildLapseQueue, buildQueue,
-  CONSOLIDATE_DELAY_HOURS, CONSOLIDATE_MAX_INTERVAL_DAYS, rankStrugglingWords,
+  buildConsolidateQueue, buildQueue,
+  CONSOLIDATE_DELAY_HOURS, CONSOLIDATE_MAX_INTERVAL_DAYS, strugglingPracticePool,
 } from '../lib/queue'
 import { todayStr } from '../lib/srs'
 import type { Progress, Word } from '../types'
 
 export type PlanKey = 'due' | 'fresh' | 'consolidate' | 'lapses' | 'quiz'
+
+/** Where 专攻顽固词 goes. One constant because the plan row and the hero card must never send you to two different screens. */
+const STRUGGLING_WALK = '/practice?pick=struggling'
 export type PlanState = 'todo' | 'done' | 'pending'
 
 export interface PlanItem {
@@ -67,19 +70,19 @@ export function buildDayPlan(
     }
   }
 
+  // 顽固词 is the endless walk now, so the count is the whole pool rather
+  // than one capped sitting, and "done" can only mean the local marker:
+  // there is no state of the data that says you finished, because the walk
+  // does not end. Practice.tsx writes the marker when a batch is finished.
   if (marks.lapseDrilledOn === today) {
-    items.push({ key: 'lapses', label: '专攻顽固词', state: 'done', to: '/review?mode=lapses' })
-  } else if (rankStrugglingWords(words, progress).length > 0) {
-    const lapse = buildLapseQueue(words, progress, today)
-    // Queue empty while struggling words exist means they were all already
-    // reviewed today — that's "done for today", not "no stubborn words".
-    if (lapse.length > 0) {
+    items.push({ key: 'lapses', label: '专攻顽固词', state: 'done', to: STRUGGLING_WALK })
+  } else {
+    const pool = strugglingPracticePool(words, progress, today)
+    if (pool.length > 0) {
       items.push({
-        key: 'lapses', label: '专攻顽固词', count: lapse.length,
-        state: 'todo', to: '/review?mode=lapses',
+        key: 'lapses', label: '专攻顽固词', count: pool.length,
+        state: 'todo', to: STRUGGLING_WALK,
       })
-    } else {
-      items.push({ key: 'lapses', label: '专攻顽固词', state: 'done', to: '/review?mode=lapses' })
     }
   }
 
@@ -138,7 +141,7 @@ export function nextAction(plan: PlanItem[]): HeroAction {
   if (l?.state === 'todo') {
     return {
       kind: 'lapses', count: l.count ?? 0, unit: '个词',
-      meta: '最近最不牢的一批', to: '/review?mode=lapses', label: '专攻顽固词',
+      meta: '从最不牢的开始,练到不想练为止', to: STRUGGLING_WALK, label: '专攻顽固词',
     }
   }
   return { kind: 'complete' }

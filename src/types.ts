@@ -122,8 +122,9 @@ export interface ProgressEntry {
    * which is exactly backwards.
    *
    * So `due` now belongs to the scheduler alone. A miss lands here instead,
-   * and buildLapseQueue reads it to put the word in front of you the same
-   * day — in the drill, which by construction cannot reach `intervalDays`.
+   * and strugglingPracticePool reads it to put the word in front of you the
+   * same day — in 顽固词加练, which by construction cannot reach
+   * `intervalDays`.
    *
    * Optional like every added field: another device on an older build
    * pushes entries without it, and the correct reading of its absence is

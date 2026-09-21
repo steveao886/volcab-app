@@ -100,13 +100,17 @@ describe('buildDayPlan', () => {
     expect(find(buildDayPlan(words, healthy, NOW, TODAY, NO_MARKS), 'lapses')).toBeUndefined()
   })
 
-  it('lapses row: done (not hidden) when every struggling word was already reviewed today', () => {
+  it('lapses row: a word reviewed today is still stubborn, so the row stays todo', () => {
+    // The capped drill hid words reviewed today, so the row could reach
+    // 'done' from the data alone. The walk hides nothing and never ends, so
+    // only the local marker can say a day is done — asserted above.
     const words = [word('a')]
     const p = emptyProgress()
     p.settings.newPerDay = 0
     p.words.a = entry({ ease: 2.1, intervalDays: 3,
       lastReviewedAt: new Date(2026, 7, 7, 9, 0, 0).toISOString() })
-    expect(find(buildDayPlan(words, p, NOW, TODAY, NO_MARKS), 'lapses')?.state).toBe('done')
+    expect(find(buildDayPlan(words, p, NOW, TODAY, NO_MARKS), 'lapses'))
+      .toMatchObject({ state: 'todo', count: 1, to: '/practice?pick=struggling' })
   })
 
   it('quiz row: always present, done once any quiz was taken today', () => {

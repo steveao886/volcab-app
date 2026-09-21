@@ -12,6 +12,7 @@ import type { PracticeSizeOption } from '../lib/practiceSize'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
 import { strugglingPracticePool } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
+import { storage } from '../lib/storage'
 import { todayStr } from '../lib/srs'
 import { filterToParams, filterWords, paramsToFilter } from './libraryFilter'
 import { ReviewCardBack } from './ReviewCard'
@@ -163,8 +164,16 @@ export function Practice() {
   // (a bookmarked filter that now matches nothing) isn't a session anyone
   // finished, so it gets no sound — same judgement as Review.tsx.
   useEffect(() => {
-    if (finished && deck.length > 0) playSessionDone(soundEnabled)
-  }, [finished, deck.length, soundEnabled])
+    if (!finished || deck.length === 0) return
+    playSessionDone(soundEnabled)
+    // 顽固词's "done for today" marker, which used to be written by the
+    // capped drill when its list ran out. The walk has no end, so the mark
+    // can no longer mean "you cleared the list" — it means you sat down with
+    // them today, and the Today row stops asking. Written on a finished
+    // batch rather than the first card, the same judgement the drill made:
+    // abandoning halfway should not cost you the rest of the day.
+    if (struggling) storage.set('lapseDrilledOn', today)
+  }, [finished, deck.length, soundEnabled, struggling, today])
 
   const toggleFlip = useCallback(() => setFlipped(f => !f), [])
 
@@ -380,7 +389,7 @@ export function Practice() {
           review page's drill note. */}
       <p className="faint review-drill-note">
         {struggling
-          ? '专攻顽固词:刚错过的和最难的排最前。不计成绩、不影响排期,答对也不会提前出队 —— 真正的检验在明天的正式一轮。'
+          ? '专攻顽固词:最难的排最前,刚错过的同难度里优先。不计成绩、不影响排期,答对也不会提前出队 —— 真正的检验在明天的正式一轮。'
           : <>
               {mixed ? '一半已掌握的词随机抽,一半是最近老忘的。' : '随便练:'}
               答错的词会进顽固词队列,但不影响复习计划,也不计入今日复习。
