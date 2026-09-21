@@ -23,6 +23,10 @@
         "intractable",
         "intransigent",
         "uncompromising"
+      ],
+      "excludeOpposites": [
+        "apathetic",
+        "halfhearted"
       ]
     },
     {
@@ -37,6 +41,9 @@
       ],
       "exclude": [
         "profuse"
+      ],
+      "excludeOpposites": [
+        "subtle"
       ]
     },
     {
@@ -67,6 +74,9 @@
       ],
       "exclude": [
         "inimical"
+      ],
+      "excludeOpposites": [
+        "diplomatic"
       ]
     },
     {
@@ -146,6 +156,13 @@
         "inconspicuous",
         "unobtrusive",
         "unpretentious"
+      ],
+      "excludeOpposites": [
+        "indiscreet",
+        "meddlesome",
+        "officious",
+        "prominent",
+        "tactless"
       ]
     },
     {
@@ -255,6 +272,12 @@
       "anchors": [
         "apathetic",
         "indifferent"
+      ],
+      "excludeOpposites": [
+        "compassionate",
+        "empathetic",
+        "reactive",
+        "sympathetic"
       ]
     },
     {
@@ -293,6 +316,10 @@
         "listless",
         "sluggish",
         "torpid"
+      ],
+      "excludeOpposites": [
+        "dogged",
+        "reactive"
       ]
     },
     {
@@ -375,6 +402,11 @@
       "zh": "含着不点破,得细看才看出来",
       "anchors": [
         "subtle"
+      ],
+      "excludeOpposites": [
+        "meddlesome",
+        "officious",
+        "prominent"
       ]
     },
     {
@@ -420,6 +452,12 @@
         "inexorable",
         "uncompromising",
         "unwavering"
+      ],
+      "excludeOpposites": [
+        "apathetic",
+        "compassionate",
+        "intermittent",
+        "sporadic"
       ]
     },
     {
@@ -611,6 +649,9 @@
       "anchors": [
         "compassionate",
         "understanding"
+      ],
+      "excludeOpposites": [
+        "benighted"
       ]
     },
     {
@@ -657,6 +698,10 @@
       "zh": "一下把人勾住,眼睛挪不开",
       "anchors": [
         "captivate"
+      ],
+      "excludeOpposites": [
+        "repel",
+        "repulse"
       ]
     },
     {
@@ -665,6 +710,10 @@
       "anchors": [
         "amiable",
         "pleasant"
+      ],
+      "excludeOpposites": [
+        "obstinate",
+        "perverse"
       ]
     },
     {
@@ -679,6 +728,9 @@
       "zh": "端着架子,生怕别人看不见",
       "anchors": [
         "ostentatious"
+      ],
+      "excludeOpposites": [
+        "subtle"
       ]
     },
     {
@@ -697,6 +749,9 @@
       "zh": "跟周围隔开、融不进去的那种状态",
       "anchors": [
         "isolation"
+      ],
+      "excludeOpposites": [
+        "congregation"
       ]
     },
     {
@@ -742,6 +797,13 @@
       "zh": "说变就变,靠不住",
       "anchors": [
         "volatile"
+      ],
+      "excludeOpposites": [
+        "inert",
+        "preemptive",
+        "proactive",
+        "proactivity",
+        "unreactive"
       ]
     },
     {

@@ -110,7 +110,7 @@ first sense is 淫秽, and so on. Questions those 82 can ask:
 |---|---|---|
 | 近义 | 81 | 82 |
 | 换词性 | 39 | 47 | 
-| 反面 | 24 | 31 |
+| 反面 | 24 | 31 (29 after the 2026-09-21 vetting, below) |
 | 加否定 | 6 | 6 |
 | **total** | **150** | **166** |
 
@@ -193,9 +193,15 @@ re-authoring. Three of four axes inherit that for free:
 | axis | how a new word joins |
 |---|---|
 | 近义 | automatic, via `synonyms` |
-| 反面 | automatic, via `antonyms` |
+| 反面 | automatic, via `antonyms` — **read the result**, see below |
 | 换词性 | automatic, via `relatedForms` |
 | 加否定 | **hand top-up** — add the id to a concept's `negations` |
+
+反面 is only *mechanically* automatic. See "The 反面 axis inherits the
+library's sense drift" below: a new word joining a concept's answer set
+through an antonym written for its other meaning is a defect the derivation
+cannot see, and `npm run validate-concepts -- --opposites` is how it is
+caught.
 
 The one manual step belongs on the `word-content` skill's new-word checklist,
 which already exists to carry exactly this kind of obligation.
@@ -245,7 +251,7 @@ The axes share one authored Chinese prompt:
 | axis | prompt | answer set |
 |---|---|---|
 | 近义 | 固执、不肯改变主意 | members |
-| 反面 | 固执的反面 | ⋃ members' library `antonyms` ∩ learned, − members |
+| 反面 | 固执的反面 | ⋃ members' library `antonyms` ∩ learned, − members, − `excludeOpposites` |
 | 换词性 | 固执（名词） | (members ∪ their `relatedForms`) filtered to that POS |
 | 加否定 | 固执（要带否定前缀的） | `negations` ∩ learned |
 
@@ -411,6 +417,41 @@ Write side strict, read side lenient: the runtime skips a concept it cannot
 resolve rather than throwing.
 
 ## Rollout
+
+## The 反面 axis inherits the library's sense drift
+
+**An antonym hangs off a word, not off the sense of the word that put it in
+this concept.** A concept prompt names one sense; a member that carries two
+brings the antonyms of both, and the second set is what the learner sees.
+
+Reported from use, 2026-09-21. 一路不松劲,压力再大也不改口 drew `relentless`
+through its 坚定 sense; `relentless`'s antonyms are written for its other one,
+持续不断, so the question accepted `intermittent` and `sporadic` — two of its
+three answers were about a sense the prompt never named.
+
+Read over all 31 opposite questions askable with the whole library learned:
+**9 carried at least one answer like that, and in 4 the strays were the
+majority.** The repeat offenders are single words leading two lives —
+`relentless`, `reactive`, `callous`, `ostentatious`, `agreeable`, `inert`,
+`discreet` — not concepts that were authored badly.
+
+`Concept.excludeOpposites` is the hand-vetted result: a denylist of *answers*
+for this axis only. Answers rather than members, because `relentless` is a
+good 近义 for 不松劲 and misleads only in the other direction. 34 answers
+banned across 14 concepts, 196 → 159; `engross` and `solitude` fell below
+MIN_ANSWERS and stopped being asked, 31 → 29.
+
+**A quorum rule was measured first and rejected.** "Require two members to
+name the antonym" reads like the principled fix and it guts the axis: 24 of
+the 31 questions have a single-member answer and most are correct (`cursory`
+from `meticulous`, `placid` from `irritable`).
+
+The reading is repeatable, not a one-off: `npm run validate-concepts --
+--opposites` prints every question with the member behind each answer. The
+validator gates that each banned id is a library word and is actually offered
+by some member, so a note cannot go stale silently — the same staleness check
+`exclude` already gets. Whether an answer matches the prompt stays a human
+judgement; nothing in the data says which sense a member joined on.
 
 Axis order is 近义 → 反面 → 换词性 → 加否定. The first three have their data
 today. 加否定 is last because it is the only one blocked on a hand-authored

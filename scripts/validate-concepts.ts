@@ -21,7 +21,15 @@ import type { Progress, Word } from '../src/types.ts'
  * library learned is.
  */
 
-const file = process.argv[2] ?? 'src/data/concepts.json'
+/**
+ * `--opposites` prints every 反面 question with the member behind each
+ * answer, and exits. It is a reading tool, not a gate: whether an answer
+ * matches the prompt is a judgement about two languages that no check can
+ * make, and Concept.excludeOpposites is the hand-vetted result of one such
+ * reading. This is how the next reading gets done.
+ */
+const review = process.argv.includes('--opposites')
+const file = process.argv.find(a => !a.startsWith('--') && a.endsWith('.json')) ?? 'src/data/concepts.json'
 const data = JSON.parse(readFileSync(file, 'utf8')) as { version: number; concepts: Concept[] }
 const words = JSON.parse(readFileSync('data/words.json', 'utf8')).words as Word[]
 const errors: string[] = []
@@ -139,6 +147,42 @@ for (const [i, c] of data.concepts.entries()) {
     const reached = c.anchors.some(a => index.buckets.get(a.trim().toLowerCase())?.has(id) || index.byHeadword.get(a.trim().toLowerCase()) === id)
     if (!reached) errors.push(`${at}: exclude "${id}" is not reached by any anchor; it does nothing`)
   }
+
+  // Same rule for the opposite denylist, and it needs its own check because
+  // it names answers rather than members: an id no member lists as an
+  // antonym is banning nothing, and the note will still be sitting there
+  // when someone rewrites the entry that used to produce it.
+  const offered = new Set<string>()
+  for (const m of members) for (const o of index.opposites.get(m) ?? []) if (!members.includes(o)) offered.add(o)
+  for (const id of c.excludeOpposites ?? []) {
+    if (!everything.has(id)) errors.push(`${at}: excludeOpposites "${id}" is not a library word`)
+    else if (!offered.has(id)) errors.push(`${at}: excludeOpposites "${id}" is not an opposite any member lists; it does nothing`)
+  }
+}
+
+if (review && errors.length === 0) {
+  let asked = 0, answers = 0
+  for (const c of data.concepts) {
+    const q = buildQuestion(c, 'opposite', index, asIfLearned)
+    if (!q) continue
+    asked++
+    answers += q.answers.length
+    const members = conceptMembers(c, index, everything)
+    console.log(`
+### ${c.id} — ${c.zh}`)
+    console.log(`  members: ${members.map(id => byId.get(id)?.headword ?? id).join(', ')}`)
+    for (const a of q.answers) {
+      const from = members.filter(m => index.opposites.get(m)?.has(a.wordId))
+      const w = byId.get(a.wordId)
+      console.log(`  ${a.form.padEnd(15)} ${(w?.meanings[0]?.zh ?? '').slice(0, 24).padEnd(26)} <- ${from.map(m => byId.get(m)?.headword ?? m).join(', ')}`)
+    }
+    for (const id of c.excludeOpposites ?? []) {
+      console.log(`  (banned) ${(byId.get(id)?.headword ?? id).padEnd(13)} ${(byId.get(id)?.meanings[0]?.zh ?? '').slice(0, 24)}`)
+    }
+  }
+  console.log(`
+${asked} opposite question(s) askable with the whole library learned, ${answers} answer(s) in total`)
+  process.exit(0)
 }
 
 if (errors.length > 0) {

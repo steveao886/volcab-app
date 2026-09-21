@@ -50,6 +50,35 @@ export interface Concept {
   /** Member ids the anchors drag in that do not belong. */
   exclude?: string[]
   /**
+   * Library ids that must not be offered as this concept's **opposite**,
+   * though a member does list them.
+   *
+   * An antonym hangs off a *word*, not off the sense of the word that put it
+   * in this concept, so the 反面 axis is where a member's second meaning
+   * surfaces. The case that produced this field: 一路不松劲,压力再大也不改口
+   * drew `relentless` through its 坚定 sense, and `relentless`'s antonyms are
+   * written for its other one — 持续不断 — so the question asked for the
+   * opposite of "不改口" and accepted `intermittent` and `sporadic`. Two of
+   * its three answers were about a sense the prompt never named.
+   *
+   * Read over all 25 opposite questions askable in September 2026, 9 carried
+   * at least one answer like that and in 4 the strays were the majority. The
+   * repeat offenders are single words with two lives — `relentless`,
+   * `reactive`, `callous`, `ostentatious`, `agreeable`, `inert` — which is
+   * why the fix is a denylist of answers rather than of members: `relentless`
+   * is a perfectly good 近义 for 不松劲 and only misleads in this direction.
+   *
+   * **Not a quorum rule.** "Require two members to name the antonym" was
+   * measured first and it guts the axis: 24 of those 25 questions have a
+   * single-member answer and most are correct (`cursory` from `meticulous`,
+   * `placid` from `irritable`).
+   *
+   * A question that falls below MIN_ANSWERS once its strays are removed
+   * simply stops being asked, which is the right failure — see the module
+   * header on failing closed.
+   */
+  excludeOpposites?: string[]
+  /**
    * Library ids that are this concept's morphologically negated form.
    *
    * **Hand-written, and it has to be.** Only 14 prefix/base pairs have both
@@ -220,10 +249,12 @@ export function buildQuestion(
 
   if (axis === 'opposite') {
     const own = new Set(members)
+    // Hand-vetted strays: see Concept.excludeOpposites.
+    const banned = new Set(concept.excludeOpposites ?? [])
     const ids = new Set<string>()
     for (const m of members) {
       for (const o of index.opposites.get(m) ?? []) {
-        if (!own.has(o) && learned.has(o)) ids.add(o)
+        if (!own.has(o) && !banned.has(o) && learned.has(o)) ids.add(o)
       }
     }
     return done([...ids].sort().map(asAnswer).filter((a): a is DivergeAnswer => a !== null))
