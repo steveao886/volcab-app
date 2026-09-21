@@ -68,6 +68,17 @@ const KEYS = {
   // the URL: a range is what you want *this* visit, a length is what you
   // want every visit.
   recallCount: 'volcab.recallCount',
+  // Question keys (`<conceptId>|<axis>`) recently answered in 发散, newest
+  // first, so the draw can sink them behind questions it has not asked.
+  //
+  // Local rather than a field on Progress.diverge, which already records the
+  // same questions and *is* synced: recordDiverge only writes when a whole
+  // round finishes, so a round quit halfway leaves nothing behind - measured
+  // on the live progress.json, 15 questions recorded against a day of play.
+  // This list is written per question answered and sees all of them. The
+  // price is the same one every entry above pays: a second device draws a
+  // question you already saw, which costs one repeat.
+  recentDiverge: 'volcab.recentDiverge',
 } as const
 
 export type StorageKey = keyof typeof KEYS
