@@ -1562,6 +1562,98 @@ describe('grade: the retention measurement', () => {
   })
 })
 
+describe('grade: a scheduled review settles the miss that put the word in 顽固词', () => {
+  // The miss half of strugglingPracticePool used to have no exit but the
+  // 7-day recency window: gradeWord never touched missedAt, and the endless
+  // walk passes settle: false on purpose, so a word that qualified on a
+  // quiz miss alone sat in 顽固词 for a week however well you now knew
+  // it. Measured on the live library 2026-09-22: 45 of the 227 words in
+  // the pool were there on a miss alone.
+  it('a "good" on a review card clears the miss — the scheduled test is the stronger observation', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })      // graduates to review
+    await step(() => { app().recordPractice('alpha', false) })
+    expect(app().progress.words['alpha'].missedAt).toBe(today)
+
+    await step(() => { app().grade('alpha', 'good') })
+
+    expect(app().progress.words['alpha'].missedAt).toBeUndefined()
+    // Deleted, not set to undefined: mergeProgress takes an entry whole, and
+    // a key carrying undefined survives a spread while JSON.stringify drops
+    // it — the two devices would then disagree about what was written.
+    expect(Object.hasOwn(app().progress.words['alpha'], 'missedAt')).toBe(false)
+  })
+
+  it('"太简单" clears it as well', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().recordPractice('alpha', false) })
+
+    await step(() => { app().grade('alpha', 'easy') })
+
+    expect(app().progress.words['alpha'].missedAt).toBeUndefined()
+  })
+
+  it('"有点难" leaves the miss standing — ease just went down, so the word is still the trouble the miss observed', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().recordPractice('alpha', false) })
+
+    await step(() => { app().grade('alpha', 'hard') })
+
+    expect(app().progress.words['alpha'].missedAt).toBe(today)
+  })
+
+  it('"忘了" leaves the miss standing — it confirms the observation rather than overturning it', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().recordPractice('alpha', false) })
+
+    await step(() => { app().grade('alpha', 'again') })
+
+    expect(app().progress.words['alpha'].missedAt).toBe(today)
+  })
+
+  it('a learning-phase card never settles: both its steps land in one sitting, so answering it proves nothing about retention', async () => {
+    await bootAsAlice()
+    // One 'good' from new advances the first learning step without graduating
+    // (LEARNING_STEPS is 2), so the card the second grade is given on is
+    // still a learning card.
+    await step(() => { app().grade('alpha', 'good') })
+    expect(app().progress.words['alpha'].state).toBe('learning')
+    await step(() => { app().recordPractice('alpha', false) })
+
+    await step(() => { app().grade('alpha', 'good') })
+
+    expect(app().progress.words['alpha'].missedAt).toBe(today)
+  })
+
+  it('a word that was never missed gains no missedAt key from being graded', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().grade('alpha', 'good') })
+    expect(Object.hasOwn(app().progress.words['alpha'], 'missedAt')).toBe(false)
+  })
+
+  it('the grade still lands — settling the miss must not swallow the schedule the grade produced', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'easy') })
+    await step(() => { app().recordPractice('alpha', false) })
+    const before = app().progress.words['alpha']
+
+    await step(() => { app().grade('alpha', 'good') })
+
+    const after = app().progress.words['alpha']
+    expect(after.missedAt).toBeUndefined()
+    // Clearing is applied to gradeWord's result, not to the entry it was
+    // given: settle the wrong one and the review is thrown away, which
+    // would read on screen as a card that refuses to leave the queue.
+    expect(after.reps).toBe(before.reps + 1)
+    expect(after.intervalDays).toBeGreaterThan(before.intervalDays)
+    expect(after.due > today).toBe(true)
+  })
+})
+
 describe('recordConsolidation: same contract, but a fumble is not a lapse', () => {
   it('a miss stamps missedAt without counting a lapse — day-one shakiness is not forgetting', async () => {
     await bootAsAlice()

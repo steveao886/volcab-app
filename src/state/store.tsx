@@ -707,6 +707,45 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
 
   // --- Actions --------------------------------------------------------------
 
+  /** Returns the entry unchanged when there is no miss recorded, so a no-op stays a no-op. */
+  const clearMissed = (e: ProgressEntry): ProgressEntry => {
+    if (e.missedAt === undefined) return e
+    const { missedAt: _settled, ...rest } = e
+    return rest
+  }
+
+  /**
+   * Whether this grade supersedes the practice miss that put the word in
+   * 顽固词.
+   *
+   * `missedAt` had no exit but the 7-day recency window until 2026-09-22.
+   * gradeWord never touched it, and the endless walk passes settle: false
+   * on purpose — so a word that qualified on a quiz miss alone stayed
+   * stubborn for a week no matter how well the scheduled review went.
+   * Measured on the live library that day: 45 of the pool's 227 words were
+   * there on a miss alone, and reviewing one perfectly moved nothing.
+   *
+   * **The 2026-08-15 hazard does not reach here.** That spec refuses to let
+   * a correct answer settle a miss because a right answer minutes after a
+   * wrong one is short-term memory, and free practice is unbounded — one
+   * afternoon of it could empty tomorrow's queue. A scheduled review cannot
+   * be farmed: grading a due card pushes `due` out past today, so the word
+   * is gone from the queue until its next interval. One settling per word
+   * per day, taken on the card the scheduler itself asked for.
+   *
+   * **Only 记得 and 太简单, and only in the review phase.**
+   * - `again` lands a lapse and −0.2 ease: it confirms the miss.
+   * - `hard` lands −0.15 ease — the scheduler is recording that this word
+   *   is trouble, which is the same thing the miss said.
+   * - A learning-phase card is not evidence either way: both learning steps
+   *   requeue by queue position, so they land inside one sitting (see
+   *   LEARNING_STEPS), which is exactly the short-term retrieval the
+   *   08-15 hazard is about. Same guard, same reason, as the review-phase
+   *   restriction on quiz demotion.
+   */
+  const settlesMiss = (prev: ProgressEntry | undefined, g: Grade): boolean =>
+    prev?.state === 'review' && (g === 'good' || g === 'easy')
+
   const grade = useCallback((wordId: string, g: Grade) => {
     const now = new Date()
     const day = todayStr(now)
@@ -731,17 +770,21 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
       stat.reviewPhase = (stat.reviewPhase ?? 0) + 1
       stat.reviewPhaseCorrect = (stat.reviewPhaseCorrect ?? 0) + (g === 'again' ? 0 : 1)
     }
+    // The last argument spaces this word off any due date one of its
+    // synonyms or same-stem relatives already holds — forward only, see
+    // nudgePastRelatives in srs.ts.
+    const graded = gradeWord(
+      prev, g, now, undefined, cur.settings.intervalModifier,
+      relatedDueGuard(wordId, stateRef.current.words, cur.words),
+    )
     commitProgress({
       ...cur,
       words: {
         ...cur.words,
-        // The last argument spaces this word off any due date one of its
-        // synonyms or same-stem relatives already holds — forward only, see
-        // nudgePastRelatives in srs.ts.
-        [wordId]: gradeWord(
-          prev, g, now, undefined, cur.settings.intervalModifier,
-          relatedDueGuard(wordId, stateRef.current.words, cur.words),
-        ),
+        // Settled on the *result*, not on `prev`: clearing the entry the
+        // grade was computed from would commit the old schedule and throw
+        // the review away.
+        [wordId]: settlesMiss(prev, g) ? clearMissed(graded) : graded,
       },
       dailyStats: { ...cur.dailyStats, [day]: stat },
     })
@@ -774,13 +817,6 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
    * without changing anything else would let this device's otherwise-stale
    * copy of the word beat a real review done on another device.
    */
-  /** Returns the entry unchanged when there is no miss recorded, so a no-op stays a no-op. */
-  const clearMissed = (e: ProgressEntry): ProgressEntry => {
-    if (e.missedAt === undefined) return e
-    const { missedAt: _settled, ...rest } = e
-    return rest
-  }
-
   const practiceGrade = useCallback((wordId: string, g: Grade) => {
     const now = new Date()
     const day = todayStr(now)
