@@ -79,7 +79,8 @@
   text-decoration: none;
 }
 
-.today-plan__row--todo:hover {
+.today-plan__row--todo:hover,
+.today-plan__row--reopenable:hover {
   background: var(--surface-sunken);
 }
 
@@ -114,6 +115,13 @@
 .today-plan__row--done .today-plan__name {
   color: var(--text-faint);
   text-decoration: line-through;
+}
+
+/* Ticked but still open: the check says today's sitting happened, and a
+   struck-through name would say the thing behind it is gone, which is the
+   one thing untrue of this row. */
+.today-plan__row--reopenable .today-plan__name {
+  text-decoration: none;
 }
 
 .today-plan__row--pending .today-plan__name {

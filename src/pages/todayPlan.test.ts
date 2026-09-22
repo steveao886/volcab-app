@@ -118,6 +118,40 @@ describe('buildDayPlan', () => {
       .toMatchObject({ state: 'todo', hint: '池子里 1 个', to: '/practice?pick=struggling' })
   })
 
+  it('lapses row: ticked for the day, but still a way in while the pool has words', () => {
+    // The row used to go inert once ticked, like every done row, and 今日
+    // carried a separate 顽固词加练 card as the durable entry to the same
+    // screen — two ways into one walk on the same page. Inert is right for
+    // 复习到期 and friends, whose done means empty. Here done means you sat
+    // down with them today, and the pool is still there.
+    const words = [word('a')]
+    const p = emptyProgress()
+    p.settings.newPerDay = 0
+    p.words.a = entry({ ease: 2.1, intervalDays: 3 })
+    expect(find(buildDayPlan(words, p, NOW, TODAY, { ...NO_MARKS, lapseDrilledOn: TODAY }), 'lapses'))
+      .toMatchObject({ state: 'done', reopenable: true, hint: '池子里 1 个', to: '/practice?pick=struggling' })
+  })
+
+  it('lapses row: ticked with an empty pool is not reopenable — the walk would only say there is nothing to do', () => {
+    const words = [word('a')]
+    const p = emptyProgress()
+    p.settings.newPerDay = 0
+    p.words.a = entry({})
+    const row = find(buildDayPlan(words, p, NOW, TODAY, { ...NO_MARKS, lapseDrilledOn: TODAY }), 'lapses')
+    expect(row?.state).toBe('done')
+    expect(row?.reopenable).toBeUndefined()
+    expect(row?.hint).toBeUndefined()
+  })
+
+  it('no other row is reopenable: their done means there is nothing left', () => {
+    const p = emptyProgress()
+    p.settings.newPerDay = 0
+    p.dailyStats[TODAY] = { ...emptyStat(), quizTaken: 1 }
+    const plan = buildDayPlan([], p, NOW, TODAY, { lapseDrilledOn: null, consolidatedOn: TODAY })
+    expect(plan.filter(r => r.state === 'done').length).toBeGreaterThan(0)
+    expect(plan.filter(r => r.key !== 'lapses' && r.reopenable)).toEqual([])
+  })
+
   it('quiz row: always present, done once any quiz was taken today', () => {
     const p = emptyProgress()
     p.settings.newPerDay = 0

@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Page } from '../components/Page'
 import { SyncStatus } from '../components/SyncStatus'
-import { strugglingPracticePool } from '../lib/queue'
 import { todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
 import { useApp } from '../state/store'
@@ -27,7 +26,7 @@ export function Today() {
   // Same memo precedent as before the rebuild: useApp()'s context value is
   // a new object on any provider re-render, and these derivations iterate
   // the whole library — they shouldn't recompute when nothing changed.
-  const { plan, hero, streak, count, total, hasStruggling } = useMemo(() => {
+  const { plan, hero, streak, count, total } = useMemo(() => {
     const plan = buildDayPlan(words, progress, new Date(), today, {
       lapseDrilledOn: storage.get<string>('lapseDrilledOn'),
       consolidatedOn: storage.get<string>('consolidatedOn'),
@@ -39,7 +38,6 @@ export function Today() {
       streak: computeStreak(progress.dailyStats, today),
       count: rp.count,
       total: rp.total,
-      hasStruggling: strugglingPracticePool(words, progress, today).length > 0,
     }
   }, [words, progress, today])
 
@@ -116,20 +114,6 @@ export function Today() {
         <span className="muted today-practice__meta">一半已掌握的随机抽,一半是最近老忘的 · 不计入复习</span>
       </Link>
 
-      {/* The unlimited struggling walk, same section for the same reason as
-          随便练练: it can't be finished and doesn't count, so it must not be
-          a plan row. It also can't live only on the drill's finish screens —
-          done plan rows are inert (see PlanRow), so once the daily drill is
-          cleared there would be no path back to that screen at all; this
-          card is the durable entry. Hidden when the pool is empty, matching
-          the button on the drill side. */}
-      {hasStruggling && (
-        <Link to="/practice?pick=struggling" className="card card--interactive today-practice">
-          <span className="today-practice__label">顽固词加练</span>
-          <span className="muted today-practice__meta">最难的排最前 · 不计成绩,想练几遍都行</span>
-        </Link>
-      )}
-
       <Link to="/stats" className="card card--interactive today-footer">
         <span>
           连续 <span className="num today-footer__accent">{streak}</span> 天
@@ -146,7 +130,12 @@ export function Today() {
   )
 }
 
-/** One plan row. Only todo rows navigate; done/pending rows are inert — a link to a page that will say "nothing to do" is a dead end dressed as an action. */
+/**
+ * One plan row. Todo rows navigate; done and pending rows are inert — a link
+ * to a page that will say "nothing to do" is a dead end dressed as an action —
+ * except a done row the plan marks reopenable, whose page still has work on it
+ * (see PlanItem.reopenable).
+ */
 function PlanRow({ item }: { item: PlanItem }) {
   const inner = (
     <>
@@ -161,10 +150,11 @@ function PlanRow({ item }: { item: PlanItem }) {
       )}
     </>
   )
-  if (item.state === 'todo') {
+  if (item.state === 'todo' || item.reopenable) {
+    const cls = item.state === 'todo' ? 'today-plan__row--todo' : 'today-plan__row--done today-plan__row--reopenable'
     return (
       <li>
-        <Link className="today-plan__row today-plan__row--todo" to={item.to}>
+        <Link className={`today-plan__row ${cls}`} to={item.to}>
           {inner}
         </Link>
       </li>

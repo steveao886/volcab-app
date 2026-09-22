@@ -113,6 +113,10 @@ moves past today, so it cannot be farmed. And the pool size moved out of
 the page. Measured on the live library that day: 227 in the pool, 182 waiting
 on ease or interval, 45 on a miss alone — and 123 of the 182 one good review
 from crossing `MATURE_INTERVAL_DAYS`.
+A ticked 专攻顽固词 row stays a link (`PlanItem.reopenable`): done there means
+you sat down today, not that the pool is empty. That is why 今日 has no separate
+顽固词加练 card — it existed only because the ticked row went inert, and put
+the same walk on the page three times.
 
 The manual 回想 rating (`ProgressEntry.recallRating`, 太简单 / 要多考) is **not** a second door. It is read only by `generateRecallSession`, as a third multiplier on the draw beside `difficultyWeight` and `recallWeight`, and reaches nothing in `srs.ts`. Its two levels are 0.05 and 6 and both numbers were measured — re-measure before changing either.
 
