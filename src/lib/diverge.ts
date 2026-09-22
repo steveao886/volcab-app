@@ -43,7 +43,24 @@ export const MIN_ANSWERS = 3
  */
 export interface Concept {
   id: string
-  /** The prompt, Chinese only. It is on screen before any answer, so a single Latin letter is a leak. */
+  /**
+   * The prompt, Chinese only. It is on screen before any answer, so a single
+   * Latin letter is a leak.
+   *
+   * **Write the members' intersection, never their union.** A prompt stretched
+   * to cover what one member alone means gets longer and vaguer with every
+   * sense it absorbs, and the reader pays for a distinction the answer set
+   * does not need. Measured case: 对眼下的处境和上头攒着一肚子意见 — 16
+   * characters against a median of 12, and the user's verdict on revealing the
+   * answers was "其实就是不满意的意思". 上头 was there for `disaffection`
+   * (离心,对当权者失去拥护) and 处境 for `discontent`, while `dissatisfaction`
+   * carries neither; all three share 不满 and nothing else, so 对现状不满意,
+   * 心里有意见 is the whole concept in 12 characters.
+   *
+   * Same disease as `excludeOpposites`, pointed the other way: there a
+   * member's second sense leaks into the answers, here it leaks into the
+   * prompt.
+   */
   zh: string
   /** Synonym keys whose buckets make up this concept. */
   anchors: string[]
@@ -322,6 +339,47 @@ function negSplit(s: string): { prefix: string; rest: string } | null {
 }
 
 /**
+ * The hint ladder's rungs, in letters of the answer.
+ *
+ * Tier 1 opens the first letter, tier 2 the first three — enough to unstick a
+ * word whose shape is there, not enough to hand over one that is not.
+ * Measured over the library's synonym buckets, a single initial already pins
+ * 64% of answers inside their own set, which is why the ladder is opt-in and
+ * counted rather than shown by default.
+ */
+export const HINT_TIERS = [1, 3] as const
+
+/**
+ * How many characters of `form` the hint ladder opens at `tier`. Tier 0 is
+ * the unhinted slot and opens nothing.
+ *
+ * **On 否定前缀 the rungs are counted past the negation prefix**, because the
+ * prefix is not information on that axis: the instruction line prints all
+ * seven of them and every answer carries one. Measured over the axis's 20
+ * answers, a flat ladder spent its entire first rung on the prefix — **0 stem
+ * letters on 20 of 20** — and its second rung averaged **0.85**, against 1
+ * and 3 on the other three axes. The question that exposed it was
+ * disaffection / discontent / dissatisfaction, where tier 2 rendered all
+ * three slots as `dis•••`: the learner had climbed the whole ladder to be
+ * shown the prefix the instruction had already listed. Counting past the
+ * prefix restores the rungs to 1 and 3 real letters.
+ *
+ * The prefix does ride along from tier 1, and it is the one thing gradeInput
+ * rule 4 refuses to forgive. That is what asking for a hint buys; `hinted`
+ * keeps the evidence separate from an unaided retrieval either way. Tier 0
+ * still opens nothing, so a slot never leaks the prefix unasked.
+ *
+ * Read side lenient: an answer that does not split — `negations` is
+ * hand-written and could hold one — just walks the plain ladder.
+ */
+export function hintOpen(form: string, tier: number, axis: DivergeAxis): number {
+  if (tier <= 0) return 0
+  const rung = HINT_TIERS[Math.min(tier, HINT_TIERS.length) - 1]
+  const prefix = axis === 'negation' ? (negSplit(form)?.prefix.length ?? 0) : 0
+  return prefix + rung
+}
+
+/**
  * One edit away: a substitution, an insertion, a deletion, **or a swap of two
  * adjacent letters**.
  *
@@ -384,7 +442,7 @@ function within1(a: string, b: string): boolean {
  * 3. an inflection of an answer → hit
  * 4. **a wrong negation prefix → reported, never forgiven.** `inprudent` is
  *    one edit from `imprudent`; without this rule the next one swallows it,
- *    and it is the only thing 加否定 tests.
+ *    and it is the only thing 否定前缀 tests.
  * 5. edit distance 1 → hit, flagged
  * 6. anything else → neutral
  *
@@ -461,12 +519,12 @@ export const divergeKey = (q: { conceptId: string; axis: DivergeAxis }): string 
  * repeats were pure chance — measured on the live library (152 askable
  * questions, 931 words): over a 7-round sitting only 47 of the 56 questions
  * asked were distinct, and 79% of rounds after the first contained a
- * question already seen that sitting. 加否定 was worst at 37%, because its
+ * question already seen that sitting. 否定前缀 was worst at 37%, because its
  * pool holds 6 and the allocation hands it a slot every round.
  *
  * The window is `recentWindow` — two thirds of the pool — and it is taken
  * **per axis**, over this axis's own entries in the list. A shared window
- * would be spent by 近义's 81 questions before 加否定's 6 saw any of it, and
+ * would be spent by 近义's 81 questions before 否定前缀's 6 saw any of it, and
  * the allocation below is per axis, so the window has to be too.
  *
  * Two thirds rather than everything, for the reason recentWindow was
@@ -476,7 +534,7 @@ export const divergeKey = (q: { conceptId: string; axis: DivergeAxis }): string 
  * Re-measured over the same 7-round sitting with the window in place:
  * repeats 16.7% -> 2.3%, distinct questions 47 -> 55 of 56, and rounds
  * containing a repeat 75% -> 22%. 近义, 反面 and 词性 each reach 0%; the
- * whole remainder is 加否定 at 19%, whose pool is 6 and whose window is
+ * whole remainder is 否定前缀 at 19%, whose pool is 6 and whose window is
  * therefore 4, so it wraps every three rounds. That one is a content
  * shortage, not a draw defect - no ordering rule can make a seventh
  * question out of six.
@@ -515,7 +573,7 @@ function demoteSeen(pool: DivergeQuestion[], recent: readonly string[], rng: () 
  * A flat round-robin was the first implementation, and measured over the 82
  * authored concepts it misbehaves visibly: the axes hold 82 / 47 / 31 / 6
  * questions, so equal slots spend a quarter of every round on the 6-question
- * 加否定 pool — you see all six within three rounds while the 82 近义 questions
+ * 否定前缀 pool — you see all six within three rounds while the 82 近义 questions
  * rotate four times slower. Across 30 rounds a flat draw reached only **101 of
  * the 166** askable questions. Proportional-after-the-floor keeps all four
  * axes on screen and stops the thinnest one from dominating.

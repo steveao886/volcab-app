@@ -111,14 +111,14 @@ first sense is 淫秽, and so on. Questions those 82 can ask:
 | 近义 | 81 | 82 |
 | 换词性 | 39 | 47 | 
 | 反面 | 24 | 31 (29 after the 2026-09-21 vetting, below) |
-| 加否定 | 6 | 6 |
+| 否定前缀 | 6 | 6 |
 | **total** | **150** | **166** |
 
 The gap between the columns is the design working: membership is derived from
 what has been learned, so the pool fills in as the library is learned rather
 than needing to be re-authored.
 
-**加否定 is the one axis that does not grow, and 6 is all there is.** It draws
+**否定前缀 is the one axis that does not grow, and 6 is all there is.** It draws
 on a hand-vetted table, and across all 82 concepts no other reaches three
 prefix-carrying members — scanning the learned words for a negation prefix
 returns 132 candidates of which roughly half are false (below), and what
@@ -195,7 +195,7 @@ re-authoring. Three of four axes inherit that for free:
 | 近义 | automatic, via `synonyms` |
 | 反面 | automatic, via `antonyms` — **read the result**, see below |
 | 换词性 | automatic, via `relatedForms` |
-| 加否定 | **hand top-up** — add the id to a concept's `negations` |
+| 否定前缀 | **hand top-up** — add the id to a concept's `negations` |
 
 反面 is only *mechanically* automatic. See "The 反面 axis inherits the
 library's sense drift" below: a new word joining a concept's answer set
@@ -236,7 +236,7 @@ it you cannot tell which direction is being asked.
 **Every askable axis gets one slot; the rest go by pool size.** The first
 implementation was a flat rotation, two slots per axis, and at 82 authored
 concepts it misbehaves visibly: the pools are 82 / 47 / 31 / 6, so a quarter of
-every round went to the 6-question 加否定 pool — all six seen within three
+every round went to the 6-question 否定前缀 pool — all six seen within three
 rounds while the 82 近义 questions rotated four times slower. Measured over 30
 rounds, a flat draw reached **101 of the 166** askable questions against
 **122** for the proportional one. The remaining slots are apportioned by
@@ -253,7 +253,7 @@ The axes share one authored Chinese prompt:
 | 近义 | 固执、不肯改变主意 | members |
 | 反面 | 固执的反面 | ⋃ members' library `antonyms` ∩ learned, − members, − `excludeOpposites` |
 | 换词性 | 固执（名词） | (members ∪ their `relatedForms`) filtered to that POS |
-| 加否定 | 固执（要带否定前缀的） | `negations` ∩ learned |
+| 否定前缀 | 固执（要带否定前缀的） | `negations` ∩ learned |
 
 Writing 86 Chinese prompts yields 86 + 24 + 43 + N questions. The authoring
 cost scales with one axis; the question count scales with four.
@@ -300,7 +300,7 @@ complacency, insouciance, nonchalance.
 costs 3 of the 46 qualifying clusters. The asked POS across the remaining 43
 is n. 28, adj. 12, v. 6.
 
-### 加否定's answers are library words
+### 否定前缀's answers are library words
 
 `negations` lists **library word ids**, not free-form negated forms. A learner
 typing `injudicious` when that word is not in the library gets the neutral
@@ -324,7 +324,7 @@ negated form* — which is the part that cannot be derived, and the whole of it.
    *mirth*.
 5. **A wrong negation prefix is never a typo.** `inprudent` → `imprudent` is
    edit distance 1 and rule 2 would swallow it — and that is the only thing
-   the 加否定 axis tests. Rule 5 overrides rule 2 whenever the expected answer
+   the 否定前缀 axis tests. Rule 5 overrides rule 2 whenever the expected answer
    carries a negation prefix, on any axis. Without this carve-out, rule 2
    silently deletes axis four.
 6. A correct English word that is in neither the answer set nor the library →
@@ -349,7 +349,8 @@ and 6 — never the hit test itself.
 - Filling the set advances automatically.
 - 提示 is a ladder: first tap gives the remaining count and their first
   letters; second gives more letters. Hinted words are counted separately —
-  they are not the same evidence as an unhinted retrieval.
+  they are not the same evidence as an unhinted retrieval. **On 否定前缀 the
+  rungs are counted past the negation prefix** — see below.
 - 我答完了 is always available and reveals the rest.
 
 ### Scoring: reward only, with a manual knife
@@ -453,8 +454,8 @@ by some member, so a note cannot go stale silently — the same staleness check
 `exclude` already gets. Whether an answer matches the prompt stays a human
 judgement; nothing in the data says which sense a member joined on.
 
-Axis order is 近义 → 反面 → 换词性 → 加否定. The first three have their data
-today. 加否定 is last because it is the only one blocked on a hand-authored
+Axis order is 近义 → 反面 → 换词性 → 否定前缀. The first three have their data
+today. 否定前缀 is last because it is the only one blocked on a hand-authored
 table, and the mode is useful without it.
 
 ## Open
@@ -462,3 +463,77 @@ table, and the mode is useful without it.
 Nothing blocking. The Chinese prompts are an authoring batch on the pattern
 this repo already runs (`recallSentences.json`, `passages.json`), and per
 CLAUDE.md the Chinese half is written by hand, not delegated.
+
+## 2026-09-21: the 否定前缀 axis was unreadable in three separate ways
+
+Reported from play, on the disaffection question. All three are fixed; the
+measurements are here because each one justifies a number in the code.
+
+### The label named an operation the axis does not perform
+
+〔加否定〕 is a verb phrase — "add a negation" — and it sat in the same round as
+〔反面〕. So the learner read it as "now give me the opposite", which is the one
+thing the axis never asks: **its answers *are* the prompt.** 怎么劝都不松口 wants
+implacable / intractable / intransigent / uncompromising, four words that all
+mean stubborn and merely happen to be built out of a negative prefix.
+
+The label is now the noun **〔否定前缀〕**, which describes the shape of the
+answers and cannot be read as an instruction to invert. The instruction line
+gained the four characters that were missing:
+
+```
+旧  说出带否定前缀的词(un- / in- / im- / ir- / il- / dis- / non-)
+新  同样的意思,但要用否定前缀构成的词(un- / in- / im- / ir- / il- / dis- / non-)
+```
+
+This spec had it right and the implementation dropped it: the worked example
+above is `固执（要带否定前缀的）`, and it is the **要…的** qualifier, not the
+prefix list, that carries the sense. A prefix list says what to type. It never
+says what to mean.
+
+### The hint ladder spent its rungs on the prefix
+
+The rungs are 1 letter then 3. On 否定前缀 every answer opens with one of the
+seven prefixes the instruction line already prints, so the rungs bought
+nothing. Measured over the axis's 20 answers against the other three axes:
+
+| axis | answers | stem letters at tier 1 | at tier 2 |
+|---|---|---|---|
+| 近义 | 357 | 1.00 | 3.00 |
+| 反面 | 155 | 1.00 | 3.00 |
+| 换词性 | 193 | 1.00 | 3.00 |
+| 否定前缀 (before) | 20 | **0.00** | **0.85** |
+| 否定前缀 (after) | 20 | 1.00 | 3.00 |
+
+Zero on 20 of 20 at tier 1 — the first rung was spent on the prefix every
+single time. The worst case is the question that was reported, whose three
+answers share `dis-`: climbing the whole ladder rendered all three slots as
+`dis•••`.
+
+`hintOpen(form, tier, axis)` in `lib/diverge.ts` now adds the prefix length to
+the rung on this axis. Tier 0 still opens nothing, so an unhinted slot never
+leaks the prefix — producing the right one is what grading rule 4 refuses to
+forgive. From tier 1 the prefix does ride along, which is what asking for a
+hint buys; `hinted` keeps that evidence separate from an unaided retrieval.
+
+```
+tier 0  ••••••••••••  ••••••••••  •••••••••••••••
+tier 1  disa••••••••  disc••••••  diss•••••••••••
+tier 2  disaff••••••  discon••••  dissat•••••••••
+```
+
+### A prompt must be the members' intersection, never their union
+
+`Concept.zh` was 对眼下的处境和上头攒着一肚子意见 — 16 characters against a
+median of 12, and on reveal the user's verdict was "其实就是不满意的意思".
+
+The length came from covering the union. 上头 was there for `disaffection`
+(离心,不满，对当权者失去拥护) and 处境 for `discontent`; `dissatisfaction`
+(对待遇、服务、现状) carries neither. All three share 不满 and nothing else, so
+the prompt is now **对现状不满意,心里有意见** — the whole concept in 12
+characters.
+
+This is `excludeOpposites`' disease pointed the other way. There a member's
+second sense leaks into the *answers*; here it leaks into the *prompt*, and it
+costs more, because a stretched prompt is read on every single play of the
+question while a stray answer is only met by whoever produces it.

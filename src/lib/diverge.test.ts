@@ -4,6 +4,7 @@ import {
   buildQuestion,
   conceptMembers,
   gradeInput,
+  hintOpen,
   generateDivergeSession,
   divergeKey,
   DIVERGE_AXES,
@@ -191,7 +192,7 @@ describe('buildQuestion', () => {
     expect(q?.answers.some(a => a.form.endsWith('ly'))).toBe(false)
   })
 
-  it('加否定 answers only what the author annotated', () => {
+  it('否定前缀 answers only what the author annotated', () => {
     const q = ask('negation')
     expect(q?.answers.map(a => a.form)).toEqual(['implacable', 'intractable', 'intransigent'])
     expect(q?.answers.every(a => a.negated)).toBe(true)
@@ -202,7 +203,7 @@ describe('buildQuestion', () => {
     expect(ask('opposite')).not.toBeNull()
   })
 
-  it('marks a negation-list member as negated on every axis, not just 加否定', () => {
+  it('marks a negation-list member as negated on every axis, not just 否定前缀', () => {
     const q = ask('synonym')
     expect(q?.answers.find(a => a.form === 'intractable')?.negated).toBe(true)
     expect(q?.answers.find(a => a.form === 'obstinate')?.negated).toBe(false)
@@ -247,7 +248,7 @@ describe('gradeInput', () => {
 
   it('rule 4: a wrong negation prefix is reported, never forgiven as a typo', () => {
     // One edit from `intractable`; rule 5 would swallow it and delete the only
-    // thing 加否定 tests.
+    // thing 否定前缀 tests.
     expect(grade('imtractable')).toEqual({ kind: 'prefix', form: 'intractable', wordId: 'intractable' })
   })
 
@@ -396,12 +397,12 @@ describe('generateDivergeSession recency', () => {
     )
   })
 
-  it('each axis gets its own window, so a long 近义 history cannot reorder 加否定', () => {
+  it('each axis gets its own window, so a long 近义 history cannot reorder 否定前缀', () => {
     // The list is all 近义. If the window were taken off the front of the
-    // list without filtering by axis, 加否定 would see a window of entries
+    // list without filtering by axis, 否定前缀 would see a window of entries
     // that none of its questions and behave as if nothing had been asked -
     // which is the same answer by accident. So assert the stronger thing:
-    // 加否定's own two recent entries still demote, with 12 近义 entries
+    // 否定前缀's own two recent entries still demote, with 12 近义 entries
     // sitting in front of them in the same list.
     const recent = [...synKeys(12), 'c0|negation', 'c1|negation']
     const served = round(recent).filter(q => q.axis === 'negation').map(divergeKey)
@@ -432,5 +433,49 @@ describe('generateDivergeSession recency', () => {
     const recent = ['gone|synonym', 'alsogone|negation', ...synKeys(8)]
     const served = round(recent).filter(q => q.axis === 'synonym').map(divergeKey)
     expect(served.some(k => synKeys(8).includes(k))).toBe(false)
+  })
+})
+
+describe('hintOpen', () => {
+  it('opens 1 then 3 letters on the axes whose answers do not share a prefix', () => {
+    expect(hintOpen('obstinate', 0, 'synonym')).toBe(0)
+    expect(hintOpen('obstinate', 1, 'synonym')).toBe(1)
+    expect(hintOpen('obstinate', 2, 'synonym')).toBe(3)
+  })
+
+  it('counts past the negation prefix on 否定前缀, so tier 1 is worth a real letter', () => {
+    // The whole point: `in` is printed in the instruction line already, so a
+    // tier that opens it hands over nothing.
+    expect(hintOpen('intractable', 1, 'negation')).toBe(3)
+    expect(hintOpen('intractable', 2, 'negation')).toBe(5)
+  })
+
+  it('counts past a three-letter prefix too — the case that showed the bug', () => {
+    // disaffection / discontent / dissatisfaction all masked to `dis•••` at
+    // tier 2, which is the prefix the instruction line lists. Zero information.
+    expect(hintOpen('disaffection', 1, 'negation')).toBe(4)
+    expect(hintOpen('disaffection', 2, 'negation')).toBe(6)
+  })
+
+  it('never opens the prefix before the first tap', () => {
+    // Producing the right prefix is what this axis tests — gradeInput rule 4
+    // refuses to forgive a wrong one — so an unhinted slot must not leak it.
+    expect(hintOpen('disaffection', 0, 'negation')).toBe(0)
+  })
+
+  it('falls back to the plain ladder for an answer with no negation prefix', () => {
+    // `negations` is hand-written and the axis is the only caller, but the
+    // read side stays lenient: an entry that does not split simply behaves
+    // like every other answer rather than throwing.
+    expect(hintOpen('adamant', 1, 'negation')).toBe(1)
+    expect(hintOpen('adamant', 2, 'negation')).toBe(3)
+  })
+
+  it('does not run off the end of a short answer', () => {
+    expect(hintOpen('inert', 2, 'negation')).toBeLessThanOrEqual('inert'.length)
+  })
+
+  it('clamps a tier above the ladder to the last rung', () => {
+    expect(hintOpen('obstinate', 9, 'synonym')).toBe(3)
   })
 })
