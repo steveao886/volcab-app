@@ -36,6 +36,16 @@
   font-size: var(--fs-sm);
 }
 
+/* The 顽固词 hero's stand-in for the number. Its own class rather than
+   today-hero__count or __done: __count is a 3.5rem numeral face that three
+   Chinese characters overflow at 375px, and __done is the 今日完成 face,
+   which would make an unfinished task look finished. */
+.today-hero__headline {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
 .today-hero__done {
   font-size: var(--fs-xl);
   font-weight: 700;

@@ -73,10 +73,20 @@ export function Today() {
           </>
         ) : (
           <>
-            <p className="num today-hero__count">
-              {hero.count}
-              <span className="today-hero__unit">{hero.unit}</span>
-            </p>
+            {/* 顽固词 gets a noun where every other action gets a number.
+                Its pool is a stock, not a remaining count — nothing you do
+                on the screen this button opens reduces it (see the comment
+                on the lapses row in todayPlan.ts) — and a stock printed at
+                3.5rem under 「现在该做」 reads as work you failed to clear.
+                The size stays on the plan row below, labelled as a pool. */}
+            {hero.kind === 'lapses' ? (
+              <p className="today-hero__headline">{hero.headline}</p>
+            ) : (
+              <p className="num today-hero__count">
+                {hero.count}
+                <span className="today-hero__unit">{hero.unit}</span>
+              </p>
+            )}
             <p className="today-hero__meta muted">{hero.meta}</p>
             <Link to={hero.to} className="btn btn--primary btn--lg btn--block">
               {hero.label}

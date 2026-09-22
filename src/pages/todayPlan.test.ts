@@ -89,8 +89,13 @@ describe('buildDayPlan', () => {
     p.settings.newPerDay = 0
     // ease below initial and immature → struggling; last reviewed yesterday → drillable
     p.words.a = entry({ ease: 2.1, intervalDays: 3, lastReviewedAt: '2026-08-06T08:00:00.000Z' })
-    expect(find(buildDayPlan(words, p, NOW, TODAY, NO_MARKS), 'lapses'))
-      .toMatchObject({ state: 'todo', count: 1 })
+    // The pool size goes in the hint, never in `count`. That slot is the
+    // remaining-work number 复习到期 and 学习新词 print, and this row cannot
+    // be driven to zero by using it: every exit from the pool belongs to
+    // the scheduled review, and the walk's own misses only add to it.
+    const row = find(buildDayPlan(words, p, NOW, TODAY, NO_MARKS), 'lapses')
+    expect(row).toMatchObject({ state: 'todo', hint: '池子里 1 个' })
+    expect(row?.count).toBeUndefined()
     expect(find(buildDayPlan(words, p, NOW, TODAY, { ...NO_MARKS, lapseDrilledOn: TODAY }), 'lapses')?.state)
       .toBe('done')
 
@@ -110,7 +115,7 @@ describe('buildDayPlan', () => {
     p.words.a = entry({ ease: 2.1, intervalDays: 3,
       lastReviewedAt: new Date(2026, 7, 7, 9, 0, 0).toISOString() })
     expect(find(buildDayPlan(words, p, NOW, TODAY, NO_MARKS), 'lapses'))
-      .toMatchObject({ state: 'todo', count: 1, to: '/practice?pick=struggling' })
+      .toMatchObject({ state: 'todo', hint: '池子里 1 个', to: '/practice?pick=struggling' })
   })
 
   it('quiz row: always present, done once any quiz was taken today', () => {
@@ -137,8 +142,15 @@ describe('nextAction', () => {
       row('consolidate', 'todo', 4), row('lapses', 'todo', 2), row('quiz', 'todo')]).kind)
       .toBe('consolidate')
     expect(nextAction([row('due', 'done', 0), row('fresh', 'done', 0),
-      row('lapses', 'todo', 2), row('quiz', 'todo')]).kind)
+      row('lapses', 'todo'), row('quiz', 'todo')]).kind)
       .toBe('lapses')
+  })
+
+  it('the lapses hero carries no count — the pool is a stock, and the number slot is for a to-do', () => {
+    const hero = nextAction([row('due', 'done', 0), row('fresh', 'done', 0),
+      row('lapses', 'todo'), row('quiz', 'todo')])
+    expect(hero).toMatchObject({ kind: 'lapses', to: '/practice?pick=struggling' })
+    expect('count' in hero).toBe(false)
   })
 
   it('a pending consolidation is not an action; quiz never becomes the hero', () => {
