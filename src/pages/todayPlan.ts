@@ -70,17 +70,27 @@ export function buildDayPlan(
     }
   }
 
-  // 顽固词 is the endless walk now, so the count is the whole pool rather
-  // than one capped sitting, and "done" can only mean the local marker:
-  // there is no state of the data that says you finished, because the walk
-  // does not end. Practice.tsx writes the marker when a batch is finished.
+  // 顽固词 is the endless walk now, and "done" can only mean the local
+  // marker: there is no state of the data that says you finished, because
+  // the walk does not end. Practice.tsx writes the marker when a batch is
+  // finished.
+  //
+  // **The pool size is a hint, not a `count`.** It went in the count slot
+  // until 2026-09-22, beside 复习到期 and 学习新词, where every number is
+  // work you can finish — and this one cannot be finished by doing the
+  // thing the row links to. Every exit from the pool (ease back to initial,
+  // the interval reaching maturity, a settled miss) is written by a
+  // scheduled review; the walk passes settle: false and its own misses only
+  // add. Playing it all day leaves the number where it was, which read as a
+  // broken counter. Measured on the live library that day: 227 words, of
+  // which 182 were waiting on ease or interval and 45 on a miss alone.
   if (marks.lapseDrilledOn === today) {
     items.push({ key: 'lapses', label: '专攻顽固词', state: 'done', to: STRUGGLING_WALK })
   } else {
     const pool = strugglingPracticePool(words, progress, today)
     if (pool.length > 0) {
       items.push({
-        key: 'lapses', label: '专攻顽固词', count: pool.length,
+        key: 'lapses', label: '专攻顽固词', hint: `池子里 ${pool.length} 个`,
         state: 'todo', to: STRUGGLING_WALK,
       })
     }
@@ -112,7 +122,12 @@ function hasConsolidationComing(words: Word[], progress: Progress, now: Date, to
 
 export type HeroAction =
   | { kind: 'complete' }
-  | { kind: 'review' | 'consolidate' | 'lapses'; count: number; unit: string; meta: string; to: string; label: string }
+  | { kind: 'review' | 'consolidate'; count: number; unit: string; meta: string; to: string; label: string }
+  // No count, for the reason the plan row has no count: the stubborn pool is
+  // a stock. The hero's number slot says how much is left to do today, and
+  // answering 顽固词 does not reduce it — so it gets a noun instead, and the
+  // size stays on the plan row where it is labelled as a pool.
+  | { kind: 'lapses'; headline: string; meta: string; to: string; label: string }
 
 /**
  * The hero card's one action, in priority order review → consolidate →
@@ -140,7 +155,7 @@ export function nextAction(plan: PlanItem[]): HeroAction {
   const l = get('lapses')
   if (l?.state === 'todo') {
     return {
-      kind: 'lapses', count: l.count ?? 0, unit: '个词',
+      kind: 'lapses', headline: '顽固词',
       meta: '从最不牢的开始,练到不想练为止', to: STRUGGLING_WALK, label: '专攻顽固词',
     }
   }

@@ -97,6 +97,23 @@ Everything under `src/state/` that touches sync is **data-safety logic, not wiri
 
 Everything else still holds: a practice miss stamps `missedAt` and nothing more. **Never pull `due` forward while leaving `intervalDays` alone** — `gradeWord` computes `next = intervalDays * ease` knowing nothing about elapsed time, so a word yanked back early and graded "good" grows as if the full interval had been served. That was a real bug (`71fba29`); the demotion above avoids it by changing the interval itself.
 
+**A scheduled review is the only thing that empties 顽固词, and the number on
+今日 says so.** `strugglingPracticePool` admits a word on low ease, an immature
+interval, *or* a `missedAt` inside seven days, and all three exits belong to
+`grade`: the walk (`/practice?pick=struggling`) passes `settle: false`, so a
+right answer there writes nothing and a wrong one only adds. Playing it cannot
+move its own count, which read as a broken counter until 2026-09-22 — a real
+user report. Two things came out of it. `grade` now clears `missedAt`, but only
+on 记得/太简单 and only on a review-phase card: `again` and `hard` both dent ease,
+so they confirm the miss rather than overturn it, and both learning steps land
+inside one sitting, which is the short-term retrieval the 08-15 spec refuses to
+credit. The 08-15 hazard does not reach `grade` at all — a graded card's `due`
+moves past today, so it cannot be farmed. And the pool size moved out of
+`PlanItem.count` into `hint`: that slot is remaining work everywhere else on
+the page. Measured on the live library that day: 227 in the pool, 182 waiting
+on ease or interval, 45 on a miss alone — and 123 of the 182 one good review
+from crossing `MATURE_INTERVAL_DAYS`.
+
 The manual 回想 rating (`ProgressEntry.recallRating`, 太简单 / 要多考) is **not** a second door. It is read only by `generateRecallSession`, as a third multiplier on the draw beside `difficultyWeight` and `recallWeight`, and reaches nothing in `srs.ts`. Its two levels are 0.05 and 6 and both numbers were measured — re-measure before changing either.
 
 See `docs/superpowers/specs/2026-08-09-quiz-demotion-design.md` and `docs/superpowers/specs/2026-08-25-recall-rating-design.md`.
