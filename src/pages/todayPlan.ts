@@ -19,6 +19,14 @@ export interface PlanItem {
   state: PlanState
   to: string
   hint?: string
+  /**
+   * A done row that still leads somewhere worth going. Done rows are inert
+   * because for every other row done means empty, and a link to "nothing to
+   * do" is a dead end. 专攻顽固词 is the one row where done means something
+   * else — you sat down with them today — while the pool behind it is as
+   * full as it was.
+   */
+  reopenable?: boolean
 }
 
 /** The two local done-markers, read from storage by the caller — passed in so this module stays pure and testable. */
@@ -84,16 +92,25 @@ export function buildDayPlan(
   // add. Playing it all day leaves the number where it was, which read as a
   // broken counter. Measured on the live library that day: 227 words, of
   // which 182 were waiting on ease or interval and 45 on a miss alone.
+  //
+  // **Ticked is not closed.** Until 2026-09-22 a ticked row went inert like
+  // every other, and 今日 carried a separate 顽固词加练 card as the way back
+  // in — so on a day with nothing due the page offered the same walk three
+  // times: the hero, this row and the card. The card existed only because
+  // this row stopped being a link, so the row stays one instead, for as long
+  // as the pool has anything in it.
+  const pool = strugglingPracticePool(words, progress, today)
+  const poolHint = pool.length > 0 ? `池子里 ${pool.length} 个` : undefined
   if (marks.lapseDrilledOn === today) {
-    items.push({ key: 'lapses', label: '专攻顽固词', state: 'done', to: STRUGGLING_WALK })
-  } else {
-    const pool = strugglingPracticePool(words, progress, today)
-    if (pool.length > 0) {
-      items.push({
-        key: 'lapses', label: '专攻顽固词', hint: `池子里 ${pool.length} 个`,
-        state: 'todo', to: STRUGGLING_WALK,
-      })
-    }
+    items.push({
+      key: 'lapses', label: '专攻顽固词', state: 'done', to: STRUGGLING_WALK,
+      ...(pool.length > 0 ? { hint: poolHint, reopenable: true } : {}),
+    })
+  } else if (pool.length > 0) {
+    items.push({
+      key: 'lapses', label: '专攻顽固词', hint: poolHint,
+      state: 'todo', to: STRUGGLING_WALK,
+    })
   }
 
   items.push({
