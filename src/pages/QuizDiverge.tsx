@@ -3,7 +3,7 @@ import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Field } from '../components/Field'
 import { TextInput } from '../components/TextInput'
-import { buildConceptIndex, divergeKey, DIVERGE_RECENT_LIMIT, gradeInput, generateDivergeSession, MIN_ANSWERS } from '../lib/diverge'
+import { buildConceptIndex, divergeKey, DIVERGE_RECENT_LIMIT, gradeInput, generateDivergeSession, HINT_TIERS, hintOpen, MIN_ANSWERS } from '../lib/diverge'
 import type { Concept, ConceptIndex, DivergeAxis, DivergeQuestion, Verdict } from '../lib/diverge'
 import { pushRecent } from '../lib/passage'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
@@ -26,12 +26,23 @@ import type { Word } from '../types'
 
 const QUESTION_COUNT = 8
 
-/** Printed on every question: without it you cannot tell which direction is being asked. */
+/**
+ * Printed on every question: without it you cannot tell which direction is
+ * being asked.
+ *
+ * **否定前缀 is a noun, and 加否定 was not.** "加否定" names an operation to
+ * perform on the prompt, so beside a 〔反面〕 question in the same round it
+ * reads as "now give me the opposite" — which is what the user read it as.
+ * The axis asks for the opposite of nothing: its answers *mean* the prompt
+ * (怎么劝都不松口 → implacable / intractable / intransigent / uncompromising)
+ * and merely happen to be built out of a negative prefix. A noun describes
+ * the answers' shape and cannot be read as an instruction to invert.
+ */
 const AXIS_LABEL: Record<DivergeAxis, string> = {
   synonym: '近义',
   opposite: '反面',
   pos: '换词性',
-  negation: '加否定',
+  negation: '否定前缀',
 }
 
 const POS_LABEL: Record<string, string> = {
@@ -48,25 +59,22 @@ const POS_LABEL: Record<string, string> = {
  * 固执、不肯改变主意 + 的反面 reads as one run-on phrase; on its own line under
  * the prompt it reads as an instruction, which is what it is. The prompts are
  * authored as free Chinese and not all of them can take a suffix.
+ *
+ * **The negation line opens with 同样的意思 because that was the part that was
+ * missing.** It used to read 说出带否定前缀的词, which says what shape to type
+ * and never says what to mean, so nothing on screen ruled out the opposite —
+ * the spec's own worked example was 固执（要带否定前缀的）, and it is the
+ * 要…的 qualifier, not the prefix list, that carries the sense.
  */
 function instructionFor(q: DivergeQuestion): string {
   if (q.axis === 'opposite') return '说出意思相反的词,有几个写几个'
-  if (q.axis === 'negation') return '说出带否定前缀的词(un- / in- / im- / ir- / il- / dis- / non-)'
+  if (q.axis === 'negation') return '同样的意思,但要用否定前缀构成的词(un- / in- / im- / ir- / il- / dis- / non-)'
   if (q.axis === 'pos') return `说出这个意思的${POS_LABEL[q.pos ?? ''] ?? q.pos ?? ''}形式`
   return '说出意思相近的词,有几个写几个'
 }
 
 /** How one produced answer landed. `hinted` is kept apart from `typo`: they are different findings. */
 interface Landed { form: string; typo: boolean; hinted: boolean }
-
-/**
- * The hint ladder's rungs. Tier 1 opens the first letter, tier 2 the first
- * three — enough to unstick a word whose shape is there, not enough to hand
- * over one that is not. Measured over the library's synonym buckets, a single
- * initial already pins 64% of answers inside their own set, which is why the
- * ladder is opt-in and counted rather than shown by default.
- */
-const HINT_TIERS = [1, 3] as const
 
 const maskTo = (form: string, open: number): string =>
   form.slice(0, open) + '•'.repeat(Math.max(form.length - open, 0))
@@ -130,8 +138,6 @@ function DivergeQuestionView({ question, index, grown, sound, onSettle, onNext, 
   const toggleConcede = (wordId: string) =>
     setConceded(c => c.includes(wordId) ? c.filter(x => x !== wordId) : [...c, wordId])
 
-  const open = hintTier === 0 ? 0 : HINT_TIERS[Math.min(hintTier, HINT_TIERS.length) - 1]
-
   return (
     <div className="diverge-q">
       <p className="diverge-q__axis">〔{AXIS_LABEL[question.axis]}〕</p>
@@ -154,7 +160,7 @@ function DivergeQuestionView({ question, index, grown, sound, onSettle, onNext, 
               className={`diverge-slot${got ? ' diverge-slot--got' : ''}${revealed && !got ? ' diverge-slot--missed' : ''}`}
             >
               <span className="diverge-slot__word" lang="en">
-                {got || revealed ? a.form : maskTo(a.form, open) || '•'.repeat(Math.min(a.form.length, 12))}
+                {got || revealed ? a.form : maskTo(a.form, hintOpen(a.form, hintTier, question.axis)) || '•'.repeat(Math.min(a.form.length, 12))}
               </span>
               {/* Every state carries a word, never colour alone — the rule the
                   quiz options already follow, for colourblind users and for
