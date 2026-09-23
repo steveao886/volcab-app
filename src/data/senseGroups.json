@@ -1456,11 +1456,11 @@
       "zh": "这项补贴反而让原本该淘汰的产能一直留着。",
       "target": "一直留着",
       "order": [
-        "perpetuate"
+        "perpetuate",
+        "prolong"
       ],
       "extra": [
         "entrench",
-        "prolong",
         "keep alive"
       ],
       "en": "The subsidy perpetuates capacity that should have been retired.",
@@ -1986,10 +1986,10 @@
       "zh": "连续三次被拒之后,他明显灰心了。",
       "target": "灰心",
       "order": [
-        "dishearten"
+        "dishearten",
+        "demoralize"
       ],
       "extra": [
-        "demoralize",
         "deject",
         "take the wind out of"
       ],

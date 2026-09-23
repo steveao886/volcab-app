@@ -159,6 +159,7 @@
       ],
       "excludeOpposites": [
         "indiscreet",
+        "insensitive",
         "meddlesome",
         "officious",
         "prominent",
@@ -172,6 +173,9 @@
         "ease",
         "lessen",
         "reduce"
+      ],
+      "excludeOpposites": [
+        "augment"
       ]
     },
     {
@@ -732,6 +736,9 @@
       "zh": "端着架子,生怕别人看不见",
       "anchors": [
         "ostentatious"
+      ],
+      "exclude": [
+        "flamboyant"
       ],
       "excludeOpposites": [
         "subtle"
