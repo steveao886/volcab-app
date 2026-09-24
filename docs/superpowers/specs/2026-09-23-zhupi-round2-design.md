@@ -432,4 +432,87 @@ mode, and the list of anything left undone with the reason.
 
 ## 9. Measured after build
 
-(Filled in by the round.)
+Built 2026-09-23 on branch `zhupi-round2`, one commit per §8 phase plus
+two the user asked for mid-round (below). Not pushed.
+
+### The §7 failure conditions
+
+- **Overflow at 375px: none.** 22 routes (今日, 词库, 词条详情, the 测试 hub
+  and all nine modes, 复习 and its lapses drill, both 练习 picks, 数据,
+  设置, 加词, 推荐, /dev) measured `scrollWidth === clientWidth` in light
+  and again in dark; the result pages of 综合, 回想, 组句, 发散, 短文, 极速
+  and 练习 were checked as they were played.
+- **State or verdict by color alone: none found.** The state marks are
+  three shapes; 掌握分布's legend prints each mark beside its name; every
+  verdict carries a word (正确答案 / 你的选择, 顺序 正确 / 错误, 没答出, 拼写差一点).
+- **`var(--accent)` gate: 28 hits in `src/pages/*.css` and
+  `src/styles/*.css`, 0 without a `/* mark: … */` comment.**
+- **Chart colors:** `--chart-1` / `--chart-2` re-run through
+  `validate_palette.js` before use — all five checks pass on all four
+  grounds, worst CVD pair ΔE 25.1 light / 23.5 dark, as §2.6 measured.
+- **Shortcuts:** every key printed before is printed now — 复习 1–4, 练习
+  1–2 and its batch-size digits, choice options 1–4 (综合, 极速, 回想 plus
+  回想's escape key), 组句's chunk digits and Enter (now a `.key` cap, not
+  `· Enter`). Played with real key presses (chrome-devtools `press_key`):
+  综合 1, 回想 Enter then 2, 组句 Enter — the verdict stayed on screen, so
+  the load-bearing `preventDefault` still holds — 练习 1 and Space.
+- **Gates:** `npm test` 1292 passed, `npm run lint` clean, `npm run build`
+  clean, `npm run validate` clean.
+- **` · ` in UI strings: 0.** The comment-aware scanner counted 39 at
+  `master` (§4's grep counted 35).
+
+### Other numbers
+
+- **Cards:** `Card`/`.card` was in 16 page files. In the product it is left
+  in 2 — the flip card in 复习 and in 练习, each with its one-line reason —
+  plus the /dev gallery's demo of the variant.
+- **Half-width commas beside CJK in UI code:** 181 by the scanner at
+  `master` (§4 counted 162); 172 converted in the strings pass, the rest
+  went with rewritten strings. Residue 2: AddWord's `split(/[,，、\n]/)`,
+  which must keep its half-width comma, and an English comment the scanner
+  misreads. One test asserted the old wording (`errors.test.ts`).
+- **Icon:** `#b3362b` with the glyph in `#f7f9f8`, drawn in Noto Serif SC
+  SemiBold (installed here as `NotoSerifSC-VF.ttf`; the named 600 instance,
+  not a synthesized bold). Safe zone from `icon-512.png`'s pixels: glyph
+  247×245 of 512 (48% × 48%), circumscribed circle 62.8% — inside
+  maskable's 80%. YaHei Bold measured 69%.
+
+### Found while building
+
+- **A pressed chip under the pointer drew ink text on its ink slab.** The
+  hover rule is four classes by way of two `:not()`s and beat
+  `[aria-pressed]`'s two; Android keeps `:hover` after a tap. Restated.
+- **回想 and 极速 never drew the strike through a wrong pick.** Round 1's
+  rule targets `.quiz-option__text`, and those two modes rendered the
+  option as a bare string.
+- **短文's empty blank drew two lines**: the `___` text on top of the rule.
+- **词条详情 set its English definition at Song leading**: its class tied
+  with base.css's `[lang='en']` rule and won on load order.
+- **已掌握 counted 811 of 811 studied words** on the live library, because
+  a word becomes `review` after its learning steps. See 记牢程度 below.
+
+### Beyond the spec, at the user's request mid-round
+
+- **答题正确率趋势 removed** from 数据, with `AccuracyTrend` and
+  `accuracyStats`; `accuracySeries` stays for 今日's footer.
+- **Two metrics added, both on thresholds the app already owns**, measured
+  on the live progress first: **记牢程度** — studied words past
+  `MATURE_INTERVAL_DAYS` (21): 525 of 811; **回想说出** — words 回想 has
+  asked (456), on a streak of `RECALL_STEADY_STREAK` (3, now one constant
+  shared with the draw weighting and 词条详情) or more (78), last answer
+  missed (45).
+- **外观: 跟随系统 / 浅色 / 深色 in 设置**, per device. This reverses round
+  1's constraint "dark mode follows the system" at the user's word; the
+  system still decides under 跟随系统, the default. The dark palette moved
+  from a media query to `:root[data-theme='dark']`; `lib/theme.ts` and an
+  inline script in `index.html` decide it, the latter before first paint
+  (checked: `<html>` carried the chosen theme at the end of parsing, before
+  React rendered).
+
+### Not done
+
+- **猜词** has no screen to redraw — the mode was retired and `/guess`
+  redirects into the hub. Its stats line and record on 数据 remain.
+- **Study content's half-width commas** — out of scope by §4.
+- The review card front's 新词 badge keeps its tinted cinnabar fill (round
+  1's); it is commented as a mark, not redrawn.
