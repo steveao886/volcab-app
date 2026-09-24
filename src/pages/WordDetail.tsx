@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../components/Button'
-import { Card } from '../components/Card'
 import { CaptureChips } from '../components/CaptureChips'
 import { Chip } from '../components/Chip'
 import { ConfirmDialog } from '../components/ConfirmDialog'
@@ -122,7 +121,6 @@ export function WordDetail() {
   // All null on every word but a heteronym, and all null on a heteronym whose
   // divergent sense has no respelling yet — see lib/sensePronounce.ts.
   const voices = senseVoices(word)
-  const hasTags = word.synonyms.length > 0 || word.antonyms.length > 0 || word.collocations.length > 0
 
   return (
     <Page
@@ -159,7 +157,10 @@ export function WordDetail() {
         <WordEditForm word={word} saving={saving} onCancel={() => setEditing(false)} onSave={handleSave} />
       ) : (
         <>
-          <Card>
+          {/* The entry reads like the back of a review card (ReviewCard.tsx):
+              meanings, the 旁批, examples, then the word's relations — on the
+              paper, each section under a ruled head, no cards. */}
+          <section className="section worddetail-entry">
             <ol className="worddetail-meaning-list">
               {word.meanings.map((m, i) => {
                 const voice = voices[i]
@@ -195,23 +196,23 @@ export function WordDetail() {
                 )
               })}
             </ol>
-            {/* Inside the meanings card rather than a card of its own: the
-                note qualifies the definitions directly above it (which
-                senses are live, what can take the word as a verb, whether
-                it praises or blames), and a separate card would present it
-                as an unrelated section. Most words have none and this
-                renders nothing at all. */}
+            {/* Directly under the meanings: the note qualifies the
+                definitions above it (which senses are live, what can take the
+                word as a verb, whether it praises or blames). It is the 旁批,
+                the same cinnabar margin note as on the review card — the one
+                block on the page that is annotation by definition. Most
+                words have none and this renders nothing at all. */}
             {note !== undefined && (
-              <div className="worddetail-note">
-                <p className="section-title worddetail-note__label">要点</p>
-                <p>{note}</p>
+              <div className="margin-note">
+                <p className="margin-note__label">要点</p>
+                <p className="margin-note__text">{note}</p>
               </div>
             )}
-          </Card>
+          </section>
 
           {word.examples.length > 0 && (
-            <Card>
-              <p className="section-title worddetail-section-title">例句</p>
+            <section className="section">
+              <h2 className="section-head">例句</h2>
               <ul className="worddetail-examples">
                 {word.examples.map((ex, i) => (
                   <li key={i} lang="en">
@@ -219,42 +220,38 @@ export function WordDetail() {
                   </li>
                 ))}
               </ul>
-            </Card>
+            </section>
           )}
 
-          {hasTags && (
-            <Card className="worddetail-tags">
-              {word.synonyms.length > 0 && (
-                <div className="worddetail-tag-group">
-                  <p className="section-title worddetail-section-title">近义词</p>
-                  <CaptureChips className="worddetail-chiprow" items={word.synonyms.map(s => ({ word: s }))} />
-                </div>
-              )}
-              {word.antonyms.length > 0 && (
-                <div className="worddetail-tag-group">
-                  <p className="section-title worddetail-section-title">反义词</p>
-                  <CaptureChips className="worddetail-chiprow" items={word.antonyms.map(s => ({ word: s }))} />
-                </div>
-              )}
-              {word.collocations.length > 0 && (
-                <div className="worddetail-tag-group">
-                  <p className="section-title worddetail-section-title">常见搭配</p>
-                  <CaptureChips className="worddetail-chiprow" items={word.collocations.map(s => ({ word: s }))} />
-                </div>
-              )}
-            </Card>
+          {word.synonyms.length > 0 && (
+            <section className="section">
+              <h2 className="section-head">近义词</h2>
+              <CaptureChips className="worddetail-chiprow" items={word.synonyms.map(s => ({ word: s }))} />
+            </section>
+          )}
+          {word.antonyms.length > 0 && (
+            <section className="section">
+              <h2 className="section-head">反义词</h2>
+              <CaptureChips className="worddetail-chiprow" items={word.antonyms.map(s => ({ word: s }))} />
+            </section>
+          )}
+          {word.collocations.length > 0 && (
+            <section className="section">
+              <h2 className="section-head">常见搭配</h2>
+              <CaptureChips className="worddetail-chiprow" items={word.collocations.map(s => ({ word: s }))} />
+            </section>
           )}
 
           {word.etymology !== undefined && (
-            <Card>
-              <p className="section-title worddetail-section-title">词源</p>
+            <section className="section">
+              <h2 className="section-head">词源</h2>
               <p className="worddetail-etymology">{word.etymology}</p>
-            </Card>
+            </section>
           )}
 
           {word.relatedForms.length > 0 && (
-            <Card>
-              <p className="section-title worddetail-section-title">同根词</p>
+            <section className="section">
+              <h2 className="section-head">同根词</h2>
               {/* A chip row rather than the vertical list this used to be, so
                   a related form is staged the same way and reads the same way
                   as a synonym — on this page and on the review card. */}
@@ -271,57 +268,66 @@ export function WordDetail() {
                   ),
                 }))}
               />
-            </Card>
+            </section>
           )}
 
-          <Card className="worddetail-stats">
-            <div className="stat">
-              <p className="stat__value stat__value--row">
+          {/* Label left, value right: a ledger, not a grid of centered big
+              numbers — these are facts to look up, not a headline. */}
+          <section className="section">
+            <h2 className="section-head">学习记录</h2>
+            <dl className="ledger worddetail-stats">
+            <div className="ledger__row">
+              <dt className="ledger__label">学习状态</dt>
+              <dd className="ledger__value worddetail-stats__state">
                 <StateDot state={state} />
                 {STATE_LABEL[state]}
-              </p>
-              <p className="stat__label">学习状态</p>
+              </dd>
             </div>
-            <div className="stat">
-              <p className="num stat__value">{entry?.due ?? '—'}</p>
-              <p className="stat__label">到期日</p>
+            <div className="ledger__row">
+              <dt className="ledger__label">到期日</dt>
+              <dd className="ledger__value">{entry?.due ?? '—'}</dd>
             </div>
-            <div className="stat">
-              <p className="num stat__value">{entry?.reps ?? 0}</p>
-              <p className="stat__label">复习次数</p>
+            <div className="ledger__row">
+              <dt className="ledger__label">复习次数</dt>
+              <dd className="ledger__value">{entry?.reps ?? 0}</dd>
             </div>
-            <div className="stat">
-              <p className="num stat__value">{entry?.lapses ?? 0}</p>
-              <p className="stat__label">失误次数</p>
+            <div className="ledger__row">
+              <dt className="ledger__label">失误次数</dt>
+              <dd className="ledger__value">{entry?.lapses ?? 0}</dd>
             </div>
             {/* The usage score is an **optional** field: words added
-                manually within the app won't have one. This whole tile
+                manually within the app won't have one. This whole row
                 doesn't render when it's absent — showing 0 or — would
                 read as "you basically never encounter this word", which
                 is a false conclusion. The value is written as "8 / 10"
                 rather than a bare 8, so it's still interpretable away
                 from its label. */}
             {word.usageScore !== undefined && (
-              <div className="stat worddetail-stat--wide">
-                <p className="num stat__value">{word.usageScore} / 10</p>
-                <p className="stat__label">当代遇见概率</p>
+              <div className="ledger__row">
+                <dt className="ledger__label">当代遇见概率</dt>
+                <dd className="ledger__value">{word.usageScore} / 10</dd>
               </div>
             )}
             {/* Production, kept beside the schedule rather than folded into
                 it, because the whole reason the record exists is that the
                 two come apart: a word can be scheduled 20 days out on a
                 healthy ease and still be unproducible from Chinese. Absent
-                until 回想 has actually asked it — a 0/0 tile would read as a
+                until 回想 has actually asked it — a 0/0 row would read as a
                 failure rather than as "not measured yet", the same call the
-                usage-score tile above makes. */}
+                usage-score row above makes. */}
             {entry?.recall !== undefined && entry.recall.reps > 0 && (
-              <div className="stat worddetail-stat--wide">
-                <p className="num stat__value">
+              <div className="ledger__row">
+                <dt className="ledger__label">
+                  回想说出
+                  {entry.recall.streak >= 3 && (
+                    <span className="worddetail-stats__aside">
+                      连对 <span className="num">{entry.recall.streak}</span> 次
+                    </span>
+                  )}
+                </dt>
+                <dd className="ledger__value">
                   {entry.recall.correct} / {entry.recall.reps}
-                </p>
-                <p className="stat__label">
-                  回想说出{entry.recall.streak >= 3 ? ` · 连对 ${entry.recall.streak}` : ''}
-                </p>
+                </dd>
               </div>
             )}
             {/* The user's own verdict, and the only place all three states
@@ -337,8 +343,9 @@ export function WordDetail() {
                 has never been studied, so 回想 cannot reach it and
                 rateRecall would no-op; no control beats a dead one. */}
             {entry !== undefined && (
-              <div className="stat worddetail-stat--wide">
-                <div className="worddetail-chiprow worddetail-rating" role="group" aria-label="回想出题难度">
+              <div className="ledger__row worddetail-stats__rating">
+                <dt className="ledger__label">回想出题</dt>
+                <dd className="worddetail-chiprow" role="group" aria-label="回想出题难度">
                   {RECALL_RATINGS.map(([level, label]) => (
                     <Chip
                       key={level}
@@ -347,19 +354,24 @@ export function WordDetail() {
                       onClick={() => rateRecall(word.id, level)}
                     />
                   ))}
-                </div>
-                <p className="stat__label">回想出题</p>
+                </dd>
               </div>
             )}
-          </Card>
+            </dl>
+          </section>
 
           <p className="worddetail-meta faint">
-            来源笔记:{word.sourceNote} · 添加于 {word.addedAt}
+            <span>来源笔记 {word.sourceNote}</span>
+            <span>添加于 <span className="num">{word.addedAt}</span></span>
           </p>
 
-          <Button variant="danger" block onClick={() => setConfirmOpen(true)}>
-            删除此词
-          </Button>
+          {/* Set apart below a rule: the one irreversible action on the page
+              should not read as the next item in the ledger above it. */}
+          <div className="worddetail-danger">
+            <Button variant="danger" block onClick={() => setConfirmOpen(true)}>
+              删除此词
+            </Button>
+          </div>
         </>
       )}
 

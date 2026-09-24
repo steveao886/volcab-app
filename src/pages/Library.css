@@ -63,31 +63,18 @@
 }
 
 /* --- Entry list -------------------------------------------------------------
-   The whole list shares one Card frame (pad="none"), with rows separated by
-   a hairline rather than each row being its own card — lighter at 476 rows,
-   and visually closer to a dictionary index. */
-
-.library-list {
-  overflow: hidden; /* clip to the Card's rounded corners */
-}
+   A .ledger (components.css): rows divided by hairlines, a stronger rule on
+   top, no box — at 476 rows a dictionary index, not a card. Each row is the
+   whole hit area: the link, or in manage mode the checkbox's <label>. */
 
 .library-row {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  min-height: var(--tap);
-  padding: var(--sp-3) var(--sp-4);
-  color: inherit;
-  text-decoration: none;
   cursor: pointer;
   transition: background-color var(--dur-1) var(--ease);
 }
 
-.library-row:not(:last-child) {
-  border-bottom: 1px solid var(--rule);
-}
-
-.library-row:hover {
+/* The link row gets its hover from .ledger; the manage-mode <label> is
+   neither a link nor a button, so it asks for the same one here. */
+label.library-row:hover {
   background: var(--surface-sunken);
 }
 

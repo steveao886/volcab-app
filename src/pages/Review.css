@@ -217,31 +217,8 @@
   line-height: var(--lh-body);
 }
 
-/* The usage note is a 旁批: the note a reader writes beside the text, in
-   cinnabar, with its label set vertically in the margin. It is the one
-   block on the card that is annotation by definition — the answer to the
-   question the learner just got wrong — so it is the one block that gets
-   the mark color. Measured contrast of --accent on the card surface:
-   5.71:1 light, 5.71:1 dark. */
-.review-tags--note {
-  display: flex;
-  gap: var(--sp-3);
-  align-items: flex-start;
-  color: var(--accent);
-}
-
-.review-tags--note .review-tags__label {
-  writing-mode: vertical-rl;
-  padding-top: 3px;
-  color: inherit;
-  font-weight: 900;
-  letter-spacing: 0.3em;
-  line-height: 1;
-}
-
-.review-note {
-  line-height: var(--lh-body);
-}
+/* The usage note is the shared 旁批, .margin-note in components.css — the
+   word detail page prints the same note and must read the same. */
 
 /* The POS abbreviation (v. / adj. …) sandwiched between the word form and the Chinese meaning in a related-form chip, dialed down one notch */
 /* --- Flip hint / grade buttons ----------------------------------------------------

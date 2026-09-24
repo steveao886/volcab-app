@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Button } from '../components/Button'
-import { Card } from '../components/Card'
 import { Chip } from '../components/Chip'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Icon } from '../components/Icon'
@@ -52,7 +51,7 @@ function LibraryRow({
 
   if (manageMode) {
     return (
-      <label className="library-row" role="listitem">
+      <label className="ledger__row library-row" role="listitem">
         <span className="check">
           <input
             type="checkbox"
@@ -68,7 +67,7 @@ function LibraryRow({
   }
 
   return (
-    <Link className="library-row" role="listitem" to={`/word/${word.id}`}>
+    <Link className="ledger__row library-row" role="listitem" to={`/word/${word.id}`}>
       {body}
     </Link>
   )
@@ -274,7 +273,7 @@ export function Library() {
           promise a session with nothing in it. */}
       {!manageMode && filtered.length > 0 && (
         <Link className="btn btn--secondary library-practice" to={`/practice?${practiceParams}`}>
-          练这 <span className="num">{filtered.length}</span> 个 →
+          练这 <span className="num">{filtered.length}</span> 个
         </Link>
       )}
 
@@ -295,8 +294,9 @@ export function Library() {
       )}
 
       {empty === null ? (
-        // A long list of 476 entries: explicit list semantics, so screen readers can announce the item count and support list-mode navigation
-        <Card pad="none" className="library-list" role="list">
+        // A long list of 476 entries: explicit list semantics, so screen readers can announce the item count and support list-mode navigation.
+        // A ruled list on the page, not a card: a dictionary index has no box around it.
+        <div className="ledger library-list" role="list">
           {filtered.map(w => (
             <LibraryRow
               key={w.id}
@@ -307,7 +307,7 @@ export function Library() {
               onToggle={() => toggleSelect(w.id)}
             />
           ))}
-        </Card>
+        </div>
       ) : (
         <div className="empty-state">
           <p className="empty-state__title">{empty.title}</p>
