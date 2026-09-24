@@ -68,6 +68,7 @@
   --lh-tight: 1.25;        /* headings, buttons */
   --lh-snug: 1.45;         /* phonetics, hints, compact text */
   --lh-body: 1.75;         /* Song body text needs more leading than a sans */
+  --lh-latin: 1.55;        /* an English paragraph at --lh-body reads double-spaced */
 
   --tracking-eyebrow: 0.18em;
   --tracking-tight: -0.01em;

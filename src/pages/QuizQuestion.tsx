@@ -280,7 +280,7 @@ function AnswerFeedback({ correct, onNext, nextLabel, children, detail }: Answer
 
   return (
     <>
-      <p className="quiz-feedback" role="status">
+      <p className={correct ? 'quiz-feedback quiz-feedback--right' : 'quiz-feedback quiz-feedback--wrong'} role="status">
         {correct ? '回答正确' : '回答错误'}
       </p>
       {children}
@@ -403,7 +403,7 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
                   shortcut might as well not exist. */}
               <span>
                 <span className="quiz-option__key">{i + 1}</span>
-                {opt}
+                <span className="quiz-option__text">{opt}</span>
               </span>
               {locked && opt === question.answer ? (
                 <span className="quiz-option__tag">正确答案</span>

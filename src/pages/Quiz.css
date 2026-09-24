@@ -3,32 +3,39 @@
    quiz-; the global stylesheet is left untouched.
    ========================================================================== */
 
+/* Same arrangement as the review page's progress: 圈点 marks, count under them on the right. */
 .quiz-progress {
   display: grid;
-  gap: var(--sp-2);
+  gap: var(--sp-1);
 }
 
 .quiz-progress__count {
   font-size: var(--fs-sm);
+  text-align: end;
 }
 
+/* What the question asks (根据例句选出正确的单词). A plain muted line: it was
+   a tracked all-caps eyebrow, which does nothing to Chinese except space
+   it out. */
 .quiz-q__label {
-  font-size: var(--fs-eyebrow);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-eyebrow);
-  color: var(--text-faint);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
 }
 
 .quiz-q__prompt {
   margin-top: var(--sp-2);
-  font-size: var(--fs-md);
-  line-height: var(--lh-snug);
+  font-size: 1.25rem;
+  line-height: 1.5;
 }
 
-/* word2meaning's prompt reuses .word (serif type for English headwords); this just adds a bit of top spacing */
+/* word2meaning's prompt reuses .word for the headword face. The size is
+   restated here because .quiz-q__prompt above ties with .word on
+   specificity and this file loads later, which quietly shrank the headline
+   to the prompt size. */
 .quiz-q__prompt.word {
   margin-top: var(--sp-3);
+  font-size: var(--fs-word);
+  line-height: var(--lh-word);
 }
 
 /* The part of speech under an antonymPick prompt: which sense of a
@@ -40,10 +47,60 @@
   margin-top: var(--sp-1);
 }
 
+/* Options are ruled rows, not boxes: a hairline under each, the way a
+   printed exercise lists its choices. The row is still a full-width button
+   at least 56px tall, so the hit area is what it was. */
 .quiz-options {
   display: grid;
-  gap: var(--sp-2);
   margin-top: var(--sp-5);
+  border-top: 1px solid var(--rule);
+}
+
+.quiz-options > .btn {
+  min-height: 56px;
+  padding: var(--sp-3) var(--sp-2);
+  justify-content: space-between;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  border-radius: 0;
+  font-size: var(--fs-base);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* English headword options read at headword weight; Chinese definitions
+   stay body text, because they run to two lines and a heavy face there is
+   a wall. */
+.quiz-options > .btn[lang='en'] .quiz-option__text {
+  font-family: var(--font-word);
+  font-size: 1.3125rem;
+  font-weight: 600;
+}
+
+/* Answered. The correct row turns 石青 and its key gets circled; a wrong
+   pick is struck through in cinnabar and its key gets a 叉. The marks sit
+   on the key, not the text: a hand-drawn loop can wrap a number but not a
+   two-line Chinese definition. The tags below keep the verdict readable
+   without color. */
+.quiz-options > .btn--correct {
+  background: transparent;
+  color: var(--success);
+}
+
+.quiz-options > .btn--incorrect {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.btn--incorrect .quiz-option__text {
+  text-decoration: line-through;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+}
+
+.btn--incorrect .quiz-option__tag {
+  color: var(--accent);
 }
 
 /* Number-key hint before each option: press 1–4 to answer directly. Same
@@ -57,20 +114,48 @@
    number sticks to the top of the content box), or float dead-center next
    to a three-line meaning. Following the baseline sidesteps both cases. */
 .quiz-option__key {
-  margin-inline-end: var(--sp-2);
+  position: relative;
+  display: inline-block;
+  min-width: 1.2em;
+  margin-inline-end: var(--sp-3);
   font-family: var(--font-num);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-align: center;
   color: var(--text-faint);
 }
 
-/* After grading, the correct/incorrect options use a light background with
-   text of the same hue, so faint gray on top would just blur together —
-   follow the text color instead, only dialing down opacity a bit to
-   preserve visual hierarchy. */
 .btn--correct .quiz-option__key,
 .btn--incorrect .quiz-option__key {
   color: inherit;
-  opacity: 0.75;
+}
+
+/* The two marks, drawn as masks so they take --accent in either theme: a
+   loop that doesn't quite close, the way a pen circles something, and two
+   crossing strokes. */
+.btn--correct .quiz-option__key::after,
+.btn--incorrect .quiz-option__key::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: var(--accent);
+  -webkit-mask: var(--mark) center / 100% 100% no-repeat;
+  mask: var(--mark) center / 100% 100% no-repeat;
+  transform: translate(-50%, -52%);
+  pointer-events: none;
+}
+
+.btn--correct .quiz-option__key::after {
+  --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M13 27C4 23 3 11 13 6C22 1 35 4 37 14C39 24 29 30 19 29C11 28 6 22 8 15C9 11 12 8 17 7'/%3E%3C/svg%3E");
+  width: 2.4em;
+  height: 1.9em;
+}
+
+.btn--incorrect .quiz-option__key::after {
+  --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M8 7L25 25M25 7L8 26'/%3E%3C/svg%3E");
+  width: 1.7em;
+  height: 1.7em;
 }
 
 /* Small caption attached below the option text after grading: "correct
@@ -79,17 +164,25 @@
    scenarios. */
 .quiz-option__tag {
   display: block;
-  margin-top: 2px;
+  flex: none;
   font-size: var(--fs-xs);
-  font-weight: 500;
-  opacity: 0.85;
+  font-weight: 700;
 }
 
+/* The verdict. Colored to match the marks above it, and worded, so the
+   color is never the only thing saying which. */
 .quiz-feedback {
   margin-top: var(--sp-4);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--text-muted);
+  font-size: var(--fs-md);
+  font-weight: 900;
+}
+
+.quiz-feedback--right {
+  color: var(--success);
+}
+
+.quiz-feedback--wrong {
+  color: var(--accent);
 }
 
 .quiz-q__next {
@@ -158,11 +251,14 @@
   gap: var(--sp-3);
 }
 
-/* The blank: heavier than body text, so it's spottable at a glance */
+/* The blank: a ruled gap to write in. The underscores stay in the DOM (copy
+   and paste still shows where the gap was) but are drawn as one rule. */
 .quiz-blank {
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--text);
+  display: inline-block;
+  min-width: 4em;
+  border-bottom: 1.5px solid var(--text);
+  color: transparent;
+  line-height: 1.1;
 }
 
 /* Kind label for the synonym/antonym hint */
