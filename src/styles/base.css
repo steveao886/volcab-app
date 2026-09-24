@@ -31,6 +31,15 @@ body {
   overscroll-behavior-y: none;
 }
 
+/* English blocks get Latin leading. --lh-body is tuned for Song, and a
+   paragraph of English at 1.75 reads double-spaced. :where() keeps this at
+   the specificity of the attribute alone, so any class that sets its own
+   line-height still wins. Inline English inside a Chinese line is
+   untouched: the line box keeps its Chinese strut. */
+:where(p, li, blockquote)[lang='en'] {
+  line-height: var(--lh-latin);
+}
+
 #root {
   position: relative;
   z-index: var(--z-content);

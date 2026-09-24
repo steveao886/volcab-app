@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Page } from '../components/Page'
+import { ProgressMarks } from '../components/ProgressMarks'
 import { pushRecent } from '../lib/passage'
 import { preparePronunciation } from '../lib/pronounce'
 import { contrastPairKey, generateAudioQuiz, generateContrastQuiz, generateQuiz } from '../lib/quiz'
@@ -316,30 +317,25 @@ function QuizSession({
   return (
     <>
       <div className="quiz-progress">
-        <div
-          className="progress"
-          role="progressbar"
-          aria-label="测试进度"
-          aria-valuemin={0}
-          aria-valuemax={total}
-          aria-valuenow={index}
-          aria-valuetext={`第 ${index + 1} / ${total} 题`}
-        >
-          <div className="progress__fill" style={{ width: `${(index / total) * 100}%` }} />
-        </div>
-        <p className="muted num quiz-progress__count">
-          第 {index + 1} / {total} 题
+        <ProgressMarks
+          done={index}
+          total={total}
+          label="测试进度"
+          valueText={`第 ${index + 1} / ${total} 题`}
+        />
+        <p className="muted quiz-progress__count">
+          第 <span className="num">{index + 1}</span> / <span className="num">{total}</span> 题
         </p>
       </div>
-      <Card>
-        <QuizQuestionView
-          key={index}
-          question={q}
-          onAnswered={correct => handleAnswered(correct, q)}
-          onNext={handleNext}
-          nextLabel={isLast ? '查看成绩' : '下一题'}
-        />
-      </Card>
+      {/* On the page, not in a card: the question is the whole screen, and a
+          box around the whole screen only adds a border. */}
+      <QuizQuestionView
+        key={index}
+        question={q}
+        onAnswered={correct => handleAnswered(correct, q)}
+        onNext={handleNext}
+        nextLabel={isLast ? '查看成绩' : '下一题'}
+      />
     </>
   )
 }

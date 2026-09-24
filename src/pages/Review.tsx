@@ -7,6 +7,7 @@ import { Card } from '../components/Card'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
+import { ProgressMarks } from '../components/ProgressMarks'
 import { isEditableTarget } from '../lib/keys'
 import { buildConsolidateQueue, buildQueue, CONSOLIDATE_DELAY_HOURS } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
@@ -427,17 +428,13 @@ function ReviewSession() {
   return (
     <Page title={title} back="/">
       <div className="review-progress">
-        <div
-          className="progress"
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={queue.total}
-          aria-valuenow={queue.seen}
-          aria-valuetext={`还剩 ${remaining(queue)} 张`}
-        >
-          <div className="progress__fill" style={{ width: `${(queue.seen / queue.total) * 100}%` }} />
-        </div>
-        <p className="num muted review-progress__count">还剩 {remaining(queue)} 张</p>
+        <ProgressMarks
+          done={queue.seen}
+          total={queue.total}
+          label="复习进度"
+          valueText={`还剩 ${remaining(queue)} 张`}
+        />
+        <p className="muted review-progress__count">还剩 <span className="num">{remaining(queue)}</span> 张</p>
       </div>
 
       {/* The drill reuses the four-way grade UI but no longer schedules

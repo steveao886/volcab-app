@@ -5,12 +5,16 @@
 
 /* --- Top progress x/y --------------------------------------------------------- */
 
+/* 圈点 marks (or the bar, past 28 cards) with the remaining count under
+   them, right-aligned: the marks read left to right as the session, the
+   count answers "how much is left" without counting dots. */
 .review-progress {
   display: grid;
-  gap: var(--sp-2);
+  gap: var(--sp-1);
 }
 
 .review-progress__count {
+  font-size: var(--fs-sm);
   text-align: end;
 }
 
@@ -183,11 +187,12 @@
   gap: var(--sp-3);
 }
 
+/* No rule down the left any more: the cinnabar 波浪线 under the headword
+   (.example-hit) is what marks these as examples of *this* word, and a
+   left-edge bar on every sentence was one more piece of template chrome. */
 .review-examples li {
-  padding-inline-start: var(--sp-3);
-  border-inline-start: 2px solid var(--rule);
   color: var(--text-muted);
-  line-height: var(--lh-snug);
+  line-height: 1.6;
 }
 
 .review-tags {
@@ -204,26 +209,38 @@
   gap: var(--sp-3);
 }
 
-/* Etymology is a sentence, not a row of chips. A hairline vertical rule on
-   the left sets it apart from the tag rows above and below it — without
-   this line it would read as yet another meaning. A hairline stroke rather
-   than a background fill, consistent with the rest of the site. */
+/* Etymology is a sentence, not a row of chips. Its 词源 label above it is
+   what keeps it from reading as one more meaning; the hairline rule down
+   its left edge that used to do that job went with the 朱批 redesign. */
 .review-etymology {
-  padding-left: var(--sp-3);
-  border-left: 1px solid var(--rule);
   color: var(--text-muted);
-  line-height: 1.7;
+  line-height: var(--lh-body);
 }
 
-/* The usage note gets the same treatment as the etymology below — both are
-   a sentence sitting among rows of chips, and the hairline rule is what
-   keeps either from reading as one more meaning. Full-weight text rather
-   than .review-etymology's muted, though: the note is the answer to the
-   question the learner just got wrong, not a footnote. */
+/* The usage note is a 旁批: the note a reader writes beside the text, in
+   cinnabar, with its label set vertically in the margin. It is the one
+   block on the card that is annotation by definition — the answer to the
+   question the learner just got wrong — so it is the one block that gets
+   the mark color. Measured contrast of --accent on the card surface:
+   5.71:1 light, 5.71:1 dark. */
+.review-tags--note {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-start;
+  color: var(--accent);
+}
+
+.review-tags--note .review-tags__label {
+  writing-mode: vertical-rl;
+  padding-top: 3px;
+  color: inherit;
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  line-height: 1;
+}
+
 .review-note {
-  padding-left: var(--sp-3);
-  border-left: 1px solid var(--rule);
-  line-height: 1.7;
+  line-height: var(--lh-body);
 }
 
 /* The POS abbreviation (v. / adj. …) sandwiched between the word form and the Chinese meaning in a related-form chip, dialed down one notch */
@@ -250,10 +267,16 @@
   text-align: center;
 }
 
+/* Ruled like a page: an ink rule above and below, the four columns divided
+   by 界栏 hairlines. The tinted temperature band the grade variants carry
+   elsewhere is dropped here — four colored boxes in a row were the loudest
+   thing on the screen, and the card is supposed to be. 重来 keeps the
+   cinnabar (it is the mark of a miss); the other three are ink, told apart
+   by their label, key and interval, never by color alone. */
 .review-grades {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--sp-2);
+  border-block: 1px solid var(--text);
 }
 
 /* The confirm showing (a card sent back by 困难, see reviewQueue.ts's
@@ -264,9 +287,33 @@
 }
 
 .review-grades .btn {
-  padding-inline: var(--sp-2);
+  min-height: 60px;
+  padding-inline: var(--sp-1);
   flex-direction: column;
   gap: 2px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--text);
+  font-size: var(--fs-md);
+  font-weight: 900;
+}
+
+.review-grades .btn + .btn {
+  border-inline-start: 1px solid var(--rule-strong);
+}
+
+.review-grades .btn--grade-again {
+  color: var(--accent);
+}
+
+.review-grades .btn:hover:not(:disabled) {
+  background: var(--surface-sunken);
+  color: var(--text);
+}
+
+.review-grades .btn--grade-again:hover:not(:disabled) {
+  color: var(--accent);
 }
 
 /* Label + number key stay on one line inside the stacked button. */
@@ -276,30 +323,27 @@
   gap: var(--sp-1);
 }
 
+/* The shortcut printed as a key cap, so it reads as "press 1", not as a
+   footnote number. */
 .review-grade__key {
-  color: var(--text-faint);
+  padding: 0 4px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-sm);
+  color: var(--text-muted);
   font-family: var(--font-num);
   font-size: var(--fs-xs);
+  font-weight: 400;
+  line-height: 1.4;
 }
 
-/* The consequence line. Inherits the grade's tone color (and the hover
-   inversion) instead of the faint gray of the key hint — it's information
-   about the action, not chrome. In drill modes it's absent and the
-   buttons render exactly as before. */
+/* The consequence line (稍后 / 4 天): muted under the label, so the label is
+   read first and the interval confirms it. In drill modes it's absent and
+   the buttons render exactly as before. */
 .review-grade__interval {
-  font-size: var(--fs-eyebrow);
+  font-size: var(--fs-xs);
   font-weight: 400;
   letter-spacing: 0;
-  color: inherit;
-  opacity: 0.8;
-}
-
-.btn--grade-again:hover .review-grade__key,
-.btn--grade-hard:hover .review-grade__key,
-.btn--grade-good:hover .review-grade__key,
-.btn--grade-easy:hover .review-grade__key {
-  color: inherit;
-  opacity: 0.75;
+  color: var(--text-muted);
 }
 
 /* On wider desktop screens, the grade buttons don't need to stretch the
@@ -330,19 +374,13 @@
   text-align: center;
 }
 
-/* The small vermilion line at the top of the done page. It used to borrow
-   .pos — but .pos is a part-of-speech tag (v. / adj.), and this is an
-   eyebrow label that just happened to share the same typography. An
-   eyebrow label is already one of vermilion's permitted uses (see the top
-   of tokens.css), so the look stays the same, it just no longer piggybacks
-   on the POS-tag class name. Same approach as the Quiz page's
-   .quiz-q__label. */
+/* The done page's headline (复习完成 / 暂无待复习). It was a tracked
+   vermilion eyebrow until the 朱批 redesign; a finished session is news,
+   not an annotation, so it is set as a heading in ink. */
 .review-done__label {
-  font-size: var(--fs-eyebrow);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-eyebrow);
-  color: var(--accent);
+  font-size: var(--fs-xl);
+  font-weight: 900;
+  letter-spacing: 0.06em;
 }
 
 .review-done__count {
