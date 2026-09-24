@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { ExampleSentence } from '../components/ExampleSentence'
+import { ProgressMarks } from '../components/ProgressMarks'
 import { TextInput } from '../components/TextInput'
 import { isEditableTarget, optionIndexFromKey } from '../lib/keys'
 import { pushRecent, recentWindow } from '../lib/passage'
@@ -406,18 +407,15 @@ export function ComposeSession({
   return (
     <>
       <div className="quiz-progress">
-        <div
-          className="progress"
-          role="progressbar"
-          aria-label="测试进度"
-          aria-valuemin={0}
-          aria-valuemax={total}
-          aria-valuenow={index}
-          aria-valuetext={`第 ${index + 1} / ${total} 题`}
-        >
-          <div className="progress__fill" style={{ width: `${(index / total) * 100}%` }} />
-        </div>
-        <p className="muted num quiz-progress__count">第 {index + 1} / {total} 题</p>
+        <ProgressMarks
+          done={index}
+          total={total}
+          label="测试进度"
+          valueText={`第 ${index + 1} / ${total} 题`}
+        />
+        <p className="muted quiz-progress__count">
+          第 <span className="num">{index + 1}</span> / <span className="num">{total}</span> 题
+        </p>
       </div>
       <Card>
         <ComposeQuestionView

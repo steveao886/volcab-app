@@ -610,7 +610,12 @@
   color: var(--info);
 }
 
-/* --- State dot: new is hollow (ink not yet applied), learning/mastered are solid --- */
+/* --- State marks (components/StateDot.tsx) -----------------------------------
+   A word's state in the 圈点 family, told apart by shape: a hollow ring (no
+   ink yet), a ring filled on its left half (partway), a solid dot (done).
+   Until 2026-09-23 学习中 and 已掌握 were both solid dots, one 藤黄 and one
+   石青 — the one place in the app where state rode on color alone. The
+   colors stay as a second channel; the aria-label is the third. */
 
 .dot {
   display: inline-block;
@@ -626,14 +631,18 @@
 }
 
 .dot--learning {
-  background: var(--state-learning);
+  background: linear-gradient(to right, var(--state-learning) 50%, transparent 50%);
+  box-shadow: inset 0 0 0 1.5px var(--state-learning);
 }
 
 .dot--review {
   background: var(--state-review);
 }
 
-/* --- Progress bar: 2px hairline, cinnabar fill ------------------------------- */
+/* --- Progress bar: 2px hairline ------------------------------------------------
+   The 圈点 marks' fallback past 28 items (components/ProgressMarks.tsx), so
+   it draws the same mark: cinnabar is the filled 圈点 dot stretched into a
+   line, not a decorative fill. */
 
 .progress {
   height: 2px;
@@ -643,7 +652,7 @@
 
 .progress__fill {
   height: 100%;
-  background: var(--accent);
+  background: var(--accent); /* mark: the done 圈点, run together */
   transition: width var(--dur-3) var(--ease);
 }
 
@@ -670,12 +679,224 @@
 }
 
 .marks__dot--done {
-  background: var(--accent);
+  background: var(--accent); /* mark: a filled 圈点 */
   box-shadow: none;
 }
 
 .marks__dot--current {
   box-shadow: inset 0 0 0 2px var(--text);
+}
+
+/* ==========================================================================
+   The 朱批 page vocabulary (round 2, docs/superpowers/specs/2026-09-23-zhupi-round2-design.md).
+   Four pieces every page is built from instead of cards: a section head, a
+   ruled list, a readout, and a printed key. A box survives only where the
+   box is itself the object — the flip card, a self-contained prompt, a
+   dialog — and each such .card says which, in a comment where it is used.
+   ========================================================================== */
+
+/* --- Section head ---------------------------------------------------------------
+   The heading with a hairline running out to the right edge: the rule is the
+   section's top border, drawn only where the words aren't. This is what
+   replaces "a card with a title in it". An optional __aside (a count, a
+   small action) sits after the rule, at the right edge. Margins are the
+   caller's. */
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-size: var(--fs-base);
+  font-weight: 700;
+  line-height: var(--lh-tight);
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+
+.section-head::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--rule-strong);
+}
+
+.section-head__aside {
+  order: 1;
+  flex: none;
+  font-size: var(--fs-sm);
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--text-muted);
+}
+
+/* A section on the paper: its head, then its content. */
+.section {
+  display: grid;
+  gap: var(--sp-3);
+  align-content: start;
+}
+
+.section > * {
+  min-width: 0;
+}
+
+/* --- Ruled list — .ledger ---------------------------------------------------------
+   Rows divided by hairlines, a stronger rule on top, no box around the list.
+   The row class goes on whatever element *is* the row: the <li> for a plain
+   row, the <a>/<button> inside it when the whole row is a link, so the hit
+   area is the full row and not just its text. A row is at least 48px.
+
+   Shapes:
+   - main + value/chevron: __main holds __primary with __secondary under it;
+     a __value or a chevron sits at the right.
+   - label + value: __label left, __value right (settings, word stats). */
+
+.ledger {
+  display: grid;
+  border-top: 1px solid var(--rule-strong);
+}
+
+.ledger__row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 48px;
+  padding-block: var(--sp-2);
+  border-bottom: 1px solid var(--rule);
+  color: inherit;
+  text-decoration: none;
+  text-align: start;
+}
+
+a.ledger__row:hover,
+button.ledger__row:hover:not(:disabled) {
+  background: var(--surface-sunken);
+}
+
+button.ledger__row {
+  width: 100%;
+}
+
+.ledger__main {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 2px;
+}
+
+.ledger__primary {
+  font-weight: 600;
+  overflow-wrap: break-word;
+}
+
+.ledger__secondary {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  color: var(--text-muted);
+}
+
+.ledger__label {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+/* Tabular Source Serif numerals, right-aligned. Holds a word too (a state,
+   a date); overflow-wrap keeps a long value from pushing past 375px. */
+.ledger__value {
+  flex: none;
+  max-width: 60%;
+  margin-inline-start: auto;
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: 600;
+  text-align: end;
+  overflow-wrap: anywhere;
+}
+
+.ledger__row > svg {
+  flex: none;
+  color: var(--text-muted);
+}
+
+/* --- Readout: one number and its label ----------------------------------------------
+   The number in ink, the label muted under it. No box, no accent: a streak
+   is not a mark. A row of readouts is .readouts, divided by 界栏 hairlines
+   between the cells and never around them — each cell draws a rule on its
+   own left and top, and the grid's overflow clips the ones on the outer
+   edge, so any cell count wraps into whole rows without a stray border. */
+
+.readout {
+  display: grid;
+  gap: 2px;
+  align-content: start;
+}
+
+.readout__value {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+  color: var(--text);
+}
+
+.readout__label {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  color: var(--text-muted);
+}
+
+.readouts {
+  --cols: 3;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  overflow: hidden;
+}
+
+.readouts--2 {
+  --cols: 2;
+}
+
+.readouts--4 {
+  --cols: 4;
+}
+
+.readouts > .readout {
+  justify-items: center;
+  padding: var(--sp-3) var(--sp-2);
+  text-align: center;
+  box-shadow:
+    -1px 0 0 var(--rule),
+    0 -1px 0 var(--rule);
+}
+
+/* --- Printed key ---------------------------------------------------------------------
+   A keyboard shortcut printed on the control it triggers, as a key cap, so
+   it reads as "press 1" and not as a footnote number. An undocumented
+   shortcut does not exist, and one written as prose after a middle dot
+   (提交 · Enter) barely does. Lifted from the review grade row. */
+
+.key {
+  display: inline-block;
+  padding: 0 4px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-sm);
+  color: var(--text-muted);
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+/* On an ink slab the muted key would vanish; it takes the slab's text color. */
+.btn--primary .key {
+  border-color: currentColor;
+  color: inherit;
+  opacity: 0.75;
 }
 
 /* --- Stat cell: centered big number + description label --------------------

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { ExampleSentence } from '../components/ExampleSentence'
 import { Card } from '../components/Card'
+import { ProgressMarks } from '../components/ProgressMarks'
 import { optionIndexFromKey } from '../lib/keys'
 import { pushRecent, recentWindow } from '../lib/passage'
 import { usableSentences } from '../lib/recallSentence'
@@ -722,28 +723,19 @@ export function RecallSession({
     <>
       {index === 0 && !inEncore ? <RecallOptions focus={focus} onFocus={onFocus} count={count} onCount={onCount} /> : null}
       <div className="quiz-progress">
-        <div
-          className="progress"
-          role="progressbar"
-          aria-label={inEncore ? '巩固进度' : '测试进度'}
-          aria-valuemin={0}
-          aria-valuemax={inEncore ? encore.length : total}
-          aria-valuenow={inEncore ? encoreIndex : index}
-          aria-valuetext={
+        <ProgressMarks
+          done={inEncore ? encoreIndex : index}
+          total={inEncore ? encore.length : total}
+          label={inEncore ? '巩固进度' : '测试进度'}
+          valueText={
             inEncore
-              ? `巩固 第 ${encoreIndex + 1} / ${encore.length} 题`
+              ? `巩固第 ${encoreIndex + 1} / ${encore.length} 题`
               : `第 ${index + 1} / ${total} 题`
           }
-        >
-          <div
-            className="progress__fill"
-            style={{ width: `${((inEncore ? encoreIndex : index) / (inEncore ? encore.length : total)) * 100}%` }}
-          />
-        </div>
-        <p className="muted num quiz-progress__count">
-          {inEncore
-            ? `巩固 · 第 ${encoreIndex + 1} / ${encore.length} 题`
-            : `第 ${index + 1} / ${total} 题`}
+        />
+        <p className="muted quiz-progress__count">
+          {inEncore ? '巩固，' : ''}第 <span className="num">{inEncore ? encoreIndex + 1 : index + 1}</span> /{' '}
+          <span className="num">{inEncore ? encore.length : total}</span> 题
         </p>
       </div>
       <Card>
