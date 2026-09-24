@@ -138,7 +138,7 @@ function ComposeQuestionView({ question, onAnswered, onNext, nextLabel }: Compos
 
   return (
     <div>
-      <p className="quiz-q__label">读中文,拼出英文句子,并补上空缺的词</p>
+      <p className="quiz-q__label">读中文，拼出英文句子，并补上空缺的词</p>
       <p className="quiz-q__prompt">{prompt}</p>
 
       <ol className="compose-slots" aria-label="你拼出的句子">
@@ -155,7 +155,7 @@ function ComposeQuestionView({ question, onAnswered, onNext, nextLabel }: Compos
                 }`}
                 disabled={!filled || revealed}
                 onClick={() => filled && toggle(k)}
-                aria-label={filled ? `第 ${s + 1} 格:${question.pool[k]},点击取出` : `第 ${s + 1} 格,空`}
+                aria-label={filled ? `第 ${s + 1} 格:${question.pool[k]}，点击取出` : `第 ${s + 1} 格，空`}
               >
                 {/* A wrong slot keeps what you put there, struck through in
                     cinnabar, and shows the chunk that belongs there after it —
@@ -273,7 +273,7 @@ function ComposeQuestionView({ question, onAnswered, onNext, nextLabel }: Compos
           </p>
           {verdict.word === 'form' && (
             <p className="compose-note">
-              词是对的,形不对 —— 这句要的是 <strong lang="en">{question.answer}</strong>。
+              词是对的，形不对 —— 这句要的是 <strong lang="en">{question.answer}</strong>。
             </p>
           )}
           <p className="recall-en" lang="en">
@@ -369,7 +369,7 @@ export function ComposeSession({
       <div className="quiz-empty">
         <p>
           你学过的词里还没有可以组句的。组句只考已经切好意群的句子 ——
-          切块是手写的内容,还在一批一批补。再学一阵子,或者等下一批内容,这里的题会多起来。
+          切块是手写的内容，还在一批一批补。再学一阵子，或者等下一批内容，这里的题会多起来。
         </p>
         <Link className="btn btn--primary" to="/library">
           去词库看看
@@ -389,7 +389,7 @@ export function ComposeSession({
           value={<>{score}<span className="quiz-result__of"> / {total}</span></>}
           label="顺序和词都对"
         >
-          {score === total ? '全部答对,漂亮!' : `本轮测了 ${total} 题,顺序和词都对的有 ${score} 题。`}
+          {score === total ? '全部答对，漂亮!' : `本轮测了 ${total} 题，顺序和词都对的有 ${score} 题。`}
         </ResultScore>
 
         {missed.length > 0 ? <MissedWords title="没拿下的" rows={missed} /> : null}

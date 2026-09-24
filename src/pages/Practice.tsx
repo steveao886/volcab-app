@@ -282,7 +282,7 @@ export function Practice() {
       <Page title={struggling ? '顽固词加练' : '自由练习'} back={backTo}>
         <div className="practice-size">
           <p className="practice-size__pool">
-            {struggling ? '顽固词' : '可练的词'}还有 <strong>{pool.length}</strong> 个,这一批练多少?
+            {struggling ? '顽固词' : '可练的词'}还有 <strong>{pool.length}</strong> 个，这一批练多少?
           </p>
           <div className="practice-size__options">
             {sizeOptions.map((o, i) => (
@@ -297,7 +297,7 @@ export function Practice() {
               </Button>
             ))}
           </div>
-          <p className="muted">练完还能再来一批,这里不记进度。</p>
+          <p className="muted">练完还能再来一批，这里不记进度。</p>
         </div>
       </Page>
     )
@@ -314,14 +314,14 @@ export function Practice() {
               ? struggling
                 ? '眼下没有顽固词 —— 这是好事。'
                 : mixed
-                  ? '还没有已掌握的词可以练,先去复习几轮吧。'
-                  : '这组筛选条件下没有词条,回词库换个条件试试。'
+                  ? '还没有已掌握的词可以练，先去复习几轮吧。'
+                  : '这组筛选条件下没有词条，回词库换个条件试试。'
               : hasMore
                 ? struggling
-                  ? '想接着练就继续下一批,越往后越接近记牢 —— 这里不记进度。'
-                  : '想接着练就再抽一批,不想练随时可以走 —— 这里不记进度。'
+                  ? '想接着练就继续下一批，越往后越接近记牢 —— 这里不记进度。'
+                  : '想接着练就再抽一批，不想练随时可以走 —— 这里不记进度。'
                 : struggling
-                  ? '顽固词都过了一遍。还想练可以从头再来,这里不设上限。'
+                  ? '顽固词都过了一遍。还想练可以从头再来，这里不设上限。'
                   : mixed
                     ? '能练的词都过了一遍。'
                     : '这组筛选条件下的词都过了一遍。'}
@@ -351,7 +351,7 @@ export function Practice() {
           <>
             <MissedWords title="这一轮没答上来的" rows={missed.map(w => ({ word: w }))} />
             <p className="faint practice-recap__note">
-              这 <span className="num">{missed.length}</span> 个已经排进顽固词队列,
+              这 <span className="num">{missed.length}</span> 个已经排进顽固词队列，
               这周做测验也会更常碰到它们。
             </p>
           </>
@@ -378,10 +378,10 @@ export function Practice() {
           review page's drill note. */}
       <p className="faint review-drill-note">
         {struggling
-          ? '专攻顽固词:最难的排最前,刚错过的同难度里优先。不计成绩、不影响排期,答对也不会提前出队 —— 真正的检验在明天的正式一轮。'
+          ? '专攻顽固词:最难的排最前，刚错过的同难度里优先。不计成绩、不影响排期，答对也不会提前出队 —— 真正的检验在明天的正式一轮。'
           : <>
-              {mixed ? '一半已掌握的词随机抽,一半是最近老忘的。' : '随便练:'}
-              答错的词会进顽固词队列,但不影响复习计划,也不计入今日复习。
+              {mixed ? '一半已掌握的词随机抽，一半是最近老忘的。' : '随便练:'}
+              答错的词会进顽固词队列，但不影响复习计划，也不计入今日复习。
             </>}
       </p>
 

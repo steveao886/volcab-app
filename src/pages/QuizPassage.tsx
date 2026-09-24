@@ -138,7 +138,7 @@ export function PassageSession({
   if (question === null) {
     return (
       <div className="quiz-empty">
-        <p>短文题只考你学过的词,一篇里至少要凑够 3 个。再学一阵子,这里的题会自己多起来。</p>
+        <p>短文题只考你学过的词，一篇里至少要凑够 3 个。再学一阵子，这里的题会自己多起来。</p>
         <Link className="btn btn--primary" to="/library">
           去词库看看
         </Link>
@@ -171,7 +171,7 @@ export function PassageSession({
           face at reading size, blanks as ruled gaps. It was a card, which put
           a box inside the page around the one thing on it. */}
       <div className="quiz-passage">
-        <p className="quiz-q__label">读短文,把词填进空里</p>
+        <p className="quiz-q__label">读短文，把词填进空里</p>
         <p className="quiz-passage__title">{question.passage.title}</p>
 
         <div className="quiz-passage__text" lang="en">
@@ -273,7 +273,7 @@ function PassageResult({
         value={<>{score}<span className="quiz-result__of"> / {total}</span></>}
         label="填对"
       >
-        {score === total ? '全部填对,漂亮!' : `${total} 个空,填对 ${score} 个。`}
+        {score === total ? '全部填对，漂亮!' : `${total} 个空，填对 ${score} 个。`}
       </ResultScore>
 
       <section className="section">

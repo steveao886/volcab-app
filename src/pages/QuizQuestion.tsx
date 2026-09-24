@@ -24,9 +24,9 @@ const TYPE_LABEL: Record<QuizType, string> = {
   clozeCollocation: '根据搭配选出正确的单词',
   synonymHint: '选出对应的单词',
   antonymPick: '选出意思相反的词',
-  contrast: '两个近义词,哪个更贴合这句话?',
-  audio2meaning: '听发音,选出正确的释义',
-  audio2spelling: '听发音,拼写这个单词',
+  contrast: '两个近义词，哪个更贴合这句话?',
+  audio2meaning: '听发音，选出正确的释义',
+  audio2spelling: '听发音，拼写这个单词',
 }
 
 /** Question types whose prompt is audio rather than text. */

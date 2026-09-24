@@ -152,7 +152,7 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
   if (questions.length === 0) {
     return (
       <div className="quiz-empty">
-        <p>需要至少 4 个词条才能开始极速赛。当前词库还不够,先去添加或多学几个单词吧。</p>
+        <p>需要至少 4 个词条才能开始极速赛。当前词库还不够，先去添加或多学几个单词吧。</p>
         <Link className="btn btn--primary" to="/library">
           去词库看看
         </Link>

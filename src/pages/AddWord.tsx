@@ -64,7 +64,7 @@ function captureNotice(check: CaptureCheck): ReactNode {
   if (check.kind === 'in-library') {
     return (
       <>
-        「{check.headword}」已在词库中,<Link to={`/word/${check.id}`}>前往查看</Link>
+        「{check.headword}」已在词库中，<Link to={`/word/${check.id}`}>前往查看</Link>
       </>
     )
   }
@@ -236,12 +236,12 @@ export function AddWord() {
       const hasPhonetic = result.phonetic !== ''
       const hasMeanings = result.meanings.length > 0
       let note: string | undefined
-      if (!hasPhonetic && !hasMeanings) note = '词典没有可用的音标或释义,请手动填写。'
-      else if (!hasPhonetic) note = '释义已填入,词典未提供音标,请手动填写。'
-      else if (!hasMeanings) note = '音标已填入,词典未提供释义,请手动填写。'
+      if (!hasPhonetic && !hasMeanings) note = '词典没有可用的音标或释义，请手动填写。'
+      else if (!hasPhonetic) note = '释义已填入，词典未提供音标，请手动填写。'
+      else if (!hasMeanings) note = '音标已填入，词典未提供释义，请手动填写。'
       setLookup({ status: 'done', note })
     } else if (result.status === 'not-found') {
-      setLookup({ status: 'not-found', message: `词典未收录「${headword}」,请手动填写下方表单。` })
+      setLookup({ status: 'not-found', message: `词典未收录「${headword}」，请手动填写下方表单。` })
     } else {
       setLookup({ status: 'error', message: `${result.message} 你仍然可以手动填写下方表单。` })
     }
@@ -343,7 +343,7 @@ export function AddWord() {
     } catch (err) {
       setFieldErrors((prev) => ({
         ...prev,
-        general: err instanceof Error ? err.message : '保存失败,请重试',
+        general: err instanceof Error ? err.message : '保存失败，请重试',
       }))
     } finally {
       setSaving(false)
@@ -392,7 +392,7 @@ export function AddWord() {
       <section className="section addword-capture">
         <div className="addword-section-head">
           <h2 className="section-head">快速收词</h2>
-          <p className="addword-section-hint muted">只记单词,音标、释义、例句稍后一次补全</p>
+          <p className="addword-section-hint muted">只记单词，音标、释义、例句稍后一次补全</p>
         </div>
         <div className="addword-lookup-row">
           <Field label="单词" htmlFor="aw-capture" error={captureNotice(capture)}>
@@ -444,7 +444,7 @@ export function AddWord() {
         <section className="section addword-stack">
           <div className="addword-section-head">
             <h2 className="section-head">完整添加</h2>
-            <p className="addword-section-hint muted">现在就把整个词条填完,保存后直接进入复习</p>
+            <p className="addword-section-hint muted">现在就把整个词条填完，保存后直接进入复习</p>
           </div>
           <div className="addword-lookup-row">
             <Field
@@ -454,7 +454,7 @@ export function AddWord() {
               error={
                 duplicate ? (
                   <>
-                    该词条已存在,<Link to={`/word/${id}`}>前往编辑</Link>
+                    该词条已存在，<Link to={`/word/${id}`}>前往编辑</Link>
                   </>
                 ) : (
                   fieldErrors.headword
@@ -486,12 +486,12 @@ export function AddWord() {
           {lookup.status !== 'idle' && lookup.status !== 'loading' && (
             <p className={`addword-lookup-status addword-lookup-status--${lookup.status}`} role="status">
               {lookup.status === 'done'
-                ? (lookup.note ?? '已从词典填入音标与释义,中文释义仍需手动填写。')
+                ? (lookup.note ?? '已从词典填入音标与释义，中文释义仍需手动填写。')
                 : lookup.message}
             </p>
           )}
 
-          <Field label="音标" htmlFor="aw-phonetic" hint="美式,形如 /ˈæbrəɡeɪt/" error={fieldErrors.phonetic}>
+          <Field label="音标" htmlFor="aw-phonetic" hint="美式，形如 /ˈæbrəɡeɪt/" error={fieldErrors.phonetic}>
             <TextInput
               id="aw-phonetic"
               className="addword-ipa-input"
@@ -526,7 +526,7 @@ export function AddWord() {
           <Field
             label="词源"
             htmlFor="aw-etymology"
-            hint="可留空。一句话,如「ab-(离开) + rogare(提议) → 废除」。没把握就别写 —— 编一个比不写糟"
+            hint="可留空。一句话，如「ab-(离开) + rogare(提议) → 废除」。没把握就别写 —— 编一个比不写糟"
             error={fieldErrors.etymology}
           >
             <TextInput
@@ -541,7 +541,7 @@ export function AddWord() {
         <section className="section">
           <div className="addword-section-head">
             <h3 className="section-head">释义</h3>
-            <p className="addword-section-hint muted">至少一条,词性、英文释义、中文释义均需填写</p>
+            <p className="addword-section-hint muted">至少一条，词性、英文释义、中文释义均需填写</p>
           </div>
           {fieldErrors.meanings && (
             <p className="field__error" role="alert">
@@ -626,7 +626,7 @@ export function AddWord() {
           {meanings.length > 1 && (
             <p className={`addword-share-total ${shareTotal === 100 ? 'muted' : 'field__error'}`} role="status">
               义项占比合计 <span className="num">{shareTotal}%</span>
-              {shareTotal === 100 ? '' : ',需为 100%'}
+              {shareTotal === 100 ? '' : '，需为 100%'}
             </p>
           )}
           <Button className="addword-add" type="button" variant="ghost" size="sm" onClick={addMeaning}>
@@ -637,7 +637,7 @@ export function AddWord() {
         <section className="section">
           <div className="addword-section-head">
             <h3 className="section-head">例句</h3>
-            <p className="addword-section-hint muted">至少 2 句,建议贴近现代生活或工作场景</p>
+            <p className="addword-section-hint muted">至少 2 句，建议贴近现代生活或工作场景</p>
           </div>
           {fieldErrors.examples && (
             <p className="field__error" role="alert">
@@ -676,7 +676,7 @@ export function AddWord() {
 
         <section className="section addword-stack">
           <h3 className="section-head">相关词</h3>
-          <Field label="近义词" htmlFor="aw-syn" hint="用逗号分隔,如 abolish, annul, repeal">
+          <Field label="近义词" htmlFor="aw-syn" hint="用逗号分隔，如 abolish, annul, repeal">
             <TextInput
               id="aw-syn"
               value={synonymsText}
@@ -705,7 +705,7 @@ export function AddWord() {
         <section className="section">
           <div className="addword-section-head">
             <h3 className="section-head">同根变形</h3>
-            <p className="addword-section-hint muted">可选,无则留空;词典不提供,需手动填写</p>
+            <p className="addword-section-hint muted">可选，无则留空;词典不提供，需手动填写</p>
           </div>
           {fieldErrors.relatedForms && (
             <p className="field__error" role="alert">

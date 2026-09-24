@@ -55,7 +55,7 @@ export function Login() {
           <Field
             label="GitHub Token"
             htmlFor="login-token"
-            hint="fine-grained personal access token,只需 volcab-data 仓库的 Contents 读写权限"
+            hint="fine-grained personal access token，只需 volcab-data 仓库的 Contents 读写权限"
             error={loginError ?? undefined}
           >
             <TextInput

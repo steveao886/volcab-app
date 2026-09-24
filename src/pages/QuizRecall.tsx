@@ -235,8 +235,8 @@ function RecallQuestionView({
   const feedback =
     correct ? '回答正确'
       : miss === 'blank' ? '想不起来 —— 那就在这儿把它记住'
-        : miss === 'other' ? '意思到了,词还没到 —— 这正是要练的'
-          : miss === 'hint-hit' ? '提示后想起来了 —— 这次不算对,但通路正在建立'
+        : miss === 'other' ? '意思到了，词还没到 —— 这正是要练的'
+          : miss === 'hint-hit' ? '提示后想起来了 —— 这次不算对，但通路正在建立'
             : miss === 'hint-miss' ? '看了英文释义还是拿错了词 —— 这一对值得单独看'
               : '回答错误'
 
@@ -244,12 +244,12 @@ function RecallQuestionView({
     <div className="quiz-q">
       <p className="quiz-q__label">
         {stage === 'commit'
-          ? t !== undefined ? '标出的意思,你会用哪个英文词?' : '想表达下面这句话,你会用哪个词?'
+          ? t !== undefined ? '标出的意思，你会用哪个英文词?' : '想表达下面这句话，你会用哪个词?'
           : stage === 'hint'
-            ? '换个入口 —— 读英文释义,再想一次'
+            ? '换个入口 —— 读英文释义，再想一次'
             : question.kind === 'recall'
               ? '你刚才想到的是哪个?'
-              : '三个都沾边 —— 按贴切程度排序,最贴切的先点'}
+              : '三个都沾边 —— 按贴切程度排序，最贴切的先点'}
       </p>
       <p className="quiz-q__prompt">{prompt}</p>
 
@@ -659,7 +659,7 @@ export function RecallSession({
       <div className="quiz-empty">
         <p>
           你学过的词里还凑不出可以回想的一组。回想只考已经学过的近义词组 ——
-          一组里哪怕有一个词没学过,排它就没有意义。再学一阵子,这里的题会自己多起来。
+          一组里哪怕有一个词没学过，排它就没有意义。再学一阵子，这里的题会自己多起来。
         </p>
         <Link className="btn btn--primary" to="/library">
           去词库看看
@@ -679,7 +679,7 @@ export function RecallSession({
           value={<>{score}<span className="quiz-result__of"> / {total}</span></>}
           label="答对"
         >
-          {score === total ? '全部答对,漂亮!' : `本轮测了 ${total} 题,答对 ${score} 题。`}
+          {score === total ? '全部答对，漂亮!' : `本轮测了 ${total} 题，答对 ${score} 题。`}
         </ResultScore>
 
         {/* Starting another round is the usual next move, so the controls sit

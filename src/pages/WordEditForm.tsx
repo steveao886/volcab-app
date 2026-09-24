@@ -258,7 +258,7 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
         {meanings.length > 1 && (
           <p className={shareTotal === 100 ? 'muted' : 'field__error'} role="status">
             义项占比合计 <span className="num">{shareTotal}%</span>
-            {shareTotal === 100 ? '' : ',需为 100%'}
+            {shareTotal === 100 ? '' : '，需为 100%'}
           </p>
         )}
         <Button className="worddetail-edit__add" type="button" variant="ghost" size="sm" onClick={addMeaning}>
@@ -312,7 +312,7 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
       <Field
         label="词源"
         htmlFor="edit-etymology"
-        hint="一句话,如「ab-(离开) + rogare(提议) → 废除」。没把握就留空 —— 编一个比不写糟"
+        hint="一句话，如「ab-(离开) + rogare(提议) → 废除」。没把握就留空 —— 编一个比不写糟"
       >
         <TextInput
           id="edit-etymology"
@@ -322,13 +322,13 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
         />
       </Field>
 
-      <Field label="近义词" htmlFor="edit-synonyms" hint="每行一个,可留空">
+      <Field label="近义词" htmlFor="edit-synonyms" hint="每行一个，可留空">
         <Textarea id="edit-synonyms" value={synonymsText} onChange={e => setSynonymsText(e.target.value)} disabled={saving} />
       </Field>
-      <Field label="反义词" htmlFor="edit-antonyms" hint="每行一个,可留空">
+      <Field label="反义词" htmlFor="edit-antonyms" hint="每行一个，可留空">
         <Textarea id="edit-antonyms" value={antonymsText} onChange={e => setAntonymsText(e.target.value)} disabled={saving} />
       </Field>
-      <Field label="常见搭配" htmlFor="edit-collocations" hint="每行一个,可留空">
+      <Field label="常见搭配" htmlFor="edit-collocations" hint="每行一个，可留空">
         <Textarea
           id="edit-collocations"
           value={collocationsText}

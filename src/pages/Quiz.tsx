@@ -50,15 +50,15 @@ const QUESTION_COUNT = 10
  * leads, and it must stay append-only for that reason.
  */
 const MODES = [
-  { key: 'mixed', label: '综合', desc: '中英互认 + 例句填空,日常主力' },
-  { key: 'recall', label: '回想', desc: '只看中文,回想英文词' },
+  { key: 'mixed', label: '综合', desc: '中英互认 + 例句填空，日常主力' },
+  { key: 'recall', label: '回想', desc: '只看中文，回想英文词' },
   { key: 'contrast', label: '辨析', desc: '易混词对二选一' },
-  { key: 'audio', label: '听音', desc: '听发音,选词义' },
-  { key: 'sprint', label: '极速', desc: '60 秒,能答多少答多少' },
+  { key: 'audio', label: '听音', desc: '听发音，选词义' },
+  { key: 'sprint', label: '极速', desc: '60 秒，能答多少答多少' },
   { key: 'passage', label: '短文', desc: '整段文章挖空填词' },
-  { key: 'antonym', label: '反义', desc: '给一个词,选出它的反义词' },
-  { key: 'compose', label: '组句', desc: '拼出整句,并补上空缺的词' },
-  { key: 'diverge', label: '发散', desc: '给一个中文概念,把一族词全写出来' },
+  { key: 'antonym', label: '反义', desc: '给一个词，选出它的反义词' },
+  { key: 'compose', label: '组句', desc: '拼出整句，并补上空缺的词' },
+  { key: 'diverge', label: '发散', desc: '给一个中文概念，把一族词全写出来' },
 ] as const
 
 type QuizMode = (typeof MODES)[number]['key']
@@ -132,14 +132,14 @@ function ContentGate({ label, failed, retry }: { label: string; failed: boolean;
 
 /** Explanation for when no questions can be generated: each mode is missing something different, and one generic message would leave people not knowing what to do. */
 const EMPTY_HINT: Record<Exclude<QuizMode, 'sprint' | 'passage' | 'recall' | 'compose' | 'diverge'>, string> = {
-  mixed: '需要至少 4 个词条才能测试。当前词库还不够,先去添加或多学几个单词吧。',
-  contrast: '你学过的词里还凑不出易混的一对。辨析只考已经学过的词 —— 拿两个没见过的词问「该用哪个」没有意义。再学一阵子,这里的题会自己多起来。',
-  audio: '需要至少 4 个词条才能开始听音练习。当前词库还不够,先去添加或多学几个单词吧。',
+  mixed: '需要至少 4 个词条才能测试。当前词库还不够，先去添加或多学几个单词吧。',
+  contrast: '你学过的词里还凑不出易混的一对。辨析只考已经学过的词 —— 拿两个没见过的词问「该用哪个」没有意义。再学一阵子，这里的题会自己多起来。',
+  audio: '需要至少 4 个词条才能开始听音练习。当前词库还不够，先去添加或多学几个单词吧。',
   // Narrower than the others by construction: an antonym question needs the
   // *pair* to be in the library, and only 392 of 931 words have a
   // library-internal opposite. Say that plainly rather than leaving the
   // impression the mode is broken.
-  antonym: '你学过的词里还凑不出一对反义词。反义题两边都得是库里的词 —— 只有词条的「反义词」里写着另一个词条时才成对。再学一阵子,或给已有词条补上反义词,题就会多起来。',
+  antonym: '你学过的词里还凑不出一对反义词。反义题两边都得是库里的词 —— 只有词条的「反义词」里写着另一个词条时才成对。再学一阵子，或给已有词条补上反义词，题就会多起来。',
 }
 
 /**
@@ -275,7 +275,7 @@ function QuizSession({
           value={<>{score}<span className="quiz-result__of"> / {total}</span></>}
           label="答对"
         >
-          {score === total ? '全部答对,漂亮!' : `本轮测了 ${total} 题,答对 ${score} 题。`}
+          {score === total ? '全部答对，漂亮!' : `本轮测了 ${total} 题，答对 ${score} 题。`}
         </ResultScore>
 
         {wrongWords.length > 0 ? (

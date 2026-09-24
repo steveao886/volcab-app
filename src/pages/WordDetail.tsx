@@ -107,7 +107,7 @@ export function WordDetail() {
       <Page title="未找到词条" back="/library">
         <div className="empty-state">
           <p className="empty-state__title">这个词条不存在</p>
-          <p className="empty-state__hint">可能已经在别的设备上被删除,或者链接已经失效。</p>
+          <p className="empty-state__hint">可能已经在别的设备上被删除，或者链接已经失效。</p>
           <Link className="btn btn--primary" to="/library">
             返回词库
           </Link>
@@ -380,7 +380,7 @@ export function WordDetail() {
         open={confirmOpen}
         titleId="worddetail-confirm-title"
         title={`删除「${word.headword}」?`}
-        body="这个词条以及它的学习进度(状态、复习次数、失误次数等)会一并删除,且无法恢复。"
+        body="这个词条以及它的学习进度(状态、复习次数、失误次数等)会一并删除，且无法恢复。"
         confirmLabel="确认删除"
         busy={deleting}
         onConfirm={handleDelete}

@@ -84,7 +84,7 @@ export function Discover() {
         <div className="empty-state">
           <p className="empty-state__title">这一批都看完了</p>
           <p className="empty-state__hint">
-            推荐是随 app 打包的,不会自己更新 —— 下次让我补一批新的就行。
+            推荐是随 app 打包的，不会自己更新 —— 下次让我补一批新的就行。
           </p>
           <Link className="btn btn--primary" to="/library">
             回词库
@@ -109,11 +109,11 @@ export function Discover() {
       </div>
 
       <p className="faint discover-note">
-        加入的词会进暂存区,等下次整理时补全成完整词条;不要的会被记住,以后不再出现。
+        加入的词会进暂存区，等下次整理时补全成完整词条;不要的会被记住，以后不再出现。
       </p>
 
       {shown.length === 0 ? (
-        <p className="muted discover-empty">这个类型下没有了,换一个看看。</p>
+        <p className="muted discover-empty">这个类型下没有了，换一个看看。</p>
       ) : (
         // Entries in a list on the paper, divided by strong rules, the way a
         // dictionary sets one headword after the next. They were cards.

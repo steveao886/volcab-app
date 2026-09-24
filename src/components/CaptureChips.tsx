@@ -83,7 +83,7 @@ export function CaptureChips({ items, className }: { items: CaptureChip[]; class
             // Not `disabled`: disabling a focused element blurs it, which is
             // the very thing the `captured` set exists to prevent.
             aria-disabled={done || undefined}
-            aria-label={done ? `${it.word},已加入待补全` : `把 ${it.word} 加入待补全`}
+            aria-label={done ? `${it.word}，已加入待补全` : `把 ${it.word} 加入待补全`}
             // stopPropagation runs even when the chip is spent: the review
             // card is itself a role="button" that flips on click, so a tap
             // on an inert chip would otherwise flip the card away. The

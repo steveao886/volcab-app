@@ -167,7 +167,7 @@ export class GitHubClient {
       // Matched against the `message` field alone, never the whole body: a path or a commit
       // message could contain these words, and the response echoes both back.
       if (/too large/i.test((await errorMessage(res)) ?? '')) {
-        throw new Error(`写入 ${path} 失败:文件已超过 GitHub 接口的体积上限,本次改动没有保存,重试也不会成功 (${statusTag(res)})`)
+        throw new Error(`写入 ${path} 失败:文件已超过 GitHub 接口的体积上限，本次改动没有保存，重试也不会成功 (${statusTag(res)})`)
       }
       return 'conflict'
     }

@@ -9,22 +9,22 @@
  */
 
 export const GIVE_UP =
-  '云端刚被其他设备改写,已重试一次仍冲突;本次改动留在本地,稍后会自动重试。'
+  '云端刚被其他设备改写，已重试一次仍冲突;本次改动留在本地，稍后会自动重试。'
 
 export const BACKUP_HINT =
-  '云端文件解析失败,已中止同步以免覆盖数据。请先到设置页导出备份,再检查数据仓库。'
+  '云端文件解析失败，已中止同步以免覆盖数据。请先到设置页导出备份，再检查数据仓库。'
 
-export const OFFLINE = '当前处于离线状态,连上网络后再试。'
+export const OFFLINE = '当前处于离线状态，连上网络后再试。'
 
 export const RATE_LIMITED =
-  'GitHub 接口调用过于频繁,已被限流。改动都在本地,过一会儿会自动重试。'
+  'GitHub 接口调用过于频繁，已被限流。改动都在本地，过一会儿会自动重试。'
 
 export const FORBIDDEN =
-  'GitHub 拒绝了请求:token 对数据仓库的权限可能不足。若一直失败,请到设置页重新登录并勾选该仓库。'
+  'GitHub 拒绝了请求:token 对数据仓库的权限可能不足。若一直失败，请到设置页重新登录并勾选该仓库。'
 
-export const TOKEN_REVOKED = '登录信息已失效或被撤销,请重新粘贴一个有效的 token。'
+export const TOKEN_REVOKED = '登录信息已失效或被撤销，请重新粘贴一个有效的 token。'
 
-export const NETWORK = '网络请求失败,请检查网络后重试。'
+export const NETWORK = '网络请求失败，请检查网络后重试。'
 
 /**
  * localStorage refused a write. Not a sync failure in the usual sense -- the
@@ -35,10 +35,10 @@ export const NETWORK = '网络请求失败,请检查网络后重试。'
  * have met within the year had storage.set kept throwing.
  */
 export const STORAGE_FULL =
-  '本机存储空间已满,学习记录暂时只保存在内存里并直接同步到云端;请尽快到设置页导出备份。'
+  '本机存储空间已满，学习记录暂时只保存在内存里并直接同步到云端;请尽快到设置页导出备份。'
 
 export const ownerSwitched = (previousOwner: string) =>
-  `本机上 ${previousOwner} 还有没同步完的改动,换账号登录后已被丢弃。`
+  `本机上 ${previousOwner} 还有没同步完的改动，换账号登录后已被丢弃。`
 
 export function logoutDiscarded(words: number, hadProgress: boolean, staging = 0): string {
   const parts: string[] = []
@@ -46,7 +46,7 @@ export function logoutDiscarded(words: number, hadProgress: boolean, staging = 0
   if (words > 0) parts.push(`${words} 条未同步的词库改动`)
   // Staged words are just as much something the user typed in — clearing them out on logout has to be disclosed too
   if (staging > 0) parts.push(`${staging} 个待补全的生词`)
-  return `退出前还有${parts.join('、')},已随本机数据一并清除。`
+  return `退出前还有${parts.join('、')}，已随本机数据一并清除。`
 }
 
 export const errText = (e: unknown) => (e instanceof Error ? e.message : String(e))
