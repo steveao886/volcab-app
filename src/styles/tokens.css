@@ -17,7 +17,9 @@
    ========================================================================== */
 
 :root {
-  color-scheme: light dark;
+  /* Light unless <html data-theme="dark"> says otherwise (see the dark
+     block at the end). Native controls follow the same switch. */
+  color-scheme: light;
   accent-color: var(--accent); /* mark: native checkbox / radio ticks take the cinnabar */
 
   /* --- Font families -----------------------------------------------------
@@ -189,40 +191,45 @@
 }
 
 /* --- Color: dark (墨) ------------------------------------------------------
-   Measured the same way: every text token ≥ 5.71:1, --rule-control ≥ 3.59:1. */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #15181b;
-    --surface: #1c2024;
-    --surface-sunken: #101315;
-    --text: #e4eae9;
-    --text-muted: #aeb6bb;
-    --text-faint: #949da3;
-    --rule: rgba(228, 234, 233, 0.14);
-    --rule-strong: rgba(228, 234, 233, 0.3);
-    --rule-control: #6e777d;
+   Measured the same way: every text token ≥ 5.71:1, --rule-control ≥ 3.59:1.
+   Switched by data-theme on <html>, not by a prefers-color-scheme query:
+   设置 can override the system (lib/theme.ts), and a media query cannot be
+   told "no" by the page. The system still decides under 跟随系统 — theme.ts
+   and the inline script in index.html resolve it into this attribute
+   before first paint. One dark block, one decision point. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
 
-    --accent: #e57a68;
-    --accent-soft: rgba(229, 122, 104, 0.14);
-    --on-tone: #1a1110;
+  --bg: #15181b;
+  --surface: #1c2024;
+  --surface-sunken: #101315;
+  --text: #e4eae9;
+  --text-muted: #aeb6bb;
+  --text-faint: #949da3;
+  --rule: rgba(228, 234, 233, 0.14);
+  --rule-strong: rgba(228, 234, 233, 0.3);
+  --rule-control: #6e777d;
 
-    /* In dark mode the ink slab inverts to a paper slab; the primary button keeps the same "single solid block" language */
-    --slab: #e4eae9;
-    --slab-text: #15181b;
-    --slab-hover: #ffffff;
+  --accent: #e57a68;
+  --accent-soft: rgba(229, 122, 104, 0.14);
+  --on-tone: #1a1110;
 
-    --success: #7ab0dc;
-    --warning: #d9aa4e;
-    --info: #7dbba3;
-    --danger: #e57a68;
-    --success-soft: rgba(122, 176, 220, 0.14);
-    --warning-soft: rgba(217, 170, 78, 0.14);
-    --info-soft: rgba(125, 187, 163, 0.14);
-    --danger-soft: rgba(229, 122, 104, 0.14);
+  /* In dark mode the ink slab inverts to a paper slab; the primary button keeps the same "single solid block" language */
+  --slab: #e4eae9;
+  --slab-text: #15181b;
+  --slab-hover: #ffffff;
 
-    --chart-1: #8a78d6;
-    --chart-2: #c4843f;
+  --success: #7ab0dc;
+  --warning: #d9aa4e;
+  --info: #7dbba3;
+  --danger: #e57a68;
+  --success-soft: rgba(122, 176, 220, 0.14);
+  --warning-soft: rgba(217, 170, 78, 0.14);
+  --info-soft: rgba(125, 187, 163, 0.14);
+  --danger-soft: rgba(229, 122, 104, 0.14);
 
-    --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.45), 0 10px 24px rgba(0, 0, 0, 0.35);
-  }
+  --chart-1: #8a78d6;
+  --chart-2: #c4843f;
+
+  --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.45), 0 10px 24px rgba(0, 0, 0, 0.35);
 }

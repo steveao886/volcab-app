@@ -2,7 +2,7 @@ import type { ComponentPropsWithRef } from 'react'
 
 /**
  * Dropdown select. Reuses .input's appearance but **keeps the native
- * arrow**: tokens.css declares `color-scheme: light dark`, so the native
+ * arrow**: tokens.css sets `color-scheme` to match the theme, so the native
  * control already follows light/dark automatically — drawing a custom arrow
  * would mean painting it twice for both themes and managing its hit area.
  *

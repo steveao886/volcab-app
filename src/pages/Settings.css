@@ -33,6 +33,15 @@
   color: var(--text-faint);
 }
 
+/* --- 外观: three chips on one row, 12px apart for the reason .chip::after
+   gives (their hit areas reach 6px past the visual edge). */
+
+.settings-theme {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+
 /* --- Account info: a two-row .ledger, label left / value right -------------
    The <dl>'s UA margins are the only thing the shared rows need undone. */
 

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Button } from '../components/Button'
+import { Chip } from '../components/Chip'
 import { Field } from '../components/Field'
 import { Page } from '../components/Page'
 import { TextInput } from '../components/TextInput'
@@ -11,6 +12,8 @@ import { clampIntervalModifier, MAX_INTERVAL_MODIFIER, MIN_INTERVAL_MODIFIER, to
 import { loadInputs, recommendIntervalModifier, recommendNewPerDay, retentionWindowDays } from '../lib/tuning'
 import { dailySeries, retentionStats } from './statsDerive'
 import { storage } from '../lib/storage'
+import { readThemePref, syncTheme, writeThemePref } from '../lib/theme'
+import type { ThemePref } from '../lib/theme'
 import { pendingOps, pendingStaging } from '../state/session'
 import { useApp } from '../state/store'
 import './Settings.css'
@@ -93,9 +96,25 @@ function Advice({ children }: { children: ReactNode }) {
   return <p className="settings-advice">{children}</p>
 }
 
+/** 外观's three choices, in the order they read: the default first. */
+const THEME_CHOICES: [pref: ThemePref, label: string][] = [
+  ['system', '跟随系统'],
+  ['light', '浅色'],
+  ['dark', '深色'],
+]
+
 /** Task 21 implementation: daily new-word count, account info & sign out, export backup, app version. */
 export function Settings() {
   const { owner, words, progress, updateSettings, logout, exportAll } = useApp()
+
+  // The choice is read once and written through: applying it is a DOM
+  // attribute (lib/theme.ts), not app state, so nothing else re-renders.
+  const [themePref, setThemePref] = useState<ThemePref>(readThemePref)
+  const chooseTheme = (pref: ThemePref) => {
+    writeThemePref(pref)
+    syncTheme()
+    setThemePref(pref)
+  }
 
   const [newPerDayInput, setNewPerDayInput] = useState(String(progress.settings.newPerDay))
   const currentModifier = clampIntervalModifier(progress.settings.intervalModifier)
@@ -364,6 +383,17 @@ export function Settings() {
             />
           </span>
         </label>
+      </section>
+
+      {/* Per device, not synced: the system setting this overrides is per
+          device too (see lib/theme.ts). 跟随系统 stays the default. */}
+      <section className="section">
+        <h2 className="section-head">外观</h2>
+        <div className="settings-theme" role="group" aria-label="外观">
+          {THEME_CHOICES.map(([pref, label]) => (
+            <Chip key={pref} label={label} selected={themePref === pref} onClick={() => chooseTheme(pref)} />
+          ))}
+        </div>
       </section>
 
       <section className="section">
