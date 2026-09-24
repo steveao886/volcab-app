@@ -1,8 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Card } from '../components/Card'
-import { Chip } from '../components/Chip'
 import { Page } from '../components/Page'
+import { StateDot } from '../components/StateDot'
 import { todayStr } from '../lib/srs'
 import { useApp } from '../state/store'
 import { AccuracyTrend, ReviewBars } from './statsCharts'
@@ -96,15 +95,22 @@ export function Stats() {
 
   return (
     <Page title="学习数据">
-      <Card>
-        <p className="section-title stats-section-title">近 {WINDOW_DAYS} 天复习量</p>
-        <div className="stats-headline">
-          <p className="num stats-headline__value">{summary.reviewed}</p>
-          <p className="muted stats-headline__note">
-            次复习,覆盖 <span className="num">{summary.activeDays}</span> / {WINDOW_DAYS} 天
+      {/* Every section is a ruled head and its content on the paper; the
+          cards they sat in went with round 2 of 朱批. Each leads with one
+          .readout — the number in ink, its label under it — and a sentence
+          of context beside it. */}
+      <section className="section">
+        <h2 className="section-head">近 {WINDOW_DAYS} 天复习量</h2>
+        <div className="stats-lead">
+          <div className="readout">
+            <p className="readout__value">{summary.reviewed}</p>
+            <p className="readout__label">次复习</p>
+          </div>
+          <p className="stats-lead__note">
+            覆盖 <span className="num">{summary.activeDays}</span> / {WINDOW_DAYS} 天
             {peak !== null && (
               <>
-                {' · '}最多的一天 <span className="num">{peak.reviewed}</span> 次({shortDate(peak.date)})
+                ，最多的一天 <span className="num">{peak.reviewed}</span> 次（{shortDate(peak.date)}）
               </>
             )}
           </p>
@@ -124,40 +130,46 @@ export function Stats() {
             没有学习
           </li>
         </ul>
-      </Card>
+      </section>
 
       {/* Retention is the number that says whether the schedule is right,
-          and it is not the accuracy below it. Kept on its own card, above
+          and it is not the accuracy below it. Kept in its own section, above
           the chart, because putting two percentages side by side without
           explaining the difference is how the wrong one gets acted on —
           the accuracy figure runs several points lower purely because
           every new word costs two learning-step grades. */}
       {retention.rate !== null && (
-        <Card>
-          <p className="section-title stats-section-title">真实留存率</p>
-          <div className="stats-headline">
-            <p className="num stats-headline__value">{pct(retention.rate)}%</p>
-            <p className="muted stats-headline__note">
-              到期复习的词里记住的比例 · 近 {WINDOW_DAYS} 天 <span className="num">{retention.correct}</span> /{' '}
+        <section className="section">
+          <h2 className="section-head">真实留存率</h2>
+          <div className="stats-lead">
+            <div className="readout">
+              <p className="readout__value">{pct(retention.rate)}%</p>
+              <p className="readout__label">到期复习记住的</p>
+            </div>
+            <p className="stats-lead__note">
+              近 {WINDOW_DAYS} 天 <span className="num">{retention.correct}</span> /{' '}
               <span className="num">{retention.reviewed}</span> 次
             </p>
           </div>
           <p className="faint stats-note">
             只统计已毕业的词,不含新词的学习步骤,也不含练习。间隔重复通常以 90% 为目标 —— 明显高于它,说明可以把间隔放长。
           </p>
-        </Card>
+        </section>
       )}
 
-      <Card>
-        <p className="section-title stats-section-title">答题正确率趋势</p>
+      <section className="section">
+        <h2 className="section-head">答题正确率趋势</h2>
         {accStats.average === null ? (
           <p className="stats-accuracy-empty muted">这段时间还没有复习记录。</p>
         ) : (
           <>
-            <div className="stats-headline">
-              <p className="num stats-headline__value">{pct(accStats.average)}%</p>
-              <p className="muted stats-headline__note">
-                近 {WINDOW_DAYS} 天平均,含新词的学习步骤 · <span className="num">{accStats.ratedDays}</span> 天有记录
+            <div className="stats-lead">
+              <div className="readout">
+                <p className="readout__value">{pct(accStats.average)}%</p>
+                <p className="readout__label">近 {WINDOW_DAYS} 天平均</p>
+              </div>
+              <p className="stats-lead__note">
+                含新词的学习步骤，<span className="num">{accStats.ratedDays}</span> 天有记录
               </p>
             </div>
             <AccuracyTrend points={acc} average={accStats.average} xLeft={xLeft} xRight="今天" />
@@ -183,44 +195,52 @@ export function Stats() {
             </ul>
           </>
         )}
-      </Card>
+      </section>
 
-      <Card className="stats-tiles">
-        <div className="stat">
-          <p className="num stat__value stat__value--accent">
-            {streak}
-            <span className="stats-unit">天</span>
-          </p>
-          <p className="stat__label">当前连续</p>
+      {/* Three readouts under 界栏 rules. The current streak used to be the
+          one cinnabar number on the page; a streak is not a mark. */}
+      <section className="section">
+        <h2 className="section-head">连续学习</h2>
+        <div className="readouts">
+          <div className="readout">
+            <p className="readout__value">
+              {streak}
+              <span className="stats-unit">天</span>
+            </p>
+            <p className="readout__label">当前连续</p>
+          </div>
+          <div className="readout">
+            <p className="readout__value">
+              {best}
+              <span className="stats-unit">天</span>
+            </p>
+            <p className="readout__label">最长连续</p>
+          </div>
+          <div className="readout">
+            <p className="readout__value">
+              {totals.activeDays}
+              <span className="stats-unit">天</span>
+            </p>
+            <p className="readout__label">累计学习</p>
+          </div>
         </div>
-        <div className="stat">
-          <p className="num stat__value">
-            {best}
-            <span className="stats-unit">天</span>
-          </p>
-          <p className="stat__label">最长连续</p>
-        </div>
-        <div className="stat">
-          <p className="num stat__value">
-            {totals.activeDays}
-            <span className="stats-unit">天</span>
-          </p>
-          <p className="stat__label">累计学习</p>
-        </div>
-      </Card>
+      </section>
 
-      {/* The only forward-looking card on the page. Everything else scores
+      {/* The only forward-looking section on the page. Everything else scores
           what already happened; this one answers "what does the coming week
           cost me", which is the question that can still change a decision.
           The counts come from the same due rule as buildQueue, so today's
           row always matches the Today page's "due today". */}
-      <Card>
-        <p className="section-title stats-section-title">未来 {FORECAST_DAYS} 天待复习</p>
-        <div className="stats-headline">
-          <p className="num stats-headline__value">{forecastWeek}</p>
-          <p className="muted stats-headline__note">
-            个词将在 {FORECAST_DAYS} 天内到期 · 更远的还有 <span className="num">{forecast.beyond}</span> 个,
-            已排期共 <span className="num">{forecast.total}</span> 个
+      <section className="section">
+        <h2 className="section-head">未来 {FORECAST_DAYS} 天待复习</h2>
+        <div className="stats-lead">
+          <div className="readout">
+            <p className="readout__value">{forecastWeek}</p>
+            <p className="readout__label">个词将到期</p>
+          </div>
+          <p className="stats-lead__note">
+            更远的还有 <span className="num">{forecast.beyond}</span> 个，已排期共{' '}
+            <span className="num">{forecast.total}</span> 个
           </p>
         </div>
         <ul className="stats-rows">
@@ -238,62 +258,66 @@ export function Stats() {
           ))}
         </ul>
         <p className="faint stats-note">“今天”一栏含已经过期的词。</p>
-      </Card>
+      </section>
 
-      <Card>
-        <p className="section-title stats-section-title">词库掌握分布</p>
+      <section className="section">
+        <h2 className="section-head">词库掌握分布</h2>
+        {/* A state breakdown is status, not a category: it keeps the
+            --state-* colors every state mark in the app uses, and the legend
+            under it prints each state's mark shape and name, so no segment
+            is told apart by color alone. */}
         <div className="stats-mastery-bar">
-          {/* Order matches visual progress: mastered comes first (furthest left), not-yet-learned comes last */}
-          <span
-            className="stats-mastery-bar__seg stats-mastery-bar__seg--review"
-            style={{ width: `${masteryPct(mastery.review)}%` }}
-          />
-          <span
-            className="stats-mastery-bar__seg stats-mastery-bar__seg--learning"
-            style={{ width: `${masteryPct(mastery.learning)}%` }}
-          />
-          <span
-            className="stats-mastery-bar__seg stats-mastery-bar__seg--new"
-            style={{ width: `${masteryPct(mastery.new)}%` }}
-          />
+          {/* Order matches visual progress: mastered comes first (furthest
+              left), not-yet-learned comes last. An empty state draws no
+              segment at all, so it takes no 2px gap of its own. */}
+          {(['review', 'learning', 'new'] as const).map(s => mastery[s] > 0 && (
+            <span
+              key={s}
+              className={`stats-mastery-bar__seg stats-mastery-bar__seg--${s}`}
+              style={{ width: `${masteryPct(mastery[s])}%` }}
+            />
+          ))}
         </div>
-        {/* The percentage rides on the chip label rather than replacing the
-            count: the count is what you compare against the library size,
-            the percentage is what you compare against the bar above. */}
-        <div className="stats-mastery-chips">
-          <Chip
-            label={<>已掌握 <span className="num faint">{pct(masteryPct(mastery.review) / 100)}%</span></>}
-            count={mastery.review}
-            interactive={false}
-          />
-          <Chip
-            label={<>学习中 <span className="num faint">{pct(masteryPct(mastery.learning) / 100)}%</span></>}
-            count={mastery.learning}
-            interactive={false}
-          />
-          <Chip
-            label={<>未学 <span className="num faint">{pct(masteryPct(mastery.new) / 100)}%</span></>}
-            count={mastery.new}
-            interactive={false}
-          />
-        </div>
+        {/* The percentage rides beside the count rather than replacing it:
+            the count is what you compare against the library size, the
+            percentage is what you compare against the bar above. */}
+        <ul className="stats-legend stats-mastery-legend">
+          <li>
+            <StateDot state="review" />
+            已掌握 <span className="num">{mastery.review}</span>
+            <span className="num faint">{pct(masteryPct(mastery.review) / 100)}%</span>
+          </li>
+          <li>
+            <StateDot state="learning" />
+            学习中 <span className="num">{mastery.learning}</span>
+            <span className="num faint">{pct(masteryPct(mastery.learning) / 100)}%</span>
+          </li>
+          <li>
+            <StateDot state="new" />
+            未学 <span className="num">{mastery.new}</span>
+            <span className="num faint">{pct(masteryPct(mastery.new) / 100)}%</span>
+          </li>
+        </ul>
         <p className="faint stats-note">
           词库共 <span className="num">{mastery.total}</span> 个词。
         </p>
-      </Card>
+      </section>
 
       {/* High-frequency word coverage. The "library mastery breakdown"
-          card above counts the total, and totals can lie — the sense of
+          section above counts the total, and totals can lie — the sense of
           achievement from finishing 300 words scoring a 3 is hollow. This
-          card answers "how far along are you on the most commonly used
+          section answers "how far along are you on the most commonly used
           words"; see statsDerive.usageCoverage for the banding logic. */}
-      <Card>
-        <p className="section-title stats-section-title">高频词掌握率</p>
-        <div className="stats-headline">
-          <p className="num stats-headline__value">{pct(coverage.headline.ratio)}%</p>
-          <p className="muted stats-headline__note">
-            遇见概率 7 分以上的 <span className="num">{coverage.headline.total}</span> 个词里,
-            已掌握 <span className="num">{coverage.headline.mastered}</span> 个
+      <section className="section">
+        <h2 className="section-head">高频词掌握率</h2>
+        <div className="stats-lead">
+          <div className="readout">
+            <p className="readout__value">{pct(coverage.headline.ratio)}%</p>
+            <p className="readout__label">高频词已掌握</p>
+          </div>
+          <p className="stats-lead__note">
+            遇见概率 7 分以上的 <span className="num">{coverage.headline.total}</span> 个词里，已掌握{' '}
+            <span className="num">{coverage.headline.mastered}</span> 个
           </p>
         </div>
         <ul className="stats-rows">
@@ -318,7 +342,7 @@ export function Stats() {
             </li>
           ))}
         </ul>
-      </Card>
+      </section>
 
       {/* The 还没记牢的词 card stood here, listing the five worst words with
           a 专攻 → link to /review?mode=lapses. Both halves failed. The link
@@ -339,8 +363,8 @@ export function Stats() {
           until a mode has been played — no data is a different claim from
           no success. */}
       {modes.length > 0 && (
-        <Card>
-          <p className="section-title stats-section-title">各模式正确率</p>
+        <section className="section">
+          <h2 className="section-head">各模式正确率</h2>
           <ul className="stats-modes">
             {modes.map(m => (
               <li key={m.mode} className="stats-mode">
@@ -370,53 +394,58 @@ export function Stats() {
           {modes.some(m => m.mode === 'guess') && (
             <p className="faint stats-note">猜词按「答出来了」计,买了线索也算 —— 零线索的成绩见下方纪录。</p>
           )}
-        </Card>
+        </section>
       )}
 
-      <Card className="stats-tiles">
-        <div className="stat">
-          <p className="num stat__value">{totals.totalReviewed}</p>
-          <p className="stat__label">总复习次数</p>
-        </div>
-        <div className="stat">
-          <p className="num stat__value">{mastery.review}</p>
-          <p className="stat__label">已掌握词数</p>
-        </div>
-        <div className="stat">
-          <p className="num stat__value">{totals.avgNewPerActiveDay.toFixed(1)}</p>
-          <p className="stat__label">日均新词</p>
-        </div>
-        <div className="stat">
-          <p className="num stat__value">{totals.totalQuizzes}</p>
-          <p className="stat__label">测验次数</p>
-        </div>
-        {/* "A personal best of 0 isn't a record, it's a reminder that you
-            haven't played" — which is what this comment always said, while
-            the condition only checked for the field's absence. Both
-            settlements write a record on the first session whatever the
-            score (`bestX === undefined || score > bestX.score`), so a
-            first round scoring nothing produced a proud 0. Guess made it
-            visible: zero unaided solves is an ordinary beginner's round,
-            not a rarity like scoring nothing in a 60-second sprint. */}
-        {progress.bestSprint !== undefined && progress.bestSprint.score > 0 && (
-          <div className="stat">
-            <p className="num stat__value">{progress.bestSprint.score}</p>
-            <p className="stat__label">冲刺纪录</p>
+      {/* The totals as a readout grid, 界栏 rules between the cells: three
+          to a row at 375px, however many records exist. */}
+      <section className="section">
+        <h2 className="section-head">累计</h2>
+        <div className="readouts">
+          <div className="readout">
+            <p className="readout__value">{totals.totalReviewed}</p>
+            <p className="readout__label">总复习次数</p>
           </div>
-        )}
-        {/* The unaided count, on the same terms as the sprint record. Its
-            own spec calls this the only honest scoreboard a single-player
-            app has — and it had been stored and merged since the mode
-            shipped without ever being displayed anywhere. It is also the
-            number the accuracy row above cannot give: solving with every
-            clue bought still counts as solved there. */}
-        {progress.bestGuess !== undefined && progress.bestGuess.score > 0 && (
-          <div className="stat">
-            <p className="num stat__value">{progress.bestGuess.score}</p>
-            <p className="stat__label">猜词零线索</p>
+          <div className="readout">
+            <p className="readout__value">{mastery.review}</p>
+            <p className="readout__label">已掌握词数</p>
           </div>
-        )}
-      </Card>
+          <div className="readout">
+            <p className="readout__value">{totals.avgNewPerActiveDay.toFixed(1)}</p>
+            <p className="readout__label">日均新词</p>
+          </div>
+          <div className="readout">
+            <p className="readout__value">{totals.totalQuizzes}</p>
+            <p className="readout__label">测验次数</p>
+          </div>
+          {/* "A personal best of 0 isn't a record, it's a reminder that you
+              haven't played" — which is what this comment always said, while
+              the condition only checked for the field's absence. Both
+              settlements write a record on the first session whatever the
+              score (`bestX === undefined || score > bestX.score`), so a
+              first round scoring nothing produced a proud 0. Guess made it
+              visible: zero unaided solves is an ordinary beginner's round,
+              not a rarity like scoring nothing in a 60-second sprint. */}
+          {progress.bestSprint !== undefined && progress.bestSprint.score > 0 && (
+            <div className="readout">
+              <p className="readout__value">{progress.bestSprint.score}</p>
+              <p className="readout__label">冲刺纪录</p>
+            </div>
+          )}
+          {/* The unaided count, on the same terms as the sprint record. Its
+              own spec calls this the only honest scoreboard a single-player
+              app has — and it had been stored and merged since the mode
+              shipped without ever being displayed anywhere. It is also the
+              number the accuracy row above cannot give: solving with every
+              clue bought still counts as solved there. */}
+          {progress.bestGuess !== undefined && progress.bestGuess.score > 0 && (
+            <div className="readout">
+              <p className="readout__value">{progress.bestGuess.score}</p>
+              <p className="readout__label">猜词零线索</p>
+            </div>
+          )}
+        </div>
+      </section>
     </Page>
   )
 }
