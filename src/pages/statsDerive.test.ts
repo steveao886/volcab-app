@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest'
 import { emptyProgress, emptyStat } from '../types'
 import type { Progress, Word } from '../types'
 import {
-  accuracySeries, accuracyStats, agoLabel, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
-  masteryBreakdown, modeAccuracy, modeOverview, orderByRecency, recommendMode, retentionStats, shortDate,
-  usageCoverage, windowSummary,
+  accuracySeries, agoLabel, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
+  masteryBreakdown, maturitySplit, modeAccuracy, modeOverview, orderByRecency, recallProduction, recommendMode,
+  retentionStats, shortDate, usageCoverage, windowSummary,
 } from './statsDerive'
 import type { DayPoint } from './statsDerive'
 
@@ -60,35 +60,6 @@ describe('windowSummary', () => {
 
   it('an all-zero window has no peak at all, rather than a 0-review "busiest day"', () => {
     expect(windowSummary([day('2026-07-24', 0), day('2026-07-25', 0)]).peak).toBeNull()
-  })
-})
-
-describe('accuracyStats', () => {
-  const day = (date: string, reviewed: number, correct: number): DayPoint =>
-    ({ date, reviewed, correct, newLearned: 0 })
-
-  it('the average is weighted by review count, not the mean of the daily rates', () => {
-    // Unweighted this would be (100% + 50%) / 2 = 75%; weighted it is 51/100.
-    const s = accuracyStats([day('2026-07-24', 2, 2), day('2026-07-25', 98, 49)])
-    expect(s.average).toBeCloseTo(0.51)
-  })
-
-  it('best / worst / latest ignore days with no review', () => {
-    const s = accuracyStats([day('2026-07-23', 10, 9), day('2026-07-24', 0, 0), day('2026-07-25', 10, 5)])
-    expect(s.best?.date).toBe('2026-07-23')
-    expect(s.worst?.date).toBe('2026-07-25')
-    expect(s.latest?.date).toBe('2026-07-25')
-    expect(s.ratedDays).toBe(2)
-  })
-
-  it('ties go to the later day, so the number quoted is the recent one', () => {
-    const s = accuracyStats([day('2026-07-24', 4, 4), day('2026-07-25', 8, 8)])
-    expect(s.best?.date).toBe('2026-07-25')
-  })
-
-  it('a window with no reviews gives null, not NaN or 0%', () => {
-    const s = accuracyStats([day('2026-07-25', 0, 0)])
-    expect(s).toMatchObject({ average: null, best: null, worst: null, latest: null, ratedDays: 0 })
   })
 })
 
@@ -165,6 +136,52 @@ describe('masteryBreakdown', () => {
   })
   it('an empty library doesn\'t cause division by zero', () => {
     expect(masteryBreakdown([], emptyProgress())).toEqual({ new: 0, learning: 0, review: 0, total: 0 })
+  })
+})
+
+describe('maturitySplit', () => {
+  const at = (state: 'learning' | 'review', intervalDays: number) => ({ ...entry(state), intervalDays })
+
+  it('splits studied words at the 21-day line: 21 is mature, 20 is not', () => {
+    const words = [w('a'), w('b'), w('c')]
+    const p = emptyProgress()
+    p.words['a'] = at('review', 21)
+    p.words['b'] = at('review', 20)
+    p.words['c'] = at('review', 90)
+    expect(maturitySplit(words, p)).toEqual({ mature: 2, young: 1, studied: 3 })
+  })
+  it('a learning-phase word is studied and young whatever its interval; an unstudied one counts nowhere', () => {
+    const words = [w('a'), w('b')]
+    const p = emptyProgress()
+    p.words['a'] = at('learning', 30)
+    expect(maturitySplit(words, p)).toEqual({ mature: 0, young: 1, studied: 1 })
+  })
+  it('counts library words only — a progress entry for a deleted word is not a word you know', () => {
+    const p = emptyProgress()
+    p.words['gone'] = at('review', 40)
+    expect(maturitySplit([w('a')], p)).toEqual({ mature: 0, young: 0, studied: 0 })
+  })
+})
+
+describe('recallProduction', () => {
+  const rec = (reps: number, streak: number) => ({
+    ...entry('review'), recall: { reps, correct: streak, streak, lastAt: '2026-09-01T00:00:00Z' },
+  })
+
+  it('counts words 回想 has asked, those on a streak of 3 or more, and those whose last answer missed', () => {
+    const words = [w('a'), w('b'), w('c'), w('d'), w('e')]
+    const p = emptyProgress()
+    p.words['a'] = rec(5, 3)
+    p.words['b'] = rec(4, 2)
+    p.words['c'] = rec(2, 0)
+    p.words['d'] = rec(0, 0) // a zeroed record was never asked
+    p.words['e'] = entry('review') // no recall record at all
+    expect(recallProduction(words, p)).toEqual({ asked: 3, steady: 1, lastMissed: 1 })
+  })
+  it('ignores records for words no longer in the library', () => {
+    const p = emptyProgress()
+    p.words['gone'] = rec(3, 3)
+    expect(recallProduction([w('a')], p)).toEqual({ asked: 0, steady: 0, lastMissed: 0 })
   })
 })
 

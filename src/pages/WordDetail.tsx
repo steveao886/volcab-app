@@ -12,6 +12,7 @@ import { StateDot } from '../components/StateDot'
 import { SyncStatus } from '../components/SyncStatus'
 import wordNotesFile from '../data/wordNotes.json'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
+import { RECALL_STEADY_STREAK } from '../lib/senseGroup'
 import { senseVoices } from '../lib/sensePronounce'
 import { wordNote } from '../lib/wordNotes'
 import type { WordNotesFile } from '../lib/wordNotes'
@@ -319,7 +320,7 @@ export function WordDetail() {
               <div className="ledger__row">
                 <dt className="ledger__label">
                   回想说出
-                  {entry.recall.streak >= 3 && (
+                  {entry.recall.streak >= RECALL_STEADY_STREAK && (
                     <span className="worddetail-stats__aside">
                       连对 <span className="num">{entry.recall.streak}</span> 次
                     </span>

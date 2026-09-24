@@ -1,5 +1,7 @@
 import { QUIZ_METRIC_KEYS, QUIZ_METRIC_LABELS } from '../lib/quiz'
 import type { QuizMetricKey } from '../lib/quiz'
+import { MATURE_INTERVAL_DAYS } from '../lib/queue'
+import { RECALL_STEADY_STREAK } from '../lib/senseGroup'
 import { addDays } from '../lib/srs'
 import type { Progress, Word } from '../types'
 
@@ -49,7 +51,13 @@ export function windowSummary(days: DayPoint[]): WindowSummary {
   return { reviewed, newLearned, activeDays, peak }
 }
 
-/** Accuracy. null on a day with no review — 0% would drop the line to the bottom, falsely claiming "everything was wrong that day". */
+/**
+ * Daily accuracy. null on a day with no review — 0% would falsely claim
+ * "everything was wrong that day". Read by 今日's footer (the 7-day rate).
+ * 数据's 30-day trend chart and its best/worst/latest summary
+ * (accuracyStats) were removed on 2026-09-23 at the user's request; the
+ * retention figure is the rate that says whether the schedule is right.
+ */
 export function accuracySeries(progress: Progress, today: string, days: number): AccuracyPoint[] {
   const out: AccuracyPoint[] = []
   for (let i = days - 1; i >= 0; i--) {
@@ -58,48 +66,6 @@ export function accuracySeries(progress: Progress, today: string, days: number):
     out.push({ date, accuracy: s && s.reviewed > 0 ? s.correct / s.reviewed : null })
   }
   return out
-}
-
-export interface DatedAccuracy { date: string; accuracy: number }
-export interface AccuracyStats {
-  /**
-   * Weighted: total correct / total reviewed across the window, **not** the
-   * mean of the daily rates. A day with one review would otherwise swing the
-   * headline as hard as a day with eighty, and the number is printed as
-   * "average accuracy" — that has to mean the accuracy of the reviews, not
-   * the accuracy of the days.
-   */
-  average: number | null
-  best: DatedAccuracy | null
-  worst: DatedAccuracy | null
-  /** The most recent day that had any review; what "how am I doing now" actually asks. */
-  latest: DatedAccuracy | null
-  ratedDays: number
-}
-
-/**
- * Summary numbers for the accuracy chart. Derived from DayPoint rather than
- * AccuracyPoint because the weighted average needs the raw correct/reviewed
- * counts, and reading both series would let them disagree.
- */
-export function accuracyStats(days: DayPoint[]): AccuracyStats {
-  let correct = 0, reviewed = 0, ratedDays = 0
-  let best: DatedAccuracy | null = null
-  let worst: DatedAccuracy | null = null
-  let latest: DatedAccuracy | null = null
-  for (const d of days) {
-    if (d.reviewed === 0) continue
-    correct += d.correct
-    reviewed += d.reviewed
-    ratedDays++
-    const point = { date: d.date, accuracy: d.correct / d.reviewed }
-    // >= / <= so ties resolve to the later day: days arrive oldest-first,
-    // and of two equally good days the recent one is the one worth naming.
-    if (best === null || point.accuracy >= best.accuracy) best = point
-    if (worst === null || point.accuracy <= worst.accuracy) worst = point
-    latest = point
-  }
-  return { average: reviewed === 0 ? null : correct / reviewed, best, worst, latest, ratedDays }
 }
 
 export interface Retention {
@@ -210,6 +176,54 @@ export function masteryBreakdown(words: Word[], progress: Progress): Mastery {
     else m.new++
   }
   return m
+}
+
+export interface Maturity { mature: number; young: number; studied: number }
+
+/**
+ * Studied words split at MATURE_INTERVAL_DAYS, the app's own "known" line
+ * (queue.ts; Anki's young/mature boundary). 已掌握 above only says a word
+ * graduated from its learning steps, which a word does after one day: on
+ * the live library on 2026-09-23 all 811 studied words were 已掌握, and 525
+ * of them had reached 21 days. This is the number that says how many are
+ * held long-term. Library words only, like masteryBreakdown — a progress
+ * entry for a deleted word is not a word you know.
+ */
+export function maturitySplit(words: Word[], progress: Progress): Maturity {
+  const m: Maturity = { mature: 0, young: 0, studied: 0 }
+  for (const w of words) {
+    const e = progress.words[w.id]
+    if (e === undefined || e.state === 'new') continue
+    m.studied++
+    if (e.state === 'review' && e.intervalDays >= MATURE_INTERVAL_DAYS) m.mature++
+    else m.young++
+  }
+  return m
+}
+
+export interface RecallProduction { asked: number; steady: number; lastMissed: number }
+
+/**
+ * The production axis 回想 records per word (ProgressEntry.recall), summed.
+ * Recognition is what the schedule measures and production is what 回想
+ * does, and the two come apart: a word can sit 30 days out and still not
+ * come to mind from Chinese. The record was only ever shown one word at a
+ * time on 词条详情.
+ *
+ * The two thresholds are 回想's own (senseGroup.ts's recallWeight): a
+ * streak of 3 has "earned a rest", a streak of 0 is a live miss. Measured
+ * on the live library on 2026-09-23: 456 asked, 78 steady, 45 last missed.
+ */
+export function recallProduction(words: Word[], progress: Progress): RecallProduction {
+  const r: RecallProduction = { asked: 0, steady: 0, lastMissed: 0 }
+  for (const w of words) {
+    const rec = progress.words[w.id]?.recall
+    if (rec === undefined || rec.reps === 0) continue
+    r.asked++
+    if (rec.streak >= RECALL_STEADY_STREAK) r.steady++
+    else if (rec.streak === 0) r.lastMissed++
+  }
+  return r
 }
 
 export interface CoverageBand { label: string; range: string; mastered: number; total: number }

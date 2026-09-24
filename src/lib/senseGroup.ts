@@ -189,6 +189,13 @@ const isLearned = (id: string, progress: Progress): boolean => {
  * recognise and hard to produce sorts above one that is only hard to
  * produce.
  */
+/**
+ * A 回想 streak this long means the word has earned a rest in the draw
+ * below. 词条详情 prints 连对 N from the same point and 数据 counts words
+ * past it as steadily produced, so the three agree on what "steady" is.
+ */
+export const RECALL_STEADY_STREAK = 3
+
 const recallWeight = (r: RecallStat | undefined): number => {
   if (r === undefined || r.reps === 0) return 1
   // A live miss streak is the sharpest signal available and outranks a
@@ -199,7 +206,7 @@ const recallWeight = (r: RecallStat | undefined): number => {
   if (rate < 0.8) return 1.5
   // Produced correctly and on a streak: it has earned a rest, but not
   // exclusion — the floor stays above zero so it can still be drawn.
-  return r.streak >= 3 ? 0.5 : 1
+  return r.streak >= RECALL_STEADY_STREAK ? 0.5 : 1
 }
 
 /**
