@@ -177,7 +177,13 @@ Worth doing, with a division of labour that has held across every round: **the s
 
 ## Design language
 
-Mobile-first; **375px is the design width** and layouts must not overflow it. The palette is ink and paper (`src/styles/tokens.css`); vermilion is reserved for annotation and destructive actions, never for decoration.
+Mobile-first; **375px is the design width** and layouts must not overflow it. The look is **朱批** (since 2026-09-23; `src/styles/tokens.css`, spec `docs/superpowers/specs/2026-09-23-zhupi-redesign-design.md`): the marks a Chinese reader makes in a book, on 月白 paper in 墨 ink. **Cinnabar (`--accent`) is for marks only** — 勾 / 叉 / 圈, the 波浪线 under a headword in its example, 着重号 on the active tab, the 旁批 usage note, and destructive actions — never a heading color or a decorative fill. Correct is 石青 blue, not green.
+
+The ink-and-paper look it replaced had drifted into the generic default: cream ground, serif-plus-vermilion, identical rounded shadowed cards, tracked all-caps English eyebrows, monospace digits, ` · `-joined meta. **Don't reintroduce those** — they read as template on sight. 38 UI strings still carry ` · `; round 2 of the redesign owns them.
+
+**Both serif faces are bundled** (fontsource, `src/main.tsx`) because the user reads on Windows and Android, which ship no usable Song face. They load as `unicode-range` slices and are runtime-cached, never precached: a cold 今日 costs 1,358 KB of the CJK face's 6 MB. Latin glyphs come from Source Serif 4, CJK falls through to Noto Serif SC; `:where(p, li)[lang='en']` gets `--lh-latin`, because Song's 1.75 leading reads double-spaced on English.
+
+**A page stylesheet ties with `components.css` on specificity and wins by load order.** `.quiz-q__prompt` quietly overrode `.word`'s size for the word2meaning headline until 2026-09-23. When a page class and a component class share an element, restate the property on the compound selector.
 
 Correctness must never be conveyed by color alone — quiz options carry a text tag as well as a color, for colorblind users and screenshots.
 

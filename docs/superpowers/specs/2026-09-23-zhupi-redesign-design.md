@@ -117,7 +117,9 @@ becomes worth its build-time toolchain.
     slip with nothing beside it would spend 130px on 学习数据 for nothing.
   - `back`: a plain title beside the back button, sticky as today.
 - **Tab bar: text only, the active item marked with 着重号**
-  (`text-emphasis: filled circle` in cinnabar, under the characters). Five
+  (`text-emphasis: filled dot` in cinnabar, under the characters; the
+  `filled circle` glyph was tried first and read as two heavy blots under a
+  two-character label). Five
   two-character labels read faster than five icons, and the dots are the one
   mark on the bar. The desktop rail keeps the seal and wordmark and marks the
   active row the same way.
@@ -181,6 +183,20 @@ becomes worth its build-time toolchain.
 - The network panel on a cold load of 今日: which slices and how many bytes,
   written back into this spec against the 2 MB failure condition.
 
-## Measured after build
+## Measured after build (2026-09-23)
 
-(Filled in when the build lands.)
+- **Cold load of 今日 at 375px: 17 font files, 1,358 KB** — 15 of Noto
+  Serif SC's 101 slices plus Source Serif 4's Latin roman and italic. Under
+  the 2 MB failure condition, so the fixed-subset alternative stays unbuilt.
+  Every later screen pays only for slices it adds; common punctuation and
+  frequent characters sit in the high-numbered slices 今日 already fetched.
+- **Service worker: 12 precache entries, 1.9 MB, no fonts.** All 112 woff2
+  files in `dist/assets` go through the `volcab-fonts` runtime route.
+- **A same-specificity rule had been shrinking word2meaning's headword**:
+  `.quiz-q__prompt` (Quiz.css) and `.word` (components.css) tie, and the
+  page stylesheet loads later, so the prompt's size won and the "large-type
+  headline" the comment describes rendered at prompt size. Restated on
+  `.quiz-q__prompt.word`.
+- Tests 1,284 green, lint clean, build clean. Screenshots checked at 375px
+  light and dark (今日, 复习, an answered choice question) and 1280px light
+  (今日 with the rail).
