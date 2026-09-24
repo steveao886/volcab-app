@@ -6,55 +6,10 @@
  */
 
 const PATHS = {
-  /* Today: sunrise over the horizon */
-  today: (
-    <>
-      <path d="M3.5 18h17" />
-      <path d="M7 18a5 5 0 0 1 10 0" />
-      <path d="M12 3v2.5" />
-      <path d="m4.9 6.9 1.8 1.8" />
-      <path d="m19.1 6.9-1.8 1.8" />
-      <path d="M20.5 21h-17" />
-    </>
-  ),
-  /* Library: a standing book */
-  library: (
-    <>
-      <path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v18H6.5A1.5 1.5 0 0 1 5 19.5z" />
-      <path d="M5 17h14" />
-      <path d="M9 3v14" />
-    </>
-  ),
-  /* Stats: three bars of different heights on a baseline */
-  stats: (
-    <>
-      <path d="M3.5 20.5h17" />
-      <path d="M7 20.5V13" />
-      <path d="M12 20.5V6.5" />
-      <path d="M17 20.5v-4.5" />
-    </>
-  ),
-  /* Quiz: two rows of multiple choice, first row checked */
-  quiz: (
-    <>
-      <rect x="3" y="4.5" width="18" height="6.5" rx="1.5" />
-      <rect x="3" y="13" width="18" height="6.5" rx="1.5" />
-      <path d="m6.5 7.8 1.3 1.3 2.4-2.6" />
-    </>
-  ),
-  /* Settings: sliders */
-  settings: (
-    <>
-      <path d="M3.5 7.5h9" />
-      <path d="M17.5 7.5h3" />
-      <circle cx="15" cy="7.5" r="2.5" />
-      <path d="M3.5 16.5h4" />
-      <path d="M12.5 16.5h8" />
-      <circle cx="10" cy="16.5" r="2.5" />
-    </>
-  ),
   /* Back */
   back: <path d="m14.5 4.5-7.5 7.5 7.5 7.5" />,
+  /* Forward: the mirror of back, at the end of a row that opens somewhere */
+  chevron: <path d="m9.5 4.5 7.5 7.5-7.5 7.5" />,
   /* Speak: a speaker + two sound waves (review card and word detail) */
   speak: (
     <>

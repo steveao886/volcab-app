@@ -277,7 +277,7 @@ export function Practice() {
   if (batchSize === null && sizeOptions.length > 0) {
     const preferred = preferredOption(sizeOptions, remembered)
     return (
-      <Page eyebrow="Practice" title={struggling ? '顽固词加练' : '自由练习'} back={backTo}>
+      <Page title={struggling ? '顽固词加练' : '自由练习'} back={backTo}>
         <div className="practice-size">
           <p className="practice-size__pool">
             {struggling ? '顽固词' : '可练的词'}还有 <strong>{pool.length}</strong> 个,这一批练多少?
@@ -304,7 +304,7 @@ export function Practice() {
   if (finished) {
     const neverStarted = deck.length === 0 && seen.size === 0
     return (
-      <Page eyebrow="Practice" title={struggling ? '顽固词加练' : '自由练习'} back={backTo}>
+      <Page title={struggling ? '顽固词加练' : '自由练习'} back={backTo}>
         <div className="review-done">
           <p className="review-done__label">{neverStarted ? '没有可练的词' : '这一批练完了'}</p>
           <p className="muted">
@@ -369,7 +369,7 @@ export function Practice() {
   }
 
   return (
-    <Page eyebrow="Practice" title={struggling ? '顽固词加练' : '自由练习'} back={backTo}>
+    <Page title={struggling ? '顽固词加练' : '自由练习'} back={backTo}>
       <div className="review-progress">
         <div
           className="progress"

@@ -1,12 +1,11 @@
 import { NavLink } from 'react-router-dom'
-import { Icon } from './Icon'
 
 const TABS = [
-  { to: '/', label: '今日', icon: 'today', end: true },
-  { to: '/library', label: '词库', icon: 'library', end: false },
-  { to: '/quiz', label: '测试', icon: 'quiz', end: false },
-  { to: '/stats', label: '数据', icon: 'stats', end: false },
-  { to: '/settings', label: '设置', icon: 'settings', end: false },
+  { to: '/', label: '今日', end: true },
+  { to: '/library', label: '词库', end: false },
+  { to: '/quiz', label: '测试', end: false },
+  { to: '/stats', label: '数据', end: false },
+  { to: '/settings', label: '设置', end: false },
 ] as const
 
 /**
@@ -24,6 +23,9 @@ const TABS = [
  * switcher beats one of them living somewhere else, and the bar is a grid
  * of equal columns where a seventh item would push the labels below the
  * smallest size the type scale goes down to.
+ *
+ * Labels only since the 朱批 redesign: the active tab carries 着重号 (see
+ * layout.css), and two-character labels need no icon to be found.
  */
 export function TabBar() {
   return (
@@ -43,8 +45,7 @@ export function TabBar() {
           end={tab.end}
           className="tabbar__item"
         >
-          <Icon name={tab.icon} />
-          <span>{tab.label}</span>
+          {tab.label}
         </NavLink>
       ))}
     </nav>

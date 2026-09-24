@@ -159,21 +159,21 @@ export function nextAction(plan: PlanItem[]): HeroAction {
   if (dueN + freshN > 0) {
     return {
       kind: 'review', count: dueN + freshN, unit: '张卡',
-      meta: `到期 ${dueN} · 新词 ${freshN}`, to: '/review', label: '开始复习',
+      meta: `到期 ${dueN}，新词 ${freshN}`, to: '/review', label: '开始复习',
     }
   }
   const c = get('consolidate')
   if (c?.state === 'todo') {
     return {
       kind: 'consolidate', count: c.count ?? 0, unit: '个词',
-      meta: '今天学的词,趁遗忘前再取一次', to: '/review?mode=consolidate', label: '开始巩固',
+      meta: '今天学的词，趁遗忘前再取一次', to: '/review?mode=consolidate', label: '开始巩固',
     }
   }
   const l = get('lapses')
   if (l?.state === 'todo') {
     return {
       kind: 'lapses', headline: '顽固词',
-      meta: '从最不牢的开始,练到不想练为止', to: STRUGGLING_WALK, label: '专攻顽固词',
+      meta: '从最不牢的开始，练到不想练为止', to: STRUGGLING_WALK, label: '专攻顽固词',
     }
   }
   return { kind: 'complete' }

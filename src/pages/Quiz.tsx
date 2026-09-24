@@ -373,7 +373,7 @@ function QuizHub() {
   const ordered = useMemo(() => orderByRecency(MODES, rows), [rows])
 
   return (
-    <Page eyebrow="Quiz" title="测试" back="/">
+    <Page title="测试" back="/">
       <div className="quiz-hub">
         {/* The wide slot belongs to the position, not to a named mode: the
             most recent card leads and spans both columns. That also keeps
@@ -451,7 +451,7 @@ function QuizSessionPage({ mode }: { mode: QuizMode }) {
   const restart = useCallback(() => setSession(s => s + 1), [])
 
   return (
-    <Page eyebrow="Quiz" title={MODE_LABEL[mode]} back="/quiz">
+    <Page title={MODE_LABEL[mode]} back="/quiz">
       {/* mode is folded into the key: switching modes must swap in a whole
           new round of questions, rather than stuffing new questions into
           the old session's question numbering. This is the same technique

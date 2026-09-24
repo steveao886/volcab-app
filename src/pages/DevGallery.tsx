@@ -101,7 +101,7 @@ export function DevGallery() {
   const noop = () => {}
 
   return (
-    <Page eyebrow="Components" title="组件总览">
+    <Page title="组件总览">
       <Group title="button / variant">
         <Button variant="primary">主操作</Button>
         <Button variant="secondary">次要</Button>

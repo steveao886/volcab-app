@@ -16,7 +16,12 @@
   padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
 }
 
-/* --- Tab navigation -------------------------------------------------------- */
+/* --- Tab navigation --------------------------------------------------------
+   Text only. Five two-character labels read faster than five icons, and it
+   leaves the active tab's 着重号 as the one mark on the bar: the row of
+   cinnabar dots under a character that Chinese typesetting uses for
+   emphasis. The mark is a shape as well as a color, so the active tab is
+   findable without color vision; the weight change backs it up. */
 
 .tabbar {
   position: fixed;
@@ -26,8 +31,8 @@
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
-  background: var(--surface);
-  border-top: 1px solid var(--rule);
+  background: var(--bg);
+  border-top: 1px solid var(--rule-strong);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -36,42 +41,34 @@
 }
 
 .tabbar__item {
-  position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--sp-1);
   height: var(--tabbar-h);
   color: var(--text-faint);
-  font-size: var(--fs-xs);
-  font-weight: 500;
+  font-size: 0.9375rem;
+  font-weight: 400;
   line-height: 1;
+  letter-spacing: 0.08em;
   text-decoration: none;
   transition: color var(--dur-1) var(--ease);
 }
 
 .tabbar__item:hover {
-  color: var(--text-muted);
+  color: var(--text);
 }
 
 .tabbar__item[aria-current='page'] {
   color: var(--text);
+  font-weight: 900;
+  -webkit-text-emphasis: filled dot var(--accent);
+  text-emphasis: filled dot var(--accent);
+  -webkit-text-emphasis-position: under right;
+  text-emphasis-position: under right;
 }
 
-/* Vermilion tick: the same motif as a book-edge tab, echoing the tick at the bottom of the page header */
-.tabbar__item[aria-current='page']::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: var(--tick-w);
-  height: 2px;
-  background: var(--accent);
-  transform: translateX(-50%);
-}
-
-/* --- Page skeleton ----------------------------------------------------------- */
+/* --- Page skeleton -----------------------------------------------------------
+   Three header variants, see components/Page.tsx. */
 
 .page {
   max-width: var(--page-max);
@@ -79,25 +76,21 @@
 }
 
 .page__head {
-  position: sticky;
-  top: 0;
-  z-index: var(--z-sticky);
   display: flex;
   align-items: center;
   gap: var(--sp-3);
-  padding: var(--sp-4) var(--sp-4) var(--sp-3);
-  background: var(--bg);
-  border-bottom: 1px solid var(--rule);
+  padding: var(--sp-5) var(--sp-4) 0;
 }
 
-.page__head::after {
-  content: '';
-  position: absolute;
-  left: var(--sp-4);
-  bottom: -1px;
-  width: var(--tick-w);
-  height: 2px;
-  background: var(--accent);
+/* Inside a page: stays reachable while you scroll, because the back button
+   lives here. The hairline is the only separation — no tick, no shadow. */
+.page__head--sub {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  padding-block: var(--sp-2);
+  background: var(--bg);
+  border-bottom: 1px solid var(--rule);
 }
 
 /* Full 44px hit area; a negative margin pulls the 20px icon's optical left edge back onto the 16px content margin */
@@ -119,26 +112,67 @@
   color: var(--text);
 }
 
-.page__heading {
+.page__title {
   flex: 1;
   min-width: 0;
-}
-
-.page__eyebrow {
-  font-size: var(--fs-eyebrow);
+  font-size: var(--fs-md);
   font-weight: 700;
   line-height: var(--lh-tight);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-eyebrow);
-  color: var(--accent);
+  letter-spacing: 0.04em;
+  color: var(--text);
 }
 
-.page__title {
-  font-size: var(--fs-xl);
-  font-weight: 600;
-  line-height: var(--lh-tight);
-  letter-spacing: var(--tracking-tight);
-  color: var(--text);
+/* The 题签: a title slip in a double rule, pasted onto the page. The outer
+   rule is an outline so it takes no layout space; the margin makes room for
+   it. flex: none undoes .page__title's flex: 1 — a slip is as wide as its
+   title, not the header. */
+.page__head--slip .page__title,
+.page__head--slip-v .page__title {
+  flex: none;
+  margin: 4px;
+  padding: 5px 10px 5px 14px;
+  background: var(--surface);
+  border: 1px solid var(--text);
+  outline: 1px solid var(--text);
+  outline-offset: 3px;
+  font-size: 1.375rem;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: 0.25em;
+}
+
+.page__head--slip .page__actions {
+  margin-inline-start: auto;
+}
+
+/* Vertical slip + lead. A grid rather than flex so the actions sit at the top
+   of the lead column and the slip spans both rows. */
+.page__head--slip-v {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'title actions'
+    'title lead';
+  align-items: start;
+  column-gap: var(--sp-4);
+}
+
+.page__head--slip-v .page__title {
+  grid-area: title;
+  writing-mode: vertical-rl;
+  padding: 12px 6px 8px;
+  letter-spacing: 0.3em;
+}
+
+.page__head--slip-v .page__actions {
+  grid-area: actions;
+  justify-self: end;
+}
+
+.page__lead {
+  grid-area: lead;
+  align-self: end;
+  min-width: 0;
 }
 
 .page__actions {
@@ -184,33 +218,15 @@
 }
 
 /* --- Route transitions ------------------------------------------------------
-   Deliberately **not** doing a full-page entrance animation here — both
-   options are traps that have already been stepped in:
+   Deliberately none. Both options are traps that have already been stepped in:
    - a transform offset turns the wrapper into the containing block for any
      position:fixed descendant, pinning the page's bottom action bar and
      scrim to the content box;
    - a fade-in (even just animating opacity) has its animation clock frozen
      while the tab is not visible, so the whole app can get stuck at the
-     starting frame's opacity:0. Any "entrance" animation frozen at t=0 hides
-     the content.
-
-   Instead, only the vermilion tick in the page header gets drawn in: it's
-   purely decorative, so at worst a frozen animation is missing a
-   28×2px mark — the content stays readable either way. The header node
-   itself gets rebuilt on every route change, so the animation replays naturally. */
-@keyframes tick-draw {
-  from {
-    width: 0;
-  }
-
-  to {
-    width: var(--tick-w);
-  }
-}
-
-.page__head::after {
-  animation: tick-draw var(--dur-3) var(--ease);
-}
+     starting frame's opacity:0.
+   The one animation that used to be safe here drew the vermilion tick under
+   the page header; the tick went with the 朱批 redesign. */
 
 /* Overlay mount point: createPortal targets #overlay-root,
    so dialogs/bottom bars are unaffected by route animation and their
@@ -260,33 +276,19 @@
   }
 
   .tabbar__item {
-    flex-direction: row;
     justify-content: flex-start;
-    gap: var(--sp-3);
-    height: 42px;
+    height: 44px;
     padding-inline: var(--sp-3);
     border-radius: var(--r-sm);
     font-size: var(--fs-base);
   }
 
-  .tabbar__item[aria-current='page'] {
-    background: var(--surface-sunken);
-  }
-
-  .tabbar__item[aria-current='page']::before {
-    top: 50%;
-    left: 0;
-    width: 2px;
-    height: 20px;
-    transform: translateY(-50%);
-  }
-
   .page__head {
-    padding-block: var(--sp-6) var(--sp-4);
+    padding-top: var(--sp-8);
   }
 
-  .page__title {
-    font-size: var(--fs-2xl);
+  .page__head--sub {
+    padding-block: var(--sp-3);
   }
 
   .page__body {
