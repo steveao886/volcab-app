@@ -1,45 +1,37 @@
 /* Stats (/stats, learning data) page-specific styles.
-   Cards: 30-day review volume, accuracy trend, streak tiles, upcoming
-   review load, library mastery, high-frequency coverage, stubborn words,
-   cumulative totals. The empty state uses the shared .empty-state
-   (components.css).
+   Sections: 30-day review volume, retention, accuracy trend, streaks,
+   upcoming review load, library mastery, high-frequency coverage, per-mode
+   accuracy, cumulative totals. Each is a .section-head and its content on
+   the paper (components.css); the empty state uses the shared .empty-state.
 
    The organising rule for this page: **no shape without its number**. Every
    chart carries a labelled axis, a headline figure, or a per-row count, so
    a reader can check a trend against a value instead of estimating it off a
-   silhouette. */
+   silhouette.
 
-/* Only spacing is left here; font size/weight/color come from
-   components.css's .section-title, the same convention as the WordDetail
-   page's .worddetail-section-title. */
-.stats-section-title {
-  margin-bottom: var(--sp-3);
-}
+   Colors: series take --chart-1 / --chart-2 (tokens.css, validated with the
+   dataviz validator on all four grounds); the mastery breakdown is status
+   and keeps --state-*; text never takes a series color. Cinnabar appears
+   once, as the "today" tick on a time axis — a mark, not data. It drew
+   every bar on this page until round 2. */
 
-/* --- Card headline: one big figure with a sentence of context -------------
-   Reused by four cards, so the eye finds the same "what does this card say
-   in one number" spot in each. The value stays ink, not vermilion:
-   components.css reserves the tinted .stat__value--accent for at most one
-   eye-catcher per screen, and on this page that one is the streak. */
+/* --- Section lead: one readout with a sentence of context ------------------
+   Reused by five sections, so the eye finds the same "what does this say in
+   one number" spot in each. The readout is ink, never accent. */
 
-.stats-headline {
+.stats-lead {
   display: flex;
-  align-items: baseline;
-  gap: var(--sp-3);
+  align-items: flex-end;
+  gap: var(--sp-2) var(--sp-4);
   flex-wrap: wrap;
-  margin-bottom: var(--sp-4);
 }
 
-.stats-headline__value {
-  font-size: var(--fs-xl);
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1;
-}
-
-.stats-headline__note {
-  font-size: var(--fs-sm);
+.stats-lead__note {
   flex: 1 1 12ch;
+  padding-bottom: 2px;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  color: var(--text-muted);
 }
 
 /* --- Chart frame: y-axis gutter + plot + x-axis ends ----------------------
@@ -56,7 +48,8 @@
    below its own gridline.
 
    --chart-inset comes in from ChartFrame and is the gridline inset the
-   accuracy chart needs; it is 0 for the bar chart. */
+   accuracy chart needs; it is 0 for the bar chart. --chart-h is also read by
+   ReviewBars to size its 2px segment gap in viewBox units — change both. */
 
 .stats-chart {
   --chart-h: 64px;
@@ -67,7 +60,7 @@
     'y plot'
     '. x';
   column-gap: var(--sp-2);
-  row-gap: var(--sp-1);
+  row-gap: var(--sp-2);
 }
 
 .stats-chart__y {
@@ -86,8 +79,20 @@
 }
 
 .stats-chart__plot {
+  position: relative;
   grid-area: plot;
   min-width: 0;
+}
+
+/* Today on the time axis: a short cinnabar tick hanging under the baseline
+   at today's position. The one mark a chart may carry. */
+.stats-chart__today {
+  position: absolute;
+  bottom: -6px;
+  width: 2px;
+  height: 5px;
+  margin-left: -1px;
+  background: var(--accent); /* mark: today on the time axis */
 }
 
 .stats-chart__x {
@@ -98,8 +103,8 @@
   color: var(--text-faint);
 }
 
-/* Hairline rules behind both charts. Non-scaling stroke (set on the element)
-   keeps them 1px however the viewBox is stretched. */
+/* Hairline rules behind both charts, recessive. Non-scaling stroke (set on
+   the element) keeps them 1px however the viewBox is stretched. */
 .stats-grid line {
   stroke: var(--rule);
   stroke-width: 1;
@@ -113,19 +118,20 @@
   height: var(--chart-h);
 }
 
+/* Repeat reviews: the first series. */
 .stats-bars__bar {
-  fill: var(--accent);
+  fill: var(--chart-1);
 }
 
-/* New words sit at the base of the bar in the "learning" state color — the
-   same semantic token the mastery bar uses for a word in that state, so the
-   two cards agree on what amber means. */
+/* New words at the base of the bar: the second series. It used to borrow
+   --state-learning, which made a data series and a word state share one
+   color; state colors are status and stay out of charts that aren't. */
 .stats-bars__bar--new {
-  fill: var(--state-learning);
+  fill: var(--chart-2);
 }
 
-/* A day with no study is a muted baseline tick, never a short accent bar:
-   the difference between "nothing" and "a little" is the whole point of
+/* A day with no study is a muted baseline tick, never a short bar: the
+   difference between "nothing" and "a little" is the whole point of
    looking at this chart. */
 .stats-bars__zero {
   fill: var(--rule-strong);
@@ -141,14 +147,14 @@
 
 .stats-accuracy__line {
   fill: none;
-  stroke: var(--accent);
+  stroke: var(--chart-1);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .stats-accuracy__dot {
-  fill: var(--accent);
+  fill: var(--chart-1);
 }
 
 /* The window average, as a reference to read the wobble against. Dashed and
@@ -171,7 +177,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-2) var(--sp-4);
-  margin-top: var(--sp-3);
   font-size: var(--fs-xs);
   color: var(--text-muted);
 }
@@ -190,11 +195,11 @@
 }
 
 .stats-legend__swatch--review {
-  background: var(--accent);
+  background: var(--chart-1);
 }
 
 .stats-legend__swatch--new {
-  background: var(--state-learning);
+  background: var(--chart-2);
 }
 
 /* Matches the baseline tick's shape as well as its color, otherwise the
@@ -205,20 +210,7 @@
 }
 
 .stats-note {
-  margin-top: var(--sp-3);
   font-size: var(--fs-xs);
-}
-
-/* --- Tile rows: streak card and cumulative totals -------------------------
-   auto-fit rather than a fixed three columns: the totals card carries four
-   tiles, or five once a sprint record exists, and a fixed grid would either
-   overflow 375px or leave a hole. */
-
-.stats-tiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
-  gap: var(--sp-4) var(--sp-3);
-  text-align: center;
 }
 
 /* The unit rides small and muted next to the figure, so "5 天" still scans
@@ -233,7 +225,8 @@
 /* --- Labelled rows: due forecast and high-frequency coverage --------------
    One row primitive for both, because they ask the same shape of question
    ("a name, a magnitude, a count") and looked gratuitously different when
-   they each had their own. */
+   they each had their own. Single series, so --chart-1; thin bars on a
+   hairline track, flat-ended like everything else on the paper. */
 
 .stats-rows {
   display: grid;
@@ -262,7 +255,7 @@
 .stats-row__track {
   height: 6px;
   min-width: 24px;
-  border-radius: var(--r-full);
+  border-radius: var(--r-xs);
   background: var(--surface-sunken);
   overflow: hidden;
 }
@@ -270,8 +263,7 @@
 .stats-row__fill {
   display: block;
   height: 100%;
-  border-radius: var(--r-full);
-  background: var(--accent);
+  background: var(--chart-1);
 }
 
 .stats-row__count {
@@ -285,19 +277,21 @@
   white-space: nowrap;
 }
 
-/* --- Library mastery breakdown: a stacked bar + three Chip counts ---------
-   Segment colors reuse tokens.css's --state-* (the same semantic colors as
-   StateDot); no new colors are invented. When the total is 0 (empty
-   library), all three segments are 0 width and the bar is left showing
-   just its background track — no division by zero, and it never looks
-   broken. */
+/* --- Library mastery breakdown: a stacked bar + a legend of state marks ---
+   Status, not categories: segments reuse tokens.css's --state-* (the same
+   colors as StateDot), and the legend under the bar prints each state's
+   mark shape beside its name, so the breakdown is never read by color
+   alone. A 2px paper-colored gap separates the segments (dataviz mark
+   spec: the gap, not a stroke, keeps touching fills apart). When the total
+   is 0 (empty library), all three segments are 0 width and the bar is left
+   showing just its track — no division by zero, and it never looks broken. */
 
 .stats-mastery-bar {
   display: flex;
+  gap: 2px;
   height: 10px;
-  margin-bottom: var(--sp-3);
   overflow: hidden;
-  border-radius: var(--r-full);
+  border-radius: var(--r-xs);
   background: var(--rule);
 }
 
@@ -318,24 +312,25 @@
   background: var(--state-new);
 }
 
-.stats-mastery-chips {
-  display: flex;
-  flex-wrap: wrap;
+.stats-mastery-legend {
+  font-size: var(--fs-sm);
+}
+
+.stats-mastery-legend li {
   gap: var(--sp-2);
 }
 
 /* The stubborn-words block's rules (.stats-card-head, .stats-lapse*) stood
    here and went with the card — see Stats.tsx. .stats-note stays: it is the
-   shared footnote class, used by four other cards. */
+   shared footnote class, used by four other sections. */
 
 /* Per-mode accuracy rows. Grid rather than flex so the label column, the
    bar, and the two numbers line up across rows regardless of label width —
    at 375px a ragged right edge on the percentages is the thing that reads
-   as broken. */
+   as broken. Single series, so --chart-1. */
 .stats-modes {
   display: grid;
   gap: var(--sp-3);
-  margin-top: var(--sp-4);
 }
 
 .stats-mode {
@@ -347,15 +342,15 @@
 
 .stats-mode__bar {
   height: 6px;
-  border-radius: 3px;
-  background: var(--rule);
+  border-radius: var(--r-xs);
+  background: var(--surface-sunken);
   overflow: hidden;
 }
 
 .stats-mode__fill {
   display: block;
   height: 100%;
-  background: var(--slab);
+  background: var(--chart-1);
 }
 
 /* Fixed width so the percentages form a column; 题量不足 is wider than any

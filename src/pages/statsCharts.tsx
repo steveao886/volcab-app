@@ -5,7 +5,7 @@ import type { AccuracyPoint, DayPoint } from './statsDerive'
  * The two hand-rolled SVG charts on the stats page, plus the axis frame
  * they share. No charting library — see the header of Stats.tsx.
  *
- * **Axis text is HTML, never SVG.** Both charts stretch to the card width
+ * **Axis text is HTML, never SVG.** Both charts stretch to the column width
  * with `preserveAspectRatio="none"`, which scales x and y by different
  * factors; any <text> inside would come out horizontally squashed by a
  * ratio that changes with the viewport. Gridlines survive it because
@@ -15,7 +15,7 @@ import type { AccuracyPoint, DayPoint } from './statsDerive'
 const W = 300
 const H = 90
 
-/** Gridline fractions, top to bottom, shared by both charts so their rules line up when the cards sit above one another. */
+/** Gridline fractions, top to bottom, shared by both charts so their rules line up when the sections sit above one another. */
 const GRID = [0, 0.5, 1]
 
 function GridLines() {
@@ -34,6 +34,12 @@ interface ChartFrameProps {
   xLeft: string
   xRight: string
   /**
+   * Where today falls across the plot, 0–1: the centre of the last bar, or
+   * the right edge for the line. It gets the one cinnabar thing a chart may
+   * carry — a tick on the time axis, a mark and not a data color.
+   */
+  todayAt: number
+  /**
    * How far the top and bottom gridlines sit inside the plot box, as a
    * fraction of its height. Passed through to CSS rather than duplicated
    * there: the accuracy chart insets its gridlines by PAD_Y so a 100% dot
@@ -46,7 +52,7 @@ interface ChartFrameProps {
 }
 
 /** Puts numbers on a chart: a y-axis gutter aligned to the gridlines, and the two ends of the x range. */
-function ChartFrame({ yLabels, xLeft, xRight, insetRatio = 0, children }: ChartFrameProps) {
+function ChartFrame({ yLabels, xLeft, xRight, todayAt, insetRatio = 0, children }: ChartFrameProps) {
   const style = { '--chart-inset': `calc(var(--chart-h) * ${insetRatio})` } as CSSProperties
   return (
     <div className="stats-chart" style={style}>
@@ -55,7 +61,10 @@ function ChartFrame({ yLabels, xLeft, xRight, insetRatio = 0, children }: ChartF
           <span className="num" key={i}>{l}</span>
         ))}
       </div>
-      <div className="stats-chart__plot">{children}</div>
+      <div className="stats-chart__plot">
+        {children}
+        <span className="stats-chart__today" style={{ left: `${todayAt * 100}%` }} aria-hidden="true" />
+      </div>
       <div className="stats-chart__x" aria-hidden="true">
         <span className="num">{xLeft}</span>
         <span>{xRight}</span>
@@ -73,9 +82,12 @@ interface ReviewBarsProps {
 }
 
 /**
- * Daily review volume, stacked: new words at the base, repeat reviews above
- * them (`newLearned` is a subset of `reviewed` — see recordReview in
- * store.tsx, which increments both for a first encounter).
+ * Daily review volume, stacked: new words at the base in --chart-2, repeat
+ * reviews above them in --chart-1 (`newLearned` is a subset of `reviewed` —
+ * see recordReview in store.tsx, which increments both for a first
+ * encounter). The two segments are separated by a 2px gap in the paper
+ * color rather than touching: the gap, not a stroke, is what keeps two
+ * fills apart (dataviz mark spec), and adjacent bars get the same gap.
  *
  * **A day with no study is drawn as a muted baseline tick, not a short
  * bar.** The previous version gave every day a minimum bar height in the
@@ -94,6 +106,8 @@ export function ReviewBars({ days, max, xLeft, xRight }: ReviewBarsProps) {
   /** Floor in viewBox units (~2px on screen) so a 1-review day is still visible next to a 40-review day. */
   const MIN_H = 3
   const ZERO_H = 1.5
+  /** 2px of the 64px plot height (--chart-h in Stats.css), in viewBox units. */
+  const GAP_Y = (2 / 64) * H
 
   // A window with no reviews at all has no scale to label, and printing
   // "0 / 0 / 0" up the axis would look like a rendering bug rather than an
@@ -101,18 +115,18 @@ export function ReviewBars({ days, max, xLeft, xRight }: ReviewBarsProps) {
   const yLabels = max === 0 ? ['', '', '0'] : [String(max), String(Math.round(max / 2)), '0']
 
   return (
-    <ChartFrame yLabels={yLabels} xLeft={xLeft} xRight={xRight}>
+    <ChartFrame yLabels={yLabels} xLeft={xLeft} xRight={xRight} todayAt={(n - 0.5) / n}>
       <svg
         className="stats-bars"
         viewBox={`0 0 ${W} ${H}`}
         preserveAspectRatio="none"
         role="img"
-        aria-label={`近 ${n} 天每日复习量柱状图,最高 ${max} 次`}
+        aria-label={`近 ${n} 天每日复习量柱状图，最高 ${max} 次`}
       >
         <GridLines />
         {days.map((d, i) => {
           const x = i * colW + gap / 2
-          const label = <title>{`${d.date} · 复习 ${d.reviewed} 次,新词 ${d.newLearned} 个`}</title>
+          const label = <title>{`${d.date}：复习 ${d.reviewed} 次，新词 ${d.newLearned} 个`}</title>
           if (d.reviewed === 0 || max === 0) {
             return (
               <rect key={d.date} className="stats-bars__zero" x={x} y={H - ZERO_H} width={barW} height={ZERO_H}>
@@ -122,11 +136,17 @@ export function ReviewBars({ days, max, xLeft, xRight }: ReviewBarsProps) {
           }
           const barH = Math.max(MIN_H, (d.reviewed / max) * H)
           const newH = Math.min(barH, (d.newLearned / max) * H)
+          // The repeat-review segment gives up GAP_Y at its foot when a
+          // new-word segment sits under it. A sliver thinner than the gap
+          // is dropped rather than drawn inverted; the <title> still says it.
+          const reviewH = newH > 0 ? barH - newH - GAP_Y : barH
           return (
             <g key={d.date}>
-              <rect className="stats-bars__bar" x={x} y={H - barH} width={barW} height={barH}>
-                {label}
-              </rect>
+              {reviewH > 0 && (
+                <rect className="stats-bars__bar" x={x} y={H - barH} width={barW} height={reviewH}>
+                  {label}
+                </rect>
+              )}
               {newH > 0 && (
                 <rect className="stats-bars__bar--new" x={x} y={H - newH} width={barW} height={newH}>
                   {label}
@@ -183,13 +203,13 @@ export function AccuracyTrend({ points, average, xLeft, xRight }: AccuracyTrendP
   }
 
   return (
-    <ChartFrame yLabels={['100%', '50%', '0']} xLeft={xLeft} xRight={xRight} insetRatio={PAD_Y / H}>
+    <ChartFrame yLabels={['100%', '50%', '0']} xLeft={xLeft} xRight={xRight} todayAt={1} insetRatio={PAD_Y / H}>
       <svg
         className="stats-accuracy"
         viewBox={`0 0 ${W} ${H}`}
         preserveAspectRatio="none"
         role="img"
-        aria-label="近 30 天正确率趋势,没有复习的日子不连线"
+        aria-label="近 30 天正确率趋势，没有复习的日子不连线"
       >
         {/* Gridlines sit at the plot edges (0 / 50 / 100%), but the line
             itself is inset by PAD_Y so a 100% day's dot isn't clipped in
