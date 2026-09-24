@@ -1,14 +1,17 @@
 /* ==========================================================================
-   Volcab design tokens — "Ink and Paper"
+   Volcab design tokens — "朱批"
    --------------------------------------------------------------------------
-   Visual direction: dictionary typesetting. Warm paper surface, near-black
-   ink, vermilion as the annotation color; hairline rules replace shadows for
-   separation, restrained corner radii (2–6px) closer to print than to
-   plastic cards.
-   Vermilion (--accent) is for annotation only: eyebrows, the active tab's
-   tick, progress bars, the seal; a solid vermilion block is used **only**
-   for dangerous actions. The primary action button is a solid ink slab
-   (inverted in dark mode).
+   Visual direction: the marks a Chinese reader makes in a book. A flat 月白
+   paper, 墨 ink, Song type for Chinese and Source Serif for English (drawn
+   as a pair, so mixed lines share one baseline and one color), hairline
+   rules instead of shadows, 2px corners.
+   Cinnabar (--accent) is for **marks only**: ticks and crosses, the circle
+   on a correct answer, the wavy underline under a headword in its example,
+   the 着重号 dots on the active tab, the 旁批 usage note, and destructive
+   actions. It is never a heading color or a decorative fill. The primary
+   action is a solid ink slab (inverted in dark mode).
+   Why this replaced ink-and-paper, and the contrast numbers every value
+   below was checked against: docs/superpowers/specs/2026-09-23-zhupi-redesign-design.md.
 
    Naming is always semantic — don't hardcode color values in components.
    ========================================================================== */
@@ -18,43 +21,39 @@
   accent-color: var(--accent); /* native checkbox / radio / range follow the brand color */
 
   /* --- Font families -----------------------------------------------------
-     Offline PWA, no external fonts, everything runs on the system stack.
-     Four stacks, each with its own job:
-     ui   mixed Chinese/English UI text (full Chinese weight coverage)
-     word English headwords — serif, dictionary character, sets itself apart
-          from the sans-serif UI
+     The two serif faces are bundled (src/main.tsx): the user reads on
+     Windows and Android, neither of which ships a usable Song face. Each
+     stack lists Source Serif 4 first so Latin glyphs and digits come from
+     it and CJK falls through to Noto Serif SC.
+     ui   mixed Chinese/English UI text
+     word English headwords — same family as the UI now; the headword is set
+          apart by size and weight, no longer by switching to a serif
      ipa  IPA phonetics — lists system fonts known to cover IPA Extensions
           first (Windows: Cambria; macOS/iOS: Lucida Grande / -apple-system;
           Linux/Android: Charis SIL / Noto), avoiding the mixed rendering
           that comes from falling back glyph by glyph
      mono monospace — for strings that need "as-is" presentation: code
           snippets, token names, paths
-     num  digits — monospace, so stat values don't jitter (tabular-nums used
-          together with .num)
-
-     mono and num currently share the same stack, but their purposes differ —
-     don't borrow one for the other: mono means "this is code," num means
-     "this is a number that shouldn't jitter." If digits ever need to switch
-     to a dedicated font with real tabular figures, only --font-num needs to
-     change; code blocks are unaffected.
+     num  digits — Source Serif 4's tabular lining figures (.num sets the
+          feature), so stat values don't jitter. This used to share the
+          mono stack; the comment that lived here said a real tabular font
+          would only ever need --font-num to change, and it did.
   --------------------------------------------------------------------- */
   --font-ui:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
-    'Hiragino Sans GB', 'Microsoft YaHei', 'Source Han Sans SC',
-    'Noto Sans CJK SC', sans-serif;
+    'Source Serif 4 Variable', 'Noto Serif SC Variable', 'Songti SC',
+    'STSong', 'Noto Serif CJK SC', serif;
   --font-word:
-    'Iowan Old Style', 'Palatino Linotype', Palatino, Charter, Cambria,
-    Georgia, 'Times New Roman', serif;
+    'Source Serif 4 Variable', 'Iowan Old Style', Georgia, serif;
   --font-ipa:
     Cambria, 'Charis SIL', 'Doulos SIL', 'Gentium Plus', 'Lucida Grande',
     'Lucida Sans Unicode', 'Palatino Linotype', -apple-system, serif;
   --font-mono:
     ui-monospace, 'SF Mono', 'Cascadia Mono', 'Segoe UI Mono', Menlo,
     Consolas, monospace;
-  --font-num: var(--font-mono);
+  --font-num: 'Source Serif 4 Variable', Georgia, serif;
 
   /* --- Font sizes -------------------------------------------------------- */
-  --fs-eyebrow: 0.6875rem; /* 11 eyebrow */
+  --fs-eyebrow: 0.6875rem; /* 11 small label */
   --fs-xs: 0.75rem;        /* 12 */
   --fs-sm: 0.875rem;       /* 14 */
   --fs-base: 1rem;         /* 16 body */
@@ -62,16 +61,16 @@
   --fs-xl: 1.5rem;         /* 24 page title */
   --fs-2xl: 1.875rem;      /* 30 desktop page title */
   --fs-word: 2.125rem;     /* 34 headword */
-  --fs-word-xl: 2.75rem;   /* 44 review-card headword cap; long words auto-shrink, see .word--xl */
+  --fs-word-xl: 3rem;      /* 48 review-card headword cap; long words auto-shrink, see .word--xl */
 
   /* --- Line height -------------------------------------------------------- */
-  --lh-word: 1.05;         /* large headword text */
-  --lh-tight: 1.2;         /* headings, buttons */
-  --lh-snug: 1.4;          /* phonetics, hints, compact text */
-  --lh-body: 1.7;          /* Chinese body text needs looser line spacing */
+  --lh-word: 1.1;          /* large headword text */
+  --lh-tight: 1.25;        /* headings, buttons */
+  --lh-snug: 1.45;         /* phonetics, hints, compact text */
+  --lh-body: 1.75;         /* Song body text needs more leading than a sans */
 
   --tracking-eyebrow: 0.18em;
-  --tracking-tight: -0.015em;
+  --tracking-tight: -0.01em;
 
   /* --- Spacing (4px base) -------------------------------------------------- */
   --sp-1: 4px;
@@ -85,10 +84,12 @@
   --sp-12: 48px;
   --sp-16: 64px;
 
-  /* --- Corner radius ------------------------------------------------------ */
-  --r-xs: 2px;
-  --r-sm: 3px;
-  --r-md: 6px;
+  /* --- Corner radius ------------------------------------------------------
+     Paper has corners. 2px is enough to keep a control from looking sharp
+     at 1x without reading as a rounded plastic card. */
+  --r-xs: 1px;
+  --r-sm: 2px;
+  --r-md: 2px;
   --r-full: 999px;
 
   /* --- Motion -------------------------------------------------------------- */
@@ -99,7 +100,6 @@
 
   /* --- Z-index --------------------------------------------------------
      Defined in one place — don't write literal values in components. */
-  --z-grain: 0;
   --z-content: 1;
   --z-sticky: 10;   /* page header */
   --z-nav: 20;      /* tab bar / sidebar */
@@ -110,37 +110,41 @@
   /* --- Layout --------------------------------------------------------------- */
   --page-max: 720px;
   --rail-w: 216px;
-  --tabbar-h: 58px;
+  --tabbar-h: 56px;
   --tap: 44px;             /* minimum tappable area */
-  --tick-w: 28px;          /* vermilion tick width: a marker motif repeated site-wide */
 
-  /* --- Color: light (paper) -------------------------------------------------- */
-  --bg: #f4f1ea;
-  --surface: #fdfbf7;
-  --surface-sunken: #eae5da;
-  --text: #1a1814;
-  --text-muted: #56504a;
-  --text-faint: #6e655c;
-  --rule: rgba(26, 24, 20, 0.13);        /* hairline divider, purely decorative */
-  --rule-strong: rgba(26, 24, 20, 0.26); /* emphasized dividers, dashed borders */
-  --rule-control: #8a8175;               /* interactive control outline, ≥3:1 (WCAG 1.4.11) */
+  /* --- Color: light (月白 paper) -------------------------------------------
+     Measured WCAG contrast, worst case over bg / surface / surface-sunken:
+     every text token ≥ 4.82:1, --rule-control ≥ 3.07:1. */
+  --bg: #ecf0ef;           /* 月白 */
+  --surface: #f7f9f8;
+  --surface-sunken: #e1e7e6;
+  --text: #1e2226;         /* 墨 */
+  --text-muted: #474e55;
+  --text-faint: #5c636a;
+  --rule: rgba(30, 34, 38, 0.14);        /* hairline divider, purely decorative */
+  --rule-strong: rgba(30, 34, 38, 0.3);  /* emphasized dividers, dashed borders */
+  --rule-control: #7b838a;               /* interactive control outline, ≥3:1 (WCAG 1.4.11) */
 
-  --accent: #be3c24;              /* vermilion */
-  --accent-soft: rgba(190, 60, 36, 0.1);
-  --on-tone: #fdfbf7;             /* text on any solid semantic-color block */
+  --accent: #b3362b;              /* 朱 cinnabar: marks only */
+  --accent-soft: rgba(179, 54, 43, 0.1);
+  --on-tone: #f7f9f8;             /* text on any solid semantic-color block */
 
-  --slab: #1a1814;                /* primary button: ink slab */
-  --slab-text: #f4f1ea;
-  --slab-hover: #332e28;
+  --slab: #1e2226;                /* primary button: ink slab */
+  --slab-text: #ecf0ef;
+  --slab-hover: #363c42;
 
-  --success: #446d34;
-  --warning: #8a6108;
-  --info: #276b69;
-  --danger: #be3c24;
-  --success-soft: rgba(68, 109, 52, 0.1);
-  --warning-soft: rgba(138, 97, 8, 0.1);
-  --info-soft: rgba(39, 107, 105, 0.1);
-  --danger-soft: rgba(190, 60, 36, 0.1);
+  /* Mineral pigments. Correct is 石青 blue, not green: red against blue
+     survives red-green color blindness, and every right/wrong state also
+     carries a text tag. */
+  --success: #1d5a86;             /* 石青 azurite */
+  --warning: #855a0b;             /* 藤黄 gamboge, darkened */
+  --info: #2f6b57;                /* 石绿 malachite */
+  --danger: #b3362b;
+  --success-soft: rgba(29, 90, 134, 0.1);
+  --warning-soft: rgba(133, 90, 11, 0.1);
+  --info-soft: rgba(47, 107, 87, 0.1);
+  --danger-soft: rgba(179, 54, 43, 0.1);
 
   /* Word learning states */
   --state-new: var(--text-faint);
@@ -161,49 +165,50 @@
      scrim's job is to "dim the background," and dark mode still needs
      dimming — inverting it along with --bg would make the page under the
      <dialog> lighter instead. It also doesn't belong to the brand-color
-     palette (it's not paper, not ink, and definitely not vermilion), so it
+     palette (it's not paper, not ink, and definitely not cinnabar), so it
      can't borrow --surface-sunken or --text either — it gets its own
      neutral black + opacity token. */
   --scrim: rgb(0 0 0 / 45%);
 
-  --shadow-1: 0 1px 1px rgba(26, 24, 20, 0.04), 0 1px 3px rgba(26, 24, 20, 0.05);
-  --shadow-2: 0 2px 4px rgba(26, 24, 20, 0.06), 0 8px 20px rgba(26, 24, 20, 0.08);
-  --grain-opacity: 0.04;
+  /* Flat paper: nothing that sits in the page casts a shadow. --shadow-1 is
+     kept as a name so the rules that reference it stay valid; only things
+     that float over the page (dialogs, the update prompt) keep one. */
+  --shadow-1: none;
+  --shadow-2: 0 2px 4px rgba(30, 34, 38, 0.06), 0 8px 20px rgba(30, 34, 38, 0.1);
 }
 
-/* --- Color: dark (ink) ---------------------------------------------------- */
+/* --- Color: dark (墨) ------------------------------------------------------
+   Measured the same way: every text token ≥ 5.71:1, --rule-control ≥ 3.59:1. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #141210;
-    --surface: #1c1917;
-    --surface-sunken: #100e0c;
-    --text: #f0ebe2;
-    --text-muted: #ada396;
-    --text-faint: #968c7f;
-    --rule: rgba(240, 235, 226, 0.14);
-    --rule-strong: rgba(240, 235, 226, 0.3);
-    --rule-control: #736b5e;
+    --bg: #15181b;
+    --surface: #1c2024;
+    --surface-sunken: #101315;
+    --text: #e4eae9;
+    --text-muted: #aeb6bb;
+    --text-faint: #949da3;
+    --rule: rgba(228, 234, 233, 0.14);
+    --rule-strong: rgba(228, 234, 233, 0.3);
+    --rule-control: #6e777d;
 
-    --accent: #e97457;
-    --accent-soft: rgba(233, 116, 87, 0.13);
-    --on-tone: #1a1108;
+    --accent: #e57a68;
+    --accent-soft: rgba(229, 122, 104, 0.14);
+    --on-tone: #1a1110;
 
     /* In dark mode the ink slab inverts to a paper slab; the primary button keeps the same "single solid block" language */
-    --slab: #f0ebe2;
-    --slab-text: #141210;
+    --slab: #e4eae9;
+    --slab-text: #15181b;
     --slab-hover: #ffffff;
 
-    --success: #88b06a;
-    --warning: #d9a942;
-    --info: #5bafac;
-    --danger: #e97457;
-    --success-soft: rgba(136, 176, 106, 0.13);
-    --warning-soft: rgba(217, 169, 66, 0.13);
-    --info-soft: rgba(91, 175, 172, 0.13);
-    --danger-soft: rgba(233, 116, 87, 0.13);
+    --success: #7ab0dc;
+    --warning: #d9aa4e;
+    --info: #7dbba3;
+    --danger: #e57a68;
+    --success-soft: rgba(122, 176, 220, 0.14);
+    --warning-soft: rgba(217, 170, 78, 0.14);
+    --info-soft: rgba(125, 187, 163, 0.14);
+    --danger-soft: rgba(229, 122, 104, 0.14);
 
-    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.45), 0 10px 24px rgba(0, 0, 0, 0.35);
-    --grain-opacity: 0.035;
   }
 }

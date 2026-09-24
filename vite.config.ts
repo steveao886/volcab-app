@@ -19,14 +19,13 @@ export default defineConfig({
         // install prompt and screen readers handle the app name based on
         // this field.
         lang: 'zh-CN',
-        // The "ink and paper" palette (see src/styles/tokens.css): the
-        // manifest can only take one static set of color values, so the
-        // light (paper) theme is used as the default -- consistent with
-        // index.html's default appearance when there's no media query, and
-        // with what :root resolves to when the dark media query doesn't
-        // match.
-        theme_color: '#f4f1ea',
-        background_color: '#f4f1ea',
+        // The 朱批 palette (see src/styles/tokens.css): the manifest can
+        // only take one static set of color values, so the light (月白)
+        // theme is used as the default -- consistent with index.html's
+        // default appearance when there's no media query, and with what
+        // :root resolves to when the dark media query doesn't match.
+        theme_color: '#ecf0ef',
+        background_color: '#ecf0ef',
         icons: [
           {
             src: 'icon-192.png',
@@ -56,6 +55,20 @@ export default defineConfig({
         // `new Audio(url)` replay a once-heard word offline. An mp3 never
         // changes under its URL, so revalidation would be pure waste.
         runtimeCaching: [
+          // Font slices (see src/main.tsx). Deliberately not precached:
+          // workbox's default glob is js/css/html, and adding woff2 to it
+          // would install every one of Noto Serif SC's 101 slices (6 MB) to
+          // show the few a screen uses. CacheFirst keeps each slice the
+          // first time a screen needs it, so anything seen online renders
+          // offline; a hashed asset URL never changes content.
+          {
+            urlPattern: /\/assets\/[^/]+\.woff2$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'volcab-fonts',
+              expiration: { maxEntries: 200 },
+            },
+          },
           {
             urlPattern: /^https:\/\/api\.dictionaryapi\.dev\/media\//,
             handler: 'CacheFirst',
