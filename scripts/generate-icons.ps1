@@ -3,8 +3,9 @@
 
   Reuses the "seal" motif already used elsewhere in the app (see
   .brand__seal in src/components/TabBar.tsx, src/pages/Login.tsx): a solid
-  vermilion (--accent) square with a centered "词" (word) character, sharing
-  the same source and color values as index.html's favicon.svg.
+  cinnabar (--accent) square with a centered "词" (word) character in the
+  Song face the in-app seal renders in, sharing the same color values as
+  public/favicon.svg.
 
   Both PNGs are a solid color block running to the canvas edge (no rounded
   corners drawn into the image itself), so the same file can satisfy both
@@ -13,12 +14,13 @@
   never clipped.
 
   Safe zone measured directly (reading icon-512.png pixels, not estimated
-  from CSS ratios): the glyph's bounding box is about 245x254px out of
-  512px, i.e. 48% x 50% of the canvas; its circumscribed circle diameter is
-  about 69% of the canvas, still inside maskable's 80% safe zone with room
-  to spare.
-  After changing $fontSize, this number must be re-measured -- don't reuse
-  the figures above.
+  from CSS ratios), 2026-09-23 with Noto Serif SC SemiBold: the glyph's
+  bounding box is 247x245px out of 512px, i.e. 48% x 48% of the canvas; its
+  circumscribed circle diameter is 62.8% of the canvas, inside maskable's
+  80% safe zone with room to spare. (Microsoft YaHei Bold, before, measured
+  245x254px and 69%.)
+  After changing $fontSize or the font, this number must be re-measured --
+  don't reuse the figures above.
 
   Usage (run from the repo root):
     pwsh -File scripts/generate-icons.ps1
@@ -31,9 +33,9 @@
 
 Add-Type -AssemblyName System.Drawing
 
-# --- Color values: kept consistent with src/styles/tokens.css's light (paper) theme -----
-$bgHex = '#be3c24' # --accent vermilion
-$fgHex = '#fdfbf7' # --on-tone ivory white (text on the solid color block)
+# --- Color values: kept consistent with src/styles/tokens.css's light (月白) theme -----
+$bgHex = '#b3362b' # --accent cinnabar (朱)
+$fgHex = '#f7f9f8' # --on-tone (text on the solid color block)
 
 $bg = [System.Drawing.ColorTranslator]::FromHtml($bgHex)
 $fg = [System.Drawing.ColorTranslator]::FromHtml($fgHex)
@@ -53,19 +55,22 @@ foreach ($size in $sizes) {
   $bgBrush = New-Object System.Drawing.SolidBrush($bg)
   $g.FillRectangle($bgBrush, 0, 0, $size, $size)
 
-  # Centered "词" character, same weight (600/Bold) and font (Microsoft
-  # YaHei, matching how --font-ui resolves on Windows) as .brand__seal
+  # Centered "词" character, same face and weight as .brand__seal: the app
+  # bundles Noto Serif SC and the seal renders at 600. GDI+ cannot read the
+  # bundled woff2, but a Windows install of Noto Serif SC (NotoSerifSC-VF.ttf)
+  # exposes each weight as its own family; "SemiBold" at Regular style is
+  # the real 600 instance, where FontStyle.Bold would synthesize a fake one.
   $fontSize = [float]($size * 0.52)
   # GDI+ silently substitutes the default font when the requested one is
   # missing, so the script would "succeed" while producing a wrong icon --
   # so this confirms the font is actually installed first, and would rather
   # error out than produce an image that looks wrong.
-  $fontFamily = 'Microsoft YaHei'
+  $fontFamily = 'Noto Serif SC SemiBold'
   $installed = (New-Object System.Drawing.Text.InstalledFontCollection).Families.Name
   if ($installed -notcontains $fontFamily) {
-    throw "Missing font '$fontFamily'. GDI+ would silently fall back to the default font and produce a wrong icon, so this has been aborted instead. Install the font, or switch to an equivalent Chinese sans-serif font already on this machine and re-measure the safe zone."
+    throw "Missing font '$fontFamily'. GDI+ would silently fall back to the default font and produce a wrong icon, so this has been aborted instead. Install Noto Serif SC (TTF/OTF, not the app's woff2), or switch to an equivalent Song face already on this machine and re-measure the safe zone."
   }
-  $font = New-Object System.Drawing.Font($fontFamily, $fontSize, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
+  $font = New-Object System.Drawing.Font($fontFamily, $fontSize, [System.Drawing.FontStyle]::Regular, [System.Drawing.GraphicsUnit]::Pixel)
   $fgBrush = New-Object System.Drawing.SolidBrush($fg)
 
   $format = New-Object System.Drawing.StringFormat

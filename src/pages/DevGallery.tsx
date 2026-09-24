@@ -329,7 +329,7 @@ export function DevGallery() {
         <SyncStatus
           variant="note"
           status="error"
-          message="GitHub 接口调用过于频繁,已被限流。改动都在本地,过一会儿会自动重试。"
+          message="GitHub 接口调用过于频繁，已被限流。改动都在本地，过一会儿会自动重试。"
           onRetry={noop}
         />
       </Group>
@@ -357,7 +357,7 @@ export function DevGallery() {
         </div>
         <div className="empty-state">
           <p className="empty-state__title">没有匹配"abrog"的词条</p>
-          <p className="empty-state__hint">换个关键词,或清除筛选条件再试试。</p>
+          <p className="empty-state__hint">换个关键词，或清除筛选条件再试试。</p>
         </div>
       </Group>
 
@@ -404,7 +404,7 @@ export function DevGallery() {
         open={confirmDemo !== null}
         titleId="dev-confirm-title"
         title={confirmDemo === 'plain' ? '删除「abrogate」?' : '删除选中的 3 个词条?'}
-        body="它们的学习进度(状态、复习次数、失误次数等)会一并清除,且无法恢复。"
+        body="它们的学习进度(状态、复习次数、失误次数等)会一并清除，且无法恢复。"
         detail={confirmDemo === 'list' ? 'abrogate、canonicalization、due diligence' : undefined}
         confirmLabel="确认删除"
         busy={confirmDemo === 'busy'}

@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <rect width="48" height="48" fill="#be3c24" />
+  <rect width="48" height="48" fill="#b3362b" />
   <text
     x="24"
     y="26"
-    fill="#fdfbf7"
-    font-family="'Microsoft YaHei', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans CJK SC', sans-serif"
+    fill="#f7f9f8"
+    font-family="'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', STSong, SimSun, serif"
     font-size="27"
-    font-weight="700"
+    font-weight="600"
     text-anchor="middle"
     dominant-baseline="central"
   >词</text>

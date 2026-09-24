@@ -64,11 +64,11 @@ export function validateShares(meanings: readonly HasShare[]): string | null {
 
   const bad = meanings.findIndex(m => !isValidShare(m.share))
   if (bad !== -1) {
-    return `义项占比必须是 10–90 的整十,第 ${bad + 1} 条为 ${meanings[bad].share}。`
+    return `义项占比必须是 10–90 的整十，第 ${bad + 1} 条为 ${meanings[bad].share}。`
   }
 
   const sum = shareSum(meanings)
-  if (sum !== 100) return `义项占比合计须为 100%,当前 ${sum}%。`
+  if (sum !== 100) return `义项占比合计须为 100%，当前 ${sum}%。`
 
   return null
 }

@@ -31,7 +31,7 @@ const BADGE_COPY = {
 
 const NOTE_COPY = {
   pending: '正在同步…',
-  offline: '当前离线,联网后会自动同步。',
+  offline: '当前离线，联网后会自动同步。',
 } as const
 
 interface SyncStatusProps {
@@ -51,7 +51,7 @@ export function SyncStatus({ status, variant = 'badge', message = null, onRetry 
     // semantics and keyboard reachability. The hit area is padded vertically
     // to 44px by .sync-badge::after.
     return (
-      <button type="button" className="sync-badge" onClick={onRetry} aria-label={`${label},点击重试同步`}>
+      <button type="button" className="sync-badge" onClick={onRetry} aria-label={`${label}，点击重试同步`}>
         <Badge tone={tone}>{label}</Badge>
       </button>
     )

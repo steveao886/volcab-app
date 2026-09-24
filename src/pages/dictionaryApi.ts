@@ -137,9 +137,9 @@ export async function lookupWord(word: string, timeoutMs = 8000): Promise<Lookup
     return { status: 'ok', phonetic: mapped.phonetic, meanings: mapped.meanings }
   } catch (err) {
     if (err instanceof DOMException && err.name === 'AbortError') {
-      return { status: 'error', message: '查询超时,请检查网络后重试' }
+      return { status: 'error', message: '查询超时，请检查网络后重试' }
     }
-    return { status: 'error', message: '网络请求失败,请检查网络后重试' }
+    return { status: 'error', message: '网络请求失败，请检查网络后重试' }
   } finally {
     clearTimeout(timer)
   }

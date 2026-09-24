@@ -248,7 +248,7 @@ export function Settings() {
           label="每日新词数"
           labelClassName="section-head"
           htmlFor="settings-new-per-day"
-          hint={`每天最多学习的新词数量,${NEW_PER_DAY_MIN}–${NEW_PER_DAY_MAX} 之间`}
+          hint={`每天最多学习的新词数量，${NEW_PER_DAY_MIN}–${NEW_PER_DAY_MAX} 之间`}
         >
           <TextInput
             id="settings-new-per-day"
@@ -277,15 +277,15 @@ export function Settings() {
         {newPerDayAdvice.kind === 'exhausted' && <Advice>词库里已经没有没学过的词了。</Advice>}
         {newPerDayAdvice.kind === 'ok' && (
           <Advice>
-            按这个设置每天约 <span className="num">{Math.round(newPerDayAdvice.projected)}</span> 张卡,和你近期实际每天{' '}
-            <span className="num">{Math.round(newPerDayAdvice.sustained)}</span> 张接近,不用调。
+            按这个设置每天约 <span className="num">{Math.round(newPerDayAdvice.projected)}</span> 张卡，和你近期实际每天{' '}
+            <span className="num">{Math.round(newPerDayAdvice.sustained)}</span> 张接近，不用调。
           </Advice>
         )}
         {newPerDayAdvice.kind === 'adjust' && (
           <Advice>
-            按这个设置每天约 <span className="num">{Math.round(newPerDayAdvice.projected)}</span> 张卡,而你近期实际每天{' '}
+            按这个设置每天约 <span className="num">{Math.round(newPerDayAdvice.projected)}</span> 张卡，而你近期实际每天{' '}
             <span className="num">{Math.round(newPerDayAdvice.sustained)}</span> 张 ——{' '}
-            {newPerDayAdvice.to < newPerDayAdvice.from ? '有点吃不下' : '还有余力'},建议改成{' '}
+            {newPerDayAdvice.to < newPerDayAdvice.from ? '有点吃不下' : '还有余力'}，建议改成{' '}
             <span className="num">{newPerDayAdvice.to}</span>。
           </Advice>
         )}
@@ -300,7 +300,7 @@ export function Settings() {
           label="间隔系数"
           labelClassName="section-head"
           htmlFor="settings-interval-modifier"
-          hint={`复习间隔的整体倍率,${MIN_INTERVAL_MODIFIER}–${MAX_INTERVAL_MODIFIER}。留存率明显高于 90% 时调大它,间隔会变长、每天要复习的词会变少。它是复利的,每复习一次乘一次,直到撞上间隔上限。`}
+          hint={`复习间隔的整体倍率，${MIN_INTERVAL_MODIFIER}–${MAX_INTERVAL_MODIFIER}。留存率明显高于 90% 时调大它，间隔会变长、每天要复习的词会变少。它是复利的，每复习一次乘一次，直到撞上间隔上限。`}
         >
           <TextInput
             id="settings-interval-modifier"
@@ -323,20 +323,20 @@ export function Settings() {
         {modifierAdvice.kind === 'insufficient' && (
           <Advice>
             到期复习满 <span className="num">{modifierAdvice.needed}</span> 次后给出建议(目前{' '}
-            <span className="num">{modifierAdvice.reviewed}</span> 次)。只统计已毕业词的复习,新词的学习步骤不算。
+            <span className="num">{modifierAdvice.reviewed}</span> 次)。只统计已毕业词的复习，新词的学习步骤不算。
           </Advice>
         )}
         {modifierAdvice.kind === 'ok' && (
           <Advice>
             近 {RETENTION_WINDOW_DAYS} 天留存率 <span className="num">{pct(modifierAdvice.retention)}%</span>(
-            <span className="num">{modifierAdvice.reviewed}</span> 次到期复习),已经贴着 90% 的目标,不用调。
+            <span className="num">{modifierAdvice.reviewed}</span> 次到期复习)，已经贴着 90% 的目标，不用调。
           </Advice>
         )}
         {modifierAdvice.kind === 'adjust' && (
           <Advice>
             近 {RETENTION_WINDOW_DAYS} 天留存率 <span className="num">{pct(modifierAdvice.retention)}%</span>(
             <span className="num">{modifierAdvice.reviewed}</span> 次到期复习),
-            {modifierAdvice.retention > 0.9 ? '高于 90% 的目标,间隔可以再放长' : '低于 90% 的目标,间隔该收紧'} ——
+            {modifierAdvice.retention > 0.9 ? '高于 90% 的目标，间隔可以再放长' : '低于 90% 的目标，间隔该收紧'} ——
             建议 <span className="num">{round1(modifierAdvice.to)}</span>。
           </Advice>
         )}
@@ -388,8 +388,8 @@ export function Settings() {
             <p className={unsynced ? 'settings-confirm__text settings-confirm__text--warn' : 'settings-confirm__text'}>
               退出会清除本机保存的 token、词库缓存与学习进度缓存。
               {unsynced
-                ? '其中包含尚未同步到 GitHub 的改动,退出后无法找回 —— 建议先导出备份。'
-                : '当前没有未同步的改动,重新登录后可以取回全部内容。'}
+                ? '其中包含尚未同步到 GitHub 的改动，退出后无法找回 —— 建议先导出备份。'
+                : '当前没有未同步的改动，重新登录后可以取回全部内容。'}
             </p>
             <div className="settings-confirm__actions">
               <Button ref={cancelLogoutRef} variant="secondary" block onClick={() => setConfirmingLogout(false)}>
@@ -409,7 +409,7 @@ export function Settings() {
 
       <section className="section">
         <h2 className="section-head">备份</h2>
-        <p className="settings-hint">导出词库与学习进度为一份 JSON 文件,保存到本机。</p>
+        <p className="settings-hint">导出词库与学习进度为一份 JSON 文件，保存到本机。</p>
         <Button variant="secondary" block onClick={handleExport}>
           导出备份
         </Button>
@@ -423,7 +423,7 @@ export function Settings() {
           {updateStatus === 'current'
             ? '已是最新版本。'
             : updateStatus === 'unsupported'
-              ? '查不到更新 —— 可能是离线,或者这个环境没有安装 Service Worker。'
+              ? '查不到更新 —— 可能是离线，或者这个环境没有安装 Service Worker。'
               : '向服务器确认一次。有新版本就会装好并重新加载 —— 之前点过「稍后」的更新也在这时生效。'}
         </p>
         <Button variant="secondary" block onClick={handleCheckUpdate} disabled={checking}>

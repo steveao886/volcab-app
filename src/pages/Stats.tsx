@@ -78,7 +78,7 @@ export function Stats() {
       <Page title="学习数据">
         <div className="empty-state">
           <p className="empty-state__title">还没有学习记录</p>
-          <p className="empty-state__hint">复习几个词之后,这里就会有数据。</p>
+          <p className="empty-state__hint">复习几个词之后，这里就会有数据。</p>
           <Link className="btn btn--primary" to="/">
             回今日看看
           </Link>
@@ -153,7 +153,7 @@ export function Stats() {
             </p>
           </div>
           <p className="faint stats-note">
-            只统计已毕业的词,不含新词的学习步骤,也不含练习。间隔重复通常以 90% 为目标 —— 明显高于它,说明可以把间隔放长。
+            只统计已毕业的词，不含新词的学习步骤，也不含练习。间隔重复通常以 90% 为目标 —— 明显高于它，说明可以把间隔放长。
           </p>
         </section>
       )}
@@ -410,7 +410,7 @@ export function Stats() {
               high, so the sharper number is named here rather than left to
               be inferred. */}
           {modes.some(m => m.mode === 'guess') && (
-            <p className="faint stats-note">猜词按「答出来了」计,买了线索也算 —— 零线索的成绩见下方纪录。</p>
+            <p className="faint stats-note">猜词按「答出来了」计，买了线索也算 —— 零线索的成绩见下方纪录。</p>
           )}
         </section>
       )}

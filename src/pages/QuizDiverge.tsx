@@ -67,10 +67,10 @@ const POS_LABEL: Record<string, string> = {
  * 要…的 qualifier, not the prefix list, that carries the sense.
  */
 function instructionFor(q: DivergeQuestion): string {
-  if (q.axis === 'opposite') return '说出意思相反的词,有几个写几个'
-  if (q.axis === 'negation') return '同样的意思,但要用否定前缀构成的词(un- / in- / im- / ir- / il- / dis- / non-)'
+  if (q.axis === 'opposite') return '说出意思相反的词，有几个写几个'
+  if (q.axis === 'negation') return '同样的意思，但要用否定前缀构成的词(un- / in- / im- / ir- / il- / dis- / non-)'
   if (q.axis === 'pos') return `说出这个意思的${POS_LABEL[q.pos ?? ''] ?? q.pos ?? ''}形式`
-  return '说出意思相近的词,有几个写几个'
+  return '说出意思相近的词，有几个写几个'
 }
 
 /** How one produced answer landed. `hinted` is kept apart from `typo`: they are different findings. */
@@ -87,10 +87,10 @@ const maskTo = (form: string, open: number): string =>
  * being right; calling it wrong makes the app look stupid.
  */
 function noteText(v: Verdict, index: ConceptIndex): string {
-  if (v.kind === 'hit') return v.typo ? `对了,不过正确拼写是 ${v.form}` : '对了'
+  if (v.kind === 'hit') return v.typo ? `对了，不过正确拼写是 ${v.form}` : '对了'
   if (v.kind === 'already') return `${v.form} 已经答过了`
   if (v.kind === 'prefix') return `前缀错了 —— 是 ${v.form}`
-  if (v.kind === 'otherWord') return `${index.byId.get(v.wordId)?.headword ?? v.wordId} 是词库里的另一个词,本题不算`
+  if (v.kind === 'otherWord') return `${index.byId.get(v.wordId)?.headword ?? v.wordId} 是词库里的另一个词，本题不算`
   return '这个词不在本题的答案里'
 }
 
@@ -223,7 +223,7 @@ function DivergeQuestionView({ question, index, grown, sound, onSettle, onNext, 
         <div className="diverge-q__done">
           <p>
             这题答出 <span className="num">{landed.length}</span> / <span className="num">{question.answers.length}</span>
-            {landed.some(l => l.hinted) ? `,其中 ${landed.filter(l => l.hinted).length} 个用了提示` : null}
+            {landed.some(l => l.hinted) ? `，其中 ${landed.filter(l => l.hinted).length} 个用了提示` : null}
           </p>
           {conceded.length > 0 ? <p className="muted">{conceded.length} 个词会进明天的补漏</p> : null}
           <Button type="button" variant="primary" block onClick={() => onNext(conceded)}>{nextLabel}</Button>
@@ -301,7 +301,7 @@ export function QuizDiverge({ concepts, words, onRestart }: { concepts: Concept[
   if (questions.length === 0) {
     return (
       <div className="quiz-empty">
-        <p>还没有能出的题。发散要一个概念下至少有 {MIN_ANSWERS} 个你已经学过的词 —— 再学一阵子,题会自己多起来。</p>
+        <p>还没有能出的题。发散要一个概念下至少有 {MIN_ANSWERS} 个你已经学过的词 —— 再学一阵子，题会自己多起来。</p>
       </div>
     )
   }
@@ -315,7 +315,7 @@ export function QuizDiverge({ concepts, words, onRestart }: { concepts: Concept[
           value={<>{produced}<span className="quiz-result__of"> / {total}</span></>}
           label="不靠提示答出"
         >
-          这个分母会变 —— 题目里的词是从你学过的词里现算的,学得越多,同一道题越长。
+          这个分母会变 —— 题目里的词是从你学过的词里现算的，学得越多，同一道题越长。
         </ResultScore>
         <Button type="button" variant="primary" size="lg" block onClick={onRestart}>再来一轮</Button>
       </>

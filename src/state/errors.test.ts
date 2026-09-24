@@ -67,8 +67,8 @@ describe('friendlyError: login path', () => {
 describe('logoutDiscarded', () => {
   it.each([
     [2, true, '未同步的学习进度、2 条未同步的词库改动'],
-    [0, true, '未同步的学习进度,'],
-    [3, false, '3 条未同步的词库改动,'],
+    [0, true, '未同步的学习进度，'],
+    [3, false, '3 条未同步的词库改动，'],
   ])('(%i, %s) only mentions the parts that actually exist', (ops, hadProgress, fragment) => {
     expect(logoutDiscarded(ops, hadProgress)).toContain(fragment)
   })
