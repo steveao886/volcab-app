@@ -11,7 +11,7 @@
    recommended, paired with a separate pronunciation button (Icon name="speak").
 --------------------------------------------------------------------------- */
 
-/* English headword: serif, creating hierarchy against the sans-serif UI.
+/* English headword: set apart from the UI by size and weight (both are serif now).
    The longest words in the library (interchangeability / canonicalization,
    etc.) must be able to wrap at 375px, otherwise the whole page overflows
    horizontally. */
@@ -42,20 +42,21 @@
   overflow-wrap: break-word;
 }
 
-/* Part-of-speech tag: small caps + wide tracking + vermilion, reads as dictionary at a glance */
+/* Part-of-speech tag: a muted italic `v.`, the way a dictionary prints it.
+   It used to be tracked vermilion capitals; under 朱批 cinnabar is for marks
+   a reader adds, and a part of speech is a label the page came with. */
 .pos {
-  font-size: var(--fs-eyebrow);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-eyebrow);
-  color: var(--accent);
+  font-family: var(--font-word);
+  font-size: var(--fs-sm);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--text-muted);
 }
 
-/* Digits: monospace, tabular figures, stat values don't jitter */
+/* Digits: Source Serif's tabular lining figures, stat values don't jitter */
 .num {
   font-family: var(--font-num);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
 .muted {
@@ -525,18 +526,21 @@
   justify-self: start;
 }
 
-/* The headword inside an example sentence. <mark>'s default is a bright
-   yellow background, which clashes completely with ink-and-paper — the
-   background is stripped and replaced with "body-text weight + a vermilion
-   underline": the sentence itself is --text-muted, so bumping the headword
-   up to --text already makes it stand out, and vermilion is reserved purely
-   for the annotation layer, consistent with the design language's rule that
-   vermilion is for annotation only. */
+/* The headword inside an example sentence: a cinnabar 波浪线 under it, the
+   line a Chinese reader draws under the phrase worth noticing. <mark>'s
+   default yellow background is stripped; the sentence itself is
+   --text-muted, so bumping the headword to --text and a heavier weight
+   already makes it stand out, and the wavy line says why. skip-ink is off
+   because the wave is the mark — breaking it at descenders reads as a
+   rendering fault. */
 .example-hit {
   background: none;
   color: var(--text);
   font-weight: 600;
-  box-shadow: inset 0 -1px 0 var(--accent);
+  text-decoration: underline wavy var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+  text-decoration-skip-ink: none;
 }
 
 /* Checkbox: native control tinted to the brand color, wrapped in a --tap-sized hit area */
@@ -629,20 +633,49 @@
   background: var(--state-review);
 }
 
-/* --- Progress bar: 3px hairline, vermilion fill ------------------------------ */
+/* --- Progress bar: 2px hairline, cinnabar fill ------------------------------- */
 
 .progress {
-  height: 3px;
-  border-radius: var(--r-full);
+  height: 2px;
   background: var(--rule);
   overflow: hidden;
 }
 
 .progress__fill {
   height: 100%;
-  border-radius: inherit;
   background: var(--accent);
   transition: width var(--dur-3) var(--ease);
+}
+
+/* --- 圈点 progress marks (components/ProgressMarks.tsx) -----------------------
+   One dot per item: filled cinnabar for finished, a heavy ink ring for the
+   one on screen, a hairline ring for the rest. 7px dots on a 12px pitch is
+   what puts 28 of them inside 343px, the content width at 375px — the max
+   progressMarks is called with. Shape tells the three apart, not only
+   color: filled, thick ring, thin ring. */
+
+.marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding-block: 2px;
+}
+
+.marks__dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--rule-control);
+}
+
+.marks__dot--done {
+  background: var(--accent);
+  box-shadow: none;
+}
+
+.marks__dot--current {
+  box-shadow: inset 0 0 0 2px var(--text);
 }
 
 /* --- Stat cell: centered big number + description label --------------------
