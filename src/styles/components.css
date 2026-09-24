@@ -390,17 +390,19 @@
   inset-inline: 0;
 }
 
-.chip:not(.chip--static):not([aria-disabled='true']):hover {
+/* The hover rule excludes a pressed chip itself. Each :not() counts its
+   argument, so this is four classes' worth of specificity against the
+   pressed rule's two: a pressed chip under the pointer took its ink label
+   on its ink slab — invisible, and on Android a tapped chip keeps :hover
+   until the next tap elsewhere. Restating the pressed rule with :hover
+   (three) still lost; the only fix is for hover not to apply. Measured
+   with a real pointer: color and background both rgb(30, 34, 38) before. */
+.chip:not(.chip--static):not([aria-disabled='true']):not([aria-pressed='true']):hover {
   color: var(--text);
   border-color: var(--text-faint);
 }
 
-/* The hover rule above outranks this one on specificity (four classes to
-   two), so a pressed chip under the pointer turned its label ink on an ink
-   slab — invisible, and on Android a tapped chip keeps :hover until the next
-   tap elsewhere. Restated with :hover so pressed always wins. */
-.chip[aria-pressed='true'],
-.chip[aria-pressed='true']:hover {
+.chip[aria-pressed='true'] {
   background: var(--slab);
   border-color: var(--slab);
   color: var(--slab-text);

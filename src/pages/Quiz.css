@@ -99,6 +99,13 @@
   text-decoration-thickness: 2px;
 }
 
+/* 回想's 排序: every option is a right word, only its place can be wrong.
+   A strike through the word would say the word is wrong; the 叉 on the key
+   and the 标准第 N，你排第 M tag say what actually is. */
+.quiz-options--order .btn--incorrect .quiz-option__text {
+  text-decoration: none;
+}
+
 .btn--incorrect .quiz-option__tag {
   color: var(--accent); /* mark: 你的选择 on a wrong pick */
 }

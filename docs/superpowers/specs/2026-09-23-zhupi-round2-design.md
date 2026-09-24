@@ -470,7 +470,15 @@ two the user asked for mid-round (below). Not pushed.
   `master` (§4 counted 162); 172 converted in the strings pass, the rest
   went with rewritten strings. Residue 2: AddWord's `split(/[,，、\n]/)`,
   which must keep its half-width comma, and an English comment the scanner
-  misreads. One test asserted the old wording (`errors.test.ts`).
+  misreads. One test asserted the old wording (`errors.test.ts`). A comma
+  after a half-width `)` was missed (the scanner saw no CJK neighbour); the
+  next pass caught it.
+- **The rest of the punctuation, at the user's request after §4:** 88
+  more `: ? ! ; ( )` beside CJK went full-width, four half-converted pairs
+  finished by hand, github.ts's ` (HTTP …)` included (errors.ts parses
+  only `HTTP \d{3}` and `rate-limited`, so the brackets are free), and 「」
+  for the 词库 search term. The etymology example keeps the data's
+  half-width format on purpose.
 - **Icon:** `#b3362b` with the glyph in `#f7f9f8`, drawn in Noto Serif SC
   SemiBold (installed here as `NotoSerifSC-VF.ttf`; the named 600 instance,
   not a synthesized bold). Safe zone from `icon-512.png`'s pixels: glyph
@@ -481,7 +489,13 @@ two the user asked for mid-round (below). Not pushed.
 
 - **A pressed chip under the pointer drew ink text on its ink slab.** The
   hover rule is four classes by way of two `:not()`s and beat
-  `[aria-pressed]`'s two; Android keeps `:hover` after a tap. Restated.
+  `[aria-pressed]`'s two; Android keeps `:hover` after a tap. The first fix
+  (restating the pressed rule with `:hover`, three) still lost — the final
+  review caught it; the hover rule now excludes a pressed chip. Measured
+  with a real pointer: color and background both `rgb(30, 34, 38)` before,
+  paper on ink after.
+- **An explanation on 数据 said 已掌握 takes until the next day.** It takes
+  the same session (`LEARNING_STEPS`, 1 and 10 minutes); caught in review.
 - **回想 and 极速 never drew the strike through a wrong pick.** Round 1's
   rule targets `.quiz-option__text`, and those two modes rendered the
   option as a bare string.

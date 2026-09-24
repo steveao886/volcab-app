@@ -271,7 +271,8 @@ export function Stats() {
       </section>
 
       {/* 已掌握 above only says a word finished its learning steps, which it
-          does after a day — on 2026-09-23 every studied word in the live
+          does the day it is learned (srs.ts's LEARNING_STEPS, 1 and 10
+          minutes, same session) — on 2026-09-23 every studied word in the live
           library was 已掌握. This is how many of them are held long-term, at
           the app's own line for "known" (MATURE_INTERVAL_DAYS, queue.ts). */}
       {maturity.studied > 0 && (
@@ -289,7 +290,7 @@ export function Stats() {
             </p>
           </div>
           <p className="faint stats-note">
-            {MATURE_INTERVAL_DAYS} 天是间隔重复里“记牢”的通行分界。上面的“已掌握”只说明词走完了新词步骤，第二天就算。
+            {MATURE_INTERVAL_DAYS} 天是间隔重复里“记牢”的通行分界。上面的“已掌握”只说明词走完了新词的两步，学的当天就算。
           </p>
         </section>
       )}

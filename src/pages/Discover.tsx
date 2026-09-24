@@ -135,12 +135,15 @@ export function Discover() {
                 <p className="margin-note__text">{s.note}</p>
               </div>
             )}
+            {/* 加入 then 不要, the order the buttons have always had: 不要 is
+                permanent (the word never comes back), and swapping the pair
+                would put it where the thumb expects 加入. */}
             <div className="discover-entry__actions">
-              <Button variant="ghost" onClick={() => reject(s)} aria-label={`不要 ${s.headword}`}>
-                不要
-              </Button>
               <Button variant="primary" onClick={() => accept(s)}>
                 加入
+              </Button>
+              <Button variant="ghost" onClick={() => reject(s)} aria-label={`不要 ${s.headword}`}>
+                不要
               </Button>
             </div>
           </article>

@@ -288,7 +288,11 @@ function RecallQuestionView({
         </>
       ) : (
         <>
-          <div className="quiz-options" role="group" aria-label="选项">
+          <div
+            className={question.kind === 'order' ? 'quiz-options quiz-options--order' : 'quiz-options'}
+            role="group"
+            aria-label="选项"
+          >
             {question.options.map((opt, i) => {
               const orderPos = picked.indexOf(opt)
               let variant: 'secondary' | 'correct' | 'incorrect' = 'secondary'

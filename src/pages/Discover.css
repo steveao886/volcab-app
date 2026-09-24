@@ -85,8 +85,8 @@
   font-size: var(--fs-sm);
 }
 
-/* The pair, right-aligned under the entry: 加入 at the edge under the thumb,
-   不要 beside it. */
+/* The pair, right-aligned under the entry, in the order it has always had:
+   加入, then 不要 at the edge. */
 .discover-entry__actions {
   display: flex;
   justify-content: flex-end;
