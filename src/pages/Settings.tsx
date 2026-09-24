@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Button } from '../components/Button'
-import { Card } from '../components/Card'
 import { Field } from '../components/Field'
 import { Page } from '../components/Page'
 import { TextInput } from '../components/TextInput'
@@ -241,9 +240,13 @@ export function Settings() {
 
   return (
     <Page title="设置">
-      <Card>
+      {/* Each setting is a section on the paper under a ruled head, no
+          cards. For the two numeric settings the field's own label is the
+          head (labelClassName), so the name is printed once. */}
+      <section className="section">
         <Field
           label="每日新词数"
+          labelClassName="section-head"
           htmlFor="settings-new-per-day"
           hint={`每天最多学习的新词数量,${NEW_PER_DAY_MIN}–${NEW_PER_DAY_MAX} 之间`}
         >
@@ -286,13 +289,16 @@ export function Settings() {
             <span className="num">{newPerDayAdvice.to}</span>。
           </Advice>
         )}
+      </section>
 
-        {/* Sits with the new-word count because both decide how much work
-            tomorrow holds. The hint carries the target number, because
-            "1.3" means nothing without knowing what you are aiming at —
-            the stats page prints the retention this is meant to move. */}
+      {/* Sits right after the new-word count because both decide how much
+          work tomorrow holds. The hint carries the target number, because
+          "1.3" means nothing without knowing what you are aiming at — the
+          stats page prints the retention this is meant to move. */}
+      <section className="section">
         <Field
           label="间隔系数"
+          labelClassName="section-head"
           htmlFor="settings-interval-modifier"
           hint={`复习间隔的整体倍率,${MIN_INTERVAL_MODIFIER}–${MAX_INTERVAL_MODIFIER}。留存率明显高于 90% 时调大它,间隔会变长、每天要复习的词会变少。它是复利的,每复习一次乘一次,直到撞上间隔上限。`}
         >
@@ -334,18 +340,20 @@ export function Settings() {
             建议 <span className="num">{round1(modifierAdvice.to)}</span>。
           </Advice>
         )}
-      </Card>
+      </section>
 
-      <Card>
+      <section className="section">
+        <h2 className="section-head">音效</h2>
         {/* The whole row is a <label>, so clicking anywhere toggles it —
             the same pattern as Library.tsx's LibraryRow. Defaults to on
             (spec §3.3): progress.settings.soundEnabled is treated as true
             when absent, and isSoundEnabled is the single source of that
-            check in src/lib/sound.ts, so ?? true isn't duplicated here. */}
+            check in src/lib/sound.ts, so ?? true isn't duplicated here.
+            The head above says 音效, so the row says what it plays. */}
         <label className="settings-toggle">
           <span className="settings-toggle__text">
-            <span className="settings-toggle__label">音效</span>
-            <span className="settings-toggle__hint">打分、判题、复习完成时的提示音</span>
+            <span className="settings-toggle__label">播放提示音</span>
+            <span className="settings-toggle__hint">打分、判题、复习完成时</span>
           </span>
           <span className="check">
             <input
@@ -356,24 +364,24 @@ export function Settings() {
             />
           </span>
         </label>
-      </Card>
+      </section>
 
-      <Card>
-        <p className="section-title">账号</p>
-        <div className="settings-rows">
-          <div className="settings-row">
-            <p className="settings-row__label">GitHub 用户</p>
-            <p className="settings-row__value">{owner}</p>
+      <section className="section">
+        <h2 className="section-head">账号</h2>
+        <dl className="ledger settings-account">
+          <div className="ledger__row">
+            <dt className="ledger__label">GitHub 用户</dt>
+            <dd className="ledger__value">{owner}</dd>
           </div>
           {tokenTail && (
-            <div className="settings-row">
-              <p className="settings-row__label">Token</p>
-              <p className="settings-row__value num" aria-label={`Token 末四位 ${tokenTail}`}>
+            <div className="ledger__row">
+              <dt className="ledger__label">Token</dt>
+              <dd className="ledger__value" aria-label={`Token 末四位 ${tokenTail}`}>
                 •••• {tokenTail}
-              </p>
+              </dd>
             </div>
           )}
-        </div>
+        </dl>
 
         {confirmingLogout ? (
           <div className="settings-confirm" role="alert">
@@ -397,21 +405,20 @@ export function Settings() {
             退出登录
           </Button>
         )}
-      </Card>
+      </section>
 
-      <Card>
-        <p className="section-title">备份</p>
+      <section className="section">
+        <h2 className="section-head">备份</h2>
         <p className="settings-hint">导出词库与学习进度为一份 JSON 文件,保存到本机。</p>
         <Button variant="secondary" block onClick={handleExport}>
           导出备份
         </Button>
-      </Card>
+      </section>
 
-      {/* Sits with the version rather than in a card of its own: it answers
-          "what am I running", which is the same question the line below
-          answers. */}
-      <Card>
-        <p className="section-title">版本</p>
+      {/* The update check sits under 版本: it answers "what am I running",
+          which is the same question the footer line below answers. */}
+      <section className="section">
+        <h2 className="section-head">版本</h2>
         <p className="settings-hint">
           {updateStatus === 'current'
             ? '已是最新版本。'
@@ -422,9 +429,12 @@ export function Settings() {
         <Button variant="secondary" block onClick={handleCheckUpdate} disabled={checking}>
           {checking ? '检查中…' : '检查更新'}
         </Button>
-      </Card>
+      </section>
 
-      <p className="settings-version">Volcab · {APP_VERSION}</p>
+      <p className="settings-version">
+        <span lang="en">Volcab</span>
+        <span>{APP_VERSION}</span>
+      </p>
     </Page>
   )
 }

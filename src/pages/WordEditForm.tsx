@@ -39,10 +39,10 @@ import { wordIssueMessage } from './wordIssueText'
  * (it's a structured pos/en/zh triple); there's no need to copy that
  * pattern for three flat lists.
  *
- * The two <legend>s use .worddetail-section-title (the same class as the
- * "Examples"/"Synonyms" section headings in this page's read-only state),
- * not .pos — .pos is a part-of-speech tag, and structural section headers
- * shouldn't use vermilion.
+ * The <legend>s are the shared .section-head, the same ruled head the
+ * page's read-only state puts over 例句 and 近义词, so editing a word reads
+ * like the entry it edits. Each meaning is a row divided from the next by a
+ * rule, not a box inside the form.
  */
 
 let keySeed = 0
@@ -192,7 +192,7 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
   return (
     <form className="worddetail-edit" onSubmit={handleSubmit} noValidate>
       <fieldset className="worddetail-edit__group" disabled={saving}>
-        <legend className="section-title worddetail-section-title">释义</legend>
+        <legend className="section-head">释义</legend>
         {meanings.map((m, i) => (
           <div className="worddetail-edit__meaning" key={m.key}>
             <p className="worddetail-edit__index">释义 {i + 1}</p>
@@ -261,13 +261,13 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
             {shareTotal === 100 ? '' : ',需为 100%'}
           </p>
         )}
-        <Button type="button" variant="secondary" size="sm" onClick={addMeaning}>
+        <Button className="worddetail-edit__add" type="button" variant="ghost" size="sm" onClick={addMeaning}>
           + 添加释义
         </Button>
       </fieldset>
 
       <fieldset className="worddetail-edit__group" disabled={saving}>
-        <legend className="section-title worddetail-section-title">当代遇见概率</legend>
+        <legend className="section-head">当代遇见概率</legend>
         <Field
           label="1–10"
           htmlFor="edit-usage"
@@ -290,7 +290,7 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
       </fieldset>
 
       <fieldset className="worddetail-edit__group" disabled={saving}>
-        <legend className="section-title worddetail-section-title">例句</legend>
+        <legend className="section-head">例句</legend>
         {examples.map((ex, i) => (
           <div className="worddetail-edit__example" key={ex.key}>
             <Textarea
@@ -304,7 +304,7 @@ export function WordEditForm({ word, saving, onCancel, onSave }: WordEditFormPro
             </Button>
           </div>
         ))}
-        <Button type="button" variant="secondary" size="sm" onClick={addExample}>
+        <Button className="worddetail-edit__add" type="button" variant="ghost" size="sm" onClick={addExample}>
           + 添加例句
         </Button>
       </fieldset>

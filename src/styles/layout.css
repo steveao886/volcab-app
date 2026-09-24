@@ -61,8 +61,8 @@
 .tabbar__item[aria-current='page'] {
   color: var(--text);
   font-weight: 900;
-  -webkit-text-emphasis: filled dot var(--accent);
-  text-emphasis: filled dot var(--accent);
+  -webkit-text-emphasis: filled dot var(--accent); /* mark: 着重号 */
+  text-emphasis: filled dot var(--accent); /* mark: 着重号 */
   -webkit-text-emphasis-position: under right;
   text-emphasis-position: under right;
 }

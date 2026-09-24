@@ -41,80 +41,22 @@
   justify-content: center;
 }
 
-/* Label over digit hint, the same stack as .review-grades and
-   .practice-answers — a shortcut that isn't printed on its own control does
-   not exist. */
+/* Label over its printed key (the shared .key cap) — a shortcut that isn't
+   printed on its own control does not exist. */
 .practice-size__options .btn {
   flex-direction: column;
   gap: 2px;
   min-width: 4.5rem;
 }
 
-.practice-size__key {
-  color: var(--text-faint);
-  font-family: var(--font-num);
-  font-size: var(--fs-xs);
-}
-
-/* On the highlighted chip the faint gray would fall off the ink slab. */
-.practice-size__options .btn--primary .practice-size__key {
-  color: inherit;
-  opacity: 0.75;
-}
-
-.practice-answers {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--sp-2);
-}
-
-/* Matches .review-grades: the label and its key hint stack, so the two
-   buttons keep the same height as the four they replace and the card
-   below doesn't jump on flip. */
-.practice-answers .btn {
-  padding-inline: var(--sp-2);
-  flex-direction: column;
-  gap: 2px;
-}
-
-/* On wider screens the pair shouldn't stretch the full content width —
-   same treatment, and same breakpoint, as .review-grades. */
-@media (min-width: 900px) {
-  .practice-answers {
-    max-width: 480px;
-    margin-inline: auto;
-  }
-}
+/* The answer pair is the shared .ruled-row (components.css), the same row
+   复习 grades on: two columns where it has four, the same height, so the
+   card below doesn't jump on flip. */
 
 /* --- End-of-session recap --------------------------------------------------
-   Rows follow the library's shape: headword takes what it needs, the gloss
-   fills and truncates. At 375px something has to give, and the gloss is the
-   part you can reconstruct from the headword — the same tradeoff the old
-   stats leaderboard made. */
+   The missed words are the shared MissedWords list (QuizResult.tsx), the
+   same one every quiz result page ends with; this is only its footnote. */
 
-.practice-recap__list {
-  display: grid;
-  gap: var(--sp-1);
-}
-
-.practice-recap__row {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: baseline;
-  gap: var(--sp-2);
-  padding-block: var(--sp-2);
-  min-height: var(--tap);
-  color: inherit;
-  text-decoration: none;
-}
-
-.practice-recap__word {
-  font-size: var(--fs-base);
-}
-
-.practice-recap__zh {
-  overflow: hidden;
-  font-size: var(--fs-sm);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.practice-recap__note {
+  font-size: var(--fs-xs);
 }

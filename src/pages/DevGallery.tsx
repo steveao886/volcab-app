@@ -8,6 +8,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Field } from '../components/Field'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
+import { ProgressMarks } from '../components/ProgressMarks'
 import { StateDot } from '../components/StateDot'
 import { SyncStatus } from '../components/SyncStatus'
 import { TextInput } from '../components/TextInput'
@@ -22,8 +23,10 @@ import { Textarea } from '../components/Textarea'
  * In production builds, App.tsx tree-shakes the whole route out via
  * import.meta.env.DEV.
  *
- * Layout helpers use inline styles rather than CSS classes, so dev-only
- * styles don't leak into the production stylesheet.
+ * Laid out in the 朱批 vocabulary it exists to show: each group is a
+ * section under a ruled head, not a card. Layout helpers use inline styles
+ * rather than CSS classes, so dev-only styles don't leak into the
+ * production stylesheet.
  */
 
 const ROW: CSSProperties = {
@@ -31,37 +34,12 @@ const ROW: CSSProperties = {
   flexWrap: 'wrap',
   alignItems: 'center',
   gap: 'var(--sp-3)',
-  marginTop: 'var(--sp-3)',
 }
 
 const STACK: CSSProperties = {
   display: 'grid',
   gap: 'var(--sp-3)',
-  marginTop: 'var(--sp-3)',
 }
-
-/* The group title originally borrowed .pos, but .pos is a part-of-speech
-   tag (vermilion = annotation), not a section heading; and this page also
-   happens to display .pos itself, so the two looking identical would just
-   make it unclear which one is the sample. Same treatment as
-   components.css's .section-title, just via inline styles here. */
-const LABEL: CSSProperties = {
-  fontSize: 'var(--fs-sm)',
-  fontWeight: 600,
-  lineHeight: 'var(--lh-tight)',
-  letterSpacing: '0.02em',
-  color: 'var(--text-muted)',
-}
-
-/* The stat grid's container is the page's responsibility (column count is a
-   layout decision) — this just provides one inline for the demo */
-const statsGrid = (columns: number): CSSProperties => ({
-  display: 'grid',
-  gridTemplateColumns: `repeat(${columns}, 1fr)`,
-  gap: 'var(--sp-3)',
-  textAlign: 'center',
-  marginTop: 'var(--sp-3)',
-})
 
 function Group({
   title,
@@ -73,10 +51,10 @@ function Group({
   children: ReactNode
 }) {
   return (
-    <Card>
-      <p style={LABEL}>{title}</p>
+    <section className="section">
+      <h2 className="section-head">{title}</h2>
       <div style={layout}>{children}</div>
-    </Card>
+    </section>
   )
 }
 
@@ -115,13 +93,6 @@ export function DevGallery() {
         <Button size="lg">大</Button>
       </Group>
 
-      <Group title="button / grade">
-        <Button variant="grade-again">重来</Button>
-        <Button variant="grade-hard">困难</Button>
-        <Button variant="grade-good">良好</Button>
-        <Button variant="grade-easy">简单</Button>
-      </Group>
-
       <Group title="button / quiz feedback">
         <Button variant="correct" disabled>
           答对了
@@ -131,7 +102,7 @@ export function DevGallery() {
         </Button>
       </Group>
 
-      <Group title="button / loading + disabled">
+      <Group title="button / loading, disabled">
         <Button variant="primary" loading>
           登录中
         </Button>
@@ -143,7 +114,7 @@ export function DevGallery() {
         </Button>
       </Group>
 
-      <Group title="button / icon · block · wrap" layout={STACK}>
+      <Group title="button / icon, block, wrap" layout={STACK}>
         <Button variant="secondary">
           <Icon name="speak" size={18} />
           发音
@@ -170,6 +141,32 @@ export function DevGallery() {
         </Button>
       </Group>
 
+      {/* The grade row of 复习, shared with 练习 and 回想: ruled, 界栏
+          between the columns, the miss in cinnabar, keys printed. */}
+      <Group title="ruled-row（复习、练习、回想）" layout={STACK}>
+        <div className="ruled-row">
+          <Button className="ruled-row__miss">
+            <span className="ruled-row__label">重来<span className="key">1</span></span>
+            <span className="num ruled-row__sub">稍后</span>
+          </Button>
+          <Button>
+            <span className="ruled-row__label">困难<span className="key">2</span></span>
+            <span className="num ruled-row__sub">1 天</span>
+          </Button>
+          <Button>
+            <span className="ruled-row__label">良好<span className="key">3</span></span>
+            <span className="num ruled-row__sub">4 天</span>
+          </Button>
+          <Button>
+            <span className="ruled-row__label">简单<span className="key">4</span></span>
+            <span className="num ruled-row__sub">9 天</span>
+          </Button>
+        </div>
+        <Button variant="primary" block>
+          提交 <span className="key">Enter</span>
+        </Button>
+      </Group>
+
       <Group title="chip">
         <Chip label="全部" count={476} selected />
         <Chip label="未学" count={312} />
@@ -179,16 +176,16 @@ export function DevGallery() {
         <Chip label="annul" interactive={false} />
       </Group>
 
-      <Group title="badge · dot · checkbox">
+      <Group title="state marks、badge、checkbox">
+        <StateDot state="new" />
+        <StateDot state="learning" />
+        <StateDot state="review" />
         <Badge>已同步</Badge>
         <Badge tone="accent">新词</Badge>
         <Badge tone="success">已掌握</Badge>
         <Badge tone="warning">待同步</Badge>
         <Badge tone="danger">同步失败</Badge>
         <Badge tone="info">离线</Badge>
-        <StateDot state="new" />
-        <StateDot state="learning" />
-        <StateDot state="review" />
         <label className="check">
           <input
             className="check__box"
@@ -204,6 +201,21 @@ export function DevGallery() {
             aria-label="示例复选框(已选)"
           />
         </label>
+      </Group>
+
+      <Group title="marks：圈点、勾、旁批、波浪线" layout={STACK}>
+        <ProgressMarks done={3} total={10} label="示例进度" valueText="第 4 / 10 题" />
+        <p style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)' }}>
+          <span className="mark-tick" aria-hidden="true" />
+          已保存
+        </p>
+        <div className="margin-note">
+          <p className="margin-note__label">要点</p>
+          <p className="margin-note__text">只形容坏事自行减弱，主语是坏事本身，不能带宾语。</p>
+        </div>
+        <p lang="en">
+          The storm finally <mark className="example-hit">abated</mark> after midnight.
+        </p>
       </Group>
 
       <Group title="field" layout={STACK}>
@@ -228,76 +240,89 @@ export function DevGallery() {
         </Field>
       </Group>
 
-      <Group title="card variants" layout={STACK}>
-        <Card pad="sm">card · pad=sm</Card>
-        <Card raised>card · raised</Card>
-        <a className="card card--interactive card--sm" href="#/dev">
-          card · interactive(词库列表行)
-        </a>
+      {/* The only boxes left: the flip card, a self-contained prompt, and
+          what floats (dialogs, the update prompt). */}
+      <Group title="card（只剩翻面卡与浮层）" layout={STACK}>
+        <Card pad="sm">card，pad=sm</Card>
+        <Card raised>card，raised</Card>
       </Group>
 
-      {/* --- Below are shared primitives promoted from individual pages during the integration phase --- */}
+      <Group title="ledger：主次文字加数值" layout={STACK}>
+        <ul className="ledger">
+          <li>
+            <a className="ledger__row" href="#/dev">
+              <span className="ledger__main">
+                <span className="ledger__word" lang="en">abrogate</span>
+                <span className="ledger__secondary">正式废除（法律、协议）</span>
+              </span>
+              <StateDot state="review" />
+            </a>
+          </li>
+          <li>
+            <a className="ledger__row" href="#/dev">
+              <span className="ledger__main">
+                <span className="ledger__primary">回想</span>
+                <span className="ledger__secondary">只看中文，回想英文词</span>
+              </span>
+              <span className="ledger__value">71%</span>
+            </a>
+          </li>
+        </ul>
+      </Group>
 
-      <Group title="stat · 三栏(今日页)" layout={statsGrid(3)}>
-        <div className="stat">
-          <p className="num stat__value">12</p>
-          <p className="stat__label">今日到期</p>
+      <Group title="ledger：标签加数值（设置、词条页）" layout={STACK}>
+        <dl className="ledger">
+          <div className="ledger__row">
+            <dt className="ledger__label">GitHub 用户</dt>
+            <dd className="ledger__value" style={{ margin: 0 }}>octocat</dd>
+          </div>
+          <div className="ledger__row">
+            <dt className="ledger__label">Token</dt>
+            <dd className="ledger__value" style={{ margin: 0 }}>•••• 4f2a</dd>
+          </div>
+        </dl>
+      </Group>
+
+      <Group title="readout 与界栏（数据页）" layout={STACK}>
+        <div className="readout">
+          <p className="readout__value">2781</p>
+          <p className="readout__label">次复习</p>
         </div>
-        <div className="stat">
-          <p className="num stat__value">5</p>
-          <p className="stat__label">新词</p>
-        </div>
-        <div className="stat">
-          <p className="num stat__value stat__value--accent">8</p>
-          <p className="stat__label">连续天数</p>
+        <div className="readouts">
+          <div className="readout">
+            <p className="readout__value">4</p>
+            <p className="readout__label">当前连续</p>
+          </div>
+          <div className="readout">
+            <p className="readout__value">56</p>
+            <p className="readout__label">最长连续</p>
+          </div>
+          <div className="readout">
+            <p className="readout__value">60</p>
+            <p className="readout__label">累计学习</p>
+          </div>
+          <div className="readout">
+            <p className="readout__value">291</p>
+            <p className="readout__label">测验次数</p>
+          </div>
         </div>
       </Group>
 
-      <Group title="stat · 四格 + --row(词条页)" layout={statsGrid(2)}>
-        <div className="stat">
-          <p className="stat__value stat__value--row">
-            <StateDot state="learning" />
-            学习中
-          </p>
-          <p className="stat__label">学习状态</p>
-        </div>
-        <div className="stat">
-          <p className="num stat__value">2026-07-30</p>
-          <p className="stat__label">到期日</p>
-        </div>
-        <div className="stat">
-          <p className="num stat__value">7</p>
-          <p className="stat__label">复习次数</p>
-        </div>
-        <div className="stat">
-          <p className="num stat__value">2</p>
-          <p className="stat__label">失误次数</p>
-        </div>
+      <Group title="chart tokens：黛紫、赭石">
+        <span style={{ width: 40, height: 12, background: 'var(--chart-1)' }} />
+        <span className="muted">--chart-1</span>
+        <span style={{ width: 40, height: 12, background: 'var(--chart-2)' }} />
+        <span className="muted">--chart-2</span>
       </Group>
 
-      {/* Deliberately a separate primitive from .stat: that one is a
-          centered big-number tile, this one is a single-line read-only
-          metadata row with the label on the left and value on the right.
-          Don't merge them. */}
-      <Group title="settings-row(≠ stat)" layout={STACK}>
-        <div className="settings-row">
-          <p className="settings-row__label">GitHub 用户</p>
-          <p className="settings-row__value">octocat</p>
-        </div>
-        <div className="settings-row">
-          <p className="settings-row__label">Token</p>
-          <p className="settings-row__value num">•••• 4f2a</p>
-        </div>
-      </Group>
-
-      <Group title="sync · badge(页头 actions 槽)">
+      <Group title="sync badge（页头 actions 槽）">
         <SyncStatus status="synced" onRetry={noop} />
         <SyncStatus status="pending" onRetry={noop} />
         <SyncStatus status="offline" onRetry={noop} />
         <SyncStatus status="error" onRetry={noop} />
       </Group>
 
-      <Group title="sync · note(正文内联)" layout={STACK}>
+      <Group title="sync note（正文内联）" layout={STACK}>
         <SyncStatus variant="note" status="synced" onRetry={noop} />
         <SyncStatus variant="note" status="pending" onRetry={noop} />
         <SyncStatus variant="note" status="offline" onRetry={noop} />
@@ -357,16 +382,16 @@ export function DevGallery() {
         </p>
         <p className="pos">verb</p>
         <p>正式废除(法律、协议);中文正文用 --lh-body 的行距。</p>
-        <p className="muted">muted · 次级文字</p>
-        <p className="faint">faint · 三级文字</p>
-        <p className="num">476 · 12 / 30 · 连续 8 天</p>
+        <p className="muted">muted，次级文字</p>
+        <p className="faint">faint，三级文字</p>
+        <p className="num">476　12 / 30　连续 8 天</p>
         <hr className="rule" />
         <div className="progress">
           <div className="progress__fill" style={{ width: '42%' }} />
         </div>
       </Group>
 
-      <Group title="headword overflow · 375px 回归样本" layout={STACK}>
+      <Group title="headword overflow（375px 回归样本）" layout={STACK}>
         {LONGEST.map((w) => (
           <p className="word word--xl" lang="en" key={w}>
             {w}

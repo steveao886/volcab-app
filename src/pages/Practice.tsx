@@ -17,6 +17,7 @@ import { storage } from '../lib/storage'
 import { todayStr } from '../lib/srs'
 import { filterToParams, filterWords, paramsToFilter } from './libraryFilter'
 import { ReviewCardBack } from './ReviewCard'
+import { MissedWords } from './QuizResult'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
 // The card face is literally the review card — same headword block, same
@@ -292,7 +293,7 @@ export function Practice() {
                 onClick={() => start(o)}
               >
                 {o.label}
-                <span className="practice-size__key">{i + 1}</span>
+                <span className="key">{i + 1}</span>
               </Button>
             ))}
           </div>
@@ -347,23 +348,13 @@ export function Practice() {
             Naming them is also the cheapest possible answer, since the deck
             is already in hand and nothing new is stored. */}
         {missed.length > 0 && (
-          <Card className="practice-recap">
-            <p className="section-title">这一轮没答上来的</p>
-            <ul className="practice-recap__list">
-              {missed.map(w => (
-                <li key={w.id}>
-                  <Link to={`/word/${w.id}`} className="practice-recap__row">
-                    <span className="word practice-recap__word" lang="en">{w.headword}</span>
-                    <span className="muted practice-recap__zh">{w.meanings[0]?.zh ?? ''}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <p className="faint stats-note">
+          <>
+            <MissedWords title="这一轮没答上来的" rows={missed.map(w => ({ word: w }))} />
+            <p className="faint practice-recap__note">
               这 <span className="num">{missed.length}</span> 个已经排进顽固词队列,
               这周做测验也会更常碰到它们。
             </p>
-          </Card>
+          </>
         )}
       </Page>
     )
@@ -398,14 +389,16 @@ export function Practice() {
           visible the moment the card flips, and covering nothing. */}
       <div className="review-actions">
         {flipped ? (
-          <div className="practice-answers">
-            <Button variant="grade-again" onClick={() => answer(false)}>
-              <span className="review-grade__label">
+          // The shared ruled row 复习 grades on, two columns instead of four:
+          // 不认识 in cinnabar as the mark of a miss, 认识 in ink.
+          <div className="ruled-row">
+            <Button className="ruled-row__miss" onClick={() => answer(false)}>
+              <span className="ruled-row__label">
                 不认识<span className="key">1</span>
               </span>
             </Button>
-            <Button variant="grade-good" onClick={() => answer(true)}>
-              <span className="review-grade__label">
+            <Button onClick={() => answer(true)}>
+              <span className="ruled-row__label">
                 认识<span className="key">2</span>
               </span>
             </Button>
@@ -415,6 +408,7 @@ export function Practice() {
         )}
       </div>
 
+      {/* A card that survives 朱批: the box is the flip target. */}
       <Card
         className={`review-card card--interactive ${flipped ? 'review-card--back' : 'review-card--front'}`}
         onClick={toggleFlip}

@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
-import { Card } from '../components/Card'
 import { Chip } from '../components/Chip'
 import { Page } from '../components/Page'
 import { availableSuggestions, KIND_LABEL, rankSuggestions } from '../lib/suggestion'
@@ -116,28 +115,35 @@ export function Discover() {
       {shown.length === 0 ? (
         <p className="muted discover-empty">这个类型下没有了,换一个看看。</p>
       ) : (
+        // Entries in a list on the paper, divided by strong rules, the way a
+        // dictionary sets one headword after the next. They were cards.
         shown.map(s => (
-          <Card key={s.id} className="discover-card">
-            <div className="discover-card__head">
-              <span className="word discover-card__word" lang="en">{s.headword}</span>
-              <span className="num faint discover-card__score" title="遇见概率 1–10">{s.usageScore}</span>
+          <article key={s.id} className="discover-entry">
+            <div className="discover-entry__head">
+              <span className="word discover-entry__word" lang="en">{s.headword}</span>
+              <span className="discover-entry__kind">{KIND_LABEL[s.kind]}</span>
+              <span className="num faint discover-entry__score" title="遇见概率 1–10">{s.usageScore}</span>
             </div>
-            <p className="discover-card__kind">
-              <Chip label={KIND_LABEL[s.kind]} interactive={false} />
-            </p>
-            <p className="discover-card__zh">{s.zh}</p>
-            <p className="muted discover-card__en" lang="en">{s.en}</p>
-            <p className="discover-card__example" lang="en">{s.example}</p>
-            {s.note !== undefined && <p className="faint discover-card__note">{s.note}</p>}
-            <div className="discover-card__actions">
-              <Button variant="primary" block onClick={() => accept(s)}>
-                加入
-              </Button>
+            <p className="discover-entry__zh">{s.zh}</p>
+            <p className="muted discover-entry__en" lang="en">{s.en}</p>
+            <p className="discover-entry__example" lang="en">{s.example}</p>
+            {/* The trap, the register, or why it beats the obvious synonym:
+                the same kind of note as a word's 要点, so the same 旁批. */}
+            {s.note !== undefined && (
+              <div className="margin-note discover-entry__note">
+                <p className="margin-note__label">要点</p>
+                <p className="margin-note__text">{s.note}</p>
+              </div>
+            )}
+            <div className="discover-entry__actions">
               <Button variant="ghost" onClick={() => reject(s)} aria-label={`不要 ${s.headword}`}>
                 不要
               </Button>
+              <Button variant="primary" onClick={() => accept(s)}>
+                加入
+              </Button>
             </div>
-          </Card>
+          </article>
         ))
       )}
 

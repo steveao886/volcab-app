@@ -94,7 +94,7 @@
 
 /* The 勾 is the one cinnabar thing on a finished row. */
 .today-plan__row--done .today-plan__mark {
-  color: var(--accent);
+  color: var(--accent); /* mark: 勾 */
 }
 
 .today-plan__row--pending .today-plan__mark {

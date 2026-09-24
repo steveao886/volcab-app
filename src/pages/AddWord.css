@@ -1,20 +1,20 @@
 /* ==========================================================================
    AddWord page-specific styles (Task 20).
    All class names are prefixed with .addword- and are combined with the
-   global .field/.input/.btn/.card, without redefining those components'
-   own styles. Mobile-first: every multi-column layout collapses to a
-   single column below 375px and only goes side-by-side above the
-   breakpoint, avoiding any horizontal overflow.
+   global .field/.input/.btn/.section, without redefining those components'
+   own styles. Every group is a .section under a ruled .section-head on the
+   paper — they were six cards. Mobile-first: every multi-column layout
+   collapses to a single column below 375px and only goes side-by-side
+   above the breakpoint, avoiding any horizontal overflow.
    ========================================================================== */
 
 .addword-form {
   display: grid;
-  gap: var(--sp-4);
+  gap: var(--sp-6);
 }
 
-/* Adds a consistent gap when a Card stacks multiple Fields vertically */
+/* A section that stacks several Fields gets the form's field spacing. */
 .addword-stack {
-  display: grid;
   gap: var(--sp-4);
 }
 
@@ -24,8 +24,7 @@
    action, differing only in button wording and emphasis. */
 
 .addword-capture {
-  display: grid;
-  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
 }
 
 .addword-capture__status {
@@ -37,13 +36,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-2);
-}
-
-/* section-head's built-in bottom margin is meant for non-grid Cards; these
-   two containers already have their own gap, so keeping it would double up */
-.addword-capture > .addword-section-head,
-.addword-stack > .addword-section-head {
-  margin-bottom: 0;
 }
 
 /* --- Dictionary lookup: input + query button on the same row, aligned to
@@ -88,42 +80,40 @@
 
 /* --- Repeatable groups: meanings / examples / related forms -------------- */
 
+/* The ruled head, and the one-line hint under it saying what the group needs. */
 .addword-section-head {
   display: grid;
   gap: var(--sp-1);
-  margin-bottom: var(--sp-3);
-}
-
-.addword-section-title {
-  font-size: var(--fs-base);
-  font-weight: 600;
-  color: var(--text);
 }
 
 .addword-section-hint {
   font-size: var(--fs-xs);
 }
 
+/* Rows divided by rules; each row's 删除 sits at its right edge, under the
+   fields it removes. */
 .addword-rows {
   display: grid;
-  gap: var(--sp-4);
-  margin-bottom: var(--sp-3);
 }
 
 .addword-row {
   display: grid;
   gap: var(--sp-2);
-  padding-bottom: var(--sp-4);
+  padding-block: var(--sp-3);
   border-bottom: 1px solid var(--rule);
 }
 
-.addword-row:last-child {
-  padding-bottom: 0;
-  border-bottom: none;
+.addword-row:first-child {
+  padding-top: 0;
 }
 
 .addword-row > .btn {
   justify-self: end;
+}
+
+/* 「+ 添加」 is a ghost button at the start of the line under its rows. */
+.addword-add {
+  justify-self: start;
 }
 
 .addword-row__grid {
@@ -135,7 +125,6 @@
 /* Live hint for the share total. Sits right above "+ Add meaning" so it
    doesn't crowd the button. */
 .addword-share-total {
-  margin-block: var(--sp-3);
   font-size: var(--fs-sm);
 }
 
@@ -156,11 +145,20 @@
   }
 }
 
-/* --- Receipt card shown after a successful save --------------------------- */
+/* --- Receipt shown after a successful save --------------------------------- */
 
 .addword-saved {
   display: grid;
   gap: var(--sp-3);
+}
+
+/* 已保存 with the teacher's 勾 before it: the word says it, the tick marks it. */
+.addword-saved__mark {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-md);
+  font-weight: 900;
 }
 
 .addword-saved__headline {

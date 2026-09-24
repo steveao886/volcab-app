@@ -19,10 +19,16 @@ interface FieldProps {
   htmlFor: string
   hint?: ReactNode
   error?: ReactNode
+  /**
+   * Extra class on the <label>. Settings passes `section-head`: there the
+   * field *is* the section, and a ruled head over a label saying the same
+   * word printed it twice.
+   */
+  labelClassName?: string
   children: ReactNode
 }
 
-export function Field({ label, htmlFor, hint, error, children }: FieldProps) {
+export function Field({ label, htmlFor, hint, error, labelClassName, children }: FieldProps) {
   const hintId = hint === undefined ? null : `${htmlFor}-hint`
   const errorId = error === undefined ? null : `${htmlFor}-error`
 
@@ -40,7 +46,7 @@ export function Field({ label, htmlFor, hint, error, children }: FieldProps) {
 
   return (
     <div className="field">
-      <label className="field__label" htmlFor={htmlFor}>
+      <label className={labelClassName === undefined ? 'field__label' : `field__label ${labelClassName}`} htmlFor={htmlFor}>
         {label}
       </label>
       {control}

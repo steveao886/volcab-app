@@ -1,11 +1,12 @@
-/* Settings page-specific styles: sound toggle, account info rows, sign-out confirmation, version footer. */
+/* Settings page-specific styles: sound toggle, account ledger, sign-out
+   confirmation, version footer. Every setting is a .section under a ruled
+   .section-head (components.css); the numeric fields' labels take that
+   class themselves (Field's labelClassName). */
 
 /* --- Sound toggle: a whole-row clickable label, text on the left, control on the right --------------------------------
-   Deliberately different from .settings-row (a read-only row with label on
-   the left / value on the right) — this row is interactive, and the left
-   side has two lines of text (name + description) rather than a single
-   value, so it gets its own set of class names instead of making do by
-   borrowing .settings-row or .field. */
+   Deliberately different from a ledger's label/value row — this row is
+   interactive, and the left side has two lines of text (name +
+   description) rather than a single value. */
 
 .settings-toggle {
   display: flex;
@@ -32,16 +33,11 @@
   color: var(--text-faint);
 }
 
-/* --- Account info: a group of read-only rows with label on the left / value on the right ---------------------------------
-   The row itself (.settings-row / __label / __value) has already been
-   promoted up to components.css, which also notes that it's deliberately
-   kept separate from .stat as two different primitives. Only the
-   container layout is left here. */
+/* --- Account info: a two-row .ledger, label left / value right -------------
+   The <dl>'s UA margins are the only thing the shared rows need undone. */
 
-.settings-rows {
-  display: grid;
-  gap: var(--sp-2);
-  margin-block: var(--sp-3) var(--sp-4);
+.settings-account dd {
+  margin: 0;
 }
 
 /* --- Sign out: clicking expands in place into an explanation + a second confirmation, no modal ------------------------- */
@@ -49,8 +45,6 @@
 .settings-confirm {
   display: grid;
   gap: var(--sp-3);
-  padding-top: var(--sp-4);
-  border-top: 1px solid var(--rule);
 }
 
 .settings-confirm__text {
@@ -73,7 +67,6 @@
 /* --- Backup ------------------------------------------------------------------ */
 
 .settings-hint {
-  margin-block: var(--sp-2) var(--sp-4);
   font-size: var(--fs-sm);
   line-height: var(--lh-body);
   color: var(--text-muted);
@@ -81,26 +74,28 @@
 
 /* --- Version footer ---------------------------------------------------------------- */
 
+/* Two words side by side; the middle dot that joined them was template
+   chrome. */
 .settings-version {
-  padding-block: var(--sp-2) var(--sp-4);
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding-block: var(--sp-4);
   font-size: var(--fs-xs);
   color: var(--text-faint);
-  text-align: center;
 }
 
 /* --- Advice under a setting ------------------------------------------------
    Reads as a footnote to the field it belongs to, not as a second control.
 
-   The top margin matches .field's own grid gap so the advice sits the same
-   distance below the hint as the hint sits below the input — it belongs to
-   that field, and should look like it. It was briefly a *negative* margin,
-   meant to snug the two together; .field__hint carries no bottom margin, so
-   that pulled the advice 8px up into the hint's last line and the two
-   overlapped outright. */
+   Spaced by the section's own grid gap, which puts it just below the hint
+   and inside the same ruled section as its field — it belongs to that
+   field, and should look like it. It was briefly a *negative* margin, meant
+   to snug the two together; .field__hint carries no bottom margin, so that
+   pulled the advice 8px up into the hint's last line and the two overlapped
+   outright. */
 
 .settings-advice {
-  margin-top: var(--sp-2);
-  margin-bottom: var(--sp-5);
   font-size: var(--fs-xs);
   line-height: var(--lh-snug);
   color: var(--text-muted);

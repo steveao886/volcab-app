@@ -1,10 +1,12 @@
 /* Discover (/discover, suggested vocabulary) page-specific styles.
 
-   One card per suggestion, each carrying enough to make the call without
+   One entry per suggestion, each carrying enough to make the call without
    leaving the page: the phrase, what it means in both languages, one real
-   sentence, and the trap if it has one. The decision is binary and it is
-   taken dozens of times in a row, so the two buttons are the same shape on
-   every card and never move. */
+   sentence, and the trap if it has one (as the 旁批, .margin-note). Entries
+   sit on the paper divided by strong rules, like one headword after the
+   next in a dictionary; they were cards. The decision is binary and it is
+   taken dozens of times in a row, so the two buttons are the same pair in
+   the same place under every entry and never move. */
 
 .discover-filters {
   display: flex;
@@ -24,71 +26,74 @@
   text-align: center;
 }
 
-.discover-card {
-  margin-bottom: var(--sp-3);
+.discover-entry {
+  display: grid;
+  gap: var(--sp-2);
+  padding-block: var(--sp-4);
+  border-top: 1px solid var(--rule-strong);
 }
 
-.discover-card__head {
+/* Headword, then its category and score, on one baseline; the score is
+   pushed to the right edge. Wraps rather than overflowing at 375px. */
+.discover-entry__head {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  justify-content: space-between;
-  gap: var(--sp-3);
+  gap: var(--sp-1) var(--sp-3);
 }
 
-.discover-card__word {
+.discover-entry__word {
   font-size: var(--fs-md);
   /* A phrase is several words long and must be allowed to wrap; the library's
      single headwords never needed this. */
   overflow-wrap: anywhere;
 }
 
-.discover-card__score {
+/* 短语动词 / 惯用语: a label the entry came with, muted, not a chip. */
+.discover-entry__kind {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.discover-entry__score {
+  margin-inline-start: auto;
   font-size: var(--fs-xs);
   flex: none;
 }
 
-.discover-card__kind {
-  margin-top: var(--sp-1);
-}
-
-.discover-card__zh {
-  margin-top: var(--sp-2);
+.discover-entry__zh {
   font-size: var(--fs-base);
 }
 
-.discover-card__en {
+.discover-entry__en {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+}
+
+/* The example is the part that actually decides it, set as a review card
+   sets its examples: muted, Latin leading, no rule down its left. It had a
+   cinnabar bar there, a rule doing emphasis's job. */
+.discover-entry__example {
   margin-top: var(--sp-1);
   font-size: var(--fs-sm);
-  line-height: var(--lh-snug);
+  line-height: var(--lh-latin);
+  color: var(--text-muted);
 }
 
-/* The example is the part that actually decides it — set apart with the
-   vermilion rule the app uses everywhere for annotation, not indented into
-   anonymity. */
-.discover-card__example {
-  margin-top: var(--sp-3);
-  padding-left: var(--sp-3);
-  border-left: 2px solid var(--accent);
+.discover-entry__note {
+  margin-top: var(--sp-1);
   font-size: var(--fs-sm);
-  line-height: var(--lh-body);
 }
 
-.discover-card__note {
-  margin-top: var(--sp-2);
-  font-size: var(--fs-xs);
-  line-height: var(--lh-snug);
-}
-
-/* "Accept" takes the width because it is the action worth making easy; the
-   two sit on one row so neither is ever the button under the thumb by
-   accident. */
-.discover-card__actions {
+/* The pair, right-aligned under the entry: 加入 at the edge under the thumb,
+   不要 beside it. */
+.discover-entry__actions {
   display: flex;
+  justify-content: flex-end;
   gap: var(--sp-2);
-  margin-top: var(--sp-4);
+  margin-top: var(--sp-2);
 }
 
-.discover-card__actions .btn:last-child {
-  flex: none;
+.discover-entry__actions .btn {
   min-width: 5em;
 }

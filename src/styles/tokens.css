@@ -18,7 +18,7 @@
 
 :root {
   color-scheme: light dark;
-  accent-color: var(--accent); /* native checkbox / radio / range follow the brand color */
+  accent-color: var(--accent); /* mark: native checkbox / radio ticks take the cinnabar */
 
   /* --- Font families -----------------------------------------------------
      The two serif faces are bundled (src/main.tsx): the user reads on

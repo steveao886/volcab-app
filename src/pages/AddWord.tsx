@@ -1,9 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { FormEvent, KeyboardEvent, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { Badge } from '../components/Badge'
 import { Button } from '../components/Button'
-import { Card } from '../components/Card'
 import { Chip } from '../components/Chip'
 import { Field } from '../components/Field'
 import { Icon } from '../components/Icon'
@@ -355,8 +353,14 @@ export function AddWord() {
   if (savedWord) {
     return (
       <Page title="添加新词" back="/library">
-        <Card role="status" className="addword-saved">
-          <Badge tone="accent">已保存</Badge>
+        {/* On the paper, not in a card. The 勾 is the mark a saved entry
+            earns; it replaced a cinnabar badge, a tinted fill doing a mark's
+            job. */}
+        <div role="status" className="addword-saved">
+          <p className="addword-saved__mark">
+            <span className="mark-tick" aria-hidden="true" />
+            已保存
+          </p>
           <p className="addword-saved__headline">
             <span className="word" lang="en">
               {savedWord.headword}
@@ -372,7 +376,7 @@ export function AddWord() {
               继续添加下一个
             </Button>
           </div>
-        </Card>
+        </div>
       </Page>
     )
   }
@@ -385,9 +389,9 @@ export function AddWord() {
           and Enter would accidentally trigger a full entry save. The full
           form is left unchanged below, for the "I want to fill it all in
           right now" case. */}
-      <Card className="addword-capture">
+      <section className="section addword-capture">
         <div className="addword-section-head">
-          <h2 className="addword-section-title">快速收词</h2>
+          <h2 className="section-head">快速收词</h2>
           <p className="addword-section-hint muted">只记单词,音标、释义、例句稍后一次补全</p>
         </div>
         <div className="addword-lookup-row">
@@ -420,8 +424,8 @@ export function AddWord() {
         </div>
 
         <p className="addword-capture__status" role="status">
-          待补全 {staging.length} 个
-          {captured === null ? '' : ` · 已加入「${captured}」`}
+          待补全 <span className="num">{staging.length}</span> 个
+          {captured === null ? '' : `，已加入「${captured}」`}
         </p>
 
         {staging.length > 0 && (
@@ -431,12 +435,15 @@ export function AddWord() {
             ))}
           </div>
         )}
-      </Card>
+      </section>
 
+      {/* The full entry: one section under 完整添加, its repeating groups
+          (释义, 例句, 同根变形) as sub-sections under their own ruled heads,
+          each row divided from the next by a rule. It was six cards. */}
       <form className="addword-form" onSubmit={(e) => void handleSubmit(e)} noValidate>
-        <Card className="addword-stack">
+        <section className="section addword-stack">
           <div className="addword-section-head">
-            <h2 className="addword-section-title">完整添加</h2>
+            <h2 className="section-head">完整添加</h2>
             <p className="addword-section-hint muted">现在就把整个词条填完,保存后直接进入复习</p>
           </div>
           <div className="addword-lookup-row">
@@ -529,12 +536,12 @@ export function AddWord() {
               placeholder="ab-(离开) + rogare(提议) → 废除"
             />
           </Field>
-        </Card>
+        </section>
 
-        <Card>
+        <section className="section">
           <div className="addword-section-head">
-            <h2 className="addword-section-title">释义</h2>
-            <p className="addword-section-hint muted">至少一条,词性 · 英文释义 · 中文释义均需填写</p>
+            <h3 className="section-head">释义</h3>
+            <p className="addword-section-hint muted">至少一条,词性、英文释义、中文释义均需填写</p>
           </div>
           {fieldErrors.meanings && (
             <p className="field__error" role="alert">
@@ -622,14 +629,14 @@ export function AddWord() {
               {shareTotal === 100 ? '' : ',需为 100%'}
             </p>
           )}
-          <Button type="button" variant="secondary" size="sm" onClick={addMeaning}>
+          <Button className="addword-add" type="button" variant="ghost" size="sm" onClick={addMeaning}>
             + 添加释义
           </Button>
-        </Card>
+        </section>
 
-        <Card>
+        <section className="section">
           <div className="addword-section-head">
-            <h2 className="addword-section-title">例句</h2>
+            <h3 className="section-head">例句</h3>
             <p className="addword-section-hint muted">至少 2 句,建议贴近现代生活或工作场景</p>
           </div>
           {fieldErrors.examples && (
@@ -662,12 +669,13 @@ export function AddWord() {
               </div>
             ))}
           </div>
-          <Button type="button" variant="secondary" size="sm" onClick={addExample}>
+          <Button className="addword-add" type="button" variant="ghost" size="sm" onClick={addExample}>
             + 添加例句
           </Button>
-        </Card>
+        </section>
 
-        <Card className="addword-stack">
+        <section className="section addword-stack">
+          <h3 className="section-head">相关词</h3>
           <Field label="近义词" htmlFor="aw-syn" hint="用逗号分隔,如 abolish, annul, repeal">
             <TextInput
               id="aw-syn"
@@ -692,11 +700,11 @@ export function AddWord() {
               lang="en"
             />
           </Field>
-        </Card>
+        </section>
 
-        <Card>
+        <section className="section">
           <div className="addword-section-head">
-            <h2 className="addword-section-title">同根变形</h2>
+            <h3 className="section-head">同根变形</h3>
             <p className="addword-section-hint muted">可选,无则留空;词典不提供,需手动填写</p>
           </div>
           {fieldErrors.relatedForms && (
@@ -747,10 +755,10 @@ export function AddWord() {
               ))}
             </div>
           )}
-          <Button type="button" variant="secondary" size="sm" onClick={addRelated}>
+          <Button className="addword-add" type="button" variant="ghost" size="sm" onClick={addRelated}>
             + 添加同根变形
           </Button>
-        </Card>
+        </section>
 
         {fieldErrors.general && (
           <p className="field__error" role="alert">
