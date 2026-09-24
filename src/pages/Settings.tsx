@@ -240,7 +240,7 @@ export function Settings() {
   }, [confirmingLogout])
 
   return (
-    <Page eyebrow="Settings" title="设置">
+    <Page title="设置">
       <Card>
         <Field
           label="每日新词数"

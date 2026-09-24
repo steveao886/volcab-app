@@ -104,7 +104,7 @@ export function WordDetail() {
 
   if (word === undefined) {
     return (
-      <Page eyebrow="Entry" title="未找到词条" back="/library">
+      <Page title="未找到词条" back="/library">
         <div className="empty-state">
           <p className="empty-state__title">这个词条不存在</p>
           <p className="empty-state__hint">可能已经在别的设备上被删除,或者链接已经失效。</p>
@@ -126,7 +126,6 @@ export function WordDetail() {
 
   return (
     <Page
-      eyebrow="Entry"
       title={
         <span className="word" lang="en">
           {word.headword}

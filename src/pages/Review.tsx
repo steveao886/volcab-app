@@ -365,7 +365,6 @@ function ReviewSession() {
 
   const reviewedToday = progress.dailyStats[today]?.reviewed ?? 0
   // The extra-practice pool can be non-empty while today's drill queue is
-  const eyebrow = consolidateMode ? 'Consolidate' : 'Review'
   const title = consolidateMode ? '今日巩固' : '复习'
 
   if (finished) {
@@ -382,7 +381,7 @@ function ReviewSession() {
     // button would contradict it.
     const clearedForToday = empty && alreadyDone
     return (
-      <Page eyebrow={eyebrow} title={title} back="/">
+      <Page title={title} back="/">
         <div className="review-done">
           <p className="review-done__label">
             {consolidateMode
@@ -419,14 +418,14 @@ function ReviewSession() {
     // card (would crash on curWord being undefined) nor be treated as
     // "session complete".
     return (
-      <Page eyebrow={eyebrow} title={title} back="/">
+      <Page title={title} back="/">
         <p className="muted">正在跳过一个已被移除的词条…</p>
       </Page>
     )
   }
 
   return (
-    <Page eyebrow={eyebrow} title={title} back="/">
+    <Page title={title} back="/">
       <div className="review-progress">
         <div
           className="progress"

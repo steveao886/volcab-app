@@ -196,7 +196,6 @@ export function Library() {
 
   return (
     <Page
-      eyebrow="Lexicon"
       title="词库"
       actions={
         // "Add" must live here permanently: the bottom nav only has four

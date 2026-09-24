@@ -81,7 +81,7 @@ export function Discover() {
 
   if (remaining.length === 0) {
     return (
-      <Page eyebrow="Discover" title="推荐" back="/library">
+      <Page title="推荐" back="/library">
         <div className="empty-state">
           <p className="empty-state__title">这一批都看完了</p>
           <p className="empty-state__hint">
@@ -96,7 +96,7 @@ export function Discover() {
   }
 
   return (
-    <Page eyebrow="Discover" title="推荐" back="/library">
+    <Page title="推荐" back="/library">
       <div className="discover-filters" role="group" aria-label="按类型筛选">
         {FILTERS.map(f => (
           <Chip

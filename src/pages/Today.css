@@ -1,67 +1,78 @@
-/* Today (home) page-specific styles — sketch 001 winner A. Three blocks:
-   hero (the one action), day plan (auto-derived states), footer stat line.
-   The sync badge in the header is the shared SyncStatus (components.css). */
+/* Today (home) page-specific styles. Sketch 001 winner A's structure — one
+   action, the day plan, a stat line — laid out as 朱批 (2026-09-23): no
+   cards, hairline rules, marks instead of checkboxes. The title slip and
+   the lead beside it come from Page (layout.css). */
 
-/* --- Hero: the one "do this now" card ----------------------------------- */
+/* --- Lead: beside the vertical title slip ----------------------------------- */
 
-.today-hero {
+.today-lead {
   display: grid;
-  gap: var(--sp-3);
+  gap: var(--sp-1);
 }
 
-/* Same visual role as the page eyebrow — one of vermilion's permitted uses. */
-.today-hero__eyebrow {
-  font-size: var(--fs-eyebrow);
-  font-weight: 700;
-  letter-spacing: var(--tracking-eyebrow);
-  color: var(--accent);
-}
-
-.today-hero__count {
-  font-size: 3.5rem; /* one-off display size; the type scale tops out at --fs-word-xl, which is a headword size, not a stat size */
-  font-weight: 600;
-  line-height: 1;
-}
-
-.today-hero__unit {
-  margin-left: var(--sp-2);
-  font-family: var(--font-ui);
+/* Date on the left, sync badge on the right, on the slip's top line. */
+.today-lead__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
   font-size: var(--fs-sm);
-  font-weight: 600;
-  letter-spacing: 0;
   color: var(--text-muted);
 }
 
-.today-hero__meta {
+.today-lead__label {
   font-size: var(--fs-sm);
+  color: var(--text-muted);
 }
 
-/* The 顽固词 hero's stand-in for the number. Its own class rather than
-   today-hero__count or __done: __count is a 3.5rem numeral face that three
-   Chinese characters overflow at 375px, and __done is the 今日完成 face,
-   which would make an unfinished task look finished. */
-.today-hero__headline {
-  font-size: var(--fs-xl);
-  font-weight: 700;
+/* The headline stands level with the foot of the slip. 2rem holds three
+   Song characters (顽固词) or `123 张卡` comfortably inside the ~270px the
+   slip leaves at 375px. */
+.today-lead__headline {
+  font-size: 2rem;
+  font-weight: 900;
   line-height: 1.2;
+  letter-spacing: 0.02em;
 }
 
-.today-hero__done {
-  font-size: var(--fs-xl);
+.today-lead__headline .num {
   font-weight: 700;
 }
 
-/* --- Day plan ------------------------------------------------------------- */
+/* --- The one action ---------------------------------------------------------- */
+
+.today-go {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+.today-go__meta {
+  color: var(--text-muted);
+}
+
+/* --- Day plan ------------------------------------------------------------------ */
 
 .today-plan {
-  padding-block: var(--sp-2);
+  margin-top: var(--sp-4);
 }
 
+/* Heading with a rule running out to the right edge: the rule is the
+   section's top border, drawn only where the words aren't. */
 .today-plan__title {
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--text-muted);
-  padding-block: var(--sp-2);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-1);
+  font-size: var(--fs-base);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.today-plan__title::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--rule-strong);
 }
 
 .today-plan__list {
@@ -72,9 +83,9 @@
   display: flex;
   align-items: center;
   gap: var(--sp-3);
-  min-height: var(--tap);
+  min-height: 48px;
   padding-block: var(--sp-2);
-  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
   color: inherit;
   text-decoration: none;
 }
@@ -84,27 +95,22 @@
   background: var(--surface-sunken);
 }
 
-.today-plan__box {
+.today-plan__mark {
   display: grid;
   place-items: center;
   width: 22px;
   height: 22px;
   flex: none;
-  border: 1.5px solid var(--rule-control);
-  border-radius: var(--r-sm);
-  font-size: 14px;
-  font-weight: 700;
-  color: transparent;
+  color: var(--text);
 }
 
-.today-plan__row--done .today-plan__box {
-  background: var(--success);
-  border-color: var(--success);
-  color: var(--on-tone);
+/* The 勾 is the one cinnabar thing on a finished row. */
+.today-plan__row--done .today-plan__mark {
+  color: var(--accent);
 }
 
-.today-plan__row--pending .today-plan__box {
-  border-style: dashed;
+.today-plan__row--pending .today-plan__mark {
+  color: var(--text-faint);
 }
 
 .today-plan__name {
@@ -112,74 +118,85 @@
   font-weight: 600;
 }
 
-.today-plan__row--done .today-plan__name {
-  color: var(--text-faint);
-  text-decoration: line-through;
-}
-
-/* Ticked but still open: the check says today's sitting happened, and a
-   struck-through name would say the thing behind it is gone, which is the
-   one thing untrue of this row. */
-.today-plan__row--reopenable .today-plan__name {
-  text-decoration: none;
-}
-
+.today-plan__row--done .today-plan__name,
 .today-plan__row--pending .today-plan__name {
-  color: var(--text-faint);
+  color: var(--text-muted);
+  font-weight: 400;
 }
 
-/* Count as a vermilion annotation, consistent with the old lapse count. */
+/* Ticked but still open: it links somewhere with work on it, so it keeps
+   the full-weight name of a row you can act on. */
+.today-plan__row--reopenable .today-plan__name {
+  color: var(--text);
+  font-weight: 600;
+}
+
 .today-plan__count {
-  color: var(--accent);
-  font-weight: 700;
-}
-
-.today-plan__row--done .today-plan__count {
-  color: var(--text-faint);
+  font-size: var(--fs-md);
+  font-weight: 600;
 }
 
 .today-plan__hint {
-  font-size: var(--fs-xs);
-  color: var(--text-faint);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
 }
 
-/* --- Free practice row ----------------------------------------------------
-   Between the plan and the stats footer: below the things that can actually
-   be completed, above the things that are just readouts. Two stacked lines
-   rather than the footer's flex row, because the second line is a sentence
-   explaining what the draw is made of and must not be split across the
-   width at 375px. */
+/* --- Free practice row -------------------------------------------------------
+   Between the plan and the stat line: below the things that can be
+   finished, above the things that are just readouts. Two stacked lines,
+   because the second is a sentence explaining what the draw is made of and
+   must not be split across the width at 375px. */
 
 .today-practice {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 56px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.today-practice:hover {
+  background: var(--surface-sunken);
+}
+
+.today-practice__text {
   display: grid;
-  gap: var(--sp-1);
+  flex: 1;
+  gap: 2px;
 }
 
 .today-practice__label {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .today-practice__meta {
   font-size: var(--fs-sm);
   line-height: var(--lh-snug);
+  color: var(--text-muted);
 }
 
-/* --- Footer stat line: the /stats entry point ----------------------------- */
+.today-practice > svg {
+  flex: none;
+  color: var(--text-muted);
+}
+
+/* --- Stat line: the /stats entry point ---------------------------------------- */
 
 .today-footer {
   display: flex;
   justify-content: space-between;
   gap: var(--sp-3);
   flex-wrap: wrap; /* three phrases must never overflow 375px */
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--rule);
   font-size: var(--fs-sm);
   color: var(--text-muted);
+  text-decoration: none;
 }
 
 .today-footer .num {
   color: var(--text);
+  font-size: var(--fs-base);
   font-weight: 600;
-}
-
-.today-footer .num.today-footer__accent {
-  color: var(--accent);
 }

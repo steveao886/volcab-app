@@ -354,7 +354,7 @@ export function AddWord() {
 
   if (savedWord) {
     return (
-      <Page eyebrow="New Entry" title="添加新词" back="/library">
+      <Page title="添加新词" back="/library">
         <Card role="status" className="addword-saved">
           <Badge tone="accent">已保存</Badge>
           <p className="addword-saved__headline">
@@ -378,7 +378,7 @@ export function AddWord() {
   }
 
   return (
-    <Page eyebrow="New Entry" title="添加新词" back="/library">
+    <Page title="添加新词" back="/library">
       {/* Quick capture sits at the very top, the default thing you see on
           opening this page: capturing must stay as cheap as one input box.
           It **cannot** go inside the <form> below — nesting forms is invalid,
