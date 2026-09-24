@@ -49,7 +49,7 @@ export class GitHubClient {
     const res = await fetch(`${API}/user`, {
       headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
     })
-    if (!res.ok) throw new Error(`Token 无效或已过期 (${statusTag(res)})`)
+    if (!res.ok) throw new Error(`Token 无效或已过期（${statusTag(res)}）`)
     return (await res.json()).login as string
   }
 
@@ -57,7 +57,7 @@ export class GitHubClient {
   async validate(): Promise<void> {
     const res = await fetch(`${API}/repos/${this.owner}/${this.repo}`, { headers: this.headers() })
     if (res.status === 404) throw new Error(`找不到 ${this.owner}/${this.repo}——请确认 token 已勾选该仓库的访问权限`)
-    if (!res.ok) throw new Error(`无法访问数据仓库 (${statusTag(res)})`)
+    if (!res.ok) throw new Error(`无法访问数据仓库（${statusTag(res)}）`)
   }
 
   /**
@@ -87,7 +87,7 @@ export class GitHubClient {
     const f = await this.readRaw(path)
     // No validator was sent, so a 304 here is a server fault. Failing closed
     // beats pretending this device holds a copy it may not have.
-    if (f === 'unchanged') throw new Error(`读取 ${path} 失败 (HTTP 304)`)
+    if (f === 'unchanged') throw new Error(`读取 ${path} 失败（HTTP 304）`)
     return f
   }
 
@@ -114,7 +114,7 @@ export class GitHubClient {
     })
     if (res.status === 304) return 'unchanged'
     if (res.status === 404) return null
-    if (!res.ok) throw new Error(`读取 ${path} 失败 (${statusTag(res)})`)
+    if (!res.ok) throw new Error(`读取 ${path} 失败（${statusTag(res)}）`)
     const content = await res.text()
     const sha = blobShaFromETag(res.headers.get('ETag'))
     return { content, sha: sha ?? (await this.getSha(path)) }
@@ -126,7 +126,7 @@ export class GitHubClient {
       headers: this.headers(),
       cache: 'no-store',
     })
-    if (!res.ok) throw new Error(`读取 ${path} 的版本号失败 (${statusTag(res)})`)
+    if (!res.ok) throw new Error(`读取 ${path} 的版本号失败（${statusTag(res)}）`)
     return (await res.json()).sha as string
   }
 
@@ -167,11 +167,11 @@ export class GitHubClient {
       // Matched against the `message` field alone, never the whole body: a path or a commit
       // message could contain these words, and the response echoes both back.
       if (/too large/i.test((await errorMessage(res)) ?? '')) {
-        throw new Error(`写入 ${path} 失败:文件已超过 GitHub 接口的体积上限，本次改动没有保存，重试也不会成功 (${statusTag(res)})`)
+        throw new Error(`写入 ${path} 失败：文件已超过 GitHub 接口的体积上限，本次改动没有保存，重试也不会成功（${statusTag(res)}）`)
       }
       return 'conflict'
     }
-    if (!res.ok) throw new Error(`写入 ${path} 失败 (${statusTag(res)})`)
+    if (!res.ok) throw new Error(`写入 ${path} 失败（${statusTag(res)}）`)
     return { sha: (await res.json()).content.sha as string }
   }
 }

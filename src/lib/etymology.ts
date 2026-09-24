@@ -31,6 +31,6 @@ export function validateEtymology(input: string): string | null {
   const v = normalizeEtymology(input)
   if (v === undefined) return null
   return v.length > ETYMOLOGY_MAX
-    ? `词源不超过 ${ETYMOLOGY_MAX} 字(当前 ${v.length} 字)，它是一句话不是一段考据`
+    ? `词源不超过 ${ETYMOLOGY_MAX} 字（当前 ${v.length} 字），它是一句话不是一段考据`
     : null
 }

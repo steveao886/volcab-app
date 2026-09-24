@@ -78,7 +78,7 @@ function emptyStateCopy(
   query: string,
 ): { title: string; hint: string } {
   if (!hasAnyWords) return { title: '词库还是空的', hint: '去添加第一个词条吧。' }
-  if (query.trim() !== '') return { title: `没有匹配"${query.trim()}"的词条`, hint: '换个关键词，或清除筛选条件再试试。' }
+  if (query.trim() !== '') return { title: `没有匹配「${query.trim()}」的词条`, hint: '换个关键词，或清除筛选条件再试试。' }
   return { title: '当前筛选条件下没有词条', hint: '试试清除筛选条件。' }
 }
 
@@ -240,7 +240,7 @@ export function Library() {
           placeholder="搜索词头或释义…"
           value={query}
           onChange={e => setQuery(e.target.value)}
-          aria-label="搜索词库:按词头或释义匹配"
+          aria-label="搜索词库：按词头或释义匹配"
         />
       </div>
 
@@ -289,7 +289,7 @@ export function Library() {
               aria-label="全选当前列表"
             />
           </span>
-          <span className="library-selectall__label">全选(当前 {filtered.length} 条)</span>
+          <span className="library-selectall__label">全选（当前 {filtered.length} 条）</span>
         </div>
       )}
 
@@ -348,8 +348,8 @@ export function Library() {
       <ConfirmDialog
         open={confirmOpen}
         titleId="library-confirm-title"
-        title={`删除选中的 ${selected.size} 个词条?`}
-        body="它们的学习进度(状态、复习次数、失误次数等)会一并清除，且无法恢复。"
+        title={`删除选中的 ${selected.size} 个词条？`}
+        body="它们的学习进度（状态、复习次数、失误次数等）会一并清除，且无法恢复。"
         // With 8 or fewer, list the headwords for the user to double-check; more than that becomes a wall of text that obscures what's actually being deleted
         detail={
           selectedWords.length > 0 && selectedWords.length <= 8

@@ -505,7 +505,7 @@ export function AddWord() {
           <Field
             label="当代遇见概率"
             htmlFor="aw-usage"
-            hint="1–10:在真实语境里碰到这个词的可能性。复习卡背面会显示它。"
+            hint="1–10：在真实语境里碰到这个词的可能性。复习卡背面会显示它。"
             error={fieldErrors.usageScore}
           >
             <Select
@@ -705,7 +705,7 @@ export function AddWord() {
         <section className="section">
           <div className="addword-section-head">
             <h3 className="section-head">同根变形</h3>
-            <p className="addword-section-hint muted">可选，无则留空;词典不提供，需手动填写</p>
+            <p className="addword-section-hint muted">可选，无则留空；词典不提供，需手动填写</p>
           </div>
           {fieldErrors.relatedForms && (
             <p className="field__error" role="alert">

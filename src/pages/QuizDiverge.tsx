@@ -68,7 +68,7 @@ const POS_LABEL: Record<string, string> = {
  */
 function instructionFor(q: DivergeQuestion): string {
   if (q.axis === 'opposite') return '说出意思相反的词，有几个写几个'
-  if (q.axis === 'negation') return '同样的意思，但要用否定前缀构成的词(un- / in- / im- / ir- / il- / dis- / non-)'
+  if (q.axis === 'negation') return '同样的意思，但要用否定前缀构成的词（un- / in- / im- / ir- / il- / dis- / non-）'
   if (q.axis === 'pos') return `说出这个意思的${POS_LABEL[q.pos ?? ''] ?? q.pos ?? ''}形式`
   return '说出意思相近的词，有几个写几个'
 }

@@ -273,7 +273,7 @@ function PassageResult({
         value={<>{score}<span className="quiz-result__of"> / {total}</span></>}
         label="填对"
       >
-        {score === total ? '全部填对，漂亮!' : `${total} 个空，填对 ${score} 个。`}
+        {score === total ? '全部填对，漂亮！' : `${total} 个空，填对 ${score} 个。`}
       </ResultScore>
 
       <section className="section">

@@ -32,7 +32,7 @@ export function SenseSpeakButton({ voice, headword, pos }: {
     <button
       type="button"
       className="sense-speak"
-      aria-label={`朗读 ${headword} 的 ${pos} 读音${synth ? '(合成语音)' : ''}`}
+      aria-label={`朗读 ${headword} 的 ${pos} 读音${synth ? '（合成语音）' : ''}`}
       onClick={(e) => {
         e.stopPropagation()
         if (synth) speak(voice.text)

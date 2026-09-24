@@ -155,7 +155,7 @@ function ComposeQuestionView({ question, onAnswered, onNext, nextLabel }: Compos
                 }`}
                 disabled={!filled || revealed}
                 onClick={() => filled && toggle(k)}
-                aria-label={filled ? `第 ${s + 1} 格:${question.pool[k]}，点击取出` : `第 ${s + 1} 格，空`}
+                aria-label={filled ? `第 ${s + 1} 格：${question.pool[k]}，点击取出` : `第 ${s + 1} 格，空`}
               >
                 {/* A wrong slot keeps what you put there, struck through in
                     cinnabar, and shows the chunk that belongs there after it —
@@ -389,7 +389,7 @@ export function ComposeSession({
           value={<>{score}<span className="quiz-result__of"> / {total}</span></>}
           label="顺序和词都对"
         >
-          {score === total ? '全部答对，漂亮!' : `本轮测了 ${total} 题，顺序和词都对的有 ${score} 题。`}
+          {score === total ? '全部答对，漂亮！' : `本轮测了 ${total} 题，顺序和词都对的有 ${score} 题。`}
         </ResultScore>
 
         {missed.length > 0 ? <MissedWords title="没拿下的" rows={missed} /> : null}

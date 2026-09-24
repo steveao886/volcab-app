@@ -379,8 +379,8 @@ export function WordDetail() {
       <ConfirmDialog
         open={confirmOpen}
         titleId="worddetail-confirm-title"
-        title={`删除「${word.headword}」?`}
-        body="这个词条以及它的学习进度(状态、复习次数、失误次数等)会一并删除，且无法恢复。"
+        title={`删除「${word.headword}」？`}
+        body="这个词条以及它的学习进度（状态、复习次数、失误次数等）会一并删除，且无法恢复。"
         confirmLabel="确认删除"
         busy={deleting}
         onConfirm={handleDelete}
