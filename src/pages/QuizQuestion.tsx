@@ -24,7 +24,7 @@ const TYPE_LABEL: Record<QuizType, string> = {
   clozeCollocation: '根据搭配选出正确的单词',
   synonymHint: '选出对应的单词',
   antonymPick: '选出意思相反的词',
-  contrast: '两个近义词，哪个更贴合这句话?',
+  contrast: '两个近义词，哪个更贴合这句话？',
   audio2meaning: '听发音，选出正确的释义',
   audio2spelling: '听发音，拼写这个单词',
 }
@@ -36,8 +36,8 @@ const isAudio = (t: QuizType) => t === 'audio2meaning' || t === 'audio2spelling'
  *  hint word is a synonym or antonym, otherwise the user has no way to
  *  tell whether to pick a matching or opposite meaning. */
 const HINT_KIND_LABEL: Record<'synonym' | 'antonym', string> = {
-  synonym: '与它意思相近的词是?',
-  antonym: '与它意思相反的词是?',
+  synonym: '与它意思相近的词是？',
+  antonym: '与它意思相反的词是？',
 }
 
 const BLANK = '___'
@@ -110,7 +110,7 @@ function AudioPrompt({ text }: { text: string }) {
           but is very easily mistaken for one — rather than let people
           think the feature is broken, spell out the two most common
           causes here. */}
-      <p className="faint quiz-audio__hint">听不到?检查系统音量与静音开关</p>
+      <p className="faint quiz-audio__hint">听不到？检查系统音量与静音开关</p>
     </div>
   )
 }
@@ -535,7 +535,7 @@ function SpellingQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuest
       {submitted ? (
         <AnswerFeedback correct={correct} onNext={onNext} nextLabel={nextLabel}>
           <p className="quiz-spelling-answer">
-            正确拼写:<span className="word" lang="en">{question.answer}</span>
+            正确拼写：<span className="word" lang="en">{question.answer}</span>
             {question.type === 'audio2spelling' && question.phonetic ? (
               <>
                 {' '}

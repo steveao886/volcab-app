@@ -244,11 +244,11 @@ function RecallQuestionView({
     <div className="quiz-q">
       <p className="quiz-q__label">
         {stage === 'commit'
-          ? t !== undefined ? '标出的意思，你会用哪个英文词?' : '想表达下面这句话，你会用哪个词?'
+          ? t !== undefined ? '标出的意思，你会用哪个英文词？' : '想表达下面这句话，你会用哪个词？'
           : stage === 'hint'
             ? '换个入口 —— 读英文释义，再想一次'
             : question.kind === 'recall'
-              ? '你刚才想到的是哪个?'
+              ? '你刚才想到的是哪个？'
               : '三个都沾边 —— 按贴切程度排序，最贴切的先点'}
       </p>
       <p className="quiz-q__prompt">{prompt}</p>
@@ -679,7 +679,7 @@ export function RecallSession({
           value={<>{score}<span className="quiz-result__of"> / {total}</span></>}
           label="答对"
         >
-          {score === total ? '全部答对，漂亮!' : `本轮测了 ${total} 题，答对 ${score} 题。`}
+          {score === total ? '全部答对，漂亮！' : `本轮测了 ${total} 题，答对 ${score} 题。`}
         </ResultScore>
 
         {/* Starting another round is the usual next move, so the controls sit

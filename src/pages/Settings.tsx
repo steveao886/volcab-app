@@ -289,8 +289,8 @@ export function Settings() {
 
         {newPerDayAdvice.kind === 'insufficient' && (
           <Advice>
-            学满 <span className="num">{newPerDayAdvice.needed}</span> 天后给出建议(目前{' '}
-            <span className="num">{newPerDayAdvice.activeDays}</span> 天)。
+            学满 <span className="num">{newPerDayAdvice.needed}</span> 天后给出建议（目前{' '}
+            <span className="num">{newPerDayAdvice.activeDays}</span> 天）。
           </Advice>
         )}
         {newPerDayAdvice.kind === 'exhausted' && <Advice>词库里已经没有没学过的词了。</Advice>}
@@ -341,20 +341,20 @@ export function Settings() {
 
         {modifierAdvice.kind === 'insufficient' && (
           <Advice>
-            到期复习满 <span className="num">{modifierAdvice.needed}</span> 次后给出建议(目前{' '}
-            <span className="num">{modifierAdvice.reviewed}</span> 次)。只统计已毕业词的复习，新词的学习步骤不算。
+            到期复习满 <span className="num">{modifierAdvice.needed}</span> 次后给出建议（目前{' '}
+            <span className="num">{modifierAdvice.reviewed}</span> 次）。只统计已毕业词的复习，新词的学习步骤不算。
           </Advice>
         )}
         {modifierAdvice.kind === 'ok' && (
           <Advice>
-            近 {RETENTION_WINDOW_DAYS} 天留存率 <span className="num">{pct(modifierAdvice.retention)}%</span>(
-            <span className="num">{modifierAdvice.reviewed}</span> 次到期复习)，已经贴着 90% 的目标，不用调。
+            近 {RETENTION_WINDOW_DAYS} 天留存率 <span className="num">{pct(modifierAdvice.retention)}%</span>（
+            <span className="num">{modifierAdvice.reviewed}</span> 次到期复习），已经贴着 90% 的目标，不用调。
           </Advice>
         )}
         {modifierAdvice.kind === 'adjust' && (
           <Advice>
-            近 {RETENTION_WINDOW_DAYS} 天留存率 <span className="num">{pct(modifierAdvice.retention)}%</span>(
-            <span className="num">{modifierAdvice.reviewed}</span> 次到期复习),
+            近 {RETENTION_WINDOW_DAYS} 天留存率 <span className="num">{pct(modifierAdvice.retention)}%</span>（
+            <span className="num">{modifierAdvice.reviewed}</span> 次到期复习），
             {modifierAdvice.retention > 0.9 ? '高于 90% 的目标，间隔可以再放长' : '低于 90% 的目标，间隔该收紧'} ——
             建议 <span className="num">{round1(modifierAdvice.to)}</span>。
           </Advice>

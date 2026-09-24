@@ -282,7 +282,7 @@ export function Practice() {
       <Page title={struggling ? '顽固词加练' : '自由练习'} back={backTo}>
         <div className="practice-size">
           <p className="practice-size__pool">
-            {struggling ? '顽固词' : '可练的词'}还有 <strong>{pool.length}</strong> 个，这一批练多少?
+            {struggling ? '顽固词' : '可练的词'}还有 <strong>{pool.length}</strong> 个，这一批练多少？
           </p>
           <div className="practice-size__options">
             {sizeOptions.map((o, i) => (
@@ -378,9 +378,9 @@ export function Practice() {
           review page's drill note. */}
       <p className="faint review-drill-note">
         {struggling
-          ? '专攻顽固词:最难的排最前，刚错过的同难度里优先。不计成绩、不影响排期，答对也不会提前出队 —— 真正的检验在明天的正式一轮。'
+          ? '专攻顽固词：最难的排最前，刚错过的同难度里优先。不计成绩、不影响排期，答对也不会提前出队 —— 真正的检验在明天的正式一轮。'
           : <>
-              {mixed ? '一半已掌握的词随机抽，一半是最近老忘的。' : '随便练:'}
+              {mixed ? '一半已掌握的词随机抽，一半是最近老忘的。' : '随便练：'}
               答错的词会进顽固词队列，但不影响复习计划，也不计入今日复习。
             </>}
       </p>

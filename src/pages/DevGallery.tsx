@@ -198,7 +198,7 @@ export function DevGallery() {
             className="check__box"
             type="checkbox"
             defaultChecked
-            aria-label="示例复选框(已选)"
+            aria-label="示例复选框（已选）"
           />
         </label>
       </Group>
@@ -336,7 +336,7 @@ export function DevGallery() {
 
       <Group title="disclosure" layout={STACK}>
         <details className="disclosure">
-          <summary className="disclosure__summary">收起时的样子(点开看三角旋转)</summary>
+          <summary className="disclosure__summary">收起时的样子（点开看三角旋转）</summary>
           <div style={{ padding: 'var(--sp-4)', color: 'var(--text-muted)' }}>
             展开后 summary 下缘补一条发丝线。
           </div>
@@ -344,7 +344,7 @@ export function DevGallery() {
         <details className="disclosure" open>
           <summary className="disclosure__summary">默认展开的样子</summary>
           <div style={{ padding: 'var(--sp-4)', color: 'var(--text-muted)' }}>
-            三角旋转 90°;减弱动效时直接到位。
+            三角旋转 90°；减弱动效时直接到位。
           </div>
         </details>
       </Group>
@@ -356,7 +356,7 @@ export function DevGallery() {
           <Button variant="primary">添加新词</Button>
         </div>
         <div className="empty-state">
-          <p className="empty-state__title">没有匹配"abrog"的词条</p>
+          <p className="empty-state__title">没有匹配「abrog」的词条</p>
           <p className="empty-state__hint">换个关键词，或清除筛选条件再试试。</p>
         </div>
       </Group>
@@ -381,7 +381,7 @@ export function DevGallery() {
           /ˈæbrəɡeɪt/
         </p>
         <p className="pos">verb</p>
-        <p>正式废除(法律、协议);中文正文用 --lh-body 的行距。</p>
+        <p>正式废除（法律、协议）；中文正文用 --lh-body 的行距。</p>
         <p className="muted">muted，次级文字</p>
         <p className="faint">faint，三级文字</p>
         <p className="num">476　12 / 30　连续 8 天</p>
@@ -403,8 +403,8 @@ export function DevGallery() {
       <ConfirmDialog
         open={confirmDemo !== null}
         titleId="dev-confirm-title"
-        title={confirmDemo === 'plain' ? '删除「abrogate」?' : '删除选中的 3 个词条?'}
-        body="它们的学习进度(状态、复习次数、失误次数等)会一并清除，且无法恢复。"
+        title={confirmDemo === 'plain' ? '删除「abrogate」？' : '删除选中的 3 个词条？'}
+        body="它们的学习进度（状态、复习次数、失误次数等）会一并清除，且无法恢复。"
         detail={confirmDemo === 'list' ? 'abrogate、canonicalization、due diligence' : undefined}
         confirmLabel="确认删除"
         busy={confirmDemo === 'busy'}

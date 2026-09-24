@@ -55,11 +55,11 @@ export function validateShares(meanings: readonly HasShare[]): string | null {
   const filled = meanings.filter(m => m.share !== undefined)
 
   if (meanings.length === 1) {
-    return filled.length > 0 ? '单义词不应标注义项占比(占比只对一词多义有意义)。' : null
+    return filled.length > 0 ? '单义词不应标注义项占比（占比只对一词多义有意义）。' : null
   }
 
   if (filled.length !== meanings.length) {
-    return `一词多义时每条释义都要标注占比(当前 ${meanings.length} 条里填了 ${filled.length} 条)。`
+    return `一词多义时每条释义都要标注占比（当前 ${meanings.length} 条里填了 ${filled.length} 条）。`
   }
 
   const bad = meanings.findIndex(m => !isValidShare(m.share))

@@ -130,7 +130,7 @@ export async function lookupWord(word: string, timeoutMs = 8000): Promise<Lookup
   try {
     const res = await fetch(`${ENDPOINT}/${encodeURIComponent(word)}`, { signal: controller.signal })
     if (res.status === 404) return { status: 'not-found' }
-    if (!res.ok) return { status: 'error', message: `词典查询失败(HTTP ${res.status})` }
+    if (!res.ok) return { status: 'error', message: `词典查询失败（HTTP ${res.status}）` }
     const json = await res.json().catch(() => null)
     if (json === null) return { status: 'error', message: '词典返回的内容无法解析' }
     const mapped = mapDictionaryResponse(json)

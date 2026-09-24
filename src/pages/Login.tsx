@@ -85,7 +85,7 @@ export function Login() {
         {import.meta.env.DEV && enterDemoMode && (
           <div className="login-demo">
             <Button variant="ghost" block onClick={() => void enterDemoMode()}>
-              演示模式(仅开发)
+              演示模式（仅开发）
             </Button>
           </div>
         )}

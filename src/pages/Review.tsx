@@ -449,7 +449,7 @@ function ReviewSession() {
           no longer happens. What a miss actually does now is put the word in
           the stubborn pool, i.e. 顽固词加练. */}
       {consolidateMode && (
-        <p className="faint review-drill-note">这是练习:答错会把词记进顽固词加练，不改变复习间隔;答对也不改。</p>
+        <p className="faint review-drill-note">这是练习：答错会把词记进顽固词加练，不改变复习间隔；答对也不改。</p>
       )}
 
       {/* Same placement rule as the drill note: the disclosure has to be
@@ -458,7 +458,7 @@ function ReviewSession() {
           recorded distance, not just a reassurance. */}
       {confirmShowing && curEntry !== undefined && (
         <p className="faint review-drill-note">
-          刚才按的「困难」已经记入排期(<span className="num">{diffDays(today, curEntry.due)}</span> 天后)。这一遍只是再看一眼，不再改变排期;还想不起来就按重来。
+          刚才按的「困难」已经记入排期（<span className="num">{diffDays(today, curEntry.due)}</span> 天后）。这一遍只是再看一眼，不再改变排期；还想不起来就按重来。
         </p>
       )}
 
@@ -564,8 +564,8 @@ function ReviewSession() {
       <ConfirmDialog
         open={confirmDelete}
         titleId="review-delete-title"
-        title={`删除「${curWord?.headword ?? ''}」?`}
-        body="这个词条以及它的学习进度(状态、复习次数、失误次数等)会一并删除，且无法恢复。"
+        title={`删除「${curWord?.headword ?? ''}」？`}
+        body="这个词条以及它的学习进度（状态、复习次数、失误次数等）会一并删除，且无法恢复。"
         confirmLabel="确认删除"
         busy={deleting}
         onConfirm={handleDelete}

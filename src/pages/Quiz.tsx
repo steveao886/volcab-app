@@ -275,7 +275,7 @@ function QuizSession({
           value={<>{score}<span className="quiz-result__of"> / {total}</span></>}
           label="答对"
         >
-          {score === total ? '全部答对，漂亮!' : `本轮测了 ${total} 题，答对 ${score} 题。`}
+          {score === total ? '全部答对，漂亮！' : `本轮测了 ${total} 题，答对 ${score} 题。`}
         </ResultScore>
 
         {wrongWords.length > 0 ? (

@@ -109,7 +109,7 @@ export function Discover() {
       </div>
 
       <p className="faint discover-note">
-        加入的词会进暂存区，等下次整理时补全成完整词条;不要的会被记住，以后不再出现。
+        加入的词会进暂存区，等下次整理时补全成完整词条；不要的会被记住，以后不再出现。
       </p>
 
       {shown.length === 0 ? (

@@ -62,7 +62,7 @@ export function SyncStatus({ status, variant = 'badge', message = null, onRetry 
   const failed = status === 'error'
   return (
     <p className={failed ? 'sync-note sync-note--error' : 'sync-note'} role={failed ? 'alert' : undefined}>
-      {failed ? `同步失败:${message ?? '未知错误'}` : NOTE_COPY[status]}{' '}
+      {failed ? `同步失败：${message ?? '未知错误'}` : NOTE_COPY[status]}{' '}
       <button type="button" className="sync-note__retry" onClick={onRetry}>
         重试同步
       </button>
