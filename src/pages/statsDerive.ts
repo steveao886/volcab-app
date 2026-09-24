@@ -183,7 +183,8 @@ export interface Maturity { mature: number; young: number; studied: number }
 /**
  * Studied words split at MATURE_INTERVAL_DAYS, the app's own "known" line
  * (queue.ts; Anki's young/mature boundary). 已掌握 above only says a word
- * graduated from its learning steps, which a word does after one day: on
+ * graduated from its learning steps, which a word does the day it is
+ * learned (srs.ts's LEARNING_STEPS: 1 and 10 minutes, same session): on
  * the live library on 2026-09-23 all 811 studied words were 已掌握, and 525
  * of them had reached 21 days. This is the number that says how many are
  * held long-term. Library words only, like masteryBreakdown — a progress
