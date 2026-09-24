@@ -89,7 +89,7 @@
   height: 26px;
   flex: none;
   border-radius: var(--r-xs);
-  background: var(--accent);
+  background: var(--accent); /* mark: the seal — a seal is a mark by definition */
   color: var(--on-tone);
   font-size: 15px;
   font-weight: 600;
@@ -542,7 +542,7 @@
   background: none;
   color: var(--text);
   font-weight: 600;
-  text-decoration: underline wavy var(--accent);
+  text-decoration: underline wavy var(--accent); /* mark: 波浪线 */
   text-decoration-thickness: 1px;
   text-underline-offset: 0.28em;
   text-decoration-skip-ink: none;
@@ -589,7 +589,7 @@
   width: 20px;
   height: 20px;
   margin: 0;
-  accent-color: var(--accent);
+  accent-color: var(--accent); /* mark: the tick in a checked box */
   cursor: pointer;
 }
 
@@ -612,10 +612,12 @@
   white-space: nowrap;
 }
 
+/* Only the review card's 新词 tag: a note in the corner that this card is
+   being seen for the first time. */
 .badge--accent {
   background: var(--accent-soft);
   border-color: transparent;
-  color: var(--accent);
+  color: var(--accent); /* mark: 新词 on a first showing */
 }
 
 .badge--success {
@@ -1040,82 +1042,11 @@ button.ledger__row {
   opacity: 0.75;
 }
 
-/* --- Stat cell: centered big number + description label --------------------
-   Shared by the today page's three-column overview (due/new/streak) and the
-   word detail page's four-cell learning stats.
-   .stat only handles the layout inside a single cell; how many columns,
-   column spacing, and text-align:center are given by the page's own
-   container (.today-stats / .worddetail-stats), because that's a layout
-   decision, not a component decision.
-
-   ⚠ .stat and .settings-row below are two primitives that are **deliberately
-   kept separate** — don't merge them:
-   .stat is "one big number + its name," centered, vertical, the value is
-   the star;
-   .settings-row is a single row of read-only metadata, "label left / value
-   right," horizontal, baseline-aligned, small text on both sides. They
-   happen to both be made of a label + a value, but their layout and purpose
-   differ — merging them would only produce a jack-of-all-trades that's
-   mediocre at both, held together by a pile of modifier classes fighting
-   each other. */
-
-.stat {
-  display: grid;
-  gap: var(--sp-1);
-}
-
-.stat__value {
-  font-size: var(--fs-xl);
-  font-weight: 600;
-  line-height: var(--lh-tight);
-  color: var(--text);
-}
-
-/* Added only when the value isn't a plain number but side-by-side content
-   like "state dot + text" (the word detail page's "learning state" cell).
-   Turns this cell from block text into a centered flex row, so the dot and
-   the text align instead of sitting half a line apart. */
-.stat__value--row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--sp-2);
-}
-
-/* Vermilion is for annotation only: at most one "eye-catcher" value per screen (e.g. streak days) gets tinted */
-.stat__value--accent {
-  color: var(--accent);
-}
-
-.stat__label {
-  font-size: var(--fs-xs);
-  color: var(--text-faint);
-}
-
-/* --- Metadata row: label left / value right ---------------------------------
-   Used for account info on the settings page. See the .stat comment above:
-   these two are different primitives.
-   Spacing/margin between rows is given by the page container. */
-
-.settings-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--sp-3);
-}
-
-.settings-row__label {
-  font-size: var(--fs-sm);
-  color: var(--text-muted);
-}
-
-.settings-row__value {
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--text);
-  overflow-wrap: anywhere;
-  text-align: right;
-}
+/* .stat (a centered big number) and .settings-row (label left, value right)
+   stood here until round 2 of 朱批. They were replaced by .readout and the
+   .ledger's label/value row above — the same two shapes, still kept as two
+   primitives for the reason the old comment gave: one is a number to read
+   at a glance, the other a fact to look up. */
 
 /* --- Disclosure block (native <details> / <summary>) -------------------------
    The expand triangle comes from a different source in each browser, and

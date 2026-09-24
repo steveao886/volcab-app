@@ -519,6 +519,7 @@ function ReviewSession() {
         )}
       </div>
 
+      {/* A card that survives 朱批: the box is the flip target. */}
       <Card
         className={`review-card card--interactive ${flipped ? 'review-card--back' : 'review-card--front'} ${isNewCard ? 'review-card--badge' : ''}`}
         onClick={toggleFlip}

@@ -156,18 +156,29 @@
   border: none;
 }
 
+/* A legend shrinks to its text by default; the ruled .section-head needs
+   the full width for its rule to run out to the edge. */
 .worddetail-edit__group > legend {
+  width: 100%;
   padding: 0;
   margin-bottom: var(--sp-1);
 }
 
+/* One meaning per row, divided by a rule — it was a box inside the form. */
 .worddetail-edit__meaning {
   display: grid;
   gap: var(--sp-3);
-  padding: var(--sp-4);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-md);
-  background: var(--surface);
+  padding-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--rule);
+}
+
+.worddetail-edit__meaning > .btn {
+  justify-self: end;
+}
+
+/* 「+ 添加」 is a ghost button at the start of the line under its rows. */
+.worddetail-edit__add {
+  justify-self: start;
 }
 
 .worddetail-edit__index {
