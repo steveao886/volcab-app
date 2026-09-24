@@ -11,6 +11,23 @@
     <meta name="theme-color" content="#ecf0ef" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#15181b" media="(prefers-color-scheme: dark)" />
     <title>Volcab 单词本</title>
+    <script>
+      // Light or dark before first paint: the same decision as
+      // src/lib/theme.ts (key volcab.theme; absent = follow the system),
+      // made here because the module graph loads after the page has
+      // painted once. Without it, choosing 浅色 on a dark system flashed
+      // dark paper on every open. Change the two together.
+      ;(function () {
+        var pref = null
+        try {
+          pref = localStorage.getItem('volcab.theme')
+        } catch (e) {}
+        var dark =
+          pref === 'dark' ||
+          (pref !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

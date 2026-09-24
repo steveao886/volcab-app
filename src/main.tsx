@@ -12,6 +12,12 @@ import './styles/index.css'
 import App from './App.tsx'
 import { UpdatePrompt } from './components/UpdatePrompt.tsx'
 import { AppProvider } from './state/store.tsx'
+import { syncTheme, watchSystemTheme } from './lib/theme.ts'
+
+// index.html has already set data-theme before first paint; this repeats
+// the decision (and points theme-color at it) and keeps 跟随系统 live.
+syncTheme()
+watchSystemTheme()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
