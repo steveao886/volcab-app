@@ -57,22 +57,10 @@
   margin-top: var(--sp-4);
 }
 
-/* Heading with a rule running out to the right edge: the rule is the
-   section's top border, drawn only where the words aren't. */
-.today-plan__title {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
+/* The heading is the shared .section-head (components.css); it was lifted
+   out of this file in round 2, when every other page needed it too. */
+.today-plan > .section-head {
   margin-bottom: var(--sp-1);
-  font-size: var(--fs-base);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-}
-
-.today-plan__title::after {
-  content: '';
-  flex: 1;
-  border-top: 1px solid var(--rule-strong);
 }
 
 .today-plan__list {

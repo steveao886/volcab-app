@@ -106,7 +106,7 @@ export function Today() {
       )}
 
       <section className="today-plan">
-        <h2 className="today-plan__title">今日安排</h2>
+        <h2 className="section-head">今日安排</h2>
         <ul className="today-plan__list">
           {plan.map(item => (
             <PlanRow key={item.key} item={item} />

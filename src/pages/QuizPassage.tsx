@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Chip } from '../components/Chip'
+import { ProgressMarks } from '../components/ProgressMarks'
 import { pickPassage, recordPlay } from '../lib/passage'
 import type { Passage, PassagePlay, PassageQuestion, Token } from '../lib/passage'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
@@ -155,19 +156,14 @@ export function PassageSession({
   return (
     <>
       <div className="quiz-progress">
-        <div
-          className="progress"
-          role="progressbar"
-          aria-label="填空进度"
-          aria-valuemin={0}
-          aria-valuemax={blanks.length}
-          aria-valuenow={filledCount}
-          aria-valuetext={`已填 ${filledCount} / ${blanks.length} 个空`}
-        >
-          <div className="progress__fill" style={{ width: `${(filledCount / blanks.length) * 100}%` }} />
-        </div>
-        <p className="muted num quiz-progress__count">
-          已填 {filledCount} / {blanks.length} 个空
+        <ProgressMarks
+          done={filledCount}
+          total={blanks.length}
+          label="填空进度"
+          valueText={`已填 ${filledCount} / ${blanks.length} 个空`}
+        />
+        <p className="muted quiz-progress__count">
+          已填 <span className="num">{filledCount}</span> / <span className="num">{blanks.length}</span> 个空
         </p>
       </div>
 

@@ -323,19 +323,6 @@
   gap: var(--sp-1);
 }
 
-/* The shortcut printed as a key cap, so it reads as "press 1", not as a
-   footnote number. */
-.review-grade__key {
-  padding: 0 4px;
-  border: 1px solid var(--rule-strong);
-  border-radius: var(--r-sm);
-  color: var(--text-muted);
-  font-family: var(--font-num);
-  font-size: var(--fs-xs);
-  font-weight: 400;
-  line-height: 1.4;
-}
-
 /* The consequence line (稍后 / 4 天): muted under the label, so the label is
    read first and the interval confirms it. In drill modes it's absent and
    the buttons render exactly as before. */

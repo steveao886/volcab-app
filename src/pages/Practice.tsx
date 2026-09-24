@@ -5,6 +5,7 @@ import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
+import { ProgressMarks } from '../components/ProgressMarks'
 import { isEditableTarget } from '../lib/keys'
 import { buildMixedPractice, mixedPracticePool, nextStrugglingBatch, samplePractice } from '../lib/practice'
 import { practiceSizeOptions, preferredOption, readPracticeSize, writePracticeSize } from '../lib/practiceSize'
@@ -371,17 +372,13 @@ export function Practice() {
   return (
     <Page title={struggling ? '顽固词加练' : '自由练习'} back={backTo}>
       <div className="review-progress">
-        <div
-          className="progress"
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={deck.length}
-          aria-valuenow={idx}
-          aria-valuetext={`还剩 ${deck.length - idx} 张`}
-        >
-          <div className="progress__fill" style={{ width: `${(idx / deck.length) * 100}%` }} />
-        </div>
-        <p className="num muted review-progress__count">还剩 {deck.length - idx} 张</p>
+        <ProgressMarks
+          done={idx}
+          total={deck.length}
+          label="练习进度"
+          valueText={`还剩 ${deck.length - idx} 张`}
+        />
+        <p className="muted review-progress__count">还剩 <span className="num">{deck.length - idx}</span> 张</p>
       </div>
 
       {/* Says what the page does *not* do, which is the whole reason it
@@ -404,12 +401,12 @@ export function Practice() {
           <div className="practice-answers">
             <Button variant="grade-again" onClick={() => answer(false)}>
               <span className="review-grade__label">
-                不认识<span className="review-grade__key">1</span>
+                不认识<span className="key">1</span>
               </span>
             </Button>
             <Button variant="grade-good" onClick={() => answer(true)}>
               <span className="review-grade__label">
-                认识<span className="review-grade__key">2</span>
+                认识<span className="key">2</span>
               </span>
             </Button>
           </div>

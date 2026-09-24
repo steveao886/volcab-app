@@ -147,6 +147,16 @@
   --info-soft: rgba(47, 107, 87, 0.1);
   --danger-soft: rgba(179, 54, 43, 0.1);
 
+  /* Chart series. Cinnabar is for marks, and every mineral pigment above is
+     already a status color, so data gets two hues of its own: 黛紫 then
+     赭石, always in that order. Validated with the dataviz skill's
+     validate_palette.js on all four grounds (#ECF0EF, #F7F9F8 here; #15181B,
+     #1C2024 in dark): lightness band, chroma floor, CVD separation, ≥ 3:1
+     contrast. Worst CVD pair ΔE 25.1 light / 23.5 dark. Change either value
+     and re-run the validator on all four. */
+  --chart-1: #6450ae;             /* 黛紫 */
+  --chart-2: #b7722f;             /* 赭石 */
+
   /* Word learning states */
   --state-new: var(--text-faint);
   --state-learning: var(--warning);
@@ -209,6 +219,9 @@
     --warning-soft: rgba(217, 170, 78, 0.14);
     --info-soft: rgba(125, 187, 163, 0.14);
     --danger-soft: rgba(229, 122, 104, 0.14);
+
+    --chart-1: #8a78d6;
+    --chart-2: #c4843f;
 
     --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.45), 0 10px 24px rgba(0, 0, 0, 0.35);
   }
