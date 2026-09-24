@@ -113,9 +113,9 @@ export function ReviewCardBack({ word }: { word: Word }) {
           Most words have no note (see lib/wordNotes.ts) and render nothing
           here at all, the same rule the etymology block follows. */}
       {note !== undefined && (
-        <div className="review-tags review-tags--note">
-          <p className="review-tags__label section-title">要点</p>
-          <p className="review-note">{note}</p>
+        <div className="margin-note">
+          <p className="margin-note__label">要点</p>
+          <p className="margin-note__text">{note}</p>
         </div>
       )}
 

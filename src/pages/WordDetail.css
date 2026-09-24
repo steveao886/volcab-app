@@ -1,5 +1,6 @@
 /* WordDetail (word entry detail) page-specific styles. Pronunciation row,
-   meaning/example/tag/related-form cards, learning-state stats, edit form,
+   the entry laid out on the paper under ruled section heads (it reads the
+   same as the back of a review card), learning-record ledger, edit form,
    delete confirmation dialog, fallback state for a nonexistent entry. */
 
 /* --- Pronunciation row ------------------------------------------------------------ */
@@ -12,14 +13,21 @@
 
 /* --- Meanings ---------------------------------------------------------------- */
 
-.worddetail-meaning-list {
-  display: grid;
-  gap: var(--sp-4);
+.worddetail-entry {
+  gap: var(--sp-5);
 }
 
-.worddetail-meaning:not(:last-child) {
-  padding-bottom: var(--sp-4);
-  border-bottom: 1px solid var(--rule);
+.worddetail-meaning-list {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+/* Dashed between senses, as on the back of the review card (.review-meaning):
+   one word's meanings are one block, and a solid rule would split it into
+   sections. */
+.worddetail-meaning + .worddetail-meaning {
+  padding-top: var(--sp-3);
+  border-top: 1px dashed var(--rule);
 }
 
 /* Part of speech on the left, meaning share on the right — the same layout as .review-meaning__head on the back of the review card */
@@ -34,9 +42,11 @@
   font-size: var(--fs-sm);
 }
 
+/* Latin leading: this class ties with base.css's [lang='en'] rule and wins
+   on load order, so it has to say --lh-latin itself. */
 .worddetail-meaning__en {
   margin-top: var(--sp-1);
-  line-height: var(--lh-body);
+  line-height: var(--lh-latin);
   color: var(--text);
 }
 
@@ -45,12 +55,9 @@
   color: var(--text-muted);
 }
 
-/* Only spacing is left here; font size/weight/color come from components.css's .section-title */
-.worddetail-section-title {
-  margin-bottom: var(--sp-3);
-}
-
-/* --- Examples ---------------------------------------------------------------- */
+/* --- Examples ----------------------------------------------------------------
+   No rule down the left, as on the review card: the cinnabar 波浪线 under the
+   headword (.example-hit) is what marks these as this word's examples. */
 
 .worddetail-examples {
   display: grid;
@@ -58,23 +65,11 @@
 }
 
 .worddetail-examples li {
-  padding-inline-start: var(--sp-4);
-  border-inline-start: 2px solid var(--rule-strong);
-  line-height: var(--lh-body);
+  line-height: 1.6;
   color: var(--text-muted);
 }
 
 /* --- Synonyms / antonyms / common collocations -------------------------------------------- */
-
-.worddetail-tags {
-  display: grid;
-  gap: var(--sp-4);
-}
-
-.worddetail-tag-group:not(:last-child) {
-  padding-bottom: var(--sp-4);
-  border-bottom: 1px solid var(--rule);
-}
 
 .worddetail-chiprow {
   display: flex;
@@ -84,55 +79,63 @@
   gap: var(--sp-3);
 }
 
-/* The usage note closes the meanings card, so it needs a rule above it as
-   well as the leading hairline the etymology uses — without the top border
-   it reads as a fourth meaning that lost its part-of-speech tag. */
-.worddetail-note {
-  margin-top: var(--sp-4);
-  padding-top: var(--sp-4);
-  border-top: 1px solid var(--rule);
-  line-height: 1.7;
-}
-
-.worddetail-note__label {
-  margin-bottom: var(--sp-1);
-}
-
 /* Etymology: the same treatment as the back of the review card (see
-   .review-etymology in Review.css) — a sentence, set apart from the
-   surrounding sections by a hairline vertical rule on the left. */
+   .review-etymology in Review.css) — a sentence under its head. The
+   hairline down its left edge went with the 朱批 redesign there and here. */
 .worddetail-etymology {
-  padding-left: var(--sp-3);
-  border-left: 1px solid var(--rule);
   color: var(--text-muted);
-  line-height: 1.7;
+  line-height: var(--lh-body);
 }
 
-/* --- Learning-state stats ----------------------------------------------------------
-   Each tile is the shared .stat primitive (components.css); this only
-   decides the column count. The "learning state" tile needs to fit a
-   StateDot + text, so its value additionally gets .stat__value--row. */
+/* --- Learning record -----------------------------------------------------------
+   A .ledger of label/value rows (components.css). The <dl>'s UA margins are
+   the only thing this list needs undone. */
 
-.worddetail-stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--sp-4) var(--sp-3);
-  text-align: center;
+.worddetail-stats dd {
+  margin: 0;
 }
 
-/* "Usage score" is the fifth tile, appearing only when the entry has a
-   usageScore. Being the odd one out in a two-column grid would skew the
-   whole block, so it gets a full row to itself — which also has the side
-   effect of visually separating "an attribute of the word itself" from "my
-   learning progress" in the four tiles above. */
-.worddetail-stat--wide {
-  grid-column: 1 / -1;
+/* The state's mark sits beside its word, one line. */
+.worddetail-stats__state {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+/* 连对 N 次 rides under its label, the way a ledger notes a qualifier. */
+.worddetail-stats__aside {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+}
+
+/* The rating chips take the value's place. Wrapping is allowed at 375px, and
+   the row's --sp-3 gap is load-bearing: tappable chips expand their hit area
+   6px each way, and 8px would let two wrapped lines overlap. */
+.worddetail-stats__rating {
+  flex-wrap: wrap;
+}
+
+.worddetail-stats__rating .worddetail-chiprow {
+  margin: 0;
+  justify-content: flex-end;
 }
 
 /* --- Source note / date added ---------------------------------------------------- */
 
 .worddetail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-4);
   font-size: var(--fs-xs);
+}
+
+/* --- Delete -------------------------------------------------------------------- */
+
+.worddetail-danger {
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--rule);
 }
 
 /* --- Edit form -------------------------------------------------------------- */
@@ -193,11 +196,3 @@
    .confirm-dialog, the fallback state for a nonexistent entry goes through
    .empty-state, and the sync-failure notice goes through SyncStatus /
    .sync-note. This page defines none of its own for these. */
-
-/* The rating row sits where a .stat's value normally does, so it needs the
-   same gap under it that .stat__value carries. The row's own --sp-3 comes
-   from .worddetail-chiprow and is load-bearing: tappable chips expand their
-   hit area 6px each way, and 8px would let two wrapped lines overlap. */
-.worddetail-rating {
-  margin-block-end: var(--sp-2);
-}

@@ -395,7 +395,12 @@
   border-color: var(--text-faint);
 }
 
-.chip[aria-pressed='true'] {
+/* The hover rule above outranks this one on specificity (four classes to
+   two), so a pressed chip under the pointer turned its label ink on an ink
+   slab — invisible, and on Android a tapped chip keeps :hover until the next
+   tap elsewhere. Restated with :hover so pressed always wins. */
+.chip[aria-pressed='true'],
+.chip[aria-pressed='true']:hover {
   background: var(--slab);
   border-color: var(--slab);
   color: var(--slab-text);
@@ -541,6 +546,33 @@
   text-decoration-thickness: 1px;
   text-underline-offset: 0.28em;
   text-decoration-skip-ink: none;
+}
+
+/* The 旁批: the note a reader writes beside the text, in cinnabar, with its
+   label set vertically in the margin. The usage note (要点) on the review
+   card and the word detail page, and nothing that is not annotation by
+   definition — it answers the question the learner just got wrong, so it
+   is the one block of prose that takes the mark color. Measured contrast
+   of --accent on the card surface: 5.71:1 light, 5.71:1 dark. */
+.margin-note {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-start;
+  color: var(--accent); /* mark: the 旁批 */
+}
+
+.margin-note__label {
+  flex: none;
+  writing-mode: vertical-rl;
+  padding-top: 3px;
+  font-size: var(--fs-sm);
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  line-height: 1;
+}
+
+.margin-note__text {
+  line-height: var(--lh-body);
 }
 
 /* Checkbox: native control tinted to the brand color, wrapped in a --tap-sized hit area */
@@ -737,6 +769,19 @@
 
 .section > * {
   min-width: 0;
+}
+
+/* Without a box, the only thing between one section and the next is the
+   head's rule; a little more air above it than inside the section keeps
+   the two from reading as one. */
+.section + .section {
+  margin-top: var(--sp-2);
+}
+
+/* The head's rule already opens the list; a second, stronger rule a few
+   pixels under it read as a double line. Same arrangement as 今日安排. */
+.section-head + .ledger {
+  border-top: none;
 }
 
 /* --- Ruled list — .ledger ---------------------------------------------------------
