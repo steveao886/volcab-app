@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { ExampleSentence } from '../components/ExampleSentence'
-import { Card } from '../components/Card'
 import { ProgressMarks } from '../components/ProgressMarks'
 import { optionIndexFromKey } from '../lib/keys'
 import { pushRecent, recentWindow } from '../lib/passage'
@@ -16,6 +15,7 @@ import { storage } from '../lib/storage'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
 import { todayStr } from '../lib/srs'
+import { MissedWords, ResultScore } from './QuizResult'
 
 /**
  * 回想 — the Chinese-to-English direction. A scenario sentence appears
@@ -69,11 +69,13 @@ const MISS_TAG: Record<Miss, string> = {
  *
  * The selected state changes the whole label rather than only the colour —
  * same rule the quiz options follow, and for the same reason: state must
- * never be carried by colour alone.
+ * never be carried by colour alone. Set, the label says so and the line
+ * under it says how to undo it; the two used to share one label joined by a
+ * middle dot, which in a half-width column of the ruled row did not fit.
  */
 const RATING_LABEL: Record<'easy' | 'hard', { set: string; unset: string }> = {
-  easy: { unset: '太简单', set: '已标记为太简单 · 取消' },
-  hard: { unset: '要多考', set: '已标记为要多考 · 取消' },
+  easy: { unset: '太简单', set: '已标太简单' },
+  hard: { unset: '要多考', set: '已标要多考' },
 }
 
 interface RecallQuestionViewProps {
@@ -252,15 +254,17 @@ function RecallQuestionView({
       <p className="quiz-q__prompt">{prompt}</p>
 
       {stage === 'commit' ? (
-        <div className="recall-gate">
-          <Button ref={commitRef} variant="primary" block onClick={() => setStage('answer')}>
+        /* The ruled row 复习 grades on: two equal columns, so neither answer
+           is the "small" one. 想不起来 is a first-class exit, not a give-up:
+           the mode's subject is "can I produce it right now", so "no" must
+           be sayable honestly — the alternative is guessing through the
+           options and polluting the signal. Neither has a shortcut to print:
+           我想好了 takes focus on mount, so Enter is the button's own. */
+        <div className="ruled-row recall-gate">
+          <Button ref={commitRef} onClick={() => setStage('answer')}>
             我想好了
           </Button>
-          {/* A first-class exit, not a give-up: the mode's subject is "can I
-              produce it right now", so "no" must be sayable honestly — the
-              alternative is guessing through the options and polluting the
-              signal. */}
-          <Button variant="secondary" block onClick={giveUp}>
+          <Button onClick={giveUp}>
             想不起来
           </Button>
         </div>
@@ -273,11 +277,11 @@ function RecallQuestionView({
            wrong, so nothing is bought by arriving. */
         <>
           <p className="recall-hint" lang="en">{question.hint}</p>
-          <div className="recall-gate">
-            <Button ref={hintRef} variant="primary" block onClick={() => setStage('answer')}>
+          <div className="ruled-row recall-gate">
+            <Button ref={hintRef} onClick={() => setStage('answer')}>
               我想好了
             </Button>
-            <Button variant="secondary" block onClick={giveUp}>
+            <Button onClick={giveUp}>
               还是想不起来
             </Button>
           </div>
@@ -310,7 +314,7 @@ function RecallQuestionView({
                 >
                   <span>
                     <span className="quiz-option__key">{i + 1}</span>
-                    {opt}
+                    <span className="quiz-option__text">{opt}</span>
                   </span>
                   {/* The stamp is the state: tapping again un-stamps, and the
                       numbers renumber themselves because they are indices. */}
@@ -325,7 +329,7 @@ function RecallQuestionView({
                   ) : null}
                   {revealed && question.kind === 'order' ? (
                     <span className="quiz-option__tag">
-                      标准第 {question.answer.indexOf(opt) + 1} · 你排第 {orderPos === -1 ? '—' : orderPos + 1}
+                      标准第 {question.answer.indexOf(opt) + 1}，你排第 {orderPos === -1 ? '—' : orderPos + 1}
                     </span>
                   ) : null}
                 </Button>
@@ -343,8 +347,8 @@ function RecallQuestionView({
           {question.kind === 'recall' && !revealed ? (
             <div className="recall-escape">
               <Button type="button" variant="secondary" size="sm" onClick={notMine}>
-                <span className="quiz-option__key">{escapeKey}</span>
                 我想的不是这几个
+                <span className="key">{escapeKey}</span>
               </Button>
             </div>
           ) : null}
@@ -387,27 +391,36 @@ function RecallQuestionView({
               connotation, grammar). Same job as the contrast card's note.
               A sentence-sourced question carries none — it ranks nothing —
               and the English original above is its whole reveal. */}
-          {question.why !== undefined && <p className="recall-why">{question.why}</p>}
+          {/* It is the 旁批: the one sentence written about this choice
+              rather than lifted from an entry — the same margin note as the
+              contrast card's and a word's 要点. */}
+          {question.why !== undefined && (
+            <div className="margin-note recall-why">
+              <p className="margin-note__label">辨析</p>
+              <p className="margin-note__text">{question.why}</p>
+            </div>
+          )}
           {/* 巩固 sits on the question, not on the results page: the moment
-              you want it is the moment you just missed it. */}
-          {!correct && onReinforce !== undefined ? (
+              you want it is the moment you just missed it. It shares a ruled
+              row with the rating, the two things you can do about this word
+              before moving on. */}
+          <div className="ruled-row recall-after">
+            {!correct && onReinforce !== undefined ? (
+              <Button disabled={reinforced} onClick={() => onReinforce(question)}>
+                <span className="ruled-row__label">{reinforced ? '已排进巩固' : '巩固'}</span>
+                <span className="ruled-row__sub">本轮结束后再想一遍</span>
+              </Button>
+            ) : null}
             <Button
-              variant="secondary"
-              block
-              disabled={reinforced}
-              onClick={() => onReinforce(question)}
+              aria-pressed={rated === ratingShown}
+              onClick={() => rateRecall(answerId, rated === ratingShown ? 'none' : ratingShown)}
             >
-              {reinforced ? '本轮结束后再想一遍' : '巩固 · 再想一遍'}
+              <span className="ruled-row__label">
+                {rated === ratingShown ? RATING_LABEL[ratingShown].set : RATING_LABEL[ratingShown].unset}
+              </span>
+              {rated === ratingShown ? <span className="ruled-row__sub">再点一下取消</span> : null}
             </Button>
-          ) : null}
-          <Button
-            variant="secondary"
-            block
-            aria-pressed={rated === ratingShown}
-            onClick={() => rateRecall(answerId, rated === ratingShown ? 'none' : ratingShown)}
-          >
-            {rated === ratingShown ? RATING_LABEL[ratingShown].set : RATING_LABEL[ratingShown].unset}
-          </Button>
+          </div>
           <Button ref={nextRef} className="quiz-q__next" variant="primary" block onClick={onNext}>
             {nextLabel}
           </Button>
@@ -643,7 +656,7 @@ export function RecallSession({
 
   if (total === 0) {
     return (
-      <Card className="quiz-empty">
+      <div className="quiz-empty">
         <p>
           你学过的词里还凑不出可以回想的一组。回想只考已经学过的近义词组 ——
           一组里哪怕有一个词没学过,排它就没有意义。再学一阵子,这里的题会自己多起来。
@@ -651,7 +664,7 @@ export function RecallSession({
         <Link className="btn btn--primary" to="/library">
           去词库看看
         </Link>
-      </Card>
+      </div>
     )
   }
 
@@ -662,15 +675,12 @@ export function RecallSession({
 
     return (
       <>
-        <Card>
-          <p className="quiz-result__score" role="status">
-            <span className="num quiz-result__score-num">{score}</span>
-            <span className="muted"> / {total}</span>
-          </p>
-          <p className="muted quiz-result__summary">
-            {score === total ? '全部答对,漂亮!' : `本轮测了 ${total} 题,答对 ${score} 题。`}
-          </p>
-        </Card>
+        <ResultScore
+          value={<>{score}<span className="quiz-result__of"> / {total}</span></>}
+          label="答对"
+        >
+          {score === total ? '全部答对,漂亮!' : `本轮测了 ${total} 题,答对 ${score} 题。`}
+        </ResultScore>
 
         {/* Starting another round is the usual next move, so the controls sit
             directly under the score. Below the wrong list they were off the
@@ -686,29 +696,18 @@ export function RecallSession({
           </Link>
         </div>
 
+        {/* Which kind of miss it was, carried through to the summary: "the
+            meaning was there, the word wasn't" is a different diagnosis from
+            "nothing came", and the list is where you decide what to do about
+            it. */}
         {wrongWords.length > 0 ? (
-          <Card pad="none">
-            <p className="quiz-q__label quiz-wrong-title">错词 · {wrongWords.length}</p>
-            <ul className="quiz-wrong-list">
-              {wrongWords.map(w => (
-                <li key={w.id}>
-                  <Link className="quiz-wrong-list__item" to={`/word/${w.id}`}>
-                    <span className="word" lang="en">
-                      {w.headword}
-                    </span>
-                    <span className="muted">{w.meanings[0]?.zh}</span>
-                    {/* Which kind of miss it was, carried through to the
-                        summary: "the meaning was there, the word wasn't" is
-                        a different diagnosis from "nothing came", and the
-                        list is where you decide what to do about it. */}
-                    {misses[w.id] !== undefined ? (
-                      <span className="quiz-option__tag">{MISS_TAG[misses[w.id]]}</span>
-                    ) : null}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </Card>
+          <MissedWords
+            title="错词"
+            rows={wrongWords.map(w => ({
+              word: w,
+              tag: misses[w.id] === undefined ? undefined : MISS_TAG[misses[w.id]],
+            }))}
+          />
         ) : null}
       </>
     )
@@ -738,17 +737,18 @@ export function RecallSession({
           <span className="num">{inEncore ? encore.length : total}</span> 题
         </p>
       </div>
-      <Card>
-        <RecallQuestionView
-          key={inEncore ? `encore-${encoreIndex}` : index}
-          question={q}
-          onAnswered={(correct, ids, miss) => handleAnswered(correct, ids, miss, q)}
-          onNext={handleNext}
-          nextLabel={isLast ? '查看成绩' : '下一题'}
-          onReinforce={inEncore ? undefined : reinforce}
-          reinforced={reinforced.has(q.prompt)}
-        />
-      </Card>
+      {/* On the page, not in a card, like every choice question since round
+          1: the sentence is the prompt and nothing else on the screen can be
+          mistaken for it. */}
+      <RecallQuestionView
+        key={inEncore ? `encore-${encoreIndex}` : index}
+        question={q}
+        onAnswered={(correct, ids, miss) => handleAnswered(correct, ids, miss, q)}
+        onNext={handleNext}
+        nextLabel={isLast ? '查看成绩' : '下一题'}
+        onReinforce={inEncore ? undefined : reinforce}
+        reinforced={reinforced.has(q.prompt)}
+      />
     </>
   )
 }

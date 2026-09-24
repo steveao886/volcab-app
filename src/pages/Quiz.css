@@ -95,12 +95,12 @@
 
 .btn--incorrect .quiz-option__text {
   text-decoration: line-through;
-  text-decoration-color: var(--accent);
+  text-decoration-color: var(--accent); /* mark: the strike through a wrong pick */
   text-decoration-thickness: 2px;
 }
 
 .btn--incorrect .quiz-option__tag {
-  color: var(--accent);
+  color: var(--accent); /* mark: 你的选择 on a wrong pick */
 }
 
 /* Number-key hint before each option: press 1–4 to answer directly. Same
@@ -139,7 +139,7 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  background: var(--accent);
+  background: var(--accent); /* mark: the circle / 叉 on the key */
   -webkit-mask: var(--mark) center / 100% 100% no-repeat;
   mask: var(--mark) center / 100% 100% no-repeat;
   transform: translate(-50%, -52%);
@@ -182,7 +182,7 @@
 }
 
 .quiz-feedback--wrong {
-  color: var(--accent);
+  color: var(--accent); /* mark: the verdict on a miss */
 }
 
 .quiz-q__next {
@@ -201,49 +201,37 @@
   color: var(--text-muted);
 }
 
+/* "Nothing to ask yet" and "still loading": a sentence and a way out, on the
+   paper. They were cards, which boxed a single line of text. */
 .quiz-empty {
   display: grid;
   gap: var(--sp-4);
   justify-items: start;
 }
 
-.quiz-result__score {
-  display: flex;
-  align-items: baseline;
-  gap: var(--sp-1);
+/* --- Result page (QuizResult.tsx) -------------------------------------------- */
+
+.quiz-result {
+  display: grid;
+  gap: var(--sp-2);
+  padding-block: var(--sp-2);
 }
 
-.quiz-result__score-num {
-  font-size: var(--fs-2xl);
-  font-weight: 700;
+/* The denominator reads as part of the number but a step quieter. */
+.quiz-result__of {
+  color: var(--text-muted);
+  font-weight: 400;
 }
 
 .quiz-result__summary {
-  margin-top: var(--sp-2);
+  color: var(--text-muted);
 }
 
-.quiz-wrong-title {
-  padding: var(--sp-4) var(--sp-4) 0;
-}
-
-.quiz-wrong-list {
-  display: grid;
-}
-
-.quiz-wrong-list li + li {
-  border-top: 1px solid var(--rule);
-}
-
-.quiz-wrong-list__item {
-  display: grid;
-  gap: 2px;
-  padding: var(--sp-3) var(--sp-4);
-  text-decoration: none;
-  color: inherit;
-}
-
-.quiz-wrong-list__item:hover {
-  background: var(--surface-sunken);
+/* How a word was missed, at the row's right before the chevron. */
+.quiz-missed__tag {
+  flex: none;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
 }
 
 .quiz-result__actions {
@@ -270,76 +258,59 @@
    The three extra practice modes (contrast / audio / sprint).
    ========================================================================== */
 
-/* --- Mode hub: one card per practice surface (sketch 002 winner B) --------
-   2-col grid at 375px; the mixed card spans full width so the every-day
-   default stays the largest, first target. Cards are <Link>s. */
+/* --- Mode hub: a 目录 of the nine practice surfaces --------------------------
+   A .ledger of <Link> rows (sketch 002 winner B's content, the card grid it
+   came in dropped in round 2): the mode's name and what it does on the left,
+   its stat over how long ago on the right. */
 
-.quiz-hub {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--sp-3);
+.quiz-mode {
+  align-items: center;
+  padding-block: var(--sp-3);
 }
 
-.quiz-mode-card {
-  position: relative;
-  display: grid;
-  gap: var(--sp-1);
-  align-content: start;
-  text-decoration: none;
-  color: inherit;
-}
-
-.quiz-mode-card--wide {
-  grid-column: 1 / -1;
-}
-
-.quiz-mode-card__name {
-  font-size: var(--fs-base);
-  font-weight: 700;
-}
-
-.quiz-mode-card__desc {
-  font-size: var(--fs-xs);
-  line-height: var(--lh-snug);
-  color: var(--text-faint);
-}
-
-.quiz-mode-card__meta {
+.quiz-mode__name {
   display: flex;
-  justify-content: space-between;
   align-items: baseline;
   gap: var(--sp-2);
-  margin-top: var(--sp-2);
-  padding-top: var(--sp-2);
-  border-top: 1px solid var(--rule);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  line-height: var(--lh-tight);
+  letter-spacing: 0.04em;
+}
+
+/* 推荐: the reader's note on which mode to play, so it is a mark and the one
+   cinnabar thing on the hub. Small, beside the name, a word and not a
+   badge — the solid cinnabar tab it replaced was a fill. */
+.quiz-mode__rec {
   font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent); /* mark: 推荐 */
+}
+
+.quiz-mode__meta {
+  display: grid;
+  flex: none;
+  justify-items: end;
+  gap: 2px;
+  text-align: end;
+}
+
+.quiz-mode__stat {
+  font-weight: 600;
   color: var(--text-muted);
 }
 
-.quiz-mode-card__stat {
-  font-weight: 700;
+/* The weak spot the 推荐 points at: heavier ink, not a color. The mark is
+   the word 推荐 beside the name; the number only has to stand out. */
+.quiz-mode__stat--low {
+  color: var(--text);
+  font-weight: 800;
 }
 
-/* The weak spot gets vermilion — annotation, one of its permitted uses. */
-.quiz-mode-card__stat--low {
-  color: var(--accent);
-}
-
-/* 推荐 badge: hangs off the card's top edge. Solid vermilion is otherwise
-   reserved for destructive actions; this is the annotation exception the
-   tokens header carves out for marks/eyebrows — it annotates the card, it
-   isn't a button. Text tag + color, never color alone. */
-.quiz-mode-card__badge {
-  position: absolute;
-  top: -1px;
-  right: var(--sp-3);
-  padding: 2px 8px 3px;
-  border-radius: 0 0 var(--r-sm) var(--r-sm);
-  background: var(--accent);
-  color: var(--on-tone);
-  font-size: var(--fs-eyebrow);
-  font-weight: 700;
-  letter-spacing: var(--tracking-eyebrow);
+.quiz-mode__ago {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
 }
 
 /* --- Audio question --------------------------------------------------------------- */
@@ -358,23 +329,18 @@
 /* --- Comparison card for contrast questions ------------------------------------------------------- */
 
 /* Only appears after answering. Side-by-side columns are too cramped at
-   375px, so it's two stacked blocks + a divider instead. */
+   375px, so it's two stacked blocks divided by a rule — on the page, no box
+   inside the question. */
 .quiz-contrast {
   margin-top: var(--sp-5);
   padding-top: var(--sp-4);
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--rule-strong);
 }
 
-/* The authored "what separates these two" line. Vermilion rule on the left
-   — the annotation language the site uses for etymology and example
-   emphasis — because this is the one sentence on the card written *about*
-   the pair rather than copied from either entry. */
+/* The authored "what separates these two" line is the shared 旁批
+   (.margin-note); this only spaces it. */
 .quiz-contrast__note {
-  padding-left: var(--sp-3);
-  border-left: 2px solid var(--accent);
-  font-size: var(--fs-sm);
-  line-height: var(--lh-body);
-  color: var(--text);
+  margin-top: var(--sp-3);
 }
 
 .quiz-contrast__side {
@@ -384,15 +350,14 @@
 }
 
 .quiz-contrast__side + .quiz-contrast__side {
-  border-top: 1px dashed var(--rule);
+  border-top: 1px solid var(--rule);
 }
 
-/* The answer side of this question uses vermilion as a left annotation bar
-   — vermilion is only ever for annotation, and this is exactly that
-   annotation ("which one is the answer"), not coloring the whole block. */
-.quiz-contrast__side--answer {
-  padding-left: var(--sp-3);
-  border-left: 2px solid var(--accent);
+/* Which side was the answer is said by its 本题答案 tag, in 石青 like every
+   other correct answer. The cinnabar bar down its left edge went: it was a
+   rule doing a word's job. */
+.quiz-contrast__side--answer .quiz-option__tag {
+  color: var(--success);
 }
 
 .quiz-contrast__head {
@@ -426,21 +391,38 @@
   margin-bottom: var(--sp-4);
 }
 
+/* The one live number on the screen: large, in ink. */
 .quiz-sprint__clock {
-  font-size: var(--fs-xl);
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  font-size: var(--fs-2xl);
   font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  /* Keeps the progress bar after it from jumping when the seconds count drops from two digits to one */
-  min-width: 3ch;
+  line-height: 1;
+  color: var(--text);
+  /* Keeps the bar after it from jumping when the seconds count drops from two digits to one */
+  min-width: 3.2ch;
+}
+
+/* The last ten seconds: a warning, which is a mark. */
+.quiz-sprint__clock--low {
+  color: var(--accent); /* mark: time is nearly up */
 }
 
 .quiz-sprint__unit {
   font-size: var(--fs-xs);
   font-weight: 400;
+  color: var(--text-muted);
 }
 
+/* Time left as a bar. Ink, not the cinnabar of a session's 圈点 fallback:
+   draining time is not a finished item. */
 .quiz-sprint__progress {
   flex: 1;
+}
+
+.quiz-sprint__progress .progress__fill {
+  background: var(--text-muted);
 }
 
 .quiz-sprint__score {
@@ -448,8 +430,19 @@
   white-space: nowrap;
 }
 
+.quiz-sprint__score .num {
+  color: var(--text);
+  font-size: var(--fs-base);
+  font-weight: 600;
+}
+
+.quiz-sprint__record {
+  color: var(--text);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
 .quiz-sprint__best {
-  margin-top: var(--sp-2);
   font-size: var(--fs-sm);
 }
 
@@ -458,27 +451,31 @@
    ========================================================================== */
 
 .quiz-passage__title {
-  margin-top: var(--sp-2);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--text-muted);
+  margin-top: var(--sp-3);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
-/* The passage text is a block of readable prose; the line height needs to be looser than button text — this is meant to be read, not tapped */
+/* The passage as a printed page: Source Serif at reading size and Latin
+   leading. It was set at 16px with line-height 2 to make room for the
+   blanks' underline; the rule sits inside the line box at --lh-latin
+   too, and double leading read as a form, not an article. */
 .quiz-passage__text {
-  margin-top: var(--sp-4);
-  font-size: var(--fs-base);
-  line-height: 2;
+  margin-top: var(--sp-3);
+  font-family: var(--font-word);
+  font-size: var(--fs-md);
+  line-height: var(--lh-latin);
 }
 
-/* A blank is an inline button. Underline rather than a box: a box would chop
-   a block of prose into a grid of form fields and it would stop reading like
-   an article. Line height 2 exists specifically to leave room for the underline. */
+/* A blank is an inline button drawn as round 1's ruled gap (.quiz-blank):
+   an ink rule to write on. Not a box — a box would chop a block of prose
+   into a grid of form fields. */
 .quiz-blank-slot {
   display: inline;
   padding: 0 var(--sp-1);
   border: none;
-  border-bottom: 2px solid var(--rule-control);
+  border-bottom: 1.5px solid var(--text);
   border-radius: 0;
   background: none;
   font: inherit;
@@ -487,8 +484,20 @@
   cursor: pointer;
 }
 
+/* Unfilled: the underscores stay in the DOM (copy and paste still shows
+   where the gap was, and the button keeps a width) but only the rule is
+   drawn — underscores over a rule read as a double line. */
+.quiz-blank-slot--empty {
+  display: inline-block;
+  min-width: 3.5em;
+  color: transparent;
+  line-height: 1.2;
+}
+
+/* The blank the next word will land in: a heavier rule on a sunken ground.
+   Not cinnabar — a cursor is not a mark. */
 .quiz-blank-slot--active {
-  border-bottom-color: var(--accent);
+  border-bottom-width: 3px;
   background: var(--surface-sunken);
 }
 
@@ -498,22 +507,20 @@
   cursor: default;
 }
 
-/* Wrong: a danger-colored underline marks the mistake, while the text itself
-   is the correct answer in success green — the struck-through word you
-   actually chose is rendered in front of it by .quiz-blank-slot__wrong. */
+/* Wrong, the 组句 marks: a cinnabar rule under the gap, the word you chose
+   struck through in cinnabar (.quiz-blank-slot__wrong), and the correct
+   answer after it in 石青. Showing only the correct answer, you wouldn't
+   remember where you went wrong. */
 .quiz-blank-slot--wrong {
-  border-bottom-color: var(--danger);
+  border-bottom-color: var(--accent); /* mark: a miss */
   color: var(--success);
   cursor: default;
 }
 
-/* When wrong, the word you filled in stays struck through in front of the
-   correct answer — showing only the correct answer, you wouldn't remember
-   where you went wrong */
 .quiz-blank-slot__wrong {
   margin-inline-end: var(--sp-1);
-  text-decoration: line-through;
-  color: var(--danger);
+  text-decoration: line-through var(--accent) 2px; /* mark: struck */
+  color: var(--text-muted);
   font-weight: 400;
 }
 
@@ -532,7 +539,6 @@
 .quiz-passage__pairs {
   display: grid;
   gap: var(--sp-4);
-  margin-top: var(--sp-3);
 }
 
 .quiz-passage__pairs li {
@@ -541,17 +547,16 @@
   line-height: var(--lh-snug);
 }
 
-/* The sentence containing a wrong answer gets marked in the translation: vermilion is reserved for annotations, and this is exactly the annotation "you got this sentence wrong" */
+/* The sentence containing a wrong answer gets a cinnabar stroke in its
+   margin: the line a reader draws beside a passage to come back to. A shape
+   only the wrong sentences carry, so it does not rest on color. */
 .quiz-passage__pair--wrong {
   padding-left: var(--sp-3);
-  border-left: 2px solid var(--accent);
+  border-left: 2px solid var(--accent); /* mark: 旁线 beside a missed sentence */
 }
 
 /* --- 回想 --------------------------------------------------------------- */
 
-/* The commit gate: two full-width buttons, 我想好了 on top. Vertical rather
-   than side-by-side so neither answer is the "small" one — 想不起来 is a
-   first-class exit, and a cramped half-width button would say otherwise. */
 /* The 回想 range picker. A plain wrapped row: three chips at 375px fit on
    one line, and wrapping is the right answer if a fourth is ever added. */
 .recall-options {
@@ -589,9 +594,16 @@
   font-size: var(--fs-sm);
 }
 
+/* The commit gate is a .ruled-row: two equal columns, so neither answer is
+   the "small" one — 想不起来 is a first-class exit. It was two stacked
+   full-width buttons for the same reason; equal columns say it more
+   quietly. */
 .recall-gate {
-  display: grid;
-  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+}
+
+/* 巩固 and the rating, the two things to do about this word before moving on. */
+.recall-after {
   margin-top: var(--sp-5);
 }
 
@@ -611,20 +623,22 @@
 
 /* The scenario said in English, using the answer. Sits between the answer
    word and the why: the word, the word working, then what separates it
-   from the others. Left rule like the review card's example sentences,
-   because that is what it is. */
+   from the others. It is an example sentence, set like the review card's:
+   the cinnabar 波浪线 under the headword marks it, and the left rule it
+   used to carry went with the one on the card. */
 .recall-en {
   margin-top: var(--sp-3);
-  padding-inline-start: var(--sp-4);
-  border-inline-start: 2px solid var(--rule-strong);
-  line-height: var(--lh-body);
+  line-height: var(--lh-latin);
+  color: var(--text-muted);
 }
 
 /* The English definition offered after 想不起来 — a second question, not a
    reveal, so it must not look like .recall-en (which appears only once the
    answer is already on screen). Boxed rather than ruled, and set apart from
    the Chinese prompt above it: the eye should land here and stop, because
-   this is the sentence being retrieved from now. */
+   this is the sentence being retrieved from now. A box that survives 朱批
+   for the reason round 2's spec allows one: it is a self-contained prompt
+   that would otherwise read as one more line of the question. */
 .recall-hint {
   margin-top: var(--sp-4);
   padding: var(--sp-3) var(--sp-4);
@@ -635,42 +649,38 @@
   line-height: var(--lh-body);
 }
 
-/* The authored why — same visual role as the contrast card's note. */
+/* The authored why is the shared 旁批 (.margin-note), the same note the
+   contrast card and a word's 要点 print; this only spaces it. */
 .recall-why {
+  margin-top: var(--sp-3);
+}
+
+/* 组句's reveal line: the headword and its gloss. Plain muted text — a
+   gloss is copied from the entry, not written about this question, so it
+   is not a 旁批. */
+.compose-gloss {
   margin-top: var(--sp-2);
   color: var(--text-muted);
-  line-height: var(--lh-body);
 }
 
-/* Wrong-word row with the 巩固 button beside the word link. min-width: 0
-   lets the link's text truncate instead of pushing the button off the
-   375px canvas. */
-.recall-wrong-row {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
+.compose-gloss [lang='en'] {
+  color: var(--text);
+  font-weight: 600;
 }
 
-.recall-wrong-row .quiz-wrong-list__item {
-  flex: 1;
-  min-width: 0;
-}
-
-.recall-wrong-row .btn {
-  margin-right: var(--sp-4);
-  flex-shrink: 0;
-}
-
-/* The asked-for chunk of the scenario. 着重号 (emphasis dots) rather than
-   color or weight: it is the traditional Chinese way to point at a run of
-   characters, it survives grayscale screenshots, and it cannot be read as
-   the vermilion "wrong" annotation. */
+/* The asked-for chunk of the scenario (回想 and 组句). What it encodes is
+   "this is the part being asked about" — the same gesture as .example-hit's
+   "this is the part to notice" — so under 朱批 it is the same mark: a
+   cinnabar 波浪线. It was ink 着重号, chosen so it could not be read as the
+   vermilion "wrong" annotation; a wrong answer is now a 叉 or a struck line,
+   and the wavy line already means "notice this" on every example sentence.
+   Shape, not color, still carries it: grayscale keeps the wave. */
 .recall-target {
   font-style: normal;
-  -webkit-text-emphasis: dot;
-  text-emphasis: dot;
-  -webkit-text-emphasis-position: under right;
-  text-emphasis-position: under right;
+  text-decoration: underline wavy var(--accent); /* mark: 波浪线 */
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  text-decoration-skip-ink: none;
 }
 
 /* The "none of these" escape. Deliberately NOT styled like a fifth option:
@@ -726,9 +736,11 @@
   cursor: pointer;
 }
 
-/* After the submit. The colour is never the only signal — the reference
-   sentence is printed in full below, and a misplaced chunk is struck
-   through as well as tinted. */
+/* After the submit, round 1's answer marks: a right slot is 石青 with its
+   text; a wrong one keeps what you put there struck through in cinnabar,
+   with the chunk that belongs there after it in 石青. Never color alone —
+   the strike is a shape, and the reference sentence is printed in full
+   below. */
 .compose-slot--right {
   border-color: var(--success);
   color: var(--success);
@@ -736,10 +748,19 @@
 }
 
 .compose-slot--wrong {
-  border-color: var(--danger);
-  color: var(--danger);
-  text-decoration: line-through;
+  border-color: var(--accent); /* mark: a miss */
+  color: var(--text);
   cursor: default;
+}
+
+.compose-slot__mine {
+  margin-inline-end: var(--sp-2);
+  color: var(--text-muted);
+  text-decoration: line-through var(--accent) 2px; /* mark: struck */
+}
+
+.compose-slot__answer {
+  color: var(--success);
 }
 
 /* The sentence-final punctuation. Out of the chunks so it cannot mark which
@@ -773,12 +794,10 @@
   opacity: 0.4;
 }
 
-/* The printed shortcut. Same treatment as the quiz options' 1–4: a shortcut
-   that is not on the control it triggers does not exist. */
-.compose-chunk__key {
+/* Each chunk prints its digit as the shared .key cap: a shortcut that is not
+   on the control it triggers does not exist. */
+.compose-chunk .key {
   flex: none;
-  color: var(--text-faint);
-  font-size: var(--fs-sm);
 }
 
 .compose-word {
@@ -797,32 +816,43 @@
   line-height: var(--lh-body);
 }
 
-/* The two verdicts, side by side. Each spells its result out — 正确 / 错误 /
-   词形错了 — so the tint is a second channel and never the only one. */
+/* The two verdicts, side by side with a 界栏 rule between them, in the
+   weight of .quiz-feedback. Each spells its result out — 正确 / 错误 /
+   词形错了 — so the color is a second channel and never the only one. They
+   were two bordered pills; a verdict is a mark on the paper, not a tag. */
 .compose-verdicts {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--sp-2);
+  align-items: baseline;
   margin-top: var(--sp-4);
+  font-size: var(--fs-md);
+  font-weight: 900;
 }
 
 .compose-verdict {
-  padding: var(--sp-1) var(--sp-3);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-sm);
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+}
+
+.compose-verdict + .compose-verdict {
+  margin-inline-start: var(--sp-3);
+  padding-inline-start: var(--sp-3);
+  border-inline-start: 1px solid var(--rule-strong);
+}
+
+.compose-verdict__axis {
   font-size: var(--fs-sm);
-  font-weight: 600;
+  font-weight: 400;
   color: var(--text-muted);
 }
 
 .compose-verdict--ok {
-  border-color: var(--success);
   color: var(--success);
 }
 
 .compose-verdict--bad {
-  border-color: var(--danger);
-  color: var(--danger);
+  color: var(--accent); /* mark: a miss, as .quiz-feedback--wrong */
 }
 
 /* ── 发散 ───────────────────────────────────────────────────────────────
@@ -834,11 +864,14 @@
   display: grid;
   gap: var(--sp-2);
 }
+/* 〔近义〕: a bracketed label in the margin, the way a book prints one. A
+   label the question came with, not a mark a reader added, so muted Song
+   and not cinnabar. */
 .diverge-q__axis {
-  font-size: var(--fs-xs);
+  font-size: var(--fs-sm);
   font-weight: 600;
   letter-spacing: 0.04em;
-  color: var(--accent);
+  color: var(--text-muted);
 }
 .diverge-q__prompt {
   font-size: var(--fs-md);
@@ -852,33 +885,45 @@
   font-size: var(--fs-sm);
   color: var(--text-muted);
 }
+/* A grown set is news about the question, said after the count in
+   parentheses. It was a cinnabar pill; nothing here is a mark. */
 .diverge-q__grown {
-  margin-left: var(--sp-2);
-  padding: 2px var(--sp-2);
-  border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--accent);
+  margin-left: var(--sp-1);
   font-size: var(--fs-xs);
 }
 
+/* The answer set as ruled rows, the .ledger's hairlines without its 48px
+   floor: up to twelve answers have to fit a phone screen with the input
+   under them. */
 .diverge-q__slots {
   display: grid;
-  gap: var(--sp-1);
   margin: var(--sp-2) 0 0;
   padding: 0;
   list-style: none;
+  border-top: 1px solid var(--rule-strong);
 }
 .diverge-slot {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--sp-2);
-  padding: var(--sp-2) var(--sp-3);
-  border: 1px solid var(--rule);
-  border-radius: 8px;
+  align-items: center;
+  gap: var(--sp-1) var(--sp-2);
+  min-height: 40px;
+  padding-block: var(--sp-1);
+  border-bottom: 1px solid var(--rule);
   /* A word not yet produced is shown as dots, which must not read as text:
      the tracking is what separates •••••••• from a redacted word. */
   letter-spacing: 0.04em;
+}
+/* Every row keeps the margin a 勾 would take, so found and unfound words
+   start at the same x. */
+.diverge-slot:not(.diverge-slot--got) {
+  padding-inline-start: calc(1em + var(--sp-2));
+}
+.diverge-slot__mark {
+  font-size: var(--fs-base);
+}
+.diverge-slot__concede {
+  margin-inline-start: auto;
 }
 /* The answer face, deliberately **not** .word: that is the 34px headword
    style, and a set of up to twelve answers rendered at headword size clips
@@ -890,13 +935,11 @@
   overflow-wrap: break-word;
   word-break: break-word;
 }
-.diverge-slot--got {
-  border-color: var(--success);
-  background: var(--success-soft);
-}
-.diverge-slot--missed {
-  border-style: dashed;
-  border-color: var(--rule-strong);
+/* Found: the word in ink beside its 勾. Not yet found: the hint dots, muted.
+   Missed at the reveal: the word, muted, with 没答出 beside it. The tint box
+   a found answer used to sit in was a fill doing a mark's job. */
+.diverge-slot:not(.diverge-slot--got) .diverge-slot__word {
+  color: var(--text-muted);
 }
 /* The state in words, never in colour alone — same rule and same reason as
    .quiz-option__tag. */
@@ -918,7 +961,7 @@
 .diverge-q__note--hit { color: var(--success); }
 /* Vermilion here is annotation, not decoration: it is the one verdict the
    learner has to read, because the prefix is the whole question. */
-.diverge-q__note--prefix { color: var(--accent); }
+.diverge-q__note--prefix { color: var(--accent); /* mark: a wrong prefix */ }
 .diverge-q__actions {
   display: flex;
   gap: var(--sp-2);

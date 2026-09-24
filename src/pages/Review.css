@@ -244,80 +244,9 @@
   text-align: center;
 }
 
-/* Ruled like a page: an ink rule above and below, the four columns divided
-   by 界栏 hairlines. The tinted temperature band the grade variants carry
-   elsewhere is dropped here — four colored boxes in a row were the loudest
-   thing on the screen, and the card is supposed to be. 重来 keeps the
-   cinnabar (it is the mark of a miss); the other three are ink, told apart
-   by their label, key and interval, never by color alone. */
-.review-grades {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-block: 1px solid var(--text);
-}
-
-/* The confirm showing (a card sent back by 困难, see reviewQueue.ts's
-   isHardConfirm) has two actions instead of four. Stretching them across
-   the same row keeps 重来 in its usual leftmost slot. */
-.review-grades--confirm {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.review-grades .btn {
-  min-height: 60px;
-  padding-inline: var(--sp-1);
-  flex-direction: column;
-  gap: 2px;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  color: var(--text);
-  font-size: var(--fs-md);
-  font-weight: 900;
-}
-
-.review-grades .btn + .btn {
-  border-inline-start: 1px solid var(--rule-strong);
-}
-
-.review-grades .btn--grade-again {
-  color: var(--accent);
-}
-
-.review-grades .btn:hover:not(:disabled) {
-  background: var(--surface-sunken);
-  color: var(--text);
-}
-
-.review-grades .btn--grade-again:hover:not(:disabled) {
-  color: var(--accent);
-}
-
-/* Label + number key stay on one line inside the stacked button. */
-.review-grade__label {
-  display: inline-flex;
-  align-items: baseline;
-  gap: var(--sp-1);
-}
-
-/* The consequence line (稍后 / 4 天): muted under the label, so the label is
-   read first and the interval confirms it. In drill modes it's absent and
-   the buttons render exactly as before. */
-.review-grade__interval {
-  font-size: var(--fs-xs);
-  font-weight: 400;
-  letter-spacing: 0;
-  color: var(--text-muted);
-}
-
-/* On wider desktop screens, the grade buttons don't need to stretch the
-   whole content width. */
-@media (min-width: 900px) {
-  .review-grades {
-    max-width: 480px;
-    margin-inline: auto;
-  }
-}
+/* The grade row is the shared .ruled-row (components.css): ruled like a
+   page, 界栏 between the columns, 重来 in cinnabar as the mark of a miss.
+   It was drawn here in round 1 and lifted out when 练习 and 回想 needed it. */
 
 /* Remove entry point: kept at a distance from the four grade buttons, visually distinct as not belonging to the same group of actions */
 .review-cull {

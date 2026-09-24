@@ -1,13 +1,13 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
-import { Card } from '../components/Card'
 import { Chip } from '../components/Chip'
 import { ProgressMarks } from '../components/ProgressMarks'
 import { pickPassage, recordPlay } from '../lib/passage'
 import type { Passage, PassagePlay, PassageQuestion, Token } from '../lib/passage'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
 import { todayStr } from '../lib/srs'
+import { ResultScore } from './QuizResult'
 import { storage } from '../lib/storage'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
@@ -137,12 +137,12 @@ export function PassageSession({
 
   if (question === null) {
     return (
-      <Card className="quiz-empty">
+      <div className="quiz-empty">
         <p>短文题只考你学过的词,一篇里至少要凑够 3 个。再学一阵子,这里的题会自己多起来。</p>
         <Link className="btn btn--primary" to="/library">
           去词库看看
         </Link>
-      </Card>
+      </div>
     )
   }
 
@@ -167,7 +167,10 @@ export function PassageSession({
         </p>
       </div>
 
-      <Card>
+      {/* A printed page, on the paper: the title, the passage in the Latin
+          face at reading size, blanks as ruled gaps. It was a card, which put
+          a box inside the page around the one thing on it. */}
+      <div className="quiz-passage">
         <p className="quiz-q__label">读短文,把词填进空里</p>
         <p className="quiz-passage__title">{question.passage.title}</p>
 
@@ -182,6 +185,7 @@ export function PassageSession({
                 const correct = chosen === blanks[bi].wordId
                 const cls = ['quiz-blank-slot']
                 if (!submitted && active === bi) cls.push('quiz-blank-slot--active')
+                if (!submitted && chosen === undefined) cls.push('quiz-blank-slot--empty')
                 if (submitted) cls.push(correct ? 'quiz-blank-slot--correct' : 'quiz-blank-slot--wrong')
                 return (
                   <button
@@ -227,7 +231,7 @@ export function PassageSession({
             </Button>
           </>
         ) : null}
-      </Card>
+      </div>
 
       {submitted ? (
         <PassageResult
@@ -265,18 +269,15 @@ function PassageResult({
 
   return (
     <>
-      <Card>
-        <p className="quiz-result__score" role="status">
-          <span className="num quiz-result__score-num">{score}</span>
-          <span className="muted"> / {total}</span>
-        </p>
-        <p className="muted quiz-result__summary">
-          {score === total ? '全部填对,漂亮!' : `${total} 个空,填对 ${score} 个。`}
-        </p>
-      </Card>
+      <ResultScore
+        value={<>{score}<span className="quiz-result__of"> / {total}</span></>}
+        label="填对"
+      >
+        {score === total ? '全部填对,漂亮!' : `${total} 个空,填对 ${score} 个。`}
+      </ResultScore>
 
-      <Card>
-        <p className="quiz-q__label">逐句对照</p>
+      <section className="section">
+        <h2 className="section-head">逐句对照</h2>
         <ol className="quiz-passage__pairs">
           {question.passage.zh.map((zh, si) => (
             <li key={si} className={wrongSentences.has(si) ? 'quiz-passage__pair--wrong' : undefined}>
@@ -285,7 +286,7 @@ function PassageResult({
             </li>
           ))}
         </ol>
-      </Card>
+      </section>
 
       <div className="quiz-result__actions">
         <Button variant="primary" size="lg" block onClick={onRestart}>

@@ -470,47 +470,47 @@ function ReviewSession() {
       <div className="review-actions">
         {flipped ? (
           confirmShowing ? (
-            <div className="review-grades review-grades--confirm">
-              <Button variant="grade-again" onClick={() => handleGrade('again')}>
-                <span className="review-grade__label">
+            <div className="ruled-row">
+              <Button variant="grade-again" className="ruled-row__miss" onClick={() => handleGrade('again')}>
+                <span className="ruled-row__label">
                   重来<span className="key">1</span>
                 </span>
-                {previews !== null && <span className="num review-grade__interval">{previews.again}</span>}
+                {previews !== null && <span className="num ruled-row__sub">{previews.again}</span>}
               </Button>
               <Button variant="grade-good" onClick={handleConfirmKnown}>
-                <span className="review-grade__label">
+                <span className="ruled-row__label">
                   记住了<span className="key">3</span>
                 </span>
                 {curEntry !== undefined && (
-                  <span className="num review-grade__interval">维持 {diffDays(today, curEntry.due)} 天</span>
+                  <span className="num ruled-row__sub">维持 {diffDays(today, curEntry.due)} 天</span>
                 )}
               </Button>
             </div>
           ) : (
-            <div className="review-grades">
-              <Button variant="grade-again" onClick={() => handleGrade('again')}>
-                <span className="review-grade__label">
+            <div className="ruled-row">
+              <Button variant="grade-again" className="ruled-row__miss" onClick={() => handleGrade('again')}>
+                <span className="ruled-row__label">
                   重来<span className="key">1</span>
                 </span>
-                {previews !== null && <span className="num review-grade__interval">{previews.again}</span>}
+                {previews !== null && <span className="num ruled-row__sub">{previews.again}</span>}
               </Button>
               <Button variant="grade-hard" onClick={() => handleGrade('hard')}>
-                <span className="review-grade__label">
+                <span className="ruled-row__label">
                   困难<span className="key">2</span>
                 </span>
-                {previews !== null && <span className="num review-grade__interval">{previews.hard}</span>}
+                {previews !== null && <span className="num ruled-row__sub">{previews.hard}</span>}
               </Button>
               <Button variant="grade-good" onClick={() => handleGrade('good')}>
-                <span className="review-grade__label">
+                <span className="ruled-row__label">
                   良好<span className="key">3</span>
                 </span>
-                {previews !== null && <span className="num review-grade__interval">{previews.good}</span>}
+                {previews !== null && <span className="num ruled-row__sub">{previews.good}</span>}
               </Button>
               <Button variant="grade-easy" onClick={() => handleGrade('easy')}>
-                <span className="review-grade__label">
+                <span className="ruled-row__label">
                   简单<span className="key">4</span>
                 </span>
-                {previews !== null && <span className="num review-grade__interval">{previews.easy}</span>}
+                {previews !== null && <span className="num ruled-row__sub">{previews.easy}</span>}
               </Button>
             </div>
           )

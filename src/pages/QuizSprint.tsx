@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
-import { Card } from '../components/Card'
 import { optionIndexFromKey } from '../lib/keys'
 import { generateQuiz } from '../lib/quiz'
 import type { QuizType } from '../lib/quiz'
@@ -9,6 +8,7 @@ import { isSoundEnabled, playQuizResult } from '../lib/sound'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
 import { todayStr } from '../lib/srs'
+import { ResultScore } from './QuizResult'
 
 /**
  * The 60-second sprint.
@@ -22,6 +22,8 @@ import { todayStr } from '../lib/srs'
  */
 
 const SPRINT_SECONDS = 60
+/** From here down the clock turns cinnabar. Ten is the last stretch you can still plan around. */
+const SPRINT_WARN_SECONDS = 10
 /**
  * Only generates two four-choice types. **Spelling questions would wreck
  * the pace** — one spelling question takes as long as four multiple-choice
@@ -149,12 +151,12 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
 
   if (questions.length === 0) {
     return (
-      <Card className="quiz-empty">
+      <div className="quiz-empty">
         <p>需要至少 4 个词条才能开始极速赛。当前词库还不够,先去添加或多学几个单词吧。</p>
         <Link className="btn btn--primary" to="/library">
           去词库看看
         </Link>
-      </Card>
+      </div>
     )
   }
 
@@ -164,20 +166,17 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
 
     return (
       <>
-        <Card>
-          <p className="quiz-result__score" role="status">
-            <span className="num quiz-result__score-num">{score}</span>
-            <span className="muted"> 题</span>
-          </p>
-          <p className="muted quiz-result__summary">
-            {isRecord ? '新纪录 🎉' : `60 秒答对 ${score} 题。`}
-          </p>
+        {/* 新纪录 is said in words, in ink: a personal best is news, not an
+            annotation, and the emoji it used to carry went for the same
+            reason 今日 dropped its own. */}
+        <ResultScore value={<>{score}<span className="quiz-result__of"> 题</span></>} label="60 秒答对">
+          {isRecord ? <p className="quiz-sprint__record">新纪录</p> : null}
           {best !== undefined && (
-            <p className="muted quiz-sprint__best">
-              个人最好成绩 <span className="num">{best.score}</span> 题 · {best.date}
+            <p className="quiz-sprint__best">
+              个人最好成绩 <span className="num">{best.score}</span> 题（<span className="num">{best.date}</span>）
             </p>
           )}
-        </Card>
+        </ResultScore>
 
         <div className="quiz-result__actions">
           <Button variant="primary" size="lg" block onClick={onRestart}>
@@ -199,65 +198,71 @@ export function SprintSession({ words, onRestart }: { words: Word[]; onRestart: 
             drown out the screen reader, and the question itself is what
             actually needs to be read. role="timer" lets it still be
             queried on demand. */}
-        <p className="num quiz-sprint__clock" role="timer" aria-label={`剩余 ${left} 秒`}>
+        {/* The one live number on the screen. Under ten seconds it takes
+            the cinnabar: a warning is a mark, the one this screen has. */}
+        <p
+          className={`num quiz-sprint__clock${left <= SPRINT_WARN_SECONDS ? ' quiz-sprint__clock--low' : ''}`}
+          role="timer"
+          aria-label={`剩余 ${left} 秒`}
+        >
           {left}
-          <span className="faint quiz-sprint__unit">s</span>
+          <span className="quiz-sprint__unit">秒</span>
         </p>
         <div className="progress quiz-sprint__progress">
           <div className="progress__fill" style={{ width: `${(left / SPRINT_SECONDS) * 100}%` }} />
         </div>
-        <p className="num muted quiz-sprint__score">
-          {score} 题
+        <p className="muted quiz-sprint__score">
+          答对 <span className="num">{score}</span>
         </p>
       </div>
 
-      <Card>
-        <div className="quiz-q">
-          <p className="quiz-q__label">
-            {q.type === 'word2meaning' ? '选出正确的释义' : '选出对应的单词'}
-          </p>
-          <p
-            className={q.type === 'word2meaning' ? 'word quiz-q__prompt' : 'quiz-q__prompt'}
-            lang={q.type === 'word2meaning' ? 'en' : undefined}
-          >
-            {q.prompt}
-          </p>
+      {/* On the page, not in a card, like every other choice question since
+          round 1: the question is the whole screen. */}
+      <div className="quiz-q">
+        <p className="quiz-q__label">
+          {q.type === 'word2meaning' ? '选出正确的释义' : '选出对应的单词'}
+        </p>
+        <p
+          className={q.type === 'word2meaning' ? 'word quiz-q__prompt' : 'quiz-q__prompt'}
+          lang={q.type === 'word2meaning' ? 'en' : undefined}
+        >
+          {q.prompt}
+        </p>
 
-          <div className="quiz-options" role="group" aria-label="选项">
-            {q.options.map((opt, i) => {
-              let variant: 'secondary' | 'correct' | 'incorrect' = 'secondary'
-              if (chosen !== null && opt === q.answer) variant = 'correct'
-              else if (chosen !== null && opt === chosen) variant = 'incorrect'
-              return (
-                <Button
-                  key={opt}
-                  type="button"
-                  variant={variant}
-                  wrap
-                  block
-                  disabled={chosen !== null}
-                  lang={q.type === 'word2meaning' ? undefined : 'en'}
-                  onClick={() => choose(opt)}
-                >
-                  <span>
-                    <span className="quiz-option__key">{i + 1}</span>
-                    {opt}
-                  </span>
-                  {/* The tag, not the colour, is what says which one was right:
-                      the 350 ms flash is exactly when a colourblind reader has
-                      nothing else to go on. Same markup as QuizQuestion. */}
-                  {chosen !== null && opt === q.answer ? (
-                    <span className="quiz-option__tag">正确答案</span>
-                  ) : null}
-                  {chosen !== null && opt === chosen && opt !== q.answer ? (
-                    <span className="quiz-option__tag">你的选择</span>
-                  ) : null}
-                </Button>
-              )
-            })}
-          </div>
+        <div className="quiz-options" role="group" aria-label="选项">
+          {q.options.map((opt, i) => {
+            let variant: 'secondary' | 'correct' | 'incorrect' = 'secondary'
+            if (chosen !== null && opt === q.answer) variant = 'correct'
+            else if (chosen !== null && opt === chosen) variant = 'incorrect'
+            return (
+              <Button
+                key={opt}
+                type="button"
+                variant={variant}
+                wrap
+                block
+                disabled={chosen !== null}
+                lang={q.type === 'word2meaning' ? undefined : 'en'}
+                onClick={() => choose(opt)}
+              >
+                <span>
+                  <span className="quiz-option__key">{i + 1}</span>
+                  <span className="quiz-option__text">{opt}</span>
+                </span>
+                {/* The tag, not the colour, is what says which one was right:
+                    the 350 ms flash is exactly when a colourblind reader has
+                    nothing else to go on. Same markup as QuizQuestion. */}
+                {chosen !== null && opt === q.answer ? (
+                  <span className="quiz-option__tag">正确答案</span>
+                ) : null}
+                {chosen !== null && opt === chosen && opt !== q.answer ? (
+                  <span className="quiz-option__tag">你的选择</span>
+                ) : null}
+              </Button>
+            )
+          })}
         </div>
-      </Card>
+      </div>
     </>
   )
 }

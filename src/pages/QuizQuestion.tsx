@@ -142,7 +142,15 @@ function ContrastCard({ answerId, otherId }: { answerId: string; otherId: string
   return (
     <div className="quiz-contrast">
       <p className="quiz-q__label">两个词的差别</p>
-      {note !== undefined && <p className="quiz-contrast__note">{note}</p>}
+      {/* The one sentence here written *about* the pair rather than copied
+          from either entry — the answer to the question just asked — so it
+          is the 旁批, the same margin note as a word's 要点. */}
+      {note !== undefined && (
+        <div className="margin-note quiz-contrast__note">
+          <p className="margin-note__label">辨析</p>
+          <p className="margin-note__text">{note}</p>
+        </div>
+      )}
       <ContrastSide word={a} isAnswer />
       <ContrastSide word={b} isAnswer={false} />
     </div>

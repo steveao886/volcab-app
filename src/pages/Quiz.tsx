@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Button } from '../components/Button'
-import { Card } from '../components/Card'
 import { Page } from '../components/Page'
 import { ProgressMarks } from '../components/ProgressMarks'
 import { pushRecent } from '../lib/passage'
@@ -21,6 +20,7 @@ import type { Progress, Word } from '../types'
 import { agoLabel, modeOverview, orderByRecency, recommendMode } from './statsDerive'
 import type { ModeOverviewRow } from './statsDerive'
 import { QuizQuestionView } from './QuizQuestion'
+import { MissedWords, ResultScore } from './QuizResult'
 import { ComposeSession } from './QuizCompose'
 import { PassageSession } from './QuizPassage'
 import { RecallSession } from './QuizRecall'
@@ -117,7 +117,7 @@ const loadConcepts = () => import('../data/concepts.json').then(m => (m.default 
 
 function ContentGate({ label, failed, retry }: { label: string; failed: boolean; retry: () => void }) {
   return (
-    <Card className="quiz-empty">
+    <div className="quiz-empty">
       {failed ? (
         <>
           <p className="muted">{label}加载失败，请检查网络后重试。</p>
@@ -126,7 +126,7 @@ function ContentGate({ label, failed, retry }: { label: string; failed: boolean;
       ) : (
         <p className="muted">正在加载{label}…</p>
       )}
-    </Card>
+    </div>
   )
 }
 
@@ -255,12 +255,12 @@ function QuizSession({
 
   if (total === 0) {
     return (
-      <Card className="quiz-empty">
+      <div className="quiz-empty">
         <p>{EMPTY_HINT[mode]}</p>
         <Link className="btn btn--primary" to="/library">
           去词库看看
         </Link>
-      </Card>
+      </div>
     )
   }
 
@@ -271,32 +271,15 @@ function QuizSession({
 
     return (
       <>
-        <Card>
-          <p className="quiz-result__score" role="status">
-            <span className="num quiz-result__score-num">{score}</span>
-            <span className="muted"> / {total}</span>
-          </p>
-          <p className="muted quiz-result__summary">
-            {score === total ? '全部答对,漂亮!' : `本轮测了 ${total} 题,答对 ${score} 题。`}
-          </p>
-        </Card>
+        <ResultScore
+          value={<>{score}<span className="quiz-result__of"> / {total}</span></>}
+          label="答对"
+        >
+          {score === total ? '全部答对,漂亮!' : `本轮测了 ${total} 题,答对 ${score} 题。`}
+        </ResultScore>
 
         {wrongWords.length > 0 ? (
-          <Card pad="none">
-            <p className="quiz-q__label quiz-wrong-title">错词 · {wrongWords.length}</p>
-            <ul className="quiz-wrong-list">
-              {wrongWords.map(w => (
-                <li key={w.id}>
-                  <Link className="quiz-wrong-list__item" to={`/word/${w.id}`}>
-                    <span className="word" lang="en">
-                      {w.headword}
-                    </span>
-                    <span className="muted">{w.meanings[0]?.zh}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </Card>
+          <MissedWords title="错词" rows={wrongWords.map(w => ({ word: w }))} />
         ) : null}
 
         <div className="quiz-result__actions">
@@ -368,34 +351,45 @@ function QuizHub() {
   const byKey = useMemo(() => new Map(rows.map(r => [r.mode, r])), [rows])
   const ordered = useMemo(() => orderByRecency(MODES, rows), [rows])
 
+  // A tab root, so no back button and the title in its slip like 词库 and
+  // 数据. It passed back="/" from the days /quiz *was* the session, reached
+  // from 今日 (d29d225); nothing recorded a reason to keep it once the hub
+  // became a tab.
   return (
-    <Page title="测试" back="/">
-      <div className="quiz-hub">
-        {/* The wide slot belongs to the position, not to a named mode: the
-            most recent card leads and spans both columns. That also keeps
-            the grid whole — nine cards is an odd count, and 1 + 4×2 fills
-            every row where 9×1-wide-plus-8 would leave an orphan. */}
-        {ordered.map((m, i) => {
+    <Page title="测试">
+      {/* A 目录, not a card grid: one ruled row per mode, name and what it
+          does on the left, how it has gone on the right. The most recent
+          mode leads (orderByRecency). It used to lead as a double-width card
+          as well, which also kept a 2-column grid of nine whole; with the
+          grid gone, position alone says it. */}
+      <ul className="ledger quiz-hub">
+        {ordered.map(m => {
           const row = byKey.get(m.key)
+          const isRec = rec === m.key
           return (
-            <Link
-              key={m.key}
-              to={`/quiz?mode=${m.key}`}
-              className={`card card--interactive quiz-mode-card${i === 0 ? ' quiz-mode-card--wide' : ''}`}
-            >
-              {rec === m.key && <span className="quiz-mode-card__badge">推荐</span>}
-              <p className="quiz-mode-card__name">{m.label}</p>
-              <p className="quiz-mode-card__desc">{m.desc}</p>
-              <p className="quiz-mode-card__meta">
-                <span className={`num quiz-mode-card__stat${rec === m.key ? ' quiz-mode-card__stat--low' : ''}`}>
-                  {statLabel(m.key, row, progress)}
+            <li key={m.key}>
+              <Link to={`/quiz?mode=${m.key}`} className="ledger__row quiz-mode">
+                <span className="ledger__main">
+                  <span className="quiz-mode__name">
+                    {m.label}
+                    {/* The reader's note on which mode to play next: an
+                        annotation, so it is the one cinnabar thing on the
+                        page — as a word, never a color alone. */}
+                    {isRec && <span className="quiz-mode__rec">推荐</span>}
+                  </span>
+                  <span className="ledger__secondary">{m.desc}</span>
                 </span>
-                <span className="quiz-mode-card__ago">{agoLabel(row?.lastPlayed ?? null, today)}</span>
-              </p>
-            </Link>
+                <span className="quiz-mode__meta">
+                  <span className={`num quiz-mode__stat${isRec ? ' quiz-mode__stat--low' : ''}`}>
+                    {statLabel(m.key, row, progress)}
+                  </span>
+                  <span className="quiz-mode__ago">{agoLabel(row?.lastPlayed ?? null, today)}</span>
+                </span>
+              </Link>
+            </li>
           )
         })}
-      </div>
+      </ul>
     </Page>
   )
 }

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
-import { Card } from '../components/Card'
 import { ExampleSentence } from '../components/ExampleSentence'
 import { ProgressMarks } from '../components/ProgressMarks'
 import { TextInput } from '../components/TextInput'
@@ -22,6 +21,7 @@ import { storage } from '../lib/storage'
 import { todayStr } from '../lib/srs'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
+import { MissedWords, ResultScore } from './QuizResult'
 
 /**
  * 组句 — order the meaning chunks, then supply the word that was taken out.
@@ -157,7 +157,18 @@ function ComposeQuestionView({ question, onAnswered, onNext, nextLabel }: Compos
                 onClick={() => filled && toggle(k)}
                 aria-label={filled ? `第 ${s + 1} 格:${question.pool[k]},点击取出` : `第 ${s + 1} 格,空`}
               >
-                <span lang="en">{filled ? question.pool[k] : ' '}</span>
+                {/* A wrong slot keeps what you put there, struck through in
+                    cinnabar, and shows the chunk that belongs there after it —
+                    the same marks as a wrong choice, so the verdict is a shape
+                    as well as a color. */}
+                {revealed && !right ? (
+                  <>
+                    {filled ? <s className="compose-slot__mine" lang="en">{question.pool[k]}</s> : null}
+                    <span className="compose-slot__answer" lang="en">{question.chunks[s]}</span>
+                  </>
+                ) : (
+                  <span lang="en">{filled ? question.pool[k] : ' '}</span>
+                )}
                 {/* The sentence-final punctuation rides the last *slot*, not
                     the chunk that lands in it. Keeping it out of the chunks is
                     what stops it marking which chunk goes last; keeping it on
@@ -188,7 +199,7 @@ function ComposeQuestionView({ question, onAnswered, onNext, nextLabel }: Compos
               disabled={revealed || placed.includes(k)}
               onClick={() => toggle(k)}
             >
-              <span className="compose-chunk__key num" aria-hidden="true">{k + 1}</span>
+              <span className="key" aria-hidden="true">{k + 1}</span>
               <span lang="en">{text}</span>
             </button>
           </li>
@@ -228,7 +239,7 @@ function ComposeQuestionView({ question, onAnswered, onNext, nextLabel }: Compos
            * The two verdicts, the reference sentence and the gloss existed
            * for 0.7ms and were never painted, so the mode's whole payload was
            * invisible to anyone answering with the keyboard — which the
-           * button advertises (提交 · Enter). Cancelling the keydown
+           * button advertises (提交 with an Enter key cap). Cancelling the keydown
            * suppresses the keypress it would otherwise produce, so the press
            * that submitted cannot also advance. A second, deliberate Enter
            * still does, which is the walkthrough QuizQuestion.tsx documents.
@@ -243,18 +254,21 @@ function ComposeQuestionView({ question, onAnswered, onNext, nextLabel }: Compos
 
       {!revealed ? (
         <Button className="quiz-q__next" variant="primary" block disabled={!ready} onClick={submit}>
-          提交 · Enter
+          提交 <span className="key">Enter</span>
         </Button>
       ) : (
         <>
-          {/* Two verdicts side by side, each spelling its result out. The
-              colour is a second channel, never the only one. */}
+          {/* Two verdicts side by side, divided by a 界栏 rule, each spelling
+              its result out. The colour is a second channel, never the only
+              one. */}
           <p className="compose-verdicts" role="status">
             <span className={`compose-verdict compose-verdict--${verdict.order === 'ok' ? 'ok' : 'bad'}`}>
-              顺序 {verdict.order === 'ok' ? '正确' : '错误'}
+              <span className="compose-verdict__axis">顺序</span>
+              {verdict.order === 'ok' ? '正确' : '错误'}
             </span>
             <span className={`compose-verdict compose-verdict--${verdict.word === 'ok' ? 'ok' : 'bad'}`}>
-              词 {verdict.word === 'ok' ? '正确' : verdict.word === 'form' ? '词形错了' : '错误'}
+              <span className="compose-verdict__axis">词</span>
+              {verdict.word === 'ok' ? '正确' : verdict.word === 'form' ? '词形错了' : '错误'}
             </span>
           </p>
           {verdict.word === 'form' && (
@@ -265,7 +279,11 @@ function ComposeQuestionView({ question, onAnswered, onNext, nextLabel }: Compos
           <p className="recall-en" lang="en">
             <ExampleSentence sentence={question.en} headword={question.headword} />
           </p>
-          {question.gloss !== undefined && <p className="recall-why">{question.headword} · {question.gloss}</p>}
+          {question.gloss !== undefined && (
+            <p className="compose-gloss">
+              <span lang="en">{question.headword}</span> {question.gloss}
+            </p>
+          )}
           <Button ref={nextRef} className="quiz-q__next" variant="primary" block onClick={onNext}>
             {nextLabel}
           </Button>
@@ -348,7 +366,7 @@ export function ComposeSession({
 
   if (total === 0) {
     return (
-      <Card className="quiz-empty">
+      <div className="quiz-empty">
         <p>
           你学过的词里还没有可以组句的。组句只考已经切好意群的句子 ——
           切块是手写的内容,还在一批一批补。再学一阵子,或者等下一批内容,这里的题会多起来。
@@ -356,44 +374,25 @@ export function ComposeSession({
         <Link className="btn btn--primary" to="/library">
           去词库看看
         </Link>
-      </Card>
+      </div>
     )
   }
 
   if (done) {
-    const missed = results.filter(r => r.kind !== null)
+    const missed = results.flatMap(r => {
+      const w = wordsById.get(r.id)
+      return r.kind === null || w === undefined ? [] : [{ word: w, tag: MISS_TAG[r.kind] }]
+    })
     return (
       <>
-        <Card>
-          <p className="quiz-result__score" role="status">
-            <span className="num quiz-result__score-num">{score}</span>
-            <span className="muted"> / {total}</span>
-          </p>
-          <p className="muted quiz-result__summary">
-            {score === total ? '全部答对,漂亮!' : `本轮测了 ${total} 题,顺序和词都对的有 ${score} 题。`}
-          </p>
-        </Card>
+        <ResultScore
+          value={<>{score}<span className="quiz-result__of"> / {total}</span></>}
+          label="顺序和词都对"
+        >
+          {score === total ? '全部答对,漂亮!' : `本轮测了 ${total} 题,顺序和词都对的有 ${score} 题。`}
+        </ResultScore>
 
-        {missed.length > 0 ? (
-          <Card pad="none">
-            <p className="quiz-q__label quiz-wrong-title">没拿下的 · {missed.length}</p>
-            <ul className="quiz-wrong-list">
-              {missed.map((r, k) => {
-                const w = wordsById.get(r.id)
-                if (w === undefined) return null
-                return (
-                  <li key={`${r.id}-${k}`}>
-                    <Link className="quiz-wrong-list__item" to={`/word/${w.id}`}>
-                      <span className="word" lang="en">{w.headword}</span>
-                      <span className="muted">{w.meanings[0]?.zh}</span>
-                      <span className="quiz-option__tag">{MISS_TAG[r.kind as string]}</span>
-                    </Link>
-                  </li>
-                )
-              })}
-            </ul>
-          </Card>
-        ) : null}
+        {missed.length > 0 ? <MissedWords title="没拿下的" rows={missed} /> : null}
 
         <div className="quiz-result__actions">
           <Button variant="primary" size="lg" block onClick={onRestart}>再测一轮</Button>
@@ -417,15 +416,16 @@ export function ComposeSession({
           第 <span className="num">{index + 1}</span> / <span className="num">{total}</span> 题
         </p>
       </div>
-      <Card>
-        <ComposeQuestionView
-          key={index}
-          question={q}
-          onAnswered={(order, word) => handleAnswered(order, word, q)}
-          onNext={handleNext}
-          nextLabel={index === total - 1 ? '查看成绩' : '下一题'}
-        />
-      </Card>
+      {/* On the page, not in a card: the Chinese prompt, the slots and the
+          chunks are the whole screen, and a box around them only adds a
+          border. */}
+      <ComposeQuestionView
+        key={index}
+        question={q}
+        onAnswered={(order, word) => handleAnswered(order, word, q)}
+        onNext={handleNext}
+        nextLabel={index === total - 1 ? '查看成绩' : '下一题'}
+      />
     </>
   )
 }

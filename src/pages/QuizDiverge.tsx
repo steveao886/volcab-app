@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '../components/Button'
-import { Card } from '../components/Card'
 import { Field } from '../components/Field'
 import { TextInput } from '../components/TextInput'
 import { buildConceptIndex, divergeKey, DIVERGE_RECENT_LIMIT, gradeInput, generateDivergeSession, HINT_TIERS, hintOpen, MIN_ANSWERS } from '../lib/diverge'
@@ -10,6 +9,7 @@ import { isSoundEnabled, playQuizResult } from '../lib/sound'
 import { storage } from '../lib/storage'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
+import { ResultScore } from './QuizResult'
 
 /**
  * 发散 — one Chinese concept, produce every English word around it.
@@ -148,7 +148,7 @@ function DivergeQuestionView({ question, index, grown, sound, onSettle, onNext, 
         已答出 <span className="num">{landed.length}</span> / <span className="num">{question.answers.length}</span>
         {/* A grown set is announced rather than silently re-denominated: the
             membership is derived from what you have learned, so it moves. */}
-        {grown > 0 ? <span className="diverge-q__grown">比上次多了 {grown} 个词</span> : null}
+        {grown > 0 ? <span className="diverge-q__grown">（比上次多了 <span className="num">{grown}</span> 个词）</span> : null}
       </p>
 
       <ul className="diverge-q__slots">
@@ -159,6 +159,9 @@ function DivergeQuestionView({ question, index, grown, sound, onSettle, onNext, 
               key={a.form}
               className={`diverge-slot${got ? ' diverge-slot--got' : ''}${revealed && !got ? ' diverge-slot--missed' : ''}`}
             >
+              {/* A found answer gets the teacher's 勾 in the margin; the
+                  words beside it still say how it was found. */}
+              {got ? <span className="mark-tick diverge-slot__mark" role="img" aria-label="答出" /> : null}
               <span className="diverge-slot__word" lang="en">
                 {got || revealed ? a.form : maskTo(a.form, hintOpen(a.form, hintTier, question.axis)) || '•'.repeat(Math.min(a.form.length, 12))}
               </span>
@@ -172,10 +175,13 @@ function DivergeQuestionView({ question, index, grown, sound, onSettle, onNext, 
                   <span className="diverge-slot__tag">没答出</span>
                   <Button
                     type="button"
+                    size="sm"
+                    className="diverge-slot__concede"
                     variant={conceded.includes(a.wordId) ? 'primary' : 'secondary'}
+                    aria-pressed={conceded.includes(a.wordId)}
                     onClick={() => toggleConcede(a.wordId)}
                   >
-                    {conceded.includes(a.wordId) ? '已标记 · 取消' : '这个我真不会'}
+                    {conceded.includes(a.wordId) ? '已标记，点此取消' : '这个我真不会'}
                   </Button>
                 </>
               ) : null}
@@ -294,9 +300,9 @@ export function QuizDiverge({ concepts, words, onRestart }: { concepts: Concept[
 
   if (questions.length === 0) {
     return (
-      <Card className="quiz-empty">
+      <div className="quiz-empty">
         <p>还没有能出的题。发散要一个概念下至少有 {MIN_ANSWERS} 个你已经学过的词 —— 再学一阵子,题会自己多起来。</p>
-      </Card>
+      </div>
     )
   }
 
@@ -304,20 +310,23 @@ export function QuizDiverge({ concepts, words, onRestart }: { concepts: Concept[
     const produced = rounds.reduce((n, r) => n + r.produced, 0)
     const total = rounds.reduce((n, r) => n + r.size, 0)
     return (
-      <Card className="quiz-result">
-        <p className="quiz-result__score">
-          <span className="num">{produced}</span> / <span className="num">{total}</span>
-        </p>
-        <p className="muted">这个分母会变 —— 题目里的词是从你学过的词里现算的,学得越多,同一道题越长。</p>
-        <Button type="button" variant="primary" block onClick={onRestart}>再来一轮</Button>
-      </Card>
+      <>
+        <ResultScore
+          value={<>{produced}<span className="quiz-result__of"> / {total}</span></>}
+          label="不靠提示答出"
+        >
+          这个分母会变 —— 题目里的词是从你学过的词里现算的,学得越多,同一道题越长。
+        </ResultScore>
+        <Button type="button" variant="primary" size="lg" block onClick={onRestart}>再来一轮</Button>
+      </>
     )
   }
 
   const q = questions[i]
   const last = progress.diverge?.[divergeKey(q)]
+  // On the page, not in a card, like every question since round 1.
   return (
-    <Card>
+    <div className="diverge">
       {/* Not .quiz-progress: that class is a grid container elsewhere, and
           reusing it here stacked 第 / 1 / 8 / 题 onto four lines. */}
       <p className="diverge-q__progress muted">
@@ -333,6 +342,6 @@ export function QuizDiverge({ concepts, words, onRestart }: { concepts: Concept[
         onNext={onNext}
         nextLabel={i + 1 >= questions.length ? '看结果' : '下一题'}
       />
-    </Card>
+    </div>
   )
 }

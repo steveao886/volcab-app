@@ -833,6 +833,16 @@ button.ledger__row {
   overflow-wrap: break-word;
 }
 
+/* A headword as a row's primary text: the headword face at 18px, not .word's
+   34px — a list of .word headwords clipped `apathetic` off the card at 375px. */
+.ledger__word {
+  font-family: var(--font-word);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+  overflow-wrap: break-word;
+}
+
 .ledger__secondary {
   font-size: var(--fs-sm);
   line-height: var(--lh-snug);
@@ -914,6 +924,92 @@ button.ledger__row {
   box-shadow:
     -1px 0 0 var(--rule),
     0 -1px 0 var(--rule);
+}
+
+/* --- Ruled row of actions -------------------------------------------------------------
+   The grade row 复习 drew in round 1, shared: equal columns between an ink
+   rule above and below, divided by 界栏 hairlines, each a label (with its
+   printed key) over an optional small line saying what it will do. Four
+   colored boxes in a row were the loudest thing on the screen; the content
+   is supposed to be. A miss keeps the cinnabar — it is the mark of one —
+   and the rest are ink, told apart by label, key and consequence, never by
+   color alone. Used by 复习, 练习 and 回想. */
+
+.ruled-row {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  border-block: 1px solid var(--text);
+}
+
+.ruled-row > .btn {
+  min-height: 60px;
+  padding-inline: var(--sp-1);
+  flex-direction: column;
+  gap: 2px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--text);
+  font-size: var(--fs-md);
+  font-weight: 900;
+  white-space: normal;
+  text-align: center;
+}
+
+.ruled-row > .btn + .btn {
+  border-inline-start: 1px solid var(--rule-strong);
+}
+
+.ruled-row > .btn:hover:not(:disabled) {
+  background: var(--surface-sunken);
+  color: var(--text);
+}
+
+.ruled-row > .ruled-row__miss,
+.ruled-row > .ruled-row__miss:hover:not(:disabled) {
+  color: var(--accent); /* mark: a miss */
+}
+
+/* Label + key stay on one line inside the stacked button. */
+.ruled-row__label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-1);
+}
+
+/* The consequence line (稍后 / 4 天 / 再点取消): muted under the label, so the
+   label is read first and this confirms it. */
+.ruled-row__sub {
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--text-muted);
+}
+
+/* On wider desktop screens the row doesn't need to stretch the whole content width. */
+@media (min-width: 900px) {
+  .ruled-row {
+    max-width: 480px;
+    width: 100%;
+    margin-inline: auto;
+  }
+}
+
+/* --- 勾 -------------------------------------------------------------------------------
+   The teacher's tick, the same stroke 今日 draws on a finished plan row, as
+   an inline mark that takes --accent in either theme (a mask, so the color
+   is the token and not baked into the SVG). Always beside a word that says
+   the same thing — the tick is the mark, never the only signal. */
+
+.mark-tick {
+  display: inline-block;
+  flex: none;
+  width: 1em;
+  height: 1em;
+  background: var(--accent); /* mark: 勾 */
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11.5l5.5 5.5L20 3.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11.5l5.5 5.5L20 3.5'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 /* --- Printed key ---------------------------------------------------------------------
