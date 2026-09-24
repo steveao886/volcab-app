@@ -1,7 +1,7 @@
 /* Stats (/stats, learning data) page-specific styles.
-   Sections: 30-day review volume, retention, accuracy trend, streaks,
-   upcoming review load, library mastery, high-frequency coverage, per-mode
-   accuracy, cumulative totals. Each is a .section-head and its content on
+   Sections: 30-day review volume, retention, streaks, upcoming review load,
+   library mastery, how much of it is held long-term, 回想 production,
+   high-frequency coverage, per-mode accuracy, cumulative totals. Each is a .section-head and its content on
    the paper (components.css); the empty state uses the shared .empty-state.
 
    The organising rule for this page: **no shape without its number**. Every
@@ -47,13 +47,11 @@
    line under the baseline it names — measured before the fix, "0" sat 12px
    below its own gridline.
 
-   --chart-inset comes in from ChartFrame and is the gridline inset the
-   accuracy chart needs; it is 0 for the bar chart. --chart-h is also read by
-   ReviewBars to size its 2px segment gap in viewBox units — change both. */
+   --chart-h is also read by ReviewBars to size its 2px segment gap in
+   viewBox units — change both. */
 
 .stats-chart {
   --chart-h: 64px;
-  --chart-inset: 0px;
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-areas:
@@ -70,8 +68,8 @@
   flex-direction: column;
   align-items: flex-end;
   justify-content: space-between;
-  height: calc(var(--chart-h) - 2 * var(--chart-inset) + 1em);
-  margin-top: calc(var(--chart-inset) - 0.5em);
+  height: calc(var(--chart-h) + 1em);
+  margin-top: -0.5em;
   min-width: 2.4em;
   font-size: var(--fs-xs);
   line-height: 1;
@@ -135,40 +133,6 @@
    looking at this chart. */
 .stats-bars__zero {
   fill: var(--rule-strong);
-}
-
-/* --- Accuracy trend: SVG line, broken at null days (see AccuracyTrend) ---- */
-
-.stats-accuracy {
-  display: block;
-  width: 100%;
-  height: var(--chart-h);
-}
-
-.stats-accuracy__line {
-  fill: none;
-  stroke: var(--chart-1);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.stats-accuracy__dot {
-  fill: var(--chart-1);
-}
-
-/* The window average, as a reference to read the wobble against. Dashed and
-   muted so it never competes with the series itself. */
-.stats-accuracy__avg {
-  stroke: var(--text-faint);
-  stroke-width: 1;
-  stroke-dasharray: 4 3;
-}
-
-.stats-accuracy-empty {
-  padding-block: var(--sp-4);
-  font-size: var(--fs-sm);
-  text-align: center;
 }
 
 /* --- Chart legend / footnotes -------------------------------------------- */

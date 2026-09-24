@@ -2,13 +2,15 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Page } from '../components/Page'
 import { StateDot } from '../components/StateDot'
+import { MATURE_INTERVAL_DAYS } from '../lib/queue'
+import { RECALL_STEADY_STREAK } from '../lib/senseGroup'
 import { todayStr } from '../lib/srs'
 import { useApp } from '../state/store'
-import { AccuracyTrend, ReviewBars } from './statsCharts'
+import { ReviewBars } from './statsCharts'
 import {
-  accuracySeries, accuracyStats, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
-  masteryBreakdown, MODE_ACCURACY_MIN, modeAccuracy, retentionStats, shortDate,
-  usageCoverage, windowSummary,
+  cumulativeTotals, dailySeries, dueForecast, forecastLabel, masteryBreakdown, maturitySplit,
+  MODE_ACCURACY_MIN, modeAccuracy, recallProduction, retentionStats, shortDate, usageCoverage,
+  windowSummary,
 } from './statsDerive'
 import { computeStreak, longestStreak } from './todayStats'
 import './Stats.css'
@@ -19,8 +21,9 @@ const FORECAST_DAYS = 7
 const pct = (ratio: number) => Math.round(ratio * 100)
 
 /**
- * Reviews over the last 30 days, accuracy trend, streak, upcoming review
- * load, library mastery, stubborn words, cumulative totals.
+ * Reviews over the last 30 days, retention, streak, upcoming review load,
+ * library mastery, how much is held long-term, 回想 production,
+ * high-frequency coverage, per-mode accuracy, cumulative totals.
  *
  * Every metric is derived purely from progress.dailyStats and each word's
  * state — no review log is stored, per v1.1 spec §5.1: progress.json goes
@@ -48,13 +51,13 @@ export function Stats() {
     const days = dailySeries(progress, today, WINDOW_DAYS)
     return {
       days,
-      acc: accuracySeries(progress, today, WINDOW_DAYS),
       summary: windowSummary(days),
-      accStats: accuracyStats(days),
       retention: retentionStats(progress, today, WINDOW_DAYS),
       streak: computeStreak(progress.dailyStats, today),
       best: longestStreak(progress.dailyStats),
       mastery: masteryBreakdown(words, progress),
+      maturity: maturitySplit(words, progress),
+      production: recallProduction(words, progress),
       coverage: usageCoverage(words, progress),
       forecast: dueForecast(words, progress, today, FORECAST_DAYS),
       totals: cumulativeTotals(progress),
@@ -66,7 +69,7 @@ export function Stats() {
     }
   }, [words, progress, today])
   const {
-    days, acc, summary, accStats, retention, streak, best, mastery,
+    days, summary, retention, streak, best, mastery, maturity, production,
     totals, modes, coverage, forecast, hasHistory,
   } = derived
 
@@ -132,12 +135,10 @@ export function Stats() {
         </ul>
       </section>
 
-      {/* Retention is the number that says whether the schedule is right,
-          and it is not the accuracy below it. Kept in its own section, above
-          the chart, because putting two percentages side by side without
-          explaining the difference is how the wrong one gets acted on —
-          the accuracy figure runs several points lower purely because
-          every new word costs two learning-step grades. */}
+      {/* Retention is the number that says whether the schedule is right.
+          It is not raw answer accuracy, which runs several points lower
+          purely because every new word costs two learning-step grades —
+          that figure had its own trend chart here until 2026-09-23. */}
       {retention.rate !== null && (
         <section className="section">
           <h2 className="section-head">真实留存率</h2>
@@ -157,45 +158,11 @@ export function Stats() {
         </section>
       )}
 
-      <section className="section">
-        <h2 className="section-head">答题正确率趋势</h2>
-        {accStats.average === null ? (
-          <p className="stats-accuracy-empty muted">这段时间还没有复习记录。</p>
-        ) : (
-          <>
-            <div className="stats-lead">
-              <div className="readout">
-                <p className="readout__value">{pct(accStats.average)}%</p>
-                <p className="readout__label">近 {WINDOW_DAYS} 天平均</p>
-              </div>
-              <p className="stats-lead__note">
-                含新词的学习步骤，<span className="num">{accStats.ratedDays}</span> 天有记录
-              </p>
-            </div>
-            <AccuracyTrend points={acc} average={accStats.average} xLeft={xLeft} xRight="今天" />
-            <ul className="stats-legend">
-              {accStats.best !== null && (
-                <li>
-                  最高 <span className="num">{pct(accStats.best.accuracy)}%</span>
-                  <span className="num faint">{shortDate(accStats.best.date)}</span>
-                </li>
-              )}
-              {accStats.worst !== null && (
-                <li>
-                  最低 <span className="num">{pct(accStats.worst.accuracy)}%</span>
-                  <span className="num faint">{shortDate(accStats.worst.date)}</span>
-                </li>
-              )}
-              {accStats.latest !== null && (
-                <li>
-                  最近 <span className="num">{pct(accStats.latest.accuracy)}%</span>
-                  <span className="num faint">{shortDate(accStats.latest.date)}</span>
-                </li>
-              )}
-            </ul>
-          </>
-        )}
-      </section>
+      {/* 答题正确率趋势 stood here: a 30-day accuracy line with its average,
+          best, worst and latest day. Removed on 2026-09-23 at the user's
+          request. It ran several points under retention purely because new
+          words' learning steps count, and the retention figure above is the
+          one that says whether the schedule is right. */}
 
       {/* Three readouts under 界栏 rules. The current streak used to be the
           one cinnabar number on the page; a streak is not a mark. */}
@@ -302,6 +269,57 @@ export function Stats() {
           词库共 <span className="num">{mastery.total}</span> 个词。
         </p>
       </section>
+
+      {/* 已掌握 above only says a word finished its learning steps, which it
+          does after a day — on 2026-09-23 every studied word in the live
+          library was 已掌握. This is how many of them are held long-term, at
+          the app's own line for "known" (MATURE_INTERVAL_DAYS, queue.ts). */}
+      {maturity.studied > 0 && (
+        <section className="section">
+          <h2 className="section-head">记牢程度</h2>
+          <div className="stats-lead">
+            <div className="readout">
+              <p className="readout__value">{pct(maturity.mature / maturity.studied)}%</p>
+              <p className="readout__label">间隔已过 {MATURE_INTERVAL_DAYS} 天</p>
+            </div>
+            <p className="stats-lead__note">
+              学过的 <span className="num">{maturity.studied}</span> 个词里有{' '}
+              <span className="num">{maturity.mature}</span> 个；其余{' '}
+              <span className="num">{maturity.young}</span> 个间隔还不到 {MATURE_INTERVAL_DAYS} 天，仍在巩固
+            </p>
+          </div>
+          <p className="faint stats-note">
+            {MATURE_INTERVAL_DAYS} 天是间隔重复里“记牢”的通行分界。上面的“已掌握”只说明词走完了新词步骤，第二天就算。
+          </p>
+        </section>
+      )}
+
+      {/* Recognition is what the schedule measures; 回想 measures whether the
+          word comes to mind from Chinese, and the two come apart. The record
+          has been kept per word since 回想 shipped and was only ever shown one
+          word at a time, on 词条详情. Absent until 回想 has asked anything. */}
+      {production.asked > 0 && (
+        <section className="section">
+          <h2 className="section-head">回想说出</h2>
+          <div className="readouts">
+            <div className="readout">
+              <p className="readout__value">{production.asked}</p>
+              <p className="readout__label">回想问过</p>
+            </div>
+            <div className="readout">
+              <p className="readout__value">{production.steady}</p>
+              <p className="readout__label">连对 {RECALL_STEADY_STREAK} 次以上</p>
+            </div>
+            <div className="readout">
+              <p className="readout__value">{production.lastMissed}</p>
+              <p className="readout__label">上次没说出</p>
+            </div>
+          </div>
+          <p className="faint stats-note">
+            复习考的是认不认得，回想考的是说不说得出：一个词可以排到一个月后，却仍然说不出来。
+          </p>
+        </section>
+      )}
 
       {/* High-frequency word coverage. The "library mastery breakdown"
           section above counts the total, and totals can lie — the sense of

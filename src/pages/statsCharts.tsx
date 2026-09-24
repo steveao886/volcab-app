@@ -1,11 +1,11 @@
-import type { CSSProperties, ReactNode } from 'react'
-import type { AccuracyPoint, DayPoint } from './statsDerive'
+import type { ReactNode } from 'react'
+import type { DayPoint } from './statsDerive'
 
 /**
- * The two hand-rolled SVG charts on the stats page, plus the axis frame
- * they share. No charting library — see the header of Stats.tsx.
+ * The hand-rolled SVG bar chart on the stats page and its axis frame. No
+ * charting library — see the header of Stats.tsx.
  *
- * **Axis text is HTML, never SVG.** Both charts stretch to the column width
+ * **Axis text is HTML, never SVG.** The chart stretches to the column width
  * with `preserveAspectRatio="none"`, which scales x and y by different
  * factors; any <text> inside would come out horizontally squashed by a
  * ratio that changes with the viewport. Gridlines survive it because
@@ -15,7 +15,7 @@ import type { AccuracyPoint, DayPoint } from './statsDerive'
 const W = 300
 const H = 90
 
-/** Gridline fractions, top to bottom, shared by both charts so their rules line up when the sections sit above one another. */
+/** Gridline fractions, top to bottom. */
 const GRID = [0, 0.5, 1]
 
 function GridLines() {
@@ -34,28 +34,23 @@ interface ChartFrameProps {
   xLeft: string
   xRight: string
   /**
-   * Where today falls across the plot, 0–1: the centre of the last bar, or
-   * the right edge for the line. It gets the one cinnabar thing a chart may
-   * carry — a tick on the time axis, a mark and not a data color.
+   * Where today falls across the plot, 0–1 (for bars, the centre of the
+   * last one). It gets the one cinnabar thing a chart may carry — a tick on
+   * the time axis, a mark and not a data color.
    */
   todayAt: number
-  /**
-   * How far the top and bottom gridlines sit inside the plot box, as a
-   * fraction of its height. Passed through to CSS rather than duplicated
-   * there: the accuracy chart insets its gridlines by PAD_Y so a 100% dot
-   * isn't sliced in half by the edge, and a y-axis label that didn't follow
-   * would point at empty space — which is exactly the kind of "close
-   * enough" annotation this pass exists to remove.
-   */
-  insetRatio?: number
   children: ReactNode
 }
 
-/** Puts numbers on a chart: a y-axis gutter aligned to the gridlines, and the two ends of the x range. */
-function ChartFrame({ yLabels, xLeft, xRight, todayAt, insetRatio = 0, children }: ChartFrameProps) {
-  const style = { '--chart-inset': `calc(var(--chart-h) * ${insetRatio})` } as CSSProperties
+/**
+ * Puts numbers on a chart: a y-axis gutter aligned to the gridlines, and the
+ * two ends of the x range. It also carried a gridline inset for the accuracy
+ * line, so a 100% dot wasn't sliced by the plot edge; that chart went on
+ * 2026-09-23 and the inset went with it.
+ */
+function ChartFrame({ yLabels, xLeft, xRight, todayAt, children }: ChartFrameProps) {
   return (
-    <div className="stats-chart" style={style}>
+    <div className="stats-chart">
       <div className="stats-chart__y" aria-hidden="true">
         {yLabels.map((l, i) => (
           <span className="num" key={i}>{l}</span>
@@ -155,103 +150,6 @@ export function ReviewBars({ days, max, xLeft, xRight }: ReviewBarsProps) {
             </g>
           )
         })}
-      </svg>
-    </ChartFrame>
-  )
-}
-
-interface AccuracyTrendProps {
-  points: AccuracyPoint[]
-  /** Weighted window average, drawn as a dashed reference line. null when there is nothing to average. */
-  average: number | null
-  xLeft: string
-  xRight: string
-}
-
-/**
- * Accuracy trend. Days with null (no review that day) must break the line
- * rather than be plotted at 0 — for the same reason as accuracySeries
- * itself: 0% would falsely claim "everything was wrong that day". Approach:
- * split consecutive non-null points into segments and draw each segment as
- * its own polyline; an isolated point (broken on both sides) is drawn as a
- * lone dot, since a single point can't form a line.
- *
- * The dashed average line is what makes a wobble readable: without a
- * reference, a line that swings between 80% and 90% looks identical to one
- * swinging between 20% and 90%, because both fill the same box.
- */
-export function AccuracyTrend({ points, average, xLeft, xRight }: AccuracyTrendProps) {
-  const PAD_Y = 8
-  const n = points.length
-  const stepX = n > 1 ? W / (n - 1) : 0
-  const yAt = (a: number) => PAD_Y + (1 - a) * (H - 2 * PAD_Y)
-
-  const segments: { x: number; y: number }[][] = []
-  let current: { x: number; y: number }[] = []
-  points.forEach((p, i) => {
-    if (p.accuracy === null) {
-      if (current.length > 0) segments.push(current)
-      current = []
-      return
-    }
-    current.push({ x: i * stepX, y: yAt(p.accuracy) })
-  })
-  if (current.length > 0) segments.push(current)
-
-  if (segments.length === 0) {
-    return <p className="stats-accuracy-empty muted">这段时间还没有复习记录。</p>
-  }
-
-  return (
-    <ChartFrame yLabels={['100%', '50%', '0']} xLeft={xLeft} xRight={xRight} todayAt={1} insetRatio={PAD_Y / H}>
-      <svg
-        className="stats-accuracy"
-        viewBox={`0 0 ${W} ${H}`}
-        preserveAspectRatio="none"
-        role="img"
-        aria-label="近 30 天正确率趋势，没有复习的日子不连线"
-      >
-        {/* Gridlines sit at the plot edges (0 / 50 / 100%), but the line
-            itself is inset by PAD_Y so a 100% day's dot isn't clipped in
-            half by the top edge. */}
-        <g className="stats-grid">
-          {GRID.map(f => (
-            <line
-              key={f}
-              x1={0}
-              x2={W}
-              y1={PAD_Y + f * (H - 2 * PAD_Y)}
-              y2={PAD_Y + f * (H - 2 * PAD_Y)}
-              vectorEffect="non-scaling-stroke"
-            />
-          ))}
-        </g>
-        {average !== null && (
-          <line
-            className="stats-accuracy__avg"
-            x1={0}
-            x2={W}
-            y1={yAt(average)}
-            y2={yAt(average)}
-            vectorEffect="non-scaling-stroke"
-          >
-            <title>{`平均 ${Math.round(average * 100)}%`}</title>
-          </line>
-        )}
-        {segments.map((seg, i) => (
-          <g key={i}>
-            {seg.length > 1 && (
-              <polyline
-                className="stats-accuracy__line"
-                vectorEffect="non-scaling-stroke"
-                points={seg.map(p => `${p.x},${p.y}`).join(' ')}
-              />
-            )}
-            {seg.map((p, j) => (
-              <circle key={j} className="stats-accuracy__dot" cx={p.x} cy={p.y} r={2.5} />
-            ))}
-          </g>
-        ))}
       </svg>
     </ChartFrame>
   )
