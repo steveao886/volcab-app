@@ -35,8 +35,10 @@ const CAPTURE_WINDOW = 3
 export const MAX_SPACING_GAP = 10
 
 /**
- * How many days back, today included, a started word keeps its relatives
- * out of the new-word queue.
+ * How many days before today a started word keeps its relatives out of the
+ * new-word queue. Words started today count as well, so with 3 a relative
+ * of something started on the 1st is held back through the 4th and may
+ * start on the 5th.
  *
  * Replayed over the live library on 2026-10-01 (221 unlearned, newPerDay
  * 8), counting related pairs started 0 / 1 / 2 / 3 days apart:
@@ -96,8 +98,8 @@ function hash(id: string): number {
  * sequential, so a shortened run is a prefix of the full one; without it
  * this would order the entire unlearned backlog on every Today render.
  *
- * `recent` is the words started in the last `LOOKBACK_DAYS` days, today
- * included, and closes what the above left open: the spacing pass orders
+ * `recent` is the words started today or in the `LOOKBACK_DAYS` days
+ * before it, and closes what the above left open: the spacing pass orders
  * one day, so tomorrow's ordering could not see today's words. Replayed
  * over the live library on 2026-10-01 (221 unlearned, newPerDay 8), the
  * same-day guarantee held — 0 pairs — but **13 related pairs started one
