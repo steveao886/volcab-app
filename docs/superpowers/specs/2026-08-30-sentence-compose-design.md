@@ -312,7 +312,8 @@ changes how often a hard word can repeat without repeating a sentence.
 | batch | annotations | effect |
 |---|---|---|
 | **v1, shipped** | **`sg` 311 + `ex` 189 = 500** | **478 words askable (69.2%), zero new Chinese** |
-| later | +~950 (to 3/word) | hard words reach 3 questions without repeating |
+| **v2 breadth, 2026-10-01** | **`sg` 91 + `ex` 480 = 571** | **1049 of 1087 words askable (96.5%), zero new Chinese** |
+| later | to 2–3/word | hard words reach 3 questions without repeating |
 
 Both pools are exhausted at 500: every sense-group sentence at or above 10
 tokens and every rendered example that clears the filters now carries
@@ -324,6 +325,26 @@ sentences whose English is already annotated from the other pool, and
 **456 of the 478 carry a single sentence**, so the repeat that
 `MAX_PER_WORD` allows is currently reachable for 22 words. That is the whole
 of what the depth batch buys, and the scan prints it.
+
+"Exhausted" held for the `ex` pool only as long as the Chinese did: v1 had
+1215 renderings, and the 回想 backlog took `recallSentences.json` to 3741.
+The v2 batch took one sentence per uncovered word, `sg` first, then an
+`ex` sentence with no `sense` tag — the reveal shows `meanings[0].zh`, so a
+secondary-sense sentence would gloss a meaning the learner was not shown.
+Sonnet drafted the cuts from a rules file and every line was read: 29 of
+574 changed (5%). 17 cut inside a phrase (`A row | of expectant faces`,
+`and named the | day`), 9 glued an opening adverbial to the subject
+(`After the second stroke he | had …`), 2 left two adverbials that could
+trade places (`on the café table | for ten seconds`, which `gradeOrder`
+would mark wrong in either order), and 1 was an idiom.
+
+The 38 words still unaskable are 26 idioms, 9 words with neither a
+rendering nor a group they head (`magnitude`, `affable`, `dogged`, …), and 3
+skipped by hand: `resentment` and `denunciation`, whose sentences reach the
+floor only through a one-token chunk or a swappable pair, and
+`low-hanging-fruit`, an idiom `isPhrase` misses because its first two
+segments are one hyphenated token. Depth is still open: 1031 more
+annotations would put 1050 words at two sentences each.
 
 ## Files
 
