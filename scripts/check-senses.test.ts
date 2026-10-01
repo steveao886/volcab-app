@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildItems, classify, readKey, requestBody, RETAG_CONFIDENCE } from './check-senses'
+import { buildItems, classify, readKey, requestBody, CONFIDENT } from './check-senses'
 import type { Word } from '../src/types'
 import type { RecallSentence } from '../src/lib/recallSentence'
 
@@ -73,14 +73,17 @@ describe('requestBody', () => {
 describe('classify', () => {
   const answer = (choice: string, confidence: number) => ({ answers: { sense: { choice, confidence } } })
 
-  it('agrees when Jev picks the tagged sense, at any confidence', () => {
-    expect(classify(1, answer('s1', 0.2))).toEqual({ pick: 1, confidence: 0.2, verdict: 'agree' })
+  it('agrees when Jev picks the tagged sense confidently', () => {
+    expect(classify(1, answer('s1', CONFIDENT))).toEqual({ pick: 1, confidence: CONFIDENT, verdict: 'agree' })
+  })
+  it('still sends an unsure agreement to be read — 3 of 93 were wrong tags', () => {
+    expect(classify(1, answer('s1', CONFIDENT - 0.01)).verdict).toBe('unsure')
   })
   it('calls a confident disagreement a likely wrong tag', () => {
-    expect(classify(0, answer('s1', RETAG_CONFIDENCE)).verdict).toBe('retag')
+    expect(classify(0, answer('s1', CONFIDENT)).verdict).toBe('retag')
   })
   it('sends a doubtful disagreement to be read', () => {
-    expect(classify(0, answer('s1', RETAG_CONFIDENCE - 0.01)).verdict).toBe('read')
+    expect(classify(0, answer('s1', CONFIDENT - 0.01)).verdict).toBe('read')
   })
   it('sends a malformed answer to be read rather than counting it as agreement', () => {
     expect(classify(0, { answers: {} }).verdict).toBe('read')
