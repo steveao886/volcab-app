@@ -5764,6 +5764,1153 @@
         "untroubled"
       ],
       "why": "serene 强调风浪当前依然安详从容，带欣赏语气；placid 多形容天生性子沉静或湖面无波，说的是平淡少波澜，不是顶住压力；untroubled 只说没被扰到，可能只是不知情或不上心。"
+    },
+    {
+      "zh": "泄露的视频显示,看守对被关押者的虐待残忍至极,三人一周内被起诉。",
+      "target": "残忍至极",
+      "en": "Leaked footage showed the atrocious treatment of detainees, and three guards were charged within a week.",
+      "order": [
+        "atrocious"
+      ],
+      "extra": [
+        "harsh",
+        "unkind"
+      ],
+      "sense": 1,
+      "why": "关键在于暴力残忍的程度：atrocious 的第二义专指对人的凶残暴行，虐待被关押者正是这种场景；harsh 只是严厉、不留情面，力度远不及残忍至极；unkind 只是不友善，更轻。"
+    },
+    {
+      "zh": "她把薪资表转发给对手公司,合伙人说这是吃里扒外,当天就让她走人。",
+      "target": "吃里扒外",
+      "en": "Forwarding the salary spreadsheet to a rival firm struck the partners as disloyal, and she was walked out that day.",
+      "order": [
+        "disloyal",
+        "unfaithful",
+        "adulterous"
+      ],
+      "why": "决定性的是对象：背弃自己应当效忠的公司或团体，用 disloyal；unfaithful 主要指对伴侣不忠（有外遇），拿来说背叛公司勉强沾边，所以排第二；adulterous 只能指婚外性关系，与这个场景毫无关系，排最后。"
+    },
+    {
+      "zh": "家长们为校门口增设斑马线奔走呼吁了好几年,请愿书贴满了街。",
+      "target": "奔走呼吁",
+      "en": "Parents have agitated for a crossing outside the school for years, papering the street with petitions.",
+      "order": [
+        "agitate"
+      ],
+      "extra": [
+        "complain",
+        "wait"
+      ],
+      "sense": 1,
+      "why": "agitate for 表示公开、持续地为某个诉求奔走造势，场景里的请愿和多年坚持正是这个意思；complain 只是抱怨，没有组织行动、争取结果的意味；wait 只是等待，完全没有主动呼吁。unsettle 和 perturb 只表示使人不安，不能接 for 表示为某事奔走。"
+    },
+    {
+      "zh": "领养中心清早来电,说手续批下来了,她当场欣喜若狂。",
+      "target": "欣喜若狂",
+      "en": "When the adoption agency called at dawn to say the paperwork had cleared, she was ecstatic.",
+      "order": [
+        "ecstatic"
+      ],
+      "extra": [
+        "pleased",
+        "glad"
+      ],
+      "why": "关键在于情绪的强度和时点：好消息已经到手、喜悦远超寻常，用 ecstatic；pleased 只是满意高兴，程度弱得多；glad 同样只是高兴，没有狂喜的力度。agog 与 expectant 写的是事情发生之前的急切等待，不是得到消息后的狂喜。"
+    },
+    {
+      "zh": "新校长在食堂和学生一起吃午饭,记得每个学生的名字,为人平易近人。",
+      "target": "平易近人",
+      "en": "The new principal is approachable, eating lunch in the cafeteria and learning every seventh-grader's name.",
+      "order": [
+        "approachable",
+        "amiable",
+        "personable"
+      ],
+      "why": "关键在于身居权威却让人愿意上前交谈：校长不摆架子，用 approachable；amiable 只说性情友善、令人喜欢，没有身份落差的意味，排第二；personable 着眼外表加举止给人的整体好印象，与愿不愿意找她说话关系最远，排第三。"
+    },
+    {
+      "zh": "公司在报社刊出调查前,抢先在周五晚上发了道歉声明。",
+      "target": "抢先",
+      "en": "The company issued a preemptive apology on Friday evening, hours before the newspaper published its investigation.",
+      "order": [
+        "preemptive",
+        "proactive",
+        "anticipatory"
+      ],
+      "why": "关键在于抢在对方行动之前出手以减轻伤害：报社即将刊出，公司抢先道歉，用 preemptive；proactive 是主动防患于未然，但不一定针对某个即将动手的对手，排第二；anticipatory 只是出于预期而提前准备或产生感受，没有抢先制止的含义，排第三。"
+    },
+    {
+      "zh": "创业公司急着想公布融资消息,可法务还要再看两天条款。",
+      "target": "急着想",
+      "en": "The startup is anxious to announce the funding round, but legal wants two more days with the term sheet.",
+      "order": [
+        "anxious"
+      ],
+      "extra": [
+        "reluctant",
+        "nervous"
+      ],
+      "sense": 1,
+      "why": "anxious to do 的第二义表示迫切想做成某事，这里公司急着公布；reluctant 是不情愿，意思正相反；nervous 是紧张害怕，没有渴望之意。apprehensive 与 uneasy 只表示担忧，不能接动词不定式表示想要。"
+    },
+    {
+      "zh": "新吸入器用了三个月,病情没有任何明显好转,诊所只好转诊。",
+      "target": "明显",
+      "en": "Three months on the new inhaler brought no appreciable improvement, so the clinic referred him on.",
+      "order": [
+        "appreciable",
+        "considerable",
+        "sizeable"
+      ],
+      "why": "关键在于能否被察觉到：改善小到看不出来，用 appreciable（大到足以被注意到）；considerable 表示相当大、足以产生影响，也能说改善，但不强调可察觉，排第二；sizeable 讲的是体积、数额、人数之大，很少用来修饰改善，排最后。"
+    },
+    {
+      "zh": "她一觉醒来浑身莫名不对劲,病得不重,人却昏沉,没法专心开会。",
+      "target": "莫名不对劲",
+      "en": "She woke up with a strange malaise, not sick enough to call in but too foggy to focus on the meeting.",
+      "order": [
+        "malaise",
+        "discomfort",
+        "apprehension"
+      ],
+      "why": "关键在于说不清来由的整体萎靡不适：病不重、人昏沉，用 malaise；discomfort 也指身体或心里不舒服，但通常是具体、能指出原因的不适，排第二；apprehension 是对即将发生的事的担忧，这里没有任何预期中的事，排最后。"
+    },
+    {
+      "zh": "每逢周年,村民都在当年发生残暴惨案的桥边点起蜡烛。",
+      "target": "残暴惨案",
+      "en": "Every anniversary the village lights candles at the bridge where the atrocity took place.",
+      "order": [
+        "atrocity",
+        "brutality"
+      ],
+      "extra": [
+        "accident"
+      ],
+      "why": "关键在于能否指一桩具体发生过的暴行事件：atrocity 是可数名词，一件暴行可以发生在某地，用 atrocity；brutality 指残暴的行为或程度，不是一桩事件，排第二；accident 是意外，没有残暴恶意，不符。"
+    },
+    {
+      "zh": "同一条街接连两起入室盗窃后,居民们保持警惕,轮流夜里巡逻。",
+      "target": "保持警惕",
+      "en": "Residents remain watchful after two break-ins on the same street, taking turns to walk the lane at night.",
+      "order": [
+        "watchful",
+        "attentive",
+        "observant"
+      ],
+      "why": "关键在于对危险保持戒备：出了盗窃案后提防再发生，用 watchful；attentive 是专心留意，没有提防危险的特定含义，排第二；observant 指善于察觉细节的特点，是一种能力而非戒备的状态，排第三。"
+    },
+    {
+      "zh": "导游叮嘱我们过境前删掉抗议照片,因为那个独裁国家的边检会翻手机。",
+      "target": "独裁",
+      "en": "Our guide told us to delete any protest photos before the border, because guards in that autocratic country search phones.",
+      "order": [
+        "autocratic"
+      ],
+      "extra": [
+        "strict",
+        "backward"
+      ],
+      "why": "关键在于修饰对象：形容国家或政府握有无人能制衡的绝对权力，用 autocratic；strict 只是管得严，不等于权力不受制约；backward 是落后，说的是发展程度，与政体无关。imperious 与 domineering 描写个人的专横态度，不能形容一个国家。"
+    },
+    {
+      "zh": "往咖啡里加一小撮糖,就能压下它的苦味,又不会变甜。",
+      "target": "苦味",
+      "en": "A pinch of sugar cuts the bitterness of the coffee without making it taste sweet.",
+      "order": [
+        "bitterness"
+      ],
+      "extra": [
+        "sourness",
+        "saltiness"
+      ],
+      "sense": 1,
+      "why": "关键在于味觉：咖啡的苦味用 bitterness（第二义，苦涩的味道）；sourness 是酸味，味道种类不对；saltiness 是咸味，同样不对。grudge 与 resentment 只表示怨恨的情绪，不能形容食物的味道。"
+    },
+    {
+      "zh": "爸爸在押的孩子,常常对同学隐瞒,还跟老师说爸爸在国外干活。",
+      "target": "在押",
+      "en": "Children whose fathers are incarcerated often hide it from classmates and tell teachers he is working overseas.",
+      "order": [
+        "incarcerated",
+        "captive",
+        "caged"
+      ],
+      "why": "关键在于因何被关：因犯罪被判入狱，用 incarcerated；captive 是被绑匪、敌人或他人扣押关押，同样人身不自由，但不是依法服刑，排第二；caged 是关在笼子里，或比喻被困住，用来说坐牢的人最不贴切，排第三。"
+    },
+    {
+      "zh": "同事刚说完父亲去世,他只冷冷问了句报告什么时候交,真是冷漠无情。",
+      "target": "冷漠无情",
+      "en": "When his colleague mentioned her father's death, he coldly asked only when the report would be ready, which felt callous.",
+      "order": [
+        "callous",
+        "insensitive"
+      ],
+      "extra": [
+        "clumsy"
+      ],
+      "why": "关键在于有没有同情心：明知对方悲痛却毫不动容，用 callous；insensitive 是没顾及对方的感受，可能出于粗心，冷酷的程度不及 callous，排第二；clumsy 是笨拙，说的是不灵巧、不得体，不是冷漠，明显更差。"
+    },
+    {
+      "zh": "他靠一张巧嘴把整个招聘委员会哄得团团转,谁也没去核实推荐人。",
+      "target": "哄得团团转",
+      "en": "His charm beguiled the entire hiring committee, and nobody thought to check the references on his resume.",
+      "order": [
+        "beguile",
+        "captivate",
+        "enthrall"
+      ],
+      "why": "关键在于魅力里带着欺骗：靠巧嘴蒙住所有人，使人放松警惕，用 beguile；captivate 是靠魅力或趣味牢牢吸引住别人，有迷住的意思但没有欺骗，排第二；enthrall 强调让人全神贯注、入迷到忘了周围，离哄骗最远，排第三。"
+    },
+    {
+      "zh": "委员会投票对参议员作出正式谴责,他随即被免去了主席职务。",
+      "target": "正式谴责",
+      "en": "The committee's vote of censure ended the senator's chairmanship.",
+      "order": [
+        "censure",
+        "condemnation",
+        "denunciation"
+      ],
+      "why": "关键在于谁在谴责、是否正式：委员会投票作出的官方谴责，用 censure；condemnation 是强烈的公开批评，主体可以是任何人，不特指官方机构，排第二；denunciation 是公开发言痛斥，偏个人当众抨击，与投票作出的正式裁决最远，排第三。"
+    },
+    {
+      "zh": "三十天后的退款由经理酌情决定,所以每周一她的办公桌前都排着队。",
+      "target": "酌情决定",
+      "en": "Refunds after thirty days are at the manager's discretion, which is why the queue forms at her desk every Monday.",
+      "order": [
+        "discretion"
+      ],
+      "extra": [
+        "choice",
+        "judgment"
+      ],
+      "why": "at one's discretion 是固定搭配，表示由某人凭自己的判断决定，经理决定是否退款正是这个意思；choice 是选择，at the manager's choice 不是地道说法；judgment 是判断力，at the manager's judgment 同样不成搭配。circumspection 与 prudence 都表示谨慎，没有自由裁量权的含义。"
+    },
+    {
+      "zh": "她一边收拾洗碗机,一边在脑子里反复咀嚼那场争吵,把自己的台词改得更狠。",
+      "target": "反复咀嚼",
+      "en": "She ruminates on the argument while unloading the dishwasher, rewriting her half of it into something far more devastating.",
+      "order": [
+        "ruminate"
+      ],
+      "extra": [
+        "remember",
+        "regret"
+      ],
+      "why": "关键在于一遍遍重复地想而没有结论：反复回放一场争吵并在脑中改写，用 ruminate；remember 只是记得，没有反复琢磨的意思；regret 是后悔，说的是情绪而不是反复思考的过程。ponder 与 cogitate 是认真或深入地思考，不带反复纠缠的意味。"
+    },
+    {
+      "zh": "她躺到凌晨三点还睡不着，把经理说的每句话翻来覆去地回想。",
+      "target": "翻来覆去",
+      "en": "She lay awake until three, caught in rumination, replaying every word her manager had said.",
+      "order": [
+        "rumination",
+        "cogitation"
+      ],
+      "extra": [
+        "daydreaming"
+      ],
+      "sense": 1,
+      "why": "关键在于想的方式：rumination 指对不愉快的事反复咀嚼、停不下来，正是翻来覆去回想糟糕的面谈；cogitation 是认真深思、要想出结论，没有反复纠结的苦闷，所以排第二；daydreaming 是漫无目的地走神，谈不上回想具体的话。"
+    },
+    {
+      "zh": "她凑过桌子，神秘兮兮地低声告诉我，哪位经理三月要走。",
+      "target": "神秘兮兮",
+      "en": "She leaned across the desk with a conspiratorial whisper and told me which manager was leaving in March.",
+      "order": [
+        "conspiratorial",
+        "shifty",
+        "devious"
+      ],
+      "sense": 1,
+      "why": "关键在于神情语气：conspiratorial 用在语气神态上，表示像在和你分享秘密、心照不宣，正配凑近低语；shifty 也描写举止，但意思是让人觉得不可信、鬼鬼祟祟，没有分享秘密的亲近，排第二；devious 说的是人心思绕、用不正当手段的计谋，不能形容一句耳语，最远。"
+    },
+    {
+      "zh": "猫趴在办公室地板上的一小块阳光里，心满意足，对我们的上线危机毫不在意。",
+      "target": "心满意足",
+      "en": "The cat lay in a patch of sun on the office floor, contented and indifferent to our deployment crisis.",
+      "order": [
+        "contented"
+      ],
+      "extra": [
+        "thrilled",
+        "proud"
+      ],
+      "why": "关键在于满足的类型：contented 是安安静静、别无所求的满足，正合晒太阳的猫；thrilled 是兴奋激动，和慵懒平静相反；proud 需要有值得自豪的成就，猫的场景里没有。"
+    },
+    {
+      "zh": "她落选后风度十足，在电视台宣布结果前就点名感谢了对手。",
+      "target": "风度十足",
+      "en": "She was gracious about losing the election, thanking her opponent by name before the networks called the result.",
+      "order": [
+        "gracious",
+        "courteous"
+      ],
+      "extra": [
+        "bitter"
+      ],
+      "why": "关键在于落败时的气度：gracious 强调宽厚大度、输了仍体面，点名感谢对手正是这种风度；courteous 只是礼貌周到、偏正式，没有输赢中那份大度，所以排第二；bitter 是怨恨不甘，与场景相反。"
+    },
+    {
+      "zh": "厨师巧妙的摆盘，把一份普通的烤鸡变得像杂志封面上的菜。",
+      "target": "巧妙",
+      "en": "The chef's artful plating turned a simple roast chicken into something from a magazine cover.",
+      "order": [
+        "artful",
+        "crafty"
+      ],
+      "extra": [
+        "clumsy"
+      ],
+      "why": "关键在于褒贬：artful 在这里是技巧高明、有创意，不含欺骗，最配摆盘；crafty 靠耍小聪明、暗中欺骗得到好处，会让人起疑，用在摆盘上带贬义，所以排第二；clumsy 是笨拙，与场景相反。"
+    },
+    {
+      "zh": "我那点粗浅的西班牙语点小吃还够用，服务员一追问就卡壳了。",
+      "target": "粗浅",
+      "en": "My rudimentary Spanish got me through ordering tapas but collapsed the moment the waiter asked a follow-up question.",
+      "order": [
+        "rudimentary",
+        "crude"
+      ],
+      "extra": [
+        "fluent"
+      ],
+      "why": "关键在于描述对象：rudimentary 说技能或知识只有最基本的入门水平，正配只够点餐的西班牙语；crude 指做得粗糙、不精细，多形容成品或估算，用在语言水平上不自然，所以排第二；fluent 是流利，与一追问就卡壳相反。"
+    },
+    {
+      "zh": "慢性偏头痛把他折磨得浑身无力，每月都得在暗室里躺两三天。",
+      "target": "浑身无力",
+      "en": "Chronic migraines debilitate him so badly that he spends two or three days a month lying in a dark room.",
+      "order": [
+        "debilitate",
+        "impair",
+        "degrade"
+      ],
+      "why": "关键在于作用对象和程度：debilitate 指让人整个身体虚弱到无法做正常的事，正合躺暗室的人；impair 是损害某一项功能或能力，不是让整个人垮掉，所以排第二；degrade 说的是质量或状态下降、降解，一般不用来描写人的体力。"
+    },
+    {
+      "zh": "检察官称两人开了九家空壳公司，骗取老年客户近两百万美元。",
+      "target": "骗取",
+      "en": "Prosecutors say the pair set up nine shell companies to defraud elderly clients of nearly two million dollars.",
+      "order": [
+        "defraud",
+        "deceive",
+        "beguile"
+      ],
+      "why": "关键在于结果：defraud 指靠欺骗拿走钱财，句里正是骗走近两百万美元；deceive 只是让人相信假话，不一定拿走钱，所以排第二；beguile 是用魅力或花招迷惑哄骗，重在吸引，和空壳公司诈骗的手法最远。"
+    },
+    {
+      "zh": "厨师起诉那位点评人诽谤她的餐厅，称食物中毒的说法纯属捏造。",
+      "target": "诽谤",
+      "en": "The chef sued the reviewer for defaming her restaurant, claiming the food-poisoning allegation was invented.",
+      "order": [
+        "defame",
+        "malign",
+        "disparage"
+      ],
+      "why": "关键在于虚假指控与损害名誉：defame 带法律意味，指发表不实之词损害名誉，正配起诉和捏造；malign 也是说坏话中伤，常是不实的，但偏日常的抹黑，排第二；disparage 是贬低、轻蔑地评论，不要求内容虚假，也不是法律上的指控，最远。"
+    },
+    {
+      "zh": "这部续集花了大钱，却严重匮乏想象力：三场追车戏，场场抄来的。",
+      "target": "匮乏",
+      "en": "For all its budget, the sequel suffers from a dearth of imagination: three chase scenes, all borrowed.",
+      "order": [
+        "dearth",
+        "deficit",
+        "impairment"
+      ],
+      "why": "关键在于缺的东西和搭配：dearth 指严重缺少想象力、证据这类抽象事物，固定说 a dearth of imagination；deficit 也能表示缺少，但更常指钱的赤字或可量化的差额，配想象力不自然，排第二；impairment 是功能受损，不是缺乏，最远。"
+    },
+    {
+      "zh": "登山第二天天气转坏，向导带大家在离山顶四百米处折返。",
+      "target": "转坏",
+      "en": "The weather deteriorated on the second day of the climb, and the guides turned everyone around four hundred meters below the summit.",
+      "order": [
+        "deteriorate",
+        "degenerate",
+        "aggravate"
+      ],
+      "why": "关键在于主语与句型：deteriorate 指状况逐渐变坏，天气、病情、关系都能做主语，正配天气转坏；degenerate 也是变坏，但多指质量或功能的退化、堕落，形容天气不自然，排第二；aggravate 是及物动词，要有人或事去加重某个问题，天气不能做它的主语，最远。"
+    },
+    {
+      "zh": "她说，被要求当着全层同事的面交出工牌、清空办公桌，那是一种屈辱。",
+      "target": "屈辱",
+      "en": "She described the degradation of being asked to hand over her badge and empty her desk while the whole floor watched.",
+      "order": [
+        "degradation",
+        "deterioration"
+      ],
+      "extra": [
+        "damage"
+      ],
+      "sense": 1,
+      "why": "关键在于尊严：degradation 的 s1 指被剥夺尊严的屈辱，正配当众交工牌；deterioration 只是质量、状况逐渐变坏，没有人格受辱的意思，所以排第二；damage 是一般的损坏，同样没有尊严的含义。"
+    },
+    {
+      "zh": "湖面平静如镜，极具迷惑性，救生员却从看不见的暗流里拉出两个游泳的人。",
+      "target": "迷惑性",
+      "en": "The lake's glassy surface was deceptive, and the lifeguard pulled two swimmers out of a current nobody could see.",
+      "order": [
+        "deceptive",
+        "deceitful"
+      ],
+      "extra": [
+        "harmless"
+      ],
+      "why": "关键在于谁在骗：deceptive 说的是外表让人产生错误印象，不需要有人故意，正配湖面；deceitful 指人故意撒谎、隐瞒真相，湖没有这种用心，所以排第二；harmless 是无害，说的是真实情况，而句子要表达的是看上去平静却危险。"
+    },
+    {
+      "zh": "最难伺候的客户半夜发邮件，要求早上七点前回复，还嫌标志太橙。",
+      "target": "难伺候",
+      "en": "Our most demanding client emails at midnight, expects a reply by seven, and once rejected a logo for being too orange.",
+      "order": [
+        "demanding"
+      ],
+      "extra": [
+        "exhausting",
+        "tiring"
+      ],
+      "sense": 1,
+      "why": "关键在于形容人的要求：demanding 用于人时，指对别人期望很高、难以满足，半夜发邮件、七点要回复正是这种客户；exhausting 和 tiring 说的是让人累的效果，而不是他的要求苛刻，不贴合难伺候这层意思。"
+    },
+    {
+      "zh": "他对薪水数字讳莫如深，哪怕对那些什么都聊的同事也一样。",
+      "target": "讳莫如深",
+      "en": "He's oddly reticent about salary numbers, even with coworkers he trades everything else with.",
+      "order": [
+        "reticent",
+        "reserved",
+        "diffident"
+      ],
+      "why": "关键在于封口的范围与原因：reticent 指不愿吐露某件事，常搭 about，正配只对薪水闭口；reserved 是整体性格含蓄寡言，而他对别的话题很敞开，排第二；diffident 是因缺乏自信而羞怯，不是不愿透露，最远。"
+    },
+    {
+      "zh": "她的助理守口如瓶，同事们早就不再追问她每周四下午去了哪里。",
+      "target": "守口如瓶",
+      "en": "Her assistant is discreet to the point that colleagues have stopped asking where she goes on Thursday afternoons.",
+      "order": [
+        "discreet",
+        "tactful"
+      ],
+      "extra": [
+        "talkative"
+      ],
+      "why": "关键在于保守秘密：discreet 指言行谨慎、不外传别人的私事，正配没人再追问行踪；tactful 重在说话做事不伤人、不让人尴尬，与保密不同，所以排第二；talkative 是话多，与守口如瓶相反。"
+    },
+    {
+      "zh": "他的模拟考成绩惨不忍睹，补习六周才勉强及格。",
+      "target": "惨不忍睹",
+      "en": "His mock exam results were dismal, but six weeks of tutoring turned a fail into a pass.",
+      "order": [
+        "dismal",
+        "gloomy",
+        "downbeat"
+      ],
+      "sense": 1,
+      "why": "dismal 指质量或结果差到极点，正好形容成绩惨不忍睹；gloomy 主要写情绪或前景的悲观，勉强能修饰数字，但没有差到极点的意思，排第二；downbeat 说的是论调低沉，不能描述结果本身，排最后。"
+    },
+    {
+      "zh": "没有哪只蚂蚁知道糖在哪，通往糖的蚁路却是一种没人设计的涌现现象。",
+      "target": "涌现现象",
+      "en": "No single ant knows where the sugar is, yet the trail to it is an emergent pattern no ant planned.",
+      "order": [
+        "emergent",
+        "emerging",
+        "nascent"
+      ],
+      "sense": 1,
+      "why": "决定性的是整体由许多简单个体互动产生、并非谁规划的，这是 emergent 的专门义；emerging 只说刚开始显现，没有互动产生之意，排第二；nascent 强调刚成形、弱小未成熟，和这个模式的成因无关，排最后。"
+    },
+    {
+      "zh": "州里终于把租金上限法案变成了法律，租客团体为此奔走了三届政府。",
+      "target": "变成了法律",
+      "en": "The state finally enacted the rent-cap bill that tenants' groups had campaigned for through three governments.",
+      "order": [
+        "enact",
+        "promulgate",
+        "legislate"
+      ],
+      "why": "决定性的是以法案为宾语、把它正式制定成法：enact 正是这个意思；promulgate 偏向把已定的法令公布施行，带宾语时勉强能用，排第二；legislate 指立法这件事本身，通常不能直接带法案作宾语，排最后。"
+    },
+    {
+      "zh": "他穿着亚麻西装潇洒地走进路演现场，还拿公司烧钱的速度开玩笑。",
+      "target": "潇洒",
+      "en": "He strode into the pitch looking debonair in a linen suit, joking about the company's burn rate.",
+      "order": [
+        "debonair",
+        "captivating",
+        "enchanting"
+      ],
+      "why": "决定性的是男子从容、讲究、轻松自如的风度：debonair 专指这种派头；captivating 说的是吸引人、抓住注意力，能形容人但不含从容的派头，排第二；enchanting 偏向如魔法般迷人，多用于风景或故事，排最后。"
+    },
+    {
+      "zh": "麻醉药让他暂时飘飘然，护士记下他对着天花板夸了整整三分钟。",
+      "target": "飘飘然",
+      "en": "The anesthetic left him briefly euphoric, and the nurse noted three minutes of him praising the ceiling tiles.",
+      "order": [
+        "euphoric",
+        "exuberant",
+        "upbeat"
+      ],
+      "why": "决定性的是药物带来的强烈而短暂的愉悦感：euphoric 正是这种飘飘然；exuberant 强调吵闹外放的精力，能描述兴奋但不含飘然的愉悦，排第二；upbeat 只是语气乐观积极，强度和性质都不对，排最后。"
+    },
+    {
+      "zh": "被问到裁员是否结束，她含糊地笑了笑，随即把话题引到餐点上。",
+      "target": "含糊",
+      "en": "Asked whether the layoffs were over, she gave an evasive smile and steered the meeting toward the catering.",
+      "order": [
+        "evasive",
+        "oblique",
+        "lukewarm"
+      ],
+      "why": "决定性的是对直接问题避而不答：evasive 正是这个意思；oblique 是不直说而拐弯暗示，仍在传达意思，不是回避，排第二；lukewarm 说的是反应冷淡，和躲闪问题无关，排最后。"
+    },
+    {
+      "zh": "航空公司对乘客已付过钱的座位再次收费，连脾气最好的顾客都会被激怒。",
+      "target": "激怒",
+      "en": "Charging a passenger again for a seat already paid for would infuriate even the calmest customers.",
+      "order": [
+        "infuriate",
+        "exasperate",
+        "aggravate"
+      ],
+      "why": "决定性的是不公平的事引起的暴怒：infuriate 的程度最强，正合再次收费这种不讲理；exasperate 偏向反复折腾、忍无可忍的恼火，强度稍低，排第二；aggravate 在这个义项里只是惹恼，最弱且偏口语，排最后。"
+    },
+    {
+      "zh": "电梯坏了一周，对住二楼的人只是件小麻烦，对九楼却是大问题。",
+      "target": "小麻烦",
+      "en": "The lift has been out for a week, a minor annoyance on the second floor and a real problem on the ninth.",
+      "order": [
+        "annoyance",
+        "aggravation",
+        "exasperation"
+      ],
+      "sense": 1,
+      "why": "决定性的是可数的、让人烦的一件事，且程度轻：annoyance 有这个可数义；aggravation 偶尔也指令人烦扰的事，但主要是情绪，排第二；exasperation 是强烈的恼怒情绪，不指一件事，也和轻微不符，排最后。"
+    },
+    {
+      "zh": "我们那位爱出风头的化学老师考试日披着斗篷上课。",
+      "target": "爱出风头",
+      "en": "Our flamboyant chemistry teacher wore a cape on exam days.",
+      "order": [
+        "flamboyant",
+        "extravagant",
+        "prodigal"
+      ],
+      "why": "决定性的是用来形容人、故意招摇引人注意：flamboyant 正是这个意思；extravagant 能形容夸张的举动，但重点是过度，不一定为了出风头，排第二；prodigal 只指挥霍钱财，不能形容人的招摇举止，排最后。"
+    },
+    {
+      "zh": "他对酸面包一丝不苟，每样原料都称到克，还把厨房湿度记在本子上。",
+      "target": "一丝不苟",
+      "en": "He's meticulous about sourdough, weighing every ingredient to the gram and logging the kitchen's humidity.",
+      "order": [
+        "meticulous",
+        "fine-grained",
+        "nuanced"
+      ],
+      "why": "决定性的是人做事极其细心、不放过细节，且能接 about：meticulous 正是这个意思；fine-grained 说的是划分很细、细节很多，不形容人的态度，但与细节有关，排第二；nuanced 说的是看到细微差别、不简单化，和称重记录无关，排最后。"
+    },
+    {
+      "zh": "她在评审会上直言不讳地提意见，团队省下一季度返工，两个新人却听得难堪。",
+      "target": "直言不讳",
+      "en": "Her forthright feedback in the design review saved the team a quarter of rework, though two juniors left stung.",
+      "order": [
+        "forthright",
+        "truthful",
+        "ingenuous"
+      ],
+      "why": "决定性的是明知不中听也坦率直说：forthright 正是这个意思；truthful 只说不撒谎、讲实话，没有主动直说的力度，排第二；ingenuous 是天真单纯、坦率出于不世故，不是敢说难听话，排最后。"
+    },
+    {
+      "zh": "他敷衍地收拾了一下合租的厨房，只擦了一块台面，三天的杯子还泡在水槽里。",
+      "target": "敷衍",
+      "en": "He made a halfhearted attempt to tidy the shared kitchen, wiping one counter and leaving three days of mugs in the sink.",
+      "order": [
+        "halfhearted",
+        "unenthusiastic",
+        "tepid"
+      ],
+      "why": "决定性的是努力只用了一半、明显不是真心去做：halfhearted 修饰尝试最自然；unenthusiastic 说没有兴致，能解释敷衍的原因，但不直接描述做法，排第二；tepid 多形容反应或评价冷淡，很少修饰一次尝试，排最后。"
+    },
+    {
+      "zh": "他喝了两杯就变得好斗,专拉着陌生人挑衅,为一场球赛都要动手。",
+      "target": "好斗",
+      "en": "After two drinks he turns belligerent, provoking strangers and ready to throw punches over a football match.",
+      "order": [
+        "belligerent",
+        "quarrelsome",
+        "hostile"
+      ],
+      "why": "belligerent 是主动挑衅、好斗,甚至动手,和「专找陌生人」「动手」最贴;quarrelsome 是爱争吵、爱抬杠,多停在口角上,排第二;hostile 只说态度上的敌意与不友好,不一定主动惹事,最靠后。"
+    },
+    {
+      "zh": "石膏打了六周,他的肩膀几乎动弹不得,复健要花更久。",
+      "target": "动弹不得",
+      "en": "Six weeks in a cast left his shoulder almost immobile, and getting it back would take longer.",
+      "order": [
+        "immobile",
+        "motionless",
+        "unreactive"
+      ],
+      "why": "immobile 强调动不了、被固定住,石膏里的肩膀正是这种情形;motionless 只是纹丝不动的状态,不含「动不了」的意思,所以第二;unreactive 说的是没有反应(化学上或神态上),与肢体活动无关,最后。"
+    },
+    {
+      "zh": "新来的保安格外卖力,连总裁也得亮两次工作证才放行。",
+      "target": "格外卖力",
+      "en": "The new security guard is so zealous that even the CEO must show her badge twice before getting through.",
+      "order": [
+        "zealous",
+        "ardent",
+        "impassioned"
+      ],
+      "why": "zealous 指热心得超出场合需要,保安对总裁也要查两遍就是过头的卖力;ardent 也写热情,但是真心投入、热烈喜爱的那种,没有过头的意味,排第二;impassioned 专指言辞、文字里感情饱满,用来形容做事的人不合适,排第三。"
+    },
+    {
+      "zh": "她在茶水间说出了无意中瞥见的薪资数字,这一失检让她丢了饭碗。",
+      "target": "失检",
+      "en": "She repeated in the staff kitchen the salary figures she had glimpsed on a screen, an indiscretion that cost her the job.",
+      "order": [
+        "indiscretion",
+        "imprudence"
+      ],
+      "extra": [
+        "carelessness"
+      ],
+      "why": "indiscretion 是失检的言行,尤其是把不该说的话说出去、造成尴尬或泄密,正合茶水间说漏薪资;imprudence 只是不够审慎、欠考虑,没有泄露秘密这一层,排第二;carelessness 泛指粗心,既不含审慎判断,更没有泄密的指向,比 indiscretion 弱得多。"
+    },
+    {
+      "zh": "我姑姑人很好,就是嘴不严,周二跟她说的事,周三全家群都知道了。",
+      "target": "嘴不严",
+      "en": "My aunt is lovely but indiscreet; tell her anything on Tuesday and the whole family group chat knows by Wednesday.",
+      "order": [
+        "indiscreet"
+      ],
+      "extra": [
+        "thoughtless",
+        "unwise"
+      ],
+      "why": "indiscreet 说的就是守不住话、不该说的随口说出去,姑姑转头就让全家群知道,正是这一点;thoughtless 只是欠考虑,没有泄露私事的指向;unwise 只说不明智,指对风险判断不当,与「说漏嘴」不挂钩,二者都不如 indiscreet 准确。"
+    },
+    {
+      "zh": "连轴转了十个小时,她既没时间也没心思做饭,晚饭又是麦片。",
+      "target": "没心思",
+      "en": "After a ten-hour shift she had neither the time nor the inclination to cook, so it was cereal again for dinner.",
+      "order": [
+        "inclination"
+      ],
+      "extra": [
+        "ability",
+        "habit"
+      ],
+      "why": "inclination 指做某事的意愿、心思,「没心思做饭」就是没有这个意愿;ability 说的是能不能,她是不想而不是不会;habit 说的是惯常做法,与此刻累得不想动的心情无关。"
+    },
+    {
+      "zh": "她头一回贴壁纸,手法笨拙,壁炉那面墙上的气泡坐在沙发上都看得见。",
+      "target": "手法笨拙",
+      "en": "Her first attempt at wallpapering was inept, and the bubbles along the fireplace wall are still visible from the sofa.",
+      "order": [
+        "inept",
+        "incompetent",
+        "feckless"
+      ],
+      "why": "inept 强调笨手笨脚、一上手就搞砸,新手贴壁纸气泡一片正是;incompetent 指缺乏胜任一份工作的能力,偏职业上的不称职,拿来说新手第一次就重了,排第二;feckless 说的是不负责任、没担当,与手艺好坏无关,最后。"
+    },
+    {
+      "zh": "小镇远离断层,工程师认定大桥的地震风险小到可以忽略不计。",
+      "target": "可以忽略不计",
+      "en": "Because the town sits far from any fault line, engineers rated the earthquake risk to the bridge as negligible.",
+      "order": [
+        "negligible"
+      ],
+      "extra": [
+        "minor",
+        "slight"
+      ],
+      "why": "negligible 的重点是小到可以不去管它,所以风险被评为「可以忽略不计」;minor 和 slight 只说小或轻,但没到可以忽略的程度,不能说明不用理会。"
+    },
+    {
+      "zh": "小孩在新沙发上画了一道红色记号笔痕,怎么擦都擦不掉。",
+      "target": "擦不掉",
+      "en": "Within twenty minutes the toddler had left an indelible red marker streak across the new couch.",
+      "order": [
+        "indelible",
+        "irreparable",
+        "lifelong"
+      ],
+      "why": "indelible 指擦不掉、抹不去,正是记号笔痕的特点;irreparable 是损坏到无法修复,和沙发被毁沾边,但重点不在擦除,排第二;lifelong 说的是持续一辈子,与痕迹擦不擦得掉无关,最后。"
+    },
+    {
+      "zh": "检查人员认定拘留所里的环境已不可容忍,限部门九十天内关闭整个监区。",
+      "target": "不可容忍",
+      "en": "Inspectors ruled conditions in the detention center intolerable and gave the department ninety days to close the wing.",
+      "order": [
+        "intolerable",
+        "unbearable"
+      ],
+      "extra": [
+        "unpleasant"
+      ],
+      "why": "intolerable 强调情况不公、危险或不可接受,不能再任其继续,检查人员的裁定正是这个意思;unbearable 说的是人感觉受不了,偏个人感受,在裁定语境里排第二;unpleasant 只是令人不快,强度不够,不足以构成必须关闭的理由。"
+    },
+    {
+      "zh": "这个司机开车反复无常,一会儿急刹,一会儿猛变道,她只给了两星。",
+      "target": "反复无常",
+      "en": "His driving was so erratic, with hard brakes and sudden lane changes, that she rated him two stars.",
+      "order": [
+        "erratic",
+        "irregular",
+        "sporadic"
+      ],
+      "why": "erratic 说行为飘忽不定、没有规律又让人捉摸不透,急刹车、乱变道正是;irregular 只是不按规律,语气平淡,没有失控的意思,排第二;sporadic 指事件偶尔零星发生,用来形容一种开车的方式不合适,最后。"
+    },
+    {
+      "zh": "蜜月十天都躺在吊床上,慢悠悠吃早饭,日子过得慵懒惬意。",
+      "target": "慵懒",
+      "en": "Their honeymoon was ten languid days of hammocks and slow breakfasts, phones left face-down in the villa.",
+      "order": [
+        "languid",
+        "lethargic",
+        "inert"
+      ],
+      "why": "languid 带着舒服的慢悠悠、懒洋洋,吊床和慢早餐的蜜月正对;lethargic 也是没精神,但偏疲沓无力,常因疲劳或药物而不舒服,少了惬意,排第二;inert 说的是一动不动、毫无行动意愿或死气沉沉,最远。"
+    },
+    {
+      "zh": "环保团体在三个州就管道许可证对簿公堂,把开工拖后了两年。",
+      "target": "对簿公堂",
+      "en": "Environmental groups have litigated the pipeline permit in three states, delaying construction by two years.",
+      "order": [
+        "litigate",
+        "oppose",
+        "indict"
+      ],
+      "why": "litigate 指把纠纷拿到法庭上通过诉讼解决,对簿公堂正是;oppose 是反对并设法阻止,环保团体确有此意,但没有说明走法律途径,排第二;indict 是检察机关刑事起诉某个人,与团体打许可证官司不是一回事,最后。"
+    },
+    {
+      "zh": "她那位邻居动不动就告人,为了树篱高度已把三户人家告上法庭。",
+      "target": "动不动就告人",
+      "en": "Her litigious neighbor had already taken three households to court over hedge heights.",
+      "order": [
+        "litigious",
+        "quarrelsome",
+        "hostile"
+      ],
+      "why": "litigious 指动辄告上法庭,正是这位邻居的行为;quarrelsome 只是爱争吵,不一定闹到法庭,指向偏了;hostile 说的是敌意与不友好,和打官司的习惯更远。"
+    },
+    {
+      "zh": "报错信息只是一串数字和符号,完全不知所云,她还是打电话问了客服。",
+      "target": "不知所云",
+      "en": "The error message was nonsensical, just a string of numbers and symbols, so she phoned the helpdesk anyway.",
+      "order": [
+        "nonsensical"
+      ],
+      "extra": [
+        "unclear",
+        "odd"
+      ],
+      "why": "nonsensical 指没有意义、没有逻辑,一串数字和符号不知所云正是;unclear 说的是不清楚,仍可能有意义,只是没说明白;odd 只是奇怪,更弱。"
+    },
+    {
+      "zh": "列车取消、手机没电、又下起暴雨,这些事凑到一起,害她错过了唯一在乎的面试。",
+      "target": "凑到一起",
+      "en": "A canceled train, a dead phone battery and a sudden downpour conspired to make her miss the only interview she cared about.",
+      "order": [
+        "conspire"
+      ],
+      "extra": [
+        "plot",
+        "arrange"
+      ],
+      "sense": 1,
+      "why": "conspire 的第二义是事件凑在一起,仿佛有意安排似的造成坏结果,取消、没电、暴雨正是;plot 和 arrange 都要有人有意安排,而这里是巧合,没有人在安排。"
+    },
+    {
+      "zh": "这趟通勤真是一波三折:水管爆了,换乘接驳车,还有个陌生人硬要分我三明治。",
+      "target": "一波三折",
+      "en": "It was an eventful commute: a burst pipe, a replacement bus, and a stranger who insisted on sharing his sandwich.",
+      "order": [
+        "eventful"
+      ],
+      "extra": [
+        "busy",
+        "tiring"
+      ],
+      "why": "eventful 指发生了很多事、一波三折,爆管、换车、陌生人分三明治正是;busy 只说忙或拥挤,没有事件层出不穷的意思;tiring 说的是累,不是事情多。"
+    },
+    {
+      "zh": "「便宜」一词的言外之意带点贬低,文案组便把它换成了「实惠」。",
+      "target": "言外之意",
+      "en": "'Cheap' has a negative connotation, so the marketing team swapped it for 'affordable' in the ad copy.",
+      "order": [
+        "connotation",
+        "nuance"
+      ],
+      "extra": [
+        "definition"
+      ],
+      "why": "connotation 指字面之外附带的联想与感情色彩,「便宜」带贬意正是;nuance 是细微的差别,说的是两种说法之间的小区别,而不是一个词自带的褒贬,排第二;definition 是字面定义,恰好是字面之内的东西,最远。"
+    },
+    {
+      "zh": "合同的措辞他看了一遍,觉得没什么招人反对的,直到律师指出了加班费那一条。",
+      "target": "招人反对",
+      "en": "He found nothing objectionable in the contract's wording until his lawyer pointed out the clause about unpaid overtime.",
+      "order": [
+        "objectionable",
+        "disagreeable",
+        "obnoxious"
+      ],
+      "why": "objectionable 的重点是让人有理由提出异议,合同措辞里有问题的条款正是;disagreeable 是令人不快,偏感觉上的不舒服,没有「可以反对」的意思,排第二;obnoxious 指粗鲁吵闹、令人讨厌的行为,最不搭。"
+    },
+    {
+      "zh": "市议会投票决定把废弃的工厂夷为平地,也不愿花几百万去翻修。",
+      "target": "夷为平地",
+      "en": "The city council voted to raze the abandoned factory rather than spend millions renovating it.",
+      "order": [
+        "raze",
+        "obliterate",
+        "efface"
+      ],
+      "why": "关键在于被拆的对象是整座建筑,而且是有人拍板推倒:raze 专指把建筑或城镇推倒夷平;obliterate 也是彻底毁掉,但泛指任何东西,常见于洪水、爆炸这类灾变,不带投票拆除的意味,所以排第二;efface 是把痕迹、字迹擦掉,对象是印记而不是建筑,最远。"
+    },
+    {
+      "zh": "方案最好周五下午再提,那时主任手头的急事都办完了,才听得进去。",
+      "target": "听得进去",
+      "en": "Pitch the redesign on Friday afternoon; the director is far more receptive once the week's fires are out.",
+      "order": [
+        "receptive",
+        "open-minded",
+        "enlightened"
+      ],
+      "why": "关键在于对眼前这个提议的接受程度会随时机变化:receptive 说的就是此刻愿意听、愿意考虑新建议;open-minded 说的是不抱成见的一贯性格,不随周五下午而变,所以排第二;enlightened 是见识开明、文明进步,说的是整体观念,与愿不愿听某个方案无关,最远。"
+    },
+    {
+      "zh": "家长们的强烈反对,让学校把上课时间推迟九十分钟的计划泡了汤。",
+      "target": "强烈反对",
+      "en": "Fierce opposition from parents killed the plan to push the school day back ninety minutes.",
+      "order": [
+        "opposition",
+        "dissent",
+        "animosity"
+      ],
+      "why": "关键在于对一项计划的有力抵制,并且真的让计划落空:opposition 就是这种带行动的反对;dissent 是对官方或多数意见表达不同看法,重在发出声音,未必有力量阻止,所以排第二;animosity 是人与人之间的敌意,不是针对某项计划的反对,最远。"
+    },
+    {
+      "zh": "那个初级分析师野心太大,同时揽下三个项目,结果一个也没做好。",
+      "target": "野心太大",
+      "en": "The junior analyst was overambitious: he volunteered for three projects at once and finished none of them properly.",
+      "order": [
+        "overambitious",
+        "grandiose",
+        "pretentious"
+      ],
+      "why": "关键在于一个人揽的事远超实际能做到的,所以注定要落空:overambitious 就是目标定得过高、不自量力;grandiose 是计划或想法规模夸张、好大喜功,重在浮夸而不在工作量,用在人身上还带妄自尊大的意思,所以排第二;pretentious 是装出高人一等的样子,与能不能做完无关,最远。"
+    },
+    {
+      "zh": "演员在葬礼那场戏里把悲痛演得太过火,哭声大得观众都笑了。",
+      "target": "演得太过火",
+      "en": "The actor chose to overplay the grief in the funeral scene, sobbing so loudly that the audience began to laugh.",
+      "order": [
+        "overplay",
+        "overstate",
+        "belabor"
+      ],
+      "sense": 1,
+      "why": "关键在于表演本身过了头:overplay 的这个义项就是演得过火、用力过猛;overstate 也是夸大,但夸大的是说法或描述,不是表演,所以排第二;belabor 是把一件事翻来覆去说得没完,是啰嗦而不是夸张,最远。"
+    },
+    {
+      "zh": "财务总监把裁员说成人才再配置,她咬住笔,把笑硬憋了回去,一点没露。",
+      "target": "憋了回去",
+      "en": "She bit her pen and repressed a laugh when the finance chief called the layoffs a talent reallocation.",
+      "order": [
+        "repress",
+        "subdue",
+        "overpower"
+      ],
+      "why": "关键在于把冲到嘴边的笑压住、不让表露出来:repress 就是把情绪或冲动按住不外露,笑一点没露正好吻合;subdue 是把情绪压低、减弱,但不强调不让外露,所以排第二;overpower 是以强力制服对方或气味盖过一切,主语是更强的一方,不能用来压自己的笑,最远。"
+    },
+    {
+      "zh": "大火中午就越过了高速公路,消防队长对着镜头承认,火势已经拦不住了。",
+      "target": "拦不住",
+      "en": "The fire jumped the highway by noon, and the chief admitted on camera that it was now uncontainable.",
+      "order": [
+        "uncontainable",
+        "unmanageable",
+        "overpowering"
+      ],
+      "why": "关键在于火越过了界线、圈不住:uncontainable 就是无法被限制在范围之内;unmanageable 是负责的人管不过来、控制不了,方向相近但不强调越界,所以排第二;overpowering 是气味、感受强烈到难以忍受,或强大到无法抵抗,不是说火势失控,最远。"
+    },
+    {
+      "zh": "在狭窄的山路上,上坡的车比下坡的车优先通行,大家都心里有数。",
+      "target": "优先通行",
+      "en": "On the narrow mountain road, cars heading uphill take precedence over those coming down.",
+      "order": [
+        "precedence",
+        "primacy",
+        "preeminence"
+      ],
+      "why": "关键在于谁有权先走、先被处理:precedence 就是优先权;primacy 是在重要性或次序上居首,偏原则和地位,不是先后通行的权利,所以排第二;preeminence 是在某一领域中卓越、出类拔萃,说的是水平和声望,与让谁先走无关,最远。"
+    },
+    {
+      "zh": "改版才几天,应用下载量就急剧下滑,团队周五早上只好撤回了更新。",
+      "target": "急剧下滑",
+      "en": "App downloads took a precipitous dive within days of the redesign, and the team rolled back the update by Friday morning.",
+      "order": [
+        "precipitous",
+        "sheer",
+        "diaphanous"
+      ],
+      "why": "关键在于数字在短时间内急速下跌:precipitous 既可指陡峭,也常形容骤然的、断崖般的下降;sheer 的陡峭义指悬崖或坡面近乎垂直,用于数量下跌不自然,但仍属同一类陡,所以排第二;diaphanous 是织物轻薄透明,与下跌无关,最远。"
+    },
+    {
+      "zh": "他那口英式口音纯属装腔作势,其实在小县城长大,只出国念过一个学期。",
+      "target": "装腔作势",
+      "en": "His British accent was pure affectation: he grew up in a small town and picked it up after one semester abroad.",
+      "order": [
+        "affectation",
+        "pretension",
+        "ostentation"
+      ],
+      "why": "关键在于说话方式是刻意装出来给人看的:affectation 就是矫揉造作的言行举止,口音正是典型;pretension 是自称比实际更有身份或品位,范围更宽,不专指某种举止,所以排第二;ostentation 是炫耀财富、学识或地位,重在摆阔,不是装出一种口音,最远。"
+    },
+    {
+      "zh": "她是调查记者,花了八个月顺着捐款一路追查,最后找到一家空壳公司。",
+      "target": "调查",
+      "en": "An investigative reporter spent eight months tracing the charity's donations to a shell company.",
+      "order": [
+        "investigative",
+        "probing",
+        "incisive"
+      ],
+      "why": "关键在于长时间查证事实、揭出内幕的工作:investigative 就是调查性的,常配记者和报道;probing 也是刨根问底,但多形容一次提问或审查,不是整段调查工作,所以排第二;incisive 是思路敏锐、一针见血,重在洞察而不在挖掘证据,最远。"
+    },
+    {
+      "zh": "物理老师在弹簧上挂水瓶,证明弹簧伸长的长度和所挂重量成正比。",
+      "target": "成正比",
+      "en": "Our physics teacher hung water bottles from a spring to show that the stretch is directly proportional to the weight.",
+      "order": [
+        "proportional",
+        "proportionate",
+        "commensurate"
+      ],
+      "why": "关键在于两个量按同一比率同增同减的数学关系:proportional 正是这个意思,directly proportional 是固定搭配;proportionate 也是成比例,但偏适度、相称,常用于罚款、份额,所以排第二;commensurate 是与另一事物在程度上相当、配得上,不涉及固定比率,最远。"
+    },
+    {
+      "zh": "实习生一直不给工资,就让只有富家子弟才进得起这行的局面一年年延续下去。",
+      "target": "延续下去",
+      "en": "Paying interns nothing perpetuates a system where only wealthy kids can afford to break into the industry.",
+      "order": [
+        "perpetuate",
+        "prolong",
+        "protract"
+      ],
+      "why": "关键在于让一种不好的局面无限期地延续:perpetuate 就是使其永久存在,常带负面;prolong 是让某事持续得比原来更久,可以用在体制上,但有限期延长而非无限延续,所以排第二;protract 是把过程拖得过长,多用于谈判、官司这类有终点的事,不能用于体制,最远。"
+    },
+    {
+      "zh": "法官说他毫无悔意,因为宣读判决时他两次朝受害者的母亲笑了笑。",
+      "target": "毫无悔意",
+      "en": "The judge called him remorseless, noting that he had smiled at the victim's mother twice during the reading of the verdict.",
+      "order": [
+        "remorseless",
+        "ruthless",
+        "relentless"
+      ],
+      "why": "关键在于做了伤害之后毫无悔意:remorseless 正是对已造成的伤害没有悔恨;ruthless 是为达目的不惜伤人、毫不留情,重在手段,不是事后的态度,所以排第二;relentless 主要是持续不松懈,只有次要义项是不留情面,与悔意无关,最远。"
+    },
+    {
+      "zh": "新版页面里,退订链接和购买按钮一样醒目,营销团队为此争了好几个月。",
+      "target": "醒目",
+      "en": "The redesign gives the unsubscribe link the same prominence as the buy button, which the marketing team fought for months.",
+      "order": [
+        "prominence"
+      ],
+      "extra": [
+        "fame",
+        "reputation"
+      ],
+      "why": "关键在于一个页面元素有多显眼:prominence 指显著、容易被注意到,正好形容链接的位置和大小;fame 是人或事物被广泛知晓,reputation 是别人对其好坏的评价,两者都说的是名声,不能描述一个按钮或链接显不显眼。"
+    },
+    {
+      "zh": "那家创业公司在她入职前两天收回了录用通知,理由是没人提过的招聘冻结。",
+      "target": "收回",
+      "en": "The startup rescinded her offer two days before her start date, citing a hiring freeze nobody had mentioned.",
+      "order": [
+        "rescind",
+        "abrogate",
+        "countermand"
+      ],
+      "why": "关键在于撤销一个已经发出的录用通知:rescind 是正式取消决定、要约或协议,使其不再有效;abrogate 是正式废止法律、协议或惯例,对象偏法规,录用通知算不上,但与协议略近,所以排第二;countermand 只用于撤销先前下达的命令,通知不是命令,最远。"
+    },
+    {
+      "zh": "朝圣的人翻山走四天,只为向一块据说是圣徒长袍碎片的遗物表达崇敬。",
+      "target": "崇敬",
+      "en": "Pilgrims walk four days across the mountains to venerate a relic said to be a fragment of the saint's robe.",
+      "order": [
+        "venerate",
+        "revere",
+        "deify"
+      ],
+      "why": "关键在于对圣物近乎神圣的敬意:venerate 正是对圣物、祖先、传统怀着近乎神圣的崇敬;revere 是深深敬佩,多用于德高望重的人,不带神圣意味,所以排第二;deify 是把人奉为神、视为不会犯错,是过度神化,而不是敬意,最远。"
+    },
+    {
+      "zh": "野餐中午就散了,滚烫的柏油路把我凉鞋的鞋底都烤软了。",
+      "target": "滚烫",
+      "en": "We abandoned the picnic by noon; the scorching pavement softened the soles of my sandals on the walk back.",
+      "order": [
+        "scorching",
+        "sweltering",
+        "contemptuous"
+      ],
+      "why": "关键在于物体表面被晒得灼人:scorching 是热到能烫伤、烤软东西;sweltering 也是酷热,但指闷热难耐的天气或环境,重在空气的闷,而不是路面的灼烫,所以排第二;contemptuous 是轻蔑的态度,与温度无关,最远。"
+    },
+    {
+      "zh": "我们在灯塔后面找到一片僻静的海滩,除了两个渔夫和一条狗,再没有别人。",
+      "target": "僻静",
+      "en": "We found a secluded beach beyond the lighthouse, where the only other visitors were two fishermen and a dog.",
+      "order": [
+        "secluded",
+        "solitary",
+        "reclusive"
+      ],
+      "why": "关键在于描写地点本身隐蔽安静、少有人至:secluded 正是这种与外界隔开的僻静;solitary 主要形容独自一人的活动或人,偶尔可指孤零零的东西,所以排第二;reclusive 只形容人避免与人交往,不能形容地点,最远。"
+    },
+    {
+      "zh": "视频会议两分钟后开始,她没有干净衬衫,用湿毛巾压平皱褶是最权宜的办法。",
+      "target": "权宜",
+      "en": "With a video call in two minutes and no clean shirt, smoothing the wrinkles with a damp towel was the expedient fix.",
+      "order": [
+        "expedient",
+        "sensible",
+        "judicious"
+      ],
+      "why": "expedient 只图眼下省事管用、不求周全,正合没衬衫又赶时间的应急凑合;sensible 是合情合理、切合实际,但没有图方便凑合的意味,排第二;judicious 指经过审慎权衡后的明智,和仓促凑合相反,排最后。"
+    },
+    {
+      "zh": "杂志封面夸她身材丰满、曲线动人,评论区照例争起了身材标准。",
+      "target": "丰满",
+      "en": "The magazine cover praised her voluptuous curves, and the comment section started the usual debate about body standards.",
+      "order": [
+        "voluptuous",
+        "sensual"
+      ],
+      "extra": [
+        "plump"
+      ],
+      "why": "voluptuous 专指体形丰满有曲线且带魅力;sensual 偏撩人的肉欲、感官享乐,不专指体形,只能勉强沾边,排第二;plump 只说圆胖,没有性感含义,离得最远。"
+    },
+    {
+      "zh": "他对那笔款项去向的解释拐弯抹角、绕来绕去,审计员干脆放弃了。",
+      "target": "拐弯抹角",
+      "en": "His explanation of the missing funds was so serpentine that the auditors gave up.",
+      "order": [
+        "serpentine",
+        "winding",
+        "sinuous"
+      ],
+      "sense": 1,
+      "why": "serpentine 用于说法、解释时,指曲折复杂到难以追踪、带着躲闪狡诈的意味,正对拐弯抹角;winding 也能比喻迂回,但只是曲折,不带回避之意,排第二;sinuous 描写平滑流畅的曲线或优美的动作,基本不用来形容解释,排最后。"
+    },
+    {
+      "zh": "他只草草扫了一眼四十页的合同就签了字,后来才发现一条自动续约两年的条款。",
+      "target": "草草",
+      "en": "He gave the 40-page contract only a cursory glance before signing, and later found a clause auto-renewing for two years.",
+      "order": [
+        "cursory"
+      ],
+      "extra": [
+        "brief",
+        "quick"
+      ],
+      "why": "cursory 指看得仓促、不顾细节,草草二字的草率之意正在其中;brief、quick 只说时间短或速度快,不含马虎敷衍的意味,抓不住草草。"
+    },
+    {
+      "zh": "丑闻曝光后,球星躲进母亲的农舍,与世隔绝,把镜头留给经纪人。",
+      "target": "与世隔绝",
+      "en": "After the scandal, the footballer went into seclusion at his mother's farmhouse and left his agent to face the cameras.",
+      "order": [
+        "seclusion",
+        "solitude",
+        "alienation"
+      ],
+      "why": "seclusion 指躲到僻静处、远离人群和公众视线,go into seclusion 正是出事后避世;solitude 只是独处,未必为了躲人,也常是自愿享受的清静,排第二;alienation 是融不进周围的疏离感,是心理感受而不是躲起来,最远。"
+    },
+    {
+      "zh": "最后一张牌翻开,荷官面无表情,一点也看不出这手牌的底细。",
+      "target": "面无表情",
+      "en": "The poker dealer stayed impassive as the final card flipped, giving away nothing about the hand.",
+      "order": [
+        "impassive",
+        "stoic",
+        "uncomplaining"
+      ],
+      "why": "impassive 描写脸上和态度毫无情绪流露,正对面无表情;stoic 也不外露情绪,但重点是默默忍受苦难,此处没有苦难可忍,排第二;uncomplaining 只指不叫苦、不抱怨,和表情无关,最远。"
+    },
+    {
+      "zh": "酒店大堂是低调的奢华:浅色橡木、柔和的灯,看不到一个标志。",
+      "target": "低调",
+      "en": "The hotel lobby is all understated luxury: pale oak, soft lamps, and not a single logo in sight.",
+      "order": [
+        "understated",
+        "subtle",
+        "nuanced"
+      ],
+      "why": "understated 指刻意收敛、不炫耀,正是低调奢华里没有标志的克制;subtle 强调细微、不易察觉,可以描述这种奢华,但不点明有意不张扬,排第二;nuanced 指考虑到细微差别、不绝对化,多用于看法和表演,不能形容装潢风格,最远。"
+    },
+    {
+      "zh": "这趟航班平安无事,对廉价航空来说,这是唯一值得给的好评。",
+      "target": "平安无事",
+      "en": "The flight was mercifully uneventful, which is the only review anyone wants to give a budget airline.",
+      "order": [
+        "uneventful"
+      ],
+      "extra": [
+        "boring",
+        "dull"
+      ],
+      "why": "uneventful 指过程中没出任何事,在航班这里是令人庆幸的褒义;boring、dull 是嫌无聊的抱怨,语气正好相反,也不是没出事的意思。"
+    },
+    {
+      "zh": "夜班护士的及时提醒,让外科医生在病人血压骤降前赶到了病房。",
+      "target": "及时",
+      "en": "A timely warning from the night nurse got the surgeon to the ward before the patient's blood pressure collapsed.",
+      "order": [
+        "timely",
+        "opportune",
+        "expeditious"
+      ],
+      "why": "timely 修饰提醒、干预这类事物,说它来得正是时候、发挥了最大作用;opportune 同样讲时机合适,但更常修饰 moment、time 这类时间本身,修饰提醒不自然,排第二;expeditious 讲做事迅速高效,强调快而不是赶在点上,最远。"
+    },
+    {
+      "zh": "祝酒词庄重肃穆,小家伙的咯咯笑声却怎么也憋不住。",
+      "target": "憋不住",
+      "en": "The toddler's irrepressible giggling during the solemn toast somehow made the whole room feel lighter.",
+      "order": [
+        "irrepressible",
+        "unstoppable",
+        "inexorable"
+      ],
+      "why": "irrepressible 指情绪、笑声、精力压也压不住,正对憋不住的笑;unstoppable 是势头无法被拦住,偏进程和气势,修饰笑声勉强可用,排第二;inexorable 带冷酷无情、不为所动的意味,与欢快的笑声完全不搭,最远。"
+    },
+    {
+      "zh": "那条匿名差评不只是批评,而是恶毒,写的人就是想让餐厅关门。",
+      "target": "恶毒",
+      "en": "The anonymous review wasn't just critical, it was malevolent: written by someone who wanted the restaurant to close.",
+      "order": [
+        "malevolent"
+      ],
+      "extra": [
+        "unkind",
+        "rude"
+      ],
+      "why": "malevolent 指本就怀着害人之心,不需要先被得罪,正合想让餐厅关门的恶意;unkind、rude 只是不友善、没礼貌,力度远远不够,谈不上恶毒。"
+    },
+    {
+      "zh": "我们的供应商愿意接受按月开发票,财务终于不用再追三天收据了。",
+      "target": "愿意接受",
+      "en": "Our vendor is amenable to monthly invoicing, so finance no longer spends three days chasing receipts.",
+      "order": [
+        "amenable",
+        "yielding",
+        "docile"
+      ],
+      "why": "amenable to 专指对某项具体提议愿意接受、肯配合,正对愿意接受按月开发票;yielding 指不坚持己见、肯让步,但更像性格而非对某个方案点头,排第二;docile 是温顺到唯命是从、任人摆布,用在谈生意的供应商身上不合适,最远。"
     }
   ]
 }
