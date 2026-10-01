@@ -147,6 +147,23 @@ export interface ProgressEntry {
    */
   demotedOn?: string
   /**
+   * The day this word left `new`. `YYYY-MM-DD`, written once by `gradeWord`
+   * and never moved — a lapse sends a word back to learning, not back to new.
+   *
+   * Exists for the new-word queue's lookback (freshOrder.ts): related words
+   * were kept off the same day but not off the next one, because tomorrow's
+   * ordering could not see what was started today. Replayed over the live
+   * library on 2026-10-01, 13 related pairs started one day apart and 14 two
+   * days apart. `lastReviewedAt` cannot stand in for it; it moves on every
+   * review.
+   *
+   * Optional like every added field: another device on an older build
+   * pushes entries without it, and words started before it existed have
+   * none. Absence reads as "not started recently", which for those words is
+   * true.
+   */
+  startedOn?: string
+  /**
    * How production is going for this word, tracked separately from the
    * schedule.
    *
