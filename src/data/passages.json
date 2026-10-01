@@ -4098,6 +4098,991 @@
         "他的捐款解决了修复费用，可下一次理事会上，大家还是为这份功劳该算谁的吵得不可开交。"
       ],
       "exclude": []
+    },
+    {
+      "id": "creek-bottle-walk",
+      "title": "退潮后的周六",
+      "en": [
+        "Every Saturday at low tide, eleven volunteers walked the mudflats of Harrow Creek with buckets and litter pickers.",
+        "The town's new bottle-return {{scheme}} was a month old, and Marta, who organised the walks, was {{gratified}} to see the bins by the car park fill with bottles that once ended up in the mud.",
+        "Old crates were the worst of it, since sun and salt water made them {{degrade}} into splinters and flakes no bigger than rice.",
+        "Marta would never {{overstate}} the results, and she told the visiting reporter that they were only collecting what they could reach.",
+        "The reporter's article ran anyway, under a headline about “saving the sea”, and the following Saturday more than a hundred people turned up.",
+        "The sight of a hundred and twenty people queuing for eleven litter pickers was {{ludicrous}}.",
+        "Marta had to {{reassure}} a shy newcomer, who feared she had come on the wrong day, that nobody would be turned away, and she handed out sacks and gloves until the sacks ran out.",
+        "Rain came in sideways off the water, and the crowd began to {{disperse}}, though the weather did nothing to {{discourage}} the thirty or so who stayed.",
+        "Hauling the sacks up the bank took {{considerable}} effort, and the skip was full by dark.",
+        "Yet when she looked at the water, Marta could see no {{appreciable}} difference, and she wrote in her notebook that they would be back next week."
+      ],
+      "zh": [
+        "每个周六退潮的时候,十一名志愿者提着水桶和拾垃圾的长夹,沿着哈罗溪口的泥滩走一遍。",
+        "镇上新推的空瓶回收计划已经办了一个月,负责组织巡滩的玛尔塔很欣慰,停车场边的回收箱里装满了瓶子,这些瓶子以前最后都落进了泥里。",
+        "最麻烦的是旧板条箱,日晒再加海水,会让它们一点点降解,碎成木刺和米粒大小的薄片。",
+        "玛尔塔从不夸大成果,她对来采访的记者说,他们只是把够得着的东西捡起来而已。",
+        "报道还是登了出来,标题里写着“拯救大海”,下一个周六就来了一百多人。",
+        "一百二十个人排队等十一把拾垃圾的长夹,这场面荒唐得有点可笑。",
+        "一位害羞的新人担心自己来错了日子,玛尔塔得宽慰她说谁也不会被赶走,然后不停地发麻袋和手套,直到麻袋发完。",
+        "雨斜着从水面上刮过来,人群开始散去,可这天气并没有让留下来的三十来个人打退堂鼓。",
+        "把麻袋拖上堤岸费了相当大的力气,天黑的时候,大垃圾箱已经装满了。",
+        "不过玛尔塔看着溪水,看不出有什么明显的变化,她在笔记本上写下,下个星期再来。"
+      ],
+      "exclude": [
+        "degenerate",
+        "outlandish",
+        "outrageous"
+      ]
+    },
+    {
+      "id": "canal-lock-heatwave",
+      "title": "七级船闸的八月",
+      "en": [
+        "Mick Dunmore had kept the Calder Flight, a staircase of seven locks, for nineteen summers, and he knew every boat on it by its paintwork.",
+        "The work was {{demanding}} even in a mild year, and in the August heatwave the {{scorching}} sun made the lock beams too hot to lean on.",
+        "He could remember when the canal's {{prosperity}} had arrived on coal barges, two hundred a week, long before its only cargo was holidaymakers.",
+        "These days he mostly kept the peace, and the first rule of the flight was that boats coming downhill took {{precedence}} over boats going up.",
+        "At three o'clock a hire-boat skipper in a damp shirt came up the flight and dismissed the whole queueing order as {{inconsequential}}, because everyone would get through in the end.",
+        "His {{simplistic}} plan was to open every gate at once and let the boats sort themselves out.",
+        "When Mick explained that this would drain the pound below, the skipper laughed and said it hardly seemed like work, a remark so {{tactless}} that the queue behind him went quiet.",
+        "Then he leaned on his horn, a noise that began to {{exasperate}} everyone on the towpath, from the cyclists to the swans.",
+        "Mick stayed {{unmoved}}, and instead of trying to {{bore}} the man with the physics of a lock pound, he simply pointed down the cut at the half-empty reach below.",
+        "The skipper looked down the cut, went red, and waited his turn like everyone else, and by seven the flight was clear."
+      ],
+      "zh": [
+        "米克·邓莫尔在卡尔德船闸群守了十九个夏天,这七级层层相连的闸,每条船他看一眼漆色就叫得出名字。",
+        "这活儿就是平常年份也不轻松,八月热浪里,毒辣的太阳把闸门横梁晒得烫手,根本没法靠。",
+        "他还记得运河最兴旺的时候,煤驳船一周两百条地开来,哪像现在,河上载的全是度假的人。",
+        "如今他多半只管维持秩序,这段船闸的头一条规矩,就是顺坡下行的船比上行的船优先通过。",
+        "下午三点,一个租船的船长穿着汗湿的衬衫开上闸口,把整个排队的次序说成无关紧要,反正到头来人人都过得去。",
+        "他的办法也简单得过了头,把所有闸门一次全打开,让船自己去理顺。",
+        "米克解释说那样会把下面的水段放干,船长却笑着说这好像也算不上什么活儿,这话说得太不得体,身后排队的人一下子都安静了。",
+        "接着他按响了喇叭,那声音渐渐惹恼了纤道上的每一个人,从骑车的到天鹅都算上。",
+        "米克无动于衷,也懒得跟对方讲闸室水位的物理道理,只是朝运河下游指了指那半空的水段。",
+        "船长顺着水道往下看了一眼,脸涨红了,便和别人一样等着轮到自己,到七点,整段船闸都清空了。"
+      ],
+      "exclude": [
+        "onerous",
+        "laborious",
+        "strenuous",
+        "effortful",
+        "trivial",
+        "negligible",
+        "callous",
+        "contemptuous",
+        "aggravate",
+        "antagonize",
+        "expressionless",
+        "unreactive"
+      ]
+    },
+    {
+      "id": "skerra-ferry-winter",
+      "title": "斯克拉渡轮的冬天",
+      "en": [
+        "Tomas joined the Skerra ferry as a deckhand in November, nineteen years old and never aboard anything bigger than a rowing boat on the town lake.",
+        "Captain Halvorsen was {{autocratic}} down to the last rope, deciding everything alone and answering no questions.",
+        "Her orders were often {{nonsensical}}, such as polishing the brass bell while the rusted loading ramp jammed, and the rota she pinned up each Sunday gave the crew {{irregular}} hours that no body clock could survive.",
+        "On the long night watches Tomas would {{fidget}} with a frayed mooring line until the mate told him to leave it alone.",
+        "Ines the cook answered every new order with sighs so {{theatrical}} that passengers in the saloon turned to look, but by Christmas the pointless tasks had begun to {{demoralize}} even her.",
+        "Nobody had checked the lifejacket locker since October.",
+        "On the last Friday of January the forecast was {{atrocious}}, yet Halvorsen would not cancel the evening sailing.",
+        "Nothing Tomas had learned on the lake prepared him for the {{brutality}} of the open sea that night, when spray froze on the rails faster than he could chip it away.",
+        "When the crew finally opened the locker at midnight, half the jackets were missing, and the inquiry that followed would call the oversight plain {{negligence}}.",
+        "Halvorsen's apology on the quay next morning was {{halfhearted}}, and Tomas simply handed in his gloves and took the morning bus home."
+      ],
+      "zh": [
+        "托马斯十一月来到斯克拉渡轮上当甲板水手,十九岁,此前坐过的最大的船,不过是镇上湖里的一条划艇。",
+        "哈尔沃森船长专断到连一根缆绳都要管,事事一个人定,谁问都不答。",
+        "她的命令常常荒唐得没道理,比如装卸坡道锈得卡死了,却叫人去擦亮铜钟,每个星期天她钉出来的排班表,上下班时间乱七八糟,没有哪个人的生物钟扛得住。",
+        "夜里值班时间长,托马斯总坐不住,手里不停摆弄一根磨损的系船缆,直到大副叫他别碰了。",
+        "厨娘伊内斯每听到一道新命令就叹气,叹得太夸张,连休息室里的乘客都扭头来看,可到圣诞节前后,这些毫无意义的差事连她也磨得没了斗志。",
+        "十月以后,就没有人查过救生衣柜。",
+        "一月最后一个星期五,天气预报糟透了,哈尔沃森却不肯取消傍晚那班船。",
+        "托马斯在湖上学到的一切,都没让他想到那晚外海竟这样严酷,浪沫冻在栏杆上,比他铲得还快。",
+        "船员半夜终于打开柜子,救生衣少了一半,事后调查把这次疏漏定性为不折不扣的失职。",
+        "第二天早上她在码头上道歉,敷衍得很,托马斯什么也没说,交还了手套,搭早班车回家了。"
+      ],
+      "exclude": [
+        "domineering",
+        "overbearing",
+        "ludicrous",
+        "capricious",
+        "dismal",
+        "cursory"
+      ]
+    },
+    {
+      "id": "cargo-galley-potatoes",
+      "title": "伙房里的新厨子",
+      "en": [
+        "Delia took over the galley of the cargo ship Marit Vos in Rotterdam, with nine days of Atlantic ahead and a crew of fourteen who had eaten the same menu for a year.",
+        "The old menu was so {{homogeneous}} that the crew named their days after potatoes, boiled Monday, boiled Tuesday, boiled Wednesday.",
+        "By six the smell of her garlic and fish stew was {{overpowering}}, and the mate, Joost, came down from the bridge to see what was burning.",
+        "Joost's {{directness}} was a legend aboard, and he asked whether she wanted him to answer {{truthfully}} or politely.",
+        "She told him to skip the politeness, and his verdict, delivered while the crew bent over their bowls, was {{truthful}} to the point of cruelty, because it came down to too much salt and too little fish.",
+        "Within the hour the full bellies had left the off-watch crew too {{lethargic}} to climb to their bunks.",
+        "Next morning she learned that the old cook had tipped nearly half of each day's bread into the sea, a waste she found {{scandalous}}.",
+        "Her rationing plan, scribbled on the back of the old menu, was a sketch so {{crude}} that the bosun mistook it for a map of Norway, yet it worked.",
+        "By day eight Joost was calling her the most {{virtuous}} cook afloat, since she wasted nothing and took no commission from the chandler, and the crew's once grudging praise had become {{unreserved}}.",
+        "On the last night, by popular request, she boiled the potatoes."
+      ],
+      "zh": [
+        "黛莉娅在鹿特丹接手了货轮“玛丽特·沃斯号”的伙房,前头是九天大西洋航程,船上十四个人已经吃了一年同一份菜单。",
+        "旧菜单清一色得出奇,船员们干脆拿土豆给日子起名,水煮星期一,水煮星期二,水煮星期三。",
+        "六点钟,她那锅蒜香鱼汤的气味浓得叫人受不了,大副约斯特从驾驶台下来,看是什么烧着了。",
+        "约斯特的直率在船上是出了名的,他问黛莉娅,要他照实说,还是说客气话。",
+        "她叫他别客套,他便当着埋头喝汤的船员们说了实话,实在到近乎刻薄,盐放多了,鱼放少了。",
+        "不到一个钟头,吃饱的下班船员全都懒洋洋的,连爬回铺位都嫌费劲。",
+        "第二天早上她才知道,前任厨子每天把将近一半的面包倒进海里,她觉得这种浪费简直不像话。",
+        "她把配给计划草草画在旧菜单背面,画得太粗糙,水手长竟当成了挪威地图,可这办法管用。",
+        "到第八天,约斯特管她叫船上最正派的厨子,因为她一点不浪费,从不拿供应商的回扣,船员们起初那点勉强的夸奖,如今也变成了毫无保留的称赞。",
+        "最后一晚,应大家的要求,她煮了土豆。"
+      ],
+      "exclude": [
+        "forthright",
+        "inert",
+        "deplorable",
+        "appalling",
+        "contemptible"
+      ]
+    },
+    {
+      "id": "sheepdog-trials-tie",
+      "title": "山谷里的牧羊犬赛",
+      "en": [
+        "On the second Saturday of September the whole of Hawksmoor valley drove up to Cragg Field for the sheepdog trials, parking their trucks along the wall.",
+        "For eleven years Walt Garrick and his old dog Fly had won the open class, and nobody had managed to {{dethrone}} them.",
+        "This year the challenge came from Sunita Rao, one of several {{emerging}} handlers on the northern circuit, with a young collie called Pip.",
+        "Low and {{watchful}}, Pip crept up the field with her eyes on the three sheep, and her run was so {{captivating}} that the crowd along the wall stopped talking.",
+        "The penalty for running late was {{proportional}} to the seconds lost, and Pip, who never hurried, finished on ninety-four points with time to spare.",
+        "Fly's run was nearly as good, and it ended on the same ninety-four, so the board showed a dead heat.",
+        "The judges huddled by the tent for twenty minutes, their {{indecision}} plain to everyone in the field.",
+        "In the end the chief judge chose to {{resolve}} the tie by checking the timekeeper's clock, and when Pip's time came out four seconds quicker she climbed onto a hay bale to {{affirm}} over the loudspeaker that Pip had won.",
+        "Walt crossed the grass, took off his cap and offered Sunita his {{wholehearted}} congratulations.",
+        "For the valley the upset was {{monumental}}, though Walt only shrugged and said Fly had been due a rest."
+      ],
+      "zh": [
+        "九月的第二个星期六,霍克斯莫尔山谷的人都开车上了克拉格场,把卡车沿着石墙一溜停好,来看牧羊犬赛。",
+        "十一年来,沃尔特·加里克和他的老狗弗莱一直稳坐公开组冠军,谁也没能把他们拉下马。",
+        "今年的挑战者是苏妮塔·拉奥,她是北方赛场上几位崭露头角的牧羊人之一,带着一条名叫皮普的年轻柯利犬。",
+        "皮普伏低身子,警觉地往坡上爬,眼睛一直盯着那三只羊,它这一趟赶羊引人入胜,石墙边的观众都不再交谈。",
+        "迟到的扣分和超时的秒数成正比,皮普从不着急,拿了九十四分,还剩下时间。",
+        "弗莱跑得也差不多,同样是九十四分,记分牌上成了平局。",
+        "评委们在帐篷边凑到一起商量了二十分钟,犹豫不决的样子全场都看得出来。",
+        "最后裁判长决定看计时员的表来化解这个平局,皮普的用时快了四秒,她爬上草垛,对着扩音器宣布皮普赢了。",
+        "沃尔特穿过草地,摘下帽子,向苏妮塔致以由衷的祝贺。",
+        "对山谷来说这场冷门是个大事件,沃尔特却只耸耸肩,说弗莱早该歇歇了。"
+      ],
+      "exclude": [
+        "emergent",
+        "fledgling",
+        "observant"
+      ]
+    },
+    {
+      "id": "pigeon-race-lychgate",
+      "title": "信鸽赛的那个下午",
+      "en": [
+        "The vicar's pigeon club had always released its birds from the churchyard wall, but this year the {{congregation}} came out after the service to find forty {{caged}} racers lined up beside the lychgate.",
+        "Old Mr Pritchard, whose loft stood on the hill, had taken the {{undemanding}} job of keeping the stopwatch, which suited his knees.",
+        "His grandson Tomasz was the opposite: {{flamboyant}} in a sequinned waistcoat, he called out each ring number as if opening a circus.",
+        "When the gate dropped, the birds went up on {{vigorous}} wingbeats and shrank over the reservoir until they were no longer {{discernible}} against the clouds.",
+        "After that the sky stayed empty for three hours.",
+        "Bored, Tomasz put forward the {{preposterous}} theory that they had stopped for tea in Calais.",
+        "\"Birds aren't tourists,\" Mr Pritchard said with his usual {{bluntness}}, \"they come home when they come home.\"",
+        "At ten past four a grey hen dropped onto the chapel spire, the village's only {{landmark}}, and Mr Pritchard, for once, forgot to press the stopwatch.",
+        "His apology, offered the next morning over the garden fence, was {{belated}}, but the hen's owner accepted it with a laugh.",
+        "The hen herself went home in a shoebox lined with newspaper."
+      ],
+      "zh": [
+        "牧师的信鸽会向来在教堂墓园的矮墙上放飞鸽子,可今年做完礼拜,会众出来一看,四十只关在笼里的赛鸽已经排在墓园门廊边。",
+        "老普里查德先生的鸽舍在山坡上,他领了份不费力的差事,管秒表,这对他的膝盖正合适。",
+        "他的孙子托马什却恰恰相反,穿一件缀亮片的马甲,张扬得很,报每只鸽环编号时活像在给马戏团开场。",
+        "闸门一落,鸽群鼓足劲拍着翅膀腾空而起,朝水库方向越飞越小,直到在云层里再也辨认不出来。",
+        "此后三个钟头,天空空荡荡的。",
+        "闲得发慌的托马什提出一个荒唐的说法:它们八成在加来停下来喝茶了。",
+        "“鸟又不是游客,”普里查德先生照例直言不讳,“该回来的时候自然就回来了。”",
+        "四点十分,一只灰母鸽落在教堂尖顶上,那是全村唯一的地标,普里查德先生这回竟忘了按秒表。",
+        "第二天早上,他隔着花园篱笆向鸽主道歉,话说得迟了,不过鸽主笑着收下了。",
+        "那只母鸽自己则被装在衬着报纸的鞋盒里回了家。"
+      ],
+      "exclude": [
+        "flashy",
+        "conspicuous"
+      ]
+    },
+    {
+      "id": "raptor-centre-vote",
+      "title": "鸟舍里的三月",
+      "en": [
+        "Valdor, the {{provincial}} capital, had just one raptor centre, run by a team so {{multicultural}} that the staff notices came in four languages.",
+        "Its oldest resident, an eagle owl born in {{captivity}}, had never hunted a mouse and showed no wish to start.",
+        "Ines, the new director, arrived in January with a New Year's {{resolution}}: to release every bird that could fly.",
+        "Her predecessor, by every account {{incompetent}}, had left the aviaries leaking and the freezer empty.",
+        "Not everyone agreed with her.",
+        "The donor who paid for the new roof wanted visitors to pose with the owl on their gloves, which Ines thought {{degrading}} for the bird, and when she refused he shrugged that an owl was only an owl, a remark so {{insensitive}} that two volunteers walked out.",
+        "Meanwhile the crow in cage four, {{cunning}} enough to unpick his own latch, {{prolong|prolonged}} every meeting by escaping onto the roof, and nothing got decided.",
+        "The vote was put off until the last Friday of March.",
+        "By then the owl had been given a rescued female, and for the first time he seemed to want her {{companionship}}."
+      ],
+      "zh": [
+        "瓦尔多是省会,却只有一家猛禽中心,队伍里各种文化背景的人都有,员工通知得用四种语言来写。",
+        "中心里年纪最大的住客是一只人工饲养长大的雕鸮,从没捉过老鼠,也没打算学。",
+        "新任主任伊内斯一月到任,带着一个新年决心:把所有能飞的鸟都放归野外。",
+        "她的前任,照所有人的说法都无能得很,留下的鸟舍漏雨,冰柜也是空的。",
+        "可不是人人都赞成她。",
+        "出资修屋顶的捐助人想让游客戴上手套、把雕鸮架在胳膊上合影,伊内斯觉得这样有辱那只鸟的尊严;她一拒绝,他就耸耸肩说雕鸮不过是只鸟,这话太不顾别人的感受,两名志愿者当场摔门而去。",
+        "与此同时,四号笼里的乌鸦狡猾得能自己拨开门闩,每次开会它都溜上房顶,把会议越拖越长,什么也没能定下来。",
+        "表决推迟到了三月的最后一个星期五。",
+        "到那时,雕鸮已经有了一只救助来的雌鸟,他头一回似乎愿意要她的陪伴了。"
+      ],
+      "exclude": [
+        "indiscreet",
+        "insolent"
+      ]
+    },
+    {
+      "id": "saturday-market-hives",
+      "title": "集市上的第三个星期六",
+      "en": [
+        "Rosa's beekeeping co-op was still {{fledgling}}: six hives on a hillside and one folding table at the Saturday market.",
+        "Sales that first month were {{dismal}}, and the few shoppers who stopped listened with {{tepid}} interest, then wandered off to the cheese stall.",
+        "Her brother Davi, who had lent her the land, was {{unenthusiastic}} about the whole venture and kept telling her to go back to teaching.",
+        "To {{augment}} the little she earned from honey, she began pouring beeswax candles in the evenings.",
+        "One regular, a retired chemist, was {{attentive}} where the others were not, tasting each jar slowly and asking which hill the clover grew on.",
+        "Then, on the third Saturday, she noticed that the stall next door was using labels copied from hers.",
+        "Its jars held imported syrup under the words 'local honey', the most {{flagrant}} mislabelling she had ever seen.",
+        "When she confronted him, he tried to {{downplay}} it as a printer's slip, until one {{unguarded}} remark gave him away.",
+        "The retired chemist, who had overheard it all, said later that the man's {{propensity}} for shortcuts was known to everyone but proved by no one.",
+        "By the next Saturday the stall next door was gone, and Rosa had sold out of candles by noon."
+      ],
+      "zh": [
+        "罗莎的养蜂合作社才刚起步:山坡上六箱蜜蜂,周六集市上一张折叠桌。",
+        "头一个月的销量惨淡,偶尔停下来的几个顾客听她介绍也是不冷不热,说完就晃去奶酪摊了。",
+        "把地借给她的哥哥达维对这整件事提不起劲,总劝她回去教书。",
+        "为了贴补卖蜂蜜赚的那点钱,她晚上开始浇蜂蜡蜡烛。",
+        "只有一位常客不像别人,她是个退休的化学师,听得专心,每罐蜂蜜都慢慢地尝,还问三叶草长在哪座山坡上。",
+        "到了第三个星期六,她发现隔壁摊子用的标签是照她的样子抄的。",
+        "那些罐子里装的是进口糖浆,标签上却写着“本地蜂蜜”,她从没见过这么明目张胆的错贴标签。",
+        "她上前质问,他想把这事说成是印刷出了差错,轻轻带过,直到一句不经意的话露了馅。",
+        "那位退休化学师把一切都听在耳里,事后说,这人爱抄近路的毛病人人皆知,却从没人拿得出证据。",
+        "下一个周六,隔壁的摊子不见了,罗莎中午前就把蜡烛卖光了。"
+      ],
+      "exclude": [
+        "emergent",
+        "emerging",
+        "incipient",
+        "atrocious",
+        "perfunctory",
+        "apathetic",
+        "downbeat",
+        "imprudent"
+      ]
+    },
+    {
+      "id": "glacier-survey-storm",
+      "title": "冰川上的第五天",
+      "en": [
+        "The {{expedition}} to measure the retreat of the Hallow Glacier was meant to last nine days.",
+        "Mirela, the leader, was {{heedful}} of every forecast, and when the radio warned of a front she ordered the tents dug in.",
+        "By noon on the second day the snow and the sky had become {{indistinguishable}}, and Joao walked into the survey pole twice.",
+        "Then the storm held the team {{captive}} in two tents for three days, and the cook, who had no {{inclination}} to keep quiet, told every story he knew.",
+        "By the fifth morning the {{seclusion}} that had felt like a privilege felt like a lid, and even Mirela, usually so calm, was {{troubled}} by the silence on the radio.",
+        "When the cloud finally lifted that afternoon, Mirela called everyone up to the ridge.",
+        "Where last year there had been solid ice lay a lake, still {{nascent}} and no bigger than a football pitch, and nobody had predicted its {{emergence}} so near the camp.",
+        "Joao suggested estimating the last line of stakes from the satellite map, but Mirela would not {{condone}} guesswork on a glacier where every number now mattered.",
+        "They walked the line the next morning, and the measurements were worse than any map had suggested."
+      ],
+      "zh": [
+        "勘测哈洛冰川退缩情况的考察队,原本打算在冰上待九天。",
+        "领队米雷拉对每一份天气预报都格外留心,电台一预警有锋面过境,她就下令把帐篷挖深固定。",
+        "第二天中午,雪和天连成一片,分不出彼此,若昂接连两次撞上测量标杆。",
+        "接着风暴把全队困在两顶帐篷里整整三天,厨师本就不爱闲着嘴,把会讲的故事全讲了一遍。",
+        "到第五天早上,原先觉得是难得清静的与世隔绝,如今像被扣了个盖子,连一向沉得住气的米雷拉也因电台里的一片寂静而心神不宁。",
+        "当天下午云终于散开,米雷拉把大家叫到山脊上。",
+        "去年还是一整片实冰的地方,如今躺着一个刚成形的湖,不过足球场大小,谁也没料到它会在离营地这么近的地方冒出来。",
+        "若昂提议最后一排标桩凭卫星地图估算,米雷拉却不肯纵容这种凭空猜测,尤其是在这条如今每个数字都至关重要的冰川上。",
+        "第二天早上他们把那一排标桩走了一遍,量出的结果比任何地图所显示的都糟。"
+      ],
+      "exclude": [
+        "emerging"
+      ]
+    },
+    {
+      "id": "tram-car-fourteen",
+      "title": "十四号车厢",
+      "en": [
+        "The Hollis Street tram depot had been closed for forty years when twelve volunteers set out to {{resuscitate}} Car 14, a wooden tram with no motor and a tree growing through its floor.",
+        "Within a month their {{emergent}} online following, mostly students posting photos of the rust, had paid for a new set of wheels.",
+        "In November the cold cracked the axle, the first real {{setback}}, and that same week a scrap dealer who came for the brass fittings was {{foil|foiled}} by a padlock and a neighbour's dog.",
+        "Then, in spring, a student blogger named Wen turned up with a camera and a theory.",
+        "Wen, whose {{investigative}} blog had once exposed a dodgy kebab van, wrote that Car 14 was a 1961 copy, and old Gus cornered him at the gate and {{harangue|harangued}} him about rivets for twenty minutes.",
+        "Marta, the treasurer, answered differently: her {{fine-grained}} records, rivet by rivet, {{refute|refuted}} the claim.",
+        "Wen posted a correction that night, and its closing line, about the {{transience}} of anything built to run on rails and rust, made Gus read it twice.",
+        "Gus, who had left school at fourteen and always carried a sense of {{inferiority}} beside people with degrees, printed the post and pinned it above the kettle.",
+        "Car 14 made its first run in June, with Gus at the bell."
+      ],
+      "zh": [
+        "霍利斯街电车库关闭了四十年,十二名志愿者想让十四号车厢重新活过来,那是一辆没有电机的木头电车,地板中间还长着一棵树。",
+        "不到一个月,他们刚刚冒头的网络粉丝群,多半是拍锈迹发照片的学生,就凑够了钱买一套新车轮。",
+        "十一月,严寒把车轴冻裂了,这是头一回真正的挫折;同一周,一个来偷铜配件的废品贩子被一把挂锁和邻居家的狗给搅了局。",
+        "开春后,一个叫文的学生博主带着相机和一套说法找上门来。",
+        "文的调查类博客曾揭过一辆黑心烤肉车的老底,这回他写道,十四号车厢是一九六一年的仿品,不是原件;老古斯在大门口把他堵住,为铆钉的事数落了他二十分钟。",
+        "财务玛尔塔换了个回应的法子:她那些细到每颗铆钉的记录,一条一条驳倒了那个说法。",
+        "当晚文发了更正,结尾一句写的是,凡靠铁轨和锈迹运转的东西都会转瞬即逝,古斯把它读了两遍。",
+        "古斯十四岁就离开了学校,在有学位的人面前总带着几分自卑,他把那篇帖子打印出来,钉在了烧水壶上方。",
+        "十四号车厢六月首次出车,古斯站在铃边。"
+      ],
+      "exclude": [
+        "emerging",
+        "fledgling",
+        "incipient",
+        "meticulous"
+      ]
+    },
+    {
+      "id": "karsa-water-stick",
+      "title": "刻痕与轮灌",
+      "en": [
+        "In the high valley of Karsa, forty households shared a single irrigation canal, and each took its water by turn, counted off on a notched stick.",
+        "Old Dorje had kept that stick for thirty years, and his {{supremacy}} over the rota had never been questioned, since nobody else could read the notches.",
+        "Then the glacier began to shrink, and by the third dry summer {{rising}} fuel prices for the pumps had added real {{hardship}} to the lowest fields.",
+        "Dorje met every complaint with open {{annoyance}}, tapping the stick on the doorpost as if the problem were a fly.",
+        "The upper farmers, whose barley stayed green, offered only silent {{acquiescence}}, and a silence like that is easy to mistake for approval.",
+        "Lhamo, whose own field was the last on the line, walked the whole canal with a tape measure and logged the {{degradation}} of the channel: cracked lining and slumped banks that lost a quarter of the flow before it reached anyone.",
+        "At the next meeting she read out her figures, and Dorje called the numbers {{extravagant}}, but the room full of {{expectant}} faces had already stopped looking at him.",
+        "Barley growers and apricot people, two {{disparate}} camps who had agreed on nothing since the road was paved, found they had one complaint.",
+        "The barley side voted a small levy on every field to pay for a new lining; {{similarly}}, the orchard families offered a month of unpaid labour.",
+        "By autumn Dorje still held the stick, but now he passed it to whoever had water coming next."
+      ],
+      "zh": [
+        "在卡尔萨高处的山谷里,四十户人家共用一条灌溉渠,各家按轮次取水,轮次刻在一根缺口木棍上。",
+        "老多杰把这根木棍攥了三十年,轮灌的事他说了算,从没人敢质疑,因为除了他,谁也认不得那些刻痕。",
+        "后来冰川开始消退,到第三个旱夏,水泵用的柴油一路涨价,地势最低的那几块田已是实实在在的苦日子。",
+        "多杰听到抱怨就不耐烦,毫不掩饰,拿木棍在门柱上敲敲打打,好像这事不过是只苍蝇。",
+        "上游那几户的大麦依旧青翠,他们只是默默顺从,可这样的沉默,很容易被当成赞同。",
+        "拉姆的田在整条渠的最末端,她拿着卷尺把渠道从头走到尾,记下了渠道的破败:衬砌裂开,渠岸塌陷,水还没流到谁家,四分之一就漏光了。",
+        "下一次开会,她把数字念了出来,多杰说这些数字夸大其词,可满屋翘首以盼的脸,早已不再看他了。",
+        "大麦户和杏园户本是两路谁也不服谁的人,自从公路铺好就没在一件事上意见一致过,这回却发现,他们的怨气原来是同一桩。",
+        "大麦这边投票决定,每块田出一小笔钱,铺一道新衬砌;杏园这边也一样,各家愿意出一个月的义工。",
+        "到了秋天,木棍还在多杰手里,但他如今会把它交给下一个该轮到水的人。"
+      ],
+      "exclude": [
+        "impairment"
+      ]
+    },
+    {
+      "id": "laundrette-sign-class",
+      "title": "周四的后屋",
+      "en": [
+        "Every Thursday, twelve adults met in the back room of a laundrette to learn sign language from Ines, who had been deaf since birth and allowed no spoken word once the door was shut.",
+        "Gerrit, a retired bus driver who could not yet ask the way to the toilets, {{mime|mimed}} a flushing chain and was understood by everyone at once.",
+        "Most of his early mistakes were {{avoidable}}, Ines signed to him, because he kept watching his own hands instead of her face.",
+        "Patience was the one {{virtue}} the class could not do without, she added, and after five weeks of {{discouraging}} progress Gerrit was ready to quit.",
+        "What kept him coming was an odd {{affinity}} for the rhythm of it, which he could not explain: his hands seemed to know where each word went.",
+        "Mara, {{conversely}}, picked up new signs in days and never checked them.",
+        "In week six she signed a joke about the laundrette's owner, Mr Okafor, without noticing that his daughter, a fluent signer, stood in the doorway holding a basket of towels, and the class came close to losing its room over that {{indiscretion}}.",
+        "Mr Okafor, who in September had {{rubber-stamp|rubber-stamped}} the room booking without a glance, now read every line of it.",
+        "Ines spent the evening trying to {{conciliate}} him, but his anger seemed {{inexorable}} until Gerrit stood up and signed an apology so slowly and plainly that the daughter had to voice it aloud.",
+        "The class kept its room, and the rule stayed the same: nobody spoke."
+      ],
+      "zh": [
+        "每个周四,十二个成年人聚在一家自助洗衣店的后屋,跟英内斯学手语。她天生失聪,门一关就不许有人开口说话。",
+        "退休公交司机赫里特还不会用手语问厕所在哪儿,只好比划拉水箱链子的动作,倒是被所有人一下子看懂了。",
+        "英内斯用手语告诉他,他早期的错误大多本可避免,因为他老盯着自己的手,而不看她的脸。",
+        "她又补了一句,耐心是这门课不可缺的一样美德;可五个星期下来,进展一直叫人泄气,赫里特已经打算退课了。",
+        "让他一直来的,是他对手语那种节奏莫名的亲近感,他自己也说不清:两只手好像天生就知道每个词该往哪儿放。",
+        "玛拉恰好相反,新手势几天就学会,却从不回头检查。",
+        "第六周,她比划了一个拿洗衣店老板奥卡福先生开涮的笑话,没留意到他女儿,一位手语流利的姑娘,正抱着一篮毛巾站在门口,全班差点就因为这次失言丢了这间屋子。",
+        "奥卡福先生九月里连看都没看就在借用单上盖了章,这回却一行一行读了起来。",
+        "英内斯忙了一晚上想安抚他,可他的怒气似乎无可挽回,直到赫里特站起来,比划了一段极慢极清楚的道歉,慢到女儿只好大声替他说了出来。",
+        "教室保住了,周四的规矩也没变:谁都不许开口。"
+      ],
+      "exclude": [
+        "irrepressible",
+        "uncontainable",
+        "remorseless",
+        "penchant",
+        "assuage"
+      ]
+    },
+    {
+      "id": "piano-tuning-fifth-floor",
+      "title": "五楼的立式钢琴",
+      "en": [
+        "On Thursday Noor and old Anselm climbed to a fifth-floor flat on Tanner Street, where a widow wanted the upright in her hall tuned for the first time in nine years.",
+        "Anselm, {{uncomplaining}} as ever, stopped twice on the landings to rest his knee, while Noor took the stairs two at a time with all her usual {{enthusiasm}}.",
+        "The widow's husband had played it every night until he died, and Noor, out of {{morbid}} curiosity, nearly asked whether it had happened at the keyboard.",
+        "One look from Anselm stopped her; he lifted the lid, struck middle C and frowned.",
+        "Damp from the outer wall had slowly {{undermine|undermined}} the glue under the bridge, so the pitch had been {{erratic}} all year, flat on Monday and sharp by Friday.",
+        "Rushing it, Anselm told her, only made matters worse: she had two years behind her, and the {{intricacy|intricacies}} of an old action took ten years to learn.",
+        "He handed her the tuning lever, and his nod was all she needed to {{bolster}} her nerve.",
+        "Down the hall the widow's grandsons {{squabble|squabbled}} over the last biscuit, and with every shout Noor grew {{uneasy}}, losing count of the beats between the two strings.",
+        "She started over, listened until the room fell away, and brought the last unison into line by {{sheer}} patience; when Anselm struck middle C again, the note held."
+      ],
+      "zh": [
+        "周四,努尔跟着老安塞尔姆爬上坦纳街一栋楼的五层,一位寡妇想请人给门厅里那架立式钢琴调音,九年来这还是头一回。",
+        "安塞尔姆一如既往地不吭一声,只是在楼梯平台上停下来歇了两回膝盖;努尔则照旧兴致勃勃,一步跨两级台阶。",
+        "寡妇的丈夫生前每晚都弹这架琴,直到去世,努尔出于病态的好奇,差点问他是不是死在琴键前。",
+        "安塞尔姆瞥了她一眼,她把话咽了回去;他掀开琴盖,按下中央C,皱起了眉。",
+        "外墙渗进来的潮气一点点蚀坏了琴马底下的胶,所以这一年来音高一直飘忽不定,周一偏低,到周五又偏高。",
+        "安塞尔姆告诉她,急着赶只会越弄越糟:她才学了两年,而老琴击弦机里那些错综复杂的门道,要十年才摸得透。",
+        "他把调音扳手递给她,一个点头就够给她壮胆了。",
+        "走廊那头,寡妇的两个孙子为了最后一块饼干吵了起来,每喊一声,努尔就更不安一分,连两根弦之间的拍音都数不清了。",
+        "她重新开始,听得连房间都消失了,全凭十足的耐心把最后一组同音弦校准;安塞尔姆再按中央C时,音稳住了。"
+      ],
+      "exclude": [
+        "degrade",
+        "fickle",
+        "impassive"
+      ]
+    },
+    {
+      "id": "kiu-street-night-market",
+      "title": "拱桥下的两个摊子",
+      "en": [
+        "Under the railway arches on Kiu Street, the night market opened at dusk, and Mr Pham's noodle stall was its {{established}} favourite, with a queue nobody could remember being shorter than ten.",
+        "Then Lien set up a charcoal grill three stalls down, and in her first week she sold out by nine every night.",
+        "Pham grew {{discontented}} and spent his slow hours in bitter {{rumination}}, counting the customers he had lost.",
+        "When a rumour reached him that Lien was paying the inspector for her good corner, it sounded all too {{plausible}}, and he repeated it to anyone who would listen.",
+        "The older regulars grew {{wary}} of her grill, as if anything new had to be cheating.",
+        "Lien heard the rumour from the tea seller, and her face showed {{momentary}} hurt before it went still.",
+        "Her only {{entanglement}} with the inspector, she said, had been a fine for a missing permit, which she had paid in cash and kept the receipt for.",
+        "Mr Sato, the manager, was too {{urbane}} to take sides in public, but his quiet {{intercession}} brought the two of them to one table.",
+        "Pham waved the receipt away {{dismissively}}, then picked it up and read it twice.",
+        "By the next Friday the queues had mixed, and the rumour died because nobody could say who had started it."
+      ],
+      "zh": [
+        "在基乌街的铁路拱桥下,夜市天一黑就开张,潘先生的面摊是这里的老牌招牌,队伍排得从来没人记得短过十个人。",
+        "后来阿莲在隔着三个摊位的地方支起一个炭火烤炉,头一个星期,她每晚九点前就卖光了。",
+        "老潘心里憋着不满,闲下来就闷着头翻来覆去地想,一个一个数着丢掉的客人。",
+        "有传言说阿莲给检查员塞钱,才占了那个好位置,传到他耳朵里,他觉得这话太像那么回事了,逢人便讲。",
+        "常来的老主顾也对她的烤炉起了戒心,好像凡是新来的就一定在耍花招。",
+        "阿莲从卖茶的那里听说了这话,脸上闪过一丝受伤的神色,随即又平静下来。",
+        "她说,自己跟检查员唯一的瓜葛,就是一张缺许可证的罚单,她当场付了现金,收据也留着。",
+        "管理员佐藤先生涵养极好,不肯当众站队,却悄悄出面说和,把两人请到了同一张桌前。",
+        "老潘起初不屑一顾地把收据推开,随后又拿起来,看了两遍。",
+        "到下一个周五,两边的队伍已经混在一起,那条传言也不了了之,因为谁也说不清是谁先传出来的。"
+      ],
+      "exclude": [
+        "conciliation",
+        "arbitration",
+        "introspection",
+        "aggrieved"
+      ]
+    },
+    {
+      "id": "eagle-pass-ski-patrol",
+      "title": "雪窝脚下的站房",
+      "en": [
+        "The ski patrol at Eagle Pass, led by Greta, kept its hut at the foot of the north bowl, with a radio, a stove and a wall chart of every slope.",
+        "The resort's owner, a man who ran the place by spreadsheet, was {{ruthless}} with costs and had cut the patrol from nine people to four.",
+        "His idea of safety was purely {{reactive}}: wait for a slide, then send in the rescuers.",
+        "Nothing could {{infuriate}} Greta more than hearing him call it {{enlightened}}.",
+        "The only new hire was Bram, who took the job for purely {{mercenary}} reasons: the daily rate was double the usual one.",
+        "In the first big storm, Bram did something {{imprudent}}: he skied the loaded north bowl alone to see whether it would slide.",
+        "The slope let go, and Greta dug him out; her {{admirable}} calm held while she used two poles and a scarf to {{immobilize}} his broken leg.",
+        "The owner flew in the next day and stood {{expressionless}} in the doorway while she told him how much ground four people could not cover.",
+        "Then she laid out the incident log, which she had {{disaggregate|disaggregated}} by slope and hour, and it showed that the north bowl slid every time the wind turned west.",
+        "By Friday there were seven names on the patrol roster again."
+      ],
+      "zh": [
+        "由格蕾塔带队的鹰隘口滑雪巡逻队,把站房设在北坡雪窝的脚下,里面有电台、炉子,还有一张标着每条雪道的墙图。",
+        "度假村的老板靠表格管事,在成本上毫不留情,已经把巡逻队从九个人砍到了四个。",
+        "在他眼里,安全完全是被动的事:等雪崩了,再派人去救。",
+        "再没有什么比听他管这叫「开明」更让格蕾塔火冒三丈了。",
+        "唯一的新人布拉姆接这份差事纯粹是为了钱:日薪是平常的两倍。",
+        "头一场大雪,布拉姆干了件鲁莽的事:他独自滑进积雪压得满满的北坡雪窝,想看看会不会塌。",
+        "雪坡塌了,格蕾塔把他挖出来;她那份令人钦佩的镇定始终没乱,用两根雪杖和一条围巾固定住他断了的腿。",
+        "第二天老板乘直升机赶到,他站在门口面无表情,听她讲四个人到底顾不过来多少地方。",
+        "随后她把事故记录摊在桌上,那份记录她已按雪道和钟点拆分开,上面清清楚楚:每逢风转西,北坡雪窝就塌。",
+        "到周五,巡逻队的名单上又有了七个名字。"
+      ],
+      "exclude": [
+        "unmoved",
+        "open-minded"
+      ]
+    },
+    {
+      "id": "brass-band-contest-day",
+      "title": "山谷里的短号",
+      "en": [
+        "The Harrow Valley Silver Band had won the regional contest eleven times, and the banners hung in a row above the rehearsal-room piano.",
+        "Old Haldane, who had conducted all eleven wins, was {{venerate|venerated}} in the valley, and his {{imperious}} habit of pointing at a late player without a word had taught three generations to arrive early.",
+        "This year the name on everyone's lips was Lindiwe, the {{up-and-coming}} cornetist from the lower village, who was nineteen and had never played in a contest.",
+        "Haldane gave her the most {{prominent}} seat, front and center, where the judges would see her first, and the older players noticed.",
+        "At Thursday's rehearsal the second trombone, {{inattentive}} after a double shift at the bus depot, came in a bar early, and Haldane waved it off as {{trivial}}.",
+        "His temper had {{diminish|diminished}} since the winter, first the shouting and then the long speeches, and Lindiwe was the only one who never asked why.",
+        "On contest day the mayor's welcome was pure {{rhetoric}}, all heritage and pride and not a word about the pit that had closed, and the hall shifted in its seats until the first band was called.",
+        "In the green room Lindiwe pressed her hands flat against her knees to {{subdue}} the trembling, and Haldane, passing behind her, said only, \"Breathe low.\"",
+        "When the adjudicator read out Harrow Valley first, the players were {{ecstatic}}, and even Haldane lifted his baton like a man hailing a taxi."
+      ],
+      "zh": [
+        "哈罗谷银管乐团拿过十一次地区赛冠军,奖旗在排练室钢琴上方挂了一排。",
+        "老霍尔丹指挥过这十一次夺冠,在山谷里备受尊崇;他有个专横的习惯,谁迟到就默不作声地指着谁,三代团员就是这样学会了早到。",
+        "今年人人嘴边的名字是琳迪薇,这位来自下村的新秀短号手才十九岁,从没参加过比赛。",
+        "霍尔丹把她安排在最显眼的位置,台口正中,评委一眼就能看到她,老团员们都看在眼里。",
+        "周四排练时,第二长号在公交车场连上了两班,心不在焉,抢了一小节进来,霍尔丹却摆摆手,说这不值一提。",
+        "入冬以来他的火气渐渐小了,先是不再吼人,后来连长篇大论也没了,只有琳迪薇从不问为什么。",
+        "比赛那天,市长的欢迎词全是空话,满口传统与自豪,只字不提关掉的那座矿井,台下的人坐立不安,直到第一支乐队被叫上台。",
+        "候场室里,琳迪薇把双手死死按在膝盖上,想压住发抖,霍尔丹从她身后经过,只说了一句:“气沉下去”。",
+        "评委宣布第一名是哈罗谷时,团员们欣喜若狂,连霍尔丹也把指挥棒高高举起,像在路边招出租车。"
+      ],
+      "exclude": [
+        "celebrated",
+        "renowned",
+        "illustrious",
+        "negligent",
+        "inconsequential",
+        "negligible",
+        "circumlocution",
+        "upbeat",
+        "agog"
+      ]
+    },
+    {
+      "id": "night-coach-prague-budapest",
+      "title": "夜班大巴过边境",
+      "en": [
+        "The 22:40 coach from Prague to Budapest had two borders to cross before dawn, and Karel, who drove it every Friday, knew his passengers by their luggage.",
+        "Tonight's crowd was {{cosmopolitan}}: two Korean students, a Ghanaian cook, a Slovak electrician going home and a Dutch teacher travelling with a cello.",
+        "The teacher, who was {{susceptible}} to drafts, buried her chin in her scarf and asked Karel twice to turn the air-conditioning down.",
+        "He did, and the coach settled into the dark until a salesman in the front row began cracking {{facetious}} jokes about the border police waiting ahead.",
+        "By midnight his jokes about the students' accents had turned {{objectionable}}, and the teacher told him, in her calm schoolroom voice, that mocking people half his age was {{disgraceful}}.",
+        "He swore he had said nothing about anyone's accent, a lie so {{blatant}} that even the student wearing headphones laughed.",
+        "Asking a paying passenger to be quiet was the most {{disagreeable}} part of Karel's job, yet the risk of a fight looked {{negligible}}: the man was fifty, tired and already yawning.",
+        "Karel's response was {{judicious}} and quiet: at the next service area he moved the salesman to an empty seat at the back, away from the students.",
+        "The stop cost four minutes, and he made them up on the empty motorway, because {{timeliness}} was the one thing he was proud of.",
+        "They crossed the last border a little before dawn, and the salesman slept all the way to Budapest."
+      ],
+      "zh": [
+        "22点40分从布拉格开往布达佩斯的夜班大巴,天亮前要过两道边境,每周五开这趟车的卡雷尔,看行李就认得乘客。",
+        "今晚车上国际化得很:两个韩国学生,一个加纳厨师,一个回家的斯洛伐克电工,还有一位带着大提琴的荷兰教师。",
+        "那位老师很容易被风吹着凉,下巴埋进围巾里,先后两次请卡雷尔把空调调小。",
+        "卡雷尔照办了,车厢沉进黑暗里,直到前排一个推销员开始拿前面等着他们的边防警察油腔滑调地开玩笑。",
+        "到了午夜,他拿学生们的口音开的玩笑已经招人反感,老师用她平静的课堂口吻告诉他,嘲笑年纪只有他一半的人是件丢脸的事。",
+        "他赌咒说自己没提过谁的口音,这谎撒得明目张胆,连戴着耳机的那个学生都笑出了声。",
+        "请一位付了钱的乘客安静,是卡雷尔这份工作里最不讨喜的一桩差事,不过动手的可能性看来微乎其微:那人五十来岁,又累,已经在打哈欠了。",
+        "卡雷尔处置得审慎而不声张:到了下一个服务区,他把推销员请到后排一个空座上,离学生们远远的。",
+        "这一停耽误了四分钟,他在空荡荡的高速公路上把时间追了回来,因为准时是他唯一引以为傲的事。",
+        "天亮前不久,大巴过了最后一道边境,推销员一路睡到布达佩斯。"
+      ],
+      "exclude": [
+        "obnoxious",
+        "insufferable",
+        "unsavory",
+        "repugnant",
+        "outrageous",
+        "trivial",
+        "inconsequential",
+        "circumspect",
+        "sagacious"
+      ]
+    },
+    {
+      "id": "bike-coop-missing-wrench",
+      "title": "扳手失踪之后",
+      "en": [
+        "The Dockside Bike Co-op fixed about forty bicycles a week in a corner of the old tram depot, and nobody there liked to be asked how they had come to the work.",
+        "Joel Reyes, who had been {{incarcerated}} for nine years, ran the wheel-truing stand, and in summer his small crew was {{augmented}} by teenagers earning school credit.",
+        "The Tuesday paper gave the co-op its first {{favorable}} review, and orders doubled by the end of the week.",
+        "A few days later a torque wrench went missing, and Priya Nair, who managed the floor, was too {{hasty}}: she named Joel in front of everyone, on no evidence at all.",
+        "The wrench turned up that afternoon in a volunteer's backpack, so the suspicion had been wholly {{unwarranted}}, but her apology was brief.",
+        "That night Joel lay awake and {{ruminate|ruminated}} on the look on her face, and by morning the old {{bitterness}} he thought he had left at the prison gate was back.",
+        "By noon {{discontent}} had reached the back room, where three of the senior mechanics were eating lunch outside rather than near Priya.",
+        "At the Friday meeting the board chair gently {{admonish|admonished}} her and warned that one careless accusation could {{erode}} the trust the co-op had built over years.",
+        "That evening Priya wrote a longer apology, and the next morning she read it aloud at the wheel stand while everyone listened."
+      ],
+      "zh": [
+        "码头自行车合作社在旧电车场的一角,一周修四十来辆自行车,那里没人愿意被问起自己是怎么干上这行的。",
+        "乔尔·雷耶斯在牢里待过九年,负责校正车圈的工位,到了夏天,他的小班组还会添上几个来挣学分的中学生。",
+        "周二的报纸给了合作社第一篇好评,到周末订单翻了一番。",
+        "几天后一把扭力扳手不见了,管车间的普丽娅·奈尔下结论太草率,当着所有人的面点了乔尔的名,却没有一点证据。",
+        "当天下午,扳手在一个志愿者的背包里找到了,可见那番怀疑完全没有道理,她的道歉却很简短。",
+        "那天夜里乔尔睁着眼躺了半宿,反复琢磨她当时的神情,到早上,他以为早已丢在监狱大门外的那股怨气又回来了。",
+        "到中午,不满情绪已经传到了后屋,三位老师傅宁愿坐到外面吃午饭,也不肯坐在普丽娅附近。",
+        "周五开会时,理事会主席温和地训诫了她,并提醒说,一次轻率的指控就能蚕食合作社多年积下的信任。",
+        "当天傍晚普丽娅写了一份更长的道歉信,第二天早上,她当着所有人的面,在校圈工位前把它念了出来。"
+      ],
+      "exclude": [
+        "grievance",
+        "animosity",
+        "grudge",
+        "alienation",
+        "censure",
+        "impair",
+        "sympathetic"
+      ]
+    },
+    {
+      "id": "station-lost-property-counter",
+      "title": "站台下的失物招领处",
+      "en": [
+        "In the lost-property office under platform nine, the morning trolley brought umbrellas, gloves, single shoes and, once, a stuffed pike.",
+        "Odile ran the counter on strict {{subordination}}: her new trainee Kofi tagged and shelved, and only she opened the bags.",
+        "Kofi had his own {{penchant}} for inventing a life for every umbrella, and he {{presume|presumed}} the cracked violin case belonged to a student who had run for a train.",
+        "Odile, who after twenty years had never grown {{complacent}}, said a case belonged to nobody until its owner could describe the inside.",
+        "At four a man in a damp raincoat claimed the violin, and the long pause before he named the maker {{foreshadow|foreshadowed}} what Kofi, afraid to {{overlook}} anything, found next: the strap was stitched with the initials L.A., and the man had signed his name Daniel.",
+        "The man went away without another word.",
+        "Odile lifted the lid herself, and in the lining pocket lay a silk scarf, soft and {{sensual}}, that still smelled of someone's perfume.",
+        "The violinist came the next morning, out of breath, and named the scarf before Odile had finished asking; her smile as she took the case was {{fleeting}}: her train was already leaving.",
+        "On the old forms the word was 'abandoned', but Odile had changed it to 'unclaimed', because the first carries unkind {{connotation|connotations}} and blames an owner who has probably just run for a train.",
+        "Whatever was still unclaimed after ninety days went to the autumn sale, and she insisted that sale be {{equitable}}: every bidder got the same ten minutes to look, and nobody got a private view."
+      ],
+      "zh": [
+        "在九号站台底下的失物招领处,每天早上的小推车送来雨伞、手套、落单的鞋,还有一回是一条做成标本的梭子鱼。",
+        "奥迪勒管着柜台,上下尊卑分得很严:新来的实习生科菲只管贴标签、上架,包只有她能打开。",
+        "科菲自己也有个癖好,爱给每把雨伞编一段人生,他认定那只裂了缝的小提琴盒属于某个赶火车跑掉的学生。",
+        "奥迪勒干了二十年,从没自满过,她常说,箱子里面是什么,失主说得出来,这箱子才算有了主人。",
+        "四点钟,一个穿湿雨衣的男人来认领那把小提琴,他说出制琴师姓名之前停顿了很久,这停顿预示了接下来的事:科菲生怕漏看什么,发现背带上缝着首字母L.A.,而那人签的名字是丹尼尔。",
+        "那人一句话也没再说,转身走了。",
+        "奥迪勒亲手掀开盒盖,衬袋里躺着一条真丝围巾,质地柔滑撩人,上头还留着别人香水的余味。",
+        "第二天早上,小提琴手气喘吁吁地赶来,奥迪勒还没问完,她就把围巾的样子说了出来;拿到琴盒时她的笑容一闪而过,因为她的火车已经在开了。",
+        "旧表格上印的是「遗弃」,奥迪勒让人改成了「无人认领」,因为前一个词言外之意带着责怪,而失主多半只是赶车跑掉了。",
+        "凡是过了九十天还没人认领的东西,都拿到秋季拍卖会上卖,她坚持拍卖要公平:每位竞拍者看货的时间都是十分钟,谁也不给开小灶。"
+      ],
+      "exclude": [
+        "affinity",
+        "insouciant",
+        "voluptuous"
+      ]
+    },
+    {
+      "id": "allotment-compost-letter",
+      "title": "堆肥味的信",
+      "en": [
+        "The Bellfield allotments sat between a railway cutting and a scrapyard, and for sixty years the same forty plot-holders had argued there about compost.",
+        "Every Sunday Old Kowalski turned his heaps with a fork to {{aerate}} them, work so {{tedious}} that the younger plot-holders found reasons to be elsewhere.",
+        "He called his method {{infallible}}, and his {{inimitable}} blend of eggshell, coffee grounds and horse manure produced tomatoes that nobody else on the site could match.",
+        "In August the smell of that blend {{pervade|pervaded}} the whole site, and the plot-holders downwind began eating lunch in their cars.",
+        "The chairwoman argued that doing nothing would amount to {{condonation}}, so the committee drew up a letter of {{censure}} to be signed by the plot-holders.",
+        "Bea, his wife, tried to {{dissuade}} them from sending it, and failed.",
+        "Hania, the newest on the site and still learning whom to trust, was {{unwary}} enough to sign before she had read a word.",
+        "Kowalski read the letter twice without a word, and the next Saturday Dariusz, the scrapyard owner, whose {{philanthropic}} streak had already paid for the allotments' water tank, turned up with plans for a covered compost bay.",
+        "Kowalski refused to be thanked; he just handed Hania a fork and told her the first turn was hers."
+      ],
+      "zh": [
+        "贝尔菲尔德市民农园夹在一条铁路路堑和一家废品场之间,六十年来,同样那四十来户租地的人一直在这里为堆肥吵个不停。",
+        "每个星期天,老科瓦尔斯基都用叉子翻他的堆肥,好让堆里透进空气,这活儿单调得很,年轻的租户总能找出别的地方要去。",
+        "他称自己的方法万无一失,那份谁也学不来的配方,蛋壳、咖啡渣加马粪,种出的番茄是全园任何人都比不上的。",
+        "八月里,那堆东西的气味弥漫了整个园子,下风处的租户开始躲到车里吃午饭。",
+        "委员会主席说,什么都不做就等于纵容,于是委员会拟了一封谴责信,准备请租户们签名。",
+        "他的妻子贝亚想劝住他们,不要把信寄出去,可没有成功。",
+        "汉娅是园里最新的租户,还没学会该信谁,她毫无戒心,一个字都没看就签了名。",
+        "科瓦尔斯基把信读了两遍,一言不发,下个星期六,废品场老板达留什带着加盖堆肥棚的图纸来了,他向来乐善好施,园子的水箱就是他出的钱。",
+        "科瓦尔斯基不肯让人道谢,只递给汉娅一把叉子,说头一回翻堆归她。"
+      ],
+      "exclude": [
+        "credulous",
+        "imprudent",
+        "magnanimous",
+        "admonition",
+        "percolate"
+      ]
+    },
+    {
+      "id": "sorrel-island-blue-glass",
+      "title": "最后一班渡轮",
+      "en": [
+        "For forty years the cooperative glassworks on Sorrel Island had kept its recipe for blue glass in the head of one man, Tobias Arne.",
+        "Visitors could watch him work the furnace but never ask what went into it, and his {{reticence}} gave the shop its {{mystique}}, which the mainland buyers paid for.",
+        "Then his apprentice Lina, {{loose-lipped}} after a night of festival wine, told a visiting journalist the whole recipe.",
+        "Within a month copies of the blue glass were selling on the mainland at a third of the price, and the island shop's takings fell {{appreciably}}.",
+        "Once the recipe was public, the blue was just glass, and the copies {{vitiate|vitiated}} the one claim the shop had left.",
+        "Without asking the cooperative, Tobias took the {{unilateral}} step of dismissing Lina that same week.",
+        "She begged to stay, but what he said to her on the quay made the break between them {{unmendable}}.",
+        "By autumn she was nearly {{destitute}}, and even the women who gutted fish on the pier, who had never liked her chatter, {{sympathize|sympathized}} with her.",
+        "The ferries ran half empty now, and the island's brief {{affluence}}, with its new roof tiles and its second café, was over.",
+        "On the last boat of the season Tobias was still at the furnace, working alone, and nobody asked him anything."
+      ],
+      "zh": [
+        "四十年来,索雷尔岛上这家合作社玻璃厂的蓝玻璃配方,一直只装在托比亚斯·阿恩一个人的脑子里。",
+        "游客可以看他操作熔炉,却不能问炉里都放了什么;他守口如瓶,让这间店平添了几分神秘色彩,大陆来的买家正是冲着这一点掏钱。",
+        "后来他的学徒莉娜在节日夜里喝多了酒,嘴上没了把门的,把整个配方告诉了一位来访的记者。",
+        "一个月之内,仿制的蓝玻璃就以三分之一的价钱在大陆卖开了,岛上这家店的收入明显下滑。",
+        "配方一公开,蓝玻璃就只是玻璃,仿品把这家店仅剩的那点卖点也折损了。",
+        "托比亚斯没有问过合作社,当周就单方面做主,把莉娜辞退了。",
+        "她求他让自己留下,可他在码头上说的那番话,让两人之间的裂痕再也补不回来了。",
+        "到了秋天,她已近乎一贫如洗,连码头上那些一向嫌她话多、整天剖鱼的妇人,也都同情起她来。",
+        "渡轮如今只剩半船客人,岛上那阵短暂的富足,连同新铺的屋瓦和第二家咖啡馆,都成了过去。",
+        "这个季节的最后一班船开走时,托比亚斯还守在炉前,独自干活,没有人再问他什么。"
+      ],
+      "exclude": [
+        "irremediable",
+        "erode",
+        "unguarded"
+      ]
+    },
+    {
+      "id": "hallen-hives-die-off",
+      "title": "空了的蜂箱",
+      "en": [
+        "Three winters running, the co-op's hives above Hallen had emptied out before spring, and nobody could say why.",
+        "Marit Solberg, the co-op's most {{reclusive}} member, had buried her husband that autumn, and she chose to {{grieve}} among the hives rather than in the village.",
+        "Out of that quiet came her {{fixation}} on a single question: what did the dead colonies have in common?",
+        "By March she was ready to {{advocate}} testing every hive for mites, and she stood up at the spring meeting and said so.",
+        "The older members, led by old Pål Hallen, stayed {{obdurate}}: forty years without tests, they said, and no reason to start now.",
+        "She paid for the tests herself; the {{sizeable}} bill took most of what her husband had left her, but the slides were {{appalling}}, with mites in nearly every dead colony.",
+        "The report was the first real {{enlightenment}} the co-op had had about the die-off, and even Pål read it twice.",
+        "Marit felt no triumph, only quiet {{vindication}}, which arrived too late for her husband to see.",
+        "In May the co-op asked her to {{officiate}} at the opening of the swarm season, a duty that had always gone to its most respected member.",
+        "She went down to the village for it, for the first time in a year, carrying the smoker."
+      ],
+      "zh": [
+        "一连三个冬天,合作社设在哈伦上方山坡的蜂箱都在开春前空了,谁也说不清为什么。",
+        "玛丽特·索尔贝格是合作社里最不爱见人的成员,那年秋天她刚埋葬了丈夫,宁可守着蜂箱默默哀悼,也不愿待在村里。",
+        "在那段漫长的寂静里,一个问题缠上了她,怎么也放不下:那些死掉的蜂群到底有什么共同点?",
+        "到了三月,她已打定主意要力主给每只蜂箱都检测螨虫,并在春季例会上站起来当众说了出来。",
+        "年长的成员以老帕尔·哈伦为首,纹丝不动:他们说,四十年没做过检测,现在也没有理由开始。",
+        "检测她自掏腰包,那笔可观的费用花掉了丈夫留给她的大半积蓄,可切片上的景象实在骇人,几乎每个死掉的蜂群里都有螨虫。",
+        "这份报告是合作社头一回真正弄明白蜂群为何死亡,连帕尔也读了两遍。",
+        "玛丽特没有扬眉吐气的感觉,只是平静地确认了自己没有错,可惜来得太迟,丈夫已经看不到了。",
+        "五月,合作社请她主持分蜂季的开幕仪式,这差事向来是交给最受敬重的成员的。",
+        "她为此下了山进村,一年来头一回,手里提着喷烟器。"
+      ],
+      "exclude": [
+        "obstinate",
+        "intractable",
+        "recalcitrant",
+        "uncompromising",
+        "headstrong",
+        "refractory",
+        "implacable",
+        "dreadful",
+        "superintend"
+      ]
+    },
+    {
+      "id": "bear-island-dark-winter",
+      "title": "漫漫长夜",
+      "en": [
+        "The weather station on Bear Island kept six people through the dark months, and the relief ship was not due until April.",
+        "Halvard, the station leader, was {{exacting}} about everything from the logbooks to the way boots were lined up, and Sigrun, who had worked on rigs and in ports on four continents, was too {{worldly}} to be impressed.",
+        "In November she told him so in front of everyone, and Halvard answered with a written order taking her off the engine rota.",
+        "She chose to {{seclude}} herself in the instrument hut for a week, and Bram, the cook, carried soup across the ice to her every evening with such quiet {{solicitude}} that she never once sent him away.",
+        "Early in December, when the sun had gone for good, a storm took out the main generator, and the sudden blackness brought a fear so {{primal}} that nobody spoke until someone found a torch.",
+        "The most {{probable}} cause was a cracked cylinder block, and Halvard, at a loss, {{countermand|countermanded}} his own order and asked Sigrun to come and look.",
+        "She looked for two hours and told him the damage was {{irreparable}}, but that the wind turbine could still carry the radio and one stove.",
+        "Halvard, who had not asked anyone for help in twenty winters, found the radio call to Tromso {{ignominious}}, and made it anyway.",
+        "On midwinter day he thanked her by handing over the key to the stores, and she {{reciprocate|reciprocated}} by asking him to teach her to read the sea ice."
+      ],
+      "zh": [
+        "熊岛气象站的六个人要熬过漫长的极夜,补给船四月才会来。",
+        "站长哈尔瓦德对一切都要求严苛,从观测日志到靴子怎么摆放都不放过;而西格伦在四大洲的钻井平台和港口都干过活,见多识广,根本不吃他这一套。",
+        "十一月里她当着所有人的面这么跟他说了,哈尔瓦德便下了一道书面命令,把她从发动机值班表上撤了下来。",
+        "她独自躲进仪器小屋待了一周,厨师布拉姆每天傍晚踩着冰面给她送汤,那份关切细致又不声张,她一次也没把他打发走。",
+        "十二月初,太阳已经彻底落下,一场风暴打坏了主发电机,骤然降临的黑暗勾起一种近乎本能的恐惧,谁也没吭声,直到有人摸出一支手电。",
+        "最可能的原因是气缸体裂了,哈尔瓦德一时没了主意,收回自己先前的命令,请西格伦过来看看。",
+        "她查了两个钟头,说损坏已经没法修复,但风力发电机还能带动电台和一只炉子。",
+        "哈尔瓦德二十个冬天没向任何人求过援,觉得给特罗姆瑟打这通电话太丢脸,可还是打了。",
+        "仲冬那天,他把储藏室的钥匙交给她,算是道谢;她也回了一份礼,请他教自己怎么看海冰。"
+      ],
+      "exclude": [
+        "painstaking",
+        "conscientious",
+        "overturn",
+        "abrogate"
+      ]
+    },
+    {
+      "id": "brush-sign-workshop-cooper-lane",
+      "title": "库珀巷的招牌铺",
+      "en": [
+        "Ferenc's workshop at the end of Cooper Lane had lettered shop signs by brush for fifty years, and the whole place still smelled of linseed oil and gold size.",
+        "Ferenc {{abhor|abhors}} anything that comes off a printer, yet the vinyl-sign trade on the high street seemed {{unstoppable}}, and each month his order book grew thinner.",
+        "His apprentice Dalia, who had learned to draw layouts on a tablet in one weekend, had {{adaptability}} to spare, and she was the one who found the tea-room job.",
+        "Mr. Varga, the tea room's new owner, was {{shrewd}}: he had worked out that a hand-painted sign would draw more passers-by than any printed one.",
+        "He and Dalia {{wrangle|wrangled}} over the price for an hour, while Ferenc, who was {{tactful}} about money, stayed by the window and said nothing.",
+        "On Friday she climbed the ladder to letter the fascia board, and with the wind rising and one foot of the ladder sitting on a cobble, her footing was {{precarious}}.",
+        "Her {{unwitting}} slip, a swapped pair of letters in Varga's own name, went unseen for three days, which Ferenc found more {{unsettling}} than the mistake itself.",
+        "It was Varga's {{astute}} wife who finally spotted it, standing across the lane with her coffee and counting the letters twice.",
+        "Dalia repainted the whole name that evening, and Ferenc held the ladder steady, still saying nothing."
+      ],
+      "zh": [
+        "费伦茨的作坊在库珀巷尽头,用毛笔给店铺画招牌已经五十年,满屋子至今还是亚麻籽油和金胶油的味道。",
+        "费伦茨痛恨一切从打印机里出来的东西,可高街上做乙烯基招牌的生意眼看势不可挡,他的订单簿一个月比一个月薄。",
+        "他的学徒达莉娅一个周末就学会了在平板上画版面,适应力绰绰有余,茶室这桩活正是她找来的。",
+        "茶室的新老板瓦尔加很精明:他算准了手绘招牌比任何印出来的都更能招来路人。",
+        "他和达莉娅为价钱争了一个钟头,费伦茨在钱的事上向来有分寸,只站在窗边一言不发。",
+        "星期五她爬上梯子去写门楣上的招牌板,风越刮越大,梯脚又架在一块鹅卵石上,她站得岌岌可危。",
+        "她无意间出了个差错,把瓦尔加自己名字里的两个字母写颠倒了,整整三天没人发现,费伦茨觉得这比错误本身更让人不安。",
+        "最后是瓦尔加那位眼光敏锐的妻子看出来的,她端着咖啡站在巷子对面,把字母数了两遍。",
+        "当晚达莉娅把整个名字重新写过,费伦茨扶着梯子,依旧什么也没说。"
+      ],
+      "exclude": [
+        "incisive",
+        "rickety",
+        "relentless"
+      ]
+    },
+    {
+      "id": "skarvbreen-glacier-survey",
+      "title": "冰原上的两个人",
+      "en": [
+        "The glacier survey on the Skarvbreen plateau was meant to last three weeks: two people, one tent, and a sledge loaded with stakes and a GPS mast.",
+        "Pia and Jonas could hardly have been more {{dissimilar}}: she sang while she worked, and he was so {{reserved}} that she learned his middle name only in the second week.",
+        "He ate the same oatmeal every morning, slept without a mat, and was almost {{ascetic}} about comfort of any kind.",
+        "The weather turned {{dreadful}} on the fourth day, and the whiteout that followed was so {{prolonged}} that they lost count of which day it was.",
+        "Lying in the tent, Pia noticed a hum beneath the wind so low it was almost {{subliminal}}, felt in the ribs more than heard.",
+        "When the storm broke, they traced the hum to a crevasse whose walls were {{translucent}}, glowing a dim blue but showing nothing of what lay beyond.",
+        "The field below the icefall was {{treacherous}}: the snow bridges looked solid and were not.",
+        "The glare after the storm had left Pia with some visual {{impairment}}, so Jonas went first, probing every step, and they managed to {{surmount}} the icefall by dusk.",
+        "That night Pia sang again, quietly, and for once Jonas hummed the second line."
+      ],
+      "zh": [
+        "斯卡夫冰川高原上的这次测量,原定三周完成:两个人,一顶帐篷,一架装满标杆和GPS桅杆的雪橇。",
+        "皮娅和约纳斯性格迥异:她干活时爱哼歌,他则拘谨寡言,她到第二周才知道他的中间名。",
+        "他每天早上吃一样的燕麦粥,睡觉连垫子都不铺,对任何舒适都近乎苦行僧般地排斥。",
+        "第四天天气坏透了,接下来白茫茫一片的天气拖得太久,他们渐渐数不清今天是第几天了。",
+        "躺在帐篷里,皮娅觉出风声底下有一种低沉的嗡鸣,低得几乎感觉不到,只觉得肋骨在颤,耳朵却听不见。",
+        "风暴一停,他们顺着嗡鸣找到一道冰裂缝,缝壁半透明,泛着幽幽的蓝光,却看不到后面是什么。",
+        "冰瀑下面的那片冰原暗藏凶险:雪桥看着结实,其实不然。",
+        "风暴过后的强光让皮娅的视力受了些损伤,约纳斯便走在前面,一步一探,傍晚时分他们终于翻过了冰瀑。",
+        "当晚皮娅又唱起歌来,声音很轻,这一回,约纳斯跟着哼了第二句。"
+      ],
+      "exclude": [
+        "appalling"
+      ]
+    },
+    {
+      "id": "thursday-lake-regatta",
+      "title": "周四的湖面",
+      "en": [
+        "Every Thursday the Orsa Lake sailing club lent its dinghies to anyone who wanted to race, and Lena Marek, fifteen, had never missed a week.",
+        "At nine she had been told she had muscular {{dystrophy}}, and in the six years since she had kept proving that her arms could still do what a tiller asked.",
+        "The disease would {{debilitate}} her a little more every year, so her grandfather Viktor, a retired ferry pilot, had taught her to save her strength for the {{strenuous}} part of any race.",
+        "Viktor had read every almanac in the town library, and on matters of weather he was the most {{erudite}} man on the lake.",
+        "On the morning of the autumn race she stood on the jetty and could {{discern}} a dark line on the far water, the first sign of the wind he had promised.",
+        "Pavel, her crewmate, was twelve and so {{ingenuous}} that he told the whole fleet exactly which shortcut he wanted to try.",
+        "His {{impetuosity}} worried her more than the weather did, and she never let him touch the tiller, because he would have steered straight for the open water.",
+        "When the squall Viktor had promised hit, Lena eased the sail out in one pull, Pavel whooped in the bow, and they crossed the line first.",
+        "Behind them the {{hapless}} crew of the Gull, who had capsized before the first mark, were bailing with a coffee mug.",
+        "At the finish the Gull's skipper protested Lena's tiller, but the judge stayed {{dispassionate}}, read the rulebook aloud, and declared Viktor's pulley-and-spring fitting {{ingenious}} and entirely legal."
+      ],
+      "zh": [
+        "每到周四,奥尔萨湖帆船俱乐部都会把小艇借给想比赛的人,十五岁的莉娜·马雷克一周也没落下过。",
+        "九岁那年,她被告知得了肌营养不良症,此后六年里,她一直在证明自己的双臂仍然听得懂舵柄的指令。",
+        "这种病会一年比一年更多地削弱她的身体,所以曾做过渡轮领航员的外公维克托教她,力气要留给每场比赛里最费劲的那一段。",
+        "维克托把镇图书馆里的年鉴都读了个遍,说到天气,他是全湖最博学的人。",
+        "秋季赛那天早晨,她站在栈桥上,看出远处水面上有一道暗线,那正是外公说过会来的风的第一个迹象。",
+        "她的船员帕维尔才十二岁,天真得很,把自己想走哪条捷径原原本本告诉了整个船队。",
+        "比起天气,他的冲动更让她担心,她从不让他碰舵柄,否则他准会一头冲向开阔水面。",
+        "维克托预告的那阵狂风一到,莉娜一把放出帆,帕维尔在船头欢呼,他们第一个冲过了终点线。",
+        "他们身后,海鸥号上倒霉的船员们在第一个标志浮筒前就翻了船,此刻正拿着一只咖啡杯舀水。",
+        "到了终点,海鸥号的舵手对莉娜的舵柄提出抗议,裁判却始终冷静客观,当场念了一遍规则,宣布维克托装的滑轮加弹簧装置设计精巧,完全合规。"
+      ],
+      "exclude": [
+        "gullible",
+        "credulous",
+        "imprudence",
+        "equitable",
+        "impair",
+        "undermine",
+        "demanding"
+      ]
+    },
+    {
+      "id": "alder-ridge-barn-wire",
+      "title": "阁楼里的铁丝",
+      "en": [
+        "Mina was the most {{observant}} child on Alder Ridge, so when old Clover stopped chewing her cud in the barn that morning, she was the first to notice.",
+        "Healthy {{ruminant|ruminants}} spend half the day chewing food they swallowed hours earlier, and a cow that goes quiet is a cow in trouble.",
+        "Mina phoned Ilse Brandt, the {{foremost}} large-animal vet in the valley, and Ilse arrived within the hour with her boots still wet from another farm.",
+        "She gave Clover local {{anesthesia}}, cut a window in the flank, and drew out a coil of rusted baling wire as long as Mina's arm.",
+        "Someone had left that wire in the winter hay, and Ilse called it the most {{egregious}} carelessness she had seen in twenty years.",
+        "Word of the wire {{scandalize|scandalized}} the whole ridge, and by afternoon a loud man at the feed store was trying to {{incite}} the other farmers to boycott the contractor who had baled the hay.",
+        "Mina's mother, who kept the co-op's books, said the {{sensible}} course was to check every bale in the loft before anyone blamed anybody.",
+        "They found wire in forty bales, and the co-op voted to {{consign}} them all to the burn pile, where by dark the flames had {{obliterate|obliterated}} every trace of them.",
+        "By then Clover was back on her feet, chewing slowly beside the stove, and Mina sat on an upturned bucket next to her and let out a long breath.",
+        "The next morning the loud man came by the barn with a bag of apples for the cow, and nobody mentioned the feed store."
+      ],
+      "zh": [
+        "米娜是奥尔德岭上最眼尖的孩子,所以那天早晨老克洛弗在牛棚里不再反刍时,头一个发现的就是她。",
+        "健康的反刍动物每天有一半时间在咀嚼几小时前咽下的食物,一头牛一安静下来,就说明出了问题。",
+        "米娜打电话给山谷里首屈一指的大型动物兽医伊尔莎·勃兰特,不到一小时伊尔莎就赶到了,靴子上还是湿的,是从另一家农场带来的。",
+        "她给克洛弗打了局部麻醉,在牛的侧腹开了一个口子,取出一团锈蚀的打捆铁丝,有米娜的手臂那么长。",
+        "这团铁丝是有人落在冬季干草里的,伊尔莎说这是她二十年来见过的最恶劣的疏忽。",
+        "铁丝的事传开后,整座山岭都为之哗然,到下午,饲料店里一个大嗓门的男人已经在煽动其他农户抵制那个负责打捆的承包商。",
+        "米娜的母亲替合作社管账,她说,最明智的做法是先把阁楼里的每一捆都查一遍,再谈怪谁。",
+        "他们在四十捆干草里找到了铁丝,合作社投票决定把这些全部丢进焚烧堆,天黑时火焰已把它们烧得无影无踪。",
+        "那时克洛弗已经重新站了起来,在炉子旁慢慢地咀嚼,米娜坐在倒扣的水桶上挨着她,长长地舒了一口气。",
+        "第二天早上,那个大嗓门的男人拎着一袋苹果来到牛棚给牛吃,谁也没提饲料店的事。"
+      ],
+      "exclude": [
+        "watchful",
+        "expedient",
+        "sagacious"
+      ]
+    },
+    {
+      "id": "ribeira-tram-depot-night",
+      "title": "凌晨三点的长桌",
+      "en": [
+        "At the Ribeira tram depot the night shift sat down at one long table at three each morning, and the talk was always about the retired chief mechanic, Old Fausto.",
+        "The older drivers had {{deify|deified}} him since the day he retired, and they talked as if no brake in the depot had been set right since.",
+        "Beatriz, the newest apprentice, was {{industrious}}: first in the yard every night, last to leave, and never heard to complain.",
+        "Rui, a mechanic who had waited eleven years for a promotion that went to someone else, grew {{resentful}} of her, and by October he was {{vindictive}} enough to hide her tools in the oil store.",
+        "The oil store stood at the far end of the yard, {{secluded}} behind two disused carriages, so nobody saw him go in.",
+        "Late trams kept costing the depot money, and since Beatriz arrived the improvement in on-time running had been only {{marginal}}, which Teresa, the shift foreman, put down to all the missing tools.",
+        "When Teresa asked him about it, his answers were {{evasive}}: he stared at the floor, changed the subject and blamed the day shift.",
+        "Beatriz, asked the same questions, named each missing wrench with its date and place, and her account was so {{credible}} that Teresa was {{inclined}} to stop hearing Rui out.",
+        "Teresa found the petty cruelty of it {{repellent}}, and the next morning his bench had been moved to the middle of the yard, in full view of her office window.",
+        "Beatriz's wrench set came back that same week, and Old Fausto, who dropped in for coffee, shook her hand and pretended not to notice that the drivers were watching."
+      ],
+      "zh": [
+        "在里贝拉电车场,夜班工人每天凌晨三点围着一张长桌坐下,聊的永远是退休的老总机修师法乌斯托。",
+        "老司机们自从他退休那天起就把他奉若神明,说起话来,仿佛车场里再没有哪个闸调对过。",
+        "最新来的学徒贝阿特丽丝勤勤恳恳,每晚头一个到场,最后一个离开,从没听她抱怨过。",
+        "机修工鲁伊等了十一年的晋升机会被别人拿走,他开始怨恨她,到了十月,他的报复心重到把她的工具藏进了油料库。",
+        "油料库在车场最远的一头,隐在两节废弃车厢后面,没人看见他走进去。",
+        "电车晚点一直在让车场亏钱,贝阿特丽丝来了以后准点率只有微乎其微的提高,值班主任特蕾莎把这归咎于那些接连丢失的工具。",
+        "特蕾莎问起这事时,他的回答含糊其辞,眼睛盯着地面,转移话题,还把责任推给日班。",
+        "同样的问题问到贝阿特丽丝,她把每把丢失的扳手何时何地不见的都说得清清楚楚,说法令人信服,特蕾莎已倾向于不再听鲁伊辩解。",
+        "特蕾莎觉得这种小肚鸡肠的刁难令人作呕,第二天早上,他的工作台就被挪到了车场正中,正对着她办公室的窗户。",
+        "就在那一周,贝阿特丽丝的扳手套装回到了她手里,老法乌斯托来喝咖啡时和她握了握手,假装没看见司机们都在盯着。"
+      ],
+      "exclude": [
+        "revere",
+        "extol",
+        "eulogize",
+        "conscientious",
+        "painstaking",
+        "aggrieved",
+        "loathsome",
+        "repugnant",
+        "sickening",
+        "infinitesimal"
+      ]
+    },
+    {
+      "id": "lantern-quay-silk-stall",
+      "title": "周五的灯笼码头",
+      "en": [
+        "Every Friday the night market on Lantern Quay filled the harbor road with stalls, and Mei's family sold silk from the corner stall beside the ferry steps.",
+        "Tourists found the quay {{enchanting}} after dark, with paper lamps strung over every awning and steam rising from the noodle carts.",
+        "Yet the whole market was {{transient}}, packed into vans every dawn so that by sunrise the road was bare again.",
+        "On the third Friday a buyer from a Milan label turned up, his {{ostensible}} purpose a walk with his niece, though he went straight to Mei's rack of {{diaphanous}} scarves.",
+        "Her father, sensing a big order, began to {{overplay}} the family's pedigree, claiming three generations of master weavers when he had sold silk for only eight years.",
+        "The buyer's reply was {{lukewarm}}, and Mei, watching her father's face, felt her old {{exasperation}} rise again.",
+        "She slipped between them, unwrapped a bolt of cream silk as {{pristine}} as the day it left the loom, and told him the truth, that her family was new to the trade but the thread was the best on the quay.",
+        "Her father looked {{abashed}}, and for once he said nothing.",
+        "The buyer took forty meters that night and promised to come back the next Friday, if the market was still there."
+      ],
+      "zh": [
+        "每到周五,灯笼码头的夜市就会把港口路摆满摊位,梅家的丝绸摊在渡轮台阶旁的街角。",
+        "游客觉得天黑后的码头迷人极了,每个遮阳棚上都挂着纸灯笼,面摊上热气腾腾。",
+        "然而整个夜市都是短暂的,每到黎明就被装进货车,太阳一出来,路面又空了。",
+        "第三个周五,一位米兰品牌的买手出现了,他表面上是陪侄女逛逛,脚下却径直走向梅的那排轻薄透明的丝巾。",
+        "她父亲嗅到大单,开始夸大家族的渊源,说他们家三代都是织造名匠,其实他卖丝绸才八年。",
+        "买手的回应不冷不热,梅看着父亲的脸,心里那股老恼火又冒了上来。",
+        "她挤到两人中间,拆开一匹乳白色的丝绸,那绸子像刚下织机时一样一尘不染,她对买手说了实话,她家入行不久,但这线是码头上最好的。",
+        "父亲面露窘色,难得一言不发。",
+        "那晚买手买走了四十米,并答应下个周五再来,前提是夜市还在。"
+      ],
+      "exclude": [
+        "belabor",
+        "perfunctory",
+        "unresponsive"
+      ]
     }
   ]
 }
