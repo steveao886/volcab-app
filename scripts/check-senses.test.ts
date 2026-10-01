@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildItems, classify, readKey, requestBody, CONFIDENT } from './check-senses'
+import { buildItems, classify, requestBody, CONFIDENT } from './check-senses'
 import type { Word } from '../src/types'
 import type { RecallSentence } from '../src/lib/recallSentence'
 
@@ -13,20 +13,6 @@ const word = (id: string, senses: number, examples: unknown[] = ['e0', 'e1', 'e2
 
 const rendering = (id: string, i: number, sense?: number): RecallSentence =>
   ({ id, i, zh: '句', target: '句', ...(sense === undefined ? {} : { sense }) })
-
-describe('readKey', () => {
-  it('prefers the environment over .env.local', () => {
-    expect(readKey('TYPESAFE_API_KEY=from-file\n', 'from-env')).toBe('from-env')
-  })
-  it('reads the key line from .env.local, skipping comments and quotes', () => {
-    expect(readKey('# TYPESAFE_API_KEY=commented\r\nTYPESAFE_API_KEY="abc"\r\n', undefined)).toBe('abc')
-  })
-  it('is undefined when the line is empty or the file is missing', () => {
-    expect(readKey('TYPESAFE_API_KEY=\n', undefined)).toBeUndefined()
-    expect(readKey(undefined, undefined)).toBeUndefined()
-    expect(readKey(undefined, '  ')).toBeUndefined()
-  })
-})
 
 describe('buildItems', () => {
   const words = [word('poly', 2), word('mono', 1), word('gappy', 3, ['e0', { en: 'not a string' }])]

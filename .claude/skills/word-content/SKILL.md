@@ -61,7 +61,10 @@ batch (step 2–3 below).
    correct answer wrong, or accepts a wrong one.
 
    **Then read every pair the batch joins through a shared synonym** (not
-   a direct one) before authoring notes for it. A synonym connects every
+   a direct one) before authoring notes for it — `npm run check-synonyms
+   -- --ids <id,id,…>` asks Jev about each and prints the suspicious ones
+   grouped by synonym; it finds the pure noise (86% precision) but not all
+   of it (42% recall), so it orders the reading, it does not replace it. A synonym connects every
    word that lists it, so a homograph — `perceptive` on `observant` (sees
    details) and on `sentient` (can perceive at all) — manufactures a pair
    of unrelated words and walks words into 发散 answer sets they don't
@@ -137,6 +140,7 @@ markers, while the Chinese register and an answer key have none.
 | Contrast notes, word notes | Sonnet subagent | given both words' full definitions, as before |
 | 回想 renderings (5 per word) | Sonnet subagent | the largest volume of Chinese in a batch |
 | Reading and editing **all** of the above Chinese | orchestrator | the half the user reads every session; no validator sees it |
+| Screening shared-synonym pairs for homographs | Jev, via `npm run check-synonyms` | the orchestrator reads the flagged hubs and decides each cut |
 | Screening renderings' `sense` tags | Jev, via `npm run check-senses` | an English one-of-N judgment — its shape exactly; the orchestrator reads ~17% instead of all |
 | Sense groups | orchestrator | an answer key; small volume, fail-closed judgment |
 | Concept membership diff (step 3) | orchestrator | a handful of lines of pure judgment |
@@ -268,9 +272,12 @@ authoring at scale: mine candidates with the triple logic in
 `scripts/content-staleness.ts`, draft from members' real examples, fail
 closed on any group whose second place is not defensible.
 
-Once per refresh, also run `npm run check-senses` with no ids — the whole
-library, ~340k Jev input tokens, under two cents. It is not in the scan
-because it needs a key and the network; read its output like step 5's.
+Once per refresh, also run `npm run check-senses` and `npm run
+check-synonyms` with no ids — the whole library, ~340k Jev input tokens
+each, under two cents each. Neither is in the scan because they need a key
+and the network; read their output like steps 3 and 5. After the
+2026-10-01 cleanup a full synonym run still flags ~70 pairs — mostly
+close words read and kept that day; cut only what reads two ways.
 
 **Never** pad content to hit a number. A skipped group costs nothing; a
 wrong answer key or an invented etymology poisons the mode that shows it.
