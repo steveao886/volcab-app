@@ -14,19 +14,13 @@
         "unmanageable"
       ],
       "exclude": [
-        "tenacious",
-        "refractory",
-        "inexorable"
+        "refractory"
       ],
       "negations": [
         "implacable",
         "intractable",
         "intransigent",
         "uncompromising"
-      ],
-      "excludeOpposites": [
-        "apathetic",
-        "halfhearted"
       ]
     },
     {
@@ -38,9 +32,6 @@
         "opulent",
         "profligate",
         "wasteful"
-      ],
-      "exclude": [
-        "profuse"
       ],
       "excludeOpposites": [
         "subtle"
@@ -103,9 +94,6 @@
         "diminish",
         "undermine",
         "wane"
-      ],
-      "exclude": [
-        "belittle"
       ]
     },
     {
@@ -283,10 +271,7 @@
         "indifferent"
       ],
       "excludeOpposites": [
-        "compassionate",
-        "empathetic",
-        "reactive",
-        "sympathetic"
+        "reactive"
       ]
     },
     {
@@ -542,9 +527,6 @@
         "perceptive",
         "shrewd",
         "sharp"
-      ],
-      "exclude": [
-        "sentient"
       ]
     },
     {
@@ -584,9 +566,6 @@
         "contemplate",
         "deliberate",
         "ruminate"
-      ],
-      "exclude": [
-        "premeditated"
       ]
     },
     {
@@ -660,9 +639,6 @@
       "anchors": [
         "compassionate",
         "understanding"
-      ],
-      "exclude": [
-        "enlightenment"
       ]
     },
     {
