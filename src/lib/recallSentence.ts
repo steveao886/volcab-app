@@ -55,6 +55,14 @@ export interface RecallSentence {
    * `meanings[0].en`, so `acrid` asked 尖刻 and offered "sharp, bitter smell
    * or taste" as the help.
    *
+   * That audit scored character overlap and could not see part of speech.
+   * Re-audited 2026-10-01 by asking Jev (TypeSafe's typed-choice model)
+   * which sense each of the 904 examples on a polysemous word uses: of its
+   * 59 disagreements, 36 were wrong tags, 14 were Jev wrong and 9 read
+   * either way. Most of the 36 were the part of speech — `harangued` on
+   * the noun, `the subconscious` on the adjective, `mimed` on 哑剧演员.
+   * A disagreement at confidence ≥0.9 was a wrong tag 33 times in 34.
+   *
    * Optional, range-checked by validate-recall-sentences, out-of-range
    * falling back to sense 0 at runtime — write strict, read lenient.
    */
