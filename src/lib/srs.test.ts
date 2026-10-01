@@ -22,6 +22,24 @@ describe('new-word learning phase', () => {
     expect(e.stepIndex).toBe(1)
     expect(e.due).toBe('2026-07-24')
   })
+  it('stamps startedOn on the first grade, and never moves it again', () => {
+    // The new-word queue's lookback reads it; lastReviewedAt moves on every
+    // review and cannot say when a word was started.
+    const first = gradeWord(undefined, 'good', now, noFuzz)
+    expect(first.startedOn).toBe('2026-07-24')
+    const later = new Date(2026, 6, 30, 10, 0, 0)
+    expect(gradeWord(first, 'good', later, noFuzz).startedOn).toBe('2026-07-24')
+    expect(gradeWord(reviewEntry({ startedOn: '2026-07-01' }), 'again', later, noFuzz).startedOn).toBe('2026-07-01')
+  })
+  it('a word left in state new is started fresh, with today as its start', () => {
+    const e = gradeWord(reviewEntry({ state: 'new' }), 'good', now, noFuzz)
+    expect(e.startedOn).toBe('2026-07-24')
+  })
+  it('an entry from before the field existed does not acquire one on review', () => {
+    // A guessed start date would feed the lookback a word that was started
+    // months ago; absent reads as "not recent", which is true.
+    expect(gradeWord(reviewEntry(), 'good', now, noFuzz).startedOn).toBeUndefined()
+  })
   it('finishing all steps graduates to review, with a 1-day interval', () => {
     const s1 = gradeWord(undefined, 'good', now, noFuzz)
     const s2 = gradeWord(s1, 'good', now, noFuzz)

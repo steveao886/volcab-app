@@ -49,6 +49,7 @@ export function addDays(dateStr: string, days: number): string {
 const freshEntry = (now: Date): ProgressEntry => ({
   state: 'learning', ease: INITIAL_EASE, intervalDays: 0, due: todayStr(now),
   stepIndex: 0, reps: 0, lapses: 0, lastReviewedAt: now.toISOString(),
+  startedOn: todayStr(now),
 })
 
 // ±5% random fuzz; no fuzzing within 3 days
