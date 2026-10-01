@@ -59,6 +59,18 @@ batch (step 2–3 below).
    belongs" and there is nothing to do — the cost of the check is reading a
    handful of lines, the cost of skipping it is a 发散 question that marks a
    correct answer wrong, or accepts a wrong one.
+
+   **Then read every pair the batch joins through a shared synonym** (not
+   a direct one) before authoring notes for it. A synonym connects every
+   word that lists it, so a homograph — `perceptive` on `observant` (sees
+   details) and on `sentient` (can perceive at all) — manufactures a pair
+   of unrelated words and walks words into 发散 answer sets they don't
+   belong in. Cut the synonym from the entry where it means something
+   else. 2026-10-01: 24 cut across 116 new words (0.26 per word before the
+   rules file quoted the cuts back at the drafter, 0.16 after — never
+   zero). **Before cutting, check the concept the synonym anchors**: some
+   concepts are built on one synonym, and cutting it can take a word out
+   of its own concept (`commensurate` via `equivalent`).
 4. **Ask what the batch owes**, naming its ids:
    `npx tsx scripts/content-staleness.ts --batch <id,id,…>`. It exits 1 while
    anything required is missing, and reports 反义 without blocking. Then
@@ -140,7 +152,9 @@ and put the counts in the commit message, e.g. `Sonnet drafts: renderings
 
 First batch, 2026-10-01 (30 words, `2e3d3e7`): entry zh 3 of 45, contrast
 notes 4 of 62, 要点 3 of 30, renderings 4 of 150 — 3–10%, every category
-far under the line. What was reworded: translationese in renderings, a
+far under the line. The next two (43 + 43 words, `ad632d3`, `bc2addf`)
+held it: entry zh 3 of 120, notes 3 of 142, 要点 1 of 72, renderings 13
+of 430 — under 4% everywhere. What was reworded: translationese in renderings, a
 collocation parked behind the wrong sense in notes, one false usage claim
 (`hasty` "never" of plain speed, against its own *a hasty retreat*), and a
 gloss narrowed by connotation (`enchanting` as 妩媚, said of women only).
@@ -210,7 +224,17 @@ more words, dispatch authoring to parallel subagents:
    definitions — is the stated distinction real? Then run `check-senses`
    over the batch (step 5 above) — the drafting agent's `sense` tags are
    the easiest thing in its output to get wrong without looking wrong.
-7. **Everything after the review stays serial**: validators, `npm test`,
+7. **Expect the merge to break content nobody touched**, and fix it by
+   reading, not by moving things until the validator is quiet. Every batch
+   today did: a sense group carrying a new word as `extra` (move it into
+   `order` last only if its `why` already ranks it there and its
+   meanings[0] matches the slot's part of speech — `censure` is a noun in
+   a verb group and was dropped instead), a 要点 illustrated with a word
+   that is now a headword. **Read the scenario before ranking a promoted
+   word last**: group 264 asked 小到可以忽略 — which *is* `negligible` —
+   with `infinitesimal` as the answer; promoting `negligible` behind it
+   would have marked the best fit second.
+8. **Everything after the review stays serial**: validators, `npm test`,
    build, live-library merge (sha-guarded), staging trim, one commit.
    These were ~7 min of the 25 and are gates, not authoring — parallelism
    has nothing to win there.
