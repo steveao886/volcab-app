@@ -86,6 +86,18 @@ batch (step 2–3 below).
    A skipped group does **not** excuse the word — it falls back to
    renderings like any other. The legs are alternatives, not a choice
    between doing the work and not.
+
+   **Then check the `sense` tags**: `npm run check-senses -- --ids
+   <id,id,…>`. A rendering about a secondary sense needs `sense`, or its
+   hint describes a different meaning; the tag is easy to get wrong by
+   part of speech (`harangued` tagged as the noun), and 38 of 904 were,
+   2026-10-01. The script asks Jev which sense each English example uses
+   and prints the disagreements in two bands. *Confident* was a wrong tag
+   33 times in 34; *doubtful* was Jev wrong most of the time. Read every
+   line, fix only what is clearly wrong, and don't re-run to make a line
+   disappear — the doubtful band moves between runs. Needs
+   `TYPESAFE_API_KEY` in `.env.local`; without it, say so and read the
+   tags on polysemous words by hand.
 6. **Live library**: `npm run check-live` to pull and diff against the repo
    copy, apply additions on top of the live file (never overwrite it with
    the repo copy — resurrecting deleted words is a real recorded failure,
@@ -110,6 +122,7 @@ markers, while the Chinese register and an answer key have none.
 | Contrast notes, word notes | Sonnet subagent | given both words' full definitions, as before |
 | 回想 renderings (5 per word) | Sonnet subagent | the largest volume of Chinese in a batch |
 | Reading and editing **all** of the above Chinese | orchestrator | the half the user reads every session; no validator sees it |
+| Screening renderings' `sense` tags | Jev, via `npm run check-senses` | an English one-of-N judgment — its shape exactly; the orchestrator reads ~6% instead of all |
 | Sense groups | orchestrator | an answer key; small volume, fail-closed judgment |
 | Concept membership diff (step 3) | orchestrator | a handful of lines of pure judgment |
 | Validators, tests, build, live merge | orchestrator, by script | mechanical — no model work to move |
@@ -169,7 +182,9 @@ more words, dispatch authoring to parallel subagents:
    writes them.
 6. **Review every Chinese line before it lands**, counting rewordings per
    category (see *Who writes what*). Contrast notes are read against both
-   definitions — is the stated distinction real?
+   definitions — is the stated distinction real? Then run `check-senses`
+   over the batch (step 5 above) — the drafting agent's `sense` tags are
+   the easiest thing in its output to get wrong without looking wrong.
 7. **Everything after the review stays serial**: validators, `npm test`,
    build, live-library merge (sha-guarded), staging trim, one commit.
    These were ~7 min of the 25 and are gates, not authoring — parallelism
@@ -203,6 +218,10 @@ measured gap (e.g. "12 candidate triples had no sense group"). Sense-group
 authoring at scale: mine candidates with the triple logic in
 `scripts/content-staleness.ts`, draft from members' real examples, fail
 closed on any group whose second place is not defensible.
+
+Once per refresh, also run `npm run check-senses` with no ids — the whole
+library, ~340k Jev input tokens, under two cents. It is not in the scan
+because it needs a key and the network; read its output like step 5's.
 
 **Never** pad content to hit a number. A skipped group costs nothing; a
 wrong answer key or an invented etymology poisons the mode that shows it.
