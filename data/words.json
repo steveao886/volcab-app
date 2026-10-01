@@ -296,7 +296,6 @@
       "synonyms": [
         "latitude",
         "margin",
-        "flexibility",
         "slack"
       ],
       "antonyms": [
@@ -342,7 +341,6 @@
       "synonyms": [
         "quagmire",
         "bog",
-        "swamp",
         "entangle"
       ],
       "antonyms": [],
@@ -502,7 +500,6 @@
       ],
       "synonyms": [
         "enact",
-        "decree",
         "proclaim",
         "disseminate"
       ],
@@ -1128,8 +1125,7 @@
       "synonyms": [
         "convenient",
         "practical",
-        "pragmatic",
-        "opportune"
+        "pragmatic"
       ],
       "antonyms": [
         "principled",
@@ -1492,8 +1488,7 @@
       ],
       "synonyms": [
         "spread",
-        "proliferate",
-        "disseminate"
+        "proliferate"
       ],
       "antonyms": [
         "contain",
@@ -2176,8 +2171,7 @@
       "synonyms": [
         "unfeeling",
         "insensitive",
-        "heartless",
-        "indifferent"
+        "heartless"
       ],
       "antonyms": [
         "compassionate",
@@ -5241,8 +5235,7 @@
       "synonyms": [
         "macabre",
         "ghoulish",
-        "gruesome",
-        "grim"
+        "gruesome"
       ],
       "antonyms": [
         "healthy",
@@ -6064,7 +6057,6 @@
       "synonyms": [
         "planned",
         "calculated",
-        "deliberate",
         "plotted"
       ],
       "antonyms": [
@@ -6627,7 +6619,6 @@
       ],
       "synonyms": [
         "facility",
-        "comfort",
         "convenience",
         "feature"
       ],
@@ -7033,7 +7024,6 @@
         "Her artless retelling of the accident, stumbling over details out of order, somehow made the jury trust her more."
       ],
       "synonyms": [
-        "naive",
         "ingenuous",
         "unaffected",
         "simple",
@@ -7369,7 +7359,6 @@
       ],
       "synonyms": [
         "generous",
-        "gracious",
         "big-hearted",
         "forgiving"
       ],
@@ -9993,8 +9982,7 @@
       "synonyms": [
         "conscious",
         "aware",
-        "feeling",
-        "perceptive"
+        "feeling"
       ],
       "antonyms": [
         "insensate",
@@ -10873,7 +10861,6 @@
       ],
       "synonyms": [
         "unnecessary",
-        "excessive",
         "redundant",
         "extraneous"
       ],
@@ -11239,7 +11226,6 @@
         "She scaled back the grandiose five-course wedding menu to a taco bar after seeing the catering quote."
       ],
       "synonyms": [
-        "extravagant",
         "overambitious",
         "pompous",
         "ostentatious"
@@ -11449,8 +11435,7 @@
       "synonyms": [
         "abundant",
         "copious",
-        "plentiful",
-        "lavish"
+        "plentiful"
       ],
       "antonyms": [
         "scant",
@@ -13798,7 +13783,6 @@
       "synonyms": [
         "massive",
         "uniform",
-        "indivisible",
         "rigid"
       ],
       "antonyms": [
@@ -14008,8 +13992,7 @@
       "synonyms": [
         "disparage",
         "demean",
-        "deride",
-        "diminish"
+        "deride"
       ],
       "antonyms": [
         "praise",
@@ -14354,7 +14337,6 @@
       "synonyms": [
         "bizarre",
         "eccentric",
-        "outrageous",
         "preposterous"
       ],
       "antonyms": [
@@ -14994,7 +14976,6 @@
       "synonyms": [
         "self-important",
         "arrogant",
-        "grandiose",
         "bombastic"
       ],
       "antonyms": [
@@ -15542,7 +15523,6 @@
       "synonyms": [
         "candidate",
         "contender",
-        "hopeful",
         "seeker"
       ],
       "antonyms": [],
@@ -16103,7 +16083,6 @@
       "synonyms": [
         "whiny",
         "peevish",
-        "fretful",
         "grumbling"
       ],
       "antonyms": [
@@ -16285,8 +16264,7 @@
       "synonyms": [
         "impair",
         "invalidate",
-        "undermine",
-        "corrupt"
+        "undermine"
       ],
       "antonyms": [
         "validate",
@@ -16374,7 +16352,6 @@
       ],
       "synonyms": [
         "mitigate",
-        "justify",
         "excuse",
         "palliate"
       ],
@@ -17511,7 +17488,6 @@
       ],
       "synonyms": [
         "compile",
-        "assemble",
         "organize",
         "arrange"
       ],
@@ -18579,7 +18555,6 @@
       "synonyms": [
         "relentless",
         "unstoppable",
-        "unyielding",
         "implacable"
       ],
       "antonyms": [
@@ -19079,8 +19054,7 @@
       "synonyms": [
         "backslide",
         "regress",
-        "recur",
-        "worsen"
+        "recur"
       ],
       "antonyms": [
         "recover",
@@ -19216,9 +19190,7 @@
       "synonyms": [
         "persistent",
         "dogged",
-        "unyielding",
-        "relentless",
-        "stubborn"
+        "relentless"
       ],
       "antonyms": [
         "yielding",
@@ -19316,8 +19288,6 @@
       "synonyms": [
         "celibate",
         "pure",
-        "modest",
-        "austere",
         "unadorned"
       ],
       "antonyms": [
@@ -19517,8 +19487,7 @@
       "synonyms": [
         "complexity",
         "elaborateness",
-        "complication",
-        "nuance"
+        "complication"
       ],
       "antonyms": [
         "simplicity"
@@ -20582,7 +20551,6 @@
         "The editor conflated three surviving manuscripts into one readable text, noting in the margins wherever the versions disagreed."
       ],
       "synonyms": [
-        "confuse",
         "equate",
         "merge",
         "fuse"
@@ -21293,8 +21261,7 @@
       "synonyms": [
         "having said that",
         "even so",
-        "all the same",
-        "still"
+        "all the same"
       ],
       "antonyms": [
         "moreover",
@@ -21856,7 +21823,6 @@
       ],
       "synonyms": [
         "impose",
-        "administer",
         "wreak"
       ],
       "antonyms": [
@@ -28682,7 +28648,6 @@
         "Reporting from the border turned perilous once both sides began treating a press vest as a target rather than protection."
       ],
       "synonyms": [
-        "treacherous",
         "hazardous",
         "precarious",
         "risky",
@@ -28998,7 +28963,6 @@
       "synonyms": [
         "jealous",
         "covetous",
-        "resentful",
         "begrudging"
       ],
       "antonyms": [
@@ -29110,8 +29074,7 @@
         "rebuke",
         "reprimand",
         "reprove",
-        "chide",
-        "caution"
+        "chide"
       ],
       "antonyms": [
         "praise",
@@ -29758,7 +29721,6 @@
       ],
       "synonyms": [
         "warning",
-        "caution",
         "reprimand",
         "rebuke",
         "exhortation"
@@ -33667,7 +33629,6 @@
         "The river's winding channel has shifted a hundred meters since the 1980s survey, so the county redrew the property lines."
       ],
       "synonyms": [
-        "twisting",
         "meandering",
         "serpentine",
         "sinuous"
@@ -34827,7 +34788,6 @@
       "synonyms": [
         "receptive",
         "compliant",
-        "agreeable",
         "tractable"
       ],
       "antonyms": [
@@ -35073,7 +35033,6 @@
         "Venture partners talk about market receptivity the way farmers talk about rainfall: you can time a launch around it but never command it."
       ],
       "synonyms": [
-        "openness",
         "receptiveness",
         "responsiveness",
         "susceptibility"
@@ -35119,7 +35078,6 @@
         "Couples therapy did not fix the arguments, but it gave both of them enough receptiveness to let the other finish a sentence."
       ],
       "synonyms": [
-        "openness",
         "receptivity",
         "willingness",
         "open-mindedness"
@@ -35603,8 +35561,7 @@
       ],
       "synonyms": [
         "insuperable",
-        "unconquerable",
-        "overwhelming"
+        "unconquerable"
       ],
       "antonyms": [
         "surmountable",
@@ -35793,7 +35750,6 @@
       ],
       "synonyms": [
         "subtle",
-        "sophisticated",
         "fine-grained",
         "layered"
       ],
@@ -38222,7 +38178,6 @@
       ],
       "synonyms": [
         "incorporation",
-        "involvement",
         "integration"
       ],
       "antonyms": [
@@ -38676,7 +38631,6 @@
         "Lithium is so reactive that the battery plant stores it under oil, and one careless spill last spring shut the line for a week."
       ],
       "synonyms": [
-        "responsive",
         "passive",
         "volatile"
       ],
@@ -38898,8 +38852,7 @@
       ],
       "synonyms": [
         "accomplish",
-        "carry out",
-        "satisfy"
+        "carry out"
       ],
       "antonyms": [
         "neglect",
@@ -40239,7 +40192,6 @@
       "synonyms": [
         "scale",
         "extent",
-        "enormity",
         "immensity",
         "significance"
       ],
@@ -40811,7 +40763,6 @@
         "Two like-minded council members pushed the composting bylaw through, and the third abstained because her brother hauls trash for a living."
       ],
       "synonyms": [
-        "congenial",
         "kindred",
         "compatible",
         "of one mind",
@@ -41681,7 +41632,6 @@
         "irrepressible",
         "euphoric",
         "ecstatic",
-        "upbeat",
         "buoyant",
         "effusive"
       ],
@@ -42174,8 +42124,7 @@
         "quiet",
         "unremarkable",
         "humdrum",
-        "monotonous",
-        "routine"
+        "monotonous"
       ],
       "antonyms": [
         "momentous",
@@ -42393,7 +42342,6 @@
       ],
       "synonyms": [
         "integration",
-        "inclusion",
         "assimilation",
         "absorption"
       ],
@@ -42778,8 +42726,7 @@
         "inert",
         "unresponsive",
         "impassive",
-        "apathetic",
-        "lukewarm"
+        "apathetic"
       ],
       "antonyms": [
         "reactive",
@@ -43062,7 +43009,6 @@
       "synonyms": [
         "unenlightened",
         "ignorant",
-        "backward",
         "uninformed",
         "superstitious"
       ],
@@ -43124,7 +43070,6 @@
       ],
       "synonyms": [
         "insight",
-        "understanding",
         "awakening",
         "illumination",
         "clarification"
@@ -43185,8 +43130,7 @@
         "improbable",
         "far-fetched",
         "unconvincing",
-        "unbelievable",
-        "dubious"
+        "unbelievable"
       ],
       "antonyms": [
         "plausible",
@@ -43307,7 +43251,6 @@
       ],
       "synonyms": [
         "overlook",
-        "excuse",
         "tolerate"
       ],
       "antonyms": [
@@ -43724,8 +43667,7 @@
       "synonyms": [
         "tenacious",
         "persistent",
-        "relentless",
-        "stubborn"
+        "relentless"
       ],
       "antonyms": [
         "halfhearted",
