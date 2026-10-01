@@ -267,4 +267,4 @@ the spec is committed.
 
 **Review in two phases**: first whether the right thing was built, then whether it was built well — and read the code rather than trusting the implementer's report. **After a change, break the production code on purpose and confirm the matching test goes red.** That once caught three tests that an early-exit path made into no-ops while they still showed green.
 
-Commit in small, self-contained steps, with a message that leads with the finding or the reason — not just the change.
+Commit in small, self-contained steps, with a message that leads with the finding or the reason — not just the change. **Every number in a commit message comes from a command run for it, not from memory**: twice on 2026-10-01 a count written from recollection was wrong in a pushed commit (0.73M Jev tokens for 0.43M, 166 excludes for 137) and needed a correction in the next one.
