@@ -1080,12 +1080,12 @@
       "zh": "她在逆境中撑了三年,没跟任何人诉过苦。",
       "target": "逆境",
       "order": [
-        "adversity"
+        "adversity",
+        "hardship",
+        "setback"
       ],
       "extra": [
-        "hardship",
-        "misfortune",
-        "setback"
+        "misfortune"
       ],
       "en": "She carried three years of adversity without complaining to anyone.",
       "why": "adversity 是持续压在身上的困厄处境,抽象且正式;hardship 更具体,常指生活上的艰难;misfortune 强调运气不好、遭遇不幸;setback 只是一次挫折,可以很快过去。"
@@ -1209,11 +1209,10 @@
         "condemn"
       ],
       "extra": [
-        "decry",
-        "censure"
+        "decry"
       ],
       "en": "Three Nobel laureates jointly denounced the ban.",
-      "why": "denounce 指公开点名地谴责,往往还伴随揭发;condemn 是最通用的谴责,可由机构作出;decry 侧重强烈反对某种做法或风气;censure 特指有权机构作出的正式申斥。"
+      "why": "denounce 指公开点名地谴责,往往还伴随揭发;condemn 是最通用的谴责,可由机构作出;decry 侧重强烈反对某种做法或风气。"
     },
     {
       "zh": "董事会里唯一的异议来自那位独立董事。",
@@ -1624,9 +1623,7 @@
       "order": [
         "abhorrent",
         "repugnant",
-        "odious"
-      ],
-      "extra": [
+        "odious",
         "repellent"
       ],
       "en": "She found the practice abhorrent and left the project that day.",
@@ -1749,10 +1746,10 @@
       "target": "坦率",
       "order": [
         "candor",
-        "frankness"
+        "frankness",
+        "bluntness"
       ],
       "extra": [
-        "bluntness",
         "plain speaking"
       ],
       "en": "Her candor did not go down well with the board, and no one could rebut it.",
