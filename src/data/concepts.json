@@ -91,6 +91,9 @@
         "reprimand",
         "scold",
         "decry"
+      ],
+      "excludeOpposites": [
+        "vindication"
       ]
     },
     {
@@ -164,7 +167,8 @@
         "meddlesome",
         "officious",
         "prominent",
-        "tactless"
+        "tactless",
+        "loose-lipped"
       ]
     },
     {

@@ -912,11 +912,11 @@
       "zh": "经历过那场风波,她对承诺变得格外谨慎。",
       "target": "格外谨慎",
       "order": [
-        "circumspect"
+        "circumspect",
+        "wary"
       ],
       "extra": [
         "cautious",
-        "wary",
         "guarded"
       ],
       "en": "After the scandal she grew circumspect about making any promise at all.",
@@ -1675,12 +1675,12 @@
       "zh": "面对裁员,大多数人表现得异常冷漠。",
       "target": "冷漠",
       "order": [
-        "apathetic"
+        "apathetic",
+        "unmoved"
       ],
       "extra": [
         "indifferent",
-        "listless",
-        "unmoved"
+        "listless"
       ],
       "en": "Most people were strangely apathetic about the layoffs.",
       "why": "apathetic 指本该在意却提不起任何情绪,含消极评价;indifferent 只说无所谓、不偏向哪边;listless 强调没精打采的生理状态;unmoved 特指被打动不了。"
@@ -1955,11 +1955,11 @@
       "zh": "军方在一夜之间罢黜了那位领导人。",
       "target": "罢黜",
       "order": [
-        "depose"
+        "depose",
+        "dethrone"
       ],
       "extra": [
         "oust",
-        "dethrone",
         "remove from power"
       ],
       "en": "The military deposed the leader overnight.",
@@ -3515,13 +3515,13 @@
       "why": "incipient 指刚开始出现、尚不明显的阶段,正式,常用于问题与疾病;early-stage 是中性的描述;budding 带正面色彩,多形容才华或恋情;in its infancy 强调整个事物还处在起步期。"
     },
     {
-      "zh": "两次测量之间的差别小到可以忽略。",
-      "target": "小到可以忽略",
+      "zh": "两次测量之间的差别小到几乎为零。",
+      "target": "小到几乎为零",
       "order": [
-        "infinitesimal"
+        "infinitesimal",
+        "negligible"
       ],
       "extra": [
-        "negligible",
         "vanishingly small",
         "minute"
       ],
