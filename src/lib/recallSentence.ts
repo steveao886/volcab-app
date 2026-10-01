@@ -62,6 +62,8 @@ export interface RecallSentence {
    * either way. Most of the 37 were the part of speech — `harangued` on
    * the noun, `the subconscious` on the adjective, `mimed` on 哑剧演员.
    * A disagreement at confidence ≥0.9 was a wrong tag 33 times in 34.
+   * A second pass the same day found a 38th the first had agreed with —
+   * `stoic#3`, nurses who *are* stoics, on the adjective.
    *
    * Optional, range-checked by validate-recall-sentences, out-of-range
    * falling back to sense 0 at runtime — write strict, read lenient.
