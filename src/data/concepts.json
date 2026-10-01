@@ -489,13 +489,6 @@
       ]
     },
     {
-      "id": "intrinsic",
-      "zh": "打根儿上就带着的,拿不掉也简化不了",
-      "anchors": [
-        "fundamental"
-      ]
-    },
-    {
       "id": "obsequious",
       "zh": "对有权的人一味讨好,姿态放得极低",
       "anchors": [
@@ -548,15 +541,6 @@
       "zh": "嘴上一套背后一套,话里掺着假",
       "anchors": [
         "deceitful"
-      ]
-    },
-    {
-      "id": "thwart",
-      "zh": "半路拦一下,让对方办不成",
-      "anchors": [
-        "block",
-        "frustrate",
-        "obstruct"
       ]
     },
     {
@@ -775,32 +759,10 @@
       ]
     },
     {
-      "id": "precarious",
-      "zh": "晃晃悠悠,随时可能塌",
-      "anchors": [
-        "shaky",
-        "unstable"
-      ]
-    },
-    {
       "id": "oblivious",
       "zh": "自己压根没意识到",
       "anchors": [
         "unconscious"
-      ]
-    },
-    {
-      "id": "fickle",
-      "zh": "说变就变,靠不住",
-      "anchors": [
-        "volatile"
-      ],
-      "excludeOpposites": [
-        "inert",
-        "preemptive",
-        "proactive",
-        "proactivity",
-        "unreactive"
       ]
     },
     {

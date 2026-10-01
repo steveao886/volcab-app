@@ -495,8 +495,8 @@ export function gradeInput(
  * would silently truncate a window computed over a larger pool - the bug
  * RECALL_RECENT_LIMIT exists for. The windows this mode wants sum to about
  * 100 today (54 + 26 + 16 + 4 over pools of 81 / 40 / 25 / 6), and the whole
- * askable pool can never exceed one question per concept per axis - 328 at
- * 82 concepts. 400 keeps the cap from ever being the binding constraint, and
+ * askable pool can never exceed one question per concept per axis - 312 at
+ * 78 concepts (328 at 82, before four were retired on 2026-10-01). 400 keeps the cap from ever being the binding constraint, and
  * costs ~9 KB beside a progress cache measured at 190 KB.
  */
 export const DIVERGE_RECENT_LIMIT = 400
