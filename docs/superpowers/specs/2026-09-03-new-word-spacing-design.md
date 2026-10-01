@@ -218,6 +218,11 @@ every review, and there is no `startedOn`. The fix would be an optional
 Deferred by decision — ship the single-ordering guarantee first and see
 whether two consecutive days actually reads as a problem.
 
+**It did, and it is closed** by exactly that field, with a 3-day lookback —
+see `2026-10-01-new-word-day-spacing-design.md`. Replayed over the live
+library that day: 0 related pairs on one day, but 13 one day apart and 14
+two days apart.
+
 ## Testing
 
 `freshOrder.test.ts`, pure:
