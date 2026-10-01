@@ -47426,6 +47426,1639 @@
       "usageScore": 5,
       "sourceNote": "manual",
       "addedAt": "2026-09-23"
+    },
+    {
+      "id": "indecision",
+      "headword": "indecision",
+      "phonetic": "/ˌɪndɪˈsɪʒən/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "the state of being unable to make up your mind or choose between options",
+          "zh": "犹豫不决;优柔寡断;踌躇"
+        }
+      ],
+      "examples": [
+        "Her indecision over the two job offers dragged on for three weeks, until the first company quietly withdrew its salary proposal.",
+        "After ten minutes of indecision in front of the menu, Tom ordered exactly what his sister had chosen.",
+        "The coach blamed the defender's moment of indecision for the goal, when he hesitated between clearing the ball and passing it back.",
+        "Years of indecision at the ministry left the bridge half-built, rusting over the river while three ministers promised to decide next month.",
+        "Pia felt a flash of indecision at the altar, her hands shaking around the bouquet, before she smiled and said yes."
+      ],
+      "synonyms": [
+        "hesitation",
+        "uncertainty",
+        "vacillation",
+        "irresolution"
+      ],
+      "antonyms": [
+        "decisiveness",
+        "resolve"
+      ],
+      "collocations": [
+        "a moment of indecision",
+        "paralysed by indecision",
+        "chronic indecision",
+        "end the indecision"
+      ],
+      "relatedForms": [
+        {
+          "form": "indecisive",
+          "pos": "adj.",
+          "zh": "犹豫不决的;优柔寡断的"
+        },
+        {
+          "form": "indecisively",
+          "pos": "adv.",
+          "zh": "犹豫不决地"
+        },
+        {
+          "form": "indecisiveness",
+          "pos": "n.",
+          "zh": "优柔寡断"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "in-(不) + de-(离开) + caedere(切) → 没能一刀切断 → 犹豫不决",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-23"
+    },
+    {
+      "id": "reserved",
+      "headword": "reserved",
+      "phonetic": "/rɪˈzɝvd/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "quiet and controlled, slow to show feelings or talk about yourself",
+          "zh": "矜持的;含蓄的;寡言少语的",
+          "share": 60
+        },
+        {
+          "pos": "adj.",
+          "en": "kept for a particular person or purpose, especially booked in advance",
+          "zh": "预订的;保留的;专用的",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "My reserved uncle sat through the whole wedding dinner smiling politely, and only talked once he found another person who liked fishing.",
+        "Mr Okafor was a reserved man who never mentioned his years in the navy, so the crowd at his funeral surprised his neighbours.",
+        "Lina was reserved by nature and rarely spoke in meetings, but her written reports were the sharpest anyone in the department had seen.",
+        "The front table by the window is reserved for the Hendersons, who have eaten here every Friday evening since the restaurant opened.",
+        "A row of seats near the stage was reserved for the injured firefighters and their families, with name cards taped to each chair."
+      ],
+      "synonyms": [
+        "reticent",
+        "restrained",
+        "undemonstrative"
+      ],
+      "antonyms": [
+        "outgoing",
+        "effusive",
+        "gregarious"
+      ],
+      "collocations": [
+        "a reserved manner",
+        "a reserved table",
+        "reserved seating",
+        "reserved parking space"
+      ],
+      "relatedForms": [
+        {
+          "form": "reserve",
+          "pos": "v.",
+          "zh": "预订;保留"
+        },
+        {
+          "form": "reservedly",
+          "pos": "adv.",
+          "zh": "拘谨地;含蓄地"
+        },
+        {
+          "form": "reservation",
+          "pos": "n.",
+          "zh": "预订;保留意见"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "re-(向后) + servare(保持) → 留着不用 → 保留的",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-23"
+    },
+    {
+      "id": "ingenuous",
+      "headword": "ingenuous",
+      "phonetic": "/ɪnˈdʒɛnjuəs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "innocent, trusting and openly honest, usually because of little experience of deceit",
+          "zh": "天真的;坦率的;单纯的"
+        }
+      ],
+      "examples": [
+        "The ingenuous intern told the client exactly how much the agency had overcharged him last year, and the room went silent.",
+        "Her ingenuous question about why adults pretend to like each other made the whole dinner table laugh.",
+        "Only an ingenuous traveller would hand his passport to a stranger at the station just because the man wore a uniform.",
+        "Tomas had an ingenuous face, and the older traders at the market saw it as an invitation to raise their prices.",
+        "The village girl's ingenuous delight at her first escalator ride charmed the shop assistants, who let her ride it three more times."
+      ],
+      "synonyms": [
+        "naive",
+        "artless",
+        "guileless",
+        "candid"
+      ],
+      "antonyms": [
+        "disingenuous",
+        "devious",
+        "worldly"
+      ],
+      "collocations": [
+        "an ingenuous smile",
+        "ingenuous charm",
+        "an ingenuous young man",
+        "an ingenuous question"
+      ],
+      "relatedForms": [
+        {
+          "form": "ingenuously",
+          "pos": "adv.",
+          "zh": "天真地;坦率地"
+        },
+        {
+          "form": "ingenuousness",
+          "pos": "n.",
+          "zh": "天真;坦率"
+        },
+        {
+          "form": "disingenuous",
+          "pos": "adj.",
+          "zh": "不坦诚的;假装天真的"
+        }
+      ],
+      "usageScore": 3,
+      "etymology": "ingenuus(生来自由的) → 坦率直白 → 天真坦率",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-23"
+    },
+    {
+      "id": "dissuade",
+      "headword": "dissuade",
+      "phonetic": "/dɪˈsweɪd/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to persuade someone not to do something they are planning or considering",
+          "zh": "劝阻;劝止;劝人打消(念头)"
+        }
+      ],
+      "examples": [
+        "Her parents tried for months to dissuade her from quitting medical school, but she had already signed the lease on a bakery.",
+        "Nothing could dissuade the old fisherman from taking his boat out that morning, not the storm warnings nor his daughter's tears.",
+        "The mayor hopes higher parking fees will dissuade commuters from driving into the centre, though early figures show little change.",
+        "I tried to dissuade Marek from lending his brother more money, but he said family never keeps accounts.",
+        "A photo of a smoker's blackened lung was meant to dissuade teenagers, yet the pupils mostly joked about it."
+      ],
+      "synonyms": [
+        "discourage",
+        "deter",
+        "put off"
+      ],
+      "antonyms": [
+        "persuade",
+        "urge",
+        "encourage"
+      ],
+      "collocations": [
+        "dissuade someone from doing",
+        "try to dissuade",
+        "fail to dissuade",
+        "dissuade them from going"
+      ],
+      "relatedForms": [
+        {
+          "form": "dissuasion",
+          "pos": "n.",
+          "zh": "劝阻"
+        },
+        {
+          "form": "dissuasive",
+          "pos": "adj.",
+          "zh": "劝阻的"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "dis-(相反) + suadere(劝说) → 劝人不要做",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-23"
+    },
+    {
+      "id": "discouraging",
+      "headword": "discouraging",
+      "phonetic": "/dɪˈskɝɪdʒɪŋ/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "making you feel less hopeful, confident or willing to continue",
+          "zh": "令人沮丧的;使人泄气的;令人灰心的"
+        }
+      ],
+      "examples": [
+        "The first test results were discouraging: after six months of treatment, the tumour had shrunk by barely two percent.",
+        "It was discouraging to watch the bakery's queue vanish the week a bigger shop opened across the road.",
+        "Her teacher's discouraging remark, that she would never play professionally, stayed with Ana long after she won the national title.",
+        "Job hunters find it discouraging to send out sixty applications and hear back from only two companies.",
+        "The weather forecast looked discouraging for the hikers, with rain due all weekend and the summit path already flooded."
+      ],
+      "synonyms": [
+        "disheartening",
+        "demoralizing",
+        "dispiriting"
+      ],
+      "antonyms": [
+        "encouraging",
+        "heartening",
+        "promising"
+      ],
+      "collocations": [
+        "a discouraging sign",
+        "discouraging news",
+        "discouraging results",
+        "find it discouraging"
+      ],
+      "relatedForms": [
+        {
+          "form": "discourage",
+          "pos": "v.",
+          "zh": "使泄气;劝阻"
+        },
+        {
+          "form": "discouragement",
+          "pos": "n.",
+          "zh": "气馁;沮丧"
+        },
+        {
+          "form": "discouragingly",
+          "pos": "adv.",
+          "zh": "令人沮丧地"
+        },
+        {
+          "form": "discouraged",
+          "pos": "adj.",
+          "zh": "灰心的"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "dis-(去掉) + courage(勇气) → 使失去勇气",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-23"
+    },
+    {
+      "id": "propensity",
+      "headword": "propensity",
+      "phonetic": "/prəˈpɛnsəti/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "a natural tendency to behave in a particular way, often one that is undesirable",
+          "zh": "倾向;习性;癖好"
+        }
+      ],
+      "examples": [
+        "Her propensity for arriving late cost her the interview, even though she had practiced every answer the night before.",
+        "The river's propensity to flood each spring has pushed the village to build its houses on stilts.",
+        "Doctors found a family propensity for heart disease and urged both brothers to have their blood pressure checked every year.",
+        "He had a propensity to exaggerate, so his friends divided every fishing story by three before believing a word.",
+        "Teenagers show a propensity for taking risks when friends are watching, according to the brain scans in the study."
+      ],
+      "synonyms": [
+        "tendency",
+        "inclination",
+        "proclivity",
+        "penchant"
+      ],
+      "antonyms": [
+        "aversion",
+        "disinclination"
+      ],
+      "collocations": [
+        "a propensity for",
+        "a propensity to",
+        "a natural propensity",
+        "a strong propensity"
+      ],
+      "relatedForms": [],
+      "usageScore": 5,
+      "etymology": "pro-(向前) + pendere(悬挂) → 向前倾斜 → 倾向",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-23"
+    },
+    {
+      "id": "inclined",
+      "headword": "inclined",
+      "phonetic": "/ɪnˈklaɪnd/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "feeling that you want to do something, or likely to behave in a particular way",
+          "zh": "倾向于…的;有意…的;易于…的",
+          "share": 70
+        },
+        {
+          "pos": "adj.",
+          "en": "having a natural talent or interest in a particular kind of activity",
+          "zh": "有…天赋的;喜好…的",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "After three hours of arguing about the budget, I was inclined to let the committee choose whatever it liked and go home.",
+        "Rain was forecast for Saturday, so Marta was inclined to cancel the picnic, though her brother insisted the clouds would pass.",
+        "Most voters in the village are inclined to trust the old doctor, who has treated three generations of their families.",
+        "Even as a child Jun was mechanically inclined, taking apart the toaster and the radio and rebuilding both before dinner.",
+        "Neither of her parents was musically inclined, so nobody understood where the girl got her ear for the cello."
+      ],
+      "synonyms": [
+        "disposed",
+        "prone",
+        "likely"
+      ],
+      "antonyms": [
+        "reluctant",
+        "unwilling"
+      ],
+      "collocations": [
+        "inclined to believe",
+        "be inclined to agree",
+        "artistically inclined",
+        "mathematically inclined"
+      ],
+      "relatedForms": [
+        {
+          "form": "inclination",
+          "pos": "n.",
+          "zh": "倾向;意愿;爱好"
+        },
+        {
+          "form": "incline",
+          "pos": "v.",
+          "zh": "使倾向于;倾斜"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "in-(向) + clinare(倾斜) → 向…倾斜 → 倾向于",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-23"
+    },
+    {
+      "id": "enchanting",
+      "headword": "enchanting",
+      "phonetic": "/ɪnˈtʃæntɪŋ/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "so charming and attractive that it fascinates you and gives you great pleasure",
+          "zh": "迷人的;令人陶醉的;引人入胜的"
+        }
+      ],
+      "examples": [
+        "The hotel sits on a hill above an enchanting little harbour where fishermen still mend their nets on the quay.",
+        "Her enchanting laugh carried across the crowded gallery, and several guests turned to see who was enjoying the show so much.",
+        "The children found the old garden enchanting, with its hidden gates, mossy statues and a pond full of fat orange fish.",
+        "Reviewers called the new puppet film enchanting, praising how a few scraps of cloth could make a theatre of adults go silent.",
+        "We stayed up late in the mountain cabin, listening to our host tell enchanting stories about wolves that married shepherds."
+      ],
+      "synonyms": [
+        "charming",
+        "captivating",
+        "delightful"
+      ],
+      "antonyms": [
+        "unappealing",
+        "dull"
+      ],
+      "collocations": [
+        "an enchanting smile",
+        "an enchanting melody",
+        "an enchanting village",
+        "utterly enchanting"
+      ],
+      "relatedForms": [
+        {
+          "form": "enchant",
+          "pos": "v.",
+          "zh": "使着迷;对…施魔法"
+        },
+        {
+          "form": "enchantment",
+          "pos": "n.",
+          "zh": "魅力;魔法"
+        },
+        {
+          "form": "enchantingly",
+          "pos": "adv.",
+          "zh": "迷人地"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "en-(在…中) + cantare(唱) → 对人念咒 → 迷惑 → 迷人的",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-23"
+    },
+    {
+      "id": "companionship",
+      "headword": "companionship",
+      "phonetic": "/kəmˈpænjənʃɪp/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "the pleasant feeling of having a friend or other people with you, so that you are not lonely",
+          "zh": "陪伴;友谊;伙伴关系"
+        }
+      ],
+      "examples": [
+        "After his wife died, the retired teacher adopted a rescue dog mostly for the companionship it offered on long evenings.",
+        "The nursing home runs a weekly tea afternoon because staff noticed that residents missed companionship more than they missed the food.",
+        "Long-haul truckers often say the radio gives them the only companionship they get between Monday and Friday.",
+        "She moved to the city for work, but it was the companionship of her flatmates that kept her from leaving in the first winter.",
+        "On the expedition, the geologist valued the quiet companionship of the guide, a man who could walk all day without saying a word."
+      ],
+      "synonyms": [
+        "fellowship",
+        "company",
+        "camaraderie"
+      ],
+      "antonyms": [
+        "loneliness",
+        "isolation"
+      ],
+      "collocations": [
+        "human companionship",
+        "provide companionship",
+        "seek companionship",
+        "years of companionship"
+      ],
+      "relatedForms": [
+        {
+          "form": "companion",
+          "pos": "n.",
+          "zh": "同伴;伴侣"
+        },
+        {
+          "form": "companionable",
+          "pos": "adj.",
+          "zh": "友善的;好相处的"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "com-(一起) + panis(面包) → 一起吃面包的人 → 同伴",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-24"
+    },
+    {
+      "id": "prolonged",
+      "headword": "prolonged",
+      "phonetic": "/prəˈlɔːŋd/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "continuing for a long time, or longer than is usual or expected",
+          "zh": "持久的;长时间的;延长的"
+        }
+      ],
+      "examples": [
+        "A prolonged dry spell in the valley left the reservoir at a third of its normal level by September.",
+        "After a prolonged silence, the minister finally admitted that the contract had been signed without any outside review.",
+        "Prolonged exposure to loud music at the club had left the drummer with a constant ringing in both ears.",
+        "The prolonged strike at the port meant that shops across the island ran out of bread, fuel and even candles.",
+        "He gave her a prolonged stare across the table, as if waiting for her to take back what she had said."
+      ],
+      "synonyms": [
+        "lengthy",
+        "protracted",
+        "extended"
+      ],
+      "antonyms": [
+        "brief",
+        "short",
+        "fleeting"
+      ],
+      "collocations": [
+        "prolonged exposure",
+        "a prolonged period",
+        "a prolonged absence",
+        "prolonged illness"
+      ],
+      "relatedForms": [
+        {
+          "form": "prolong",
+          "pos": "v.",
+          "zh": "延长;拖长"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "pro-(向前) + longus(长) → 向前拉长 → 延长的",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-24"
+    },
+    {
+      "id": "discern",
+      "headword": "discern",
+      "phonetic": "/dɪˈsɜːrn/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to see, hear or notice something that is not obvious, usually with some effort",
+          "zh": "看出;觉察;辨认出",
+          "share": 60
+        },
+        {
+          "pos": "v.",
+          "en": "to recognize the difference between things, or to work out what is true or right through careful thought",
+          "zh": "辨别;洞悉;领会",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "Through the fog, the captain could just discern the faint outline of a lighthouse about two miles off the starboard bow.",
+        "It was hard to discern any real plan in the mayor's speech, which jumped from bike lanes to tax cuts and back.",
+        "Even in the dim light of the cellar, the restorer could discern a second signature beneath the painter's name.",
+        "A good editor can discern which of the author's three endings the readers will actually remember.",
+        "Young children often cannot discern a joke from an insult, so teachers explain tone before they correct behaviour."
+      ],
+      "synonyms": [
+        "perceive",
+        "detect",
+        "make out"
+      ],
+      "antonyms": [
+        "overlook"
+      ],
+      "collocations": [
+        "discern a pattern",
+        "hard to discern",
+        "discern the truth",
+        "discern between"
+      ],
+      "relatedForms": [
+        {
+          "form": "discernment",
+          "pos": "n.",
+          "zh": "洞察力;辨别力"
+        },
+        {
+          "form": "discernible",
+          "pos": "adj.",
+          "zh": "可辨别的;看得出的"
+        },
+        {
+          "form": "discerning",
+          "pos": "adj.",
+          "zh": "有眼光的;敏锐的"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "dis-(分开) + cernere(筛;分辨) → 分辨出 → 看出",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-24"
+    },
+    {
+      "id": "indistinguishable",
+      "headword": "indistinguishable",
+      "phonetic": "/ˌɪndɪˈstɪŋɡwɪʃəbəl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "so similar to something else that you cannot tell the two apart",
+          "zh": "无法区分的;难以辨别的"
+        }
+      ],
+      "examples": [
+        "The forged banknotes were so good that even the bank teller found them indistinguishable from the real ones.",
+        "From across the lake, the twin sisters in their matching raincoats were indistinguishable, and the coach kept calling them by the wrong names.",
+        "To a beginner, the taste of the cheaper olive oil is indistinguishable from the expensive bottle sold next to it.",
+        "In the photograph, the old farmhouse and its barn look indistinguishable from the hillside, both covered by the same grey snow.",
+        "Advanced chatbots can now write emails that are indistinguishable from those of a tired manager at the end of a long week."
+      ],
+      "synonyms": [
+        "identical",
+        "interchangeable",
+        "alike"
+      ],
+      "antonyms": [
+        "distinct",
+        "different"
+      ],
+      "collocations": [
+        "virtually indistinguishable",
+        "indistinguishable from",
+        "almost indistinguishable",
+        "indistinguishable twins"
+      ],
+      "relatedForms": [
+        {
+          "form": "indistinguishably",
+          "pos": "adv.",
+          "zh": "无法区分地"
+        },
+        {
+          "form": "distinguish",
+          "pos": "v.",
+          "zh": "区分;辨别"
+        }
+      ],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-09-24"
+    },
+    {
+      "id": "hasty",
+      "headword": "hasty",
+      "phonetic": "/ˈheɪsti/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "done or decided too quickly, without taking enough time to think or check",
+          "zh": "仓促的;草率的;轻率的"
+        }
+      ],
+      "examples": [
+        "After a hasty glance at the contract, Marta signed it on the hood of the car and only found the cancellation fee a month later.",
+        "The coach warned his players against hasty passes in the final minutes, because every lost ball had turned into a goal for the other side.",
+        "Paul regretted his hasty email to the landlord the moment he read the reply and realized the leak was not the landlord's fault.",
+        "Residents were given hasty instructions to leave before the river rose, and several families forgot their medicines in the rush.",
+        "Don't make a hasty decision about the house; sleep on the offer and look at the roof again in daylight."
+      ],
+      "synonyms": [
+        "rash",
+        "hurried",
+        "impulsive"
+      ],
+      "antonyms": [
+        "careful",
+        "deliberate",
+        "unhurried"
+      ],
+      "collocations": [
+        "a hasty decision",
+        "a hasty retreat",
+        "hasty conclusions",
+        "a hasty exit"
+      ],
+      "relatedForms": [
+        {
+          "form": "haste",
+          "pos": "n.",
+          "zh": "匆忙;仓促"
+        },
+        {
+          "form": "hastily",
+          "pos": "adv.",
+          "zh": "仓促地;草率地"
+        }
+      ],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-09-24"
+    },
+    {
+      "id": "undemanding",
+      "headword": "undemanding",
+      "phonetic": "/ˌʌndɪˈmændɪŋ/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "not requiring much effort, skill or attention",
+          "zh": "不费力的;轻松的;要求不高的(工作、事务)",
+          "share": 60
+        },
+        {
+          "pos": "adj.",
+          "en": "not asking for much from other people; easy to please or look after",
+          "zh": "不苛求的;好伺候的;不挑剔的",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "After the startup collapsed, Leila took an undemanding job stacking shelves at night and used the quiet hours to plan her next move.",
+        "These ferns are undemanding: they survive dim corners, forgotten watering and three weeks of my neglect each summer.",
+        "Her grandfather was an undemanding houseguest who asked only for strong tea, a window seat and no fuss over breakfast.",
+        "Their new dog turned out to be undemanding company, content with one short walk and a rug by the radiator.",
+        "After months of cramming for the bar exam, he spent the holiday reading undemanding detective novels on a sunlit balcony."
+      ],
+      "synonyms": [
+        "easy",
+        "straightforward"
+      ],
+      "antonyms": [
+        "demanding",
+        "taxing",
+        "exacting"
+      ],
+      "collocations": [
+        "an undemanding job",
+        "undemanding work",
+        "an undemanding schedule",
+        "undemanding customers"
+      ],
+      "relatedForms": [
+        {
+          "form": "demanding",
+          "pos": "adj.",
+          "zh": "要求高的;费力的"
+        },
+        {
+          "form": "demand",
+          "pos": "n.",
+          "zh": "要求;需求"
+        }
+      ],
+      "usageScore": 4,
+      "sourceNote": "manual",
+      "addedAt": "2026-09-24"
+    },
+    {
+      "id": "uneasy",
+      "headword": "uneasy",
+      "phonetic": "/ʌnˈiːzi/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "worried or nervous, as if something bad may happen or something is not right",
+          "zh": "不安的;忐忑的;担心的",
+          "share": 60
+        },
+        {
+          "pos": "adj.",
+          "en": "marked by tension and not settled or relaxed, so that it may easily break down",
+          "zh": "紧张的;不稳固的;别扭的(局面、气氛)",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "Mina felt uneasy when the taxi driver took a turn she did not recognize and stopped answering her questions.",
+        "Something about the stranger's smile made the whole table uneasy, and the conversation dried up before the starters arrived.",
+        "I had an uneasy feeling about the loan from the start, and the missing signature on page four confirmed it.",
+        "The two rival families kept an uneasy peace for years, nodding at each other in church and never once visiting.",
+        "An uneasy silence settled over the office after the manager read out the list of branches to be closed."
+      ],
+      "synonyms": [
+        "anxious",
+        "worried",
+        "apprehensive"
+      ],
+      "antonyms": [
+        "calm",
+        "relaxed",
+        "comfortable"
+      ],
+      "collocations": [
+        "feel uneasy",
+        "an uneasy peace",
+        "an uneasy silence",
+        "uneasy about"
+      ],
+      "relatedForms": [
+        {
+          "form": "unease",
+          "pos": "n.",
+          "zh": "不安;忧虑"
+        },
+        {
+          "form": "uneasily",
+          "pos": "adv.",
+          "zh": "不安地;局促地"
+        },
+        {
+          "form": "uneasiness",
+          "pos": "n.",
+          "zh": "不安;不自在"
+        }
+      ],
+      "usageScore": 7,
+      "sourceNote": "manual",
+      "addedAt": "2026-09-25"
+    },
+    {
+      "id": "bitterness",
+      "headword": "bitterness",
+      "phonetic": "/ˈbɪtərnəs/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "a lasting feeling of anger and resentment about something unfair that happened to you",
+          "zh": "怨恨;怨愤;愤愤不平",
+          "share": 60
+        },
+        {
+          "pos": "n.",
+          "en": "a sharp, unpleasant taste, like that of strong black coffee or unsweetened chocolate",
+          "zh": "苦味;苦涩",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "Twenty years after the factory closed, Dennis still spoke of the owners with such bitterness that his daughter stopped asking about it.",
+        "There was no bitterness in her voice when she congratulated the colleague who got the promotion, only tiredness.",
+        "The divorce left a bitterness between the brothers that no amount of holiday dinners could soften.",
+        "A pinch of sugar cuts the bitterness of the coffee without making it taste sweet.",
+        "Chef Amara soaks the endive in cold water for an hour to draw out some of its bitterness before grilling it."
+      ],
+      "synonyms": [
+        "resentment",
+        "rancor",
+        "acrimony"
+      ],
+      "antonyms": [
+        "goodwill",
+        "forgiveness"
+      ],
+      "collocations": [
+        "a deep sense of bitterness",
+        "bitterness and resentment",
+        "with bitterness in his voice",
+        "the bitterness of defeat"
+      ],
+      "relatedForms": [
+        {
+          "form": "bitter",
+          "pos": "adj.",
+          "zh": "苦的;怨恨的;严寒的"
+        },
+        {
+          "form": "bitterly",
+          "pos": "adv.",
+          "zh": "痛苦地;怨恨地;极其"
+        }
+      ],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-09-25"
+    },
+    {
+      "id": "favorable",
+      "headword": "favorable",
+      "phonetic": "/ˈfeɪvərəbəl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "showing approval or support; expressing a positive opinion",
+          "zh": "赞许的;赞成的;好评的",
+          "share": 50
+        },
+        {
+          "pos": "adj.",
+          "en": "good for success or comfort; likely to give an advantage",
+          "zh": "有利的;适宜的;优惠的",
+          "share": 50
+        }
+      ],
+      "examples": [
+        "The restaurant's opening week drew a favorable review from the city's toughest critic, and the phone did not stop ringing.",
+        "Jurors formed a favorable impression of the defendant after he stayed calm and answered every question without hesitating.",
+        "Fishermen waited three days for favorable winds before the boats finally left the harbor.",
+        "The bank offered Raj a favorable rate on the mortgage because his employer had banked with them for decades.",
+        "Early polls were favorable to the mayor's housing plan, but support dropped once the cost was published."
+      ],
+      "synonyms": [
+        "approving",
+        "supportive"
+      ],
+      "antonyms": [
+        "negative",
+        "disapproving",
+        "hostile"
+      ],
+      "collocations": [
+        "a favorable review",
+        "a favorable impression",
+        "favorable conditions",
+        "favorable terms"
+      ],
+      "relatedForms": [
+        {
+          "form": "favor",
+          "pos": "n.",
+          "zh": "好感;恩惠;支持"
+        },
+        {
+          "form": "favorably",
+          "pos": "adv.",
+          "zh": "赞许地;有利地"
+        },
+        {
+          "form": "unfavorable",
+          "pos": "adj.",
+          "zh": "不利的;不赞成的"
+        }
+      ],
+      "usageScore": 7,
+      "sourceNote": "manual",
+      "addedAt": "2026-09-25"
+    },
+    {
+      "id": "sheer",
+      "headword": "sheer",
+      "phonetic": "/ʃɪr/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "nothing other than; complete and total, used to stress how great or pure something is",
+          "zh": "纯粹的;完全的;十足的",
+          "share": 50
+        },
+        {
+          "pos": "adj.",
+          "en": "of cloth, so thin and fine that you can almost see through it",
+          "zh": "极薄的;透明的(织物)",
+          "share": 30
+        },
+        {
+          "pos": "adj.",
+          "en": "of a cliff or slope, very steep and almost vertical",
+          "zh": "陡峭的;近乎垂直的",
+          "share": 20
+        }
+      ],
+      "examples": [
+        "Marcus passed the driving test through sheer stubbornness, retaking it five times until the examiner ran out of reasons to fail him.",
+        "The sheer number of unread messages after the week-long hike made Ines switch her phone off again.",
+        "She hung sheer curtains in the nursery so the morning light came through soft instead of harsh.",
+        "The bride's sleeves were sheer lace, and the photographer had to adjust the lighting to show the pattern.",
+        "The path ends at a sheer drop of two hundred meters, so the guide made everyone clip onto the rope."
+      ],
+      "synonyms": [
+        "utter",
+        "complete",
+        "absolute"
+      ],
+      "antonyms": [],
+      "collocations": [
+        "sheer luck",
+        "by sheer force of will",
+        "sheer curtains",
+        "a sheer cliff"
+      ],
+      "relatedForms": [],
+      "usageScore": 6,
+      "sourceNote": "manual",
+      "addedAt": "2026-09-25"
+    },
+    {
+      "id": "overplay",
+      "headword": "overplay",
+      "phonetic": "/ˌoʊvərˈpleɪ/",
+      "meanings": [
+        {
+          "pos": "v.",
+          "en": "to give something more importance or emphasis than it deserves, or to use an advantage too aggressively",
+          "zh": "夸大;过分强调;(恃优势)做过头",
+          "share": 60
+        },
+        {
+          "pos": "v.",
+          "en": "to act or perform in an exaggerated way",
+          "zh": "演得过火;表演过度",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "Don't overplay the risks; the study found only three side effects among four thousand patients, and all of them were mild.",
+        "The actor chose to overplay the grief at the funeral scene, sobbing so loudly that the audience started to laugh.",
+        "The union leader chose to overplay her hand by demanding a thirty percent raise, and the factory simply moved the order to another city.",
+        "Local newspapers tend to overplay the rivalry between the two towns, though most families on both sides share cousins and shops.",
+        "The young lead overplayed every line of the villain's speech, so the director taped a note saying less to her dressing-room mirror."
+      ],
+      "synonyms": [
+        "exaggerate",
+        "overstate",
+        "overdo"
+      ],
+      "antonyms": [
+        "understate",
+        "downplay"
+      ],
+      "collocations": [
+        "overplay your hand",
+        "overplay the danger",
+        "overplay a role",
+        "overplay the importance of"
+      ],
+      "relatedForms": [],
+      "usageScore": 5,
+      "sourceNote": "manual",
+      "addedAt": "2026-09-25"
+    },
+    {
+      "id": "observant",
+      "headword": "observant",
+      "phonetic": "/əbˈzɜːrvənt/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "quick to notice things, especially small details that other people miss",
+          "zh": "善于观察的;观察力敏锐的;眼尖的",
+          "share": 90
+        },
+        {
+          "pos": "adj.",
+          "en": "strictly following the rules and practices of a religion",
+          "zh": "严守教规的;虔诚的",
+          "share": 10
+        }
+      ],
+      "examples": [
+        "An observant nurse noticed the faint yellow tint in the baby's eyes and called the doctor before the night shift ended.",
+        "She was observant enough to spot that the waiter had quietly charged them for a dessert nobody had ordered.",
+        "Be observant on the trail: the only sign of the fox den was a scatter of feathers beside a fallen log.",
+        "Children who grow up in noisy households often become observant, reading a parent's mood from the way a cupboard door is shut.",
+        "Their observant neighbours close the shop every Saturday and spend the day at the synagogue, returning only after dark."
+      ],
+      "synonyms": [
+        "sharp-eyed",
+        "alert"
+      ],
+      "antonyms": [
+        "oblivious",
+        "inattentive"
+      ],
+      "collocations": [
+        "an observant reader",
+        "an observant eye",
+        "remarkably observant",
+        "an observant Jew"
+      ],
+      "relatedForms": [
+        {
+          "form": "observe",
+          "pos": "v.",
+          "zh": "观察;遵守"
+        },
+        {
+          "form": "observation",
+          "pos": "n.",
+          "zh": "观察;评论"
+        },
+        {
+          "form": "observantly",
+          "pos": "adv.",
+          "zh": "留心地"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "ob-(向) + servare(看守;守护) → 留意看着 → 善于观察的",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-25"
+    },
+    {
+      "id": "watchful",
+      "headword": "watchful",
+      "phonetic": "/ˈwɑːtʃfəl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "paying close attention in order to notice danger or trouble as soon as it appears",
+          "zh": "警惕的;戒备的;留神的"
+        }
+      ],
+      "examples": [
+        "The lifeguard stayed watchful all afternoon, scanning the crowded shallows each time a child's shout rose above the splash.",
+        "Under the watchful eye of her coach, the swimmer repeated the turn forty times until it came out clean.",
+        "Villagers remain watchful after two break-ins on the same street, taking turns to walk the lane at night.",
+        "A watchful teacher noticed the boy flinch whenever his stepfather's car pulled up, and quietly reported it to the school office.",
+        "The border guards were watchful but polite, checking every boot while the line of cars stretched back past the petrol station."
+      ],
+      "synonyms": [
+        "vigilant",
+        "alert",
+        "wary"
+      ],
+      "antonyms": [
+        "careless",
+        "unwary"
+      ],
+      "collocations": [
+        "a watchful eye",
+        "watchful waiting",
+        "stay watchful",
+        "watchful for signs of"
+      ],
+      "relatedForms": [
+        {
+          "form": "watchfully",
+          "pos": "adv.",
+          "zh": "警惕地"
+        },
+        {
+          "form": "watchfulness",
+          "pos": "n.",
+          "zh": "警惕;警觉"
+        },
+        {
+          "form": "watch",
+          "pos": "v.",
+          "zh": "注视;留意"
+        }
+      ],
+      "usageScore": 5,
+      "sourceNote": "manual",
+      "addedAt": "2026-09-25"
+    },
+    {
+      "id": "inattentive",
+      "headword": "inattentive",
+      "phonetic": "/ˌɪnəˈtentɪv/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "not paying attention to what is being said or done",
+          "zh": "不专心的;心不在焉的;疏忽的",
+          "share": 60
+        },
+        {
+          "pos": "adj.",
+          "en": "not giving other people the care or courtesy they should expect",
+          "zh": "怠慢的;不体贴的",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "The inattentive driver glanced at his phone and rolled through the red light, clipping a delivery van at the corner.",
+        "Mr Lin sighed at the back row of inattentive students, half of whom were drawing in the margins of their notebooks.",
+        "Inattentive proofreading let the typo reach the front page, and by noon the editor had received forty angry emails.",
+        "An inattentive host, he let the guests' glasses sit empty all evening while he argued about football with his brother-in-law.",
+        "Reviewers faulted the clinic for inattentive staff who left an elderly patient waiting in a draughty corridor for three hours."
+      ],
+      "synonyms": [
+        "distracted",
+        "unmindful",
+        "careless"
+      ],
+      "antonyms": [
+        "attentive",
+        "observant",
+        "mindful"
+      ],
+      "collocations": [
+        "an inattentive driver",
+        "inattentive students",
+        "inattentive to detail",
+        "an inattentive listener"
+      ],
+      "relatedForms": [
+        {
+          "form": "inattention",
+          "pos": "n.",
+          "zh": "不注意;疏忽"
+        },
+        {
+          "form": "inattentively",
+          "pos": "adv.",
+          "zh": "漫不经心地"
+        },
+        {
+          "form": "attentive",
+          "pos": "adj.",
+          "zh": "专心的;体贴的"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "in-(不) + attendere(伸向;留意) → 不留心的",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-25"
+    },
+    {
+      "id": "heedful",
+      "headword": "heedful",
+      "phonetic": "/ˈhiːdfəl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "paying careful attention to advice, warnings or possible danger",
+          "zh": "留心的;注意的;谨慎的"
+        }
+      ],
+      "examples": [
+        "Heedful of the forecast, the hikers turned back at the ridge an hour before the storm closed in.",
+        "She kept her savings in a plain account, heedful of what had happened to her uncle's shop after the bank called in its loan.",
+        "A heedful traveller, Amara photographed her passport and emailed the copy to her sister before leaving the hostel.",
+        "The mayor, heedful of angry letters from residents, scrapped the new parking charge within a week.",
+        "Be heedful when you cross the old footbridge, because the third plank from the end rots through every spring."
+      ],
+      "synonyms": [
+        "mindful",
+        "attentive"
+      ],
+      "antonyms": [
+        "heedless",
+        "careless"
+      ],
+      "collocations": [
+        "heedful of warnings",
+        "heedful of advice",
+        "be heedful of",
+        "heedful of the danger"
+      ],
+      "relatedForms": [
+        {
+          "form": "heed",
+          "pos": "n.",
+          "zh": "注意;留心"
+        },
+        {
+          "form": "heedfully",
+          "pos": "adv.",
+          "zh": "留心地"
+        },
+        {
+          "form": "heedless",
+          "pos": "adj.",
+          "zh": "不顾的;疏忽的"
+        }
+      ],
+      "usageScore": 3,
+      "sourceNote": "manual",
+      "addedAt": "2026-09-25"
+    },
+    {
+      "id": "caged",
+      "headword": "caged",
+      "phonetic": "/keɪdʒd/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "kept shut inside a cage",
+          "zh": "关在笼中的;被囚禁的",
+          "share": 70
+        },
+        {
+          "pos": "adj.",
+          "en": "feeling trapped, restricted or unable to move freely",
+          "zh": "被困住的;受束缚的",
+          "share": 30
+        }
+      ],
+      "examples": [
+        "A caged parrot in the café window repeated the owner's greeting to every passer-by, and children pressed their noses to the glass.",
+        "Activists filmed hundreds of caged hens packed so tightly in the barn that none of them could spread a wing.",
+        "The caged tiger paced the same four metres of concrete until the zoo finally moved her to a larger enclosure.",
+        "After a year in a windowless office, Priya felt caged, and handed in her notice on a rainy Monday.",
+        "He felt caged in the small town, where everyone knew his business, and left for the capital at nineteen."
+      ],
+      "synonyms": [
+        "confined",
+        "penned",
+        "imprisoned"
+      ],
+      "antonyms": [
+        "free",
+        "wild",
+        "unconfined"
+      ],
+      "collocations": [
+        "a caged bird",
+        "caged animals",
+        "caged hens",
+        "feel caged in"
+      ],
+      "relatedForms": [
+        {
+          "form": "cage",
+          "pos": "n.",
+          "zh": "笼子;牢笼"
+        },
+        {
+          "form": "cage",
+          "pos": "v.",
+          "zh": "关进笼中;囚禁"
+        }
+      ],
+      "usageScore": 5,
+      "etymology": "cavea(中空处;笼) → 笼子 → 关在笼中的",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-25"
+    },
+    {
+      "id": "captivity",
+      "headword": "captivity",
+      "phonetic": "/kæpˈtɪvəti/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "the state of being held prisoner or kept shut in a place, unable to leave",
+          "zh": "囚禁;被俘;监禁",
+          "share": 60
+        },
+        {
+          "pos": "n.",
+          "en": "the condition of an animal that is kept in a zoo, cage or reserve instead of living in the wild",
+          "zh": "圈养;人工饲养",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "After eleven months of captivity in a remote mountain camp, the aid worker was released and flown home to her family.",
+        "The journalist's memoir describes his captivity in a basement, where he counted the days by scratching lines into the wall.",
+        "Soldiers who survived captivity during the war rarely spoke about it, even to their wives.",
+        "Pandas born in captivity are now taught by keepers to forage for bamboo before they are moved to the mountain reserve.",
+        "Zoo vets say elephants kept in captivity often develop foot problems from standing on concrete all day."
+      ],
+      "synonyms": [
+        "imprisonment",
+        "confinement",
+        "detention"
+      ],
+      "antonyms": [
+        "freedom",
+        "liberty"
+      ],
+      "collocations": [
+        "held in captivity",
+        "born in captivity",
+        "bred in captivity",
+        "release from captivity"
+      ],
+      "relatedForms": [
+        {
+          "form": "captive",
+          "pos": "adj.",
+          "zh": "被俘的;被囚禁的"
+        },
+        {
+          "form": "captive",
+          "pos": "n.",
+          "zh": "俘虏;被囚者"
+        },
+        {
+          "form": "captor",
+          "pos": "n.",
+          "zh": "俘获者;绑架者"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "capere(抓住;拿) → captivus 被抓住的 → 囚禁",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-25"
+    },
+    {
+      "id": "virtue",
+      "headword": "virtue",
+      "phonetic": "/ˈvɝːtʃu/",
+      "meanings": [
+        {
+          "pos": "n.",
+          "en": "a good quality of character, such as honesty or patience, or moral goodness in general",
+          "zh": "美德;品德;德行",
+          "share": 60
+        },
+        {
+          "pos": "n.",
+          "en": "an advantage or useful feature that makes something better than the alternatives",
+          "zh": "优点;好处;长处",
+          "share": 40
+        }
+      ],
+      "examples": [
+        "Her grandfather held that patience was the highest virtue, and he made her wait a full year before teaching her to repair watches.",
+        "The mayor campaigned as a man of virtue, which made the leaked photos of him accepting free holidays from contractors all the more damaging.",
+        "Nobody in the office saw frugality as a virtue after the manager refused to replace the broken heater all winter.",
+        "The main virtue of the small cottage is its silence; the nearest road is four miles away.",
+        "The one virtue of working from home, she told her colleagues, was the two hours a day she no longer spent stuck on the train."
+      ],
+      "synonyms": [
+        "goodness",
+        "morality",
+        "righteousness"
+      ],
+      "antonyms": [
+        "vice",
+        "wickedness",
+        "immorality"
+      ],
+      "collocations": [
+        "a cardinal virtue",
+        "make a virtue of necessity",
+        "by virtue of",
+        "the virtue of patience"
+      ],
+      "relatedForms": [
+        {
+          "form": "virtuous",
+          "pos": "adj.",
+          "zh": "有德行的;品德高尚的"
+        },
+        {
+          "form": "virtuously",
+          "pos": "adv.",
+          "zh": "有德地;品行端正地"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "vir(男人) → virtus 男子气概;勇气 → 美德",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-25"
+    },
+    {
+      "id": "ludicrous",
+      "headword": "ludicrous",
+      "phonetic": "/ˈludɪkrəs/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "so unreasonable or foolish that it is absurd and almost laughable",
+          "zh": "荒唐的;可笑的;滑稽的"
+        }
+      ],
+      "examples": [
+        "The airline wanted three hundred dollars to change a seat, a ludicrous fee for a flight that was already forty minutes late.",
+        "It is ludicrous to expect a nurse working double shifts to answer emails from the office at three in the morning.",
+        "The ludicrous rumor that the village bakery was run by a crime ring spread through the whole valley in one afternoon.",
+        "The ludicrous sight of the groom wrestling a goat out of the wedding tent made even the priest laugh out loud.",
+        "Our coach's ludicrous plan was to play five strikers against a team that had not lost at home in two years."
+      ],
+      "synonyms": [
+        "absurd",
+        "ridiculous",
+        "preposterous"
+      ],
+      "antonyms": [
+        "sensible",
+        "reasonable"
+      ],
+      "collocations": [
+        "a ludicrous idea",
+        "absolutely ludicrous",
+        "ludicrous prices",
+        "sound ludicrous"
+      ],
+      "relatedForms": [
+        {
+          "form": "ludicrously",
+          "pos": "adv.",
+          "zh": "荒唐地;可笑地"
+        },
+        {
+          "form": "ludicrousness",
+          "pos": "n.",
+          "zh": "荒唐;滑稽"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "ludus(游戏;玩笑) → ludicrus 供嬉戏的 → 滑稽荒唐的",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-25"
+    },
+    {
+      "id": "sensible",
+      "headword": "sensible",
+      "phonetic": "/ˈsɛnsəbəl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "showing good judgment and practical thinking; reasonable and not foolish",
+          "zh": "明智的;合理的;切合实际的"
+        }
+      ],
+      "examples": [
+        "After the flood, the sensible thing was to carry the family's papers upstairs before the water rose again.",
+        "Dr. Okafor gave sensible advice: sleep eight hours, walk daily, and stop reading medical forums at midnight.",
+        "For the winter hike, Mira packed sensible boots with thick soles instead of the stylish pair she had bought in the city.",
+        "Any sensible tenant would have read the lease before signing it, but Tom was in a hurry to get the keys.",
+        "The union and management finally reached a sensible compromise: shorter shifts in summer and longer ones in winter."
+      ],
+      "synonyms": [
+        "practical",
+        "wise"
+      ],
+      "antonyms": [
+        "foolish",
+        "unwise",
+        "reckless"
+      ],
+      "collocations": [
+        "a sensible decision",
+        "sensible shoes",
+        "sensible advice",
+        "sensible precautions"
+      ],
+      "relatedForms": [
+        {
+          "form": "sensibly",
+          "pos": "adv.",
+          "zh": "明智地;合理地"
+        },
+        {
+          "form": "sensibility",
+          "pos": "n.",
+          "zh": "感受力;敏感"
+        }
+      ],
+      "usageScore": 7,
+      "etymology": "sentire(感觉;感知) → 有感知力的 → 明智的",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-25"
+    },
+    {
+      "id": "nonsensical",
+      "headword": "nonsensical",
+      "phonetic": "/nɑnˈsɛnsɪkəl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "having no meaning or logic; completely absurd",
+          "zh": "无意义的;荒谬的;不合情理的"
+        }
+      ],
+      "examples": [
+        "The error message was nonsensical, just a string of numbers and symbols, so Priya phoned the helpdesk anyway.",
+        "The machine-translated manual told us to rotate the soup clockwise, one of many completely nonsensical instructions.",
+        "Jonas woke from the fever muttering nonsensical phrases about trains and lemons, and his sister called an ambulance.",
+        "The new parking rule is nonsensical: residents may park on the street all night but not for ten minutes at noon.",
+        "Critics said the film's last twenty minutes were nonsensical, since characters who had died reappeared without any explanation."
+      ],
+      "synonyms": [
+        "absurd",
+        "meaningless",
+        "illogical"
+      ],
+      "antonyms": [
+        "sensible",
+        "logical",
+        "coherent"
+      ],
+      "collocations": [
+        "a nonsensical rule",
+        "utterly nonsensical",
+        "a nonsensical answer",
+        "sound nonsensical"
+      ],
+      "relatedForms": [
+        {
+          "form": "nonsense",
+          "pos": "n.",
+          "zh": "胡说;无意义的话"
+        },
+        {
+          "form": "nonsensically",
+          "pos": "adv.",
+          "zh": "荒谬地;毫无道理地"
+        }
+      ],
+      "usageScore": 5,
+      "sourceNote": "manual",
+      "addedAt": "2026-09-25"
+    },
+    {
+      "id": "abysmal",
+      "headword": "abysmal",
+      "phonetic": "/əˈbɪzməl/",
+      "meanings": [
+        {
+          "pos": "adj.",
+          "en": "extremely bad; of a very low standard",
+          "zh": "极差的;糟透的;糟糕透顶的"
+        }
+      ],
+      "examples": [
+        "The team's abysmal defence let in seven goals, and half the fans had left before the second half began.",
+        "Reviewers gave the restaurant abysmal marks for service, noting that the soup arrived cold and the waiter never came back.",
+        "Her abysmal result of nineteen percent came after she had spent the month before the exam on a skiing trip.",
+        "Commuters on the northern line endured abysmal punctuality again this week, with only one train in three running on time.",
+        "The hotel's abysmal reputation was earned: guests found mould in the showers and a locked fire exit on every floor."
+      ],
+      "synonyms": [
+        "dreadful",
+        "terrible"
+      ],
+      "antonyms": [
+        "excellent",
+        "superb",
+        "outstanding"
+      ],
+      "collocations": [
+        "an abysmal failure",
+        "abysmal conditions",
+        "abysmal performance",
+        "an abysmal record"
+      ],
+      "relatedForms": [
+        {
+          "form": "abysmally",
+          "pos": "adv.",
+          "zh": "糟糕透顶地"
+        },
+        {
+          "form": "abyss",
+          "pos": "n.",
+          "zh": "深渊;深不可测之处"
+        }
+      ],
+      "usageScore": 6,
+      "etymology": "a-(无) + byssos(底) → 无底深渊 → 糟透的",
+      "sourceNote": "manual",
+      "addedAt": "2026-09-25"
     }
   ]
 }

@@ -1650,10 +1650,10 @@
       "zh": "她对那个机会的矛盾心理拖了整整三个月。",
       "target": "矛盾心理",
       "order": [
-        "ambivalence"
+        "ambivalence",
+        "indecision"
       ],
       "extra": [
-        "indecision",
         "hesitancy",
         "mixed feelings"
       ],
@@ -1692,10 +1692,10 @@
       "zh": "开庭前一晚,她对第二天的问话感到忧虑。",
       "target": "忧虑",
       "order": [
-        "apprehensive"
+        "apprehensive",
+        "uneasy"
       ],
       "extra": [
-        "uneasy",
         "nervous",
         "on edge"
       ],
@@ -1846,10 +1846,10 @@
       "zh": "那样的照明条件根本不利于长时间阅读。",
       "target": "不利于",
       "order": [
-        "conducive"
+        "conducive",
+        "favorable"
       ],
       "extra": [
-        "favorable",
         "helpful",
         "supportive of"
       ],
@@ -5384,9 +5384,7 @@
       "order": [
         "careless",
         "haphazard",
-        "oblivious"
-      ],
-      "extra": [
+        "oblivious",
         "inattentive"
       ],
       "why": "careless 说的是做事不上心,出错正是不上心的直接结果,可以直接修饰 mistake、error 这类词;haphazard 批评的是毫无章法、想到哪做到哪,落点在做事的组织方式,本身不谈对错;oblivious 只形容人对眼前正在发生的事浑然不觉,主语必须是人,修饰不了一处错误;inattentive 同样只说人当下不专心,不能用来形容错误本身。"

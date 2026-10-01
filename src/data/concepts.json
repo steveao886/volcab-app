@@ -76,7 +76,8 @@
         "inimical"
       ],
       "excludeOpposites": [
-        "diplomatic"
+        "diplomatic",
+        "favorable"
       ]
     },
     {
@@ -681,6 +682,9 @@
       "anchors": [
         "favorable",
         "propitious"
+      ],
+      "excludeOpposites": [
+        "hostile"
       ]
     },
     {
