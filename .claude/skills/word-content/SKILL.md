@@ -138,15 +138,34 @@ and put the counts in the commit message, e.g. `Sonnet drafts: renderings
 40, reworded 6; notes 22, reworded 3`. **A category reworded at more than
 1 in 4 goes back to the orchestrator** — edit this table, with the numbers.
 
+First batch, 2026-10-01 (30 words, `2e3d3e7`): entry zh 3 of 45, contrast
+notes 4 of 62, 要点 3 of 30, renderings 4 of 150 — 3–10%, every category
+far under the line. What was reworded: translationese in renderings, a
+collocation parked behind the wrong sense in notes, one false usage claim
+(`hasty` "never" of plain speed, against its own *a hasty retreat*), and a
+gloss narrowed by connotation (`enchanting` as 妩媚, said of women only).
+What review caught that no reworded count shows: six homograph synonyms
+that the rules file had warned against.
+
 Spend tokens on authoring, not on reading files:
 
 - **Never read `data/words.json` whole** (1.68 MB, 2026-10-01), nor the
   large `src/data/*.json` (`recallSentences` 578 KB, `contrastNotes`
   296 KB). One read costs more than a batch's authoring. Pull the fields
   you need by id with `node -e`.
-- **A subagent prompt carries everything the agent needs** — the rule
-  excerpt, one sample of the output shape, the chunk's definitions — and
-  tells it not to open repo files and to return only JSON.
+- **A subagent reads everything it needs from scratch files, and only
+  those** — one rules file per kind of work (the rule excerpt, one sample
+  of the output shape), written once and shared by every agent, plus one
+  input file per chunk with that chunk's definitions. It writes its JSON
+  to an output file and replies with one line, so drafts never pass
+  through the orchestrator's context twice.
+- **Size chunks by the agent's fixed cost, not by parallelism.** A
+  Sonnet subagent costs ~80k tokens before it writes a line — its system
+  prompt and this repo's CLAUDE.md — and the work is small beside it.
+  Measured 2026-10-01: entry agents given 6 words used 79–84k with 2–4
+  tool calls; note agents given 20–21 pairs and rendering agents given 10
+  words used 82–85k. Doubling the work moved the cost by ~3%, and that
+  round reworded the least (3–10%). Every extra chunk is another ~80k.
 
 ## Batches of 6+ words: fan out the authoring
 
@@ -157,12 +176,14 @@ other, and each note depends only on its own pair — so for a batch of 6 or
 more words, dispatch authoring to parallel subagents:
 
 1. **Fan out entry authoring.** Split the staged headwords into chunks of
-   ~6 and launch one general-purpose subagent per chunk with
-   `model: "sonnet"`, in a single message so they run concurrently. Each prompt must be self-contained:
-   paste the entry rules from `docs/word-entry-spec.md` (5 located
-   examples, 12–30 words each, usageScore, share rules, etymology-or-omit),
-   the exact JSON shape of one recent entry, and the chunk's headwords.
-   Have each agent return a JSON array; the orchestrator concatenates.
+   ~10 and launch one general-purpose subagent per chunk with
+   `model: "sonnet"`, in a single message so they run concurrently. The
+   rules file carries the entry rules from `docs/word-entry-spec.md` (5
+   located examples, 12–30 words each, usageScore, share rules,
+   etymology-or-omit), the exact JSON shape of one recent entry, the
+   no-homograph-synonym rule (`unqualified` under both 不够格 and 无保留),
+   and no Latin-script proper nouns a rendering can't carry (Slack, CEO).
+   Each agent writes a JSON array; the orchestrator concatenates.
 2. **Pre-check centrally, never per-agent.** Run the merged array through
    the locate/mismark/word-count pre-check (headwordPattern +
    isInflectionOf over every example) *before* touching `data/words.json`.
@@ -172,15 +193,16 @@ more words, dispatch authoring to parallel subagents:
    `data/words.json` first (batch members can pair with each other), so it
    cannot overlap with step 1. Run it once, centrally.
 4. **Fan out note authoring.** Partition the new pair keys into chunks
-   (~10 pairs each), and give every `model: "sonnet"` agent the full
+   (~20 pairs each), and give every `model: "sonnet"` agent the full
    zh/en definitions of both words in each of its pairs — the note must
    state a real distinction, and an agent without the definitions will
    invent one. Word notes ride along in the same chunks. Merge, sort keys,
    validate centrally.
 5. **Fan out the 回想 renderings** in the same message as the notes, for
-   every word no sense group will cover: chunks of ~6 words, each agent
-   given the five examples, `meanings[0]` and the rendering rules of
-   step 5 above (zero Latin letters, `target` ≤16 chars appearing
+   every word no sense group will cover: chunks of ~10 words, each agent
+   given the five examples, **every** sense (it tags `sense` per example,
+   part of speech first) and the rendering rules of step 5 above (zero
+   Latin letters — transliterate names; `target` 2–6 chars appearing
    exactly once). Sense groups are not fanned out — the orchestrator
    writes them.
 6. **Review every Chinese line before it lands**, counting rewordings per
