@@ -156,7 +156,7 @@ Worth doing, with a division of labour that has held across every round: **the s
 
 **A prose reviewer that cannot see the option pool over-reports ambiguity.** Given finished sentences and asked for defects, it flagged 7 and 5 were real; both false flags were "ten other words fit this blank", naming words that are not in the library and so can never be offered. Hand it the headword list or discount that category by hand.
 
-**Do the Chinese yourself.** Two rounds of sharpening the brief never got the register — the output stays translationese. It is the half the user reads every session and the half no validator sees. Budget for editing it, not for prompting it.
+**Do the Chinese yourself.** Two rounds of sharpening the brief never got the register — the output stays translationese. It is the half the user reads every session and the half no validator sees. Budget for editing it, not for prompting it. That was measured on Gemini. Since 2026-10-01 the word-content skill tries Sonnet drafting the Chinese with the orchestrator rewording it line by line, on probation: the commit records the reword rate per category, and above 1 in 4 that category comes back to the orchestrator. Unmeasured until the first batch reports.
 
 **Both halves are needed.** A mechanical pre-check caught one entry in 1,119 that put its target in the sentence twice, which no reviewer catches by eye; the brief stops the failure a script cannot see. Keep the fan-out serialised or give agents disjoint id namespaces up front — parallel agents assigning ids collide otherwise.
 

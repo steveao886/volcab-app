@@ -97,6 +97,41 @@ batch (step 2–3 below).
    `npm test && npm run build && npx oxlint`, and commit the word list with
    its notes and renderings — they are one change.
 
+## Who writes what
+
+Drafting goes to Sonnet; judgment and every line of Chinese stay with the
+orchestrator (run the session on Opus). The split follows where a mistake
+can hide: structure has a gate that has caught every error across 420
+markers, while the Chinese register and an answer key have none.
+
+| Work | Who | Why |
+|---|---|---|
+| Entry drafts (examples + `meanings[].zh`) | Sonnet subagent | the locate pre-check and `validate-words` gate the structure |
+| Contrast notes, word notes | Sonnet subagent | given both words' full definitions, as before |
+| 回想 renderings (5 per word) | Sonnet subagent | the largest volume of Chinese in a batch |
+| Reading and editing **all** of the above Chinese | orchestrator | the half the user reads every session; no validator sees it |
+| Sense groups | orchestrator | an answer key; small volume, fail-closed judgment |
+| Concept membership diff (step 3) | orchestrator | a handful of lines of pure judgment |
+| Validators, tests, build, live merge | orchestrator, by script | mechanical — no model work to move |
+
+**The split is on probation, and the edit rate decides it.** CLAUDE.md's
+"do the Chinese yourself" was measured on Gemini; Sonnet drafting Chinese
+for review is untested. While reviewing, count per category how many
+drafted items you changed in wording (punctuation-only fixes don't count)
+and put the counts in the commit message, e.g. `Sonnet drafts: renderings
+40, reworded 6; notes 22, reworded 3`. **A category reworded at more than
+1 in 4 goes back to the orchestrator** — edit this table, with the numbers.
+
+Spend tokens on authoring, not on reading files:
+
+- **Never read `data/words.json` whole** (1.68 MB, 2026-10-01), nor the
+  large `src/data/*.json` (`recallSentences` 578 KB, `contrastNotes`
+  296 KB). One read costs more than a batch's authoring. Pull the fields
+  you need by id with `node -e`.
+- **A subagent prompt carries everything the agent needs** — the rule
+  excerpt, one sample of the output shape, the chunk's definitions — and
+  tells it not to open repo files and to return only JSON.
+
 ## Batches of 6+ words: fan out the authoring
 
 Measured on the 24-word batch of 2026-08-14: ~25 minutes end to end, and
@@ -106,8 +141,8 @@ other, and each note depends only on its own pair — so for a batch of 6 or
 more words, dispatch authoring to parallel subagents:
 
 1. **Fan out entry authoring.** Split the staged headwords into chunks of
-   ~6 and launch one general-purpose subagent per chunk, in a single
-   message so they run concurrently. Each prompt must be self-contained:
+   ~6 and launch one general-purpose subagent per chunk with
+   `model: "sonnet"`, in a single message so they run concurrently. Each prompt must be self-contained:
    paste the entry rules from `docs/word-entry-spec.md` (5 located
    examples, 12–30 words each, usageScore, share rules, etymology-or-omit),
    the exact JSON shape of one recent entry, and the chunk's headwords.
@@ -121,12 +156,21 @@ more words, dispatch authoring to parallel subagents:
    `data/words.json` first (batch members can pair with each other), so it
    cannot overlap with step 1. Run it once, centrally.
 4. **Fan out note authoring.** Partition the new pair keys into chunks
-   (~10 pairs each), and give every agent the full zh/en definitions of
-   both words in each of its pairs — the note must state a real
-   distinction, and an agent without the definitions will invent one. Word
-   notes ride along in the same chunks. Merge, sort keys, validate
-   centrally.
-5. **Everything after the notes stays serial**: validators, `npm test`,
+   (~10 pairs each), and give every `model: "sonnet"` agent the full
+   zh/en definitions of both words in each of its pairs — the note must
+   state a real distinction, and an agent without the definitions will
+   invent one. Word notes ride along in the same chunks. Merge, sort keys,
+   validate centrally.
+5. **Fan out the 回想 renderings** in the same message as the notes, for
+   every word no sense group will cover: chunks of ~6 words, each agent
+   given the five examples, `meanings[0]` and the rendering rules of
+   step 5 above (zero Latin letters, `target` ≤16 chars appearing
+   exactly once). Sense groups are not fanned out — the orchestrator
+   writes them.
+6. **Review every Chinese line before it lands**, counting rewordings per
+   category (see *Who writes what*). Contrast notes are read against both
+   definitions — is the stated distinction real?
+7. **Everything after the review stays serial**: validators, `npm test`,
    build, live-library merge (sha-guarded), staging trim, one commit.
    These were ~7 min of the 25 and are gates, not authoring — parallelism
    has nothing to win there.
