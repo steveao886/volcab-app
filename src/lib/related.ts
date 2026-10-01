@@ -117,12 +117,18 @@ export const SESSION_SPACING_GAP = 5
  * is a **prefix** of the full one — which is what lets the new-word queue
  * order five words instead of the whole unlearned backlog on every Today
  * render. Left at its default the result is a permutation of the input.
+ *
+ * `blocked` marks an item that is related to something placed **before
+ * this run** — a word started yesterday, which no position inside today's
+ * ordering can clear. It is passed over on the same terms as a related
+ * neighbour, and fails open the same way.
  */
 export function spaceApart<T>(
   sorted: readonly T[],
   related: (a: T, b: T) => boolean,
   gap: number,
   limit: number = sorted.length,
+  blocked: (item: T) => boolean = () => false,
 ): T[] {
   const take = Math.min(Math.max(limit, 0), sorted.length)
   if (gap <= 0) return sorted.slice(0, take)
@@ -133,7 +139,7 @@ export function spaceApart<T>(
     let pick = 0
     const ceiling = Math.min(LOOKAHEAD, rest.length)
     for (let i = 0; i < ceiling; i++) {
-      if (!recent.some(w => related(w, rest[i]))) { pick = i; break }
+      if (!blocked(rest[i]) && !recent.some(w => related(w, rest[i]))) { pick = i; break }
     }
     out.push(rest.splice(pick, 1)[0])
   }
