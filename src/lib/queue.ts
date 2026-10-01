@@ -1,4 +1,4 @@
-import { MAX_SPACING_GAP, orderFreshWords } from './freshOrder'
+import { LOOKBACK_DAYS, MAX_SPACING_GAP, orderFreshWords } from './freshOrder'
 import { declaredLinks, isRelated, SESSION_SPACING_GAP, spaceApart } from './related'
 import { addDays, INITIAL_EASE, todayStr } from './srs'
 import type { Progress, Word } from '../types'
@@ -77,11 +77,21 @@ export function buildQueue(words: Word[], progress: Progress, today: string): Da
   // related words can't share a window of newPerDay slots if more than that many words
   // separate them. Capped because too large a gap makes the constraint unsatisfiable and
   // lands worse than a small one (see MAX_SPACING_GAP).
+  //
+  // The gap only spans one day's ordering, so the words started today and
+  // in the LOOKBACK_DAYS before it go in as well — tomorrow's ordering
+  // could not see today's, and a session resumed halfway could not see its
+  // own first half. A cutoff string compares correctly against YYYY-MM-DD.
+  const since = addDays(today, -LOOKBACK_DAYS)
   const fresh = orderFreshWords(
     words.filter(w => !progress.words[w.id] || progress.words[w.id].state === 'new'),
     new Map(words.map((w, i) => [w.id, i])),
     Math.min(progress.settings.newPerDay, MAX_SPACING_GAP),
     budget,
+    words.filter(w => {
+      const s = progress.words[w.id]?.startedOn
+      return s !== undefined && s >= since
+    }),
   ).map(w => w.id)
 
   return { due, fresh }

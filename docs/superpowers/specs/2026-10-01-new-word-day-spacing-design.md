@@ -56,8 +56,9 @@ judged harmless — it costs a few days of separation, nothing more.
    `gradeWord` on the entry it creates for a word leaving `new`. That is the
    only path out of `new`. `isProgressEntry` ignores extra fields, and an
    older build carries it forward through `{ ...prev }`.
-2. **A lookback.** `buildQueue` passes the words started in the last
-   **3 days, today included**, to `orderFreshWords`, which passes over a
+2. **A lookback.** `buildQueue` passes the words started **today or in the
+   3 days before it** — a relative of something started on the 1st waits
+   until the 5th — to `orderFreshWords`, which passes over a
    candidate related to any of them while anything else within `LOOKAHEAD`
    fits. Today is included because a session left halfway and resumed
    re-orders the rest of the day without the words already started — the

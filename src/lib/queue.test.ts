@@ -133,6 +133,36 @@ describe('buildQueue — prioritized by encounter probability', () => {
       .toEqual(buildQueue(reversed, p(3), '2026-07-24').fresh)
   })
 
+  describe('lookback over recently started words', () => {
+    // alpha would be today's one new word; it is bravo's synonym.
+    const ws = [{ ...word('alpha', 9), synonyms: ['bravo'] }, word('bravo', 5), word('carol', 5)]
+    const started = (startedOn?: string): Progress => {
+      const x = p(1)
+      x.words['bravo'] = {
+        state: 'review', ease: 2.5, intervalDays: 1, due: '2026-07-30', stepIndex: 0, reps: 3, lapses: 0,
+        lastReviewedAt: '2026-07-21T00:00:00Z', ...(startedOn === undefined ? {} : { startedOn }),
+      }
+      return x
+    }
+
+    it('keeps a word away from a relative started yesterday, or three days ago', () => {
+      expect(buildQueue(ws, started('2026-07-23'), '2026-07-24').fresh).toEqual(['carol'])
+      expect(buildQueue(ws, started('2026-07-21'), '2026-07-24').fresh).toEqual(['carol'])
+    })
+
+    it('lets it through once the relative was started four days ago', () => {
+      expect(buildQueue(ws, started('2026-07-20'), '2026-07-24').fresh).toEqual(['alpha'])
+    })
+
+    it('counts a relative started today — a session left halfway resumes without it otherwise', () => {
+      expect(buildQueue(ws, started('2026-07-24'), '2026-07-24').fresh).toEqual(['carol'])
+    })
+
+    it('an entry from before startedOn existed blocks nothing', () => {
+      expect(buildQueue(ws, started(), '2026-07-24').fresh).toEqual(['alpha'])
+    })
+  })
+
   it('words missing usageScore sort last — unscored does not mean high-frequency, it should not jump the queue', () => {
     const ws = [word('unscored'), word('low', 1)]
     expect(buildQueue(ws, p(2), '2026-07-24').fresh).toEqual(['low', 'unscored'])
