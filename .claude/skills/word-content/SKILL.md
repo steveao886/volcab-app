@@ -90,12 +90,15 @@ batch (step 2–3 below).
    **Then check the `sense` tags**: `npm run check-senses -- --ids
    <id,id,…>`. A rendering about a secondary sense needs `sense`, or its
    hint describes a different meaning; the tag is easy to get wrong by
-   part of speech (`harangued` tagged as the noun), and 38 of 904 were,
+   part of speech (`harangued` tagged as the noun), and 40 of 904 were,
    2026-10-01. The script asks Jev which sense each English example uses
-   and prints the disagreements in two bands. *Confident* was a wrong tag
-   33 times in 34; *doubtful* was Jev wrong most of the time. Read every
-   line, fix only what is clearly wrong, and don't re-run to make a line
-   disappear — the doubtful band moves between runs. Needs
+   and prints three bands. A *confident disagreement* was a wrong tag 33
+   times in 34; a *doubtful disagreement* was Jev wrong most of the time
+   — a tag just corrected from noun to verb can land here, so leave it;
+   an *unsure agreement* was a wrong tag 3 times in 93, every one a noun
+   tagged as its verb or adjective. Read every line, fix only what is
+   clearly wrong, and don't re-run to make a line disappear — the
+   doubtful bands move between runs. Needs
    `TYPESAFE_API_KEY` in `.env.local`; without it, say so and read the
    tags on polysemous words by hand.
 6. **Live library**: `npm run check-live` to pull and diff against the repo
@@ -122,7 +125,7 @@ markers, while the Chinese register and an answer key have none.
 | Contrast notes, word notes | Sonnet subagent | given both words' full definitions, as before |
 | 回想 renderings (5 per word) | Sonnet subagent | the largest volume of Chinese in a batch |
 | Reading and editing **all** of the above Chinese | orchestrator | the half the user reads every session; no validator sees it |
-| Screening renderings' `sense` tags | Jev, via `npm run check-senses` | an English one-of-N judgment — its shape exactly; the orchestrator reads ~6% instead of all |
+| Screening renderings' `sense` tags | Jev, via `npm run check-senses` | an English one-of-N judgment — its shape exactly; the orchestrator reads ~17% instead of all |
 | Sense groups | orchestrator | an answer key; small volume, fail-closed judgment |
 | Concept membership diff (step 3) | orchestrator | a handful of lines of pure judgment |
 | Validators, tests, build, live merge | orchestrator, by script | mechanical — no model work to move |

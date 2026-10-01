@@ -19,7 +19,7 @@ Core loops: spaced-repetition review (`/review`), quizzes in several modes (`/qu
 | `npm run validate` | all nine `validate-*` content gates in one go; runs in CI |
 | `npm run validate-words` | gate for `data/words.json`; the per-word rules live in `src/lib/wordValidate.ts`, shared with both entry forms |
 | `npm run check-live` | diff `data/words.json` against the live `volcab-data` copy through `gh`; `-- --write` realigns the repo copy |
-| `npm run check-senses` | ask Jev which sense each 回想 rendering's example uses and print disagreements with its `sense` tag; `-- --ids a,b` for a batch. Needs `TYPESAFE_API_KEY` in `.env.local` (gitignored), so never in CI |
+| `npm run check-senses` | ask Jev which sense each 回想 rendering's example uses and print where it disagrees with the `sense` tag, or agrees unsurely; `-- --ids a,b` for a batch. Needs `TYPESAFE_API_KEY` in `.env.local` (gitignored), so never in CI |
 
 **Never start the dev server with a shell command.** Use the browser preview tooling (`preview_start` with the `volcab-dev` config in `.claude/launch.json`), then drive and verify the page with the same toolset.
 
