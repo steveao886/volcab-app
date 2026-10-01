@@ -124,4 +124,23 @@ describe('spaceApart', () => {
   it('handles an empty list', () => {
     expect(spaceApart([], related, 5)).toEqual([])
   })
+
+  it('passes over a blocked item while an unblocked one is in reach', () => {
+    // 'a' stands for "related to something started yesterday": no distance
+    // inside this run can clear it, so it waits behind everything that fits.
+    const blocked = (x: string) => x[0] === 'a'
+    expect(spaceApart(['a1', 'b1', 'c1'], related, 2, 3, blocked)).toEqual(['b1', 'c1', 'a1'])
+  })
+
+  it('fails open when everything in reach is blocked — a blocked item is late, never dropped', () => {
+    const blocked = (x: string) => x[0] === 'a'
+    expect(spaceApart(['a1', 'a2'], related, 2, 2, blocked)).toEqual(['a1', 'a2'])
+  })
+
+  it('the blocked check stops the walk at the same limit, as a prefix of the full run', () => {
+    const blocked = (x: string) => x === 'b1'
+    const input = ['a1', 'a2', 'b1', 'c1', 'd1', 'e1']
+    const full = spaceApart(input, related, 2, input.length, blocked)
+    expect(spaceApart(input, related, 2, 3, blocked)).toEqual(full.slice(0, 3))
+  })
 })
