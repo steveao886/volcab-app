@@ -20,6 +20,12 @@
  * agreed with. Run it once per batch and read what it prints; re-running
  * to make a line go away proves nothing.
  *
+ * Measured by hand the same day over the first pass's 845 agreements: all
+ * 93 below 0.9 confidence held 3 wrong tags (`stoic#3`, `grouse#1`,
+ * `ramble#4` — each a noun tagged as its verb or adjective); 50 drawn at
+ * random from the 752 at or above 0.9 held none, which bounds that band
+ * at roughly 6% wrong (rule of three), not at zero.
+ *
  * A disagreement is advice, never an edit: the person reads it and decides.
  * Exit 0 with a report, 2 on a missing key or a failed API call. Needs
  * TYPESAFE_API_KEY (environment, or .env.local, which is gitignored), so it
