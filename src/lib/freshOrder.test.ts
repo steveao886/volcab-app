@@ -130,6 +130,68 @@ describe('orderFreshWords', () => {
     expect(ids(orderFreshWords(one, spread(one), 5, 5))).toEqual(['alpha'])
   })
 
+  it('separates two words that share a synonym — a confusable pair no declared link records', () => {
+    // Neither names the other; they meet only through "dreadful", which is
+    // how appalling / atrocious-style families show up in contrast.ts.
+    const pool = [
+      word('alpha', 9, { synonyms: ['dreadful'] }),
+      word('bravo', 9, { synonyms: ['dreadful'] }),
+      ...filler,
+    ]
+    const out = ids(orderFreshWords(pool, spread(pool), 3, pool.length))
+    expect(Math.abs(out.indexOf('alpha') - out.indexOf('bravo'))).toBeGreaterThan(3)
+  })
+
+  describe('lookback over recently started words', () => {
+    it('defers a word related to one started in the last few days, which no gap inside today can see', () => {
+      const recent = [word('bravo', 9)]
+      const pool = [word('alpha', 9, { synonyms: ['bravo'] }), ...filler.slice(0, 4)]
+      const out = ids(orderFreshWords(pool, spread(pool), 5, 4, recent))
+      expect(out).not.toContain('alpha')
+      expect(out).toHaveLength(4)
+    })
+
+    it('reads the link from either side — the started word may be the one that declares it', () => {
+      const recent = [word('bravo', 9, { antonyms: ['alpha'] })]
+      const pool = [word('alpha', 9), ...filler.slice(0, 4)]
+      expect(ids(orderFreshWords(pool, spread(pool), 5, 4, recent))).not.toContain('alpha')
+    })
+
+    it('counts a shared stem and a shared synonym against a started word too', () => {
+      const recent = [word('resent', 9), word('bravo', 9, { synonyms: ['dreadful'] })]
+      const pool = [word('resentment', 9), word('alpha', 9, { synonyms: ['dreadful'] }), ...filler.slice(0, 4)]
+      const out = ids(orderFreshWords(pool, spread(pool), 5, 4, recent))
+      expect(out).not.toContain('resentment')
+      expect(out).not.toContain('alpha')
+    })
+
+    it('does not apply capture proximity to a started word', () => {
+      // Across a capture batch that rule is mostly noise: on 2026-10-01, 28 of
+      // 416 adjacent unlearned pairs were related by anything else, and
+      // applied across the lookback it left nothing legal to pick.
+      const recent = [word('bravo', 5)]
+      const pool = [word('alpha', 9), ...filler.slice(0, 3)]
+      const index = new Map<string, number>([['bravo', 0], ['alpha', 1]])
+      filler.forEach((w, i) => index.set(w.id, 100 + i * 100))
+      expect(ids(orderFreshWords(pool, index, 5, 4, recent))[0]).toBe('alpha')
+    })
+
+    it('a word listed as both waiting and started is not blocked by itself', () => {
+      // Words and progress can disagree; a word shares its own stem, so
+      // without the guard it would defer itself behind the whole lookahead.
+      const alpha = word('alpha', 9)
+      const pool = [alpha, ...filler.slice(0, 4)]
+      expect(ids(orderFreshWords(pool, spread(pool), 5, 1, [alpha]))).toEqual(['alpha'])
+    })
+
+    it('never returns a started word, and fails open rather than shrinking the day', () => {
+      const recent = [word('bravo', 9)]
+      const pool = [word('alpha', 9, { synonyms: ['bravo'] }), word('carol', 9, { synonyms: ['bravo'] })]
+      const out = ids(orderFreshWords(pool, spread(pool), 5, 2, recent))
+      expect(out.sort()).toEqual(['alpha', 'carol'])
+    })
+  })
+
   it('a word missing from the index map is still ordered, just without the capture rule', () => {
     // Words and progress can disagree about what exists (see CLAUDE.md); a
     // missing index must not throw or drop the word.
