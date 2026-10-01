@@ -411,7 +411,8 @@
       "excludeOpposites": [
         "meddlesome",
         "officious",
-        "prominent"
+        "prominent",
+        "overpowering"
       ]
     },
     {
@@ -462,7 +463,8 @@
         "apathetic",
         "compassionate",
         "intermittent",
-        "sporadic"
+        "sporadic",
+        "avoidable"
       ]
     },
     {
@@ -834,6 +836,9 @@
       "zh": "看着就反胃,生理上受不了",
       "anchors": [
         "revolting"
+      ],
+      "excludeOpposites": [
+        "admirable"
       ]
     },
     {
