@@ -132,7 +132,9 @@
         "genial",
         "grievance",
         "obscene",
-        "turmoil"
+        "turmoil",
+        "companionable",
+        "simpatico"
       ]
     },
     {
@@ -418,7 +420,8 @@
         "provident",
         "sagacious",
         "sapient",
-        "vitiate"
+        "vitiate",
+        "unyielding"
       ]
     },
     {
@@ -814,7 +817,8 @@
         "inimical",
         "magnanimous",
         "probity",
-        "ruinous"
+        "ruinous",
+        "snag"
       ]
     },
     {
@@ -895,7 +899,8 @@
         "race-to-the-bottom",
         "tenacious",
         "ulterior",
-        "uncompromising"
+        "uncompromising",
+        "snag"
       ]
     },
     {
@@ -974,7 +979,8 @@
         "exacting",
         "industrious",
         "irrepressible",
-        "malign"
+        "malign",
+        "apathy"
       ]
     },
     {
@@ -1198,7 +1204,8 @@
         "auspicious",
         "conducive",
         "machination",
-        "pantomime"
+        "pantomime",
+        "incensed"
       ]
     },
     {
@@ -1237,7 +1244,8 @@
         "ingratiate",
         "irreparable",
         "perpetuate",
-        "presumptuous"
+        "presumptuous",
+        "enduring"
       ]
     },
     {
@@ -1284,7 +1292,8 @@
         "recalcitrant",
         "reprove",
         "tenacious",
-        "uncompromising"
+        "uncompromising",
+        "uncontrollable"
       ]
     },
     {
@@ -1359,7 +1368,10 @@
         "denounce",
         "malignant",
         "percolate",
-        "uncompromising"
+        "uncompromising",
+        "irresistible",
+        "reproach",
+        "unfavorable"
       ]
     },
     {
@@ -1403,7 +1415,8 @@
         "reminiscent",
         "rickety",
         "succumb",
-        "tenacious"
+        "tenacious",
+        "uncontrollable"
       ]
     },
     {
@@ -1437,7 +1450,8 @@
         "artful",
         "deify",
         "genial",
-        "petulant"
+        "petulant",
+        "companionable"
       ]
     },
     {
@@ -1473,7 +1487,8 @@
         "dispassionate",
         "incriminate",
         "irreducible",
-        "mire"
+        "mire",
+        "companionable"
       ]
     },
     {
@@ -1512,7 +1527,9 @@
         "sociable",
         "subconscious",
         "subliminal",
-        "unwitting"
+        "unwitting",
+        "companionable",
+        "prevalent"
       ]
     },
     {
@@ -1626,7 +1643,10 @@
         "conciliate",
         "alleviate",
         "abate",
-        "slacken"
+        "slacken",
+        "simpatico",
+        "reproach",
+        "unfavorable"
       ]
     },
     {
@@ -1686,7 +1706,8 @@
         "litigious",
         "quarrelsome",
         "inimical",
-        "remorseless"
+        "remorseless",
+        "implore"
       ]
     },
     {
@@ -1968,7 +1989,8 @@
         "antagonize",
         "deify",
         "reticent",
-        "percolate"
+        "percolate",
+        "indecisive"
       ]
     },
     {
@@ -2127,7 +2149,8 @@
         "refractory",
         "resentful",
         "sedulous",
-        "uncompromising"
+        "uncompromising",
+        "earnest"
       ]
     },
     {
@@ -2162,7 +2185,8 @@
         "uncontainable",
         "sedulous",
         "argumentative",
-        "disputatious"
+        "disputatious",
+        "disquiet"
       ]
     },
     {
@@ -2555,7 +2579,8 @@
         "inimical",
         "implacable",
         "refractory",
-        "sedulous"
+        "sedulous",
+        "reproach"
       ]
     },
     {
@@ -2779,7 +2804,8 @@
         "argumentative",
         "quarrelsome",
         "fractious",
-        "remorseless"
+        "remorseless",
+        "demeaning"
       ]
     },
     {
@@ -3013,7 +3039,8 @@
         "collude",
         "contemptible",
         "sickening",
-        "benevolent"
+        "benevolent",
+        "long-standing"
       ]
     },
     {
@@ -3163,7 +3190,9 @@
         "disputatious",
         "pugnacious",
         "quarrelsome",
-        "resentful"
+        "resentful",
+        "demoralizing",
+        "disheartening"
       ]
     },
     {
@@ -3213,7 +3242,8 @@
         "placate",
         "alleviate",
         "abate",
-        "slacken"
+        "slacken",
+        "simpatico"
       ]
     },
     {
@@ -3255,7 +3285,8 @@
         "acrid",
         "antipathetic",
         "inimical",
-        "resentful"
+        "resentful",
+        "outrage"
       ]
     },
     {
@@ -3331,7 +3362,8 @@
         "acrid",
         "antipathetic",
         "inimical",
-        "resentful"
+        "resentful",
+        "concurrence"
       ]
     },
     {
@@ -3404,7 +3436,9 @@
         "courteous",
         "agreeable",
         "sedulous",
-        "acrid"
+        "acrid",
+        "companionable",
+        "simpatico"
       ]
     },
     {
@@ -3637,7 +3671,8 @@
       ],
       "exclude": [
         "open-minded",
-        "profligacy"
+        "profligacy",
+        "rash"
       ]
     },
     {
@@ -3862,7 +3897,9 @@
         "他越描越黑的辩解，只让本就担心论坛名声的老会员们更加心烦意乱。",
         "到了周末，整个帖子已经吵成一团，老交情都为了一个数字上的失误闹掰了。"
       ],
-      "exclude": []
+      "exclude": [
+        "vexation"
+      ]
     },
     {
       "id": "harbor-pier-ordinance",
@@ -4067,7 +4104,8 @@
         "disreputable",
         "intransigent",
         "obstinate",
-        "uncompromising"
+        "uncompromising",
+        "companionable"
       ]
     },
     {
@@ -4171,7 +4209,8 @@
         "aggravate",
         "antagonize",
         "expressionless",
-        "unreactive"
+        "unreactive",
+        "madden"
       ]
     },
     {
@@ -4275,7 +4314,8 @@
       "exclude": [
         "emergent",
         "fledgling",
-        "observant"
+        "observant",
+        "overthrow"
       ]
     },
     {
@@ -4307,7 +4347,8 @@
       ],
       "exclude": [
         "flashy",
-        "conspicuous"
+        "conspicuous",
+        "histrionic"
       ]
     },
     {
@@ -4375,7 +4416,8 @@
         "perfunctory",
         "apathetic",
         "downbeat",
-        "imprudent"
+        "imprudent",
+        "vigilant"
       ]
     },
     {
@@ -4467,7 +4509,8 @@
         "到了秋天,木棍还在多杰手里,但他如今会把它交给下一个该轮到水的人。"
       ],
       "exclude": [
-        "impairment"
+        "impairment",
+        "concurrence"
       ]
     },
     {
@@ -4710,7 +4753,8 @@
         "alienation",
         "censure",
         "impair",
-        "sympathetic"
+        "sympathetic",
+        "reproach"
       ]
     },
     {
@@ -4848,7 +4892,8 @@
         "refractory",
         "implacable",
         "dreadful",
-        "superintend"
+        "superintend",
+        "affirmation"
       ]
     },
     {
@@ -4880,7 +4925,8 @@
         "painstaking",
         "conscientious",
         "overturn",
-        "abrogate"
+        "abrogate",
+        "demeaning"
       ]
     },
     {
@@ -5081,7 +5127,9 @@
       "exclude": [
         "belabor",
         "perfunctory",
-        "unresponsive"
+        "unresponsive",
+        "vexation",
+        "alluring"
       ]
     }
   ]
