@@ -1052,10 +1052,10 @@
       "zh": "抗议持续了六周,最终推翻了那个政权。",
       "target": "推翻",
       "order": [
-        "topple"
+        "topple",
+        "overthrow"
       ],
       "extra": [
-        "overthrow",
         "bring down",
         "unseat"
       ],
@@ -1232,11 +1232,11 @@
       "zh": "新药在三期试验里的功效并不比老药强。",
       "target": "功效",
       "order": [
-        "efficacy"
+        "efficacy",
+        "potency"
       ],
       "extra": [
         "effectiveness",
-        "potency",
         "efficiency"
       ],
       "en": "The new drug showed no better efficacy than the old one in phase three.",
@@ -1260,10 +1260,10 @@
       "zh": "这种蜥蜴是该岛特有的,别处一只也找不到。",
       "target": "特有的",
       "order": [
-        "endemic"
+        "endemic",
+        "indigenous"
       ],
       "extra": [
-        "indigenous",
         "native",
         "confined to"
       ],
@@ -1773,11 +1773,11 @@
       "zh": "要求他辞职的呼声在第三天变得压不住了。",
       "target": "呼声",
       "order": [
-        "clamor"
+        "clamor",
+        "outcry",
+        "uproar"
       ],
       "extra": [
-        "outcry",
-        "uproar",
         "groundswell"
       ],
       "en": "By the third day the clamor for his resignation was impossible to ignore.",
@@ -2973,11 +2973,11 @@
       "zh": "这一章讲的是从样本推断总体的那套方法。",
       "target": "推断",
       "order": [
-        "inferential"
+        "inferential",
+        "deductive",
+        "presumptive"
       ],
       "extra": [
-        "deductive",
-        "presumptive",
         "drawing conclusions"
       ],
       "en": "The chapter covers inferential methods: what a sample says about a population.",
@@ -3054,27 +3054,27 @@
       "why": "intersperse 指把一类东西间隔地分布在另一类之中,常用被动 be interspersed with;dot 强调星星点点;pepper 侧重密集地撒布,常带负面;scatter through 是描述性说法。"
     },
     {
-      "zh": "主动公开失误这件事本身值得称赞。",
-      "target": "值得称赞",
+      "zh": "把候诊时间砍掉一半,这个目标出发点可嘉,只是预算一分钱还没批下来。",
+      "target": "出发点可嘉",
       "order": [
         "laudable",
-        "commendable"
+        "commendable",
+        "praiseworthy"
       ],
       "extra": [
-        "praiseworthy",
         "to their credit"
       ],
-      "en": "Disclosing the error unprompted was laudable.",
-      "why": "laudable 指行为在道义上值得表扬,正式,常暗示结果未必成功;commendable 接近但更常用于日常表扬;praiseworthy 是它的直白同义;to their credit 是插入语,不能作定语。"
+      "en": "The aim of halving waiting times is laudable, but not a cent of the budget has been approved yet.",
+      "why": "laudable 多修饰目标、动机与意图(a laudable aim),常暗含「出发点好,做不做得成另说」,正对一个还没落地的目标;commendable 更常夸已经做出来的具体行为和努力,用在尚未实现的目标上隔了一层;praiseworthy 是泛泛的「值得称赞」,不带「只论出发点」这层意思,最远;to their credit 是插入语,不能作表语。"
     },
     {
       "zh": "法官考虑到他主动自首,最终从宽处理。",
       "target": "从宽处理",
       "order": [
-        "leniency"
+        "leniency",
+        "clemency"
       ],
       "extra": [
-        "clemency",
         "mercy",
         "a lighter sentence"
       ],
@@ -3180,18 +3180,18 @@
       "why": "dyslexia 是特定的神经发育性阅读障碍诊断名;reading difficulty 只描述读得吃力,原因不限;word blindness 是早期旧称;learning difference 是回避病理色彩的当代委婉说法。"
     },
     {
-      "zh": "那套设备用的是过时的接口,配件早就停产了。",
-      "target": "过时的",
+      "zh": "那套设备用的还是早被淘汰的接口,配件好几年前就停产了。",
+      "target": "早被淘汰的",
       "order": [
-        "outmoded"
+        "obsolete",
+        "outmoded",
+        "antiquated"
       ],
       "extra": [
-        "obsolete",
-        "antiquated",
         "legacy"
       ],
-      "en": "The rig uses an outmoded connector whose parts stopped shipping years ago.",
-      "why": "outmoded 指被更新的东西取代而显得落伍,重点在时代变了;obsolete 强调已彻底不再使用、被正式淘汰;antiquated 带古旧可笑的意味;legacy 是技术圈中性说法,指仍在服役的旧系统。"
+      "en": "The rig uses an obsolete connector whose parts stopped shipping years ago.",
+      "why": "obsolete 指已被新东西彻底取代、不再生产也不再使用,配件停产正是它;outmoded 说的是落伍、不合时宜,多指观念和做法,东西本身还能用;antiquated 带「老掉牙、有点可笑」的语气,重在年头久,不说停产;legacy 是技术圈的中性说法,指仍在服役的旧系统。"
     },
     {
       "zh": "两台仪器之间的温差小到勉强可察觉。",
@@ -3504,11 +3504,11 @@
       "zh": "那还只是初期的裂纹,当时谁都没在意。",
       "target": "初期的",
       "order": [
-        "incipient"
+        "incipient",
+        "budding"
       ],
       "extra": [
         "early-stage",
-        "budding",
         "in its infancy"
       ],
       "en": "It was an incipient crack and nobody paid attention.",
@@ -3766,13 +3766,13 @@
       "why": "ravishing 指美到令人失神,程度极高且略显文学;stunning 是最常用的惊艳;breathtaking 多形容景色或场面;resplendent 强调华丽夺目、光彩照人。"
     },
     {
-      "zh": "菜单上那道菜的描述很诱人,可惜当天售罄。",
-      "target": "诱人",
+      "zh": "菜单上那道菜的描述勾得人心痒,可惜当天售罄。",
+      "target": "勾得人心痒",
       "order": [
-        "tantalizing"
+        "tantalizing",
+        "enticing"
       ],
       "extra": [
-        "enticing",
         "mouthwatering",
         "just out of reach"
       ],
@@ -4293,13 +4293,13 @@
       "target": "一无所有",
       "en": "The fire left two dozen families destitute, sleeping in a school gym while the insurance calls went unanswered.",
       "order": [
-        "destitute"
-      ],
-      "extra": [
-        "penniless",
+        "destitute",
         "indigent"
       ],
-      "why": "destitute 是贫穷的极端：连钱、食物、住处都没有，常说 left destitute；它还有一个书面用法 destitute of，表示完全欠缺某种品质。"
+      "extra": [
+        "penniless"
+      ],
+      "why": "destitute 是贫穷的极端：连钱、食物、住处都没有，常说 left destitute，正对一场火灾后的一无所有；indigent 是正式用语，多见于法律、救济语境（indigent defendants），说的是长期贫困、需要救助，不写骤然失去一切；penniless 只说身无分文。"
     },
     {
       "zh": "董事会把她的沉默当成了默许，没等她开口就付诸表决。",
@@ -4617,12 +4617,10 @@
       "en": "The union stayed intransigent on healthcare and the strike ran into a third week.",
       "order": [
         "intransigent",
+        "unyielding",
         "headstrong"
       ],
-      "extra": [
-        "unyielding"
-      ],
-      "why": "intransigent 用于谈判与立场：拒绝妥协、谈不拢，主语常是工会、党派、代表团；headstrong 说的是个人性格上的一意孤行，多用于孩子和年轻人，跟谈判桌无关。"
+      "why": "intransigent 用于谈判与立场：拒绝妥协、谈不拢，主语常是工会、党派、代表团，正对寸步不让；unyielding 是不肯让步的泛称，也能说工会，但不专指谈判桌上的拒不妥协，排第二；headstrong 说的是个人性格上的一意孤行，多用于孩子和年轻人，跟谈判桌无关，最远。"
     },
     {
       "zh": "找来一个通两种方言的翻译，语言就不再是谈判的障碍。",

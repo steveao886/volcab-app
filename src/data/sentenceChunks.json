@@ -2056,7 +2056,7 @@
   },
   {
    "src": "sg",
-   "id": "outmoded",
+   "id": "obsolete",
    "i": 240,
    "cuts": [
     3,
@@ -2064,7 +2064,7 @@
     10
    ],
    "blank": 4,
-   "answer": "outmoded"
+   "answer": "obsolete"
   },
   {
    "src": "sg",

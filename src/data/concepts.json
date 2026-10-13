@@ -14,13 +14,17 @@
         "unmanageable"
       ],
       "exclude": [
-        "refractory"
+        "refractory",
+        "uncontrollable"
       ],
       "negations": [
         "implacable",
         "intractable",
         "intransigent",
         "uncompromising"
+      ],
+      "excludeOpposites": [
+        "containable"
       ]
     },
     {
@@ -382,6 +386,9 @@
       "anchors": [
         "nonchalant",
         "unconcerned"
+      ],
+      "excludeOpposites": [
+        "vigilant"
       ]
     },
     {
@@ -401,7 +408,8 @@
         "meddlesome",
         "officious",
         "prominent",
-        "overpowering"
+        "overpowering",
+        "histrionic"
       ]
     },
     {
@@ -756,6 +764,9 @@
       "anchors": [
         "adverse",
         "harmful"
+      ],
+      "exclude": [
+        "unfavorable"
       ]
     },
     {
@@ -780,7 +791,8 @@
         "revolting"
       ],
       "excludeOpposites": [
-        "admirable"
+        "admirable",
+        "tantalizing"
       ]
     },
     {
@@ -802,6 +814,9 @@
         "exasperation",
         "irritation",
         "vexation"
+      ],
+      "excludeOpposites": [
+        "extenuation"
       ]
     },
     {
