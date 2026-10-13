@@ -20,7 +20,7 @@ grows the question pools. Evidence for every rule: `docs/word-add-checklist.md`.
 | `src/data/senseGroups.json` | scenario `zh` | **required, one of two legs**: a word with ≥2 same-POS partners is covered by the group it joins | `npm run validate-sense-groups` |
 | `src/data/recallSentences.json` | word id + example `i` | **required, the other leg**: 5 Chinese renderings for any word no group covers | `npm run validate-recall-sentences` |
 | `src/data/sentenceChunks.json` | `(src, id, i)` | optional coverage, no floor | `npm run validate-sentence-chunks` |
-| `src/data/passages.json` | `{{id}}` markers | optional coverage | `npm run validate-passages` |
+| `src/data/passages.json` | `{{id}}` markers | optional coverage — **but the word joins tier-1 distractor pools silently; diff and vet** | `npm run validate-passages` |
 | `src/data/concepts.json` | derived from `synonyms` | **nothing to author** — but the word joins existing 发散 answer sets silently; diff and vet | `npm run validate-concepts` |
 | `src/data/suggestions.json` | — | nothing — self-filters at runtime | `npm run validate-suggestions` |
 | `data/wordlist.json` | — | dead file, referenced by nothing. Do not touch | — |
@@ -38,6 +38,13 @@ until it drags in a word that does not belong in that answer set. That
 judgment is what the concept's `exclude` array records, no validator can make
 it, and nothing prompts for it unless the membership is diffed across the
 batch (step 2–3 below).
+
+**`passages.json` has the same shape of hazard, pointed at distractors.** A
+passage's tier-1 distractors are the shared-synonym neighbours of its blanks
+— derived, not listed — so a new word joins them with nothing authored, and
+there it is worse than a stray 发散 answer: offered as a *wrong* option, a
+word that also fits the blank marks the learner wrong for a right answer.
+The passage's `exclude` array is where that judgment goes (step 3).
 
 ## Adding words
 
@@ -74,6 +81,19 @@ batch (step 2–3 below).
    zero). **Before cutting, check the concept the synonym anchors**: some
    concepts are built on one synonym, and cutting it can take a word out
    of its own concept (`commensurate` via `equivalent`).
+
+   **Last, diff the passage distractor pools**, after the synonym cuts
+   (each cut changes the pools): `npx tsx scripts/passage-pool-diff.ts`
+   prints every word this batch adds to a passage's tier-1 pool, with the
+   blank it neighbours and that blank's sentence. Ask of each line only
+   whether the word, put in that blank, would also be correct; if so, add
+   it to that passage's `exclude`. 2026-10-12: 65 new entries from 125
+   words, and **47 would have been a second right answer** — *a common
+   {{snag}}* for impediment, *began to {{madden}} everyone* for
+   exasperate. The 18 kept could not fit their slot: a noun offered for an
+   adjective blank, *for time {{immemorial}}*. Fail closed when unsure —
+   an excluded word costs one distractor among many; a fitting one is a
+   question that marks the right answer wrong.
 4. **Ask what the batch owes**, naming its ids:
    `npx tsx scripts/content-staleness.ts --batch <id,id,…>`. It exits 1 while
    anything required is missing, and reports 反义 without blocking. Then
@@ -145,7 +165,7 @@ markers, while the Chinese register and an answer key have none.
 | Sense groups | Sonnet drafts with a standing order to skip; orchestrator reads every key | an answer key. At backlog scale (136 candidates, 2026-10-01) Sonnet skipped 36 and review dropped 3 more — two repeated a scene already used, one ranked on a distinction the scene could not carry. Below ~10 groups, write them yourself |
 | 组句 cuts | Sonnet drafts ~115 words a file in `chunk-append` shorthand, blank pre-located; orchestrator reads every line rendered as `a | b [word] | c` | 2026-10-01: 29 of 574 changed — mostly a phrase cut in half or an opening adverbial glued to the subject. The rules file must say **no two chunks may trade places**: `gradeOrder` is exact, so a movable time phrase marks a correct order wrong |
 | Passages | Sonnet drafts, one setting **assigned** per group; orchestrator reads all and every distractor pool | given a list of suggested settings, six agents converged on it — 4 night markets, 3 glacier surveys in 29. Mark ~4 new words beside ~6 the learner has learned (live `progress.json`), or the passage sits behind the one-third unlearned gate. Say `en`/`zh` are **arrays** of sentences — unsaid, all six wrote paragraphs |
-| Concept membership diff (step 3) | orchestrator | a handful of lines of pure judgment |
+| Concept membership and passage-pool diffs (step 3) | orchestrator | lines of pure judgment, each against one prompt or one sentence |
 | Validators, tests, build, live merge | orchestrator, by script | mechanical — no model work to move |
 
 **The split is on probation, and the edit rate decides it.** CLAUDE.md's
@@ -211,7 +231,10 @@ more words, dispatch authoring to parallel subagents:
    do not let an agent self-certify.
 3. **The pair diff is the one barrier.** It needs the *whole* batch in
    `data/words.json` first (batch members can pair with each other), so it
-   cannot overlap with step 1. Run it once, centrally.
+   cannot overlap with step 1. Run it once, centrally — and the 发散 and
+   passage-pool diffs of *Adding words* step 3 with it, since all three
+   read the same finished synonym lists. The pool diff can run while the
+   note and rendering agents work; it touches only `passages.json`.
 4. **Fan out note authoring.** Partition the new pair keys into chunks
    (~20 pairs each), and give every `model: "sonnet"` agent the full
    zh/en definitions of both words in each of its pairs — the note must
@@ -239,7 +262,14 @@ more words, dispatch authoring to parallel subagents:
    that is now a headword. **Read the scenario before ranking a promoted
    word last**: group 264 asked 小到可以忽略 — which *is* `negligible` —
    with `infinitesimal` as the answer; promoting `negligible` behind it
-   would have marked the best fit second.
+   would have marked the best fit second. **And check the target against
+   the promoted word's own gloss**: an `extra` is offered as a wrong option
+   long before it is a library word, so a target that *is* its gloss is
+   already a live wrong answer. 2026-10-12 found two — 231 asked 值得称赞
+   (praiseworthy's gloss) for `laudable`, 282 asked 诱人 (enticing's) for
+   `tantalizing` — and one scene that fit the extra best outright (240,
+   配件停产, `obsolete` behind `outmoded`); the first two were retargeted
+   to their answer's own sense, the third reordered.
 8. **Everything after the review stays serial**: validators, `npm test`,
    build, live-library merge (sha-guarded), staging trim, one commit.
    These were ~7 min of the 25 and are gates, not authoring — parallelism
