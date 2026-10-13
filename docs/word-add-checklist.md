@@ -103,9 +103,19 @@ them is a judgment no validator makes (§1.5).
   blanks somewhere. Currently 236/498 — reported by
   `scripts/validate-passages.ts:150-153`, never enforced.
 - **What the app does when missing**: the new word is simply never a blank.
-  It can still surface as a *distractor* through the fallback tiers
-  (`src/lib/passage.ts:288-305`). **No error, no degradation** — adding a
-  passage is a content decision, not a completion step.
+  **No error, no degradation** — adding a passage is a content decision,
+  not a completion step.
+- **What the new word does to passages anyway**: it surfaces as a
+  *distractor*, and not only through the fallback tiers. Tier 1 of
+  `pickDistractors` (`src/lib/passage.ts`) is the non-direct neighbours of
+  a passage's blanks on the confusable graph, so a word that shares a
+  synonym with a blank joins that passage's pool the moment it is added.
+  If it also fits the blank, the question marks a right answer wrong.
+  `npx tsx scripts/passage-pool-diff.ts` prints exactly what a batch added
+  against HEAD, with each blank's sentence; a fitting word goes in that
+  passage's `exclude`. Measured on the 2026-10-12 batch: 65 new pool
+  entries from 125 words, 47 of them fitting. **Do this for every batch**,
+  whether or not it authors a passage.
 
 ### 1.4 `src/data/suggestions.json` — **needs nothing**
 
@@ -445,7 +455,9 @@ Steps marked **[BATCH]** should be done once for the whole batch, not per word.
     the monthly refresh, and deferral demonstrably did not work: on the day
     the rule changed the scan read **79** words with no 回想 question at
     all, against a library of 931.
-12. *Optional*: mark the word in a passage → `npm run validate-passages`
+12. **[BATCH]** *Required*: `npx tsx scripts/passage-pool-diff.ts`, after
+    any synonym cuts, and read every line — see §1.3. Then, *optional*:
+    mark the word in a passage → `npm run validate-passages`
     (≥6 distinct marks per passage; answer must not appear as plain text
     elsewhere). *Optional*: drop a now-redundant entry from
     `src/data/suggestions.json` → `npm run validate-suggestions`.
