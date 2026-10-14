@@ -30,11 +30,12 @@ export interface ContrastPair {
 /**
  * id → every word it is confusable with.
  *
- * The pair list turned into a lookup, because two callers now need to ask
- * "is X confusable with Y" per question rather than walk the list: the
- * antonym question keeps a confusable of its answer out of the options, and
- * the sentence-sourced recall question does the same. Building it once per
- * session is the same O(n²) argument `sharedSynonyms` is hoisted for.
+ * The pair list turned into a lookup, because callers need to ask "is X
+ * confusable with Y" per question rather than walk the list: the antonym
+ * question keeps a confusable of its answer out of the options, the
+ * sentence-sourced recall question does the same, and so — since 2026-10-13 —
+ * does every other four-choice quiz type (`pickDistractorLabels`). Building
+ * it once per session is the same O(n²) argument `sharedSynonyms` is hoisted for.
  */
 export function confusableIndex(words: Word[]): Map<string, Set<string>> {
   const index = new Map<string, Set<string>>()

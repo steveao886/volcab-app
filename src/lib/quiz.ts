@@ -216,24 +216,47 @@ export function shuffle<T>(arr: T[], rng: () => number): T[] {
   return a
 }
 
-// Collects distractors deduped by the display text labelFn renders, excluding w itself and
-// answerLabel. Looks in pool first, and if fewer than 3 are found falls back to the whole
-// word library to fill the rest; if still fewer than 3 after deduping, returns null and the
-// caller skips this candidate word — a question with duplicate options (or a duplicated
-// correct answer) must never be output.
+// Collects distractors deduped by the display text labelFn renders, excluding w itself,
+// answerLabel, and every word confusable with w. Looks in pool first, and if fewer than 3
+// are found falls back to the whole word library to fill the rest; if still fewer than 3
+// after deduping, returns null and the caller skips this candidate word — a question with
+// duplicate options (or a duplicated correct answer) must never be output.
+//
+// **The confusable exclusion is generateAntonymQuestion's rule 2, applied to every other
+// four-choice type**: a word sharing a synonym with the answer is very likely a second
+// correct answer. Measured 2026-10-13 over the 1212-word library (1710 contrast pairs) with
+// live progress (941 learned), 8,000 seeded questions per type: 0.65–0.90% of questions of
+// each type that comes through here offered one, which compounds to 4.9% of ten-question
+// mixed rounds and 40% of 60-question sprints. Read by hand, 16 of 40 sampled hits were a
+// plain second answer (`inimical` for 有害的;不利的, `stoic` for "the dealer stayed ___") and
+// 11 more were arguable. The clear misses were mostly cloze, where the blank's part of
+// speech already rules the partner out — and meaning2word had none at all.
+//
+// A confusable that is *not* a right answer would be the hardest distractor there is, and
+// it is given up on purpose, for buildSentenceQuestion's reason (recallSentence.ts): there
+// is no comparison card here to absorb a near-miss, so a defensible answer is simply marked
+// wrong. Discrimination is contrast mode's job (generateContrastQuiz).
+//
+// It starves nothing. The most-connected word has 13 partners against 1211 candidates,
+// and every type's askable count came out identical before and after — over the
+// whole library, over live progress, and over a 4-word pool where five of the six pairs
+// are confusable (the fallback fills from the library).
 function pickDistractorLabels(
   w: Word,
   answerLabel: string,
   labelFn: (word: Word) => string,
   pool: Word[],
   fallback: Word[],
+  confusable: Map<string, Set<string>>,
   rng: () => number,
 ): string[] | null {
+  const near = confusable.get(w.id)
+  const eligible = (x: Word) => x.id !== w.id && !(near?.has(x.id) ?? false)
   const seen = new Set<string>([answerLabel])
   const result: string[] = []
 
   const collect = (list: Word[]) => {
-    for (const cand of shuffle(list.filter(x => x.id !== w.id), rng)) {
+    for (const cand of shuffle(list.filter(eligible), rng)) {
       if (result.length >= 3) break
       const label = labelFn(cand)
       if (seen.has(label)) continue
@@ -380,7 +403,11 @@ export interface AntonymIndices {
   external: Map<string, { text: string; from: string }[]>
 }
 
-export function buildAntonymIndices(words: Word[]): AntonymIndices {
+/** `confusable` is taken rather than rebuilt when generateQuiz already holds one for its other types. */
+export function buildAntonymIndices(
+  words: Word[],
+  confusable: Map<string, Set<string>> = confusableIndex(words),
+): AntonymIndices {
   const external = new Map<string, { text: string; from: string }[]>()
   for (const w of words) {
     const pos = w.meanings[0]?.pos
@@ -393,7 +420,7 @@ export function buildAntonymIndices(words: Word[]): AntonymIndices {
       else external.set(pos, [{ text, from: w.id }])
     }
   }
-  return { answers: antonymAnswerIndex(words), confusable: confusableIndex(words), external }
+  return { answers: antonymAnswerIndex(words), confusable, external }
 }
 
 /**
@@ -638,9 +665,12 @@ export function generateQuiz(
 
   // The shared-word set is computed once for the whole word library — putting it inside the loop would make it O(n²)
   const sharedSynonymsCache = sharedSynonyms(words)
+  // Same reason: buildContrastPairs walks the whole library, and every
+  // four-choice type reads this (see pickDistractorLabels), antonymPick included.
+  const confusable = confusableIndex(words)
   // Same reason, and only paid when the rotation actually contains the type:
-  // buildAntonymIndices walks the contrast graph over the whole library.
-  const antonymIndices = types.includes('antonymPick') ? buildAntonymIndices(words) : null
+  // buildAntonymIndices walks every antonym in the library.
+  const antonymIndices = types.includes('antonymPick') ? buildAntonymIndices(words, confusable) : null
 
   const candidates = weightedShuffle(pool, w => difficultyWeight(w, progress, today), rng)
   const questions: QuizQuestion[] = []
@@ -678,7 +708,7 @@ export function generateQuiz(
       const sources = type === 'clozeExample' ? w.examples : w.collocations
       const prompt = pickCloze(sources, w.headword, rng)
       if (prompt === null) continue // None of this word's examples/collocations could locate the headword — move to the next candidate word
-      const distractors = pickDistractorLabels(w, w.headword, headwordLabel, pool, words, rng)
+      const distractors = pickDistractorLabels(w, w.headword, headwordLabel, pool, words, confusable, rng)
       if (!distractors) continue
       questions.push({
         type, wordId: w.id, prompt,
@@ -710,7 +740,7 @@ export function generateQuiz(
       const hints = [...syns, ...w.antonyms.filter(usable)]
       if (hints.length === 0) continue // This word's synonyms and antonyms are all shared with other entries or all spell out the answer — move to the next candidate word
       const hint = hints[Math.floor(rng() * hints.length)]
-      const distractors = pickDistractorLabels(w, w.headword, headwordLabel, pool, words, rng)
+      const distractors = pickDistractorLabels(w, w.headword, headwordLabel, pool, words, confusable, rng)
       if (!distractors) continue
       questions.push({
         type, wordId: w.id, prompt: hint,
@@ -735,7 +765,7 @@ export function generateQuiz(
     const meaningOf = (x: Word) => meaningLabel(pickMeaning(x, rng))
     const labelFn = type === 'word2meaning' ? meaningOf : (x: Word) => x.headword
     const answer = type === 'word2meaning' ? ownMeaning : w.headword
-    const distractors = pickDistractorLabels(w, answer, labelFn, pool, words, rng)
+    const distractors = pickDistractorLabels(w, answer, labelFn, pool, words, confusable, rng)
     if (!distractors) continue // Still fewer than 3 distractors after deduping — skip this word, next candidate takes its place
 
     questions.push({
@@ -890,6 +920,10 @@ export function generateAudioQuiz(
 ): QuizQuestion[] {
   const pool = questionPool(words, progress)
   if (pool === null) return []
+  // Hoisted out of the loop for the same reason as in generateQuiz. A
+  // confusable's gloss under a headword you only heard is the same second
+  // answer as under one you read: 0.65% of audio2meaning questions offered one.
+  const confusable = confusableIndex(words)
 
   const candidates = weightedShuffle(pool, w => difficultyWeight(w, progress, today), rng)
   const questions: QuizQuestion[] = []
@@ -909,7 +943,7 @@ export function generateAudioQuiz(
     }
 
     const answer = meaningLabel(pickMeaning(w, rng))
-    const distractors = pickDistractorLabels(w, answer, x => meaningLabel(pickMeaning(x, rng)), pool, words, rng)
+    const distractors = pickDistractorLabels(w, answer, x => meaningLabel(pickMeaning(x, rng)), pool, words, confusable, rng)
     if (!distractors) continue
     questions.push({
       type, wordId: w.id,
