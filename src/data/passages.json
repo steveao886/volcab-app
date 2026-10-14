@@ -1648,7 +1648,8 @@
         "slacken",
         "simpatico",
         "reproach",
-        "unfavorable"
+        "unfavorable",
+        "regress"
       ]
     },
     {
@@ -3906,7 +3907,8 @@
         "到了周末，整个帖子已经吵成一团，老交情都为了一个数字上的失误闹掰了。"
       ],
       "exclude": [
-        "vexation"
+        "vexation",
+        "renown"
       ]
     },
     {

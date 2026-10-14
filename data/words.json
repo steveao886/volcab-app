@@ -2125,7 +2125,8 @@
         "soothe",
         "allay",
         "mollify",
-        "pacify"
+        "pacify",
+        "gratify"
       ],
       "antonyms": [
         "aggravate",
@@ -2730,7 +2731,9 @@
         "justify",
         "exonerate",
         "absolve",
-        "prove right"
+        "prove right",
+        "corroborate",
+        "substantiate"
       ],
       "antonyms": [
         "incriminate",
@@ -3020,7 +3023,8 @@
         "obstacle",
         "hindrance",
         "barrier",
-        "obstruction"
+        "obstruction",
+        "impairment"
       ],
       "antonyms": [
         "aid",
@@ -4046,7 +4050,8 @@
         "mistake",
         "omission",
         "supervision",
-        "monitoring"
+        "monitoring",
+        "negligence"
       ],
       "antonyms": [
         "neglect"
@@ -11704,7 +11709,8 @@
         "define",
         "depict",
         "specify",
-        "describe"
+        "describe",
+        "elucidate"
       ],
       "antonyms": [
         "obscure",
@@ -16654,7 +16660,8 @@
         "chaos",
         "disorder",
         "unrest",
-        "disarray"
+        "disarray",
+        "upheaval"
       ],
       "antonyms": [
         "calm",
@@ -22878,7 +22885,8 @@
         "placate",
         "pacify",
         "mollify",
-        "conciliate"
+        "conciliate",
+        "gratify"
       ],
       "antonyms": [
         "provoke",
@@ -29073,7 +29081,8 @@
         "rebuke",
         "reprimand",
         "reprove",
-        "chide"
+        "chide",
+        "exhort"
       ],
       "antonyms": [
         "praise",
@@ -39863,7 +39872,8 @@
       "synonyms": [
         "supremacy",
         "primacy",
-        "dominance"
+        "dominance",
+        "eminence"
       ],
       "antonyms": [
         "obscurity",
@@ -43435,7 +43445,8 @@
         "crafty",
         "wily",
         "devious",
-        "sly"
+        "sly",
+        "trickery"
       ],
       "antonyms": [
         "naive",
@@ -45753,7 +45764,8 @@
         "motion",
         "decision",
         "settlement",
-        "solution"
+        "solution",
+        "resolve"
       ],
       "antonyms": [],
       "collocations": [
@@ -52650,7 +52662,8 @@
       ],
       "synonyms": [
         "impermanence",
-        "ephemerality"
+        "ephemerality",
+        "brevity"
       ],
       "antonyms": [
         "permanence",
@@ -58391,7 +58404,8 @@
       ],
       "synonyms": [
         "revert",
-        "backslide"
+        "backslide",
+        "degenerate"
       ],
       "antonyms": [
         "progress",
@@ -59516,7 +59530,8 @@
       "synonyms": [
         "rebuke",
         "reproof",
-        "disapproval"
+        "disapproval",
+        "reprove"
       ],
       "antonyms": [
         "praise",
