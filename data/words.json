@@ -4418,7 +4418,6 @@
       "synonyms": [
         "corrupt",
         "immoral",
-        "degenerate",
         "wicked"
       ],
       "antonyms": [
@@ -12916,7 +12915,8 @@
         "slander",
         "defame",
         "vilify",
-        "disparage"
+        "disparage",
+        "malignant"
       ],
       "antonyms": [
         "praise",
@@ -14621,7 +14621,6 @@
         "The lampshade's diaphanous silk let just enough light through to make the reading nook feel warm instead of glaring."
       ],
       "synonyms": [
-        "sheer",
         "translucent",
         "gossamer",
         "gauzy"
@@ -15105,7 +15104,8 @@
         "forward",
         "impertinent",
         "audacious",
-        "brazen"
+        "brazen",
+        "insolent"
       ],
       "antonyms": [
         "modest",
@@ -21493,7 +21493,8 @@
         "rudimentary",
         "crude",
         "elementary",
-        "basic"
+        "basic",
+        "primal"
       ],
       "antonyms": [
         "advanced",
@@ -24614,7 +24615,8 @@
         "affected",
         "ostentatious",
         "grandiose",
-        "highfalutin"
+        "highfalutin",
+        "pompous"
       ],
       "antonyms": [
         "modest",
@@ -24876,7 +24878,8 @@
         "dissatisfaction",
         "disaffection",
         "unrest",
-        "resentment"
+        "resentment",
+        "discontented"
       ],
       "antonyms": [
         "contentment",
@@ -27570,7 +27573,8 @@
         "disgusting",
         "sickening",
         "nauseating",
-        "vile"
+        "vile",
+        "detestable"
       ],
       "antonyms": [
         "delightful",
@@ -27865,7 +27869,8 @@
         "ordinary",
         "humdrum",
         "banal",
-        "workaday"
+        "workaday",
+        "earthly"
       ],
       "antonyms": [
         "extraordinary",
@@ -29557,7 +29562,8 @@
         "subtle",
         "low-key",
         "muted",
-        "unobtrusive"
+        "unobtrusive",
+        "downbeat"
       ],
       "antonyms": [
         "flashy",
@@ -29819,7 +29825,8 @@
         "loathsome",
         "odious",
         "repugnant",
-        "despicable"
+        "despicable",
+        "repellent"
       ],
       "antonyms": [
         "admirable",
@@ -31485,7 +31492,8 @@
         "detestable",
         "abhorrent",
         "loathsome",
-        "repugnant"
+        "repugnant",
+        "repellent"
       ],
       "antonyms": [
         "delightful",
@@ -39600,7 +39608,8 @@
         "exacerbate",
         "worsen",
         "compound",
-        "irritate"
+        "irritate",
+        "madden"
       ],
       "antonyms": [
         "alleviate",
@@ -42716,7 +42725,6 @@
         "The audience was so unreactive during the first half that the comedian rewrote his closing set during the interval."
       ],
       "synonyms": [
-        "inert",
         "unresponsive",
         "impassive",
         "apathetic"
@@ -45152,7 +45160,8 @@
       "synonyms": [
         "disgraceful",
         "shameful",
-        "shocking"
+        "shocking",
+        "reprehensible"
       ],
       "antonyms": [
         "commendable",
@@ -45992,7 +46001,8 @@
         "enchanting",
         "fascinating",
         "enthralling",
-        "mesmerizing"
+        "mesmerizing",
+        "ravishing"
       ],
       "antonyms": [
         "dull",
@@ -47767,7 +47777,8 @@
       "synonyms": [
         "charming",
         "captivating",
-        "delightful"
+        "delightful",
+        "ravishing"
       ],
       "antonyms": [
         "unappealing",
@@ -48028,7 +48039,8 @@
       "synonyms": [
         "rash",
         "hurried",
-        "impulsive"
+        "impulsive",
+        "precipitous"
       ],
       "antonyms": [
         "careful",
@@ -48326,7 +48338,8 @@
       "synonyms": [
         "utter",
         "complete",
-        "absolute"
+        "absolute",
+        "diaphanous"
       ],
       "antonyms": [],
       "collocations": [
@@ -49022,7 +49035,9 @@
       "synonyms": [
         "shocking",
         "horrifying",
-        "atrocious"
+        "atrocious",
+        "abysmal",
+        "egregious"
       ],
       "antonyms": [
         "excellent",
@@ -50002,7 +50017,8 @@
       ],
       "synonyms": [
         "unimportant",
-        "insignificant"
+        "insignificant",
+        "marginal"
       ],
       "antonyms": [
         "significant",
@@ -50060,7 +50076,8 @@
       "synonyms": [
         "minor",
         "petty",
-        "insignificant"
+        "insignificant",
+        "marginal"
       ],
       "antonyms": [
         "important",
@@ -50287,7 +50304,8 @@
       "synonyms": [
         "shameful",
         "scandalous",
-        "appalling"
+        "appalling",
+        "reprehensible"
       ],
       "antonyms": [
         "honorable",
@@ -51269,7 +51287,8 @@
       "synonyms": [
         "histrionic",
         "melodramatic",
-        "stagy"
+        "stagy",
+        "affected"
       ],
       "antonyms": [
         "understated",
@@ -51550,7 +51569,10 @@
       ],
       "synonyms": [
         "beleaguered",
-        "embattled"
+        "embattled",
+        "anxious",
+        "apprehensive",
+        "uneasy"
       ],
       "antonyms": [
         "thriving"
@@ -51744,7 +51766,8 @@
         "The negotiators sat unmoved by the union's offer of a shorter shift and insisted that the original timetable stood."
       ],
       "synonyms": [
-        "impassive"
+        "impassive",
+        "obdurate"
       ],
       "antonyms": [
         "stirred"
@@ -52042,7 +52065,8 @@
       ],
       "synonyms": [
         "cautious",
-        "leery"
+        "leery",
+        "vigilant"
       ],
       "antonyms": [
         "trusting",
@@ -53023,7 +53047,8 @@
       ],
       "synonyms": [
         "perceptibly",
-        "measurably"
+        "measurably",
+        "considerably"
       ],
       "antonyms": [
         "negligibly",
@@ -53695,7 +53720,8 @@
       ],
       "synonyms": [
         "ill-equipped",
-        "unsuited"
+        "unsuited",
+        "unreserved"
       ],
       "antonyms": [
         "competent",
@@ -53800,7 +53826,9 @@
       "synonyms": [
         "bewitching",
         "captivating",
-        "seductive"
+        "seductive",
+        "enticing",
+        "ravishing"
       ],
       "antonyms": [
         "repellent",
@@ -54462,7 +54490,8 @@
       "synonyms": [
         "inflexible",
         "uncompromising",
-        "adamant"
+        "adamant",
+        "refractory"
       ],
       "antonyms": [
         "flexible",
@@ -55287,7 +55316,8 @@
       "synonyms": [
         "closed-minded",
         "intolerant",
-        "parochial"
+        "parochial",
+        "provincial"
       ],
       "antonyms": [
         "open-minded",
@@ -55538,7 +55568,8 @@
       "synonyms": [
         "reckless",
         "impulsive",
-        "foolhardy"
+        "foolhardy",
+        "imprudent"
       ],
       "antonyms": [
         "cautious",
@@ -56638,7 +56669,8 @@
       "synonyms": [
         "annoy",
         "vex",
-        "irk"
+        "irk",
+        "madden"
       ],
       "antonyms": [
         "please",
@@ -56915,7 +56947,8 @@
       "synonyms": [
         "clandestine",
         "concealed",
-        "undercover"
+        "undercover",
+        "underhand"
       ],
       "antonyms": [
         "overt",
@@ -59217,7 +59250,8 @@
       "synonyms": [
         "blameworthy",
         "reprehensible",
-        "culpable"
+        "culpable",
+        "deplorable"
       ],
       "antonyms": [
         "praiseworthy",
@@ -59255,7 +59289,8 @@
       ],
       "synonyms": [
         "blameworthy",
-        "inexcusable"
+        "inexcusable",
+        "deplorable"
       ],
       "antonyms": [
         "laudable",

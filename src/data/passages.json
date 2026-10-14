@@ -29,7 +29,8 @@
         "ardent",
         "countermand",
         "pompous",
-        "presumptuous"
+        "presumptuous",
+        "theatrical"
       ]
     },
     {
@@ -498,7 +499,8 @@
         "criticality",
         "discontent",
         "forbidding",
-        "inundate"
+        "inundate",
+        "revolting"
       ]
     },
     {
@@ -1932,7 +1934,8 @@
         "candor",
         "frankness",
         "impair",
-        "sympathetic"
+        "sympathetic",
+        "revolting"
       ]
     },
     {
@@ -2097,7 +2100,8 @@
         "refractory",
         "remorseless",
         "resentful",
-        "uncompromising"
+        "uncompromising",
+        "sheer"
       ]
     },
     {
@@ -2255,7 +2259,8 @@
         "temerity",
         "sedulous",
         "argumentative",
-        "disputatious"
+        "disputatious",
+        "rash"
       ]
     },
     {
@@ -2869,7 +2874,9 @@
         "镇民大会上，她跟那些放任河堤坍塌的官员吵了起来，言辞激烈，却始终没人提高嗓门。"
       ],
       "exclude": [
-        "remorseless"
+        "remorseless",
+        "abhorrent",
+        "odious"
       ]
     },
     {
@@ -3286,7 +3293,8 @@
         "antipathetic",
         "inimical",
         "resentful",
-        "outrage"
+        "outrage",
+        "appalling"
       ]
     },
     {
@@ -4281,7 +4289,8 @@
         "inert",
         "deplorable",
         "appalling",
-        "contemptible"
+        "contemptible",
+        "censurable"
       ]
     },
     {
@@ -4417,7 +4426,8 @@
         "apathetic",
         "downbeat",
         "imprudent",
-        "vigilant"
+        "vigilant",
+        "appalling"
       ]
     },
     {
@@ -4642,7 +4652,9 @@
       ],
       "exclude": [
         "unmoved",
-        "open-minded"
+        "open-minded",
+        "aggravate",
+        "irritate"
       ]
     },
     {
@@ -4718,7 +4730,9 @@
         "trivial",
         "inconsequential",
         "circumspect",
-        "sagacious"
+        "sagacious",
+        "blameworthy",
+        "censurable"
       ]
     },
     {
@@ -4893,7 +4907,8 @@
         "implacable",
         "dreadful",
         "superintend",
-        "affirmation"
+        "affirmation",
+        "dismal"
       ]
     },
     {
@@ -4986,7 +5001,8 @@
         "当晚皮娅又唱起歌来,声音很轻,这一回,约纳斯跟着哼了第二句。"
       ],
       "exclude": [
-        "appalling"
+        "appalling",
+        "sheer"
       ]
     },
     {
