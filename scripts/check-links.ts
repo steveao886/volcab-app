@@ -13,34 +13,38 @@
  *
  * The candidate test is a shared gloss term under the same part of
  * speech, CJK only, parentheticals dropped first — `（情绪等）` is a usage
- * label, not a meaning, and paired oscillate with percolate. Measured
- * 2026-10-13 over 1212 words: 155 candidates at three characters, 227 at
- * two. Three is the default only because it was read first, not because
- * two is noise: the extra 72 are all verbs (44) and nouns (28), whose
- * Chinese glosses run two characters (诡计, 贬低, 证实) where an adjective
- * carries 的 — machination/scheme/trickery, reproach/reprove. Those 72
- * have not been read.
+ * label, not a meaning, and paired oscillate with percolate. Two
+ * characters, because three misses the verbs and nouns: their glosses run
+ * two characters (诡计, 贬低, 证实) where an adjective carries 的. Measured
+ * 2026-10-13 over 1212 words: 155 candidates at three characters, and 72
+ * more at two, every one a verb (44) or a noun (28).
  *
  * A candidate is not a verdict: observant shares 虔诚的 with pious through
- * its religious sense. Of the 155, 40 were read as interchangeable, and
- * linking them took 37 synonym strings on 33 entries; the other 115 shared a gloss and
- * nothing a reader would mix up. Linking is a synonym written into an
- * entry, and a synonym joins every word that lists it — write it on the
- * side whose other listers belong with the new partner, and diff the pair
- * graph, 发散 membership and passage pools after.
+ * its religious sense. Read one by one, 40 of the 155 and 15 of the 71
+ * still open at two characters were interchangeable — a quarter and a
+ * fifth; the rest shared a gloss and nothing a reader would mix up.
+ * Verbs miss more often through a secondary sense (支持 joins affirm,
+ * bolster and sympathize, three different kinds of support). Linking is
+ * a synonym written into an entry, and a synonym joins every word that
+ * lists it — write it on the side whose other listers belong with the new
+ * partner, and diff the pair graph, 发散 membership and passage pools after.
  *
- * Jev orders the reading, it does not replace it. Against the 40 labels
- * made before it ran: at P >= 0.9 it flagged 31, 26 right (84% precision,
- * 65% recall); irritate/madden scored 0.12 on degree alone. Reading its
- * disagreements moved one label each way (primal/primitive in,
- * dubious/shifty out).
+ * Jev orders the reading, it does not replace it, and it is weaker where
+ * the shorter terms reach. Against labels made before it ran, at P >= 0.9:
+ * on the three-character adjectives it flagged 31, 26 right (84%
+ * precision, 65% recall; irritate/madden scored 0.12 on degree alone); on
+ * the two-character verbs and nouns it flagged 7, 2 right, and the other
+ * 5 were all words that meet only in a secondary sense (belittle/degrade
+ * on 贬低). Reading its disagreements moved four labels across both
+ * rounds: primal/primitive, assuage/gratify and appease/gratify in,
+ * dubious/shifty out.
  *
  * Exit 0 with a report, 2 on a missing key or a failed call. Needs
  * TYPESAFE_API_KEY (environment or .env.local) unless --no-jev.
  *
  *   npx tsx scripts/check-links.ts                  every candidate, with Jev's reading
  *   npx tsx scripts/check-links.ts --ids a,b,c      candidates touching these words (a batch)
- *   npx tsx scripts/check-links.ts --min-term 2     shorter shared terms (the unread 72)
+ *   npx tsx scripts/check-links.ts --min-term 3     longer terms only, mostly adjectives
  *   npx tsx scripts/check-links.ts --no-jev         candidates only, no key needed
  */
 import { readFileSync } from 'node:fs'
@@ -49,8 +53,8 @@ import { buildContrastPairs } from '../src/lib/contrast.ts'
 import type { Word, WordsFile } from '../src/types.ts'
 import { MODEL, askJev, costOf, loadKey, mapPool } from './jev.ts'
 
-/** Shortest shared gloss term that counts by default — see the header for what two characters found. */
-export const MIN_TERM = 3
+/** Shortest shared gloss term that counts by default — see the header for what three characters missed. */
+export const MIN_TERM = 2
 
 /**
  * `pos\tterm` for every CJK-only term of at least `minTerm` characters in

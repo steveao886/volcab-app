@@ -85,7 +85,9 @@ The passage's `exclude` array is where that judgment goes (step 3).
    **Then look for the links nobody wrote**: `npm run check-links --
    --ids <id,id,…>` lists same-part-of-speech pairs that share a Chinese
    gloss term but are joined by nothing, with Jev's guess at whether they
-   are interchangeable (84% precision, 65% recall at 0.9). It is the
+   are interchangeable — useful on adjectives (84% precision at 0.9),
+   close to useless on verbs and nouns (2 of 7), where it is fooled by a
+   shared secondary sense. It is the
    opposite failure to a homograph and costs the same thing: the contrast
    graph is what keeps a second right answer out of the options, so with
    `ravishing` and `captivating` unjoined, "the opposite of hideous" could
@@ -94,9 +96,12 @@ The passage's `exclude` array is where that judgment goes (step 3).
    side's `synonyms` — **the side whose other listers belong with the new
    partner**, because the string joins all of them (`madden` onto
    aggravate, never `aggravate` onto madden, which joins it to
-   exacerbate). 2026-10-13, whole library: 40 of 155 candidates linked, 15
-   of them touching the 125-word batch before it; the rest were older
-   gaps. Linking adds pairs, so it adds notes — run it before step 4.
+   exacerbate; `negligence` onto oversight, never `oversight` anywhere,
+   because the string also means supervision). 2026-10-13, whole library:
+   55 of 226 candidates linked (40 of 155 sharing a term of three
+   characters, 15 of 71 sharing only two); of the first 40, 15 touched
+   the 125-word batch before it, the rest were older gaps. Linking adds
+   pairs, so it adds notes — run it before step 4.
 
    **Last, diff the passage distractor pools**, after the synonym cuts
    (each cut changes the pools): `npx tsx scripts/passage-pool-diff.ts`
@@ -322,7 +327,7 @@ closed on any group whose second place is not defensible.
 
 Once per refresh, also run `npm run check-senses`, `npm run
 check-synonyms` and `npm run check-links` with no ids — the whole
-library, ~340k Jev input tokens for the first two and ~70k for the third,
+library, ~340k Jev input tokens for the first two and ~80k for the third,
 under two cents each. None is in the scan because they need a key and the
 network; read their output like steps 3 and 5. After the 2026-10-01
 cleanup a full synonym run still flags ~70 pairs (71 on 2026-10-13) —
@@ -331,8 +336,7 @@ mostly close words read and kept that day; cut only what reads two ways.
 instead of cutting it**: `diaphanous` and `precipitous` both listed
 `sheer`, one for the fabric and one for the cliff, and cutting it from
 diaphanous alone would lose a real pair — so diaphanous dropped `sheer`
-and sheer listed `diaphanous`. `check-links -- --min-term 2` still has 72
-unread verb and noun candidates.
+and sheer listed `diaphanous`.
 
 **Never** pad content to hit a number. A skipped group costs nothing; a
 wrong answer key or an invented etymology poisons the mode that shows it.

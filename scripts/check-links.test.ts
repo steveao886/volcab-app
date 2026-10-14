@@ -6,15 +6,15 @@ const word = (id: string, zh: string, synonyms: string[] = [], pos = 'adj.', ant
   ({ id, headword: id, meanings: [{ pos, en: `${id} sense`, zh }], synonyms, antonyms, examples: [] }) as unknown as Word
 
 describe('glossTerms', () => {
-  it('keeps CJK-only terms of three or more characters, keyed by part of speech', () => {
-    expect([...glossTerms(word('alpha', '迷人的;诱人的,极有吸引力的'))]).toEqual(['adj.\t迷人的', 'adj.\t诱人的', 'adj.\t极有吸引力的'])
+  it('keeps CJK-only terms of two or more characters, keyed by part of speech, because verb and noun glosses run two', () => {
+    expect([...glossTerms(word('alpha', '激怒;使恼火;A级', [], 'v.'))]).toEqual(['v.\t激怒', 'v.\t使恼火'])
   })
-  it('drops two-character terms and parenthetical usage labels', () => {
+  it('drops one-character terms and parenthetical usage labels', () => {
     // （情绪等） paired oscillate with percolate before parentheticals were dropped
-    expect([...glossTerms(word('alpha', '激怒;(情绪等)波动不定的;（价格）上涨'))]).toEqual(['adj.\t波动不定的'])
+    expect([...glossTerms(word('alpha', '怒;(情绪等)波动不定的;（价格）上涨'))]).toEqual(['adj.\t波动不定的', 'adj.\t上涨'])
   })
-  it('admits shorter terms when asked, which is where verbs and nouns live', () => {
-    expect([...glossTerms(word('alpha', '激怒;使恼火', [], 'v.'), 2)]).toEqual(['v.\t激怒', 'v.\t使恼火'])
+  it('narrows to longer terms when asked', () => {
+    expect([...glossTerms(word('alpha', '激怒;使恼火', [], 'v.'), 3)]).toEqual(['v.\t使恼火'])
   })
   it('splits on full-width separators as well as half-width ones', () => {
     expect([...glossTerms(word('alpha', '令人作呕的；令人厌恶的，可憎的、讨厌的'))]).toEqual(['adj.\t令人作呕的', 'adj.\t令人厌恶的', 'adj.\t可憎的', 'adj.\t讨厌的'])
