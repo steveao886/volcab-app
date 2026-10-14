@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { QUIZ_TYPES, buildAntonymIndices, clozeCollocation, clozeExample, contrastPairKey, generateAntonymQuestion, generateAudioQuiz, generateContrastQuiz, generateQuiz, pickCloze, pickMeaning, sharedSynonyms, difficultyWeight, weightedShuffle} from './quiz'
+import type { QuizQuestion, QuizType } from './quiz'
+import { confusableIndex } from './contrast'
 import { isShapeGiveaway } from './shapeGiveaway'
 import { MISS_RECENCY_DAYS } from './queue'
 import { addDays } from './srs'
@@ -1054,5 +1056,126 @@ describe('full-library regression — synonymHint', () => {
       }
     }
     expect(leaked).toEqual([])
+  })
+})
+
+/**
+ * Every four-choice type that draws through pickDistractorLabels — the
+ * mixed quiz's five and listening mode's audio2meaning. antonymPick has its
+ * own distractor path and its own confusable test above.
+ */
+const LABEL_TYPES = ['word2meaning', 'meaning2word', 'clozeExample', 'clozeCollocation', 'synonymHint'] as const satisfies readonly QuizType[]
+const byGloss = (q: QuizQuestion) => q.type === 'word2meaning' || q.type === 'audio2meaning'
+// meaningLabel is private to quiz.ts; this is the same `${pos} ${zh}` rendering.
+const gloss = (m: Meaning) => `${m.pos} ${m.zh}`
+
+/**
+ * antonymPick's rule 2, carried to every other four-choice type: a word
+ * sharing a synonym with the answer is very likely a second correct answer.
+ * alpha and bravo share `kinship`, so the contrast graph pairs them; in a
+ * six-word library each would sit among the other's three distractors 60%
+ * of the time if nothing kept it out.
+ */
+describe('generateQuiz — a confusable partner of the answer is never a distractor', () => {
+  const kin = (ids: Record<string, string[]>) => (w: Word): Word => ({ ...w, synonyms: [...w.synonyms, ...(ids[w.id] ?? [])] })
+  const linked = words.map(kin({ alpha: ['kinship'], bravo: ['kinship'] }))
+  const partner: Record<string, string> = { alpha: 'bravo', bravo: 'alpha' }
+  const offers = (q: QuizQuestion, id: string) => {
+    const w = linked.find(x => x.id === id)!
+    return q.options.includes(byGloss(q) ? gloss(w.meanings[0]) : w.headword)
+  }
+  const assertNone = (make: (seed: number) => QuizQuestion[]) => {
+    let asked = 0
+    for (let seed = 0; seed < 20; seed++) {
+      for (const q of make(seed)) {
+        const other = partner[q.wordId]
+        if (other === undefined) continue
+        asked++
+        expect(offers(q, other), `${q.type}: ${q.wordId} offered ${other} (seed ${seed})`).toBe(false)
+      }
+    }
+    // Non-vacuous: the pair itself has to have been asked.
+    expect(asked).toBeGreaterThan(0)
+  }
+
+  for (const type of LABEL_TYPES) {
+    it(type, () => assertNone(seed => generateQuiz(linked, allStudied(linked), TODAY, 6, mulberry(seed), [type])))
+  }
+  it('audio2meaning', () => assertNone(seed => generateAudioQuiz(linked, allStudied(linked), TODAY, 6, mulberry(seed))))
+
+  /**
+   * The thin case, and the same call antonymPick makes: falling back to a
+   * confusable would fire exactly where the pool is thinnest and quietly
+   * ship the two-answer question the exclusion exists to stop.
+   */
+  it('a word left with fewer than three non-confusable candidates is skipped, not downgraded', () => {
+    // alpha is confusable with bravo and with carol, leaving delta and echo: two candidates for three slots.
+    const five = words.slice(0, 5).map(kin({ alpha: ['kinship', 'kindred'], bravo: ['kinship'], carol: ['kindred'] }))
+    for (let seed = 0; seed < 10; seed++) {
+      const qs = generateQuiz(five, allStudied(five), TODAY, 5, mulberry(seed), ['meaning2word'])
+      expect(qs.map(q => q.wordId).sort()).toEqual(['bravo', 'carol', 'delta', 'echo'])
+    }
+  })
+})
+
+describe('full-library regression — confusable distractors', () => {
+  const loadLibrary = async () =>
+    ((await import('../../data/words.json')).default as unknown as { words: Word[] }).words
+
+  /**
+   * Before the exclusion, 0.44–0.78% of each type's questions offered a
+   * partner with every word studied (2026-10-13, 1212 words, 1710 pairs).
+   * With it removed, this walk's 5,500 questions put a partner in 43 of
+   * them — 44 options — so a regression cannot slip through on luck.
+   *
+   * An option is flagged only when **every** word rendering that text is a
+   * partner. 11 glosses are shared verbatim by two words, and a gloss drawn
+   * from the owner that is not confusable is a legitimate distractor whose
+   * text merely matches a partner's — `nuanced` meets
+   * `adj. 不显眼的;不引人注目的` through `inconspicuous`, which it is not
+   * paired with, while `unobtrusive`, which it is, says the same thing.
+   */
+  it('no four-choice question offers a confusable partner of its answer', async () => {
+    const words = await loadLibrary()
+    const progress = allStudied(words)
+    const confusable = confusableIndex(words)
+    const owners = new Map<string, string[]>()
+    const own = (key: string, id: string) => owners.set(key, [...(owners.get(key) ?? []), id])
+    for (const w of words) {
+      own(`hw ${w.headword}`, w.id)
+      for (const m of w.meanings) own(`zh ${gloss(m)}`, w.id)
+    }
+    const bad: string[] = []
+    const check = (q: QuizQuestion) => {
+      const near = confusable.get(q.wordId)
+      if (near === undefined) return
+      for (const o of q.options) {
+        if (o === q.answer) continue
+        const ids = owners.get(`${byGloss(q) ? 'zh' : 'hw'} ${o}`) ?? []
+        if (ids.length > 0 && ids.every(id => near.has(id))) bad.push(`${q.type}: ${q.wordId} offered ${o}`)
+      }
+    }
+    for (let seed = 0; seed < 25; seed++) {
+      for (const type of LABEL_TYPES) {
+        for (const q of generateQuiz(words, progress, TODAY, 40, mulberry(seed), [type])) check(q)
+      }
+      for (const q of generateAudioQuiz(words, progress, TODAY, 40, mulberry(seed))) {
+        if (q.type === 'audio2meaning') check(q)
+      }
+    }
+    expect(bad).toEqual([])
+  })
+
+  /**
+   * The starvation check. These two types skip a word for one reason only —
+   * pickDistractorLabels returning null — so asking for the whole library
+   * walks every word and the count is the number askable. The most-connected
+   * word had 13 partners on 2026-10-13, against 1211 candidates.
+   */
+  it('the exclusion leaves every word askable', async () => {
+    const words = await loadLibrary()
+    for (const type of ['meaning2word', 'word2meaning'] as const) {
+      expect(generateQuiz(words, allStudied(words), TODAY, words.length, mulberry(1), [type])).toHaveLength(words.length)
+    }
   })
 })
