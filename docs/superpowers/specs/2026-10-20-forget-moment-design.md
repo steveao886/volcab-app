@@ -277,8 +277,10 @@ without them.
   - `members`: stamped when the tangle is born and recomputed only on
     reopen, so the 60-day evaluation can tell who was in it *(my call)*
   - `settled`: members answered right since the last reopen or refresh
-  - `stage`: day 1 or due
-  - `dueOn`, `doneOn?`, `lastAt`
+  - `bornOn`, `dueOn`, `doneOn?`, `lastAt`
+  - There is no stored stage. Day 1 is `bornOn === today`, and due is
+    `!doneOn && dueOn <= today`, so no stored state can disagree with the
+    dates, which are the only thing a second device can be sure of.
   - Merged per key with the later `lastAt` winning, the `mergeDiverge`
     pattern.
   - Malformed entries are skipped, never thrown on.
