@@ -9,7 +9,7 @@ import type { QuizMetricKey } from '../lib/quiz'
 import { relatedDueGuard } from '../lib/related'
 import { demoteWord, gradeWord, todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
-import { applyConfusion, applyTangleResults, tangleMembers } from '../lib/tangle'
+import { applyConfusion, applyTangleResults, isReadable, tangleMembers } from '../lib/tangle'
 import { wordsCache } from '../lib/wordsCache'
 import type { WordsCache } from '../lib/wordsCache'
 import { emptyProgress, emptyStat } from '../types'
@@ -1289,14 +1289,19 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
    *
    * A key that is not there is skipped silently: with no stat there is no
    * member list to settle against, and a record written from the ids alone
-   * would have none. A missing word is skipped by markMissed, the same call
-   * recordRecall makes.
+   * would have none. **So is a stat that is not readable** (a hand-edited
+   * `members: 'a,b'`): login and a cached boot reach the store without
+   * mergeProgress, and applyTangleResults would throw on it, while
+   * buildTangleSession reads the same stat as an empty session, so a key
+   * dueTangles never vetted gets this far. Nothing is written for it, wrong
+   * ids included: a miss is stamped only alongside the tangle it belongs to. A
+   * missing word is skipped by markMissed, the same call recordRecall makes.
    */
   const recordTangle = useCallback((key: string, correctIds: string[], wrongIds: string[], autoSettled: string[]) => {
     const now = new Date()
     const cur = stateRef.current.progress
     const stat = cur.tangles?.[key]
-    if (stat === undefined) return
+    if (!isReadable(stat)) return
     const live = new Set(stateRef.current.words.map((w) => w.id))
     commitProgress({
       ...cur,
