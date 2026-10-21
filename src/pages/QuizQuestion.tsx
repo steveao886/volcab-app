@@ -1,5 +1,6 @@
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import { Blanked } from '../components/Blanked'
 import { Button } from '../components/Button'
 import { Chip } from '../components/Chip'
 import { Field } from '../components/Field'
@@ -38,19 +39,6 @@ const isAudio = (t: QuizType) => t === 'audio2meaning' || t === 'audio2spelling'
 const HINT_KIND_LABEL: Record<'synonym' | 'antonym', string> = {
   synonym: '与它意思相近的词是？',
   antonym: '与它意思相反的词是？',
-}
-
-const BLANK = '___'
-
-/** Cloze questions wrap the "___" in prompt with its own span, to make the blank more prominent than the body text. */
-function renderBlanked(text: string): ReactNode {
-  const parts = text.split(BLANK)
-  return parts.map((part, i) => (
-    <Fragment key={i}>
-      {part}
-      {i < parts.length - 1 ? <span className="quiz-blank">{BLANK}</span> : null}
-    </Fragment>
-  ))
 }
 
 interface QuizQuestionViewProps {
@@ -377,7 +365,7 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
           className={isHeadwordPrompt ? 'word quiz-q__prompt' : 'quiz-q__prompt'}
           lang={promptLang}
         >
-          {isCloze ? renderBlanked(question.prompt) : question.prompt}
+          {isCloze ? <Blanked text={question.prompt} blankClass="quiz-blank" /> : question.prompt}
         </p>
       )}
       {/* Which sense of a polysemous prompt is being asked about. `antonyms`
