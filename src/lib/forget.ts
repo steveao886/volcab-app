@@ -73,12 +73,16 @@ export function glossTerms(zh: string): string[] {
  * 证实 for `corroborate` (证实;确证) asks the user to pick the answer's own
  * meaning as the thing they confused it with. A partner term is dropped when it
  * sits inside the word's joined `zh` text, so 证实 goes against 使…得以证实
- * though it is not a whole gloss there. That one test also covers a term that
- * equals one of the word's own gloss terms: those are cut out of the same text,
- * so an equality check beside it could never change a result. The text is every
- * meaning of the word, since the card might have been missed on any of them;
- * the partner contributes its first only, the sense the confusable pair is
- * about.
+ * though it is not a whole gloss there, **or when it equals one of the word's
+ * own gloss terms**. The substring test does not cover the second: glossTerms
+ * cuts a qualifier out of the middle of a term, and what is left is no longer
+ * in the text it came from — `vindicate`'s 证明(某人)无罪 is the term 证明无罪.
+ * 12 of the library's 4607 own terms have that shape, and none of the 10562
+ * partner terms (every pair, both ways) equals one today, so the check changes
+ * nothing yet; it is there because the next authored meaning can. Measured on
+ * data/words.json on 2026-10-21. The text is every meaning of the word, since
+ * the card might have been missed on any of them; the partner contributes its
+ * first only, the sense the confusable pair is about.
  *
  * Partners walk closest-first (pair `score` descending, then id, so the order
  * is a function of the data alone). Unstudied partners are skipped — the user
@@ -94,6 +98,7 @@ export function forgetOptions(
   pairs: ContrastPair[],
 ): ForgetOption[] {
   const ownText = word.meanings.map((m) => m.zh).join(';')
+  const ownTerms = new Set(word.meanings.flatMap((m) => glossTerms(m.zh)))
 
   const partners: { id: string; score: number }[] = []
   for (const p of pairs) {
@@ -108,7 +113,7 @@ export function forgetOptions(
   for (const { id } of partners) {
     const zh = byId.get(id)?.meanings[0]?.zh
     if (typeof zh !== 'string') continue
-    const left = glossTerms(zh).filter((t) => !ownText.includes(t))
+    const left = glossTerms(zh).filter((t) => !ownTerms.has(t) && !ownText.includes(t))
     if (left.length === 0) continue
     const text = left.join(';')
     if (seen.has(text)) continue
@@ -190,6 +195,17 @@ export function needsHintLadder(entry: ProgressEntry | undefined, today: string)
  * No arrow, or nothing before it, and there is no rung: failing closed beats
  * guessing where the answer starts.
  *
+ * **Nor when a part's gloss is the word's own meaning.** `credence` (相信;采信)
+ * is `credere(相信) → 采信`, `solace` (安慰;慰藉) `拉丁 solari(安慰) → 慰藉`:
+ * the root carries one of the meanings unchanged, and the anchor is the
+ * answer. The rung goes when the text before the arrow contains any of the
+ * word's gloss terms (glossTerms, over every meaning, as forgetOptions reads
+ * them) of two characters or more. That takes the rung from 24 of the 1042
+ * words that had one, measured on data/words.json on 2026-10-21. A
+ * one-character term is not counted, so a single shared character is not
+ * taken for the meaning; on the same data that spares exactly one word,
+ * `angular`, whose `angulus(角)` stands beside the gloss 角的.
+ *
  * A sentence the headword cannot be located in is skipped, the same rule the
  * cloze and the highlighting follow, so the rung never shows an unmarked
  * sentence. A missing rung is simply absent; the ladder just has fewer steps.
@@ -204,7 +220,8 @@ export function hintRungs(word: Word): HintRung[] {
   if (typeof etymology === 'string') {
     const arrow = etymology.indexOf('→')
     const text = arrow < 0 ? '' : etymology.slice(0, arrow).trim()
-    if (text !== '') rungs.push({ kind: 'etymology', text })
+    const ownMeaning = word.meanings.flatMap((m) => glossTerms(m.zh)).some((t) => t.length >= 2 && text.includes(t))
+    if (text !== '' && !ownMeaning) rungs.push({ kind: 'etymology', text })
   }
 
   return rungs
