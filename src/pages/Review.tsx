@@ -18,12 +18,14 @@ import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { storage } from '../lib/storage'
 import { relatedDueGuard } from '../lib/related'
 import { diffDays, previewIntervals, todayStr } from '../lib/srs'
+import { todaysConfusedPairs } from '../lib/tangle'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
 import { ForgetAsk } from './ForgetAsk'
 import { HintLadder } from './HintLadder'
 import { ReviewCardBack } from './ReviewCard'
 import { advance, buildSessionQueue, currentId, dropCurrent, isDone, isHardConfirm, remaining } from './reviewQueue'
 import type { SessionQueue } from './reviewQueue'
+import { TangleDay1 } from './TangleDay1'
 import { useApp } from '../state/store'
 import type { Grade, ProgressEntry } from '../types'
 import './Review.css'
@@ -502,6 +504,14 @@ function ReviewSession() {
     // ranking knows nothing of it, and "没有记不牢的词" printed above that
     // button would contradict it.
     const clearedForToday = empty && alreadyDone
+    // The scheduled review only, which is where a lapse is asked about. Read
+    // from today's forget records rather than from tangles born today: a
+    // refreshed or reopened tangle keeps its old `bornOn` and is owed the same
+    // day-1 look. Shown on the `empty` screen too: reopening this page later in
+    // the day shows today's pairs again, since TangleDay1 stores nothing about
+    // having been seen.
+    const confusedToday =
+      mode === 'due' ? todaysConfusedPairs(progress, today, new Set(words.map((w) => w.id))) : []
     return (
       <Page title={title} back="/">
         <div className="review-done">
@@ -528,6 +538,9 @@ function ReviewSession() {
             返回今日
           </Link>
         </div>
+        {/* Under 返回今日, not above it: the way out stays where it was, and
+            the minute this asks for is an offer, not a gate on leaving. */}
+        <TangleDay1 pairs={confusedToday} />
       </Page>
     )
   }
