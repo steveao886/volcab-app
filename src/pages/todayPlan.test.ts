@@ -242,6 +242,15 @@ describe('buildDayPlan', () => {
     expect(keys.indexOf('untangle')).toBe(keys.indexOf('lapses') + 1)
     expect(keys.indexOf('quiz')).toBe(keys.indexOf('untangle') + 1)
   })
+
+  it('quiz row: always present, done once any quiz was taken today', () => {
+    const p = emptyProgress()
+    p.settings.newPerDay = 0
+    expect(find(buildDayPlan([], p, NOW, TODAY, NO_MARKS), 'quiz'))
+      .toMatchObject({ state: 'todo', hint: '可选', to: '/quiz' })
+    p.dailyStats[TODAY] = { ...emptyStat(), quizTaken: 1 }
+    expect(find(buildDayPlan([], p, NOW, TODAY, NO_MARKS), 'quiz')?.state).toBe('done')
+  })
 })
 
 describe('untangle session mark', () => {
@@ -260,15 +269,6 @@ describe('untangle session mark', () => {
     expect(bumpUntangleSessions(null, TODAY)).toEqual({ day: TODAY, n: 1 })
     expect(bumpUntangleSessions({ day: TODAY, n: 2 }, TODAY)).toEqual({ day: TODAY, n: 3 })
     expect(bumpUntangleSessions({ day: '2026-08-06', n: 3 }, TODAY)).toEqual({ day: TODAY, n: 1 })
-  })
-
-  it('quiz row: always present, done once any quiz was taken today', () => {
-    const p = emptyProgress()
-    p.settings.newPerDay = 0
-    expect(find(buildDayPlan([], p, NOW, TODAY, NO_MARKS), 'quiz'))
-      .toMatchObject({ state: 'todo', hint: '可选', to: '/quiz' })
-    p.dailyStats[TODAY] = { ...emptyStat(), quizTaken: 1 }
-    expect(find(buildDayPlan([], p, NOW, TODAY, NO_MARKS), 'quiz')?.state).toBe('done')
   })
 })
 
