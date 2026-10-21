@@ -42,23 +42,47 @@ type Stage = { at: 'how' } | { at: 'which' } | { at: 'pair'; partnerId: string }
  *
  * Each stage's container carries its own `key`, so a button focused in one
  * stage is unmounted rather than reused as a different control in the next.
+ *
+ * **Two callbacks, because answering and moving on are two moments.**
+ * `onAnswer` writes the record and fires at the choice, on every path. A
+ * named partner then shows the pair and its note, and `onContinue` waits for
+ * 继续; every other answer continues at once. That is the spec's order,
+ * record then reveal: stage 3 is where the user has already answered and is
+ * most likely to stop, and a record written at 继续 was lost by leaving there.
  */
-export function ForgetAsk({ word, options, polysemous, onDone }: {
+export function ForgetAsk({ word, options, polysemous, onAnswer, onContinue }: {
   word: Word
   options: ForgetOption[]
   polysemous: boolean
-  onDone(rec: ForgetAnswer): void
+  /** Records the answer. Fired once per lapse, at the choice, before any reveal. */
+  onAnswer(rec: ForgetAnswer): void
+  /** Moves the session on. Fired once, after onAnswer: with it, or on 继续 after a partner. */
+  onContinue(): void
 }) {
   const { words } = useApp()
   const [stage, setStage] = useState<Stage>({ at: 'how' })
-  // One answer per lapse: a double press of 继续, or a key and a click in the
-  // same moment, would otherwise write the record twice.
-  const doneRef = useRef(false)
+  // Each fires once per lapse. A handler can run against a stage that has
+  // already moved on (a second key in the same task, a key and a click
+  // together), and the ref, unlike the stage, is never a render behind: a
+  // fast repeat on a partner cannot write a second record, and a stray choice
+  // after one cannot skip the pair it opened.
+  const answeredRef = useRef(false)
+  const continuedRef = useRef(false)
+  const answer = useCallback((rec: ForgetAnswer): boolean => {
+    if (answeredRef.current) return false
+    answeredRef.current = true
+    onAnswer(rec)
+    return true
+  }, [onAnswer])
+  const proceed = useCallback(() => {
+    if (!answeredRef.current || continuedRef.current) return
+    continuedRef.current = true
+    onContinue()
+  }, [onContinue])
+  // Every answer but a partner: nothing to reveal, so on at once.
   const finish = useCallback((rec: ForgetAnswer) => {
-    if (doneRef.current) return
-    doneRef.current = true
-    onDone(rec)
-  }, [onDone])
+    if (answer(rec)) proceed()
+  }, [answer, proceed])
 
   const choices = useMemo((): Choice[] => [
     ...options.map((o): Choice => ({
@@ -70,19 +94,17 @@ export function ForgetAsk({ word, options, polysemous, onDone }: {
 
   // A list holding only 意思想错了，但不在这里 asks nothing: 想成了别的 already said it.
   const pickConfused = useCallback(() => {
+    if (answeredRef.current) return
     if (choices.length === 1) finish({ kind: 'confused' })
     else setStage({ at: 'which' })
   }, [choices.length, finish])
 
+  // A partner is recorded here, before the pair is shown, not at 继续.
   const pickChoice = useCallback((c: Choice) => {
-    if (c.partnerId !== undefined) setStage({ at: 'pair', partnerId: c.partnerId })
-    else finish(c.answer)
-  }, [finish])
-
-  const partnerId = stage.at === 'pair' ? stage.partnerId : undefined
-  const proceed = useCallback(() => {
-    if (partnerId !== undefined) finish({ kind: 'confused', with: partnerId })
-  }, [partnerId, finish])
+    const partnerId = c.partnerId
+    if (partnerId === undefined) finish(c.answer)
+    else if (answer(c.answer)) setStage({ at: 'pair', partnerId })
+  }, [answer, finish])
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
