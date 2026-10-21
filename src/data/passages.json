@@ -62,7 +62,8 @@
         "artless",
         "malleable",
         "preeminent",
-        "slippery-slope"
+        "slippery-slope",
+        "world-renowned"
       ]
     },
     {
@@ -164,6 +165,7 @@
         "关停这座备受喜爱的电台，对区域事故率没起到任何实质作用，只是让黑暗的海面显得更空荡了。"
       ],
       "exclude": [
+        "cordial",
         "genial",
         "unpretentious"
       ]
@@ -384,7 +386,8 @@
         "disreputable",
         "ignominious",
         "inimical",
-        "petulant"
+        "petulant",
+        "ungovernable"
       ]
     },
     {
@@ -635,7 +638,8 @@
         "alleviate",
         "disaffect",
         "extenuation",
-        "incite"
+        "incite",
+        "vex"
       ]
     },
     {
@@ -670,6 +674,7 @@
         "alleviate",
         "artifice",
         "assuage",
+        "burdensome",
         "concur",
         "deft",
         "devious",
@@ -782,7 +787,9 @@
       "exclude": [
         "depose",
         "effortful",
-        "magnanimous"
+        "grueling",
+        "magnanimous",
+        "sloppy"
       ]
     },
     {
@@ -816,6 +823,7 @@
         "antipathetic",
         "belligerent",
         "disputatious",
+        "impertinence",
         "inimical",
         "magnanimous",
         "probity",
@@ -933,6 +941,7 @@
         "到了中午，所有面包都被抢购一空。"
       ],
       "exclude": [
+        "agitation",
         "analogous",
         "headstrong",
         "impinge",
@@ -1054,6 +1063,7 @@
         "最后她把九箱蜂托付给了山谷那头的一所学校，自己留下两箱——那个要跟蜜蜂说话的故事，也跟着一起去了。"
       ],
       "exclude": [
+        "advantageous",
         "auspicious",
         "headstrong",
         "intractable",
@@ -1097,6 +1107,7 @@
         "一个黑影从雨中走了进来。"
       ],
       "exclude": [
+        "advantageous",
         "conducive",
         "metastasize",
         "oblivious",
@@ -1172,6 +1183,7 @@
         "校方突然承诺保持透明被认为是值得称赞的，但对受害者来说实在太晚了。"
       ],
       "exclude": [
+        "dictatorial",
         "embroil"
       ]
     },
@@ -1203,11 +1215,12 @@
         "感觉到那个恰好的时机，一名当地记者拿着相机走上前来记录下了这一幕。"
       ],
       "exclude": [
+        "advantageous",
         "auspicious",
         "conducive",
+        "incensed",
         "machination",
-        "pantomime",
-        "incensed"
+        "pantomime"
       ]
     },
     {
@@ -1295,7 +1308,8 @@
         "reprove",
         "tenacious",
         "uncompromising",
-        "uncontrollable"
+        "uncontrollable",
+        "ungovernable"
       ]
     },
     {
@@ -1330,6 +1344,7 @@
         "contemptible",
         "eclectic",
         "ignominious",
+        "impede",
         "importune",
         "intercede",
         "manifold",
@@ -1365,14 +1380,16 @@
         "甚至在最后一场比赛开闸的几周前，地方报纸就开始颂扬这个场地了。"
       ],
       "exclude": [
+        "acclaim",
+        "adamant",
         "covetous",
         "deify",
         "denounce",
+        "irresistible",
         "malignant",
         "percolate",
-        "uncompromising",
-        "irresistible",
         "reproach",
+        "uncompromising",
         "unfavorable"
       ]
     },
@@ -1418,7 +1435,8 @@
         "rickety",
         "succumb",
         "tenacious",
-        "uncontrollable"
+        "uncontrollable",
+        "ungovernable"
       ]
     },
     {
@@ -1450,10 +1468,12 @@
       ],
       "exclude": [
         "artful",
+        "companionable",
         "deify",
         "genial",
+        "pervasive",
         "petulant",
-        "companionable"
+        "rife"
       ]
     },
     {
@@ -1563,6 +1583,7 @@
       ],
       "exclude": [
         "assuage",
+        "dictatorial",
         "dovetail",
         "erratic",
         "rickety",
@@ -1597,59 +1618,62 @@
         "可找到了它，也没能缓解爷爷心里的担忧——他怕这间茶馆熬不过自己。"
       ],
       "exclude": [
+        "abate",
         "abhorrent",
-        "detestable",
-        "loathsome",
-        "odious",
-        "deplorable",
-        "hideous",
         "admonish",
         "admonition",
-        "reprimand",
-        "reproof",
-        "condemnation",
-        "denunciation",
-        "amiable",
-        "genial",
-        "sociable",
         "agreeable",
-        "philanthropic",
-        "respectful",
-        "deterioration",
-        "relapse",
-        "spendthrift",
-        "ostentatious",
-        "grandiose",
-        "sumptuous",
-        "profuse",
-        "devious",
-        "underhand",
-        "dishonest",
+        "alleviate",
+        "amiable",
         "antipathetic",
-        "malignant",
-        "perilous",
+        "appease",
+        "charitable",
+        "conciliate",
+        "condemnation",
+        "cordial",
+        "denunciation",
+        "deplorable",
+        "deterioration",
+        "detestable",
+        "devious",
+        "disadvantageous",
+        "dishonest",
+        "genial",
+        "grandiose",
         "headstrong",
+        "hideous",
         "implacable",
         "inexorable",
         "intractable",
         "intransigent",
+        "loathsome",
+        "malignant",
         "obdurate",
         "obstinate",
+        "odious",
+        "ostentatious",
+        "perilous",
+        "philanthropic",
+        "placate",
+        "profuse",
+        "pugnacious",
         "recalcitrant",
         "refractory",
-        "uncompromising",
-        "pugnacious",
-        "sedulous",
-        "appease",
-        "placate",
-        "conciliate",
-        "alleviate",
-        "abate",
-        "slacken",
-        "simpatico",
+        "regress",
+        "relapse",
+        "reprimand",
         "reproach",
-        "unfavorable",
-        "regress"
+        "reproof",
+        "respectful",
+        "sedulous",
+        "simpatico",
+        "slacken",
+        "sociable",
+        "spendthrift",
+        "sumptuous",
+        "uncompromising",
+        "underhand",
+        "unfavorable"
       ]
     },
     {
@@ -1849,27 +1873,28 @@
         "最后那场了结家产的会面，远在谁提高嗓门之前，语气就已经剑拔弩张了。"
       ],
       "exclude": [
-        "headstrong",
-        "implacable",
-        "inexorable",
-        "intractable",
-        "intransigent",
-        "obdurate",
-        "obstinate",
-        "recalcitrant",
-        "refractory",
-        "uncompromising",
-        "pugnacious",
-        "sedulous",
         "acrid",
         "antipathetic",
         "argumentative",
+        "clash",
         "disputatious",
-        "litigious",
-        "quarrelsome",
-        "resentful",
+        "headstrong",
+        "implacable",
+        "inexorable",
         "inimical",
-        "remorseless"
+        "intractable",
+        "intransigent",
+        "litigious",
+        "obdurate",
+        "obstinate",
+        "pugnacious",
+        "quarrelsome",
+        "recalcitrant",
+        "refractory",
+        "remorseless",
+        "resentful",
+        "sedulous",
+        "uncompromising"
       ]
     },
     {
@@ -2030,6 +2055,7 @@
         "argumentative",
         "belligerent",
         "disputatious",
+        "feeble",
         "headstrong",
         "implacable",
         "inexorable",
@@ -2046,9 +2072,9 @@
         "refractory",
         "remorseless",
         "resentful",
+        "retrograde",
         "sedulous",
         "uncompromising",
-        "retrograde",
         "understated"
       ]
     },
@@ -2186,12 +2212,13 @@
         "董事会开会时，场面变得剑拔弩张——那份订单的旧怨全被翻了出来。"
       ],
       "exclude": [
-        "underhand",
-        "uncontainable",
-        "sedulous",
         "argumentative",
         "disputatious",
-        "disquiet"
+        "disquiet",
+        "scheming",
+        "sedulous",
+        "uncontainable",
+        "underhand"
       ]
     },
     {
@@ -2223,10 +2250,11 @@
       ],
       "exclude": [
         "acquisitive",
-        "impromptu",
-        "sedulous",
         "argumentative",
-        "disputatious"
+        "cheeky",
+        "disputatious",
+        "impromptu",
+        "sedulous"
       ]
     },
     {
@@ -2257,11 +2285,12 @@
         "最后一轮交叉盘问变得剑拔弩张，辩方指责她整个案子都建立在一段泄露出去的谈话上。"
       ],
       "exclude": [
-        "temerity",
-        "sedulous",
         "argumentative",
         "disputatious",
-        "rash"
+        "opposed",
+        "rash",
+        "sedulous",
+        "temerity"
       ]
     },
     {
@@ -2392,35 +2421,38 @@
         "报道登上头版那天，连之前嘲笑过他的实习生们也都停下来一字一句地读完。"
       ],
       "exclude": [
-        "discomfort",
-        "culminate",
-        "contravene",
-        "sycophant",
-        "gloomy",
-        "capricious",
-        "headstrong",
-        "implacable",
-        "inexorable",
-        "intractable",
-        "intransigent",
-        "obdurate",
-        "obstinate",
-        "perverse",
-        "recalcitrant",
-        "refractory",
-        "remorseless",
-        "sedulous",
-        "uncompromising",
         "acrid",
         "antipathetic",
         "argumentative",
         "belligerent",
+        "burdensome",
+        "capricious",
+        "contravene",
+        "culminate",
+        "discomfort",
         "disputatious",
+        "gloomy",
+        "grueling",
+        "headstrong",
+        "implacable",
+        "inexorable",
         "inimical",
+        "intractable",
+        "intransigent",
         "litigious",
+        "obdurate",
+        "obstinate",
+        "perverse",
         "pugnacious",
         "quarrelsome",
-        "resentful"
+        "recalcitrant",
+        "refractory",
+        "remorseless",
+        "resentful",
+        "sedulous",
+        "sycophant",
+        "uncompromising",
+        "unnatural"
       ]
     },
     {
@@ -2451,34 +2483,35 @@
         "两个月后，那份离岸文件终于外泄，所有平淡的否认瞬间土崩瓦解。"
       ],
       "exclude": [
-        "premeditated",
-        "disloyal",
-        "ostensible",
-        "dubious",
-        "disreputable",
-        "headstrong",
-        "implacable",
-        "inexorable",
-        "intractable",
-        "intransigent",
-        "obdurate",
-        "obstinate",
-        "perverse",
-        "recalcitrant",
-        "refractory",
-        "remorseless",
-        "sedulous",
-        "uncompromising",
         "acrid",
         "antipathetic",
         "argumentative",
         "belligerent",
+        "disloyal",
         "disputatious",
+        "disreputable",
+        "dubious",
+        "headstrong",
+        "implacable",
+        "inexorable",
         "inimical",
+        "intractable",
+        "intransigent",
         "litigious",
+        "obdurate",
+        "obstinate",
+        "ostensible",
+        "perverse",
+        "premeditated",
         "pugnacious",
         "quarrelsome",
-        "resentful"
+        "recalcitrant",
+        "refractory",
+        "remorseless",
+        "resentful",
+        "sedulous",
+        "uncompromising",
+        "unpersuasive"
       ]
     },
     {
@@ -2561,32 +2594,33 @@
         "只有他那位锲而不舍的侄女不肯离场，非要他签字把费尔德从账户里彻底踢出去才罢休。"
       ],
       "exclude": [
-        "profligate",
-        "prodigal",
-        "headstrong",
-        "obdurate",
-        "recalcitrant",
-        "intractable",
-        "intransigent",
-        "uncompromising",
-        "perverse",
         "abhorrent",
-        "detestable",
-        "odious",
-        "repugnant",
-        "condemn",
-        "reproof",
-        "vitiate",
-        "sumptuous",
-        "copious",
         "antipathetic",
         "belligerent",
+        "condemn",
+        "copious",
+        "detestable",
         "disputatious",
-        "inimical",
+        "headstrong",
         "implacable",
+        "inflexible",
+        "inimical",
+        "intractable",
+        "intransigent",
+        "obdurate",
+        "odious",
+        "perverse",
+        "prodigal",
+        "profligate",
+        "recalcitrant",
         "refractory",
+        "reproach",
+        "reproof",
+        "repugnant",
         "sedulous",
-        "reproach"
+        "sumptuous",
+        "uncompromising",
+        "vitiate"
       ]
     },
     {
@@ -2760,11 +2794,12 @@
       "exclude": [
         "antipathetic",
         "belligerent",
+        "burdensome",
         "disputatious",
-        "inimical",
         "headstrong",
         "implacable",
         "inexorable",
+        "inimical",
         "intractable",
         "intransigent",
         "obdurate",
@@ -2804,14 +2839,15 @@
         "唯独一个堂兄弟不肯善罢甘休，翻查了几个月的旧银行记录，最终逼出了他一句颜面扫地的认罪。"
       ],
       "exclude": [
-        "resentful",
-        "outraged",
-        "discontented",
         "argumentative",
-        "quarrelsome",
+        "demeaning",
+        "discontented",
         "fractious",
+        "outraged",
+        "quarrelsome",
         "remorseless",
-        "demeaning"
+        "resentful",
+        "scheming"
       ]
     },
     {
@@ -2842,9 +2878,10 @@
         "那位同事在会上当众指她走后门，两人当场唇枪舌剑，话虽尖利，却谁也没提高嗓门。"
       ],
       "exclude": [
-        "resentful",
         "aggrieved",
-        "remorseless"
+        "remorseless",
+        "resentful",
+        "unremarkable"
       ]
     },
     {
@@ -2875,9 +2912,10 @@
         "镇民大会上，她跟那些放任河堤坍塌的官员吵了起来，言辞激烈，却始终没人提高嗓门。"
       ],
       "exclude": [
-        "remorseless",
         "abhorrent",
-        "odious"
+        "odious",
+        "remorseless",
+        "sloppy"
       ]
     },
     {
@@ -2970,29 +3008,30 @@
         "她还注意到他拇指上那道显眼的老茧，那是他几十年握着锉刀留下的印记。"
       ],
       "exclude": [
-        "headstrong",
-        "obdurate",
-        "obstinate",
-        "intractable",
-        "recalcitrant",
-        "refractory",
-        "uncompromising",
-        "intransigent",
-        "sedulous",
-        "implacable",
-        "inexorable",
-        "remorseless",
         "abhorrent",
+        "amenable",
+        "benevolent",
         "deplorable",
         "disreputable",
-        "loathsome",
-        "odious",
-        "revolting",
-        "ignominious",
-        "benevolent",
-        "amenable",
+        "enchant",
+        "engross",
         "exuberant",
-        "engross"
+        "headstrong",
+        "ignominious",
+        "implacable",
+        "inexorable",
+        "intractable",
+        "intransigent",
+        "loathsome",
+        "obdurate",
+        "obstinate",
+        "odious",
+        "recalcitrant",
+        "refractory",
+        "remorseless",
+        "revolting",
+        "sedulous",
+        "uncompromising"
       ]
     },
     {
@@ -3023,32 +3062,33 @@
         "多年后，沃斯私下也承认，如今连他自己都开始为湿地说话了，毕竟游客现在肯掏钱来看这片地方。"
       ],
       "exclude": [
-        "headstrong",
-        "obdurate",
-        "obstinate",
-        "intractable",
-        "recalcitrant",
-        "refractory",
-        "uncompromising",
-        "intransigent",
-        "sedulous",
-        "implacable",
-        "inexorable",
-        "remorseless",
+        "abiding",
         "acrid",
-        "argumentative",
-        "belligerent",
-        "disputatious",
-        "pugnacious",
-        "quarrelsome",
         "animosity",
         "antipathy",
-        "grievance",
+        "argumentative",
+        "belligerent",
+        "benevolent",
         "collude",
         "contemptible",
+        "disputatious",
+        "grievance",
+        "headstrong",
+        "implacable",
+        "inexorable",
+        "intractable",
+        "intransigent",
+        "long-standing",
+        "obdurate",
+        "obstinate",
+        "pugnacious",
+        "quarrelsome",
+        "recalcitrant",
+        "refractory",
+        "remorseless",
+        "sedulous",
         "sickening",
-        "benevolent",
-        "long-standing"
+        "uncompromising"
       ]
     },
     {
@@ -3131,25 +3171,26 @@
         "主任最后实在忍不住，催我随便说点什么，免得报道出来时我们一句话都没有。"
       ],
       "exclude": [
-        "headstrong",
-        "obdurate",
-        "obstinate",
-        "intractable",
-        "recalcitrant",
-        "refractory",
-        "uncompromising",
-        "intransigent",
-        "sedulous",
-        "implacable",
-        "inexorable",
-        "remorseless",
         "acrid",
         "argumentative",
         "belligerent",
+        "detached",
         "disputatious",
+        "headstrong",
+        "implacable",
+        "inexorable",
+        "intractable",
+        "intransigent",
+        "obdurate",
+        "obstinate",
         "pugnacious",
         "quarrelsome",
-        "resentful"
+        "recalcitrant",
+        "refractory",
+        "remorseless",
+        "resentful",
+        "sedulous",
+        "uncompromising"
       ]
     },
     {
@@ -3231,27 +3272,28 @@
         "直到看见那张改好的地图重新摊开在桌上，居民们心头的怒气才终于平息下来。"
       ],
       "exclude": [
-        "congenial",
+        "abate",
+        "alleviate",
+        "appease",
         "approachable",
-        "gracious",
-        "sociable",
+        "conciliate",
+        "congenial",
         "contemptible",
+        "cordial",
         "disreputable",
-        "ignominious",
-        "sickening",
         "docile",
-        "open-minded",
-        "lukewarm",
-        "sedulous",
+        "gracious",
+        "ignominious",
         "implacable",
         "inexorable",
-        "appease",
-        "conciliate",
+        "lukewarm",
+        "open-minded",
         "placate",
-        "alleviate",
-        "abate",
+        "sedulous",
+        "sickening",
+        "simpatico",
         "slacken",
-        "simpatico"
+        "sociable"
       ]
     },
     {
@@ -3326,15 +3368,16 @@
         "到最后，双方的谈判闹得剑拔弩张，律师之间只互相寄信，谁也不肯当面开口。"
       ],
       "exclude": [
-        "sedulous",
-        "implacable",
-        "inexorable",
         "acrid",
         "antipathetic",
+        "implacable",
+        "inexorable",
         "inimical",
-        "resentful",
+        "off-putting",
         "perpetuate",
-        "repudiate"
+        "repudiate",
+        "resentful",
+        "sedulous"
       ]
     },
     {
@@ -3365,14 +3408,15 @@
         "她和那位对手专家的争执闹得剑拔弩张，拍卖行最后干脆不让两人同处一室。"
       ],
       "exclude": [
-        "sedulous",
-        "implacable",
-        "inexorable",
         "acrid",
         "antipathetic",
+        "concurrence",
+        "implacable",
+        "inexorable",
         "inimical",
+        "melancholy",
         "resentful",
-        "concurrence"
+        "sedulous"
       ]
     },
     {
@@ -3403,13 +3447,14 @@
         "这场该不该卖房子的争吵闹得剑拔弩张，两个表亲从此谁也不理谁，直到来年春天才又开口。"
       ],
       "exclude": [
-        "sedulous",
-        "implacable",
-        "inexorable",
         "acrid",
         "antipathetic",
+        "implacable",
+        "inexorable",
         "inimical",
-        "resentful"
+        "resentful",
+        "sedulous",
+        "tranquil"
       ]
     },
     {
@@ -3618,8 +3663,9 @@
         "那位议员接下来几个月都在从他曾主持过的每个委员会里艰难脱身，一个接一个地辞去席位。"
       ],
       "exclude": [
-        "painstaking",
-        "conscientious"
+        "aficionado",
+        "conscientious",
+        "painstaking"
       ]
     },
     {
@@ -3649,7 +3695,9 @@
         "直到会计把账目摊开，大家才真正意识到第二家店欠下的债有多庞大。",
         "母亲最终的反应里带着一种微妙的分寸——算不上原谅，只是一种刻意的、悄悄的软化。"
       ],
-      "exclude": []
+      "exclude": [
+        "agitation"
+      ]
     },
     {
       "id": "vineyard-partner-dispute",
@@ -3845,7 +3893,8 @@
         "随后召开的家庭会议没几分钟就吵翻了天，几十年的积怨全摊到了桌面上。"
       ],
       "exclude": [
-        "contrived"
+        "contrived",
+        "unpersuasive"
       ]
     },
     {
@@ -3977,9 +4026,10 @@
         "尽管如此，他还是锲而不舍，每晚都回去接着谈，直到双方终于在同一份文件上签了字。"
       ],
       "exclude": [
-        "sedulous",
+        "belligerent",
         "remorseless",
-        "belligerent"
+        "sedulous",
+        "verbosity"
       ]
     },
     {
@@ -4010,9 +4060,10 @@
         "与房东的纠纷越闹越僵，直到双方最终在法庭上达成和解。"
       ],
       "exclude": [
-        "sedulous",
+        "belligerent",
+        "meek",
         "remorseless",
-        "belligerent"
+        "sedulous"
       ]
     },
     {
@@ -4109,13 +4160,16 @@
         "最后，还是一张父亲天不亮就揉面的旧照片，多少抚平了两人之间的怒气。"
       ],
       "exclude": [
+        "adamant",
+        "companionable",
+        "cordial",
         "deplorable",
         "detestable",
         "disreputable",
+        "inflexible",
         "intransigent",
         "obstinate",
-        "uncompromising",
-        "companionable"
+        "uncompromising"
       ]
     },
     {
@@ -4176,6 +4230,7 @@
       ],
       "exclude": [
         "degenerate",
+        "demoralize",
         "outlandish",
         "outrageous"
       ]
@@ -4208,19 +4263,21 @@
         "船长顺着水道往下看了一眼,脸涨红了,便和别人一样等着轮到自己,到七点,整段船闸都清空了。"
       ],
       "exclude": [
-        "onerous",
-        "laborious",
-        "strenuous",
-        "effortful",
-        "trivial",
-        "negligible",
-        "callous",
-        "contemptuous",
         "aggravate",
         "antagonize",
+        "burdensome",
+        "callous",
+        "contemptuous",
+        "effortful",
         "expressionless",
-        "unreactive",
-        "madden"
+        "grueling",
+        "laborious",
+        "madden",
+        "negligible",
+        "onerous",
+        "strenuous",
+        "trivial",
+        "unreactive"
       ]
     },
     {
@@ -4251,12 +4308,13 @@
         "第二天早上她在码头上道歉,敷衍得很,托马斯什么也没说,交还了手套,搭早班车回家了。"
       ],
       "exclude": [
-        "domineering",
-        "overbearing",
-        "ludicrous",
         "capricious",
+        "cursory",
+        "discourage",
         "dismal",
-        "cursory"
+        "domineering",
+        "ludicrous",
+        "overbearing"
       ]
     },
     {
@@ -4323,6 +4381,7 @@
         "对山谷来说这场冷门是个大事件,沃尔特却只耸耸肩,说弗莱早该歇歇了。"
       ],
       "exclude": [
+        "delightful",
         "emergent",
         "fledgling",
         "observant",
@@ -4357,9 +4416,10 @@
         "那只母鸽自己则被装在衬着报纸的鞋盒里回了家。"
       ],
       "exclude": [
-        "flashy",
         "conspicuous",
-        "histrionic"
+        "flashy",
+        "histrionic",
+        "illogical"
       ]
     },
     {
@@ -4487,6 +4547,7 @@
         "十四号车厢六月首次出车,古斯站在铃边。"
       ],
       "exclude": [
+        "complication",
         "emerging",
         "fledgling",
         "incipient",
@@ -4586,6 +4647,7 @@
         "她重新开始,听得连房间都消失了,全凭十足的耐心把最后一组同音弦校准;安塞尔姆再按中央C时,音稳住了。"
       ],
       "exclude": [
+        "clash",
         "degrade",
         "fickle",
         "impassive"
@@ -4685,15 +4747,16 @@
         "评委宣布第一名是哈罗谷时,团员们欣喜若狂,连霍尔丹也把指挥棒高高举起,像在路边招出租车。"
       ],
       "exclude": [
+        "agog",
         "celebrated",
-        "renowned",
-        "illustrious",
-        "negligent",
-        "inconsequential",
-        "negligible",
         "circumlocution",
-        "upbeat",
-        "agog"
+        "dictatorial",
+        "illustrious",
+        "inconsequential",
+        "negligent",
+        "negligible",
+        "renowned",
+        "upbeat"
       ]
     },
     {
@@ -4724,17 +4787,18 @@
         "天亮前不久,大巴过了最后一道边境,推销员一路睡到布达佩斯。"
       ],
       "exclude": [
-        "obnoxious",
-        "insufferable",
-        "unsavory",
-        "repugnant",
-        "outrageous",
-        "trivial",
-        "inconsequential",
-        "circumspect",
-        "sagacious",
         "blameworthy",
-        "censurable"
+        "censurable",
+        "circumspect",
+        "inconsequential",
+        "insufferable",
+        "obnoxious",
+        "off-putting",
+        "outrageous",
+        "repugnant",
+        "sagacious",
+        "trivial",
+        "unsavory"
       ]
     },
     {
@@ -4900,17 +4964,18 @@
         "她为此下了山进村,一年来头一回,手里提着喷烟器。"
       ],
       "exclude": [
-        "obstinate",
-        "intractable",
-        "recalcitrant",
-        "uncompromising",
-        "headstrong",
-        "refractory",
-        "implacable",
-        "dreadful",
-        "superintend",
+        "adamant",
         "affirmation",
-        "dismal"
+        "dismal",
+        "dreadful",
+        "headstrong",
+        "implacable",
+        "intractable",
+        "obstinate",
+        "recalcitrant",
+        "refractory",
+        "superintend",
+        "uncompromising"
       ]
     },
     {
@@ -5143,11 +5208,12 @@
         "那晚买手买走了四十米,并答应下个周五再来,前提是夜市还在。"
       ],
       "exclude": [
+        "alluring",
         "belabor",
+        "mesmerizing",
         "perfunctory",
         "unresponsive",
-        "vexation",
-        "alluring"
+        "vexation"
       ]
     }
   ]

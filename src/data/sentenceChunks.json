@@ -1252,9 +1252,10 @@
    "cuts": [
     2,
     6,
-    8
+    9,
+    15
    ],
-   "blank": 7,
+   "blank": 8,
    "answer": "brevity"
   },
   {
