@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { buildDayPlan, nextAction } from './todayPlan'
-import type { PlanItem } from './todayPlan'
+import { bumpUntangleSessions, buildDayPlan, nextAction, untangleSessionsToday } from './todayPlan'
+import type { LocalMarks, PlanItem } from './todayPlan'
 import { emptyProgress, emptyStat } from '../types'
-import type { Progress, ProgressEntry, Word } from '../types'
+import type { Progress, ProgressEntry, TangleStat, Word } from '../types'
 
 const word = (id: string): Word => ({
   id, headword: id, phonetic: '/x/', meanings: [{ pos: 'n.', en: 'x', zh: 'x' }],
@@ -18,9 +18,31 @@ const entry = (over: Partial<ProgressEntry>): ProgressEntry => ({
 const TODAY = '2026-08-07'
 // 21:00 local — safely past the 3-hour consolidation window for anything learned in the morning
 const NOW = new Date(2026, 7, 7, 21, 0, 0)
-const NO_MARKS = { lapseDrilledOn: null, consolidatedOn: null }
+const NO_MARKS: LocalMarks = { lapseDrilledOn: null, consolidatedOn: null, untangleSessions: null }
 
 const find = (plan: PlanItem[], key: string) => plan.find(p => p.key === key)
+
+/** An open tangle of two members, due yesterday. */
+const tangle = (members: string[], over: Partial<TangleStat> = {}): TangleStat => ({
+  pairs: [`${members[0]}|${members[1]}`], members, settled: [],
+  bornOn: '2026-08-05', dueOn: '2026-08-06', lastAt: '2026-08-05T08:00:00.000Z', ...over,
+})
+
+/** `n` due tangles over words t0…t(2n−1), every one of them in the library and in the review phase with nothing due. */
+const withDueTangles = (n: number): { words: Word[]; progress: Progress } => {
+  const words: Word[] = []
+  const progress = emptyProgress()
+  progress.settings.newPerDay = 0
+  progress.tangles = {}
+  for (let i = 0; i < n; i++) {
+    const a = `t${2 * i}`, b = `t${2 * i + 1}`
+    words.push(word(a), word(b))
+    progress.words[a] = entry({})
+    progress.words[b] = entry({})
+    progress.tangles[`${a}|${b}`] = tangle([a, b])
+  }
+  return { words, progress }
+}
 
 describe('buildDayPlan', () => {
   it('due row: todo with count while words are due, done at zero', () => {
@@ -147,9 +169,97 @@ describe('buildDayPlan', () => {
     const p = emptyProgress()
     p.settings.newPerDay = 0
     p.dailyStats[TODAY] = { ...emptyStat(), quizTaken: 1 }
-    const plan = buildDayPlan([], p, NOW, TODAY, { lapseDrilledOn: null, consolidatedOn: TODAY })
+    const plan = buildDayPlan([], p, NOW, TODAY, { lapseDrilledOn: null, consolidatedOn: TODAY, untangleSessions: null })
     expect(plan.filter(r => r.state === 'done').length).toBeGreaterThan(0)
     expect(plan.filter(r => r.key !== 'lapses' && r.reopenable)).toEqual([])
+  })
+
+  it('untangle row: hidden with no due tangle', () => {
+    const { words, progress } = withDueTangles(0)
+    expect(find(buildDayPlan(words, progress, NOW, TODAY, NO_MARKS), 'untangle')).toBeUndefined()
+
+    // Open but not due until tomorrow (born today): day 1 belongs to 复习完成, not here.
+    const later = withDueTangles(1)
+    later.progress.tangles = { 't0|t1': tangle(['t0', 't1'], { bornOn: TODAY, dueOn: '2026-08-08' }) }
+    expect(find(buildDayPlan(later.words, later.progress, NOW, TODAY, NO_MARKS), 'untangle')).toBeUndefined()
+  })
+
+  it('untangle row: liveness is the word list, so a tangle whose words were deleted is not owed', () => {
+    // The user deletes words in the app and from another device; their
+    // progress entries can outlive them, so `progress.words` is not the test.
+    const { progress } = withDueTangles(1)
+    expect(find(buildDayPlan([word('t0')], progress, NOW, TODAY, NO_MARKS), 'untangle')).toBeUndefined()
+  })
+
+  it('untangle row: todo with count min(due, 3 − sessions today)', () => {
+    const { words, progress } = withDueTangles(5)
+    const marks: LocalMarks = { ...NO_MARKS, untangleSessions: { day: TODAY, n: 1 } }
+    expect(find(buildDayPlan(words, progress, NOW, TODAY, marks), 'untangle'))
+      .toMatchObject({ label: '拆开缠在一起的词', state: 'todo', count: 2, to: '/untangle' })
+
+    // Fewer due than the day has room for: the count is what is due.
+    const one = withDueTangles(1)
+    expect(find(buildDayPlan(one.words, one.progress, NOW, TODAY, NO_MARKS), 'untangle'))
+      .toMatchObject({ state: 'todo', count: 1 })
+  })
+
+  it('untangle row: done but reopenable after 3 sessions while more are due', () => {
+    // The cap is a default, not a wall (spec §3): the day's share is done,
+    // and the rest are still a tap away.
+    const { words, progress } = withDueTangles(2)
+    const marks: LocalMarks = { ...NO_MARKS, untangleSessions: { day: TODAY, n: 3 } }
+    const row = find(buildDayPlan(words, progress, NOW, TODAY, marks), 'untangle')
+    expect(row).toMatchObject({ state: 'done', reopenable: true, hint: '还有 2 团', to: '/untangle' })
+    expect(row?.count).toBeUndefined()
+  })
+
+  it('untangle row: done, not hidden, once a session ran today and none are left due', () => {
+    // A finished day's work must not vanish from the plan: the same reason
+    // 巩固's row stays as done once its marker is set.
+    const { words, progress } = withDueTangles(0)
+    const row = find(buildDayPlan(words, progress, NOW, TODAY, { ...NO_MARKS, untangleSessions: { day: TODAY, n: 1 } }), 'untangle')
+    expect(row).toMatchObject({ state: 'done', to: '/untangle' })
+    expect(row?.count).toBeUndefined()
+    expect(row?.reopenable).toBeUndefined()
+    expect(row?.hint).toBeUndefined()
+  })
+
+  it('untangle row: a mark from another day counts as 0 sessions', () => {
+    const { words, progress } = withDueTangles(5)
+    const marks: LocalMarks = { ...NO_MARKS, untangleSessions: { day: '2026-08-06', n: 3 } }
+    expect(find(buildDayPlan(words, progress, NOW, TODAY, marks), 'untangle'))
+      .toMatchObject({ state: 'todo', count: 3 })
+    // And with nothing due, yesterday's sessions do not tick today's row.
+    const none = withDueTangles(0)
+    expect(find(buildDayPlan(none.words, none.progress, NOW, TODAY, marks), 'untangle')).toBeUndefined()
+  })
+
+  it('untangle row: sits after 专攻顽固词 and before the optional quiz', () => {
+    const { words, progress } = withDueTangles(1)
+    words.push(word('s'))
+    progress.words.s = entry({ ease: 2.1, intervalDays: 3 })
+    const keys = buildDayPlan(words, progress, NOW, TODAY, NO_MARKS).map(r => r.key)
+    expect(keys.indexOf('untangle')).toBe(keys.indexOf('lapses') + 1)
+    expect(keys.indexOf('quiz')).toBe(keys.indexOf('untangle') + 1)
+  })
+})
+
+describe('untangle session mark', () => {
+  it('counts only today\'s sessions, and reads a malformed mark as none', () => {
+    expect(untangleSessionsToday(null, TODAY)).toBe(0)
+    expect(untangleSessionsToday({ day: TODAY, n: 2 }, TODAY)).toBe(2)
+    expect(untangleSessionsToday({ day: '2026-08-06', n: 2 }, TODAY)).toBe(0)
+    // localStorage hands back whatever JSON is there; a hand-edited or
+    // half-written mark must not read as sessions done.
+    for (const bad of [{ day: TODAY, n: '2' }, { day: TODAY, n: -1 }, { day: TODAY, n: Number.NaN }, { day: TODAY }, 'x', 3]) {
+      expect(untangleSessionsToday(bad as unknown as LocalMarks['untangleSessions'], TODAY)).toBe(0)
+    }
+  })
+
+  it('a finished session adds one to today and starts a new day at one', () => {
+    expect(bumpUntangleSessions(null, TODAY)).toEqual({ day: TODAY, n: 1 })
+    expect(bumpUntangleSessions({ day: TODAY, n: 2 }, TODAY)).toEqual({ day: TODAY, n: 3 })
+    expect(bumpUntangleSessions({ day: '2026-08-06', n: 3 }, TODAY)).toEqual({ day: TODAY, n: 1 })
   })
 
   it('quiz row: always present, done once any quiz was taken today', () => {
@@ -185,6 +295,37 @@ describe('nextAction', () => {
       row('lapses', 'todo'), row('quiz', 'todo')])
     expect(hero).toMatchObject({ kind: 'lapses', to: '/practice?pick=struggling' })
     expect('count' in hero).toBe(false)
+  })
+
+  it('untangle todo beats lapses todo, and carries the tangles left as its count', () => {
+    // Tangles are finishable work, unlike the stubborn pool: each session
+    // takes one off today's list, so the number slot means what it says.
+    const hero = nextAction([row('due', 'done', 0), row('fresh', 'done', 0),
+      row('lapses', 'todo'), row('untangle', 'todo', 2), row('quiz', 'todo')])
+    expect(hero).toEqual({
+      kind: 'untangle', count: 2, unit: '团',
+      meta: '复习时混过的近义词，并排分清', to: '/untangle', label: '开始拆解',
+    })
+  })
+
+  it('review and consolidate beat untangle', () => {
+    expect(nextAction([row('due', 'todo', 1), row('fresh', 'done', 0),
+      row('untangle', 'todo', 2), row('quiz', 'todo')]).kind)
+      .toBe('review')
+    expect(nextAction([row('due', 'done', 0), row('fresh', 'done', 0),
+      row('consolidate', 'todo', 3), row('untangle', 'todo', 2), row('quiz', 'todo')]).kind)
+      .toBe('consolidate')
+  })
+
+  it('a done untangle row never becomes the hero, reopenable or not', () => {
+    // Without the untangle hero, a todo row sat under 今日完成; the reverse
+    // mistake would be a hero asking for work the plan says is done.
+    const reopenable: PlanItem = { ...row('untangle', 'done'), reopenable: true, hint: '还有 2 团' }
+    expect(nextAction([row('due', 'done', 0), row('fresh', 'done', 0), reopenable, row('quiz', 'todo')]).kind)
+      .toBe('complete')
+    expect(nextAction([row('due', 'done', 0), row('fresh', 'done', 0),
+      row('lapses', 'todo'), reopenable, row('quiz', 'todo')]).kind)
+      .toBe('lapses')
   })
 
   it('a pending consolidation is not an action; quiz never becomes the hero', () => {

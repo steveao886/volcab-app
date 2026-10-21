@@ -12,6 +12,7 @@ import { Review } from './pages/Review'
 import { Settings } from './pages/Settings'
 import { Stats } from './pages/Stats'
 import { Today } from './pages/Today'
+import { Untangle } from './pages/Untangle'
 import { WordDetail } from './pages/WordDetail'
 
 /**
@@ -53,6 +54,9 @@ function App() {
               filter instead of the scheduler. The filter travels in the
               query string (q/status/src), never a list of ids. */}
           <Route path="/practice" element={<Practice />} />
+          {/* Its own route too, not /practice?pick=: a tangle session is a
+              side by side and then questions, with nothing of the card. */}
+          <Route path="/untangle" element={<Untangle />} />
           <Route path="/library" element={<Library />} />
           <Route path="/discover" element={<Discover />} />
           <Route path="/word/:id" element={<WordDetail />} />

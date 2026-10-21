@@ -217,6 +217,22 @@ export function dueTangles(tangles: Progress['tangles'], today: string, live: Se
 }
 
 /**
+ * Which tangle /untangle runs, given its `?key=` and dueTangles' list: the
+ * named one when it is due, otherwise the oldest due; null when none is.
+ *
+ * **Only a due tangle is run, whatever the URL says.** A key can name a
+ * tangle that is gone, finished, down to one live member, or not due until
+ * tomorrow, and each of those is a session with nothing owed: the first three
+ * would ask nothing, and the last would hand day 2 over on day 1, which
+ * 复习完成 already covers. Falling back rather than refusing keeps a stale
+ * link useful.
+ */
+export function pickTangle(requested: string | null, due: string[]): string | null {
+  if (requested !== null && due.includes(requested)) return requested
+  return due[0] ?? null
+}
+
+/**
  * The pairs confused today: one entry per pair, from the forget records of
  * `kind: 'confused'` made on `today` that name a partner, with both words
  * still in the library. This is what 复习完成's 今天混过的词 section is built

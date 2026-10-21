@@ -1,0 +1,70 @@
+/* ==========================================================================
+   /untangle — day 2 of a tangle (Untangle.tsx).
+
+   Most of it is borrowed, the way Practice.css borrows the review card:
+   the progress row, the drill note and the done screen are the review
+   page's, and the question is 今天混过的词's (.review-tangle__*, the day-1
+   section on the same page's done screen). Day 1 and day 2 ask the same kind
+   of question about the same pairs, and copying those rules under
+   .untangle- names would let the two drift into two looks for one thing.
+   Untangle.tsx imports Review.css for that reason.
+
+   What is this page's own is the side by side, the 混过 tag, and the printed
+   key on each option: day 1 has two options and no shortcuts, this has up to
+   five and 1..n.
+   ========================================================================== */
+
+/* --- Side by side ------------------------------------------------------------
+   A member is a ledger row holding its headword, its first gloss, and its
+   要点 under them, so the row stacks instead of laying its parts side by
+   side. Compound selector: .ledger__row is display: flex with centred items,
+   and a page rule of one class ties with it and wins only by load order. */
+
+.ledger__row.untangle-member {
+  display: grid;
+  align-items: start;
+  gap: var(--sp-2);
+  padding-block: var(--sp-3);
+}
+
+/* 混过: the note about the pair the user confused. A word in a ruled ink box,
+   read without color; not cinnabar, which is kept for the marks (CLAUDE.md),
+   and this is a label. It sits in the pair line, so it resets that line's
+   headword face. */
+.untangle-note__mixed {
+  flex: none;
+  align-self: center;
+  padding: 0 var(--sp-1);
+  border: 1px solid var(--text);
+  border-radius: var(--r-sm);
+  font-family: var(--font-ui);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.untangle-go {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+/* --- Questions ---------------------------------------------------------------- */
+
+.untangle-ask {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+.untangle-ask__label {
+  font-size: var(--fs-sm);
+}
+
+/* The printed key, then the headword; the option row spreads this and its
+   tag (正确答案 / 你的选择) to the two ends. */
+.untangle-option {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  min-width: 0;
+}

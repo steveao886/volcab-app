@@ -9,7 +9,7 @@ import { storage } from '../lib/storage'
 import { useApp } from '../state/store'
 import { accuracySeries } from './statsDerive'
 import { buildDayPlan, nextAction } from './todayPlan'
-import type { PlanItem } from './todayPlan'
+import type { LocalMarks, PlanItem } from './todayPlan'
 import { computeStreak, reviewProgress } from './todayStats'
 import './Today.css'
 
@@ -37,6 +37,7 @@ export function Today() {
     const plan = buildDayPlan(words, progress, new Date(), today, {
       lapseDrilledOn: storage.get<string>('lapseDrilledOn'),
       consolidatedOn: storage.get<string>('consolidatedOn'),
+      untangleSessions: storage.get<LocalMarks['untangleSessions']>('untangleSessions'),
     })
     const rp = reviewProgress(words, progress)
     return {

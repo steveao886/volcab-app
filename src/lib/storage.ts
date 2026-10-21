@@ -50,6 +50,13 @@ const KEYS = {
   // done on another device.
   consolidatedOn: 'volcab.consolidatedOn',
   lapseDrilledOn: 'volcab.lapseDrilledOn',
+  // `{ day, n }`: how many tangle sessions (/untangle) were finished on
+  // `day`, so 今日's 拆开缠在一起的词 row knows when the day's share is done.
+  // A count, where the two above are a date, because the share is
+  // TANGLE_DAILY_CAP sessions rather than one. Local for the same reasons:
+  // a second device offering a fourth session costs one session, and the
+  // tangles themselves, which are synced, already say which are still due.
+  untangleSessions: 'volcab.untangleSessions',
   // The day the interval modifier was last changed. Retention measured
   // before that describes the old setting, so the tuning advice reads only
   // the days after it — see retentionWindowDays. Local for the same reason
