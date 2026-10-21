@@ -443,6 +443,21 @@ function ReviewSession() {
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
+      // A key another window listener has already acted on is not this
+      // page's. ForgetAsk and HintLadder call preventDefault on every key they
+      // handle, and the hold check below covers them only while this listener
+      // runs first. Any progress commit with the question up (a push's
+      // reconcile, a 409 merge, online → syncNow) rebuilds the entry and
+      // re-subscribes both effects, children first, so ForgetAsk's listener
+      // moves ahead of this one — recorded in the browser on 2026-10-21. A 1
+      // that answers the question then releases the hold, and this listener,
+      // reached on the same event, graded the relearning card a second time
+      // and advanced past the next card (reps +2 and the next card skipped,
+      // reproduced with a script-dispatched keydown). A real key press escapes
+      // that today only because React renders the answer in a microtask
+      // between the two listeners and removes this one before the dispatch
+      // reaches it: an accident of scheduling, not something to lean on.
+      if (e.defaultPrevented) return
       if (curId === undefined || isEditableTarget(document.activeElement)) return
       // 怎么忘的？ owns the keyboard while it is up (its own 1..n and Enter):
       // a 1-4 here would grade the card a second time and a Space would
