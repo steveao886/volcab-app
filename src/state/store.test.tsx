@@ -1637,6 +1637,34 @@ describe('recordForget / recordTangle: a diagnosis and a practice miss, never th
     await step(() => { app().recordTangle('no|such', ['lapsed'], ['twin'], []) })
     expect(app().progress).toBe(before)
   })
+
+  // A cached boot hands the store its progress without mergeProgress (a first
+  // boot with a network read does merge, and mergeTangles drops a bad stat), and
+  // buildTangleSession reads these same stats as an empty session, so a key
+  // dueTangles never listed reaches the write. applyTangleResults throws on the
+  // first (`members.includes`) and on the second (the spread of `settled`).
+  it.each([
+    ['a members that is a string', { members: 'a,b' }],
+    ['a settled that is null', { settled: null }],
+  ])('recordTangle skips a stat with %s instead of throwing, and stamps no miss for it', async (_label, over) => {
+    const k = contrastNoteKey('alpha', 'beta')
+    const broken = { pairs: [k], members: ['alpha', 'beta'], settled: [], bornOn: today, dueOn: today, lastAt: '2026-10-01T00:00:00.000Z', ...over }
+    const cached = emptyProgress()
+    cached.words['alpha'] = { state: 'review', ease: 2.5, intervalDays: 3, due: '2026-07-30', stepIndex: 0, reps: 4, lapses: 0, lastReviewedAt: '2026-07-25T01:00:00Z' }
+    ;(cached as { tangles?: unknown }).tangles = { [k]: broken }
+    // A device that has booted before, remote unchanged since: the 304 keeps the cached progress as it is.
+    storage.set('token', 'tok-alice'); storage.set('owner', 'alice')
+    storage.set('wordsSha', 'w-remote'); storage.set('progress', cached); storage.set('progressSha', 'p-remote')
+    remote.files['words.json'] = { content: wordsFile(['alpha', 'beta']), sha: 'w-remote' }
+    remote.files['progress.json'] = { content: JSON.stringify(cached), sha: 'p-remote' }
+    await mount(createMemoryWordsCache([word('alpha'), word('beta')]))
+    const before = app().progress
+    expect(before.tangles?.[k]).toMatchObject(over)   // the stat really reached the store unrepaired
+
+    await step(() => { app().recordTangle(k, ['beta'], ['alpha'], []) })
+
+    expect(app().progress).toBe(before)
+  })
 })
 
 describe('grade: the retention measurement', () => {

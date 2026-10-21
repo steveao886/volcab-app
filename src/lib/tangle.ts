@@ -66,13 +66,17 @@ const isStringArray = (v: unknown): v is string[] => Array.isArray(v) && v.every
  * mergeTangles' readTangle requires, so a stat that survives a merge is
  * readable here and the other way round.
  *
- * **Every reader below goes through this.** Login and a cached boot hand the
- * store its progress without going through mergeProgress, so a hand-edited
- * `"members": "a,b"` can arrive here, and these run on every render of 今日
- * and every grade. Returns the stat itself, not a rebuilt copy, so a field a
- * newer build added rides through a spread untouched.
+ * **Every reader below goes through this**, and so does the store's
+ * recordTangle, the one writer that reads a stat it was handed a key for.
+ * Login and a cached boot hand the store its progress without going through
+ * mergeProgress, so a hand-edited `"members": "a,b"` can arrive here, and
+ * these run on every render of 今日 and every grade. A key does not mean the
+ * stat behind it is readable: buildTangleSession reads a bad `members` as
+ * empty and builds a harmless session, so a page can reach the write with a key
+ * dueTangles never vetted. Returns the stat itself, not a rebuilt copy, so a
+ * field a newer build added rides through a spread untouched.
  */
-function isReadable(raw: unknown): raw is TangleStat {
+export function isReadable(raw: unknown): raw is TangleStat {
   if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return false
   const s = raw as Record<string, unknown>
   return typeof s.lastAt === 'string' && typeof s.bornOn === 'string' && typeof s.dueOn === 'string'
