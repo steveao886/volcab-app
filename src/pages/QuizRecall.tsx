@@ -88,7 +88,7 @@ interface RecallQuestionViewProps {
   reinforced: boolean
 }
 
-function RecallQuestionView({
+export function RecallQuestionView({
   question, onAnswered, onNext, nextLabel, onReinforce, reinforced,
 }: RecallQuestionViewProps) {
   const { progress, rateRecall } = useApp()

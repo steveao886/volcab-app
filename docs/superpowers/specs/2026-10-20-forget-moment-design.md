@@ -210,6 +210,12 @@ Its life:
      - Where a sense group's `order` lies inside the members, add its
        question too: 排序 if it is rankable, otherwise 唤词. It is extra
        practice and does not gate completion.
+       - Two members at least. *Why:* a group of one asks its word against
+         words outside the tangle (`[corroborate]` against `back up`,
+         `bear out`, `cross-verify`), which the cloze already does better.
+       - Its answers write `recall` and, on a miss, `missedAt`, after the
+         session's tangle record and outside it. Never `recordQuiz`, never
+         巩固 (§4).
    - **Each member needs one right answer, and it carries over.** *(My
      call.)*
      - A member answered right is settled.

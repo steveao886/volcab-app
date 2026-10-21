@@ -3,6 +3,7 @@ import type { ContrastPair } from './contrast'
 import { contrastNoteKey } from './contrastNotes'
 import { headwordPattern } from './headword'
 import { clozeExample, shuffle } from './quiz'
+import type { SenseGroup } from './senseGroup'
 import { addDays, todayStr } from './srs'
 
 /**
@@ -425,4 +426,30 @@ export function buildTangleSession(
     else questions.push({ answerId: w.id, prompt, options: shuffle(headwords, rng) })
   }
   return { members, notes: ordered, questions, autoSettled }
+}
+
+/**
+ * The sense groups a tangle session also asks (spec §3, "Day 2, complete"):
+ * every group whose `order` lies inside `members`, in the order `groups`
+ * gives them. The page asks each as 排序 when it can and 唤词 otherwise.
+ *
+ * **Every ranked word a member, and at least two of them.** A group reaching
+ * one word outside the tangle (`[substantiate, corroborate, ratify]` against
+ * corroborate + vindicate + substantiate) is a question about a word the user
+ * did not confuse. A group of one is the same thing from the other side: the
+ * real `[corroborate]` group offers it against `back up`, `bear out` and
+ * `cross-verify`, so all the question tests is corroborate against words
+ * outside the tangle, which the cloze already asked better.
+ *
+ * Measured on the same tangles buildTangleSession's note counts (the 1333
+ * pairs scoring CONTRAST_MIN_SCORE or more, data/words.json, every word
+ * studied, 2026-10-21): 623 hold no group, 513 one, 144 two, and 53 three to
+ * five. A group of one would have joined a tangle 236 times.
+ *
+ * Extra practice only: nothing here settles a member or reaches
+ * applyTangleResults.
+ */
+export function tangleGroups(members: string[], groups: SenseGroup[]): SenseGroup[] {
+  const inside = new Set(members)
+  return groups.filter((g) => g.order.length >= 2 && g.order.every((id) => inside.has(id)))
 }

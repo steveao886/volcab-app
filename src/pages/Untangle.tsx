@@ -11,14 +11,17 @@ import { contrastNoteKey } from '../lib/contrastNotes'
 import type { ContrastNotesFile } from '../lib/contrastNotes'
 import { isEditableTarget, optionIndexFromKey } from '../lib/keys'
 import { shuffle } from '../lib/quiz'
+import { buildOrderQuestion, buildRecallQuestion, isRankable } from '../lib/senseGroup'
+import type { RecallQuestion, SenseGroup, SenseGroupsFile } from '../lib/senseGroup'
 import { todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
-import { buildTangleSession, dueTangles, isReadable, pickTangle } from '../lib/tangle'
+import { buildTangleSession, dueTangles, isReadable, pickTangle, tangleGroups } from '../lib/tangle'
 import type { TangleNote, TangleQuestion } from '../lib/tangle'
 import { wordNote } from '../lib/wordNotes'
 import type { WordNotesFile } from '../lib/wordNotes'
 import { useApp } from '../state/store'
 import type { Progress, Word } from '../types'
+import { RecallQuestionView } from './QuizRecall'
 import { MissedWords } from './QuizResult'
 import { bumpUntangleSessions } from './todayPlan'
 import type { LocalMarks } from './todayPlan'
@@ -26,6 +29,8 @@ import type { LocalMarks } from './todayPlan'
 // are borrowed from the review page, the question from 今天混过的词 there:
 // see Untangle.css.
 import './Review.css'
+// The sense-group questions are 回想's own view, whose rules live there.
+import './Quiz.css'
 import './Untangle.css'
 
 const TITLE = '拆开缠在一起的词'
@@ -61,6 +66,33 @@ function openTangle(requested: string | null, words: Word[], progress: Progress)
   return { key, ...session, questions: shuffle(session.questions, Math.random) }
 }
 
+// Fetched, not bundled, for the reason Quiz.tsx's loader gives, and from the
+// same chunk: 327 KB that 今日 and the review page never read.
+const loadGroups = () => import('../data/senseGroups.json').then((m) => (m.default as SenseGroupsFile).groups)
+
+/**
+ * The sense-group questions a session asks after its clozes (spec §3): one for
+ * each group tangleGroups finds inside the members, 排序 when the group is
+ * rankable and can be ranked (three or more members and no outside words),
+ * otherwise 唤词. A group that can carry neither, a library too sparse to
+ * fill four options, is left out. The filler pool is generateRecallSession's:
+ * every learned word.
+ */
+function groupQuestions(
+  groups: SenseGroup[], members: Word[], words: Word[], progress: Progress, rng: () => number = Math.random,
+): RecallQuestion[] {
+  const byId = new Map(words.map((w) => [w.id, w]))
+  const fillerPool = words.filter((w) => {
+    const e = progress.words[w.id]
+    return e !== undefined && e.state !== 'new'
+  })
+  return tangleGroups(members.map((w) => w.id), groups).flatMap((g) => {
+    const q = (isRankable(g, progress) ? buildOrderQuestion(g, byId, rng) : null)
+      ?? buildRecallQuestion(g, byId, fillerPool, rng)
+    return q === null ? [] : [q]
+  })
+}
+
 /** The two members a note is about, in member order. Null for a key no pair of them makes. */
 function notePair(key: string, members: Word[]): [Word, Word] | null {
   for (let i = 0; i < members.length; i++) {
@@ -93,10 +125,10 @@ export function Untangle() {
   return <TangleSession key={`${run}:${requested ?? ''}`} requested={requested} onNext={next} />
 }
 
-type Stage = 'study' | 'ask' | 'end'
+type Stage = 'study' | 'ask' | 'groups' | 'end'
 
 /**
- * Practice in CLAUDE.md's sense, and the whole of what it writes is one
+ * Practice in CLAUDE.md's sense, and the whole of what the clozes write is one
  * recordTangle call when the last answer lands: the tangle's settled list and
  * dates, and `missedAt` on a member answered wrong. Nothing the scheduler owns
  * moves and nothing is demoted (spec §4). The session count for 今日 is written
@@ -104,25 +136,43 @@ type Stage = 'study' | 'ask' | 'end'
  * tangle is still due and the session is owed again — rather than half a
  * session read as a whole one by applyTangleResults.
  *
+ * **The sense-group questions come after that record, and outside it**: extra
+ * practice that never gates completion (spec §3), so they cannot change what
+ * recordTangle receives or when, and leaving during them loses nothing. Each
+ * answer is written as it lands: recordRecall, 回想's production record, and on
+ * a miss recordPractice(id, false, { settle: false }) for each word it marks,
+ * `missedAt` and nothing else. Not recordQuiz, which demotes and ticks 今日's
+ * quiz row, and no 巩固 (`onReinforce`), whose consolidateWord writes `lapses`.
+ *
  * **Read once, on mount**, for the reason TangleDay1 gives: the record
  * re-renders the page, and a session rebuilt then would reshuffle its options
  * under the finger, or, with this tangle no longer due, swap in the next one.
+ * The group questions are built once, from the mount's words and progress,
+ * when their file arrives; until it has, the clozes lead straight to the end.
  *
- * Keys: Enter is the one way forward at every stage (开始答题, 下一题, 看结果,
- * 下一团), 1..n pick an option, all printed on their controls. Every key
+ * Keys: Enter is the one way forward at every stage (开始答题, 下一题, 继续,
+ * 看结果, 下一团), 1..n pick an option, all printed on their controls. Every key
  * handled calls preventDefault, which is what stops the keypress that follows
  * a keydown from activating whatever the surface change has just put under
  * focus (CLAUDE.md, the 组句 bug). A held key's repeats are swallowed and do
  * nothing. Enter is taken only while nothing else has focus, so a focused
- * link or the back button keeps its own Enter.
+ * link or the back button keeps its own Enter. **During the group questions
+ * this page listens to no key at all**: RecallQuestionView has its own keydown
+ * and focuses its own buttons, and one surface listens at a time.
  */
 function TangleSession({ requested, onNext }: { requested: string | null; onNext(key: string): void }) {
-  const { words, progress, recordTangle } = useApp()
+  const { words, progress, recordTangle, recordRecall, recordPractice, rateRecall } = useApp()
   const [opened] = useState(() => openTangle(requested, words, progress))
+  // The mount's library and progress, which the group questions are built
+  // from; a ref's initial value is read on the first render only.
+  const mounted = useRef({ words, progress })
   const [stage, setStage] = useState<Stage>('study')
   const [idx, setIdx] = useState(0)
   const [chosen, setChosen] = useState<string | null>(null)
   const [results, setResults] = useState<{ id: string; correct: boolean }[]>([])
+  // Null until senseGroups.json has arrived; then fixed for the session.
+  const [groupQs, setGroupQs] = useState<RecallQuestion[] | null>(null)
+  const [groupIdx, setGroupIdx] = useState(0)
   // Whether the question on screen is answered. A ref because a key and a
   // click in the same frame both run before the render that disables the
   // options; it is reset only by moving to the next question.
@@ -152,17 +202,22 @@ function TangleSession({ requested, onNext }: { requested: string | null; onNext
     storage.set('untangleSessions', bumpUntangleSessions(storage.get<LocalMarks['untangleSessions']>('untangleSessions'), todayStr(new Date())))
   }, [opened, recordTangle])
 
+  // What follows the clozes: the group questions when there are any, read at
+  // the moment of leaving the last cloze.
+  const extras = groupQs?.length ?? 0
+  const afterClozes: Stage = extras > 0 ? 'groups' : 'end'
+
   const start = useCallback(() => {
     if (stage !== 'study') return
     // Every unsettled member settled by being shown: the side by side was
     // the session, and reading it was the answer.
     if (questions.length === 0) {
       record([])
-      setStage('end')
+      setStage(afterClozes)
     } else {
       setStage('ask')
     }
-  }, [stage, questions.length, record])
+  }, [stage, questions.length, record, afterClozes])
 
   const choose = useCallback((opt: string) => {
     if (stage !== 'ask' || q === undefined || answeredRef.current) return
@@ -180,9 +235,40 @@ function TangleSession({ requested, onNext }: { requested: string | null; onNext
       setChosen(null)
       setIdx(idx + 1)
     } else {
-      setStage('end')
+      setStage(afterClozes)
     }
-  }, [stage, idx, questions.length])
+  }, [stage, idx, questions.length, afterClozes])
+
+  // A sense-group answer, written when it lands. Nothing here reaches the
+  // schedule or the tangle: see the note above TangleSession.
+  const answerGroup = useCallback((q: RecallQuestion, correct: boolean, wrongIds: string[]) => {
+    const id = q.orderIds[0]
+    recordRecall([{ id, correct }])
+    if (correct) return
+    // A miss refutes 太简单, as it does in 回想 (QuizRecall's handleAnswered):
+    // the rating is on this view's reveal, and would otherwise still read
+    // 已标太简单 over the word just missed.
+    if (progress.words[id]?.recallRating?.level === 'easy') rateRecall(id, 'none')
+    for (const w of wrongIds) recordPractice(w, false, { settle: false })
+  }, [progress, recordRecall, rateRecall, recordPractice])
+
+  const nextGroup = useCallback(() => {
+    if (stage !== 'groups' || groupQs === null) return
+    if (groupIdx + 1 < groupQs.length) setGroupIdx(groupIdx + 1)
+    else setStage('end')
+  }, [stage, groupQs, groupIdx])
+
+  useEffect(() => {
+    if (opened === null) return
+    let alive = true
+    const { words: w, progress: p } = mounted.current
+    loadGroups().then(
+      (groups) => { if (alive) setGroupQs(groupQuestions(groups, opened.members, w, p)) },
+      // Extra practice: a file that fails to load costs the extras, never the session.
+      () => { if (alive) setGroupQs([]) },
+    )
+    return () => { alive = false }
+  }, [opened])
 
   const nextKey = remaining[0]
   const nextTangle = useMemo(() => (nextKey === undefined ? null : () => onNext(nextKey)), [nextKey, onNext])
@@ -202,7 +288,12 @@ function TangleSession({ requested, onNext }: { requested: string | null; onNext
   }, [chosen])
 
   useEffect(() => {
-    if (opened === null) return
+    // Not during the group questions: RecallQuestionView owns the keys there,
+    // with its own keydown for 1..n and its own focused buttons for Enter.
+    // Left attached, this handler would still see the last cloze in `chosen`
+    // and take an Enter on the body for a 下一题 that is no longer on screen;
+    // each check that keeps that harmless today is one edit from gone.
+    if (opened === null || stage === 'groups') return
     function onKeyDown(e: KeyboardEvent) {
       if (e.ctrlKey || e.metaKey || e.altKey || isEditableTarget(document.activeElement)) return
       if (e.key === 'Enter') {
@@ -321,9 +412,16 @@ function TangleSession({ requested, onNext }: { requested: string | null; onNext
                 <span className="num">{questions.length}</span> 道填空。答对的词算分清，答错的明天再问。
               </>
             ) : '这几个词找不到合适的例句出题，看过一遍就算拆完。'}
+            {/* Said before anything is answered, like the drill note: the
+                extras settle nothing, so they must not read as more clozes. */}
+            {extras > 0 && (
+              <>
+                再加 <span className="num">{extras}</span> 道回想题，只是加练，不算分清。
+              </>
+            )}
           </p>
           <Button ref={forwardRef} variant="primary" block onClick={click(start)}>
-            {questions.length > 0 ? '开始答题' : '看完了'}
+            {questions.length + extras > 0 ? '开始答题' : '看完了'}
             <span className="key">Enter</span>
           </Button>
         </div>
@@ -389,12 +487,48 @@ function TangleSession({ requested, onNext }: { requested: string | null; onNext
             )}
             {locked && (
               <Button ref={forwardRef} variant="primary" block onClick={click(advance)}>
-                {last ? '看结果' : '下一题'}
+                {/* 继续, not 看结果, when the extras come first: the result
+                    is still a screen away. */}
+                {!last ? '下一题' : extras > 0 ? '继续' : '看结果'}
                 <span className="key">Enter</span>
               </Button>
             )}
           </div>
         </div>
+      </Page>
+    )
+  }
+
+  const gq = stage === 'groups' ? groupQs?.[groupIdx] : undefined
+  if (gq !== undefined && groupQs !== null) {
+    const lastGroup = groupIdx + 1 === groupQs.length
+    return (
+      <Page title={TITLE} back="/">
+        <div className="review-progress">
+          <ProgressMarks
+            done={groupIdx}
+            total={groupQs.length}
+            label="加练进度"
+            valueText={`加练第 ${groupIdx + 1} 题，共 ${groupQs.length} 题`}
+          />
+          <p className="muted review-progress__count">
+            加练，第 <span className="num">{groupIdx + 1}</span> 题，共 <span className="num">{groupQs.length}</span> 题
+          </p>
+        </div>
+        {/* The face changes here from the clozes to 回想's, so the page says
+            again what these answers do not do. */}
+        <p className="faint review-drill-note">只是加练，不算分清，也不影响复习排期。</p>
+        {/* Keyed by the question, so each one mounts with its commit gate
+            closed and its own button focused. No onReinforce: 巩固 writes
+            `lapses`, which a tangle never touches. */}
+        <RecallQuestionView
+          key={groupIdx}
+          question={gq}
+          onAnswered={(correct, ids) => answerGroup(gq, correct, ids)}
+          onNext={nextGroup}
+          nextLabel={lastGroup ? '看结果' : '下一题'}
+          reinforced={false}
+        />
       </Page>
     )
   }
