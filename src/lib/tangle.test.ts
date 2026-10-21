@@ -4,7 +4,7 @@ import { emptyProgress } from '../types'
 import type { ContrastPair } from './contrast'
 import {
   TANGLE_DAILY_CAP, TANGLE_MEMBER_CAP, applyConfusion, applyTangleResults, dueTangles,
-  tangleMembers, todaysConfusedPairs,
+  isFinished, tangleMembers, todaysConfusedPairs,
 } from './tangle'
 
 const pair = (a: string, b: string, score: number): ContrastPair => ({
@@ -172,6 +172,53 @@ describe('applyConfusion', () => {
     expect(got['a|c']).toEqual(t)
   })
 
+  it("never replaces a tangle sitting at the pair's key: a reopen can drop a member, and the next confusion of that pair finds it", () => {
+    // Done `a|c` holds [a, c, b]. Confusing a|b reopens it and recomputes members from (a, b),
+    // whose three closer common partners push c out.
+    const done = stat({ pairs: ['a|c'], members: ['a', 'c', 'b'], settled: ['a', 'b', 'c'], doneOn: '2026-10-19' })
+    const reopened = applyConfusion({ 'a|c': done }, 'a', 'b', () => ['a', 'b', 'p1', 'p2', 'p3'], NOW)
+    expect(reopened['a|c'].members).toEqual(['a', 'b', 'p1', 'p2', 'p3'])
+
+    const live = new Set(['a', 'b', 'c', 'p1', 'p2', 'p3'])
+    const progressed = applyTangleResults(reopened['a|c'], ['p1'], [], live, NOW)
+
+    let calls = 0
+    const again = applyConfusion({ 'a|c': progressed }, 'a', 'c', () => (calls++, ['a', 'c']), NOW)
+    expect(Object.keys(again)).toEqual(['a|c'])
+    expect(again['a|c'].pairs).toEqual(['a|c', 'a|b'])
+    expect(again['a|c'].settled).toEqual(['p1'])
+    expect(again['a|c'].dueOn).toBe(TOMORROW)
+    expect(again['a|c'].members).toEqual(['a', 'b', 'p1', 'p2', 'p3'])
+    expect(calls).toBe(0)
+  })
+
+  it("reopens a done tangle at the pair's key that holds neither word, keeping its pairs", () => {
+    const done = stat({ pairs: ['a|b', 'x|y'], members: ['x', 'y'], settled: ['x', 'y'], doneOn: '2026-10-19' })
+    const got = applyConfusion({ 'a|b': done }, 'a', 'b', members, NOW)
+    expect(Object.keys(got)).toEqual(['a|b'])
+    expect(got['a|b'].pairs).toEqual(['a|b', 'x|y'])
+    expect(got['a|b'].members).toEqual(['a', 'b', 'c'])
+    expect(got['a|b'].bornOn).toBe(TODAY)
+    expect(Object.hasOwn(got['a|b'], 'doneOn')).toBe(false)
+  })
+
+  it("refreshes an open tangle at the pair's key that holds neither word, without recomputing its members", () => {
+    const open = stat({ pairs: ['a|b', 'x|y'], members: ['x', 'y'], settled: ['x'] })
+    const got = applyConfusion({ 'a|b': open }, 'a', 'b', () => ['never', 'called'], NOW)
+    expect(Object.keys(got)).toEqual(['a|b'])
+    expect(got['a|b'].pairs).toEqual(['a|b', 'x|y'])
+    expect(got['a|b'].members).toEqual(['x', 'y'])
+    expect(got['a|b'].settled).toEqual(['x'])
+    expect(got['a|b'].dueOn).toBe('2026-10-19')
+  })
+
+  it("replaces an unreadable stat at the pair's own key, which is how a hand-edited one is repaired", () => {
+    const junk = { pairs: 'a|b', members: 7, settled: null } as unknown as TangleStat
+    const got = applyConfusion({ 'a|b': junk }, 'a', 'b', members, NOW)
+    expect(got['a|b'].pairs).toEqual(['a|b'])
+    expect(got['a|b'].bornOn).toBe(TODAY)
+  })
+
   it('returns a new record and never mutates what it was given', () => {
     const input = deepFreeze({ 'a|b': stat({ doneOn: '2026-10-19' }), 'c|d': stat({ members: ['c', 'd'] }) })
     const before = structuredClone(input)
@@ -214,6 +261,26 @@ describe('dueTangles', () => {
       today: stat({ dueOn: TODAY }),
     }
     expect(dueTangles(tangles, TODAY, live).sort()).toEqual(['today', 'twoLive'])
+  })
+
+  it('leaves out a tangle with nothing left to ask, though nothing wrote its doneOn: the unsettled member was deleted', () => {
+    // [a, b, c], a and b settled, c missed and then deleted.
+    const tangles = { gone: stat({ members: ['a', 'b', 'c'], settled: ['a', 'b'] }) }
+    expect(dueTangles(tangles, TODAY, new Set(['a', 'b']))).toEqual([])
+    expect(dueTangles(tangles, TODAY, new Set(['a', 'b', 'c']))).toEqual(['gone'])
+  })
+
+  it('lists exactly the tangles applyTangleResults would not finish, so the two cannot disagree', () => {
+    const lives = [new Set(['a', 'b', 'c']), new Set(['a', 'b']), new Set(['b', 'c'])]
+    const settleds = [[], ['a'], ['a', 'b'], ['b', 'c'], ['a', 'b', 'c']]
+    for (const live of lives) {
+      for (const settled of settleds) {
+        const s = stat({ members: ['a', 'b', 'c'], settled })
+        const listed = dueTangles({ k: s }, TODAY, live).includes('k')
+        const finishes = applyTangleResults(s, [], [], live, NOW).doneOn !== undefined
+        expect(listed, `live ${[...live]} settled ${settled}`).toBe(!finishes)
+      }
+    }
   })
 
   it('is empty when there are no tangles at all', () => {
@@ -328,6 +395,30 @@ describe('todaysConfusedPairs', () => {
   })
 })
 
+describe('isFinished', () => {
+  const live = new Set(['a', 'b', 'c'])
+
+  it('is false while a member still in the library is unsettled', () => {
+    expect(isFinished(stat({ settled: ['a', 'b'] }), live)).toBe(false)
+    expect(isFinished(stat({ settled: [] }), live)).toBe(false)
+  })
+
+  it('is true once every member still in the library is settled, whatever happened to the deleted ones', () => {
+    expect(isFinished(stat({ settled: ['a', 'b', 'c'] }), live)).toBe(true)
+    expect(isFinished(stat({ members: ['a', 'b', 'gone'], settled: ['a', 'b'] }), live)).toBe(true)
+    expect(isFinished(stat({ members: ['gone1', 'gone2'], settled: [] }), live)).toBe(true)
+  })
+
+  it('is true when doneOn is set, even if a word deleted and added again is a live member nobody settled', () => {
+    expect(isFinished(stat({ settled: ['a', 'b'], doneOn: '2026-10-19' }), live)).toBe(true)
+  })
+
+  it('reads a doneOn that is not a string as not done, and decides by the settled list', () => {
+    const odd = { ...stat({ settled: ['a'] }), doneOn: 7 } as unknown as TangleStat
+    expect(isFinished(odd, live)).toBe(false)
+  })
+})
+
 describe('applyTangleResults', () => {
   const live = new Set(['a', 'b', 'c'])
 
@@ -340,6 +431,11 @@ describe('applyTangleResults', () => {
     const got = applyTangleResults(stat({ settled: ['a'] }), ['b'], ['c'], live, NOW)
     expect(got.doneOn).toBe(TODAY)
     expect(got.lastAt).toBe(NOW.toISOString())
+  })
+
+  it('keeps the doneOn a finished tangle already has', () => {
+    const got = applyTangleResults(stat({ settled: ['a', 'b', 'c'], doneOn: '2026-10-19' }), [], [], live, NOW)
+    expect(got.doneOn).toBe('2026-10-19')
   })
 
   it('does not wait on a member that has been deleted', () => {

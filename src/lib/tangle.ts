@@ -80,6 +80,31 @@ function isReadable(raw: unknown): raw is TangleStat {
 /** A `doneOn` that is present but not a string reads as not done, as readTangle does: it only shows the tangle once more. */
 const isDone = (stat: TangleStat): boolean => typeof stat.doneOn === 'string'
 
+/**
+ * Whether a tangle has nothing left to ask: it is done (`doneOn` is set), or
+ * every member still in the library is settled. **The one definition**, read
+ * by dueTangles to leave it off 今日 and by applyTangleResults to decide when
+ * to write `doneOn`, so the two cannot drift. The 60-day evaluation's "whose
+ * tangle has since been done" should call it too, not read `doneOn` alone.
+ *
+ * **A tangle can be finished without a `doneOn`.** Only a session writes
+ * `doneOn`, and a member deleted after the others settled leaves the tangle
+ * with no unsettled word to ask about: `[a, b, c]` with `a` and `b` settled,
+ * `c` missed, then `c` deleted. Nothing then calls applyTangleResults, and
+ * were it listed as due it would sit on 今日 as owed work whose session asks
+ * nothing, the phantom backlog the spec's anti-goals rule out. A deleted
+ * member cannot be answered, so it is not waited on.
+ *
+ * A `doneOn` that is present counts whatever the settled list says: a word
+ * deleted and added again under the same id is a live member that was never
+ * settled, and the finished tangle stays finished.
+ */
+export function isFinished(stat: TangleStat, live: Set<string>): boolean {
+  if (isDone(stat)) return true
+  const settled = new Set(stat.settled)
+  return stat.members.every((id) => !live.has(id) || settled.has(id))
+}
+
 const isTangleMap = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v)
 
@@ -105,8 +130,19 @@ const isTangleMap = (v: unknown): v is Record<string, unknown> =>
  * `members` is a callback so the graph is ranked only when a tangle is born or
  * reopened.
  *
+ * **A readable stat already at the pair's key is a host whatever its members
+ * say.** A reopen recomputes members from the pair that reopened it, and
+ * that pair has three slots beside itself: reopen done `a|c` (`[a, c, b, …]`)
+ * by confusing `a|b`, and `c` can fall out once `(a, b)` has three closer
+ * common partners. Confusing `a|c` next finds no tangle holding both, and
+ * writing a new one at the key would replace the reopened tangle and wipe its
+ * `pairs`, `settled` and `dueOn`. The key is taken; refreshing or reopening
+ * what sits there is the only thing that does not lose a record.
+ *
  * A stat that is not readable is never a candidate and is carried through
- * unchanged, so one bad record cannot stop a lapse from being recorded.
+ * unchanged, so one bad record cannot stop a lapse from being recorded. One
+ * at the pair's own key is the exception that cannot be carried: it is
+ * replaced, which is how a hand-edited stat is repaired.
  */
 export function applyConfusion(
   tangles: Progress['tangles'], a: string, b: string, members: () => string[], now: Date,
@@ -118,7 +154,8 @@ export function applyConfusion(
 
   const holding: { key: string; stat: TangleStat }[] = []
   for (const [k, raw] of Object.entries(base)) {
-    if (isReadable(raw) && raw.members.includes(a) && raw.members.includes(b)) holding.push({ key: k, stat: raw })
+    if (!isReadable(raw)) continue
+    if (k === key || (raw.members.includes(a) && raw.members.includes(b))) holding.push({ key: k, stat: raw })
   }
   const latest = (xs: typeof holding) =>
     [...xs].sort((x, y) => byString(y.stat.lastAt, x.stat.lastAt) || byString(x.key, y.key))[0]
@@ -150,10 +187,10 @@ export function applyConfusion(
 }
 
 /**
- * The keys of the tangles due on `today`: open, `dueOn` today or earlier, and
- * at least two members still in the library. Oldest `dueOn` first, then
- * `bornOn`, then key, so the order is a function of the data alone. The
- * caller applies TANGLE_DAILY_CAP.
+ * The keys of the tangles due on `today`: not finished (see isFinished),
+ * `dueOn` today or earlier, and at least two members still in the library.
+ * Oldest `dueOn` first, then `bornOn`, then key, so the order is a function of
+ * the data alone. The caller applies TANGLE_DAILY_CAP.
  *
  * **Fewer than two live members is never due.** The user deletes words in the
  * app, and from another device; a tangle of one word has nothing to be
@@ -165,7 +202,7 @@ export function dueTangles(tangles: Progress['tangles'], today: string, live: Se
   if (!isTangleMap(tangles)) return []
   const due: { key: string; stat: TangleStat }[] = []
   for (const [key, raw] of Object.entries(tangles)) {
-    if (!isReadable(raw) || isDone(raw) || raw.dueOn > today) continue
+    if (!isReadable(raw) || raw.dueOn > today || isFinished(raw, live)) continue
     if (raw.members.filter((id) => live.has(id)).length < 2) continue
     due.push({ key, stat: raw })
   }
@@ -224,11 +261,11 @@ export function todaysConfusedPairs(
  * being shown (`autoSettled`, a member with no usable sentence), join
  * `settled`. A new stat, and the input is untouched.
  *
- * **Done is every member still in the library being settled.** A deleted
- * member cannot be answered, so waiting on it would hold the tangle open for
- * good. When it is done, `doneOn` is today; otherwise it stays open and is due
- * tomorrow, so a miss costs a day and never a session of its own. `lastAt`
- * moves to `now` either way, which is what the merge picks a side by.
+ * **Done is isFinished on the settled list this session leaves**, the same
+ * test dueTangles lists by. When it holds, `doneOn` is today (a tangle that
+ * already has one keeps it); otherwise it stays open and is due tomorrow, so a
+ * miss costs a day and never a session of its own. `lastAt` moves to `now`
+ * either way, which is what the merge picks a side by.
  *
  * Only members can be settled: an id the stat never held is dropped, so
  * `settled` stays a subset of `members`. This writes nothing a schedule reads,
@@ -237,17 +274,9 @@ export function todaysConfusedPairs(
 export function applyTangleResults(
   stat: TangleStat, correctIds: string[], autoSettled: string[], live: Set<string>, now: Date,
 ): TangleStat {
-  const today = todayStr(now)
   const settled = [...new Set([...stat.settled, ...correctIds, ...autoSettled])].filter((id) => stat.members.includes(id))
-  const settledSet = new Set(settled)
-  const done = stat.members.filter((id) => live.has(id)).every((id) => settledSet.has(id))
-
   const next: TangleStat = { ...stat, settled, lastAt: now.toISOString() }
-  if (done) {
-    next.doneOn = today
-  } else {
-    next.dueOn = addDays(today, 1)
-    delete next.doneOn
-  }
+  if (!isFinished(next, live)) next.dueOn = addDays(todayStr(now), 1)
+  else if (!isDone(next)) next.doneOn = todayStr(now)
   return next
 }
