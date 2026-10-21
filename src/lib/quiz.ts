@@ -143,7 +143,8 @@ export function pickMeaning(w: Word, rng: () => number): Meaning {
 
 const meaningLabel = (m: Meaning) => `${m.pos} ${m.zh}`
 
-const BLANK = '___'
+/** What clozeExample puts where the headword was. Exported for the one renderer that draws it as a gap (components/Blanked.tsx). */
+export const BLANK = '___'
 
 /**
  * Blanks out the headword in an example sentence. Locating rules are in lib/headword.ts —

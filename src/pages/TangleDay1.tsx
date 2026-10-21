@@ -1,5 +1,5 @@
-import { Fragment, useRef, useState } from 'react'
-import type { ReactNode } from 'react'
+import { useRef, useState } from 'react'
+import { Blanked } from '../components/Blanked'
 import { Button } from '../components/Button'
 import contrastNotesFile from '../data/contrastNotes.json'
 import { contrastNoteKey } from '../lib/contrastNotes'
@@ -8,9 +8,6 @@ import { pairContrastQuestion } from '../lib/quiz'
 import type { QuizQuestion } from '../lib/quiz'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
-
-/** What clozeExample puts where the headword was (lib/quiz.ts keeps the constant private). */
-const BLANK = '___'
 
 interface DayOneItem {
   lapsed: Word
@@ -37,17 +34,6 @@ function buildItems(pairs: { lapsed: string; partner: string }[], words: Word[])
     items.push({ lapsed: a, partner: b, note: notes[contrastNoteKey(a.id, b.id)], question: pairContrastQuestion(a, b, Math.random) })
   }
   return items
-}
-
-/** The cloze prompt with each blank given its own span, so the gap reads as a gap and not as three underscores. */
-function renderBlanked(text: string): ReactNode {
-  const parts = text.split(BLANK)
-  return parts.map((part, i) => (
-    <Fragment key={i}>
-      {part}
-      {i < parts.length - 1 ? <span className="review-tangle__blank">{BLANK}</span> : null}
-    </Fragment>
-  ))
 }
 
 /**
@@ -136,7 +122,7 @@ function PairQuestion({ question }: { question: QuizQuestion }) {
 
   return (
     <div className="review-tangle__q">
-      <p className="review-tangle__prompt" lang="en">{renderBlanked(question.prompt)}</p>
+      <p className="review-tangle__prompt" lang="en"><Blanked text={question.prompt} blankClass="review-tangle__blank" /></p>
       <div className="review-tangle__options" role="group" aria-label="选项">
         {question.options.map((opt) => {
           const isAnswer = opt === question.answer
