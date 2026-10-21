@@ -156,10 +156,19 @@ applies when that record is **一片空白**, or **想成了别的** with no par
 wrong meaning matched nothing offered):
 
 1. one of its own example sentences, headword marked, no meaning shown;
-2. its etymology, if it has one;
+2. its etymology up to the first `→`, if it has one;
 3. flip.
 
 Each rung is one key press. The user can flip at any rung.
+
+**Rung 2 stops at the arrow, and nothing after it is shown.** Every one of
+the 1042 etymologies in `data/words.json` (of 1411 words, measured
+2026-10-20) ends in `→ <the Chinese meaning>`: `corroborate` is
+`cor-(加强) + robur(力量) → 加固 → 证实`. Shown whole, rung 2 hands over the
+answer, which is the reason 要点 was rejected below. The part before the
+first `→` is the parts and their glosses, the memory anchor without the
+meaning. If an etymology has no `→`, or nothing before it, the word has no
+rung 2; fail closed rather than guess where the answer starts.
 
 This deliberately differs from what I sketched in conversation (要点 → 词根 →
 a blanked example). The front asks for the *meaning* of an English word, so
