@@ -1,6 +1,8 @@
-import type { Progress, TangleStat } from '../types'
+import type { Progress, TangleStat, Word } from '../types'
 import type { ContrastPair } from './contrast'
 import { contrastNoteKey } from './contrastNotes'
+import { headwordPattern } from './headword'
+import { clozeExample, shuffle } from './quiz'
 import { addDays, todayStr } from './srs'
 
 /**
@@ -279,4 +281,128 @@ export function applyTangleResults(
   if (!isFinished(next, live)) next.dueOn = addDays(todayStr(now), 1)
   else if (!isDone(next)) next.doneOn = todayStr(now)
   return next
+}
+
+export interface TangleQuestion {
+  /** The member whose example is blanked. */
+  answerId: string
+  /** An example of the answer with its headword blanked, free of every other member's headword. */
+  prompt: string
+  /** Every live member's headword, shuffled, so the answer has no fixed place. */
+  options: string[]
+}
+
+export interface TangleNote {
+  /** contrastNoteKey of the two members the note is about. */
+  key: string
+  text: string
+  /** The user confused this very pair: it is the reason the tangle exists, so it leads and is marked. */
+  confused: boolean
+}
+
+export interface TangleSession {
+  /** The members still in the library, in the order the tangle stamped them. */
+  members: Word[]
+  notes: TangleNote[]
+  questions: TangleQuestion[]
+  /** Unsettled members that got no question: settled by being shown (applyTangleResults' `autoSettled`). */
+  autoSettled: string[]
+}
+
+/**
+ * An example of `answer`, blanked, in which no member of `others` is left to
+ * read: the sentence filter 辨析 applies to its one other word
+ * (pairContrastQuestion), widened to every word on offer. Examples are tried in
+ * shuffled order for the same reason pickCloze does it: taking the first would
+ * make a word's question the same sentence every session.
+ *
+ * Tests the **blanked** prompt, as pairContrastQuestion does: blanking removes
+ * the answer's own occurrences first, so a stem the answer shares with another
+ * member cannot disqualify a sentence that is otherwise clean. headwordPattern
+ * also catches inflected forms, which is the point: `vindicated` is as much
+ * the second option as `vindicate`.
+ */
+function tangleCloze(answer: Word, others: Word[], rng: () => number): string | null {
+  for (const example of shuffle(answer.examples, rng)) {
+    const prompt = clozeExample(example, answer.headword)
+    if (prompt === null) continue
+    if (others.some((o) => headwordPattern(prompt, o.headword) !== null)) continue
+    return prompt
+  }
+  return null
+}
+
+/**
+ * What one tangle session shows and asks (spec §3, "Day 2, complete"): the
+ * members side by side, the notes between them, and one cloze for each member
+ * not yet settled. Pure; the page renders it and applyTangleResults records it.
+ *
+ * - **Members** are the stamped ones still in `byId`, in stamped order. A
+ *   deleted member is skipped everywhere, never an error: the user deletes
+ *   words in the app and from another device, and `members` is stamped once.
+ * - **Notes** are the authored contrast notes between two live members, found
+ *   by contrastNoteKey; a pair with none shows none. The pairs the user
+ *   confused come first and carry `confused`. A key in `stat.pairs` counts
+ *   only if both its words are live members: `pairs` can outlive a member, and
+ *   a note is only ever built between members that are on the page.
+ * - **Questions**: each unsettled member gets one cloze whose options are
+ *   *every* live member's headword, the settled ones too. They are still on
+ *   offer, so a sentence carrying any of them is no question at all (the
+ *   anti-goal "a question offers two right answers"), which is why the filter
+ *   looks at all of them and not just the unsettled.
+ * - **A member with no usable sentence is settled by being shown**, listed in
+ *   `autoSettled` rather than dropped: every example carrying another member,
+ *   or none locating the headword. Left unsettled it would keep the tangle
+ *   due every day with nothing to ask, the backlog the spec's anti-goals rule
+ *   out, and the member is still on the side-by-side page, which is the whole
+ *   of what can be done for it. Rare but real: a session built for each of the
+ *   1333 pairs scoring CONTRAST_MIN_SCORE or more, on the repo's
+ *   data/words.json with every word counted as studied (2026-10-21), left 6
+ *   of the 5193 members across them with no usable sentence.
+ * - **Fewer than two live members asks and settles nothing.** One headword is
+ *   not a choice, and a tangle in that state is never due (dueTangles), so a
+ *   session reaches here only if a word was deleted after the tangle was
+ *   listed. Settling the lone member then would credit a showing that taught
+ *   nothing.
+ *
+ * The read side is lenient: a `members`, `settled` or `pairs` that is not an
+ * array of strings reads as empty, so a hand-edited record cannot break the
+ * session. Both the order examples are tried in and the order of each
+ * question's options draw on the injected `rng`.
+ */
+export function buildTangleSession(
+  stat: TangleStat, byId: Map<string, Word>, notes: Record<string, string>, rng: () => number = Math.random,
+): TangleSession {
+  const ids = isStringArray(stat.members) ? stat.members : []
+  const settled = new Set(isStringArray(stat.settled) ? stat.settled : [])
+  const confusedKeys = new Set(isStringArray(stat.pairs) ? stat.pairs : [])
+
+  const members: Word[] = []
+  for (const id of ids) {
+    const w = byId.get(id)
+    if (w !== undefined) members.push(w)
+  }
+  if (members.length < 2) return { members, notes: [], questions: [], autoSettled: [] }
+
+  const found: TangleNote[] = []
+  for (let i = 0; i < members.length; i++) {
+    for (let j = i + 1; j < members.length; j++) {
+      const key = contrastNoteKey(members[i].id, members[j].id)
+      const text = notes[key]
+      if (typeof text !== 'string' || text.trim() === '') continue
+      found.push({ key, text, confused: confusedKeys.has(key) })
+    }
+  }
+  const ordered = [...found.filter((n) => n.confused), ...found.filter((n) => !n.confused)]
+
+  const headwords = members.map((w) => w.headword)
+  const questions: TangleQuestion[] = []
+  const autoSettled: string[] = []
+  for (const w of members) {
+    if (settled.has(w.id)) continue
+    const prompt = tangleCloze(w, members.filter((o) => o.id !== w.id), rng)
+    if (prompt === null) autoSettled.push(w.id)
+    else questions.push({ answerId: w.id, prompt, options: shuffle(headwords, rng) })
+  }
+  return { members, notes: ordered, questions, autoSettled }
 }

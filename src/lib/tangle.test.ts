@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import type { ForgetRecord, Progress, ProgressEntry, TangleStat } from '../types'
+import type { ForgetRecord, Progress, ProgressEntry, TangleStat, Word } from '../types'
 import { emptyProgress } from '../types'
 import type { ContrastPair } from './contrast'
+import { headwordPattern } from './headword'
 import {
-  TANGLE_DAILY_CAP, TANGLE_MEMBER_CAP, applyConfusion, applyTangleResults, dueTangles,
+  TANGLE_DAILY_CAP, TANGLE_MEMBER_CAP, applyConfusion, applyTangleResults, buildTangleSession, dueTangles,
   isFinished, tangleMembers, todaysConfusedPairs,
 } from './tangle'
 
@@ -473,5 +474,171 @@ describe('applyTangleResults', () => {
     expect(input).toEqual(before)
     expect(got).not.toBe(input)
     expect(got.settled).not.toBe(input.settled)
+  })
+})
+
+describe('buildTangleSession', () => {
+  const mkWord = (id: string, examples: string[]): Word => ({
+    id, headword: id, phonetic: `/${id}/`, meanings: [{ pos: 'v.', en: `def of ${id}`, zh: '甲' }],
+    examples, synonyms: [], antonyms: [], collocations: [], relatedForms: [],
+    sourceNote: 't', addedAt: '2026-07-01',
+  })
+  // Two clean sentences and two that carry another member, per word: a filter that is
+  // dropped picks a dirty sentence on some seed below, while a working one never does.
+  const corroborate = mkWord('corroborate', [
+    'Two independent witnesses corroborated the account of the crash.',
+    'The lab results corroborate what the nurse had suspected all week.',
+    'Nothing in the logbook would corroborate or vindicate his story.',
+    'She hoped a second audit would corroborate the first and substantiate her figures.',
+  ])
+  const vindicate = mkWord('vindicate', [
+    'The final report vindicated the engineer who had raised the alarm.',
+    'Years later the data vindicated her early warning.',
+    'Only the recording could vindicate her, and it would also corroborate his version.',
+    'A court ruling would vindicate the whole team and substantiate their claim.',
+  ])
+  const substantiate = mkWord('substantiate', [
+    'He could not substantiate the rumour with a single document.',
+    'A receipt would substantiate the refund claim.',
+    'Nothing would substantiate or corroborate the claim.',
+    'Only the log could substantiate her story and vindicate him.',
+  ])
+  const extra = mkWord('extra', ['The extra shift paid for itself.'])
+  const byId = new Map([corroborate, vindicate, substantiate, extra].map((w) => [w.id, w]))
+  const MEMBERS = ['corroborate', 'vindicate', 'substantiate']
+  const tangle = (over: Partial<TangleStat> = {}) =>
+    stat({ pairs: ['corroborate|vindicate'], members: MEMBERS, ...over })
+
+  /** A small deterministic generator, so each seed is a different but repeatable draw. */
+  const seeded = (seed: number) => () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296
+    return seed / 4294967296
+  }
+  const SEEDS = Array.from({ length: 25 }, (_, i) => i + 1)
+
+  it('gives a note for every member pair that has one, the confused pairs first and marked', () => {
+    const notes = {
+      'corroborate|vindicate': '前者是旁证，后者是平反。',
+      'substantiate|vindicate': '前者是拿出证据，后者是证明无辜。',
+      'corroborate|extra': 'not a member',
+      'gone|vindicate': 'not in the library',
+    }
+    // The confused pair is the *last* member pair in member order, so only putting it first moves it.
+    const got = buildTangleSession(tangle({ pairs: ['substantiate|vindicate'] }), byId, notes, seeded(1))
+    expect(got.notes).toEqual([
+      { key: 'substantiate|vindicate', text: notes['substantiate|vindicate'], confused: true },
+      { key: 'corroborate|vindicate', text: notes['corroborate|vindicate'], confused: false },
+    ])
+  })
+
+  it('marks a confused pair only when both of its words are live members of the tangle', () => {
+    const notes = {
+      'corroborate|vindicate': 'ok',
+      'corroborate|gone': 'gone is not in the library',
+      'corroborate|extra': 'extra is live but not a member',
+      'substantiate|vindicate': 'a pair the user never confused',
+    }
+    const got = buildTangleSession(
+      tangle({ pairs: ['corroborate|gone', 'corroborate|extra', 'corroborate|vindicate'] }), byId, notes, seeded(1),
+    )
+    expect(got.notes.map((n) => [n.key, n.confused])).toEqual([
+      ['corroborate|vindicate', true],
+      ['substantiate|vindicate', false],
+    ])
+  })
+
+  it('asks one cloze per unsettled live member, with every live member as an option', () => {
+    for (const seed of SEEDS) {
+      const got = buildTangleSession(tangle({ settled: ['vindicate'] }), byId, {}, seeded(seed))
+      expect(got.questions.map((q) => q.answerId)).toEqual(['corroborate', 'substantiate'])
+      expect(got.autoSettled).toEqual([])
+      for (const q of got.questions) {
+        expect(q.prompt).toContain('___')
+        // Every other member, the settled one included: all of them are on offer as options.
+        for (const other of MEMBERS.filter((id) => id !== q.answerId)) {
+          expect(headwordPattern(q.prompt, other), `${q.answerId} offered ${other} in: ${q.prompt}`).toBeNull()
+        }
+        expect([...q.options].sort()).toEqual([...MEMBERS].sort())
+      }
+    }
+  })
+
+  it('shuffles the options with the injected rng, so an answer has no fixed place', () => {
+    const places = new Set<number>()
+    for (const seed of SEEDS) {
+      const q = buildTangleSession(tangle(), byId, {}, seeded(seed)).questions[0]
+      places.add(q.options.indexOf(q.answerId))
+    }
+    expect(places.size).toBeGreaterThan(1)
+  })
+
+  it('settles by being shown a member whose every example carries another member, and asks the rest', () => {
+    const crowded = mkWord('substantiate', [
+      'Nothing would substantiate or corroborate the claim.',
+      'Only the log could substantiate her story and vindicate him.',
+    ])
+    const got = buildTangleSession(tangle(), new Map(byId).set('substantiate', crowded), {}, seeded(3))
+    expect(got.autoSettled).toEqual(['substantiate'])
+    expect(got.questions.map((q) => q.answerId)).toEqual(['corroborate', 'vindicate'])
+    // Still a member on the page and an option, only not a question: shown, so settled.
+    expect(got.members.map((w) => w.id)).toEqual(MEMBERS)
+    expect(got.questions[0].options).toContain('substantiate')
+  })
+
+  it('settles by being shown a member none of whose examples locates the headword', () => {
+    const unlocatable = mkWord('vindicate', ['The report cleared the engineer completely.', 'Nobody doubted her afterwards.'])
+    const got = buildTangleSession(tangle(), new Map(byId).set('vindicate', unlocatable), {}, seeded(3))
+    expect(got.autoSettled).toEqual(['vindicate'])
+    expect(got.questions.map((q) => q.answerId)).toEqual(['corroborate', 'substantiate'])
+  })
+
+  it('neither asks nor reports a member that is already settled, usable sentence or not', () => {
+    const unlocatable = mkWord('vindicate', ['The report cleared the engineer completely.'])
+    const got = buildTangleSession(tangle({ settled: ['vindicate'] }), new Map(byId).set('vindicate', unlocatable), {}, seeded(3))
+    expect(got.autoSettled).toEqual([])
+    expect(got.questions.map((q) => q.answerId)).toEqual(['corroborate', 'substantiate'])
+  })
+
+  it('leaves a member that is not in the library out of the members, the notes and the questions', () => {
+    const notes = { 'corroborate|vindicate': 'ok', 'corroborate|gone': 'x', 'gone|vindicate': 'y' }
+    const got = buildTangleSession(
+      tangle({ members: ['corroborate', 'gone', 'vindicate', 'substantiate'], pairs: ['corroborate|gone'] }),
+      byId, notes, seeded(2),
+    )
+    expect(got.members.map((w) => w.id)).toEqual(MEMBERS)
+    expect(got.notes.map((n) => n.key)).toEqual(['corroborate|vindicate'])
+    expect(got.questions.map((q) => q.answerId)).toEqual(MEMBERS)
+    for (const q of got.questions) expect(q.options).not.toContain('gone')
+    expect(got.autoSettled).toEqual([])
+  })
+
+  it('asks nothing and settles nothing when fewer than two members are left', () => {
+    const got = buildTangleSession(tangle({ members: ['corroborate', 'gone', 'also-gone'] }), byId, {}, seeded(1))
+    expect(got.members.map((w) => w.id)).toEqual(['corroborate'])
+    expect(got.questions).toEqual([])
+    expect(got.autoSettled).toEqual([])
+  })
+
+  it('is the same session for the same rng sequence', () => {
+    const notes = { 'corroborate|vindicate': 'ok' }
+    const a = buildTangleSession(tangle(), byId, notes, seeded(11))
+    const b = buildTangleSession(tangle(), byId, notes, seeded(11))
+    expect(b).toEqual(a)
+  })
+
+  it('reads a stat whose lists are not arrays as having none, instead of throwing', () => {
+    const junk = (over: Record<string, unknown>) => ({ ...tangle(), ...over }) as unknown as TangleStat
+    // A number, null and an object are not iterable, so each would throw if read as a list.
+    for (const bad of [7, null, { a: 1 }, 'corroborate,vindicate']) {
+      // No members: nothing to show, ask or settle.
+      const noMembers = buildTangleSession(junk({ members: bad }), byId, {}, seeded(1))
+      expect(noMembers).toEqual({ members: [], notes: [], questions: [], autoSettled: [] })
+      // No settled list: every member is unsettled, so every member is asked.
+      const noSettled = buildTangleSession(junk({ settled: bad }), byId, {}, seeded(1))
+      expect(noSettled.questions.map((q) => q.answerId)).toEqual(MEMBERS)
+      // No pairs: a note still shows, and none is marked as confused.
+      const noPairs = buildTangleSession(junk({ pairs: bad }), byId, { 'corroborate|vindicate': 'ok' }, seeded(1))
+      expect(noPairs.notes).toEqual([{ key: 'corroborate|vindicate', text: 'ok', confused: false }])
+    }
   })
 })

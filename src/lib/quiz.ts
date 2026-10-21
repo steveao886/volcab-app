@@ -793,8 +793,11 @@ export const CONTRAST_MIN_SCORE = 3
  * A single discrimination question: blanks out the headword in `answer`'s example
  * sentence, having the user choose between answer and other. Returns null if it can't be
  * built, and the caller swaps sides or tries a different pair.
+ *
+ * Exported for the forget-moment day-1 section, which asks this question about one specific
+ * confused pair rather than drawing pairs from the library.
  */
-function contrastQuestion(answer: Word, other: Word, rng: () => number): QuizQuestion | null {
+export function pairContrastQuestion(answer: Word, other: Word, rng: () => number): QuizQuestion | null {
   // Shuffles first, same as pickCloze — taking the first candidate in order would make the
   // same pair's question always the same sentence. pickCloze isn't used directly here
   // because there's an extra filter: "the other word's headword must not remain in the
@@ -900,7 +903,7 @@ export function generateContrastQuiz(
     if (wa === undefined || wb === undefined) continue
     // Which word becomes the answer is randomized, otherwise the alphabetically earlier one would always be the answer — users would learn to exploit that pattern
     const [first, second] = rng() < 0.5 ? [wa, wb] : [wb, wa]
-    const q = contrastQuestion(first, second, rng) ?? contrastQuestion(second, first, rng)
+    const q = pairContrastQuestion(first, second, rng) ?? pairContrastQuestion(second, first, rng)
     if (q !== null) questions.push(q)
   }
   return questions
