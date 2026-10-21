@@ -8,6 +8,10 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Icon } from '../components/Icon'
 import { Page } from '../components/Page'
 import { ProgressMarks } from '../components/ProgressMarks'
+import { buildContrastPairs } from '../lib/contrast'
+import { learnedIds } from '../lib/diverge'
+import { forgetOptions, hintRungs, isLapse, needsHintLadder } from '../lib/forget'
+import type { ForgetInput } from '../lib/forget'
 import { isEditableTarget } from '../lib/keys'
 import { buildConsolidateQueue, buildQueue, CONSOLIDATE_DELAY_HOURS } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
@@ -15,11 +19,13 @@ import { storage } from '../lib/storage'
 import { relatedDueGuard } from '../lib/related'
 import { diffDays, previewIntervals, todayStr } from '../lib/srs'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
+import { ForgetAsk } from './ForgetAsk'
+import { HintLadder } from './HintLadder'
 import { ReviewCardBack } from './ReviewCard'
 import { advance, buildSessionQueue, currentId, dropCurrent, isDone, isHardConfirm, remaining } from './reviewQueue'
 import type { SessionQueue } from './reviewQueue'
 import { useApp } from '../state/store'
-import type { Grade } from '../types'
+import type { Grade, ProgressEntry } from '../types'
 import './Review.css'
 
 /* Keyboard shortcuts only take over the space/number keys when focus
@@ -81,7 +87,7 @@ export function Review() {
 }
 
 function ReviewSession() {
-  const { words, progress, grade, recordConsolidation, deleteWords } = useApp()
+  const { words, progress, grade, recordConsolidation, recordForget, deleteWords } = useApp()
   const [today] = useState(() => todayStr(new Date()))
   // ?mode= swaps which batch the session is built from — lapses (words you
   // keep forgetting) or consolidate (today's new words, a few hours on).
@@ -121,7 +127,24 @@ function ReviewSession() {
   // whether a 困难 on a review-phase card earns another showing, and the
   // committed entry cannot say — after 困难 the word is still `review` with
   // a future `due`, exactly like a card answered well.
-  const pendingRef = useRef<{ id: string; grade: Grade } | undefined>(undefined)
+  // And the entry as it stood before the grade: whether a 重来 was a lapse is
+  // a question about `prev` (gradeWord has already sent the word to learning
+  // by the time the effect reads it back — see isLapse), and the forget
+  // record keeps two of its fields, which the grade overwrites.
+  const pendingRef = useRef<{ id: string; grade: Grade; prev?: ProgressEntry } | undefined>(undefined)
+  // A lapse in the scheduled review, holding the card while 怎么忘的？ is up.
+  // `entry` is the committed result the progress effect read back, kept for
+  // the advance() it skipped; `prev` is the entry before the grade.
+  const [forgetAsk, setForgetAsk] = useState<{ id: string; entry: ProgressEntry | undefined; prev: ProgressEntry } | null>(null)
+  // The same hold, readable before the render that shows it, and the one
+  // the event handlers check. setForgetAsk from the progress effect renders
+  // on a later task; in between, the grade row is still mounted, pendingRef
+  // is already clear, and every handler's `asking` is still null. The second
+  // click of a double click on 重来 landed in that gap and graded the
+  // now-relearning card again — not a lapse, so the queue moved on and the
+  // question was never asked (seen in the browser: reps +2, no forget
+  // record). Holds the word's id, so a word dropped mid-question releases it.
+  const heldRef = useRef<string | undefined>(undefined)
   const pendingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   // The session-complete sound must only ever play once: while finished
   // stays true, this component can re-render many times for unrelated
@@ -145,6 +168,28 @@ function ReviewSession() {
   // days on a 10-day word). 重来 stays a real grade: failing the second
   // look is a genuine relapse. See the 2026-08-27 hard-requeue-confirm spec.
   const confirmShowing = isHardConfirm(queue, curId, curEntry)
+  // Derived against the head of the queue, like the manual flip: a word
+  // deleted from another device while the question is up is dropped from the
+  // queue, and the question goes with it rather than hanging over the next card.
+  const asking = forgetAsk !== null && forgetAsk.id === curId ? forgetAsk : null
+
+  // Built once per library, not per lapse: the 想成了别的 list reads the pair
+  // graph, and words does not move when a card is graded.
+  const contrastPairs = useMemo(() => buildContrastPairs(words), [words])
+  const forgetOpts = useMemo(
+    () =>
+      asking === null || curWord === undefined
+        ? []
+        : forgetOptions(curWord, new Map(words.map((w) => [w.id, w])), learnedIds(progress), contrastPairs),
+    [asking, curWord, words, progress, contrastPairs],
+  )
+
+  // The blank word's second showing (spec §2). The front only: the back is
+  // the answer the ladder leads toward.
+  const ladderRungs = useMemo(
+    () => (!flipped && curWord !== undefined && needsHintLadder(curEntry, today) ? hintRungs(curWord) : []),
+    [flipped, curWord, curEntry, today],
+  )
 
   // Only the scheduled review shows interval previews. Drill grades
   // deliberately don't reschedule (recordConsolidation),
@@ -170,8 +215,11 @@ function ReviewSession() {
     if (curWord !== undefined) preparePronunciation(curWord.headword)
   }, [curWord])
 
+  // Every way to flip goes through here — the card's click, its own Enter and
+  // Space, the window's Space — so this one guard is what keeps the card
+  // still while 怎么忘的？ is up. The question is about the back it shows.
   const toggleFlip = useCallback(() => {
-    if (curId === undefined) return
+    if (curId === undefined || heldRef.current === curId) return
     setManualFlip({ id: curId, value: !flipped })
   }, [curId, flipped])
 
@@ -179,12 +227,13 @@ function ReviewSession() {
     (g: Grade) => {
       if (pendingRef.current !== undefined) return // Previous grade hasn't landed yet, ignore the repeat click
       if (curId === undefined || !flipped) return // Grading before flipping doesn't mean anything
+      if (heldRef.current === curId) return // The grade has landed and the question is about it; no second one
       // Played synchronously within the click's call stack: iOS requires
       // the AudioContext's creation/resume to happen inside a user
       // gesture, and this is the single, earliest point where sound plays
       // for a grade (see lib/sound.ts).
       playGrade(g, soundEnabled)
-      pendingRef.current = { id: curId, grade: g }
+      pendingRef.current = { id: curId, grade: g, prev: curEntry }
       // Fallback: the effect below relies on the cross-module contract
       // that "progress is guaranteed to become a new reference once
       // grade() commits" (see the note on that effect). If that contract
@@ -209,7 +258,7 @@ function ReviewSession() {
       if (consolidateMode) recordConsolidation(curId, g)
       else grade(curId, g)
     },
-    [curId, flipped, grade, recordConsolidation, consolidateMode, soundEnabled],
+    [curId, curEntry, flipped, grade, recordConsolidation, consolidateMode, soundEnabled],
   )
 
   // Dismisses the confirm showing: the queue moves on and nothing is
@@ -221,6 +270,9 @@ function ReviewSession() {
   const handleConfirmKnown = useCallback(() => {
     if (pendingRef.current !== undefined) return
     if (curId === undefined || !flipped) return
+    // A 重来 on the confirm showing is a lapse too, and a 3 pressed before the
+    // question renders would otherwise move the queue on past it.
+    if (heldRef.current === curId) return
     playGrade('good', soundEnabled)
     const id = curId
     const entry = curEntry
@@ -265,6 +317,16 @@ function ReviewSession() {
       pendingTimeoutRef.current = undefined
     }
     const entry = progress.words[pendingId]
+    // A lapse holds the card where it is: the grade has landed, and the
+    // queue moves on only once 怎么忘的？ is answered (handleForgetDone). The
+    // scheduled review only — a drill writes no schedule and has no lapse to
+    // ask about — and read from `prev`, so the relearning showings that
+    // follow, already `learning` going in, never ask a second time.
+    if (mode === 'due' && pending.prev !== undefined && isLapse(pending.prev, pending.grade)) {
+      heldRef.current = pendingId
+      setForgetAsk({ id: pendingId, entry, prev: pending.prev })
+      return
+    }
     setQueue((q) => advance(q, pendingId, entry, today, mode === 'due', pending.grade))
     // The head of the queue has moved on to "the next showing" — even if
     // the card reinserted at the tail happens to have the same id
@@ -275,6 +337,26 @@ function ReviewSession() {
     // the answer side.
     setManualFlip(null)
   }, [progress, today, mode])
+
+  // The answer to 怎么忘的？, then the advance the progress effect held back.
+  // recordForget writes only the forget log and a tangle, so there is no
+  // commit to wait for and the queue moves here directly, with the
+  // read-back entry the effect kept, and recycling on, since only the
+  // scheduled review asks; the currentId guard is the same one
+  // handleConfirmKnown uses. The manual flip is cleared for the reason the
+  // effect gives: a recycled card must come back on its front.
+  const handleForgetDone = useCallback(
+    (rec: Omit<ForgetInput, 'prevInterval' | 'prevReviewedAt'>) => {
+      if (asking === null) return
+      const { id, entry, prev } = asking
+      heldRef.current = undefined
+      recordForget(id, { ...rec, prevInterval: prev.intervalDays, prevReviewedAt: prev.lastReviewedAt })
+      setQueue((q) => (currentId(q) === id ? advance(q, id, entry, today, true, 'again') : q))
+      setManualFlip(null)
+      setForgetAsk(null)
+    },
+    [asking, recordForget, today],
+  )
 
   // Clears the fallback timer on unmount, so it doesn't reach for a ref that no longer exists after the page is gone.
   useEffect(
@@ -317,18 +399,35 @@ function ReviewSession() {
       // handling, otherwise a Space/Enter bubbling up from the speak
       // button would get handled a second time here.
       if (e.target !== e.currentTarget) return
+      // While the question is up the card is not a control at all, and its
+      // stopPropagation below would keep Enter — 继续 — from ever reaching
+      // ForgetAsk's listener on window: the card keeps focus after a 重来
+      // pressed on the keyboard. Space is still swallowed: left to the browser
+      // it scrolls the page, and the question goes out of view with it.
+      if (heldRef.current === curId) {
+        if (e.key === ' ' || e.code === 'Space') e.preventDefault()
+        return
+      }
       if (e.key === 'Enter' || e.key === ' ' || e.code === 'Space') {
         e.preventDefault()
         e.stopPropagation() // Stops this same event from bubbling up to the global listener on window, avoiding a double flip
         toggleFlip()
       }
     },
-    [toggleFlip],
+    [toggleFlip, curId],
   )
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (curId === undefined || isEditableTarget(document.activeElement)) return
+      // 怎么忘的？ owns the keyboard while it is up (its own 1..n and Enter):
+      // a 1-4 here would grade the card a second time and a Space would
+      // flip away the back the question is about. A Space that would have
+      // flipped is swallowed rather than left to scroll the question away.
+      if (heldRef.current === curId) {
+        if ((e.key === ' ' || e.code === 'Space') && document.activeElement === document.body) e.preventDefault()
+        return
+      }
       if (e.key === ' ' || e.code === 'Space') {
         // Only takes over Space as the flip shortcut when "nothing at all
         // has focus" (activeElement===body). When the card itself has
@@ -466,9 +565,23 @@ function ReviewSession() {
           and with a long back the user still reported scrolling to grade —
           and the bar sat overlaying the tail of the card's own content. Up
           here it is always in the same place, visible from the moment the
-          card flips, and covers nothing. The 1-4 keys are unchanged. */}
+          card flips, and covers nothing. The 1-4 keys are unchanged.
+
+          怎么忘的？ takes the grade row's place rather than going under the
+          card, for the same reason: the card is still showing its back, and
+          under a long back the question would sit below the fold of a page
+          that seemed to have stopped. While it is up there is no grade row
+          to press. */}
       <div className="review-actions">
-        {flipped ? (
+        {asking !== null ? (
+          <ForgetAsk
+            key={`${asking.id}:${queue.seen}`}
+            word={curWord}
+            options={forgetOpts}
+            polysemous={curWord.meanings.length > 1}
+            onDone={handleForgetDone}
+          />
+        ) : flipped ? (
           confirmShowing ? (
             <div className="ruled-row">
               <Button variant="grade-again" className="ruled-row__miss" onClick={() => handleGrade('again')}>
@@ -550,10 +663,17 @@ function ReviewSession() {
             <Icon name="speak" />
           </button>
         </div>
+        {/* Keyed by the showing, not the word: a recycled card shares its id
+            with the showing before it, and must open with the ladder closed. */}
+        {ladderRungs.length > 0 && (
+          <HintLadder key={`${curWord.id}:${queue.seen}`} word={curWord} rungs={ladderRungs} />
+        )}
         {flipped && <ReviewCardBack word={curWord} />}
       </Card>
 
-      {flipped && (
+      {/* Not while the question is up: the card is held for it, and deleting
+          the word under it would leave a question about nothing. */}
+      {flipped && asking === null && (
         <div className="review-cull">
           <Button variant="ghost" size="sm" onClick={() => setConfirmDelete(true)}>
             删除这个词

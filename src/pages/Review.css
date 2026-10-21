@@ -248,6 +248,75 @@
    page, 界栏 between the columns, 重来 in cinnabar as the mark of a miss.
    It was drawn here in round 1 and lifted out when 练习 and 回想 needed it. */
 
+/* --- 怎么忘的？ ---------------------------------------------------------------
+   Asked in the grade row's slot after a lapse (ForgetAsk.tsx). No box: it is
+   the page asking, not a card. Built from the shared vocabulary — the ruled
+   row for the first two answers, a .ledger for the meanings, the 旁批 for
+   the pair's note — and the question line is ink, not a mark: nothing here
+   has been judged right or wrong. */
+
+.review-forget {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.review-forget__q {
+  font-weight: 700;
+  text-align: center;
+}
+
+/* The two rows about the list rather than on it (它自己的另一个意思,
+   意思想错了，但不在这里) read lighter than the meanings, so an eye going down
+   the list meets the meanings first. Their wording says what they are; the
+   weight only orders the reading. */
+.review-forget__choice--meta .ledger__primary {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.review-forget__pair {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-family: var(--font-word);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.review-forget__and {
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+/* --- Hint ladder (HintLadder.tsx) --------------------------------------------
+   On the front of a blank word's second showing. The front centers the
+   headword; the rungs are prose and run the card's full width, start-aligned
+   like the back they lead to, while 提示 stays centered under the word. */
+
+.review-ladder {
+  justify-self: stretch;
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-4);
+  margin-top: var(--sp-4);
+}
+
+.review-ladder__rung {
+  justify-self: stretch;
+  display: grid;
+  gap: var(--sp-2);
+  text-align: start;
+}
+
+.review-ladder__example {
+  color: var(--text-muted);
+}
+
 /* Remove entry point: kept at a distance from the four grade buttons, visually distinct as not belonging to the same group of actions */
 .review-cull {
   display: flex;
