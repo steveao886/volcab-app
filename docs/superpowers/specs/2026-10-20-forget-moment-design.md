@@ -166,9 +166,19 @@ the 1042 etymologies in `data/words.json` (of 1411 words, measured
 2026-10-20) ends in `→ <the Chinese meaning>`: `corroborate` is
 `cor-(加强) + robur(力量) → 加固 → 证实`. Shown whole, rung 2 hands over the
 answer, which is the reason 要点 was rejected below. The part before the
-first `→` is the parts and their glosses, the memory anchor without the
-meaning. If an etymology has no `→`, or nothing before it, the word has no
-rung 2; fail closed rather than guess where the answer starts.
+first `→` is the parts and their glosses, usually the memory anchor without
+the meaning. If an etymology has no `→`, or nothing before it, the word has
+no rung 2; fail closed rather than guess where the answer starts.
+
+**Not always without the meaning, though.** A root can be glossed with the
+word's own meaning: `credence` (相信;采信) is `credere(相信) → 采信`,
+`solace` (安慰;慰藉) `拉丁 solari(安慰) → 慰藉`, `copious` `copia(丰富,充裕) →
+大量的`. In 24 of the 1042 (data/words.json, 2026-10-21) the text before the
+arrow contains one of the word's own gloss terms of two characters or more,
+over all its meanings, and for those the rung would hand over the answer
+after all. They get no rung 2, failing closed the same way. A one-character
+term does not count; on the same data that spares exactly one word,
+`angular`, whose `angulus(角)` stands beside the gloss 角的.
 
 This deliberately differs from what I sketched in conversation (要点 → 词根 →
 a blanked example). The front asks for the *meaning* of an English word, so

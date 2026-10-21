@@ -101,6 +101,16 @@ describe('forgetOptions', () => {
     expect(forgetOptions(x, byIdOf(x, p), new Set(['p']), [pair('x', 'p', 5)])).toEqual([])
   })
 
+  it("drops a partner term equal to one of the answer's own glosses even where the qualifier sat mid-term", () => {
+    // glossTerms cuts 证明(某人)无罪 to 证明无罪, which is not a substring of the
+    // text it came from — the shape `vindicate`, `conflate` and `inflict` have.
+    const x = w('x', ['证明…正确;证实;证明(某人)无罪'])
+    const p = w('p', ['证明无罪;昭雪'])
+    expect(forgetOptions(x, byIdOf(x, p), new Set(['p']), [pair('x', 'p', 5)])).toEqual([
+      { partnerId: 'p', text: '昭雪' },
+    ])
+  })
+
   it("takes terms from all of the answer's meanings but the partner's first only", () => {
     const x = w('x', ['拖延', '搁置'])
     const p = w('p', ['搁置', '推迟'], [])
@@ -259,6 +269,24 @@ describe('hintRungs', () => {
     expect(hintRungs(w('corroborate', ['证实'], sentence, '→ 证实'))).toHaveLength(1)
     expect(hintRungs(w('corroborate', ['证实'], sentence, '  → 加固 → 证实'))).toHaveLength(1)
     expect(hintRungs(w('corroborate', ['证实'], sentence, ''))).toHaveLength(1)
+  })
+
+  it("has no etymology rung when the text before the arrow already carries one of the word's own glosses", () => {
+    // credence's etymology glosses its root with the word's own meaning, so the
+    // part before the arrow is the answer too.
+    const sentence = ['Nobody gave credence to the rumour.']
+    expect(hintRungs(w('credence', ['相信;采信;可信度'], sentence, 'credere(相信) → 采信'))).toEqual([
+      { kind: 'example', sentence: 'Nobody gave credence to the rumour.' },
+    ])
+    // Any of its meanings, not only the first: the card may have been missed on either.
+    expect(hintRungs(w('solace', ['慰藉', '安慰'], ['She found solace in music.'], '拉丁 solari(安慰) → 慰藉'))).toHaveLength(1)
+  })
+
+  it('keeps the etymology rung when only a one-character gloss appears before the arrow', () => {
+    // 力 and 强 are glosses here and both sit inside the text before the arrow,
+    // but a one-character term is not counted.
+    const word = w('x', ['力;强'], ['He will x it.'], CORROBORATE_ETYM)
+    expect(hintRungs(word)).toContainEqual({ kind: 'etymology', text: 'cor-(加强) + robur(力量)' })
   })
 
   it('keeps an etymology rung when no example locates the headword', () => {
