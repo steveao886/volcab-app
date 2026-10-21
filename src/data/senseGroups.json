@@ -759,10 +759,10 @@
       "zh": "最富的一成和最穷的一成之间的差距还在拉大。",
       "target": "差距",
       "order": [
-        "disparity"
+        "disparity",
+        "discrepancy"
       ],
       "extra": [
-        "discrepancy",
         "imbalance",
         "inequality"
       ],
@@ -870,11 +870,11 @@
       "zh": "法院把三十年刑期强加在一个从犯身上。",
       "target": "强加",
       "order": [
-        "inflict"
+        "inflict",
+        "administer"
       ],
       "extra": [
         "impose",
-        "administer",
         "mete out"
       ],
       "en": "The court inflicted a thirty-year sentence on an accomplice.",
@@ -1024,10 +1024,10 @@
       "zh": "办个执照要盖十一个章,这些繁文缛节劝退了大半人。",
       "target": "繁文缛节",
       "order": [
-        "red-tape"
+        "red-tape",
+        "bureaucracy"
       ],
       "extra": [
-        "bureaucracy",
         "formalities",
         "paperwork"
       ],
@@ -1038,11 +1038,11 @@
       "zh": "这不是某个人的失误,而是系统性的设计缺陷。",
       "target": "系统性的",
       "order": [
-        "systemic"
+        "systemic",
+        "pervasive"
       ],
       "extra": [
         "structural",
-        "pervasive",
         "endemic to the system"
       ],
       "en": "This is not one person's error but a systemic design flaw.",
@@ -1274,11 +1274,11 @@
       "zh": "新的分配方案要让三个部门都觉得公平。",
       "target": "公平",
       "order": [
-        "equitable"
+        "equitable",
+        "impartial"
       ],
       "extra": [
         "fair",
-        "impartial",
         "even-handed"
       ],
       "en": "The new split has to look equitable to all three departments.",
@@ -1386,10 +1386,10 @@
       "zh": "疫情之后那几年,整个行业弥漫着一种萎靡。",
       "target": "萎靡",
       "order": [
-        "malaise"
+        "malaise",
+        "unease"
       ],
       "extra": [
-        "unease",
         "lethargy",
         "doldrums"
       ],
@@ -1430,12 +1430,11 @@
         "ominous"
       ],
       "extra": [
-        "foreboding",
         "sinister",
         "portentous"
       ],
       "en": "The ominous line at the end of the contract turned out to be right.",
-      "why": "ominous 指预示着坏事将至,重点在征兆;foreboding 多指人心里那股不祥的预感;sinister 强调其中透着恶意;portentous 也指预兆,但常带浮夸做作的意味。"
+      "why": "ominous 指预示着坏事将至,重点在征兆;sinister 强调其中透着恶意;portentous 也指预兆,但常带浮夸做作的意味。"
     },
     {
       "zh": "在这类手术里,时机比技术更为要紧。",
@@ -1553,10 +1552,10 @@
       "zh": "那封时间戳对得上的邮件成了本案的铁证。",
       "target": "铁证",
       "order": [
-        "smoking-gun"
+        "smoking-gun",
+        "hard-evidence"
       ],
       "extra": [
-        "hard evidence",
         "damning proof",
         "clincher"
       ],
@@ -1636,12 +1635,11 @@
         "affront"
       ],
       "extra": [
-        "slight",
         "indignity",
         "insult"
       ],
       "en": "His remark was an affront that stopped the whole table mid-meal.",
-      "why": "affront 指当众冒犯他人尊严,分量重且明显;slight 是被轻慢、没被当回事,细微得多;indignity 强调让人失了体面的遭遇,未必出自恶意;insult 最通用,不含公开与否的信息。"
+      "why": "affront 指当众冒犯他人尊严,分量重且明显;indignity 强调让人失了体面的遭遇,未必出自恶意;insult 最通用,不含公开与否的信息。"
     },
     {
       "zh": "她对那个机会的矛盾心理拖了整整三个月。",
@@ -1707,11 +1705,10 @@
         "laborious"
       ],
       "extra": [
-        "grueling",
         "punishing"
       ],
       "en": "That stretch is steep and long, the most arduous part of the route.",
-      "why": "arduous 指需要持续投入大量体力或心力,正式;laborious 侧重繁琐费工、进展缓慢,累在耗时而非强度;grueling 强调把人榨干的折磨感;punishing 突出对身体的摧残。"
+      "why": "arduous 指需要持续投入大量体力或心力,正式;laborious 侧重繁琐费工、进展缓慢,累在耗时而非强度;punishing 突出对身体的摧残。"
     },
     {
       "zh": "这一点他已经说得够多了,再讲下去只会拖慢会议。",
@@ -1728,17 +1725,17 @@
       "why": "belabor 指对已经清楚的事反复申说,重点在多余;harp on 强调翻来覆去地念叨,令人厌烦;dwell on 侧重停在某个话题上不肯往前;hammer away at 含有为说服对方而反复施压的意味。"
     },
     {
-      "zh": "他的回信只有两句话,简洁得近乎冷淡。",
-      "target": "简洁",
+      "zh": "他的回信只有两句话,她诧异于这份简短,还把信纸翻过来找下文。",
+      "target": "简短",
       "order": [
-        "brevity"
+        "brevity",
+        "conciseness"
       ],
       "extra": [
-        "conciseness",
         "terseness",
         "economy of words"
       ],
-      "en": "His reply ran to two sentences, a brevity that read as cold.",
+      "en": "His reply ran to two sentences, and its brevity sent her turning the page over to look for the rest.",
       "why": "brevity 指篇幅或时长的短,中性,也可指人生短暂;conciseness 强调话不多但意思全,是褒义;terseness 短到近乎生硬;economy of words 侧重用词节省,常带赞许。"
     },
     {
@@ -1857,10 +1854,10 @@
       "zh": "讨论里他把相关性和因果混为一谈。",
       "target": "混为一谈",
       "order": [
-        "conflate"
+        "conflate",
+        "equate"
       ],
       "extra": [
-        "equate",
         "lump together",
         "muddle"
       ],
@@ -2219,10 +2216,10 @@
       "zh": "用三根皮筋和一支笔解决这个问题,靠的是巧思。",
       "target": "巧思",
       "order": [
-        "ingenuity"
+        "ingenuity",
+        "resourcefulness"
       ],
       "extra": [
-        "resourcefulness",
         "inventiveness",
         "cleverness"
       ],
@@ -2233,12 +2230,12 @@
       "zh": "那句话本身无害,是被截图之后才变了味。",
       "target": "无害",
       "order": [
-        "innocuous"
+        "innocuous",
+        "unremarkable"
       ],
       "extra": [
         "inoffensive",
-        "benign",
-        "unremarkable"
+        "benign"
       ],
       "en": "The line was innocuous until someone screenshotted it.",
       "why": "innocuous 指本身不会造成伤害或冒犯,常用于事后对比;inoffensive 侧重不至于惹人不快;benign 强调不含恶意,医学上指良性;unremarkable 只说平淡无奇,不涉及是否有害。"
@@ -2454,14 +2451,14 @@
       "why": "reclusive 指长期主动避开社交、独自生活;withdrawn 强调从人群中退缩的状态,常因抑郁;hermit-like 是比喻说法;off the grid 侧重脱离现代生活的基础设施。"
     },
     {
-      "zh": "他公开否认了自己两年前签过的那份协议。",
-      "target": "公开否认",
+      "zh": "他公开宣布不再承认自己两年前签过的那份协议。",
+      "target": "不再承认",
       "order": [
-        "repudiate"
+        "repudiate",
+        "disavow",
+        "renounce"
       ],
       "extra": [
-        "disavow",
-        "renounce",
         "walk back"
       ],
       "en": "He publicly repudiated the agreement he had signed two years earlier.",
@@ -3212,10 +3209,10 @@
       "target": "茫然",
       "order": [
         "perplexity",
-        "bewilderment"
+        "bewilderment",
+        "puzzlement"
       ],
       "extra": [
-        "puzzlement",
         "incomprehension"
       ],
       "en": "He stared at the invoice in perplexity.",
@@ -3533,10 +3530,10 @@
       "target": "讨好的",
       "order": [
         "ingratiating",
-        "obsequious"
+        "obsequious",
+        "fawning"
       ],
       "extra": [
-        "fawning",
         "unctuous"
       ],
       "en": "His ingratiating tone made everyone uncomfortable.",
@@ -3867,10 +3864,10 @@
       "target": "哀伤的",
       "order": [
         "plaintive",
-        "mournful"
+        "mournful",
+        "doleful"
       ],
       "extra": [
-        "doleful",
         "wistful"
       ],
       "en": "A plaintive bird call carried from somewhere far off.",
@@ -4397,12 +4394,10 @@
       "en": "She is a voracious reader, finishing three audiobooks a week on her commute alone.",
       "order": [
         "voracious",
+        "insatiable",
         "acquisitive"
       ],
-      "extra": [
-        "insatiable"
-      ],
-      "why": "voracious 本义是食量惊人，引申为对某事如饥似渴，最常搭 reader、appetite；acquisitive 说的是占有欲，想把东西买下来、攒起来，跟读得多完全是两码事。"
+      "why": "voracious 本义是食量惊人，引申为对某事如饥似渴，最常搭 reader、appetite；insatiable 说的是怎么也填不满，多搭 appetite、curiosity，形容读书的劲头也说得通，但不如 voracious reader 地道；acquisitive 说的是占有欲，想把东西买下来、攒起来，跟读得多完全是两码事。"
     },
     {
       "zh": "她反对开放式改造的态度强烈到全场安静了一秒。",
@@ -4513,12 +4508,13 @@
       "en": "When HR moved to fire the intern, the team lead interceded quietly and got him a second chance.",
       "order": [
         "intercede",
+        "mediate",
         "conciliate"
       ],
+      "why": "intercede 是替第三方向有权的人开口求情，说话的人自己不在争端里；mediate 是在争执的两方之间居中调停，不替任何一方说话，组长这里却明明站在实习生一边；conciliate 是安抚对立的双方、把关系修好，做的人通常就站在冲突中间；arbitrate 是作为中立的第三方拍板裁决。",
       "extra": [
-        "mediate"
-      ],
-      "why": "intercede 是替第三方向有权的人开口求情，说话的人自己不在争端里；conciliate 是安抚对立的双方、把关系修好，做的人通常就站在冲突中间。"
+        "arbitrate"
+      ]
     },
     {
       "zh": "这份文档把谁批什么划得清清楚楚，工单再没在半路卡住。",
@@ -5335,13 +5331,11 @@
       "order": [
         "treacherous",
         "perilous",
+        "hazardous",
         "deceptive"
       ],
-      "extra": [
-        "hazardous"
-      ],
       "sense": 0,
-      "why": "treacherous 说的是危险藏在看不出来的地方,或者状况说变就变,主语正是路面、水流、天气这类东西;perilous 只讲危险大、九死一生,凶险是明摆着的,不含藏这一层;hazardous 指存在某种具体的危害源,多见于规章和安全告示;deceptive 只说外表骗人、容易看走眼,本身不含任何危险。"
+      "why": "treacherous 说的是危险藏在看不出来的地方,或者状况说变就变,主语正是路面、水流、天气这类东西;perilous 只讲危险大、九死一生,凶险是明摆着的,不含藏这一层;hazardous 也只说有危险,而且是规章和安全告示里的口吻,指存在某种具体的危害源,比 perilous 离这里更远;deceptive 只说外表骗人、容易看走眼,本身不含任何危险。"
     },
     {
       "zh": "那套房源的照片刻意挡住了洗衣机后面的霉斑,广告写得存心骗人。",
@@ -5842,10 +5836,10 @@
       "target": "急着想",
       "en": "The startup is anxious to announce the funding round, but legal wants two more days with the term sheet.",
       "order": [
-        "anxious"
+        "anxious",
+        "reluctant"
       ],
       "extra": [
-        "reluctant",
         "nervous"
       ],
       "sense": 1,
@@ -6417,11 +6411,11 @@
       "target": "可以忽略不计",
       "en": "Because the town sits far from any fault line, engineers rated the earthquake risk to the bridge as negligible.",
       "order": [
-        "negligible"
+        "negligible",
+        "slight"
       ],
       "extra": [
-        "minor",
-        "slight"
+        "minor"
       ],
       "why": "negligible 的重点是小到可以不去管它,所以风险被评为「可以忽略不计」;minor 和 slight 只说小或轻,但没到可以忽略的程度,不能说明不用理会。"
     },
@@ -6514,11 +6508,11 @@
         "conspire"
       ],
       "extra": [
-        "plot",
-        "arrange"
+        "arrange",
+        "cooperate"
       ],
       "sense": 1,
-      "why": "conspire 的第二义是事件凑在一起,仿佛有意安排似的造成坏结果,取消、没电、暴雨正是;plot 和 arrange 都要有人有意安排,而这里是巧合,没有人在安排。"
+      "why": "conspire 的第二义是事件凑在一起,仿佛有意安排似的造成坏结果,取消、没电、暴雨正是;arrange 要有人有意安排,cooperate 是人跟人有意配合,而这里是巧合,没有人在安排。"
     },
     {
       "zh": "这趟通勤真是一波三折:水管爆了,换乘接驳车,还有个陌生人硬要分我三明治。",

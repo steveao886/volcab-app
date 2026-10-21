@@ -913,15 +913,18 @@ describe('full-library regression — antonymPick', () => {
       'in the wake of → ahead of',
       'in the wake of → in anticipation of',
     ])
-    // Re-measured 2026-10-12 over 1212 words (was 2651 / 1693 / 928 at 1087).
+    // Re-measured 2026-10-20 over 1411 words (was 2905 / 1835 / 1044 at 1212).
     // These track the library's own shape, so a word batch moves them; what
     // must not move without explanation is the `failed` list above.
-    expect(directions).toHaveLength(2905)
-    // 1835 answer with a word the library has no entry for; the other 1070 are
-    // the library-internal pairs, 1114 directions less the 44 the shape rule takes.
-    expect(directions.filter(d => d.external)).toHaveLength(1835)
-    expect(new Set(directions.map(d => d.from.id)).size).toBe(1044)
-  })
+    expect(directions).toHaveLength(3365)
+    // 1983 answer with a word the library has no entry for; the other 1382 are
+    // the library-internal pairs, 1438 directions less the 56 the shape rule takes.
+    expect(directions.filter(d => d.external)).toHaveLength(1983)
+    expect(new Set(directions.map(d => d.from.id)).size).toBe(1226)
+    // One question built per direction over the whole library, so the cost grows
+    // with it: 3.9s on its own at 1411 words, 5.3s inside the full suite, past
+    // vitest's 5s default. A timeout here fails as a timeout, never as a count.
+  }, 20_000)
 
   /**
    * The five pairs the shape rule removes, named so the count above can't

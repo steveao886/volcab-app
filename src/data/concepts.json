@@ -15,7 +15,8 @@
       ],
       "exclude": [
         "refractory",
-        "uncontrollable"
+        "uncontrollable",
+        "ungovernable"
       ],
       "negations": [
         "implacable",
@@ -98,6 +99,9 @@
         "diminish",
         "undermine",
         "wane"
+      ],
+      "exclude": [
+        "subside"
       ]
     },
     {
@@ -160,7 +164,8 @@
         "officious",
         "prominent",
         "tactless",
-        "loose-lipped"
+        "loose-lipped",
+        "blunt"
       ]
     },
     {
@@ -339,6 +344,9 @@
         "paucity",
         "scarcity",
         "shortage"
+      ],
+      "excludeOpposites": [
+        "affluence"
       ]
     },
     {
@@ -347,6 +355,9 @@
       "anchors": [
         "bossy",
         "overbearing"
+      ],
+      "excludeOpposites": [
+        "unobtrusive"
       ]
     },
     {
@@ -388,7 +399,8 @@
         "unconcerned"
       ],
       "excludeOpposites": [
-        "vigilant"
+        "vigilant",
+        "outraged"
       ]
     },
     {
@@ -574,6 +586,9 @@
       "zh": "冲得呛人,话里带刺",
       "anchors": [
         "bitter"
+      ],
+      "excludeOpposites": [
+        "contented"
       ]
     },
     {
@@ -638,6 +653,9 @@
       "zh": "本来就不好,又被推得更糟",
       "anchors": [
         "worsen"
+      ],
+      "excludeOpposites": [
+        "recuperate"
       ]
     },
     {
@@ -658,7 +676,8 @@
         "propitious"
       ],
       "excludeOpposites": [
-        "hostile"
+        "hostile",
+        "ruinous"
       ]
     },
     {
@@ -707,6 +726,13 @@
       "zh": "好接近,爱跟人来往",
       "anchors": [
         "affable"
+      ],
+      "exclude": [
+        "cordial"
+      ],
+      "excludeOpposites": [
+        "discourteous",
+        "ungracious"
       ]
     },
     {
@@ -756,6 +782,9 @@
       "anchors": [
         "disquiet",
         "unease"
+      ],
+      "exclude": [
+        "agitation"
       ]
     },
     {
@@ -816,7 +845,9 @@
         "vexation"
       ],
       "excludeOpposites": [
-        "extenuation"
+        "extenuation",
+        "alleviation",
+        "forbearance"
       ]
     },
     {
@@ -824,6 +855,9 @@
       "zh": "当场就炸了,咽不下这口气",
       "anchors": [
         "indignant"
+      ],
+      "excludeOpposites": [
+        "gratified"
       ]
     },
     {
