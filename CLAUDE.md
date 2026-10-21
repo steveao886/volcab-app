@@ -123,6 +123,8 @@ the same walk on the page three times.
 
 The manual 回想 rating (`ProgressEntry.recallRating`, 太简单 / 要多考) is **not** a second door. It is read only by `generateRecallSession`, as a third multiplier on the draw beside `difficultyWeight` and `recallWeight`, and reaches nothing in `srs.ts`. Its two levels are 0.05 and 6 and both numbers were measured — re-measure before changing either.
 
+**Untangling a confusion is practice too, and never demotes.** A lapse in the scheduled review asks 怎么忘的？, and naming a partner opens a tangle (`Progress.tangles`): 今天混过的词 on 复习完成 that day, then 拆开缠在一起的词 on 今日 (`/untangle`) from the next. Their questions write through `recordPractice(id, correct, { settle: false })` and `recordTangle`, and a miss in either stamps `missedAt` and nothing else — `due`, `intervalDays`, `ease`, `lapses` and `state` stay the scheduler's, and there is no `demoteWord` on this path. A right answer settles a tangle member, not the word: it leaves `missedAt` for a scheduled review to clear. The question itself is asked after the 重来 has been graded, so `recordForget` writes only the forget log and the tangle. See `docs/superpowers/specs/2026-10-20-forget-moment-design.md` §4.
+
 See `docs/superpowers/specs/2026-08-09-quiz-demotion-design.md` and `docs/superpowers/specs/2026-08-25-recall-rating-design.md`.
 
 ## Content rules
