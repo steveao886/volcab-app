@@ -200,6 +200,13 @@ export interface ProgressEntry {
    * `lastReviewedAt` — and the other device grading the same word later
    * out-ranks it and takes the record with it. mergeForgot unions by `at`.
    *
+   * **It grows the progress cache by every lapse.** A record is 111
+   * characters (一片空白) to 133 (a partner with a median-length id), so the
+   * live library's 5.85 lapses a day add about 284K characters a year, 10.8%
+   * of WebKit's localStorage quota (2026-10-21; see `Progress.tangles`). The
+   * per-word cap does not bound that in practice: the 503 lapses of those 86
+   * days fell on 331 words, and none had lapsed more than 7 times.
+   *
    * Optional like every added field: another device on an older build
    * pushes entries without it, and the correct reading of its absence is
    * "no lapse recorded", not a rejected merge.
@@ -388,9 +395,12 @@ export interface DivergeStat {
  * together as practice on the day it was found and again the next day.
  * Keyed in `Progress.tangles` by the pair that opened it.
  *
- * **There is no stored stage.** Day 1 is `bornOn === today` and due is
- * `!doneOn && dueOn <= today`; a stored stage could disagree with the dates,
- * and the dates are the only thing a second device can be sure of.
+ * **There is no stored stage.** Day 1 is read from today's confused forget
+ * records (todaysConfusedPairs), not from `bornOn`, which a refresh keeps.
+ * Due is dueTangles: `dueOn <= today`, not finished (isFinished: `doneOn`
+ * set, or every live member settled) and at least two members still in the
+ * library. A stored stage could disagree with the dates and the records,
+ * which are the only things a second device can be sure of.
  *
  * Practice, not schedule: nothing here reaches `srs.ts`.
  */
@@ -505,10 +515,21 @@ export interface Progress {
    * different pairs have disjoint keys and a wholesale pick would throw one
    * device's away.
    *
-   * Unbounded in principle: nothing prunes a finished tangle. A stat at the
-   * five-member cap with three pairs serialises to 268 bytes (measured
-   * 2026-10-20), so the daily cap of three new tangles is an upper bound of
-   * about 0.3 MB a year, and the real rate is however often the user lapses.
+   * **Unbounded: nothing prunes a finished tangle**, and nothing caps how many
+   * are born. TANGLE_DAILY_CAP caps sessions; births follow confused lapses,
+   * one at most per lapse that names a partner. A tangle with its key
+   * serialises to 204 characters open and 269 done at the median (337 at
+   * most), over the 1184 pairs of studied words in the live library on
+   * 2026-10-21. At that library's 5.85 lapses a day (503 in 86 days), a new
+   * partner on every lapse would add 574K characters a year.
+   *
+   * **The ceiling that comes first is the localStorage cache, not
+   * progress.json.** Progress is cached there whole, and WebKit's 5 MiB is
+   * 2,621,440 UTF-16 units: 21.9% a year for tangles at that upper bound,
+   * beside 10.8% for the forget log (`ProgressEntry.forgot`), on top of a
+   * cache that stood at 246,924 units (9.4%) the same day. Pruning tangles
+   * finished long ago is the lever once the 60-day evaluation no longer
+   * reads them.
    */
   tangles?: Record<string, TangleStat>
 }

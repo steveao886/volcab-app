@@ -12,7 +12,7 @@ import type { Word } from '../types'
 /** What the question decides. The two `prev` fields are the review page's to add: only it saw the entry before the grade. */
 type ForgetAnswer = Omit<ForgetInput, 'prevInterval' | 'prevReviewedAt'>
 
-/** One row of 想成了别的. A partner's meaning carries the partner, and choosing it shows the pair before anything is recorded. */
+/** One row of 想成了别的. A partner's meaning carries the partner, and choosing it records the answer first and then shows the pair, so leaving at the pair keeps the record. */
 interface Choice {
   label: string
   answer: ForgetAnswer

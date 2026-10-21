@@ -112,7 +112,7 @@ for (const p of file.passages) {
   if (markedIds.size < MIN_MARKS) at(`only marked ${markedIds.size} distinct word(s), needs at least ${MIN_MARKS}`)
 
   // Same hazard quiz.ts guards against twice (clozeExample's "blank out every occurrence in
-  // the same sentence", contrastQuestion's "the other word's headword must not remain in the
+  // the same sentence", pairContrastQuestion's "the other word's headword must not remain in the
   // sentence") -- except here the leftover occurrence can be in any *other* sentence of the
   // same passage, not just the one it's marked in. Strip every marker out of the whole
   // passage first, so what's left is exactly the prose the reader sees printed as-is; if a
