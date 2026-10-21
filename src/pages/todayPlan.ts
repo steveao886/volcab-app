@@ -3,9 +3,10 @@ import {
   CONSOLIDATE_DELAY_HOURS, CONSOLIDATE_MAX_INTERVAL_DAYS, strugglingPracticePool,
 } from '../lib/queue'
 import { todayStr } from '../lib/srs'
+import { dueTangles, TANGLE_DAILY_CAP } from '../lib/tangle'
 import type { Progress, Word } from '../types'
 
-export type PlanKey = 'due' | 'fresh' | 'consolidate' | 'lapses' | 'quiz'
+export type PlanKey = 'due' | 'fresh' | 'consolidate' | 'lapses' | 'untangle' | 'quiz'
 
 /** Where 专攻顽固词 goes. One constant because the plan row and the hero card must never send you to two different screens. */
 const STRUGGLING_WALK = '/practice?pick=struggling'
@@ -29,14 +30,40 @@ export interface PlanItem {
   reopenable?: boolean
 }
 
-/** The two local done-markers, read from storage by the caller — passed in so this module stays pure and testable. */
-export interface LocalMarks { lapseDrilledOn: string | null; consolidatedOn: string | null }
+/** The local done-markers, read from storage by the caller — passed in so this module stays pure and testable. */
+export interface LocalMarks {
+  lapseDrilledOn: string | null
+  consolidatedOn: string | null
+  /**
+   * Tangle sessions finished on `day`. A count rather than a date like the two
+   * above, because 拆开缠在一起的词 is done after TANGLE_DAILY_CAP sessions, not
+   * after one. Written by Untangle.tsx through bumpUntangleSessions.
+   */
+  untangleSessions: { day: string; n: number } | null
+}
+
+/**
+ * How many tangle sessions the mark says ran on `today`. A mark from another
+ * day is none. Lenient, since the caller hands over whatever JSON
+ * localStorage held: a mark whose `n` is not a positive integer counts as
+ * none rather than as sessions done, so a broken mark errs toward offering
+ * the day's sessions again and never toward hiding work that is owed.
+ */
+export function untangleSessionsToday(mark: LocalMarks['untangleSessions'], today: string): number {
+  if (typeof mark !== 'object' || mark === null || mark.day !== today) return 0
+  return Number.isInteger(mark.n) && mark.n > 0 ? mark.n : 0
+}
+
+/** The mark after one more session finished on `today`. */
+export function bumpUntangleSessions(mark: LocalMarks['untangleSessions'], today: string): { day: string; n: number } {
+  return { day: today, n: untangleSessionsToday(mark, today) + 1 }
+}
 
 /**
  * The Today page's day plan. Every state is derived from the same queue
  * functions the review page runs — if a row and the page it links to ever
- * printed different numbers, one of them would be lying — plus the two
- * local drill markers and dailyStats[today]. Nothing here is toggled by
+ * printed different numbers, one of them would be lying — plus the local
+ * markers (LocalMarks) and dailyStats[today]. Nothing here is toggled by
  * hand: a checkbox the user could flip records nothing and goes stale the
  * moment sync moves the queue.
  */
@@ -113,6 +140,36 @@ export function buildDayPlan(
     })
   }
 
+  // 拆开缠在一起的词 (forget-moment spec §3, day 2). Liveness is the word
+  // list, not progress.words: a deleted word's entry can outlive it, and a
+  // tangle left with one live word is never due (dueTangles).
+  //
+  // **Unlike 顽固词, `count` is right here.** A session takes its tangle off
+  // today's list whatever the answers — finished, or due again tomorrow — so
+  // the number falls by one per session and reaches zero. It counts at most
+  // TANGLE_DAILY_CAP minus the sessions already run: the cap is a default,
+  // not a wall, so past it the row is done but stays a link while more are
+  // due, the remainder in the hint.
+  //
+  // **Done with nothing due is still a row** once a session ran today:
+  // finished work must not vanish from the plan, the same reason 巩固's row
+  // stays as done.
+  const dueTangleCount = dueTangles(progress.tangles, today, new Set(words.map(w => w.id))).length
+  const sessions = untangleSessionsToday(marks.untangleSessions, today)
+  if (dueTangleCount > 0 && sessions < TANGLE_DAILY_CAP) {
+    items.push({
+      key: 'untangle', label: '拆开缠在一起的词', count: Math.min(dueTangleCount, TANGLE_DAILY_CAP - sessions),
+      state: 'todo', to: '/untangle',
+    })
+  } else if (dueTangleCount > 0) {
+    items.push({
+      key: 'untangle', label: '拆开缠在一起的词', state: 'done', to: '/untangle',
+      hint: `还有 ${dueTangleCount} 团`, reopenable: true,
+    })
+  } else if (sessions > 0) {
+    items.push({ key: 'untangle', label: '拆开缠在一起的词', state: 'done', to: '/untangle' })
+  }
+
   items.push({
     key: 'quiz', label: '快速测试一轮', state: (stat?.quizTaken ?? 0) > 0 ? 'done' : 'todo',
     to: '/quiz', hint: '可选',
@@ -139,7 +196,7 @@ function hasConsolidationComing(words: Word[], progress: Progress, now: Date, to
 
 export type HeroAction =
   | { kind: 'complete' }
-  | { kind: 'review' | 'consolidate'; count: number; unit: string; meta: string; to: string; label: string }
+  | { kind: 'review' | 'consolidate' | 'untangle'; count: number; unit: string; meta: string; to: string; label: string }
   // No count, for the reason the plan row has no count: the stubborn pool is
   // a stock. The hero's number slot says how much is left to do today, and
   // answering 顽固词 does not reduce it — so it gets a noun instead, and the
@@ -148,8 +205,14 @@ export type HeroAction =
 
 /**
  * The hero card's one action, in priority order review → consolidate →
- * lapses. The quiz row never becomes the hero: the plan labels it 可选,
- * and promoting an optional task to "现在该做" would contradict the label.
+ * untangle → lapses. The quiz row never becomes the hero: the plan labels it
+ * 可选, and promoting an optional task to "现在该做" would contradict the label.
+ *
+ * Untangle sits before lapses because it can be finished and the stubborn
+ * walk cannot, and it has to be here at all: left out, a day with only
+ * tangles due printed 今日完成 above a todo row. Only a todo row counts; past
+ * the daily cap the row is done (if reopenable), and a hero asking for work
+ * the plan calls done would be the same contradiction the other way round.
  */
 export function nextAction(plan: PlanItem[]): HeroAction {
   const get = (k: PlanKey) => plan.find(p => p.key === k)
@@ -167,6 +230,13 @@ export function nextAction(plan: PlanItem[]): HeroAction {
     return {
       kind: 'consolidate', count: c.count ?? 0, unit: '个词',
       meta: '今天学的词，趁遗忘前再取一次', to: '/review?mode=consolidate', label: '开始巩固',
+    }
+  }
+  const u = get('untangle')
+  if (u?.state === 'todo') {
+    return {
+      kind: 'untangle', count: u.count ?? 0, unit: '团',
+      meta: '复习时混过的近义词，并排分清', to: '/untangle', label: '开始拆解',
     }
   }
   const l = get('lapses')

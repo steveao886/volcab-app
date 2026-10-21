@@ -5,7 +5,7 @@ import type { ContrastPair } from './contrast'
 import { headwordPattern } from './headword'
 import {
   TANGLE_DAILY_CAP, TANGLE_MEMBER_CAP, applyConfusion, applyTangleResults, buildTangleSession, dueTangles,
-  isFinished, tangleMembers, todaysConfusedPairs,
+  isFinished, pickTangle, tangleMembers, todaysConfusedPairs,
 } from './tangle'
 
 const pair = (a: string, b: string, score: number): ContrastPair => ({
@@ -309,6 +309,26 @@ describe('dueTangles', () => {
   it('reads a doneOn that is not a string as not done, as the merge does', () => {
     const odd = { ...stat(), doneOn: 7 } as unknown as TangleStat
     expect(dueTangles({ odd }, TODAY, live)).toEqual(['odd'])
+  })
+})
+
+describe('pickTangle', () => {
+  it('runs the named tangle when it is due', () => {
+    expect(pickTangle('b|c', ['a|b', 'b|c'])).toBe('b|c')
+  })
+
+  it('falls back to the oldest due tangle for no name, or a name that is not due', () => {
+    // A missing key, a finished one, one left with a single live member and
+    // one not due until tomorrow all fail the same test: dueTangles left them
+    // out, so the session would have nothing it owes to ask.
+    expect(pickTangle(null, ['a|b', 'b|c'])).toBe('a|b')
+    expect(pickTangle('x|y', ['a|b', 'b|c'])).toBe('a|b')
+    expect(pickTangle('', ['a|b'])).toBe('a|b')
+  })
+
+  it('is null with nothing due, named or not', () => {
+    expect(pickTangle(null, [])).toBeNull()
+    expect(pickTangle('a|b', [])).toBeNull()
   })
 })
 

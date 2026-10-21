@@ -1,0 +1,441 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { MouseEvent as ReactMouseEvent } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { Blanked } from '../components/Blanked'
+import { Button } from '../components/Button'
+import { Page } from '../components/Page'
+import { ProgressMarks } from '../components/ProgressMarks'
+import contrastNotesFile from '../data/contrastNotes.json'
+import wordNotesFile from '../data/wordNotes.json'
+import { contrastNoteKey } from '../lib/contrastNotes'
+import type { ContrastNotesFile } from '../lib/contrastNotes'
+import { isEditableTarget, optionIndexFromKey } from '../lib/keys'
+import { shuffle } from '../lib/quiz'
+import { todayStr } from '../lib/srs'
+import { storage } from '../lib/storage'
+import { buildTangleSession, dueTangles, isReadable, pickTangle } from '../lib/tangle'
+import type { TangleNote, TangleQuestion } from '../lib/tangle'
+import { wordNote } from '../lib/wordNotes'
+import type { WordNotesFile } from '../lib/wordNotes'
+import { useApp } from '../state/store'
+import type { Progress, Word } from '../types'
+import { MissedWords } from './QuizResult'
+import { bumpUntangleSessions } from './todayPlan'
+import type { LocalMarks } from './todayPlan'
+// The progress row, the drill note, the done screen and the question itself
+// are borrowed from the review page, the question from 今天混过的词 there:
+// see Untangle.css.
+import './Review.css'
+import './Untangle.css'
+
+const TITLE = '拆开缠在一起的词'
+
+/** One tangle, read once when the session opens. */
+interface Opened {
+  key: string
+  members: Word[]
+  notes: TangleNote[]
+  /** In the order they are asked, shuffled once. */
+  questions: TangleQuestion[]
+  autoSettled: string[]
+}
+
+/**
+ * The tangle this session runs, or null when none is due. Only a due tangle is
+ * run (pickTangle); a stat dueTangles let through is readable, and the
+ * two-member test is buildTangleSession's own answer to a word deleted since.
+ *
+ * **The questions are shuffled here, once.** buildTangleSession returns them
+ * in member order, and the members start with the confused pair, so the first
+ * question was always the very word the side by side had just listed first.
+ */
+function openTangle(requested: string | null, words: Word[], progress: Progress): Opened | null {
+  const live = new Set(words.map((w) => w.id))
+  const key = pickTangle(requested, dueTangles(progress.tangles, todayStr(new Date()), live))
+  if (key === null) return null
+  const stat = progress.tangles?.[key]
+  if (!isReadable(stat)) return null
+  const byId = new Map(words.map((w) => [w.id, w]))
+  const session = buildTangleSession(stat, byId, (contrastNotesFile as ContrastNotesFile).notes)
+  if (session.members.length < 2) return null
+  return { key, ...session, questions: shuffle(session.questions, Math.random) }
+}
+
+/** The two members a note is about, in member order. Null for a key no pair of them makes. */
+function notePair(key: string, members: Word[]): [Word, Word] | null {
+  for (let i = 0; i < members.length; i++) {
+    for (let j = i + 1; j < members.length; j++) {
+      if (contrastNoteKey(members[i].id, members[j].id) === key) return [members[i], members[j]]
+    }
+  }
+  return null
+}
+
+/**
+ * /untangle — day 2 of a tangle (forget-moment spec §3): the members side by
+ * side, the notes between them, then one cloze for each member not yet
+ * settled. One tangle per session; `?key=` names it, and anything not due
+ * falls back to the oldest due one.
+ *
+ * Each session is its own mount. 下一团 bumps `run` and names the next tangle
+ * in the query (with `replace`, so the back gesture leaves the page rather
+ * than walking back through finished tangles), and the key below throws the
+ * finished session's state away instead of resetting it field by field.
+ */
+export function Untangle() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requested = searchParams.get('key')
+  const [run, setRun] = useState(0)
+  const next = useCallback((key: string) => {
+    setRun((r) => r + 1)
+    setSearchParams({ key }, { replace: true })
+  }, [setSearchParams])
+  return <TangleSession key={`${run}:${requested ?? ''}`} requested={requested} onNext={next} />
+}
+
+type Stage = 'study' | 'ask' | 'end'
+
+/**
+ * Practice in CLAUDE.md's sense, and the whole of what it writes is one
+ * recordTangle call when the last answer lands: the tangle's settled list and
+ * dates, and `missedAt` on a member answered wrong. Nothing the scheduler owns
+ * moves and nothing is demoted (spec §4). The session count for 今日 is written
+ * at the same moment. Leaving before the last answer writes nothing, so the
+ * tangle is still due and the session is owed again — rather than half a
+ * session read as a whole one by applyTangleResults.
+ *
+ * **Read once, on mount**, for the reason TangleDay1 gives: the record
+ * re-renders the page, and a session rebuilt then would reshuffle its options
+ * under the finger, or, with this tangle no longer due, swap in the next one.
+ *
+ * Keys: Enter is the one way forward at every stage (开始答题, 下一题, 看结果,
+ * 下一团), 1..n pick an option, all printed on their controls. Every key
+ * handled calls preventDefault, which is what stops the keypress that follows
+ * a keydown from activating whatever the surface change has just put under
+ * focus (CLAUDE.md, the 组句 bug). A held key's repeats are swallowed and do
+ * nothing. Enter is taken only while nothing else has focus, so a focused
+ * link or the back button keeps its own Enter.
+ */
+function TangleSession({ requested, onNext }: { requested: string | null; onNext(key: string): void }) {
+  const { words, progress, recordTangle } = useApp()
+  const [opened] = useState(() => openTangle(requested, words, progress))
+  const [stage, setStage] = useState<Stage>('study')
+  const [idx, setIdx] = useState(0)
+  const [chosen, setChosen] = useState<string | null>(null)
+  const [results, setResults] = useState<{ id: string; correct: boolean }[]>([])
+  // Whether the question on screen is answered. A ref because a key and a
+  // click in the same frame both run before the render that disables the
+  // options; it is reset only by moving to the next question.
+  const answeredRef = useRef(false)
+  const recordedRef = useRef(false)
+  // Whichever forward button is on screen; only one ever is.
+  const forwardRef = useRef<HTMLButtonElement>(null)
+
+  const byId = useMemo(() => new Map(words.map((w) => [w.id, w])), [words])
+  // What is still due once this session is recorded, for 下一团. Read live,
+  // after the record, so the tangle just run has already left the list.
+  const remaining = useMemo(
+    () => (stage === 'end' ? dueTangles(progress.tangles, todayStr(new Date()), new Set(byId.keys())) : []),
+    [stage, progress, byId],
+  )
+
+  const questions = opened?.questions ?? []
+  const q: TangleQuestion | undefined = questions[idx]
+  const answer = q === undefined ? undefined : opened?.members.find((w) => w.id === q.answerId)?.headword
+
+  const record = useCallback((all: { id: string; correct: boolean }[]) => {
+    if (opened === null || recordedRef.current) return
+    recordedRef.current = true
+    recordTangle(
+      opened.key, all.filter((r) => r.correct).map((r) => r.id), all.filter((r) => !r.correct).map((r) => r.id), opened.autoSettled,
+    )
+    storage.set('untangleSessions', bumpUntangleSessions(storage.get<LocalMarks['untangleSessions']>('untangleSessions'), todayStr(new Date())))
+  }, [opened, recordTangle])
+
+  const start = useCallback(() => {
+    if (stage !== 'study') return
+    // Every unsettled member settled by being shown: the side by side was
+    // the session, and reading it was the answer.
+    if (questions.length === 0) {
+      record([])
+      setStage('end')
+    } else {
+      setStage('ask')
+    }
+  }, [stage, questions.length, record])
+
+  const choose = useCallback((opt: string) => {
+    if (stage !== 'ask' || q === undefined || answeredRef.current) return
+    answeredRef.current = true
+    setChosen(opt)
+    const all = [...results, { id: q.answerId, correct: opt === answer }]
+    setResults(all)
+    if (all.length === questions.length) record(all)
+  }, [stage, q, answer, results, questions.length, record])
+
+  const advance = useCallback(() => {
+    if (stage !== 'ask' || !answeredRef.current) return
+    if (idx + 1 < questions.length) {
+      answeredRef.current = false
+      setChosen(null)
+      setIdx(idx + 1)
+    } else {
+      setStage('end')
+    }
+  }, [stage, idx, questions.length])
+
+  const nextKey = remaining[0]
+  const nextTangle = useMemo(() => (nextKey === undefined ? null : () => onNext(nextKey)), [nextKey, onNext])
+
+  // The page is one scroll, and the side by side can run past a screen: the
+  // questions start at the top, not wherever 开始答题 was.
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [stage])
+
+  // The answered question hands focus to 下一题, so a keyboard user is not left
+  // on the option that just went disabled. Safe under the keypress hazard: an
+  // answer by key has already had its keydown's default prevented, so no
+  // keypress follows to land here.
+  useEffect(() => {
+    if (chosen !== null) forwardRef.current?.focus()
+  }, [chosen])
+
+  useEffect(() => {
+    if (opened === null) return
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.ctrlKey || e.metaKey || e.altKey || isEditableTarget(document.activeElement)) return
+      if (e.key === 'Enter') {
+        const go = stage === 'study' ? start : stage === 'end' ? nextTangle : chosen !== null ? advance : null
+        if (go === null) return
+        const el = document.activeElement
+        if (el !== null && el !== document.body && el !== forwardRef.current) return
+        e.preventDefault()
+        if (!e.repeat) go()
+        return
+      }
+      if (stage !== 'ask' || q === undefined || chosen !== null) return
+      const i = optionIndexFromKey(e, q.options.length)
+      if (i < 0) return
+      e.preventDefault()
+      if (!e.repeat) choose(q.options[i])
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [opened, stage, chosen, q, start, advance, choose, nextTangle])
+
+  // The second click of a double click lands on whatever the first one put
+  // there: 下一题's place can hold the next question's option. Keyboard
+  // activation has detail 0 and is unaffected.
+  const click = (act: () => void) => (e: ReactMouseEvent) => {
+    if (e.detail > 1) return
+    act()
+  }
+
+  if (opened === null) {
+    return (
+      <Page title={TITLE} back="/">
+        <div className="review-done">
+          <p className="review-done__label">没有要拆的词</p>
+          <p className="muted">复习时把一个词想成了别的近义词，第二天它们会排到这里。</p>
+          <Link to="/" className="btn btn--primary btn--lg">返回今日</Link>
+        </div>
+      </Page>
+    )
+  }
+
+  if (stage === 'study') {
+    const wordNotes = wordNotesFile as WordNotesFile
+    return (
+      <Page title={TITLE} back="/">
+        {/* Says what the page does not do, before anything is answered: the
+            same disclosure the drills print above their card. */}
+        <p className="faint review-drill-note">先并排看一遍，再每个词答一道填空。只是练习，不影响复习排期。</p>
+
+        <section className="section">
+          <h2 className="section-head">
+            并排看
+            <span className="section-head__aside">
+              <span className="num">{opened.members.length}</span> 个词
+            </span>
+          </h2>
+          <ul className="ledger">
+            {opened.members.map((w) => {
+              const note = wordNote(wordNotes, w.id)
+              return (
+                <li key={w.id} className="ledger__row untangle-member">
+                  <span className="ledger__main">
+                    <span className="ledger__word" lang="en">{w.headword}</span>
+                    <span className="ledger__secondary">{w.meanings[0]?.zh}</span>
+                  </span>
+                  {/* The word's own usage boundary, the 旁批 the review card
+                      prints under its meanings. Most words have none and
+                      show none (lib/wordNotes.ts). */}
+                  {note !== undefined && (
+                    <div className="margin-note">
+                      <p className="margin-note__label">要点</p>
+                      <p className="margin-note__text">{note}</p>
+                    </div>
+                  )}
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+
+        {opened.notes.length > 0 && (
+          <section className="section">
+            <h2 className="section-head">差别在哪</h2>
+            <ul className="ledger">
+              {opened.notes.map((n) => {
+                const pair = notePair(n.key, opened.members)
+                return (
+                  <li key={n.key} className="review-tangle__item">
+                    {pair !== null && (
+                      <p className="review-tangle__pair">
+                        <span lang="en">{pair[0].headword}</span>
+                        <span className="review-tangle__and">和</span>
+                        <span lang="en">{pair[1].headword}</span>
+                        {/* The pair the user confused, the reason the
+                            tangle exists. A word, so it reads without
+                            color; ink, because it is a label and not one of
+                            the marks cinnabar is kept for. */}
+                        {n.confused && <span className="untangle-note__mixed">混过</span>}
+                      </p>
+                    )}
+                    <div className="margin-note">
+                      <p className="margin-note__label">辨析</p>
+                      <p className="margin-note__text">{n.text}</p>
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
+        )}
+
+        <div className="untangle-go">
+          <p className="muted">
+            {questions.length > 0 ? (
+              <>
+                <span className="num">{questions.length}</span> 道填空。答对的词算分清，答错的明天再问。
+              </>
+            ) : '这几个词找不到合适的例句出题，看过一遍就算拆完。'}
+          </p>
+          <Button ref={forwardRef} variant="primary" block onClick={click(start)}>
+            {questions.length > 0 ? '开始答题' : '看完了'}
+            <span className="key">Enter</span>
+          </Button>
+        </div>
+      </Page>
+    )
+  }
+
+  if (stage === 'ask' && q !== undefined) {
+    const locked = chosen !== null
+    const correct = chosen === answer
+    const last = idx + 1 === questions.length
+    return (
+      <Page title={TITLE} back="/">
+        {/* Keyed by the question, so a button focused on one question is
+            unmounted rather than reused as a different control on the next. */}
+        <div className="untangle-ask" key={idx}>
+          <div className="review-progress">
+            <ProgressMarks
+              done={idx}
+              total={questions.length}
+              label="拆解进度"
+              valueText={`第 ${idx + 1} 题，共 ${questions.length} 题`}
+            />
+            <p className="muted review-progress__count">
+              第 <span className="num">{idx + 1}</span> 题，共 <span className="num">{questions.length}</span> 题
+            </p>
+          </div>
+
+          <div className="review-tangle__q">
+            <p className="muted untangle-ask__label">哪个词填进空里？</p>
+            <p className="review-tangle__prompt" lang="en">
+              <Blanked text={q.prompt} blankClass="review-tangle__blank" />
+            </p>
+            <div className="review-tangle__options" role="group" aria-label="选项">
+              {q.options.map((opt, i) => {
+                const isAnswer = opt === answer
+                const variant = !locked ? 'secondary' : isAnswer ? 'correct' : opt === chosen ? 'incorrect' : 'secondary'
+                return (
+                  <Button key={opt} variant={variant} wrap block disabled={locked} onClick={click(() => choose(opt))}>
+                    {/* The number printed on the option is the shortcut;
+                        an unprinted one does not exist. */}
+                    <span className="untangle-option">
+                      <span className="key">{i + 1}</span>
+                      <span className="review-tangle__opt-text" lang="en">{opt}</span>
+                    </span>
+                    {locked && isAnswer && <span className="review-tangle__tag">正确答案</span>}
+                    {locked && !isAnswer && opt === chosen && <span className="review-tangle__tag">你的选择</span>}
+                  </Button>
+                )
+              })}
+            </div>
+            {/* Right and wrong in words as well as color, as 今天混过的词 says
+                them: 对 / 错, the tags above, and the right word by name. */}
+            {locked && (
+              <p className={correct ? 'review-tangle__verdict review-tangle__verdict--right' : 'review-tangle__verdict'} role="status">
+                <span className="review-tangle__verdict-mark">{correct ? '对' : '错'}</span>
+                {!correct && (
+                  <>
+                    答案是<span className="review-tangle__answer" lang="en">{answer}</span>
+                  </>
+                )}
+              </p>
+            )}
+            {locked && (
+              <Button ref={forwardRef} variant="primary" block onClick={click(advance)}>
+                {last ? '看结果' : '下一题'}
+                <span className="key">Enter</span>
+              </Button>
+            )}
+          </div>
+        </div>
+      </Page>
+    )
+  }
+
+  const right = results.filter((r) => r.correct).length
+  const unsettled = results.filter((r) => !r.correct).flatMap((r) => {
+    const w = byId.get(r.id)
+    return w === undefined ? [] : [w]
+  })
+  // Done is what this session leaves: every member it asked about answered
+  // right (a member it could not ask about was settled by being shown), the
+  // same test applyTangleResults writes doneOn by.
+  const done = results.every((r) => r.correct)
+  return (
+    <Page title={TITLE} back="/">
+      <div className="review-done">
+        <p className="review-done__label">{done ? '这一团拆完了' : '明天再来'}</p>
+        <p className="muted">
+          {questions.length === 0
+            ? '这几个词看过一遍，这一团就到这里。'
+            : done
+              ? '这一轮全答对了。每个词都答对过一次，这一团就到这里。'
+              : <>
+                  答对 <span className="num">{right} / {questions.length}</span>。没答对的明天只问它们，答对的不用再答。
+                </>}
+        </p>
+        {nextTangle !== null && (
+          <>
+            <Button ref={forwardRef} variant="primary" size="lg" onClick={click(nextTangle)}>
+              下一团<span className="key">Enter</span>
+            </Button>
+            <p className="faint">
+              还有 <span className="num">{remaining.length}</span> 团
+            </p>
+          </>
+        )}
+        <Link to="/" className={nextTangle !== null ? 'btn btn--secondary btn--lg' : 'btn btn--primary btn--lg'}>
+          返回今日
+        </Link>
+      </div>
+      {unsettled.length > 0 && <MissedWords title="还没分清" rows={unsettled.map((w) => ({ word: w }))} />}
+    </Page>
+  )
+}
