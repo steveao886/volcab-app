@@ -197,8 +197,9 @@ Its life:
    - if no usable sentence exists, the note alone.
    - About a minute or two in total.
 2. **Day 2, complete.** From the next day the tangle is due on 今日, in a new
-   row **拆开缠在一起的词**. `count` is the number of tangles due, shown at
-   most 3 per day, oldest first *(cap: my call)*. A session takes one tangle:
+   row **拆开缠在一起的词**, at `/untangle`. `count` is the number of tangles
+   due, at most 3 per day less the sessions already run today, oldest first
+   *(cap: my call)*. A session takes one tangle:
    - **Side by side**: every member's headword, `meanings[0].zh` and 要点,
      then the contrast notes between members, with the pair the user
      confused first and marked.
@@ -224,7 +225,18 @@ Its life:
      - The 今日 row counts at most 3 due tangles as today's work, oldest
        first.
      - After 3 sessions the row is done but stays a link
-       (`PlanItem.reopenable`) while more are due.
+       (`PlanItem.reopenable`) while more are due, the rest in its hint
+       (还有 N 团).
+     - With none left due, the row is done once a session ran today, and
+       absent only when none did. *Why:* finished work must not vanish
+       from the plan, the reason 巩固's done row exists. The day's sessions
+       are a local count, like the drills' done markers.
+     - **The todo row is the 今日 hero's action**, after 复习 and 巩固 and
+       before 顽固词, counted in 团. *Why:* left out of the hero, a day with
+       only tangles due printed 今日完成 above a todo row. It counts, unlike
+       顽固词, because a session takes its tangle off the day's list whatever
+       the answers, so the number reaches zero. A done row, past the cap,
+       is never the hero.
 3. **Refreshed.** A new confused pair whose two words are both members of an
    open tangle does not open another one:
    - the pair is appended to the tangle's `pairs`;
