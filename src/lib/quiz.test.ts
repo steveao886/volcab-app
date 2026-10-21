@@ -841,7 +841,16 @@ describe('generateQuiz — antonymPick', () => {
   })
 })
 
-describe('full-library regression — antonymPick', () => {
+/**
+ * The full-library blocks build questions over every word, so their cost grows
+ * with the library and vitest's 5s default stops fitting. Measured at 1411
+ * words: 1.2-2.4s per test run alone, 5.3s for one inside the full local
+ * suite, and 5.1s for another on the CI runner, which failed the deploy. A
+ * timeout here only ever fails as a timeout, never as a wrong count.
+ */
+const FULL_LIBRARY = { timeout: 30_000 }
+
+describe('full-library regression — antonymPick', FULL_LIBRARY, () => {
   const loadLibrary = async () => {
     const lib = (await import('../../data/words.json')).default as unknown as { words: Word[] }
     return lib.words
@@ -921,10 +930,7 @@ describe('full-library regression — antonymPick', () => {
     // the library-internal pairs, 1438 directions less the 56 the shape rule takes.
     expect(directions.filter(d => d.external)).toHaveLength(1983)
     expect(new Set(directions.map(d => d.from.id)).size).toBe(1226)
-    // One question built per direction over the whole library, so the cost grows
-    // with it: 3.9s on its own at 1411 words, 5.3s inside the full suite, past
-    // vitest's 5s default. A timeout here fails as a timeout, never as a count.
-  }, 20_000)
+  })
 
   /**
    * The five pairs the shape rule removes, named so the count above can't
@@ -1049,7 +1055,7 @@ describe('full-library regression — antonymPick', () => {
   })
 })
 
-describe('full-library regression — synonymHint', () => {
+describe('full-library regression — synonymHint', FULL_LIBRARY, () => {
   it('never hints with a word the answer can be spelled out of', async () => {
     const lib = (await import('../../data/words.json')).default as unknown as { words: Word[] }
     const leaked: string[] = []
@@ -1121,7 +1127,7 @@ describe('generateQuiz — a confusable partner of the answer is never a distrac
   })
 })
 
-describe('full-library regression — confusable distractors', () => {
+describe('full-library regression — confusable distractors', FULL_LIBRARY, () => {
   const loadLibrary = async () =>
     ((await import('../../data/words.json')).default as unknown as { words: Word[] }).words
 
