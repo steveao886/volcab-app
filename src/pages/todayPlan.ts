@@ -60,6 +60,22 @@ export function bumpUntangleSessions(mark: LocalMarks['untangleSessions'], today
 }
 
 /**
+ * `due` tangles split by today's share of TANGLE_DAILY_CAP sessions, with
+ * `sessions` already run today: `today` is what the share still holds, oldest
+ * first, and `beyond` is the rest, still due but past the day's default.
+ *
+ * **One function because two screens print it.** 今日's row counts `today` and,
+ * past the share, hints `beyond`; /untangle's end screen says the same after
+ * each session. The end screen used to print every due tangle — five due and
+ * one session run, it said 还有 4 团 while 今日 said 2 — and kept 下一团 as its
+ * Enter past the cap, which made the default a wall it walked straight through.
+ */
+export function untangleShare(due: number, sessions: number): { today: number; beyond: number } {
+  const today = Math.max(0, Math.min(due, TANGLE_DAILY_CAP - sessions))
+  return { today, beyond: due - today }
+}
+
+/**
  * The Today page's day plan. Every state is derived from the same queue
  * functions the review page runs — if a row and the page it links to ever
  * printed different numbers, one of them would be lying — plus the local
@@ -146,25 +162,26 @@ export function buildDayPlan(
   //
   // **Unlike 顽固词, `count` is right here.** A session takes its tangle off
   // today's list whatever the answers — finished, or due again tomorrow — so
-  // the number falls by one per session and reaches zero. It counts at most
-  // TANGLE_DAILY_CAP minus the sessions already run: the cap is a default,
-  // not a wall, so past it the row is done but stays a link while more are
-  // due, the remainder in the hint.
+  // the number falls by one per session and reaches zero. It counts today's
+  // share (untangleShare), at most TANGLE_DAILY_CAP minus the sessions
+  // already run: the cap is a default, not a wall, so past it the row is done
+  // but stays a link while more are due, the remainder in the hint.
   //
   // **Done with nothing due is still a row** once a session ran today:
   // finished work must not vanish from the plan, the same reason 巩固's row
   // stays as done.
   const dueTangleCount = dueTangles(progress.tangles, today, new Set(words.map(w => w.id))).length
   const sessions = untangleSessionsToday(marks.untangleSessions, today)
-  if (dueTangleCount > 0 && sessions < TANGLE_DAILY_CAP) {
+  const share = untangleShare(dueTangleCount, sessions)
+  if (share.today > 0) {
     items.push({
-      key: 'untangle', label: '拆开缠在一起的词', count: Math.min(dueTangleCount, TANGLE_DAILY_CAP - sessions),
+      key: 'untangle', label: '拆开缠在一起的词', count: share.today,
       state: 'todo', to: '/untangle',
     })
-  } else if (dueTangleCount > 0) {
+  } else if (share.beyond > 0) {
     items.push({
       key: 'untangle', label: '拆开缠在一起的词', state: 'done', to: '/untangle',
-      hint: `还有 ${dueTangleCount} 团`, reopenable: true,
+      hint: `还有 ${share.beyond} 团`, reopenable: true,
     })
   } else if (sessions > 0) {
     items.push({ key: 'untangle', label: '拆开缠在一起的词', state: 'done', to: '/untangle' })
