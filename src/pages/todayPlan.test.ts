@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bumpUntangleSessions, buildDayPlan, nextAction, untangleSessionsToday } from './todayPlan'
+import { bumpUntangleSessions, buildDayPlan, nextAction, untangleSessionsToday, untangleShare } from './todayPlan'
 import type { LocalMarks, PlanItem } from './todayPlan'
 import { emptyProgress, emptyStat } from '../types'
 import type { Progress, ProgressEntry, TangleStat, Word } from '../types'
@@ -269,6 +269,36 @@ describe('untangle session mark', () => {
     expect(bumpUntangleSessions(null, TODAY)).toEqual({ day: TODAY, n: 1 })
     expect(bumpUntangleSessions({ day: TODAY, n: 2 }, TODAY)).toEqual({ day: TODAY, n: 3 })
     expect(bumpUntangleSessions({ day: '2026-08-06', n: 3 }, TODAY)).toEqual({ day: TODAY, n: 1 })
+  })
+})
+
+describe('untangleShare', () => {
+  it("splits the due tangles into what is left of today's share and what lies beyond it", () => {
+    expect(untangleShare(5, 0)).toEqual({ today: 3, beyond: 2 })
+    expect(untangleShare(4, 1)).toEqual({ today: 2, beyond: 2 })
+    expect(untangleShare(1, 0)).toEqual({ today: 1, beyond: 0 })
+    expect(untangleShare(0, 0)).toEqual({ today: 0, beyond: 0 })
+  })
+
+  it("at or past the share nothing is today's, and everything due is beyond it", () => {
+    expect(untangleShare(2, 3)).toEqual({ today: 0, beyond: 2 })
+    expect(untangleShare(2, 5)).toEqual({ today: 0, beyond: 2 })
+    expect(untangleShare(0, 4)).toEqual({ today: 0, beyond: 0 })
+  })
+
+  it('is the number the 今日 row prints, below the share and past it', () => {
+    // The /untangle end screen reads the same helper after its session is
+    // recorded. Five due, one session run: 4 left, and both must say 2 — the
+    // end screen once printed 4 here.
+    const below = withDueTangles(4)
+    const one: LocalMarks = { ...NO_MARKS, untangleSessions: { day: TODAY, n: 1 } }
+    expect(find(buildDayPlan(below.words, below.progress, NOW, TODAY, one), 'untangle')?.count)
+      .toBe(untangleShare(4, 1).today)
+
+    const past = withDueTangles(2)
+    const three: LocalMarks = { ...NO_MARKS, untangleSessions: { day: TODAY, n: 3 } }
+    expect(find(buildDayPlan(past.words, past.progress, NOW, TODAY, three), 'untangle')?.hint)
+      .toBe(`还有 ${untangleShare(2, 3).beyond} 团`)
   })
 })
 

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Blanked } from '../components/Blanked'
 import { Button } from '../components/Button'
 import { Page } from '../components/Page'
@@ -23,7 +23,7 @@ import { useApp } from '../state/store'
 import type { Progress, Word } from '../types'
 import { RecallQuestionView } from './QuizRecall'
 import { MissedWords } from './QuizResult'
-import { bumpUntangleSessions } from './todayPlan'
+import { bumpUntangleSessions, untangleSessionsToday, untangleShare } from './todayPlan'
 import type { LocalMarks } from './todayPlan'
 // The progress row, the drill note, the done screen and the question itself
 // are borrowed from the review page, the question from 今天混过的词 there:
@@ -157,7 +157,8 @@ type Stage = 'study' | 'ask' | 'groups' | 'end'
  * when their file arrives; until it has, the end screen offers none.
  *
  * Keys: Enter is the one way forward at every stage (开始答题, 下一题, 看结果,
- * 下一团), 1..n pick an option, all printed on their controls. Every key
+ * then 下一团 — or 返回今日 once today's share of sessions is done, see the end
+ * screen), 1..n pick an option, all printed on their controls. Every key
  * handled calls preventDefault, which is what stops the keypress that follows
  * a keydown from activating whatever the surface change has just put under
  * focus (CLAUDE.md, the 组句 bug). A held key's repeats are swallowed and do
@@ -199,6 +200,21 @@ function TangleSession({ requested, onNext }: { requested: string | null; onNext
     () => (stage === 'end' ? dueTangles(progress.tangles, todayStr(new Date()), new Set(byId.keys())) : []),
     [stage, progress, byId],
   )
+  // The same split 今日's row prints (untangleShare), so the two screens say
+  // one number. Read at the end, like `remaining`: record() has bumped the
+  // session mark by the time the stage gets there.
+  const share = useMemo(
+    () => untangleShare(
+      remaining.length,
+      untangleSessionsToday(storage.get<LocalMarks['untangleSessions']>('untangleSessions'), todayStr(new Date())),
+    ),
+    [remaining],
+  )
+  // Today's share is done and more are due: the cap is a default, not a wall,
+  // so 下一团 stays, but as the option, and the way home takes Enter.
+  const pastShare = share.today === 0 && share.beyond > 0
+  const navigate = useNavigate()
+  const goHome = useCallback(() => navigate('/'), [navigate])
 
   const questions = opened?.questions ?? []
   const q: TangleQuestion | undefined = questions[idx]
@@ -289,6 +305,9 @@ function TangleSession({ requested, onNext }: { requested: string | null; onNext
 
   const nextKey = remaining[0]
   const nextTangle = useMemo(() => (nextKey === undefined ? null : () => onNext(nextKey)), [nextKey, onNext])
+  // What Enter does on the end screen: the next tangle while today's share
+  // has one, home once it is done, nothing when none is due.
+  const endForward = nextTangle === null ? null : pastShare ? goHome : nextTangle
 
   // The page is one scroll, and the side by side can run past a screen: the
   // questions start at the top, not wherever 开始答题 was.
@@ -314,7 +333,7 @@ function TangleSession({ requested, onNext }: { requested: string | null; onNext
     function onKeyDown(e: KeyboardEvent) {
       if (e.ctrlKey || e.metaKey || e.altKey || isEditableTarget(document.activeElement)) return
       if (e.key === 'Enter') {
-        const go = stage === 'study' ? start : stage === 'end' ? nextTangle : chosen !== null ? advance : null
+        const go = stage === 'study' ? start : stage === 'end' ? endForward : chosen !== null ? advance : null
         if (go === null) return
         const el = document.activeElement
         if (el !== null && el !== document.body && el !== forwardRef.current) return
@@ -330,7 +349,7 @@ function TangleSession({ requested, onNext }: { requested: string | null; onNext
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [opened, stage, chosen, q, start, advance, choose, nextTangle])
+  }, [opened, stage, chosen, q, start, advance, choose, endForward])
 
   // The second click of a double click lands on whatever the first one put
   // there: 下一题's place can hold the next question's option. Keyboard
@@ -576,19 +595,33 @@ function TangleSession({ requested, onNext }: { requested: string | null; onNext
                   答对 <span className="num">{right} / {questions.length}</span>。没答对的明天只问它们，答对的不用再答。
                 </>}
         </p>
-        {nextTangle !== null && (
+        {/* Below today's share, 下一团 is the way on and the count is the one
+            今日 prints for the row (untangleShare). Past it, the share is done:
+            返回今日 takes the primary slot and Enter, and 下一团 stays as the
+            option, with how many lie beyond the share. */}
+        {nextTangle !== null && !pastShare && (
           <>
             <Button ref={forwardRef} variant="primary" size="lg" onClick={click(nextTangle)}>
               下一团<span className="key">Enter</span>
             </Button>
             <p className="faint">
-              还有 <span className="num">{remaining.length}</span> 团
+              今天还有 <span className="num">{share.today}</span> 团
             </p>
           </>
         )}
-        <Link to="/" className={nextTangle !== null ? 'btn btn--secondary btn--lg' : 'btn btn--primary btn--lg'}>
-          返回今日
+        <Link to="/" className={nextTangle !== null && !pastShare ? 'btn btn--secondary btn--lg' : 'btn btn--primary btn--lg'}>
+          返回今日{pastShare && <span className="key">Enter</span>}
         </Link>
+        {nextTangle !== null && pastShare && (
+          <>
+            <p className="faint">
+              今天的份做完了，另外还有 <span className="num">{share.beyond}</span> 团
+            </p>
+            <Button variant="secondary" size="lg" onClick={click(nextTangle)}>
+              下一团
+            </Button>
+          </>
+        )}
         {/* The sense groups inside this tangle, offered after the verdict and
             never in front of it (see the note above TangleSession). Last and
             small, like 回想's 我想的不是这几个: an option, not the way on. No

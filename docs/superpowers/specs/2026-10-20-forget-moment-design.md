@@ -248,6 +248,13 @@ Its life:
      - After 3 sessions the row is done but stays a link
        (`PlanItem.reopenable`) while more are due, the rest in its hint
        (还有 N 团).
+     - **/untangle's end screen prints the row's numbers**, from the same
+       helper (`untangleShare`). Below the share: 今天还有 N 团, with 下一团 on
+       Enter. At or past it: 返回今日 takes the primary slot and Enter, 下一团
+       stays as the secondary option without a key, and the screen says
+       另外还有 N 团. *Why:* it printed every due tangle — five due and one
+       session run, 还有 4 团 beside 今日's 2 — and kept 下一团 on Enter past
+       the cap, so the default never showed where the day stopped.
      - With none left due, the row is done once a session ran today, and
        absent only when none did. *Why:* finished work must not vanish
        from the plan, the reason 巩固's done row exists. The day's sessions
