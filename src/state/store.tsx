@@ -1,11 +1,15 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import { buildContrastPairs } from '../lib/contrast'
+import { appendForget } from '../lib/forget'
+import type { ForgetInput } from '../lib/forget'
 import { GitHubClient } from '../lib/github'
 import { mergeProgress } from '../lib/merge'
 import type { QuizMetricKey } from '../lib/quiz'
 import { relatedDueGuard } from '../lib/related'
 import { demoteWord, gradeWord, todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
+import { applyConfusion, applyTangleResults, tangleMembers } from '../lib/tangle'
 import { wordsCache } from '../lib/wordsCache'
 import type { WordsCache } from '../lib/wordsCache'
 import { emptyProgress, emptyStat } from '../types'
@@ -112,6 +116,10 @@ export interface AppActions {
   recordSprint(score: number, wrongIds: string[], asked: number): void
   /** 猜词 settlement: same contract as recordQuiz, demotion included, plus the best count of no-clue solves */
   recordGuess(wrongIds: string[], unaided: number, asked: number, solved: number): void
+  /** One lapse's diagnosis. Writes ProgressEntry.forgot and, when it names a partner, Progress.tangles. Nothing the scheduler owns. */
+  recordForget(wordId: string, rec: ForgetInput): void
+  /** A finished tangle session. Writes Progress.tangles; a miss stamps missedAt on that word and nothing else. */
+  recordTangle(key: string, correctIds: string[], wrongIds: string[], autoSettled: string[]): void
   /** Add or edit an entry (upsert by id), pushes words.json immediately */
   saveWord(word: Word): Promise<void>
   /** Delete entries, also clearing their progress records */
@@ -1213,6 +1221,91 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
     void flushProgress()
   }, [commitProgress, flushProgress])
 
+  /**
+   * How a lapse was forgotten, recorded when the user answers. **Writes
+   * `forgot` on the word and, when the answer names a partner, one tangle —
+   * nothing the scheduler owns.**
+   *
+   * The grade has already landed: the question follows the 重来, and grade()
+   * commits through update(), so stateRef holds the lapse by the time this
+   * reads it. That is why `lastReviewedAt` is not stamped: it is the
+   * timestamp the grade just wrote, mergeProgress ranks the whole entry on it,
+   * and bumping it again could only make this device's copy harder for another
+   * device's real review to beat. The record does not need the stamp to
+   * survive — mergeForgot unions the log by `at`, which is what keeps it when
+   * the other device grades the same word later and out-ranks the entry.
+   *
+   * A word deleted on another device between the grade and the answer is
+   * skipped rather than resurrected, the call rateRecall makes.
+   *
+   * **A tangle needs a partner that is still in the library.** `'self'` (the
+   * word's own other sense) and an answer naming no word have nobody to be
+   * untangled from, and a partner deleted since the options were built would
+   * give the tangle a member nobody can be asked about. The record is still
+   * written in each case: it is the diagnosis, and its readers check liveness
+   * themselves (todaysConfusedPairs).
+   *
+   * buildContrastPairs scans every word's synonyms (7 ms a call over
+   * data/words.json's 1,411 words, 2026-10-21), so it sits inside the `members`
+   * callback: applyConfusion calls that only when a tangle is born or
+   * reopened, and a refresh of an open one never pays for it. "Studied" is
+   * past `new`, since the user cannot have confused a word they have not met.
+   */
+  const recordForget = useCallback((wordId: string, rec: ForgetInput) => {
+    const now = new Date()
+    const cur = stateRef.current.progress
+    const prev = cur.words[wordId]
+    if (!prev) return
+    const entry = appendForget(prev, { ...rec, at: now.toISOString() })
+    const next: Progress = { ...cur, words: { ...cur.words, [wordId]: entry } }
+
+    const partner = rec.with
+    if (
+      partner !== undefined && partner !== 'self' && partner !== wordId
+      && stateRef.current.words.some((w) => w.id === partner)
+    ) {
+      next.tangles = applyConfusion(cur.tangles, wordId, partner, () => {
+        const studied = new Set(Object.keys(cur.words).filter((id) => cur.words[id].state !== 'new'))
+        return tangleMembers(wordId, partner, studied, buildContrastPairs(stateRef.current.words))
+      }, now)
+    }
+
+    commitProgress(next)
+    schedulePush()
+  }, [commitProgress, schedulePush])
+
+  /**
+   * A tangle session's result: the members answered right, the ones missed,
+   * and the ones settled by being shown. **Writes the tangle, and on a miss
+   * `missedAt` on that word — nothing else.**
+   *
+   * The one stamp every practice surface is allowed (markMissed), the same
+   * write as recordPractice(id, false). A tangle is practice, so there is no
+   * `due`, `intervalDays`, `ease`, `lapses` or `state`, no demotion (a quiz
+   * miss halves the interval and this does not, spec §4), no dailyStats, and
+   * no `lastReviewedAt`, which is mergeProgress's key for the whole entry.
+   * The stat's own `lastAt` is the key for the tangle, and applyTangleResults
+   * moves it.
+   *
+   * A key that is not there is skipped silently: with no stat there is no
+   * member list to settle against, and a record written from the ids alone
+   * would have none. A missing word is skipped by markMissed, the same call
+   * recordRecall makes.
+   */
+  const recordTangle = useCallback((key: string, correctIds: string[], wrongIds: string[], autoSettled: string[]) => {
+    const now = new Date()
+    const cur = stateRef.current.progress
+    const stat = cur.tangles?.[key]
+    if (stat === undefined) return
+    const live = new Set(stateRef.current.words.map((w) => w.id))
+    commitProgress({
+      ...cur,
+      words: markMissed(cur.words, wrongIds, todayStr(now)),
+      tangles: { ...cur.tangles, [key]: applyTangleResults(stat, correctIds, autoSettled, live, now) },
+    })
+    schedulePush()
+  }, [commitProgress, schedulePush])
+
   const saveWord = useCallback(async (word: Word): Promise<void> => {
     const words = applyWordOps(stateRef.current.words, [{ kind: 'upsert', word }])
     cacheWords(words)
@@ -1297,11 +1390,11 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
 
   const value = useMemo<AppContextValue>(() => ({
     ...state,
-    login, logout, grade, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
+    login, logout, grade, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, recordForget, recordTangle, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll,
     ...(import.meta.env.DEV ? { enterDemoMode } : {}),
   }), [
-    state, login, logout, grade, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, saveWord, deleteWords, addStaging,
+    state, login, logout, grade, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, recordForget, recordTangle, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll, enterDemoMode,
   ])
 

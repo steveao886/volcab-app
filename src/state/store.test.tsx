@@ -8,6 +8,7 @@ import { FORBIDDEN, RATE_LIMITED, STORAGE_FULL, TOKEN_REVOKED, logoutDiscarded, 
 import { pendingOps, pendingStaging, validWords } from './session'
 import type { SyncClient } from './sync'
 import { GitHubClient } from '../lib/github'
+import { contrastNoteKey } from '../lib/contrastNotes'
 import { storage } from '../lib/storage'
 import { createMemoryWordsCache } from '../lib/wordsCache'
 import type { WordsCache } from '../lib/wordsCache'
@@ -1518,6 +1519,123 @@ describe('consolidateWord: 巩固 declares a miss a real forget, and nothing mor
     const before = app().progress.words
     await step(() => { app().consolidateWord('does-not-exist') })
     expect(app().progress.words).toBe(before)
+  })
+})
+
+// The forget moment's two writes. Same contract as rateRecall and
+// recordRecall above and asserted the same way: the whole entry compared
+// against what the grade left, minus the one field the action owns, so a
+// scheduler field added later fails here too.
+describe('recordForget / recordTangle: a diagnosis and a practice miss, never the schedule', () => {
+  /** Four words that all list `kin`, so every pair of them is a confusable pair. `stranger` is never graded, so it is never studied. */
+  const kin = (id: string): Word => ({ ...word(id), synonyms: ['kin'] })
+  const members = ['lapsed', 'twin', 'third', 'stranger']
+
+  async function bootKin(): Promise<void> {
+    storage.set('token', 'tok-alice')
+    storage.set('owner', 'alice')
+    remote.files['words.json'] = { content: JSON.stringify({ version: 1, words: members.map(kin) }), sha: 'w-remote' }
+    remote.files['progress.json'] = { content: JSON.stringify(emptyProgress()), sha: 'p-remote' }
+    await mount()
+  }
+
+  /** `lapsed` reviewed out to a real interval and then failed, the way Review grades a lapse; returns the entry as the lapse left it. */
+  async function lapse(): Promise<Progress['words'][string]> {
+    await step(() => { app().grade('lapsed', 'easy') })
+    await step(() => { app().grade('lapsed', 'easy') })
+    await step(() => { app().grade('twin', 'easy') })
+    await step(() => { app().grade('third', 'easy') })
+    await step(() => { app().grade('lapsed', 'again') })
+    return app().progress.words['lapsed']
+  }
+
+  const key = contrastNoteKey('lapsed', 'twin')
+  const confusedWithTwin = { kind: 'confused', with: 'twin', prevInterval: 4, prevReviewedAt: '2026-10-01T08:00:00.000Z' } as const
+
+  it('recordForget appends the record and nothing else on the word', async () => {
+    await bootKin()
+    const before = await lapse()
+
+    await step(() => { app().recordForget('lapsed', confusedWithTwin) })
+
+    const { forgot, ...rest } = app().progress.words['lapsed']
+    expect(rest).toEqual(before)
+    expect(forgot).toEqual([{ ...confusedWithTwin, at: expect.any(String) }])
+  })
+
+  it('a named partner opens a tangle of the pair and the studied words near both', async () => {
+    await bootKin()
+    await lapse()
+
+    await step(() => { app().recordForget('lapsed', confusedWithTwin) })
+
+    const tangle = app().progress.tangles?.[key]
+    // `stranger` lists `kin` too but was never graded, so the user cannot have confused it.
+    expect(tangle?.members).toEqual(['lapsed', 'twin', 'third'])
+    expect(tangle?.pairs).toEqual([key])
+    expect(tangle?.settled).toEqual([])
+    expect(tangle?.bornOn).toBe(today)
+    expect(tangle?.doneOn).toBeUndefined()
+  })
+
+  it.each([
+    ['the word\'s own other sense', { kind: 'confused', with: 'self', prevInterval: 4, prevReviewedAt: 'x' }],
+    ['a meaning that was wrong but not any word shown', { kind: 'confused', prevInterval: 4, prevReviewedAt: 'x' }],
+    ['a blank', { kind: 'blank', prevInterval: 4, prevReviewedAt: 'x' }],
+    ['a partner deleted since the options were built', { kind: 'confused', with: 'gone', prevInterval: 4, prevReviewedAt: 'x' }],
+  ] as const)('%s is recorded on the word and opens no tangle', async (_label, rec) => {
+    await bootKin()
+    await lapse()
+
+    await step(() => { app().recordForget('lapsed', rec) })
+
+    expect(app().progress.words['lapsed'].forgot).toHaveLength(1)
+    expect(app().progress.tangles).toBeUndefined()
+  })
+
+  it('recordForget skips a word deleted on another device mid-session', async () => {
+    await bootKin()
+    const before = app().progress.words
+    await step(() => { app().recordForget('nowhere', confusedWithTwin) })
+    expect(app().progress.words).toBe(before)
+    expect(app().progress.tangles).toBeUndefined()
+  })
+
+  it('recordTangle settles the right and shown members, stamps missedAt on a miss, and writes nothing else', async () => {
+    await bootKin()
+    await lapse()
+    await step(() => { app().recordForget('lapsed', confusedWithTwin) })
+    const before = app().progress
+    const twin = before.words['twin']
+
+    await step(() => { app().recordTangle(key, ['lapsed'], ['twin'], ['third']) })
+
+    const after = app().progress
+    expect(after.tangles?.[key].settled).toEqual(['lapsed', 'third'])
+    expect(after.tangles?.[key].doneOn).toBeUndefined()   // twin is still unsettled
+    expect(after.words['twin']).toEqual({ ...twin, missedAt: today })
+    // A right answer touches no word at all, and no tally moves.
+    expect(after.words['lapsed']).toBe(before.words['lapsed'])
+    expect(after.words['third']).toBe(before.words['third'])
+    expect(after.dailyStats).toBe(before.dailyStats)
+  })
+
+  it('recordTangle finishes the tangle once every member is settled', async () => {
+    await bootKin()
+    await lapse()
+    await step(() => { app().recordForget('lapsed', confusedWithTwin) })
+
+    await step(() => { app().recordTangle(key, ['lapsed', 'twin', 'third'], [], []) })
+
+    expect(app().progress.tangles?.[key].doneOn).toBe(today)
+  })
+
+  it('recordTangle skips a key that is not there', async () => {
+    await bootKin()
+    await lapse()
+    const before = app().progress
+    await step(() => { app().recordTangle('no|such', ['lapsed'], ['twin'], []) })
+    expect(app().progress).toBe(before)
   })
 })
 
