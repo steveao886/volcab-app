@@ -3,9 +3,10 @@ import type { ForgetRecord, Progress, ProgressEntry, TangleStat, Word } from '..
 import { emptyProgress } from '../types'
 import type { ContrastPair } from './contrast'
 import { headwordPattern } from './headword'
+import type { SenseGroup } from './senseGroup'
 import {
   TANGLE_DAILY_CAP, TANGLE_MEMBER_CAP, applyConfusion, applyTangleResults, buildTangleSession, dueTangles,
-  isFinished, pickTangle, tangleMembers, todaysConfusedPairs,
+  isFinished, pickTangle, tangleGroups, tangleMembers, todaysConfusedPairs,
 } from './tangle'
 
 const pair = (a: string, b: string, score: number): ContrastPair => ({
@@ -660,5 +661,36 @@ describe('buildTangleSession', () => {
       const noPairs = buildTangleSession(junk({ pairs: bad }), byId, { 'corroborate|vindicate': 'ok' }, seeded(1))
       expect(noPairs.notes).toEqual([{ key: 'corroborate|vindicate', text: 'ok', confused: false }])
     }
+  })
+})
+
+describe('tangleGroups', () => {
+  const MEMBERS = ['corroborate', 'vindicate', 'substantiate']
+  const group = (order: string[], extra?: string[]): SenseGroup => ({
+    zh: `${order.join('/')} 的场景`, order, why: 'w', ...(extra === undefined ? {} : { extra }),
+  })
+
+  it('returns only groups whose order lies inside the members', () => {
+    // The two real groups over these words (senseGroups.json): one inside the tangle, one reaching ratify.
+    const inside = group(['vindicate', 'corroborate', 'substantiate'])
+    const reaching = group(['substantiate', 'corroborate', 'ratify'])
+    expect(tangleGroups(MEMBERS, [reaching, inside])).toEqual([inside])
+  })
+
+  it('returns a group of two inside the members, and keeps the order the groups come in', () => {
+    const pair = group(['substantiate', 'vindicate'])
+    const three = group(['vindicate', 'corroborate', 'substantiate'])
+    expect(tangleGroups(MEMBERS, [pair, three])).toEqual([pair, three])
+  })
+
+  it('does not return a group of one, though its member is in the tangle: everything else it offers is outside it', () => {
+    // Copied from senseGroups.json: corroborate alone, against outside words.
+    const lone = group(['corroborate'], ['back up', 'bear out', 'cross-verify'])
+    expect(tangleGroups(MEMBERS, [lone])).toEqual([])
+  })
+
+  it('returns nothing for a tangle no group fits inside', () => {
+    expect(tangleGroups(['corroborate', 'ratify'], [group(MEMBERS)])).toEqual([])
+    expect(tangleGroups(MEMBERS, [])).toEqual([])
   })
 })
