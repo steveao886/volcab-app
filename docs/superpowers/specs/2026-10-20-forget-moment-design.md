@@ -213,6 +213,11 @@ Its life:
        - Two members at least. *Why:* a group of one asks its word against
          words outside the tangle (`[corroborate]` against `back up`,
          `bear out`, `cross-verify`), which the cloze already does better.
+       - Offered on the end screen (再练 N 道回想题), after the verdict and
+         下一团, and back to that screen when done. *Why:* between the last
+         cloze and the verdict they held 下一团 behind up to five questions
+         on 710 of 1333 measured tangles, and the only way past one was an
+         answer, which writes a miss for a throwaway pick.
        - Its answers write `recall` and, on a miss, `missedAt`, after the
          session's tangle record and outside it. Never `recordQuiz`, never
          巩固 (§4).
