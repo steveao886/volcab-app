@@ -1,7 +1,7 @@
 # When a learned word is forgotten: ask how, then untangle
 
 **Date:** 2026-10-20
-**Status:** draft, awaiting the user's approval
+**Status:** approved 2026-10-20; implementing
 
 ## Problem
 
@@ -248,8 +248,17 @@ without them.
     - `prevInterval` and `prevReviewedAt`: the entry's `intervalDays` and
       `lastReviewedAt` **before** the lapse was graded. `gradeWord`
       overwrites both, so they must be captured first. *(My call.)*
-  - It is written on the same entry the 重来 just graded, so it rides the
-    whole-entry merge by `lastReviewedAt`.
+  - It is written on the same entry the 重来 just graded, but it does **not**
+    ride the whole-entry merge by `lastReviewedAt`. It is unioned by `at`
+    and capped at `FORGET_LOG_LIMIT`.
+    - *Why:* the phone records a lapse, then the laptop grades the same word
+      later. The laptop's entry has the later `lastReviewedAt`, wins the
+      pick, and has no record of the lapse, so the record would be dropped
+      silently, along with the `prev` fields that cannot be recovered. A log
+      has no single winner, so the union keeps every lapse either device
+      saw.
+    - Cutting the union at the cap, oldest first, makes the result a
+      function of the two logs, so both devices converge on the same ten.
   - It is also the first per-lapse history the app keeps. The two `prev`
     fields tell a later analysis the interval each word was lost at, which
     today cannot be recovered.

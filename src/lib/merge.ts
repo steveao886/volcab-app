@@ -1,4 +1,5 @@
-import type { BestRecord, DailyStat, DivergeStat, Progress, RecallRating, RecallStat } from '../types'
+import type { BestRecord, DailyStat, DivergeStat, ForgetRecord, Progress, RecallRating, RecallStat, TangleStat } from '../types'
+import { FORGET_LOG_LIMIT } from './forget'
 
 /**
  * Local rather than imported from sync.ts: merge.ts is pure and must not pull
@@ -185,6 +186,93 @@ function mergeDiverge(a: Progress['diverge'], b: Progress['diverge']): Progress[
   return out
 }
 
+const isForgetRecord = (v: unknown): v is ForgetRecord =>
+  isRecord(v) && typeof v.at === 'string' && (v.kind === 'blank' || v.kind === 'confused')
+
+/**
+ * Two devices' forget logs for one word: a **union keyed by `at`**, oldest
+ * first, cut to the newest FORGET_LOG_LIMIT.
+ *
+ * A log, not a state, so neither "later side wins" (mergeRating) nor a
+ * per-field split (mergeRecall) applies: every record is a lapse that really
+ * happened, written once, and two devices lapse the same word on different
+ * days between syncs. Picking a side would drop the other's lapses. The same
+ * lapse seen from both sides carries the same `at` and collapses to one.
+ *
+ * The cap is applied to the union, after sorting, so what is cut is always
+ * the oldest — and the result is a function of the two sets alone, which
+ * lets both devices converge on the same ten instead of each keeping its own.
+ *
+ * Only `at` and `kind` are checked: they are what this function keys and
+ * sorts on. A hand-edited `"forgot": 7` reaches here intact (isProgress does
+ * not gate it), and anything unusable is skipped rather than allowed to throw
+ * inside the boot path. When either side holds the field the result is an
+ * array — an empty one if everything was junk — so that a malformed value on
+ * the entry that won the whole-entry pick is overwritten, not carried through.
+ */
+export function mergeForgot(a: ForgetRecord[] | undefined, b: ForgetRecord[] | undefined): ForgetRecord[] | undefined {
+  if (a === undefined && b === undefined) return undefined
+  const byAt = new Map<string, ForgetRecord>()
+  for (const log of [a, b]) {
+    if (!Array.isArray(log)) continue
+    for (const rec of log) if (isForgetRecord(rec) && !byAt.has(rec.at)) byAt.set(rec.at, rec)
+  }
+  return [...byAt.values()]
+    .sort((x, y) => (x.at < y.at ? -1 : x.at > y.at ? 1 : 0))
+    .slice(-FORGET_LOG_LIMIT)
+}
+
+const isStringArray = (v: unknown): v is string[] => Array.isArray(v) && v.every((x) => typeof x === 'string')
+
+/**
+ * A tangle stat read leniently: rebuilt from its named fields, or undefined
+ * when any field the runtime relies on is missing or the wrong shape.
+ *
+ * `doneOn` is the one field that may be absent, so a value that is present
+ * but not a string is dropped instead of failing the stat — treated as
+ * "not done", which only shows the tangle once more.
+ */
+function readTangle(v: unknown): TangleStat | undefined {
+  if (!isRecord(v)) return undefined
+  const { lastAt, bornOn, dueOn, doneOn, pairs, members, settled } = v
+  if (typeof lastAt !== 'string' || typeof bornOn !== 'string' || typeof dueOn !== 'string') return undefined
+  if (!isStringArray(pairs) || !isStringArray(members) || !isStringArray(settled)) return undefined
+  return { pairs, members, settled, bornOn, dueOn, ...(typeof doneOn === 'string' ? { doneOn } : {}), lastAt }
+}
+
+/**
+ * Tangles, merged **per key**, and within a key the later `lastAt` takes the
+ * **whole stat** — the mergeDiverge pattern, minus a field to maximise.
+ *
+ * Not field by field: a stat is one state, and the later one is the truer
+ * picture of it. A union of `settled` would carry members settled before a
+ * reopen into the reopened tangle, and keeping a `doneOn` the later state no
+ * longer has would close a tangle that is open again. Per key rather than a
+ * pick of the whole map because two devices untangling different pairs have
+ * disjoint keys, and every one of them has to survive.
+ *
+ * A tie keeps the first side seen, as diverge does. Skipping a malformed stat
+ * lets the other side's copy of the same key stand, rather than throwing.
+ *
+ * **Every field of TangleStat has to be listed in readTangle**, for the same
+ * reason as DailyStat's in mergeProgress: this rebuilds the stat, so a field
+ * it does not name is dropped on the first sync.
+ */
+export function mergeTangles(a: Progress['tangles'], b: Progress['tangles']): Progress['tangles'] {
+  if (a === undefined && b === undefined) return undefined
+  const out: Record<string, TangleStat> = {}
+  for (const side of [a, b]) {
+    if (!isRecord(side)) continue
+    for (const [key, raw] of Object.entries(side)) {
+      const stat = readTangle(raw)
+      if (stat === undefined) continue
+      const cur = out[key]
+      if (cur === undefined || stat.lastAt > cur.lastAt) out[key] = stat
+    }
+  }
+  return out
+}
+
 export function mergeProgress(local: Progress, remote: Progress): Progress {
   const words: Progress['words'] = { ...remote.words }
   for (const [id, le] of Object.entries(local.words)) {
@@ -203,6 +291,12 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
     if (entry === undefined) continue
     const recall = mergeRecall(local.words[id]?.recall, remote.words[id]?.recall)
     const recallRating = mergeRating(local.words[id]?.recallRating, remote.words[id]?.recallRating)
+    // The forget log is the odd one out: it *is* written together with a
+    // `lastReviewedAt` (on the entry the 重来 just graded), and still cannot
+    // ride the pick. The stamp that wins is the other device's — a later
+    // grade of the same word there carries no log, or an older one — and the
+    // record of the lapse goes with the entry that lost.
+    const forgot = mergeForgot(local.words[id]?.forgot, remote.words[id]?.forgot)
     // Spread conditionally rather than assigning undefined: absent on both
     // sides has to stay absent. An explicit `undefined` key survives every
     // in-memory comparison the tests make, even though JSON.stringify would
@@ -211,6 +305,7 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
       ...entry,
       ...(recall === undefined ? {} : { recall }),
       ...(recallRating === undefined ? {} : { recallRating }),
+      ...(forgot === undefined ? {} : { forgot }),
     }
   }
 
@@ -249,6 +344,7 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
   const bestGuess = pickBest(local.bestGuess, remote.bestGuess)
   const dismissed = unionDismissed(local.dismissed, remote.dismissed)
   const diverge = mergeDiverge(local.diverge, remote.diverge)
+  const tangles = mergeTangles(local.tangles, remote.tangles)
 
   // When neither side has one of these, **omit the key entirely** rather than writing
   // `bestSprint: undefined`: the latter would make `Object.hasOwn(p, 'bestSprint')` true,
@@ -263,5 +359,6 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
     ...(bestGuess === undefined ? {} : { bestGuess }),
     ...(dismissed === undefined ? {} : { dismissed }),
     ...(diverge === undefined ? {} : { diverge }),
+    ...(tangles === undefined ? {} : { tangles }),
   }
 }

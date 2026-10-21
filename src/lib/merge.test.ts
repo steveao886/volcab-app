@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { mergeProgress } from './merge'
 import { emptyProgress } from '../types'
-import type { DailyStat, Progress, ProgressEntry } from '../types'
+import type { DailyStat, ForgetRecord, Progress, ProgressEntry, TangleStat } from '../types'
 
 const entry = (lastReviewedAt: string, reps: number): ProgressEntry => ({
   state: 'review', ease: 2.5, intervalDays: 3, due: '2026-07-30',
@@ -485,5 +485,154 @@ describe('mergeProgress diverge', () => {
     remote.diverge = { other: stat(2, 2, '2026-09-18T10:00:00Z') }
     const m = mergeProgress(local, remote)
     expect(Object.keys(m.diverge!).sort()).toEqual(['good', 'other'])
+  })
+})
+
+describe("mergeProgress's forgot", () => {
+  const entry = (over: Partial<ProgressEntry> = {}): ProgressEntry => ({
+    state: 'review', ease: 2.5, intervalDays: 10, due: '2026-10-20',
+    stepIndex: 0, reps: 5, lapses: 0, lastReviewedAt: '2026-10-01T00:00:00Z', ...over,
+  })
+  const withEntry = (e: ProgressEntry): Progress => {
+    const p = emptyProgress()
+    p.words.alpha = e
+    return p
+  }
+  /** One lapse, stamped on day `d` of October 2026. The same `d` is the same lapse. */
+  const rec = (d: number, over: Partial<ForgetRecord> = {}): ForgetRecord => ({
+    at: `2026-10-${String(d).padStart(2, '0')}T08:00:00.000Z`,
+    kind: 'blank', prevInterval: 10, prevReviewedAt: '2026-09-20T08:00:00.000Z', ...over,
+  })
+
+  /**
+   * The reason the log is merged on its own: the lapse is written on the
+   * entry the 重来 just graded, and the wholesale pick resolves entries by
+   * `lastReviewedAt`. The laptop grading the same word later out-ranks the
+   * phone's entry, and the record of how the phone forgot it goes with it,
+   * silently, along with the only copy of the interval it was lost at.
+   */
+  it('keeps a forget record written on one device when the other device graded the word later', () => {
+    const r1 = rec(5, { kind: 'confused', with: 'beta' })
+    const forgot = withEntry(entry({ lastReviewedAt: '2026-10-05T08:00:00.000Z', forgot: [r1] }))
+    const graded = withEntry(entry({ lastReviewedAt: '2026-10-09T08:00:00.000Z' }))
+    for (const m of [mergeProgress(forgot, graded), mergeProgress(graded, forgot)]) {
+      expect(m.words.alpha.forgot).toEqual([r1])
+      // The later grade still owns the schedule.
+      expect(m.words.alpha.lastReviewedAt).toBe('2026-10-09T08:00:00.000Z')
+    }
+  })
+
+  it('unions forget records by at, oldest first, keeping the last 10', () => {
+    // 7 + 7 with 3 shared is 11 distinct lapses, so the oldest (day 1) must go.
+    // Interleaved and out of order on purpose: a concatenation would pass a
+    // test whose two lists were already sorted and disjoint.
+    const local = withEntry(entry({ forgot: [1, 3, 5, 7, 9, 11, 13].map((d) => rec(d)) }))
+    const remote = withEntry(entry({ forgot: [5, 9, 13, 2, 4, 6, 8].map((d) => rec(d)) }))
+    const days = (p: Progress) => p.words.alpha.forgot!.map((r) => Number(r.at.slice(8, 10)))
+    expect(days(mergeProgress(local, remote))).toEqual([2, 3, 4, 5, 6, 7, 8, 9, 11, 13])
+    // The result is a function of the two sets, not of which device merged.
+    expect(mergeProgress(remote, local).words.alpha.forgot).toEqual(mergeProgress(local, remote).words.alpha.forgot)
+  })
+
+  it('absent on both sides stays absent', () => {
+    const m = mergeProgress(withEntry(entry()), withEntry(entry()))
+    expect('forgot' in m.words.alpha).toBe(false)
+  })
+
+  it('a word held by one side only keeps its log', () => {
+    const r1 = rec(3)
+    const p = emptyProgress()
+    p.words.beta = entry({ forgot: [r1] })
+    const m = mergeProgress(p, withEntry(entry()))
+    expect(m.words.beta.forgot).toEqual([r1])
+    expect('forgot' in m.words.alpha).toBe(false)
+  })
+
+  it('skips records without a string at or a known kind, and never throws on a non-array', () => {
+    const good = rec(4)
+    // isProgress does not check this field, so a hand-edited file reaches here intact.
+    const junk = [{ ...good, at: 5 }, { ...good, kind: 'bogus' }, null, 'x', good] as unknown as ForgetRecord[]
+    const m = mergeProgress(withEntry(entry({ forgot: junk })), withEntry(entry()))
+    expect(m.words.alpha.forgot).toEqual([good])
+    // A non-array is replaced by a clean one, not carried through by the winning entry.
+    const bad = withEntry(entry({ forgot: 7 as unknown as ForgetRecord[] }))
+    expect(mergeProgress(bad, withEntry(entry())).words.alpha.forgot).toEqual([])
+  })
+
+  it('merging the log leaves every scheduler field untouched', () => {
+    const sched = entry({ ease: 2.35, intervalDays: 17, due: '2026-11-02', reps: 9, lapses: 2 })
+    const a = withEntry({ ...sched, forgot: [rec(2)] })
+    const b = withEntry({ ...sched, forgot: [rec(6)] })
+    const { forgot: _m, ...mergedSched } = mergeProgress(a, b).words.alpha
+    expect(mergedSched).toEqual(sched)
+  })
+})
+
+describe("mergeProgress's tangles", () => {
+  const stat = (lastAt: string, over: Partial<TangleStat> = {}): TangleStat => ({
+    pairs: ['alpha|beta'], members: ['alpha', 'beta'], settled: [],
+    bornOn: '2026-10-20', dueOn: '2026-10-21', lastAt, ...over,
+  })
+
+  it('tangles: the later lastAt wins per key, keys from both sides survive', () => {
+    const local = emptyProgress(), remote = emptyProgress()
+    local.tangles = {
+      both: stat('2026-10-21T09:00:00.000Z', { settled: ['alpha'] }),
+      back: stat('2026-10-20T09:00:00.000Z'),
+      localOnly: stat('2026-10-20T10:00:00.000Z'),
+    }
+    remote.tangles = {
+      both: stat('2026-10-20T09:00:00.000Z'),
+      back: stat('2026-10-22T09:00:00.000Z', { doneOn: '2026-10-22' }),
+      remoteOnly: stat('2026-10-20T11:00:00.000Z'),
+    }
+    const m = mergeProgress(local, remote).tangles!
+    expect(Object.keys(m).sort()).toEqual(['back', 'both', 'localOnly', 'remoteOnly'])
+    // Local is later on `both`, remote is later on `back`: neither side wins by being local.
+    expect(m.both.settled).toEqual(['alpha'])
+    expect(m.back.doneOn).toBe('2026-10-22')
+  })
+
+  it('tangles: the later stat is taken whole, never field by field', () => {
+    // A field-wise union would put `alpha` back in `settled` and keep a
+    // `doneOn` that the later state has already reopened away from.
+    const local = emptyProgress(), remote = emptyProgress()
+    local.tangles = { k: stat('2026-10-21T09:00:00.000Z', { settled: ['alpha'], doneOn: '2026-10-21' }) }
+    remote.tangles = { k: stat('2026-10-23T09:00:00.000Z', { dueOn: '2026-10-24' }) }
+    const m = mergeProgress(local, remote).tangles!.k
+    expect(m).toEqual(stat('2026-10-23T09:00:00.000Z', { dueOn: '2026-10-24' }))
+    expect('doneOn' in m).toBe(false)
+  })
+
+  it('tangles: a tie keeps the first side seen, the way diverge does', () => {
+    const local = emptyProgress(), remote = emptyProgress()
+    local.tangles = { k: stat('2026-10-21T09:00:00.000Z', { dueOn: '2026-10-22' }) }
+    remote.tangles = { k: stat('2026-10-21T09:00:00.000Z', { dueOn: '2026-10-23' }) }
+    expect(mergeProgress(local, remote).tangles!.k.dueOn).toBe('2026-10-22')
+  })
+
+  it('tangles: a malformed entry is skipped, not thrown on', () => {
+    const local = emptyProgress(), remote = emptyProgress()
+    const ok = stat('2026-10-21T09:00:00.000Z')
+    ;(local as unknown as { tangles: unknown }).tangles = {
+      k: { lastAt: 5 },
+      noMembers: { ...ok, members: 'alpha' },
+      mixedPairs: { ...ok, pairs: ['alpha|beta', 7] },
+      noSettled: { ...ok, settled: undefined },
+      noDue: { ...ok, dueOn: undefined },
+      noBorn: { ...ok, bornOn: 3 },
+      notAStat: 7,
+      good: ok,
+    }
+    remote.tangles = { other: stat('2026-10-21T10:00:00.000Z') }
+    expect(Object.keys(mergeProgress(local, remote).tangles!).sort()).toEqual(['good', 'other'])
+    // A whole non-object is the same junk, one level up.
+    ;(local as unknown as { tangles: unknown }).tangles = 7
+    expect(Object.keys(mergeProgress(local, remote).tangles!)).toEqual(['other'])
+  })
+
+  it('tangles absent on both sides stays absent', () => {
+    const m = mergeProgress(emptyProgress(), emptyProgress())
+    expect('tangles' in m).toBe(false)
   })
 })
