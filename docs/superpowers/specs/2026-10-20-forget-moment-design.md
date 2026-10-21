@@ -228,9 +228,11 @@ Its life:
          cloze and the verdict they held 下一团 behind up to five questions
          on 710 of 1333 measured tangles, and the only way past one was an
          answer, which writes a miss for a throwaway pick.
-       - Its answers write `recall` and, on a miss, `missedAt`, after the
-         session's tangle record and outside it. Never `recordQuiz`, never
-         巩固 (§4).
+       - Its answers write `recall` as each lands and, on a miss, `missedAt`
+         plus `recallRating` back to none when it was 太简单 (a miss refutes
+         it, as in 回想), after the session's tangle record and outside it.
+         The reveal also lets the user rate the word by hand. Never
+         `recordQuiz`, never 巩固 (§4).
    - **Each member needs one right answer, and it carries over.** *(My
      call.)*
      - A member answered right is settled.
@@ -280,6 +282,9 @@ Everything here is practice in CLAUDE.md's sense.
 
 - A miss in a tangle question stamps `missedAt` and nothing else, like the
   drills and 顽固词.
+  - Day 1's question writes as it is answered. Day 2's clozes write once,
+    in one tangle record when the session's last answer lands; a session
+    left before that writes nothing, and the tangle is still owed.
 - It never demotes.
 - `due`, `intervalDays`, `ease`, `lapses` and `state` stay the scheduler's.
 
@@ -318,9 +323,15 @@ without them.
     reopen, so the 60-day evaluation can tell who was in it *(my call)*
   - `settled`: members answered right since the last reopen or refresh
   - `bornOn`, `dueOn`, `doneOn?`, `lastAt`
-  - There is no stored stage. Day 1 is `bornOn === today`, and due is
-    `!doneOn && dueOn <= today`, so no stored state can disagree with the
-    dates, which are the only thing a second device can be sure of.
+  - There is no stored stage, so no stored state can disagree with the dates
+    and the forget records, which are the only things a second device can be
+    sure of.
+    - Day 1 is today's confused forget records (`todaysConfusedPairs`), not
+      `bornOn === today`: a refreshed tangle keeps its `bornOn` and is owed
+      the same day-1 look.
+    - Due is `dueOn <= today`, not finished (`isFinished`: `doneOn` set, or
+      every member still in the library settled), and at least two members
+      still in the library.
   - Merged per key with the later `lastAt` winning, the `mergeDiverge`
     pattern.
   - Malformed entries are skipped, never thrown on.
