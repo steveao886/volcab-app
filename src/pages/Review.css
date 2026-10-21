@@ -348,3 +348,136 @@
 .review-done__count {
   font-size: var(--fs-md);
 }
+
+/* --- 今天混过的词 (TangleDay1.tsx) ------------------------------------------
+   Under the done page, as a section: a ruled head, then one ruled item per
+   pair. No box — the page is asking, not a card. Its own class names rather
+   than the quiz's (.quiz-options, .quiz-feedback): those are layout contracts
+   for the quiz page, and this is two buttons in a list item, not a quiz. */
+
+.review-tangle__item {
+  display: grid;
+  gap: var(--sp-3);
+  padding-block: var(--sp-4);
+  border-bottom: 1px solid var(--rule);
+}
+
+/* The pair in the list face, the way 怎么忘的？ names it after a partner is
+   chosen; start-aligned here, because this one sits in a list. */
+.review-tangle__pair {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-family: var(--font-word);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.review-tangle__and {
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.review-tangle__q {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.review-tangle__prompt {
+  font-size: var(--fs-md);
+  overflow-wrap: anywhere;
+}
+
+/* The ruled gap to write on, as the quiz draws it. */
+.review-tangle__blank {
+  display: inline-block;
+  min-width: 4em;
+  border-bottom: 1.5px solid var(--text);
+  color: transparent;
+  line-height: 1.1;
+}
+
+/* Two ruled rows, a hairline between them, like a printed exercise's choices.
+   Still full-width buttons at least 48px tall. Ruled above and between but
+   not below: the item's own rule closes the list, and a row rule under the
+   last one drew a double line a padding's width above it. Compound
+   selectors, because .btn--secondary and .btn--correct/--incorrect declare
+   their own background and this file ties with components.css on a single
+   class. */
+.review-tangle__options {
+  display: grid;
+  border-top: 1px solid var(--rule);
+}
+
+.review-tangle__options > .btn {
+  min-height: 48px;
+  padding: var(--sp-2);
+  justify-content: space-between;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.review-tangle__options > .btn + .btn {
+  border-top: 1px solid var(--rule);
+}
+
+.review-tangle__opt-text {
+  font-family: var(--font-word);
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+
+/* Answered: the right row in 石青, the wrong pick muted and struck through.
+   The tags beside them and the verdict below say the same in words. */
+.review-tangle__options > .btn--correct {
+  background: transparent;
+  color: var(--success);
+}
+
+.review-tangle__options > .btn--incorrect {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.review-tangle__options > .btn--incorrect .review-tangle__opt-text {
+  text-decoration: line-through;
+  text-decoration-color: var(--accent); /* mark: the strike through a wrong pick */
+  text-decoration-thickness: 2px;
+}
+
+.review-tangle__tag {
+  flex: none;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.review-tangle__verdict {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+}
+
+.review-tangle__verdict-mark {
+  font-size: var(--fs-md);
+  font-weight: 900;
+}
+
+.review-tangle__verdict--right .review-tangle__verdict-mark {
+  color: var(--success);
+}
+
+.review-tangle__answer {
+  font-family: var(--font-word);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
