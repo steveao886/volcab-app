@@ -143,8 +143,9 @@ function ReviewSession() {
   // click of a double click on 重来 landed in that gap and graded the
   // now-relearning card again — not a lapse, so the queue moved on and the
   // question was never asked (seen in the browser: reps +2, no forget
-  // record). Holds the word's id, so a word dropped mid-question releases it.
-  const heldRef = useRef<string | undefined>(undefined)
+  // record). Holds the word's id, so a word dropped mid-question releases it,
+  // and whether this lapse's record is written, so it is written once.
+  const heldRef = useRef<{ id: string; recorded: boolean } | undefined>(undefined)
   const pendingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   // The session-complete sound must only ever play once: while finished
   // stays true, this component can re-render many times for unrelated
@@ -219,7 +220,7 @@ function ReviewSession() {
   // Space, the window's Space — so this one guard is what keeps the card
   // still while 怎么忘的？ is up. The question is about the back it shows.
   const toggleFlip = useCallback(() => {
-    if (curId === undefined || heldRef.current === curId) return
+    if (curId === undefined || heldRef.current?.id === curId) return
     setManualFlip({ id: curId, value: !flipped })
   }, [curId, flipped])
 
@@ -227,7 +228,7 @@ function ReviewSession() {
     (g: Grade) => {
       if (pendingRef.current !== undefined) return // Previous grade hasn't landed yet, ignore the repeat click
       if (curId === undefined || !flipped) return // Grading before flipping doesn't mean anything
-      if (heldRef.current === curId) return // The grade has landed and the question is about it; no second one
+      if (heldRef.current?.id === curId) return // The grade has landed and the question is about it; no second one
       // Played synchronously within the click's call stack: iOS requires
       // the AudioContext's creation/resume to happen inside a user
       // gesture, and this is the single, earliest point where sound plays
@@ -272,7 +273,7 @@ function ReviewSession() {
     if (curId === undefined || !flipped) return
     // A 重来 on the confirm showing is a lapse too, and a 3 pressed before the
     // question renders would otherwise move the queue on past it.
-    if (heldRef.current === curId) return
+    if (heldRef.current?.id === curId) return
     playGrade('good', soundEnabled)
     const id = curId
     const entry = curEntry
@@ -318,12 +319,12 @@ function ReviewSession() {
     }
     const entry = progress.words[pendingId]
     // A lapse holds the card where it is: the grade has landed, and the
-    // queue moves on only once 怎么忘的？ is answered (handleForgetDone). The
+    // queue moves on only once 怎么忘的？ is done with (handleForgetContinue). The
     // scheduled review only — a drill writes no schedule and has no lapse to
     // ask about — and read from `prev`, so the relearning showings that
     // follow, already `learning` going in, never ask a second time.
     if (mode === 'due' && pending.prev !== undefined && isLapse(pending.prev, pending.grade)) {
-      heldRef.current = pendingId
+      heldRef.current = { id: pendingId, recorded: false }
       setForgetAsk({ id: pendingId, entry, prev: pending.prev })
       return
     }
@@ -338,25 +339,46 @@ function ReviewSession() {
     setManualFlip(null)
   }, [progress, today, mode])
 
-  // The answer to 怎么忘的？, then the advance the progress effect held back.
-  // recordForget writes only the forget log and a tangle, so there is no
-  // commit to wait for and the queue moves here directly, with the
-  // read-back entry the effect kept, and recycling on, since only the
-  // scheduled review asks; the currentId guard is the same one
-  // handleConfirmKnown uses. The manual flip is cleared for the reason the
-  // effect gives: a recycled card must come back on its front.
-  const handleForgetDone = useCallback(
+  // The answer to 怎么忘的？, written the moment it is given (spec §1:
+  // record, then reveal). A named partner is followed by the pair and its
+  // note, the one stage where the user has already answered and may well
+  // stop, so writing at 继续 lost the record and its tangle to anyone who
+  // left there. Once per lapse, whatever reaches here twice: `recorded` is
+  // flipped before the write, on the ref, which no render lags behind.
+  //
+  // Writing while the question is up cannot move the queue. The commit
+  // re-runs the progress effect, but that effect cleared pendingRef before
+  // raising the question and returns on an empty one, and handleGrade, the
+  // only thing that fills it, refuses while the hold is on.
+  const handleForgetAnswer = useCallback(
     (rec: Omit<ForgetInput, 'prevInterval' | 'prevReviewedAt'>) => {
-      if (asking === null) return
-      const { id, entry, prev } = asking
-      heldRef.current = undefined
+      const held = heldRef.current
+      if (asking === null || held === undefined || held.id !== asking.id || held.recorded) return
+      held.recorded = true
+      const { id, prev } = asking
       recordForget(id, { ...rec, prevInterval: prev.intervalDays, prevReviewedAt: prev.lastReviewedAt })
-      setQueue((q) => (currentId(q) === id ? advance(q, id, entry, today, true, 'again') : q))
-      setManualFlip(null)
-      setForgetAsk(null)
     },
-    [asking, recordForget, today],
+    [asking, recordForget],
   )
+
+  // Then the advance the progress effect held back: at once for every answer
+  // but a partner, on 继续 for a partner. recordForget writes nothing the
+  // queue reads, so there is no commit to wait for, and the queue moves with
+  // the read-back entry the effect kept, recycling on since only the
+  // scheduled review asks. Releasing the hold first makes a second call a
+  // no-op even before the render — a recycled card can be back at the head
+  // under the same id, where the currentId guard alone would advance twice.
+  // The manual flip is cleared for the reason the effect gives: a recycled
+  // card must come back on its front.
+  const handleForgetContinue = useCallback(() => {
+    const held = heldRef.current
+    if (asking === null || held === undefined || held.id !== asking.id) return
+    heldRef.current = undefined
+    const { id, entry } = asking
+    setQueue((q) => (currentId(q) === id ? advance(q, id, entry, today, true, 'again') : q))
+    setManualFlip(null)
+    setForgetAsk(null)
+  }, [asking, today])
 
   // Clears the fallback timer on unmount, so it doesn't reach for a ref that no longer exists after the page is gone.
   useEffect(
@@ -404,7 +426,7 @@ function ReviewSession() {
       // ForgetAsk's listener on window: the card keeps focus after a 重来
       // pressed on the keyboard. Space is still swallowed: left to the browser
       // it scrolls the page, and the question goes out of view with it.
-      if (heldRef.current === curId) {
+      if (heldRef.current?.id === curId) {
         if (e.key === ' ' || e.code === 'Space') e.preventDefault()
         return
       }
@@ -424,7 +446,7 @@ function ReviewSession() {
       // a 1-4 here would grade the card a second time and a Space would
       // flip away the back the question is about. A Space that would have
       // flipped is swallowed rather than left to scroll the question away.
-      if (heldRef.current === curId) {
+      if (heldRef.current?.id === curId) {
         if ((e.key === ' ' || e.code === 'Space') && document.activeElement === document.body) e.preventDefault()
         return
       }
@@ -579,7 +601,8 @@ function ReviewSession() {
             word={curWord}
             options={forgetOpts}
             polysemous={curWord.meanings.length > 1}
-            onDone={handleForgetDone}
+            onAnswer={handleForgetAnswer}
+            onContinue={handleForgetContinue}
           />
         ) : flipped ? (
           confirmShowing ? (
