@@ -191,6 +191,45 @@ export interface ProgressEntry {
    * "never rated", not a rejected merge.
    */
   recallRating?: RecallRating
+  /**
+   * How this word was forgotten, one record per lapse in the scheduled
+   * review, oldest first, the last FORGET_LOG_LIMIT kept. See ForgetRecord.
+   *
+   * **Merged on its own, not by the whole-entry pick.** The record is
+   * written on the entry the 重来 just graded, so it carries that entry's
+   * `lastReviewedAt` — and the other device grading the same word later
+   * out-ranks it and takes the record with it. mergeForgot unions by `at`.
+   *
+   * Optional like every added field: another device on an older build
+   * pushes entries without it, and the correct reading of its absence is
+   * "no lapse recorded", not a rejected merge.
+   */
+  forgot?: ForgetRecord[]
+}
+
+/**
+ * One lapse, and what the user said about it: the mind went blank, or the
+ * word was taken for something else.
+ *
+ * `prevInterval` and `prevReviewedAt` are the entry's `intervalDays` and
+ * `lastReviewedAt` **as they stood before the lapse was graded**. `gradeWord`
+ * overwrites both, so after the grade they cannot be recovered — and they are
+ * what a later analysis needs to say what interval each word was lost at,
+ * which this app could not tell until now.
+ *
+ * A log, not a state: a record is written once and never edited, so two
+ * devices' logs merge as a union keyed on `at`.
+ */
+export interface ForgetRecord {
+  /** ISO timestamp of the lapse. The merge key. */
+  at: string
+  kind: 'blank' | 'confused'
+  /** The partner word's id, or `'self'` for the word's own other sense. Absent: the meaning was wrong, but not any word shown. */
+  with?: string
+  /** `intervalDays` before the lapse was graded. */
+  prevInterval: number
+  /** `lastReviewedAt` before the lapse was graded. */
+  prevReviewedAt: string
 }
 
 /**
@@ -344,6 +383,34 @@ export interface DivergeStat {
   lastAt: string
 }
 
+/**
+ * A knot of near-synonyms the user confused with one another, studied
+ * together as practice on the day it was found and again the next day.
+ * Keyed in `Progress.tangles` by the pair that opened it.
+ *
+ * **There is no stored stage.** Day 1 is `bornOn === today` and due is
+ * `!doneOn && dueOn <= today`; a stored stage could disagree with the dates,
+ * and the dates are the only thing a second device can be sure of.
+ *
+ * Practice, not schedule: nothing here reaches `srs.ts`.
+ */
+export interface TangleStat {
+  /** `contrastNoteKey` of every confused pair inside it, latest last. */
+  pairs: string[]
+  /** Word ids. Stamped when the tangle is born and recomputed only on reopen, so a later evaluation can tell who was in it. */
+  members: string[]
+  /** Members answered right since the last birth, reopen or refresh. */
+  settled: string[]
+  /** `YYYY-MM-DD` */
+  bornOn: string
+  /** `YYYY-MM-DD` */
+  dueOn: string
+  /** `YYYY-MM-DD`, set when it was finished. */
+  doneOn?: string
+  /** ISO timestamp of the last change. The merge key. */
+  lastAt: string
+}
+
 export interface Progress {
   version: 1
   /**
@@ -427,6 +494,23 @@ export interface Progress {
    * hundred entries at most, which is nothing against progress.json's budget.
    */
   diverge?: Record<string, DivergeStat>
+  /**
+   * Tangles of confused near-synonyms, keyed by the pair that opened each.
+   * See TangleStat.
+   *
+   * **Optional**, like diverge: a device on an older build pushes progress
+   * without the key, and that has to read as "this build does not know about
+   * tangles", never as "they were finished". mergeProgress merges per key,
+   * the later `lastAt` taking the whole stat, because two devices untangling
+   * different pairs have disjoint keys and a wholesale pick would throw one
+   * device's away.
+   *
+   * Unbounded in principle: nothing prunes a finished tangle. A stat at the
+   * five-member cap with three pairs serialises to 268 bytes (measured
+   * 2026-10-20), so the daily cap of three new tangles is an upper bound of
+   * about 0.3 MB a year, and the real rate is however often the user lapses.
+   */
+  tangles?: Record<string, TangleStat>
 }
 
 export const emptyProgress = (): Progress => ({
