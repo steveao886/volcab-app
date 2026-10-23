@@ -1,0 +1,57 @@
+/* ==========================================================================
+   近义词 (Synonyms.tsx)
+   Built from the shared vocabulary — .section, .ledger, .margin-note, and
+   the pair line 今天混过的词 and /untangle use (Review.css) — so this file
+   holds only what those lack. No box: the page is reading, not a card.
+   ========================================================================== */
+
+.synonyms-group {
+  display: grid;
+  gap: var(--sp-5);
+}
+
+/* The group's term(s), the page's subject. The longest title on the live
+   library is 10 characters (不冷不热、微温、温吞, 2026-10-23), one line at
+   375px; overflow-wrap covers a longer merge. */
+.synonyms-group__term {
+  margin: 0;
+  font-size: var(--fs-2xl);
+  font-weight: 900;
+  line-height: var(--lh-tight);
+  overflow-wrap: anywhere;
+}
+
+.synonyms-group__count {
+  margin: var(--sp-1) 0 0;
+  font-size: var(--fs-sm);
+}
+
+/* A member stacks its headword, meanings, usage and 要点. Compound selector:
+   .ledger__row is a centred flex row, and one page class ties with it and
+   would win only by load order. */
+.ledger__row.synonyms-member {
+  display: grid;
+  align-items: start;
+  gap: var(--sp-1);
+  padding-block: var(--sp-3);
+}
+
+.synonyms-member__meaning {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+}
+
+/* Collocations are English strings: the headword face, muted, and free to
+   break anywhere so a long run cannot push past 375px. */
+.synonyms-member__usage {
+  font-family: var(--font-word);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.synonyms-member .margin-note {
+  margin-top: var(--sp-1);
+}

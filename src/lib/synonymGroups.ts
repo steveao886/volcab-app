@@ -36,8 +36,8 @@ export interface SynonymGroup {
 }
 
 /** Words the user has met: a progress entry past `new`. */
-export function studiedIds(progress: Progress): Set<string> {
-  return new Set(Object.entries(progress.words).filter(([, e]) => e.state !== 'new').map(([id]) => id))
+export function studiedIds(entries: Progress['words']): Set<string> {
+  return new Set(Object.entries(entries).filter(([, e]) => e.state !== 'new').map(([id]) => id))
 }
 
 export function buildSynonymGroups(words: Word[], studied: ReadonlySet<string>): SynonymGroup[] {

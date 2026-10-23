@@ -12,6 +12,7 @@ import { Review } from './pages/Review'
 import { Settings } from './pages/Settings'
 import { Stats } from './pages/Stats'
 import { Today } from './pages/Today'
+import { Synonyms } from './pages/Synonyms'
 import { Untangle } from './pages/Untangle'
 import { WordDetail } from './pages/WordDetail'
 
@@ -57,6 +58,7 @@ function App() {
           {/* Its own route too, not /practice?pick=: a tangle session is a
               side by side and then questions, with nothing of the card. */}
           <Route path="/untangle" element={<Untangle />} />
+          <Route path="/synonyms" element={<Synonyms />} />
           <Route path="/library" element={<Library />} />
           <Route path="/discover" element={<Discover />} />
           <Route path="/word/:id" element={<WordDetail />} />

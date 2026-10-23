@@ -102,6 +102,6 @@ describe('studiedIds', () => {
       b: { ...base, state: 'learning' },
       c: { ...base, state: 'review' },
     }
-    expect([...studiedIds(p)].sort()).toEqual(['b', 'c'])
+    expect([...studiedIds(p.words)].sort()).toEqual(['b', 'c'])
   })
 })
