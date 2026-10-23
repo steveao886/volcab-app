@@ -274,6 +274,27 @@ export function mergeTangles(a: Progress['tangles'], b: Progress['tangles']): Pr
   return out
 }
 
+/**
+ * 近义词 last-seen stamps, merged **per term, the later stamp winning** — the
+ * mergeTangles pattern on a plain string. Two devices reading different groups
+ * stamp disjoint terms, and a pick of the whole map would rewind one device's
+ * rotation. Both sides write toISOString, so a string compare orders them. A
+ * value that is not a string is skipped, as isProgress does not gate this field.
+ */
+export function mergeSynonymSeen(a: Progress['synonymSeen'], b: Progress['synonymSeen']): Progress['synonymSeen'] {
+  if (a === undefined && b === undefined) return undefined
+  const out: Record<string, string> = {}
+  for (const side of [a, b]) {
+    if (!isRecord(side)) continue
+    for (const [term, at] of Object.entries(side)) {
+      if (typeof at !== 'string') continue
+      const cur = out[term]
+      if (cur === undefined || at > cur) out[term] = at
+    }
+  }
+  return out
+}
+
 export function mergeProgress(local: Progress, remote: Progress): Progress {
   const words: Progress['words'] = { ...remote.words }
   for (const [id, le] of Object.entries(local.words)) {
@@ -346,6 +367,7 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
   const dismissed = unionDismissed(local.dismissed, remote.dismissed)
   const diverge = mergeDiverge(local.diverge, remote.diverge)
   const tangles = mergeTangles(local.tangles, remote.tangles)
+  const synonymSeen = mergeSynonymSeen(local.synonymSeen, remote.synonymSeen)
 
   // When neither side has one of these, **omit the key entirely** rather than writing
   // `bestSprint: undefined`: the latter would make `Object.hasOwn(p, 'bestSprint')` true,
@@ -361,5 +383,6 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
     ...(dismissed === undefined ? {} : { dismissed }),
     ...(diverge === undefined ? {} : { diverge }),
     ...(tangles === undefined ? {} : { tangles }),
+    ...(synonymSeen === undefined ? {} : { synonymSeen }),
   }
 }

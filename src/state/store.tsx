@@ -120,6 +120,8 @@ export interface AppActions {
   recordForget(wordId: string, rec: ForgetInput): void
   /** A finished tangle session. Writes Progress.tangles; a miss stamps missedAt on that word and nothing else. */
   recordTangle(key: string, correctIds: string[], wrongIds: string[], autoSettled: string[]): void
+  /** A 近义词 group was left: stamps each of its gloss terms in Progress.synonymSeen. Nothing the scheduler owns. */
+  markSynonymsSeen(terms: string[]): void
   /** Add or edit an entry (upsert by id), pushes words.json immediately */
   saveWord(word: Word): Promise<void>
   /** Delete entries, also clearing their progress records */
@@ -1311,6 +1313,23 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
     schedulePush()
   }, [commitProgress, schedulePush])
 
+  /**
+   * A 近义词 group was left: every one of its terms gets one timestamp
+   * (synonym-groups spec §6). **Writes Progress.synonymSeen and nothing
+   * else** — no word entry, no `lastReviewedAt`, no dailyStats, since reading
+   * a group is not practice and counts for nothing. The map merges per term
+   * (mergeSynonymSeen), so it needs no stamp elsewhere to survive a sync.
+   */
+  const markSynonymsSeen = useCallback((terms: string[]) => {
+    if (terms.length === 0) return
+    const at = new Date().toISOString()
+    const cur = stateRef.current.progress
+    const synonymSeen = { ...(cur.synonymSeen ?? {}) }
+    for (const t of terms) synonymSeen[t] = at
+    commitProgress({ ...cur, synonymSeen })
+    schedulePush()
+  }, [commitProgress, schedulePush])
+
   const saveWord = useCallback(async (word: Word): Promise<void> => {
     const words = applyWordOps(stateRef.current.words, [{ kind: 'upsert', word }])
     cacheWords(words)
@@ -1395,11 +1414,11 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
 
   const value = useMemo<AppContextValue>(() => ({
     ...state,
-    login, logout, grade, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, recordForget, recordTangle, saveWord, deleteWords, addStaging,
+    login, logout, grade, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, recordForget, recordTangle, markSynonymsSeen, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll,
     ...(import.meta.env.DEV ? { enterDemoMode } : {}),
   }), [
-    state, login, logout, grade, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, recordForget, recordTangle, saveWord, deleteWords, addStaging,
+    state, login, logout, grade, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, recordForget, recordTangle, markSynonymsSeen, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll, enterDemoMode,
   ])
 

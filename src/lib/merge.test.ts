@@ -642,3 +642,24 @@ describe("mergeProgress's tangles", () => {
     expect('tangles' in m).toBe(false)
   })
 })
+
+describe("mergeProgress's synonymSeen", () => {
+  it('merges per term, the later stamp winning, the same in both orders', () => {
+    const local = emptyProgress(), remote = emptyProgress()
+    local.synonymSeen = { 反感: '2026-10-23T10:00:00.000Z', 抱怨: '2026-10-20T08:00:00.000Z' }
+    remote.synonymSeen = { 反感: '2026-10-22T10:00:00.000Z', 抱怨: '2026-10-21T08:00:00.000Z', 减轻: '2026-10-19T08:00:00.000Z' }
+    const want = { 反感: '2026-10-23T10:00:00.000Z', 抱怨: '2026-10-21T08:00:00.000Z', 减轻: '2026-10-19T08:00:00.000Z' }
+    expect(mergeProgress(local, remote).synonymSeen).toEqual(want)
+    expect(mergeProgress(remote, local).synonymSeen).toEqual(want)
+  })
+
+  it('skips a value that is not a string', () => {
+    const local = emptyProgress(), remote = emptyProgress()
+    local.synonymSeen = { 反感: 5, 抱怨: '2026-10-20T08:00:00.000Z' } as unknown as Progress['synonymSeen']
+    expect(mergeProgress(local, remote).synonymSeen).toEqual({ 抱怨: '2026-10-20T08:00:00.000Z' })
+  })
+
+  it('stays absent when neither side has it', () => {
+    expect('synonymSeen' in mergeProgress(emptyProgress(), emptyProgress())).toBe(false)
+  })
+})
