@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Word } from '../types'
-import { MAX_SYNONYM_NOTE, synonymNoteErrors } from './synonymNotesValidate'
+import { maxSynonymNote, synonymNoteErrors } from './synonymNotesValidate'
 
 const w = (id: string, zh: string[], headword = id): Word => ({
   id, headword, phonetic: '', sourceNote: 'test', addedAt: '2026-10-23',
@@ -34,8 +34,15 @@ describe('synonymNoteErrors', () => {
   })
 
   it('rejects text over the cap, and empty text', () => {
-    expect(synonymNoteErrors('厌恶', { ...ok, text: ok.text + '长'.repeat(MAX_SYNONYM_NOTE) }, lib)).toHaveLength(1)
+    expect(synonymNoteErrors('厌恶', { ...ok, text: ok.text + '长'.repeat(maxSynonymNote(3)) }, lib)).toHaveLength(1)
     expect(synonymNoteErrors('厌恶', { ...ok, text: '' }, lib).length).toBeGreaterThan(0)
+  })
+
+  it('caps by group size, so a pair cannot run as long as a larger group', () => {
+    const pad = (s: string, n: number) => s + '长'.repeat(n - s.length)
+    const pair = { members: ['averse', 'aversion'], text: pad('averse 最轻;aversion 想躲开。', maxSynonymNote(2) + 1) }
+    expect(synonymNoteErrors('厌恶', pair, lib)).toHaveLength(1)
+    expect(synonymNoteErrors('厌恶', { ...ok, text: pad(ok.text, maxSynonymNote(2) + 1) }, lib)).toEqual([])
   })
 
   it('requires each headword as a word or an inflection, not a substring', () => {

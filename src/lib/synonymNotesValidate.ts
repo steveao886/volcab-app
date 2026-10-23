@@ -14,11 +14,18 @@ import { isInflectionOf } from './headword'
  */
 
 /**
- * Provisional. The spec sets the real cap from the first 30-group batch:
- * re-measure that batch and replace this number. The B sample in the mockups
- * ran about 170 characters for four words.
+ * The cap grows with the group: 100 characters plus 40 a member. On the first
+ * batch (30 paragraphs, 2026-10-23) length tracked the number of words
+ * compared — pairs ran 118–168 (20 groups), three members 191–210 (6), four
+ * 212–225 (2), five 231–275 (2). A flat cap had to choose between letting a
+ * pair run 1.6× its longest and refusing a five-word group. 100 + 40n sits
+ * 5–16% above the longest paragraph at each size (180 / 220 / 260 / 300).
+ * The live page's largest groups have 6 members (2 of 326), so 340 there is
+ * extrapolated: re-measure once one is written.
  */
-export const MAX_SYNONYM_NOTE = 300
+export function maxSynonymNote(memberCount: number): number {
+  return 100 + 40 * memberCount
+}
 
 export function synonymNoteErrors(key: string, entry: unknown, wordsById: Map<string, Word>): string[] {
   if (typeof entry !== 'object' || entry === null) return [`${key}: entry must be { members, text }`]
@@ -36,7 +43,8 @@ export function synonymNoteErrors(key: string, entry: unknown, wordsById: Map<st
   }
 
   if (text.trim() === '') errors.push(`${key}: text is empty`)
-  if (text.length > MAX_SYNONYM_NOTE) errors.push(`${key}: text is ${text.length} chars (max ${MAX_SYNONYM_NOTE})`)
+  const max = maxSynonymNote(members.length)
+  if (text.length > max) errors.push(`${key}: text is ${text.length} chars (max ${max} for ${members.length} members)`)
 
   const tokens = (text.match(/[A-Za-z]+(?:[-'][A-Za-z]+)*/g) ?? []).map((t) => t.toLowerCase())
   const lower = text.toLowerCase()
