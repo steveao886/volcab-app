@@ -199,6 +199,16 @@ describe('latestForgetToday / needsHintLadder', () => {
     expect(needsHintLadder(entry({ forgot: [rec({ kind: 'confused', with: 'vindicate' })] }), TODAY)).toBe(false)
     expect(needsHintLadder(entry({ forgot: [rec({ kind: 'confused', with: 'self' })] }), TODAY)).toBe(false)
   })
+  // 没想全 names no partner either, so a rule keyed on `with` alone ladders it.
+  it('does not after 没想全, where the word came back but not all of it', () => {
+    expect(needsHintLadder(entry({ forgot: [rec({ kind: 'partial' })] }), TODAY)).toBe(false)
+  })
+  it('reads a 没想全 as the latest record, over a 一片空白 earlier the same day', () => {
+    const early = rec({ at: at(2026, 10, 20, 8), kind: 'blank' })
+    const late = rec({ at: at(2026, 10, 20, 15), kind: 'partial' })
+    expect(latestForgetToday(entry({ forgot: [early, late] }), TODAY)).toEqual(late)
+    expect(needsHintLadder(entry({ forgot: [early, late] }), TODAY)).toBe(false)
+  })
   it("does not for yesterday's record, or for a word with no log", () => {
     expect(needsHintLadder(entry({ forgot: [rec({ at: at(2026, 10, 19) })] }), TODAY)).toBe(false)
     expect(needsHintLadder(entry(), TODAY)).toBe(false)

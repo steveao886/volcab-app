@@ -534,6 +534,12 @@ describe("mergeProgress's forgot", () => {
     expect(mergeProgress(remote, local).words.alpha.forgot).toEqual(mergeProgress(local, remote).words.alpha.forgot)
   })
 
+  it('keeps a 没想全 record, a kind added after the first two', () => {
+    const r1 = rec(6, { kind: 'partial' })
+    const m = mergeProgress(withEntry(entry({ forgot: [r1] })), withEntry(entry()))
+    expect(m.words.alpha.forgot).toEqual([r1])
+  })
+
   it('absent on both sides stays absent', () => {
     const m = mergeProgress(withEntry(entry()), withEntry(entry()))
     expect('forgot' in m.words.alpha).toBe(false)

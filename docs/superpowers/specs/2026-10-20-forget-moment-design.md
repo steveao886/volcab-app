@@ -109,8 +109,11 @@ Every 重来 that is a **lapse** asks how the word was forgotten. A lapse is a
 confirm showing. A 重来 on a learning-step card does not ask: that word was
 never learned in this pass. The user accepted the extra step on every lapse.
 
-After 重来 the card stays where it is. Under it, one row: **怎么忘的？**,
-with three buttons and printed keys (two until 2026-10-23).
+After 重来 the card stays where it is. Under it: **怎么忘的？**, with four
+buttons and printed keys, in two ruled rows of two (one row of two until
+2026-10-23). Four do not fit one row at 375px: three sized to content already
+took 324 of the 343px. Most forgotten first: 一片空白 1, 想成了别的 2, 没想全 3,
+其实没忘 4.
 
 - **一片空白**: record it and move on.
 - **想成了别的**: show a short list of what the word might have been taken
@@ -144,6 +147,13 @@ with three buttons and printed keys (two until 2026-10-23).
     opens no tangle and is treated like 一片空白 in §2.
   - If a word has no option and one sense, the list would hold only the last
     choice. Skip it and record directly.
+- **没想全** *(added 2026-10-23, decided with the user)*: record it
+  (`kind: 'partial'`) and move on. The word came back, but not all of its
+  meaning, or not its part of speech.
+  - Asked whether anything should follow from it, the user said an honest
+    option and its own record are enough.
+  - So it opens no tangle, and §2 gives it no ladder: the word was in mind,
+    and the back shows the rest.
 - **其实没忘** *(added 2026-10-23, decided with the user)*: write nothing and
   move on.
   - *Why:* the user sometimes presses 重来 on a word they did recall, to see
@@ -310,7 +320,10 @@ without them.
 - **`ProgressEntry.forgot?: ForgetRecord[]`**, keeping the last 10.
   - A record is `{ at, kind, with?, prevInterval, prevReviewedAt }`:
     - `at`: an ISO string
-    - `kind`: `'blank' | 'confused'`
+    - `kind`: `'blank' | 'confused' | 'partial'`. `'partial'` (没想全) came
+      on 2026-10-23; a build older than that skips it in the merge, so a
+      device that has not updated drops it from what it pushes, and the
+      device that wrote it unions it back on its next merge.
     - `with`: a word id, or `'self'` for its own other sense, or absent for
       意思想错了,但不在这里
     - `prevInterval` and `prevReviewedAt`: the entry's `intervalDays` and
