@@ -1,1 +1,35 @@
-{ "version": 1, "notes": {} }
+{
+  "version": 1,
+  "notes": {
+    "欺骗": { "members": ["deceit", "deceitful", "deceive", "trickery"], "text": "deceit、deceitful、deceive 同根:deceit 是名词,指欺骗这件事和不诚实本身,近乎道德指控(a web of deceit);deceitful 是形容词,说人或做法存心撒谎、藏着真相去占便宜;deceive 是动词,宾语是被骗的人,也可以是自己(deceive yourself)。trickery 也是名词,但指具体使出的花招手段,重在手法,可以只是个小把戏(camera trickery)。" },
+    "密谋": { "members": ["conspire", "plot", "scheme", "intrigue"], "text": "conspire 是动词,要和别人联手,干的多是违法或有害的事,法律味重(conspire to defraud);plot 既是动词也是名词(阴谋),所图多是有害或违法的事,可以合谋,也可以一个人暗中盘算(hatch a plot);scheme 在这里是动词,重在为自己谋好处而暗中盘算,不一定要害人;intrigue 是名词,多指政府或机构内部的暗中算计、勾心斗角,是持续的暗斗,而不是某一桩具体的阴谋(political intrigue)。" },
+    "有分寸": { "members": ["tactful", "diplomatic"], "text": "tactful 和 diplomatic 都是形容词,都是说话做事不得罪人。tactful 偏体贴:在尴尬场合顾着对方的感受,不让人下不来台,有时靠不提、转开话题(a tactful reply);diplomatic 偏手腕:会说话,能把难出口的话说得让人挑不出刺(a diplomatic answer)。" },
+    "逐渐减少": { "members": ["diminishing", "dwindle"], "text": "diminishing 是形容词,多作定语,说的是一路递减的趋势,尤其是每多投一分、换回的越来越少(diminishing returns);dwindle 是不及物动词,不带宾语,主语是人数、存款、储备这类东西,自己一点点变少,常带一点快见底的意味(dwindle to nothing)。" },
+    "专横": { "members": ["domineering", "overbearing", "tyranny"], "text": "domineering 和 overbearing 都是形容词,几乎同义,都说人爱控制别人:domineering 重在事事做主、支配别人(domineering boss);overbearing 重在管得太宽,让人喘不过气(overbearing parent)。tyranny 是名词,不形容人,指压在人身上的专横支配本身,施加者可以是人、规矩或某样东西,也能夸张地调侃日常小事(a small tyranny)。" },
+    "轻蔑": { "members": ["contemptuous", "dismissive", "dismissively"], "text": "contemptuous 是形容词,是摆在明面上的鄙视,看不起对方,带着情绪(contemptuous of authority);dismissive 也是形容词,是不当回事,一句话一个手势就把人或事打发掉,不一定动气(dismissive tone);dismissively 是 dismissive 的副词形式,修饰那个打发人的动作(shrug dismissively)。" },
+    "敷衍了事": { "members": ["perfunctory", "dismissive"], "text": "两个都是形容词。perfunctory 说的是做事:例行公事,用最少的力气走个过场,心不在焉(a perfunctory apology),不一定看不起谁;dismissive 说的是态度:觉得对方或这件事不值得认真对待,所以随口打发,常带轻蔑(dismissive of)。" },
+    "毫不留情": { "members": ["relentless", "ruthless"], "text": "两个都是形容词,说人下手不留情面。relentless 狠在不松手:盯住一件事追到底,不给对方喘息(relentless about deadlines);ruthless 狠在不心软、不留余地,多用在砍掉多余的东西上,这个义上常含褒义,比如夸人取舍干脆(ruthless efficiency)。" },
+    "短暂": { "members": ["momentary", "momentarily", "fleeting", "transient", "brevity"], "text": "momentary 是形容词,只持续片刻,常修饰停顿、沉默、失误(a momentary lapse);momentarily 同根,是副词,修饰动作或状态,说「一时」(momentarily distracted);fleeting 是形容词,强调一闪而过、抓不住,常配一瞥、一笑、名声(a fleeting glimpse);transient 也是形容词,重在不持久,时间不一定极短(transient symptoms);brevity 是名词,指短暂这个性质(the brevity of the honeymoon),更常用来夸文字简练。" },
+    "粗略": { "members": ["crude", "cursory"], "text": "两个都是形容词。crude 说的是东西本身粗糙、不精细:草图、估算、石器,做出来就没打磨,有时反而够用(crude but effective);cursory 说的是看一眼、查一遍的动作草率,没细看就过去了,多修饰一瞥、审阅、检查这类动作(a cursory glance)。" },
+    "无能": { "members": ["incompetent", "ineptitude", "feckless"], "text": "incompetent 是形容词,说人不胜任、本事不够,做了也做砸,多说经理、医生、施工方(an incompetent manager);ineptitude 是名词,指无能本身,带点笨拙的味道,可以指某一方面(ineptitude with spreadsheets);feckless 是形容词,差的不只是本事,更是责任心,一再答应又落不了地,没担当、不上心(feckless leadership)。" },
+    "堕落": { "members": ["depraved", "degradation"], "text": "depraved 是形容词,评的是人的品行,说人或人干的事道德败坏、带着恶意(a depraved act);degradation 是名词,这里不指品行坏,而指人格尊严被剥夺的屈辱,或这样对待人的做法,落在受害的一方,不是作恶的一方。" },
+    "愤愤不平": { "members": ["indignant", "aggrieved", "bitterness"], "text": "indignant 是形容词,因为觉得不公而动了火气,带义正词严的味道,也可以替别人抱不平(righteously indignant);aggrieved 也是形容词,重心是「我被亏待了」,带委屈,自认是受害的一方(feel aggrieved);bitterness 是名词,是怨愤积下来的状态,不是一时的火气,事过多年还在(a deep sense of bitterness)。" },
+    "冷落": { "members": ["rebuff", "slight"], "text": "两个都是及物动词。rebuff 是别人递来了提议、请求或示好,你生硬地回绝(rebuff an offer);slight 不一定要对方先开口,无视、漏掉、言语上轻慢,都会让人觉得自己没被当回事,宾语是人(felt slighted)。" },
+    "奸诈": { "members": ["cunning", "treacherous", "perfidious"], "text": "cunning 是名词,指靠骗人、耍心眼达到目的的算计本事,带贬义,不一定背叛了谁的信任(low cunning);treacherous 和 perfidious 都是形容词,说人背信弃义,辜负了信任他的人:treacherous 是普通用词,人和涉及背叛的事都能说(a treacherous ally);perfidious 更书面,强调存心背叛,罪名更重(perfidious betrayal)。" },
+    "尽管": { "members": ["in-spite-of", "notwithstanding"], "text": "in spite of 是介词短语,后面接名词或 -ing 形式,中性日常(in spite of the storm),要接从句得补 the fact that;notwithstanding 偏正式书面,法律文书里尤其多,作介词时前置后置都行(the rain notwithstanding),作连词时常带 that 引出从句。" },
+    "心满意足": { "members": ["contented", "fulfilled"], "text": "都是形容词,说心里满意。contented 是知足,有的已经够了、不再多求,心境平和(a contented sigh),晒太阳的猫也能用;fulfilled 是觉得工作或生活有意义、有成就感,不只是不缺什么(feel fulfilled)。" },
+    "抑制": { "members": ["discourage", "subdue"], "text": "都是及物动词。discourage 是劝阻,靠加难度、摆态度让人觉得不值得做,主语常是措施(discourage sb from doing);subdue 是压下去,对象可以是人和动物,也可以是情绪、光线(subdue one's anger),把势头压住、让强度降下来,不是劝人打消念头。" },
+    "合群": { "members": ["sociable", "gregarious"], "text": "都是形容词,说人爱和人待在一起。sociable 程度轻,是愿意与人相处、也相处得来,可以只在短时间或某种场合才这样,也能形容聚会场合(a sociable evening);gregarious 重得多,是天性爱扎堆、见谁都聊,人越多越来劲(gregarious nature)。" },
+    "贪婪": { "members": ["acquisitive", "voracious"], "text": "都是形容词。acquisitive 贪的是财物,爱买爱攒,占有欲强,偏贬义(acquisitive instinct),公司一路收购也能用;voracious 贪的是量,胃口大得填不满,或对某事如饥似渴,常不带贬义(a voracious reader)。" },
+    "满足": { "members": ["contented", "fulfill", "gratify", "appease", "assuage"], "text": "contented 是形容词,说人自己觉得够了、不再多求,是一种心境;其余四个都是及物动词,按宾语分。fulfill 满足的是要求、条件、标准,即达标(fulfill the requirements);gratify 满足的是欲望、虚荣心,顺着给,常带纵容(gratify a desire);appease 和 assuage 满足的多是饥饿这类难受的欲求,是把它压下去、缓一缓(appease one's hunger),appease 还能说满足好奇心。" },
+    "体现": { "members": ["embody", "exemplify"], "text": "都是及物动词。embody 说主语是某种理念、品质看得见摸得着的化身,人和物都行(embody the spirit of);exemplify 说主语是某种趋势、问题的一个清楚的例子,拿它就能说明一类(exemplify a trend),重在举例,不是化身。" },
+    "平易近人": { "members": ["approachable", "down-to-earth"], "text": "都是形容词,都能夸人没架子。approachable 看的是别人敢不敢上前,尤其是有身份的人还好说话(friendly and approachable);down-to-earth 看的是人本身务实、不摆谱,所以也能说建议、做法实在(down-to-earth advice),对象不必有地位。" },
+    "鲁莽": { "members": ["impetuous", "rash", "temerity"], "text": "impetuous 和 rash 是形容词,temerity 是名词。impetuous 突出一时的冲劲,可说人,也可说一时冲动的举动(an impetuous decision);rash 突出不掂量后果,多修饰决定、承诺、动作(a rash promise)。temerity 说的是胆大放肆,不是没想清楚而是敢做,多说 have the temerity to,带着「竟敢」的口气。" },
+    "暗中": { "members": ["covert", "underhand"], "text": "covert 是形容词,说事情暗中进行、不公开,本身不带褒贬,常见于情报、侦查(a covert operation),瞒着家人准备惊喜也能用;underhand 也是形容词,还能作副词(got the promotion underhand),除了暗中,还带不诚实、不光彩的评判,多说手段、行为。" },
+    "好争论": { "members": ["disputatious", "contentious"], "text": "都是形容词,这里说人爱争。disputatious 重在爱辩、爱抬杠,也常说一场讨论或聚会吵了起来(turned disputatious);contentious 取这一义时带点好斗,爱挑事、爱唱反调,每个细节都要争(contentious in every code review)。" },
+    "彬彬有礼": { "members": ["courteous", "urbane"], "text": "都是形容词。courteous 看礼节,周到客气,连对服务生、陌生人也一样,略带正式(courteous service);urbane 看气度,是见过世面的老练从容,有礼之外还圆融、有魅力,遇到尴尬能轻松化解(urbane charm)。" },
+    "主持": { "members": ["officiate", "preside"], "text": "都是动词。officiate 可直接接婚礼、比赛(officiate a wedding),是以正式身份主持仪式或执裁比赛,证婚人、裁判干的活;preside 多接 over(preside over a meeting),是坐在主位掌控会议、法庭乃至家宴的全场,重在掌控进程。" },
+    "勉强": { "members": ["marginal", "reluctant"], "text": "都是形容词,但「勉强」不是一回事。marginal 说数量或效果小得刚够算数,修饰改善、领先、利润这类结果(a marginal improvement);reluctant 说人不情愿、犹豫,多接 to do(reluctant to leave),也能放在名词前作定语。" },
+    "是…的典型": { "members": ["epitomize", "exemplify"], "text": "都是及物动词,主语是那个典型的人或事。epitomize 是缩影,说它把整体浓缩在自己身上,是最典型的那个(epitomized the whole disastrous morning),分量更重;exemplify 是例证,说它是一类现象里清楚的一例,拿它就能说明趋势或问题(exemplify a trend),不必到极致的程度。" }
+  }
+}
