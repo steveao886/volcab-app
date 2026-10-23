@@ -16,9 +16,10 @@ Core loops: spaced-repetition review (`/review`), quizzes in several modes (`/qu
 | `npx vitest run src/lib/foo.test.ts` | one file |
 | `npm run build` | `tsc -b && vite build` — run this, not `tsc` alone (`-b` also type-checks `scripts/`) |
 | `npm run lint` | oxlint; runs in CI |
-| `npm run validate` | all nine `validate-*` content gates in one go; runs in CI |
+| `npm run validate` | all ten `validate-*` content gates in one go; runs in CI |
 | `npm run validate-words` | gate for `data/words.json`; the per-word rules live in `src/lib/wordValidate.ts`, shared with both entry forms |
 | `npm run check-live` | diff `data/words.json` against the live `volcab-data` copy through `gh`; `-- --write` realigns the repo copy |
+| `npm run synonym-todo` | the next 近义词 groups the page will show that lack a current paragraph in `src/data/synonymNotes.json`, in page order, from live progress through `gh`; `-- --limit N` (default 30). The content round's to-do list; never in CI |
 | `npm run check-synonyms` | ask Jev, for each contrast pair joined only by a shared synonym, whether the synonym reads two ways; prints suspicious pairs grouped by synonym. `-- --ids a,b` for a batch. Same key, never in CI. Shared plumbing lives in `scripts/jev.ts` |
 | `npm run check-links` | the other direction: same-POS pairs sharing a Chinese gloss term that nothing joins, each with Jev's guess at whether a quiz would have to accept both. `-- --ids a,b` for a batch, `-- --no-jev` without a key |
 | `npm run check-senses` | ask Jev which sense each 回想 rendering's example uses and print where it disagrees with the `sense` tag, or agrees unsurely; `-- --ids a,b` for a batch. Needs `TYPESAFE_API_KEY` in `.env.local` (gitignored), so never in CI |
