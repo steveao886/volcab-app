@@ -16,6 +16,7 @@ import type { SynonymGroup } from '../lib/synonymGroups'
 import { pickVisit, resolveVisit } from '../lib/synonymVisit'
 import type { WordNotesFile } from '../lib/wordNotes'
 import { useApp } from '../state/store'
+import { enterIntent } from './synonymsEnter'
 import './Review.css'
 import './Synonyms.css'
 
@@ -65,23 +66,30 @@ export function Synonyms() {
     setVisit({ keys: pickVisit(groups, progress.synonymSeen, progress.words).map((g) => g.key), left: [] })
   }, [groups, progress.synonymSeen, progress.words])
 
-  // Enter does what the visible button does. preventDefault on the keydown:
-  // the button keeps focus after a click, and Chrome activates a focused
-  // button on the keypress that follows — the 组句 bug (CLAUDE.md), where the
-  // rest of one press clicked the next control. A held Enter's auto-repeat is
-  // ignored, so it cannot race through the groups; a focused link (回今日)
-  // keeps its own Enter.
+  // Enter does what the visible button does, on keydown with preventDefault,
+  // and a held Enter's repeats are cancelled rather than ignored: see
+  // enterIntent for the 组句 mechanism both guard against.
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      if (e.repeat || e.key !== 'Enter' || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return
       const active = document.activeElement
-      if (isEditableTarget(active) || active instanceof HTMLAnchorElement) return
-      if (current !== undefined) { e.preventDefault(); leave(current.group) }
-      else if (shown.length > 0) { e.preventDefault(); again() }
+      const focus = isEditableTarget(active) ? 'editable' : active instanceof HTMLAnchorElement ? 'link' : 'other'
+      const intent = enterIntent(e, focus, current !== undefined || shown.length > 0)
+      if (intent === 'pass') return
+      e.preventDefault()
+      if (intent === 'swallow') return
+      if (current !== undefined) leave(current.group)
+      else again()
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [current, shown.length, leave, again])
+
+  // Each group opens at its top. A long one (6 words, their 要点 and up to 15
+  // pair notes) runs several screens at 375px, and the window kept its scroll,
+  // so the next group opened past its title (final review, 2026-10-23); the
+  // same fix as Untangle.tsx's stage effect.
+  const currentKey = current?.group.key
+  useEffect(() => { window.scrollTo(0, 0) }, [currentKey])
 
   // The second click of a double click lands on the next group's button,
   // which would stamp a group nobody read.
