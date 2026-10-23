@@ -38,8 +38,19 @@ export function synonymNoteErrors(key: string, entry: unknown, wordsById: Map<st
   if (text.trim() === '') errors.push(`${key}: text is empty`)
   if (text.length > MAX_SYNONYM_NOTE) errors.push(`${key}: text is ${text.length} chars (max ${MAX_SYNONYM_NOTE})`)
 
-  const tokens = text.match(/[A-Za-z]+(?:[-'][A-Za-z]+)*/g) ?? []
+  const tokens = (text.match(/[A-Za-z]+(?:[-'][A-Za-z]+)*/g) ?? []).map((t) => t.toLowerCase())
   const lower = text.toLowerCase()
+  // A token that is exactly one member's headword names that member alone.
+  // isInflectionOf accepts some derivations in both directions (unease /
+  // uneasy, entreat / entreaty), so without this a paragraph naming only
+  // uneasy passed for unease — 22 of 519 groups hold such a pair with every
+  // word counted studied (final review, 2026-10-23).
+  const memberHeads = new Set(
+    [...new Set(members)].flatMap((id) => {
+      const h = wordsById.get(id)?.headword.trim().toLowerCase()
+      return h === undefined || h.includes(' ') ? [] : [h]
+    }),
+  )
   for (const id of seen) {
     const w = wordsById.get(id)
     if (w === undefined) { errors.push(`${key}: ${id} is not in data/words.json`); continue }
@@ -51,7 +62,9 @@ export function synonymNoteErrors(key: string, entry: unknown, wordsById: Map<st
     // Named as a word or an inflection, not a substring: mire must not pass
     // on "admire". A multi-word headword is matched as the phrase.
     const h = w.headword.trim().toLowerCase()
-    const named = h.includes(' ') ? lower.includes(h) : tokens.some((t) => isInflectionOf(t, h))
+    const named = h.includes(' ')
+      ? lower.includes(h)
+      : tokens.some((t) => t === h || (!memberHeads.has(t) && isInflectionOf(t, h)))
     if (!named) errors.push(`${key}: text never names ${w.headword}`)
   }
   return errors
