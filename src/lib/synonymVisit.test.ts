@@ -66,15 +66,28 @@ describe('pickVisit', () => {
 
   it('keeps the rotation fair while boosts arrive every visit', () => {
     // 23 groups with one forgettable member each; every visit, three members
-    // picked by a fixed LCG are forgotten. With 3 rotation slots a visit, no
-    // group can wait more than 8 visits: at most 22 groups are ever ahead of
-    // it, and each visit takes at least 3 of them.
+    // picked by a fixed LCG are forgotten.
+    //
+    // The spec's property (§Success): rotation never shows a group that has
+    // been seen while some group has never been seen. The plan's version,
+    // "rotation counts stay within one of each other", is false for a correct
+    // rotation — a group first shown by a boost is legitimately behind in
+    // rotation count (the final review broke it in 15,434 of 18,000 simulated
+    // visits) — so it is not asserted. The wait bound is kept beside it: with
+    // 3 rotation slots a visit and at most 22 groups ever ahead, no group
+    // waits more than 8 visits.
     const groups = Array.from({ length: 23 }, (_, i) => g(`k${i}`, [`m${i}`, `x${i}`]))
     const seen: Record<string, string> = {}
     const words: Progress['words'] = {}
+    const total = new Map(groups.map((x) => [x.key, 0]))
     const lastVisit = new Map(groups.map((x) => [x.key, 0]))
+    const boostedNow = (x: SynonymGroup) => {
+      const last = groupLastSeen(x, seen)
+      return (words[x.members[0].id]?.forgot ?? []).some((r) => last === undefined || r.at > last)
+    }
     let lcg = 7
     let boostedPicks = 0
+    let reseenByRotation = 0
     for (let v = 1; v <= 40; v++) {
       for (let j = 0; j < 3; j++) {
         lcg = (lcg * 48271) % 2147483647
@@ -82,18 +95,24 @@ describe('pickVisit', () => {
         const prev = words[id]?.forgot?.map((r) => r.at) ?? []
         words[id] = entry([...prev, T(v * 10)].slice(-10))
       }
+      const boosts = Math.min(BOOST_CAP, groups.filter(boostedNow).length)
       const picked = pickVisit(groups, seen, words)
       expect(picked).toHaveLength(5)
+      const rotationReseen = picked.slice(boosts).some((x) => (total.get(x.key) ?? 0) > 0)
+      boostedPicks += boosts
       picked.forEach((x, i) => {
-        const last = groupLastSeen(x, seen)
-        const forgot = words[x.members[0].id]?.forgot ?? []
-        if (i < 2 && forgot.some((r) => last === undefined || r.at > last)) boostedPicks++
+        total.set(x.key, (total.get(x.key) ?? 0) + 1)
         stamp(seen, [x], T(v * 10 + 1 + i))
         lastVisit.set(x.key, v)
       })
+      if (rotationReseen) {
+        reseenByRotation++
+        expect(Math.min(...total.values())).toBeGreaterThanOrEqual(1)
+      }
       for (const [, at] of lastVisit) expect(v - at).toBeLessThanOrEqual(8)
     }
     expect(boostedPicks).toBeGreaterThan(0)
+    expect(reseenByRotation).toBeGreaterThan(0)
   })
 
   it('breaks ties the same way on every call', () => {
