@@ -251,7 +251,7 @@
 /* --- 怎么忘的？ ---------------------------------------------------------------
    Asked in the grade row's slot after a lapse (ForgetAsk.tsx). No box: it is
    the page asking, not a card. Built from the shared vocabulary — the ruled
-   row for the first two answers, a .ledger for the meanings, the 旁批 for
+   row for the first three answers, a .ledger for the meanings, the 旁批 for
    the pair's note — and the question line is ink, not a mark: nothing here
    has been judged right or wrong. */
 
@@ -263,6 +263,15 @@
 .review-forget__q {
   font-weight: 700;
   text-align: center;
+}
+
+/* Three answers (其实没忘 joined on 2026-10-23) in equal columns broke
+   想成了别的 onto two lines at 375px: 114px a column against its 120px of label,
+   key and padding. Sized to content they take 108/127/109 of the 343px and
+   all sit on one line. Two classes, so it outranks .ruled-row's own column
+   rule whatever the load order. */
+.review-forget .ruled-row {
+  grid-auto-columns: auto;
 }
 
 /* The two rows about the list rather than on it (它自己的另一个意思,

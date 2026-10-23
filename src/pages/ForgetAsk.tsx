@@ -54,9 +54,9 @@ export function ForgetAsk({ word, options, polysemous, onAnswer, onContinue }: {
   word: Word
   options: ForgetOption[]
   polysemous: boolean
-  /** Records the answer. Fired once per lapse, at the choice, before any reveal. */
+  /** Records the answer. Fired at most once per lapse, at the choice, before any reveal; never for 其实没忘. */
   onAnswer(rec: ForgetAnswer): void
-  /** Moves the session on. Fired once, after onAnswer: with it, or on 继续 after a partner. */
+  /** Moves the session on. Fired once: with onAnswer, on 继续 after a partner, or alone for 其实没忘. */
   onContinue(): void
 }) {
   const { words } = useApp()
@@ -83,6 +83,20 @@ export function ForgetAsk({ word, options, polysemous, onAnswer, onContinue }: {
   const finish = useCallback((rec: ForgetAnswer) => {
     if (answer(rec)) proceed()
   }, [answer, proceed])
+  // 其实没忘: the 重来 was pressed to see the word sooner — 不熟 still grows
+  // the interval (×1.2, then the interval modifier: ×1.8 at the user's 1.5),
+  // and only 重来 brings a word back tomorrow. Two answers that both said
+  // "forgot" made the user pick one anyway (2026-10-23), and that record would
+  // count in the "what interval is a word lost at" analysis as a real
+  // forgetting. So it writes nothing, and the grade stands: lapses +1 and the
+  // ease dent are the scheduler's, and both say "watch this word", which is
+  // why it was pressed. Closes the answer like any other, so no later key in
+  // the same lapse can still record one.
+  const notForgotten = useCallback(() => {
+    if (answeredRef.current) return
+    answeredRef.current = true
+    proceed()
+  }, [proceed])
 
   const choices = useMemo((): Choice[] => [
     ...options.map((o): Choice => ({
@@ -110,11 +124,12 @@ export function ForgetAsk({ word, options, polysemous, onAnswer, onContinue }: {
     function onKeyDown(e: KeyboardEvent) {
       if (e.repeat) return
       if (stage.at === 'how') {
-        const i = optionIndexFromKey(e, 2)
+        const i = optionIndexFromKey(e, 3)
         if (i < 0) return
         e.preventDefault()
         if (i === 0) finish({ kind: 'blank' })
-        else pickConfused()
+        else if (i === 1) pickConfused()
+        else notForgotten()
         return
       }
       if (stage.at === 'which') {
@@ -131,7 +146,7 @@ export function ForgetAsk({ word, options, polysemous, onAnswer, onContinue }: {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [stage.at, choices, finish, pickConfused, pickChoice, proceed])
+  }, [stage.at, choices, finish, pickConfused, notForgotten, pickChoice, proceed])
 
   const click = (act: () => void) => (e: ReactMouseEvent) => {
     if (e.detail > 1) return
@@ -151,6 +166,11 @@ export function ForgetAsk({ word, options, polysemous, onAnswer, onContinue }: {
           <Button onClick={click(pickConfused)}>
             <span className="ruled-row__label">
               想成了别的<span className="key">2</span>
+            </span>
+          </Button>
+          <Button onClick={click(notForgotten)}>
+            <span className="ruled-row__label">
+              其实没忘<span className="key">3</span>
             </span>
           </Button>
         </div>
