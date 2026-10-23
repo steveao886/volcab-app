@@ -110,7 +110,7 @@ confirm showing. A 重来 on a learning-step card does not ask: that word was
 never learned in this pass. The user accepted the extra step on every lapse.
 
 After 重来 the card stays where it is. Under it, one row: **怎么忘的？**,
-with two buttons and printed keys.
+with three buttons and printed keys (two until 2026-10-23).
 
 - **一片空白**: record it and move on.
 - **想成了别的**: show a short list of what the word might have been taken
@@ -144,6 +144,20 @@ with two buttons and printed keys.
     opens no tangle and is treated like 一片空白 in §2.
   - If a word has no option and one sense, the list would hold only the last
     choice. Skip it and record directly.
+- **其实没忘** *(added 2026-10-23, decided with the user)*: write nothing and
+  move on.
+  - *Why:* the user sometimes presses 重来 on a word they did recall, to see
+    it sooner. 不熟 never shortens an interval: it is ×1.2 and then the
+    interval modifier, ×1.8 at the user's 1.5, so a 20-day word comes back in
+    36 days. Only 重来 brings a word back tomorrow. With two answers that both
+    said "forgot", the user had to pick one anyway; of the first 9 records
+    (two days), 6 were 意思想错了,但不在这里, and which of them were this case
+    cannot be told.
+  - No record, because the records exist to say what interval a word is lost
+    at, and this lapse is not one.
+  - The grade stands *(my call, accepted)*: `lapses` +1 and the ease dent are
+    the scheduler's, and both say "watch this word", which is why 重来 was
+    pressed. Undoing them would mean rewriting a grade already applied.
 
 Nothing about grading changes. The question is asked after the grade has been
 applied.
@@ -342,7 +356,8 @@ Everything under `src/state/` that touches sync is data-safety logic. Read
 ## Goals, non-goals, anti-goals
 
 - **Goals**
-  - Every lapse leaves a record of how it happened.
+  - Every lapse leaves a record of how it happened, unless the user says it
+    was not forgotten (其实没忘, §1).
   - Every confusion is shown its contrast at once, and studied as a tangle
     on day 1 and again on day 2.
 - **Non-goals, for this version** (recorded so they are not taken as
