@@ -19,12 +19,14 @@
     "validate-recall-sentences": "tsx scripts/validate-recall-sentences.ts",
     "validate-sentence-chunks": "tsx scripts/validate-sentence-chunks.ts",
     "validate-concepts": "tsx scripts/validate-concepts.ts",
-    "validate": "npm run validate-words && npm run validate-passages && npm run validate-suggestions && npm run validate-contrast-notes && npm run validate-word-notes && npm run validate-sense-groups && npm run validate-recall-sentences && npm run validate-sentence-chunks && npm run validate-concepts",
+    "validate": "npm run validate-words && npm run validate-passages && npm run validate-suggestions && npm run validate-contrast-notes && npm run validate-word-notes && npm run validate-sense-groups && npm run validate-recall-sentences && npm run validate-sentence-chunks && npm run validate-concepts && npm run validate-synonym-notes",
     "check-links": "tsx scripts/check-links.ts",
     "check-live": "tsx scripts/check-live.ts",
     "check-senses": "tsx scripts/check-senses.ts",
     "check-synonyms": "tsx scripts/check-synonyms.ts",
-    "chunk-worksheet": "tsx scripts/chunk-worksheet.ts"
+    "chunk-worksheet": "tsx scripts/chunk-worksheet.ts",
+    "validate-synonym-notes": "tsx scripts/validate-synonym-notes.ts",
+    "synonym-todo": "tsx scripts/synonym-todo.ts"
   },
   "dependencies": {
     "@fontsource-variable/noto-serif-sc": "^5.3.0",
