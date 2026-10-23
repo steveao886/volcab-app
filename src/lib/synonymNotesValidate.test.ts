@@ -47,6 +47,17 @@ describe('synonymNoteErrors', () => {
     expect(synonymNoteErrors('泥潭', { members: ['mire', 'quagmire'], text: 'mired 是陷住;quagmire 更深。' }, bog)).toEqual([])
   })
 
+  it('does not let one member of a word family stand in for another', () => {
+    // isInflectionOf accepts some derivations both ways (unease / uneasy), so
+    // a token that is exactly one member's headword counts for that member
+    // alone. 22 of 519 groups hold such a pair, every word counted studied.
+    const fam = new Map([w('unease', ['不安;忧虑']), w('uneasy', ['不安的;忐忑的'])].map((x) => [x.id, x]))
+    const errs = synonymNoteErrors('不安', { members: ['unease', 'uneasy'], text: 'uneasy 说人心里不踏实。' }, fam)
+    expect(errs).toHaveLength(1)
+    expect(errs[0]).toContain('names unease')
+    expect(synonymNoteErrors('不安', { members: ['unease', 'uneasy'], text: 'unease 是名词;uneasy 是形容词。' }, fam)).toEqual([])
+  })
+
   it('matches a multi-word headword as a phrase', () => {
     expect(synonymNoteErrors('反感', { members: ['averse', 'put-off'], text: 'averse 较轻;put off 是被劝退。' }, lib)).toEqual([])
   })
