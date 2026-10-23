@@ -122,11 +122,21 @@ export function Today() {
           read as a fifth chore. It sits here because "I want to look at some
           words" is a real impulse that previously had only one home, buried
           under the library's filter bar. No mark at its start, unlike every
-          plan row above: a ring would say "still to do". */}
+          plan row above: a ring would say "still to do".
+          近义词 sits beside it for the same reason: its rotation never ends
+          and counts for nothing, and the user chose this place over a plan
+          row (synonym-groups spec §1). */}
       <Link to="/practice?pick=mixed" className="today-practice">
         <span className="today-practice__text">
           <span className="today-practice__label">随便练练</span>
           <span className="today-practice__meta">一半已掌握的随机抽，一半是最近老忘的，不计入复习</span>
+        </span>
+        <Icon name="chevron" size={18} />
+      </Link>
+      <Link to="/synonyms" className="today-practice">
+        <span className="today-practice__text">
+          <span className="today-practice__label">看几组近义词</span>
+          <span className="today-practice__meta">按中文意思分组，并排看差别，不计入复习</span>
         </span>
         <Icon name="chevron" size={18} />
       </Link>
