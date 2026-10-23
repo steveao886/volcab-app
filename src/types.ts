@@ -537,6 +537,22 @@ export interface Progress {
    * reads them.
    */
   tangles?: Record<string, TangleStat>
+  /**
+   * 近义词: gloss term → ISO timestamp of the last time a group carrying that
+   * term was left (docs/superpowers/specs/2026-10-23-synonym-groups-design.md
+   * §6). Keyed by term, not by group, because which terms merge into one group
+   * shifts with what is studied, and a term's stamp stays valid through that.
+   *
+   * **Optional**, like diverge and tangles: a device on an older build pushes
+   * progress without it, and that reads as "nothing seen yet", which only
+   * shows a group again.
+   *
+   * **Bounded by the library's shared gloss terms, not by time**: every one
+   * of the 716 stamped is 23,303 UTF-16 units, 0.89% of the 2,621,440 the
+   * localStorage cache lives under (2026-10-23). The forget log and tangles
+   * above are what move that ceiling.
+   */
+  synonymSeen?: Record<string, string>
 }
 
 export const emptyProgress = (): Progress => ({
