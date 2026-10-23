@@ -186,8 +186,9 @@ function mergeDiverge(a: Progress['diverge'], b: Progress['diverge']): Progress[
   return out
 }
 
+// A build older than 'partial' skips it here; see ForgetRecord for why that heals.
 const isForgetRecord = (v: unknown): v is ForgetRecord =>
-  isRecord(v) && typeof v.at === 'string' && (v.kind === 'blank' || v.kind === 'confused')
+  isRecord(v) && typeof v.at === 'string' && (v.kind === 'blank' || v.kind === 'confused' || v.kind === 'partial')
 
 /**
  * Two devices' forget logs for one word: a **union keyed by `at`**, oldest

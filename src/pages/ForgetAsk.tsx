@@ -124,11 +124,12 @@ export function ForgetAsk({ word, options, polysemous, onAnswer, onContinue }: {
     function onKeyDown(e: KeyboardEvent) {
       if (e.repeat) return
       if (stage.at === 'how') {
-        const i = optionIndexFromKey(e, 3)
+        const i = optionIndexFromKey(e, 4)
         if (i < 0) return
         e.preventDefault()
         if (i === 0) finish({ kind: 'blank' })
         else if (i === 1) pickConfused()
+        else if (i === 2) finish({ kind: 'partial' })
         else notForgotten()
         return
       }
@@ -157,7 +158,9 @@ export function ForgetAsk({ word, options, polysemous, onAnswer, onContinue }: {
     return (
       <div className="review-forget" key="how" role="group" aria-labelledby="review-forget-q">
         <p className="review-forget__q" id="review-forget-q">怎么忘的？</p>
-        <div className="ruled-row">
+        {/* Most forgotten first: the top row did not have the word, the bottom
+            row had it, in part or whole. */}
+        <div className="ruled-row review-forget__answers">
           <Button onClick={click(() => finish({ kind: 'blank' }))}>
             <span className="ruled-row__label">
               一片空白<span className="key">1</span>
@@ -168,9 +171,14 @@ export function ForgetAsk({ word, options, polysemous, onAnswer, onContinue }: {
               想成了别的<span className="key">2</span>
             </span>
           </Button>
+          <Button onClick={click(() => finish({ kind: 'partial' }))}>
+            <span className="ruled-row__label">
+              没想全<span className="key">3</span>
+            </span>
+          </Button>
           <Button onClick={click(notForgotten)}>
             <span className="ruled-row__label">
-              其实没忘<span className="key">3</span>
+              其实没忘<span className="key">4</span>
             </span>
           </Button>
         </div>

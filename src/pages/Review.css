@@ -265,13 +265,23 @@
   text-align: center;
 }
 
-/* Three answers (其实没忘 joined on 2026-10-23) in equal columns broke
-   想成了别的 onto two lines at 375px: 114px a column against its 120px of label,
-   key and padding. Sized to content they take 108/127/109 of the 343px and
-   all sit on one line. Two classes, so it outranks .ruled-row's own column
-   rule whatever the load order. */
-.review-forget .ruled-row {
-  grid-auto-columns: auto;
+/* Four answers (其实没忘 and 没想全 joined on 2026-10-23) do not fit one
+   ruled row at 375px: three sized to content already took 324 of the 343px.
+   So two rows of two, ruled like the grade row — 界栏 between the columns, a
+   hairline between the rows, nothing at the row's own edges. Compound
+   selectors, so they outrank .ruled-row's column rule and its .btn + .btn
+   divider whatever the load order. */
+.ruled-row.review-forget__answers {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ruled-row.review-forget__answers > .btn:nth-child(odd) {
+  border-inline-start: 0;
+}
+
+.ruled-row.review-forget__answers > .btn:nth-child(n + 3) {
+  border-block-start: 1px solid var(--rule-strong);
 }
 
 /* The two rows about the list rather than on it (它自己的另一个意思,

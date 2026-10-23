@@ -215,8 +215,13 @@ export interface ProgressEntry {
 }
 
 /**
- * One lapse, and what the user said about it: the mind went blank, or the
- * word was taken for something else.
+ * One lapse, and what the user said about it: the mind went blank, the word
+ * was taken for something else, or it came back only in part (没想全: some of
+ * the meaning, or not the part of speech). 其实没忘 writes no record at all.
+ *
+ * `'partial'` came after the first two (2026-10-23). A build older than that
+ * skips it in mergeForgot, so a device that has not updated drops it from
+ * what it pushes; the device that wrote it unions it back on its next merge.
  *
  * `prevInterval` and `prevReviewedAt` are the entry's `intervalDays` and
  * `lastReviewedAt` **as they stood before the lapse was graded**. `gradeWord`
@@ -230,7 +235,7 @@ export interface ProgressEntry {
 export interface ForgetRecord {
   /** ISO timestamp of the lapse. The merge key. */
   at: string
-  kind: 'blank' | 'confused'
+  kind: 'blank' | 'confused' | 'partial'
   /** The partner word's id, or `'self'` for the word's own other sense. Absent: the meaning was wrong, but not any word shown. */
   with?: string
   /** `intervalDays` before the lapse was graded. */

@@ -146,7 +146,7 @@ export function appendForget(entry: ProgressEntry, rec: ForgetRecord): ProgressE
 const isReadableRecord = (v: unknown): v is ForgetRecord =>
   typeof v === 'object' && v !== null && !Array.isArray(v)
   && typeof (v as ForgetRecord).at === 'string'
-  && ((v as ForgetRecord).kind === 'blank' || (v as ForgetRecord).kind === 'confused')
+  && ((v as ForgetRecord).kind === 'blank' || (v as ForgetRecord).kind === 'confused' || (v as ForgetRecord).kind === 'partial')
 
 /**
  * The newest forget record whose lapse happened on `today` (local, as
@@ -174,12 +174,13 @@ export function latestForgetToday(entry: ProgressEntry | undefined, today: strin
  * named (the wrong meaning matched nothing offered). Either way the user did
  * not have the word's neighbour in mind, so a nudge toward the word itself is
  * what is missing. A partner, or the word's own other sense, says what it was
- * taken for and needs no ladder.
+ * taken for and needs no ladder. Neither does 没想全: the word came back, only
+ * not all of its meaning or its part of speech, and the back shows the rest.
  */
 export function needsHintLadder(entry: ProgressEntry | undefined, today: string): boolean {
   const rec = latestForgetToday(entry, today)
   if (rec === undefined) return false
-  return rec.kind === 'blank' || typeof rec.with !== 'string'
+  return rec.kind === 'blank' || (rec.kind === 'confused' && typeof rec.with !== 'string')
 }
 
 /**
