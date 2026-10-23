@@ -1982,3 +1982,38 @@ describe('recordSprint: best score', () => {
     expect(sent.bestSprint).toEqual({ score: 7, date: today })
   })
 })
+
+describe('markSynonymsSeen: the 近义词 rotation, never the schedule', () => {
+  it('stamps every term and touches nothing else', async () => {
+    storage.set('token', 'tok-alice')
+    storage.set('owner', 'alice')
+    remote.files['words.json'] = { content: wordsFile(['a', 'b']), sha: 'w-remote' }
+    remote.files['progress.json'] = { content: JSON.stringify(emptyProgress()), sha: 'p-remote' }
+    await mount()
+    await step(() => { app().grade('a', 'easy') })
+    const words = structuredClone(app().progress.words)
+    const dailyStats = structuredClone(app().progress.dailyStats)
+
+    await step(() => { app().markSynonymsSeen(['反感', '厌恶']) })
+
+    const seen = app().progress.synonymSeen ?? {}
+    expect(Object.keys(seen).sort()).toEqual(['厌恶', '反感'].sort())
+    expect(seen['反感']).toBe(seen['厌恶'])
+    expect(new Date(seen['反感']).toISOString()).toBe(seen['反感'])
+    expect(app().progress.words).toEqual(words)
+    expect(app().progress.dailyStats).toEqual(dailyStats)
+  })
+
+  it('writes nothing for an empty list', async () => {
+    storage.set('token', 'tok-alice')
+    storage.set('owner', 'alice')
+    remote.files['words.json'] = { content: wordsFile(['a']), sha: 'w-remote' }
+    remote.files['progress.json'] = { content: JSON.stringify(emptyProgress()), sha: 'p-remote' }
+    await mount()
+    const before = app().progress
+
+    await step(() => { app().markSynonymsSeen([]) })
+
+    expect(app().progress).toBe(before)
+  })
+})

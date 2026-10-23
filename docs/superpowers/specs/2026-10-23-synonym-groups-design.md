@@ -286,8 +286,9 @@ last time a group carrying that term was left.
   orders them.
 - **Size, and the next limit.** The map is bounded by the number of shared
   terms in the library, not by time. With all 716 stamped it is 23,303 UTF-16
-  units, 0.88% of the localStorage quota the progress cache lives under
-  (977,624 units was 37% on 2026-09-01). The quota itself stays the nearer
+  units, 0.89% of the 2,621,440-unit localStorage quota the progress cache
+  lives under (WebKit's 5 MiB, as `Progress.tangles` records it; 0.88% in an
+  earlier draft divided by an estimate). The quota itself stays the nearer
   ceiling, and the forget log and tangles are what move it (CLAUDE.md).
 - **It writes nothing the scheduler owns**: `due`, `intervalDays`, `ease`,
   `lapses`, `state`, `missedAt` and `lastReviewedAt` are untouched. The write
