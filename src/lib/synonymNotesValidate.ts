@@ -20,8 +20,16 @@ import { isInflectionOf } from './headword'
  * 212–225 (2), five 231–275 (2). A flat cap had to choose between letting a
  * pair run 1.6× its longest and refusing a five-word group. 100 + 40n sits
  * 5–16% above the longest paragraph at each size (180 / 220 / 260 / 300).
- * The live page's largest groups have 6 members (2 of 326), so 340 there is
- * extrapolated: re-measure once one is written.
+ *
+ * Re-measured over all 326 paragraphs once every group on the page had one
+ * (2026-10-23): pairs median 149, max 178 (208 groups); three members 199,
+ * 219 (82); four 250, 260 (25); five 275, 288 (9); six 334 (2, cap 340).
+ * Those 296 were drafted with this cap printed in the brief, so they measure
+ * the cap as much as the content: 16 of the 25 four-member paragraphs sit
+ * within 5% of 260, and none read as cut short in review. If a group's real
+ * distinction will not fit, raise the per-member rate, not the base: the
+ * pressure is on the larger groups, and pairs (4 of 208 near their cap) are
+ * where padding would show.
  */
 export function maxSynonymNote(memberCount: number): number {
   return 100 + 40 * memberCount
