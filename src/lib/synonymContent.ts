@@ -25,6 +25,12 @@ export interface MemberView {
   meanings: { pos: string; zh: string }[]
   /** Collocations, first-meaning members only; empty otherwise. */
   usage: string[]
+  /**
+   * The entry's `antonyms`, first-meaning members only, for the usage line's
+   * reason: an antonym hangs off the word, and on a later-meaning member it
+   * answers the other sense (spec R3). Includes words outside the library.
+   */
+  antonyms: string[]
   /** The word note, in the pieces view and on first-meaning members only. */
   note?: string
   /**
@@ -34,9 +40,16 @@ export interface MemberView {
   bridge?: { form: string; pos: string; zh: string; usage: string[] }
 }
 
+/** The opposite group, compact: its words and, when current, its own paragraph (spec R3). */
+export interface OppositeView {
+  title: string
+  members: { id: string; headword: string; meanings: { pos: string; zh: string }[] }[]
+  text?: string
+}
+
 export type GroupView =
-  | { kind: 'paragraph'; title: string; members: MemberView[]; text: string }
-  | { kind: 'pieces'; title: string; members: MemberView[]; pairs: { a: string; b: string; text: string }[]; missing: number }
+  | { kind: 'paragraph'; title: string; members: MemberView[]; text: string; opposite?: OppositeView }
+  | { kind: 'pieces'; title: string; members: MemberView[]; pairs: { a: string; b: string; text: string }[]; missing: number; opposite?: OppositeView }
 
 /**
  * The paragraph written for exactly these members, under any of the group's
@@ -81,9 +94,12 @@ export function groupView(
   notes: SynonymNotesFile,
   contrast: ContrastNotesFile,
   wordNotes: WordNotesFile,
+  opposite?: SynonymGroup,
 ): GroupView | null {
   const live = group.members.filter((m) => wordsById.has(m.id))
   if (live.length < 2) return null
+  const oppositeView = opposite === undefined ? undefined : viewOpposite(opposite, wordsById, notes)
+  const withOpposite = oppositeView === undefined ? {} : { opposite: oppositeView }
   const bridgeOf = new Map((Array.isArray(group.bridges) ? group.bridges : []).map((b) => [b.for, b]))
   const view = (m: SynonymMember, withNote: boolean): MemberView => {
     const w = wordsById.get(m.id) as Word
@@ -102,6 +118,7 @@ export function groupView(
         return meaning === undefined ? [] : [{ pos: meaning.pos, zh: meaning.zh }]
       }),
       usage: m.firstMeaning && Array.isArray(w.collocations) ? w.collocations : [],
+      antonyms: m.firstMeaning && Array.isArray(w.antonyms) ? w.antonyms.filter((a) => typeof a === 'string') : [],
       ...(note === undefined ? {} : { note }),
       ...(bridge === undefined ? {} : { bridge }),
     }
@@ -115,6 +132,7 @@ export function groupView(
       title: group.key,
       members: paragraph.members.map((id) => view(byId.get(id) as SynonymMember, false)),
       text: paragraph.text,
+      ...withOpposite,
     }
   }
 
@@ -135,5 +153,31 @@ export function groupView(
     members: live.map((m) => view(m, true)),
     pairs,
     missing: total - pairs.length,
+    ...withOpposite,
+  }
+}
+
+/** The opposite group's words, in its paragraph's order when it has a current one; undefined when fewer than two of its words remain. */
+function viewOpposite(group: SynonymGroup, wordsById: Map<string, Word>, notes: SynonymNotesFile): OppositeView | undefined {
+  const live = group.members.filter((m) => wordsById.has(m.id))
+  if (live.length < 2) return undefined
+  const paragraph = currentNote({ ...group, members: live }, notes)
+  const order = paragraph?.members ?? live.map((m) => m.id)
+  const byId = new Map(live.map((m) => [m.id, m]))
+  return {
+    title: group.key,
+    members: order.flatMap((id) => {
+      const m = byId.get(id)
+      const w = wordsById.get(id)
+      if (m === undefined || w === undefined) return []
+      return [{
+        id, headword: w.headword,
+        meanings: m.carrying.flatMap((i) => {
+          const meaning = w.meanings[i]
+          return meaning === undefined ? [] : [{ pos: meaning.pos, zh: meaning.zh }]
+        }),
+      }]
+    }),
+    ...(paragraph === undefined ? {} : { text: paragraph.text }),
   }
 }

@@ -55,8 +55,10 @@ they said 反义词也分清: the opposites' own differences, not just their nam
 - **A group's opposite group** is the group with the most opposite pairs to
   it, when that count is at least 2 and strictly greater than any other
   group's count. Otherwise the group has none.
-  - Measured on the 519 groups: 269 reach some other group; 175 have a best
-    of at least 2 pairs; **136 have a unique one**.
+  - Measured on the 519 groups, by the module that implements this rule:
+    **149 have an opposite group**, 68 of them in pairs that pick each other.
+    (A rough count before implementation said 136; it counted pairs found
+    from one side only.)
   - Examples: 朴素↔奢华, 减轻↔使恶化, 安抚↔激怒, 审慎↔轻率, 疏忽↔留心,
     犹豫不决↔坚决, 贬低↔颂扬, 简洁↔冗词、啰嗦.
 - **Shown** as a 反面 section after 差别在哪: the opposite group's title, its
