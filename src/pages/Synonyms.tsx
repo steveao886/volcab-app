@@ -13,6 +13,7 @@ import { groupView } from '../lib/synonymContent'
 import type { GroupView, SynonymNotesFile } from '../lib/synonymContent'
 import { buildSynonymGroups } from '../lib/synonymGroups'
 import type { SynonymGroup } from '../lib/synonymGroups'
+import { oppositeGroups } from '../lib/synonymOpposites'
 import { pickVisit, resolveVisit } from '../lib/synonymVisit'
 import type { WordNotesFile } from '../lib/wordNotes'
 import { useApp } from '../state/store'
@@ -42,6 +43,14 @@ export function Synonyms() {
   }))
 
   const wordsById = useMemo(() => new Map(words.map((w) => [w.id, w])), [words])
+  // Each group's opposite group, when it has a clear one (spec R3).
+  const opposites = useMemo(() => {
+    const byKey = new Map(groups.map((g) => [g.key, g]))
+    return new Map([...oppositeGroups(groups, words)].flatMap(([k, o]) => {
+      const g = byKey.get(o)
+      return g === undefined ? [] : [[k, g] as const]
+    }))
+  }, [groups, words])
   const shown = useMemo(
     () => resolveVisit(visit.keys, groups).flatMap((group) => {
       const view = groupView(
@@ -49,10 +58,11 @@ export function Synonyms() {
         synonymNotesFile as SynonymNotesFile,
         contrastNotesFile as ContrastNotesFile,
         wordNotesFile as WordNotesFile,
+        opposites.get(group.key),
       )
       return view === null ? [] : [{ group, view }]
     }),
-    [visit.keys, groups, wordsById],
+    [visit.keys, groups, wordsById, opposites],
   )
   const index = shown.findIndex((s) => !visit.left.includes(s.group.key))
   const current = index === -1 ? undefined : shown[index]
@@ -173,6 +183,12 @@ function GroupBlock({ view }: { view: GroupView }) {
                   )}
                 </span>
               )}
+              {m.antonyms.length > 0 && (
+                <span className="synonyms-member__antonyms">
+                  <span className="synonyms-member__tag">反义</span>
+                  <span lang="en">{m.antonyms.join('、')}</span>
+                </span>
+              )}
               {m.note !== undefined && (
                 <div className="margin-note">
                   <p className="margin-note__label">要点</p>
@@ -220,6 +236,34 @@ function GroupBlock({ view }: { view: GroupView }) {
           </>
         )}
       </section>
+
+      {/* The opposite side is another synonym group, with its own paragraph
+          (spec R3). It is not stamped as seen: it keeps its own turn. */}
+      {view.opposite !== undefined && (
+        <section className="section">
+          <h3 className="section-head">反面</h3>
+          <p className="synonyms-opposite__term">{view.opposite.title}</p>
+          <ul className="ledger">
+            {view.opposite.members.map((m) => (
+              <li key={m.id} className="ledger__row synonyms-member">
+                <span className="ledger__word" lang="en">{m.headword}</span>
+                {m.meanings.map((x, i) => (
+                  <span key={i} className="synonyms-member__meaning">
+                    <span className="pos">{x.pos}</span>
+                    <span className="ledger__secondary">{x.zh}</span>
+                  </span>
+                ))}
+              </li>
+            ))}
+          </ul>
+          {view.opposite.text !== undefined && (
+            <div className="margin-note">
+              <p className="margin-note__label">辨析</p>
+              <p className="margin-note__text">{view.opposite.text}</p>
+            </div>
+          )}
+        </section>
+      )}
     </article>
   )
 }

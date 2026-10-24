@@ -134,6 +134,47 @@ describe('base words in the view (spec R2)', () => {
   })
 })
 
+describe('opposites in the view (spec R3)', () => {
+  const ant = (id: string, zh: string, antonyms: string[]): Word => ({ ...w(id, [['adj.', zh]]), antonyms })
+  const thrift = byId(
+    ant('frugal', '节俭的', ['lavish', 'wasteful']),
+    ant('thrifty', '节俭的', ['extravagant']),
+    ant('lavish', '奢侈的', []),
+    ant('extravagant', '奢侈的', []),
+    { ...w('spare', [['adj.', '多余的'], ['adj.', '节俭的']]), antonyms: ['necessary'] },
+  )
+  const frugalGroup: SynonymGroup = {
+    key: '节俭', terms: ['节俭'], bridges: [],
+    members: [member('frugal'), member('thrifty'), member('spare', [1])],
+  }
+  const lavishGroup: SynonymGroup = { key: '奢侈', terms: ['奢侈'], bridges: [], members: [member('extravagant'), member('lavish')] }
+
+  it('lists antonyms on first-meaning members only', () => {
+    const view = groupView(frugalGroup, thrift, synNotes(), contrast(), wordNotes())
+    expect(view?.members.map((m) => m.antonyms)).toEqual([['lavish', 'wasteful'], ['extravagant'], []])
+  })
+
+  it('shows the opposite group, with its paragraph when current', () => {
+    const notes = synNotes({ 奢侈: { members: ['lavish', 'extravagant'], text: 'lavish 偏慷慨……' } })
+    const view = groupView(frugalGroup, thrift, notes, contrast(), wordNotes(), lavishGroup)
+    expect(view?.opposite).toEqual({
+      title: '奢侈',
+      members: [
+        { id: 'lavish', headword: 'lavish', meanings: [{ pos: 'adj.', zh: '奢侈的' }] },
+        { id: 'extravagant', headword: 'extravagant', meanings: [{ pos: 'adj.', zh: '奢侈的' }] },
+      ],
+      text: 'lavish 偏慷慨……',
+    })
+  })
+
+  it('shows the opposite group without a paragraph when none is current, and none without one', () => {
+    const view = groupView(frugalGroup, thrift, synNotes(), contrast(), wordNotes(), lavishGroup)
+    expect(view?.opposite?.text).toBeUndefined()
+    expect(view?.opposite?.members.map((m) => m.id)).toEqual(['extravagant', 'lavish'])
+    expect(groupView(frugalGroup, thrift, synNotes(), contrast(), wordNotes())?.opposite).toBeUndefined()
+  })
+})
+
 describe('currentNote', () => {
   it('matches the member set regardless of order, under any of the terms', () => {
     const notes = synNotes({ 反感: { members: ['aversion', 'averse', 'antipathy'], text: 't' } })

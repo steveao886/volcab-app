@@ -83,3 +83,31 @@
 .synonyms-member__bridge .synonyms-member__usage {
   flex-basis: 100%;
 }
+
+/* 反义: the entry's opposites, set like the usage line (English, muted) with
+   a small label, since both are lists of English beside a word. */
+.synonyms-member__antonyms {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--sp-2);
+  font-family: var(--font-word);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.synonyms-member__antonyms .synonyms-member__tag {
+  font-family: var(--font-ui);
+}
+
+/* The opposite group's title, a step below the page's own term: it is the
+   other side of this group, not a second subject. */
+.synonyms-opposite__term {
+  margin: 0;
+  font-size: var(--fs-xl);
+  font-weight: 900;
+  line-height: var(--lh-tight);
+  overflow-wrap: anywhere;
+}
