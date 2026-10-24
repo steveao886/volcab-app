@@ -1,5 +1,95 @@
 # 近义词: words that share a Chinese meaning, side by side
 
+## Revision 2 (2026-10-23, after the first version shipped)
+
+Four changes, decided with the user after using the page. Where they
+contradict a section below, this one wins; the sections below are marked.
+
+### R1. Groups span the whole library (decided with the user)
+
+§2's rule 2 ("only studied words are shown") is gone: a group is a gloss term
+shared by two or more library words, studied or not. The user: 剧透没学过的词
+没事儿, 没学过的也可以提前写进去.
+
+- **Why it is also the better data shape:** under the studied-only rule a
+  group's members changed every time the user studied one of its words, and
+  each change made its paragraph stale. 12 of 329 paragraphs were already
+  stale a few hours after they were written. Over the whole library, a group
+  changes only when the library does.
+- **Measured** on the live library, 2026-10-23 (1,411 words): 519 groups,
+  against 329 studied-only. Only 186 of them matched a current paragraph, so
+  333 paragraphs had to be written or rewritten.
+- `studiedIds` goes, and `buildSynonymGroups` takes the word list alone.
+
+### R2. A word alone in its part of speech brings its base word (decided with the user)
+
+The user's example: 逐渐减少 holds `diminishing` (adj.) and `dwindle` (v.),
+so nothing compares like with like. `diminish` (v.) is the word to set
+beside `dwindle`. The user: 要把原词带上.
+
+- **A member is lone** when none of its carrying meanings shares a part of
+  speech with any carrying meaning of another member.
+- **Its base word** is the first of its own `relatedForms` whose `pos` some
+  other member has, and whose form is not already a member. At most one per
+  lone member.
+- **Shown** as a 同根 row under that member: the form, the related form's
+  part of speech and `zh`. When the form is itself a library word, its usage
+  line is shown as well. *(My call.)*
+- **The paragraph compares it too**: the gate (R4) requires a group's
+  paragraph to name each base word as well as each member. A paragraph that
+  does not name one is not current for that group.
+- It comes from the lone word's own entry, so it can be any word; R1 already
+  dropped the studied-only rule.
+
+### R3. Opposites (decided with the user)
+
+The user's observation was that an opposite is really another synonym
+group (反义其实也就是另一组近义词). Asked what the opposite side should give,
+they said 反义词也分清: the opposites' own differences, not just their names.
+
+- **An opposite pair** is two members of different groups, both
+  first-meaning members, one listing the other in `antonyms` (headwords
+  matched case-insensitively). Restricting to first-meaning members is
+  CLAUDE.md's antonym rule: an antonym hangs off a word, not a sense, so a
+  word in a group through its other sense brings opposites of that sense.
+- **A group's opposite group** is the group with the most opposite pairs to
+  it, when that count is at least 2 and strictly greater than any other
+  group's count. Otherwise the group has none.
+  - Measured on the 519 groups: 269 reach some other group; 175 have a best
+    of at least 2 pairs; **136 have a unique one**.
+  - Examples: 朴素↔奢华, 减轻↔使恶化, 安抚↔激怒, 审慎↔轻率, 疏忽↔留心,
+    犹豫不决↔坚决, 贬低↔颂扬, 简洁↔冗词、啰嗦.
+- **Shown** as a 反面 section after 差别在哪: the opposite group's title, its
+  members (headword, part of speech, carrying meaning), and its own paragraph
+  as a 辨析 note when current.
+  - Every group owes a paragraph anyway (R4), so the opposite side costs no
+    extra writing.
+  - The opposite group is not stamped as seen: it keeps its own turn in the
+    rotation. *(My call.)*
+- **Every first-meaning member also gets a 反义 line**: its `antonyms`,
+  joined with 、, including words not in the library. 838 of 899
+  first-meaning members carry at least one. The line hides on later-meaning
+  members, for the usage line's reason.
+
+### R4. Every group has a paragraph, and adding a word keeps it so (decided with the user)
+
+The user: 以后加新词的流程也要改一下, 确保也加到这里.
+
+- **Groups no longer depend on progress (R1),** so the write side can compute
+  every group from `data/words.json`. `validate-synonym-notes` now fails (CI
+  included) when:
+  - a group has no current paragraph;
+  - a paragraph is current for no group (orphaned by an edit or a deletion);
+  - a group's paragraph does not name each of its base words.
+- **This supersedes §4's "coverage is not enforced".** A word that creates or
+  changes a group cannot be committed until the paragraph is written.
+- **`content-staleness --batch` reports the same debt per word**, and the
+  word-content skill's map and add-word steps name `synonymNotes.json` as
+  required.
+- **The runtime stays lenient.** The live library can be ahead of the repo
+  copy (a deletion in the app), and a group whose paragraph no longer
+  matches falls back to the pieces, as before.
+
 ## Intent
 
 The user wants a page that groups the words they have studied by a shared
@@ -64,7 +154,7 @@ means the word has a progress entry past `new`.
    word, not only `meanings[0]`. Stripping 的 is what puts 不安的 (adj.) and
    不安 (n.) in one group, and that is what makes part-of-speech differences
    appear at all.
-2. **Only studied words are shown.** A group needs 2 or more of them, and an
+2. *(Superseded by R1: groups span the whole library.)* **Only studied words are shown.** A group needs 2 or more of them, and an
    unstudied member is left out, so the page never spoils a word before its
    first review.
 3. **A group that is only one word family is dropped.** If every displayed
