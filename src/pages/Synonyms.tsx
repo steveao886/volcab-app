@@ -6,6 +6,7 @@ import { Page } from '../components/Page'
 import { ProgressMarks } from '../components/ProgressMarks'
 import contrastNotesFile from '../data/contrastNotes.json'
 import synonymNotesFile from '../data/synonymNotes.json'
+import synonymOppositesFile from '../data/synonymOpposites.json'
 import wordNotesFile from '../data/wordNotes.json'
 import type { ContrastNotesFile } from '../lib/contrastNotes'
 import { isEditableTarget } from '../lib/keys'
@@ -22,7 +23,7 @@ import './Review.css'
 import './Synonyms.css'
 
 /**
- * 近义词 — studied words that share a Chinese gloss, a few groups a visit
+ * 近义词 — library words that share a Chinese gloss, a few groups a visit
  * (docs/superpowers/specs/2026-10-23-synonym-groups-design.md). Reading only:
  * the one write is the last-seen stamp, as each group is left.
  *
@@ -46,7 +47,12 @@ export function Synonyms() {
   // Each group's opposite group, when it has a clear one (spec R3).
   const opposites = useMemo(() => {
     const byKey = new Map(groups.map((g) => [g.key, g]))
-    return new Map([...oppositeGroups(groups, words)].flatMap(([k, o]) => {
+    // The vetoes are bundled content; a malformed list vetoes nothing.
+    const raw: unknown = (synonymOppositesFile as { exclude?: unknown }).exclude
+    const exclude = Array.isArray(raw)
+      ? raw.filter((p): p is [string, string] => Array.isArray(p) && p.length === 2 && p.every((t) => typeof t === 'string'))
+      : []
+    return new Map([...oppositeGroups(groups, words, exclude)].flatMap(([k, o]) => {
       const g = byKey.get(o)
       return g === undefined ? [] : [[k, g] as const]
     }))
@@ -111,7 +117,7 @@ export function Synonyms() {
   if (groups.length === 0) {
     return (
       <Page title="近义词" back="/">
-        <p className="muted">学过的词里还没有共用一个中文意思的，多学一些再来。</p>
+        <p className="muted">词库里还没有共用一个中文意思的词。</p>
       </Page>
     )
   }
@@ -173,7 +179,7 @@ function GroupBlock({ view }: { view: GroupView }) {
               {m.antonyms.length > 0 && (
                 <span className="synonyms-member__antonyms">
                   <span className="synonyms-member__tag">反义</span>
-                  <span lang="en">{m.antonyms.join('、')}</span>
+                  <span className="synonyms-member__list" lang="en">{m.antonyms.join('、')}</span>
                 </span>
               )}
               {/* A lone part of speech brings its base word (spec R2), so the
@@ -183,7 +189,7 @@ function GroupBlock({ view }: { view: GroupView }) {
                   <span className="synonyms-member__tag">同根</span>
                   <span className="synonyms-member__form" lang="en">{m.bridge.form}</span>
                   <span className="pos">{m.bridge.pos}</span>
-                  <span className="ledger__secondary">{m.bridge.zh}</span>
+                  <span className="ledger__secondary synonyms-member__list">{m.bridge.zh}</span>
                   {m.bridge.usage.length > 0 && (
                     <span className="synonyms-member__usage" lang="en">{m.bridge.usage.join('、')}</span>
                   )}
@@ -253,6 +259,15 @@ function GroupBlock({ view }: { view: GroupView }) {
                     <span className="ledger__secondary">{x.zh}</span>
                   </span>
                 ))}
+                {/* Its paragraph names its base words (spec R2), so they are listed too. */}
+                {m.bridge !== undefined && (
+                  <span className="synonyms-member__bridge">
+                    <span className="synonyms-member__tag">同根</span>
+                    <span className="synonyms-member__form" lang="en">{m.bridge.form}</span>
+                    <span className="pos">{m.bridge.pos}</span>
+                    <span className="ledger__secondary synonyms-member__list">{m.bridge.zh}</span>
+                  </span>
+                )}
               </li>
             ))}
           </ul>

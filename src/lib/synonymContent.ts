@@ -43,7 +43,8 @@ export interface MemberView {
 /** The opposite group, compact: its words and, when current, its own paragraph (spec R3). */
 export interface OppositeView {
   title: string
-  members: { id: string; headword: string; meanings: { pos: string; zh: string }[] }[]
+  /** With each member's base word, since the opposite paragraph names it (spec R2). */
+  members: { id: string; headword: string; meanings: { pos: string; zh: string }[]; bridge?: { form: string; pos: string; zh: string } }[]
   text?: string
 }
 
@@ -164,18 +165,21 @@ function viewOpposite(group: SynonymGroup, wordsById: Map<string, Word>, notes: 
   const paragraph = currentNote({ ...group, members: live }, notes)
   const order = paragraph?.members ?? live.map((m) => m.id)
   const byId = new Map(live.map((m) => [m.id, m]))
+  const bridgeOf = new Map((Array.isArray(group.bridges) ? group.bridges : []).map((b) => [b.for, b]))
   return {
     title: group.key,
     members: order.flatMap((id) => {
       const m = byId.get(id)
       const w = wordsById.get(id)
       if (m === undefined || w === undefined) return []
+      const b = bridgeOf.get(id)
       return [{
         id, headword: w.headword,
         meanings: m.carrying.flatMap((i) => {
           const meaning = w.meanings[i]
           return meaning === undefined ? [] : [{ pos: meaning.pos, zh: meaning.zh }]
         }),
+        ...(b === undefined ? {} : { bridge: { form: b.form, pos: b.pos, zh: b.zh } }),
       }]
     }),
     ...(paragraph === undefined ? {} : { text: paragraph.text }),

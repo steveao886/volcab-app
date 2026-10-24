@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { Word } from '../types'
 import type { SynonymNotesFile } from './synonymContent'
 import type { SynonymGroup } from './synonymGroups'
-import { maxSynonymNote, synonymCoverageErrors, synonymNoteErrors } from './synonymNotesValidate'
+import { maxSynonymNote, oppositeExcludeErrors, synonymCoverageErrors, synonymNoteErrors } from './synonymNotesValidate'
 
 const w = (id: string, zh: string[], headword = id): Word => ({
   id, headword, phonetic: '', sourceNote: 'test', addedAt: '2026-10-23',
@@ -138,5 +138,69 @@ describe('synonymCoverageErrors (spec R4)', () => {
     const errs = synonymCoverageErrors([dwindleGroup, easeGroup], file(unnamed), byId)
     expect(errs).toHaveLength(1)
     expect(errs[0]).toContain('diminish')
+  })
+})
+
+describe('oppositeExcludeErrors (final review of revision 2)', () => {
+  const ant = (id: string, antonyms: string[]): Word => ({ ...w(id, ['x']), antonyms })
+  const words = [ant('frugal', ['lavish']), ant('thrifty', ['extravagant']), ant('lavish', []), ant('extravagant', [])]
+  const member = (id: string) => ({ id, carrying: [0], firstMeaning: true })
+  const groups: SynonymGroup[] = [
+    { key: '节俭', terms: ['节俭'], bridges: [], members: [member('frugal'), member('thrifty')] },
+    { key: '奢侈', terms: ['奢侈'], bridges: [], members: [member('lavish'), member('extravagant')] },
+  ]
+
+  it('accepts an exclusion that matches a candidate pairing', () => {
+    expect(oppositeExcludeErrors({ version: 1, exclude: [['节俭', '奢侈']] }, groups, words)).toEqual([])
+  })
+
+  it('reports an exclusion that matches no candidate any more', () => {
+    const errs = oppositeExcludeErrors({ version: 1, exclude: [['节俭', '浪费']] }, groups, words)
+    expect(errs).toHaveLength(1)
+    expect(errs[0]).toContain('节俭 → 浪费')
+  })
+
+  it('reports a malformed file without throwing', () => {
+    expect(oppositeExcludeErrors(null, groups, words)).toHaveLength(1)
+    expect(oppositeExcludeErrors({ version: 1, exclude: [['节俭']] }, groups, words)).toHaveLength(1)
+  })
+})
+
+describe('phrase headwords and owed base words in messages (final review of revision 2)', () => {
+  const lib3 = new Map([
+    w('far-fetched', ['牵强的'], 'far fetched'),
+    w('implausible', ['牵强的']),
+    w('setback', ['倒退']),
+    w('regress', ['倒退']),
+    w('down-to-earth', ['务实的'], 'down-to-earth'),
+    w('practical', ['务实的']),
+  ].map((x) => [x.id, x]))
+  const member = (id: string) => ({ id, carrying: [0], firstMeaning: true })
+  const file = (notes: SynonymNotesFile['notes']): SynonymNotesFile => ({ version: 1, notes })
+
+  it('names a phrase headword through a hyphen, and a hyphenated one through spaces', () => {
+    const fetched: SynonymGroup = { key: '牵强', terms: ['牵强'], bridges: [], members: [member('far-fetched'), member('implausible')] }
+    expect(synonymCoverageErrors([fetched], file({ 牵强: { members: ['far-fetched', 'implausible'], text: 'a far-fetched theory 比 implausible 更夸张。' } }), lib3)).toEqual([])
+    const earth: SynonymGroup = { key: '务实', terms: ['务实'], bridges: [], members: [member('down-to-earth'), member('practical')] }
+    expect(synonymCoverageErrors([earth], file({ 务实: { members: ['down-to-earth', 'practical'], text: 'down to earth 说人;practical 说办法。' } }), lib3)).toEqual([])
+  })
+
+  it('names a phrase base word through an inflection of its first word', () => {
+    const back: SynonymGroup = {
+      key: '倒退', terms: ['倒退'], members: [member('regress'), member('setback')],
+      bridges: [{ for: 'setback', form: 'set back', pos: 'v.', zh: '使倒退' }],
+    }
+    const text = 'regress 是自己退回去;setback 是名词,对应的动词 sets back 是被外力拖慢。'
+    expect(synonymCoverageErrors([back], file({ 倒退: { members: ['regress', 'setback'], text } }), lib3)).toEqual([])
+  })
+
+  it('names the base words a group owes in its missing-paragraph message', () => {
+    const back: SynonymGroup = {
+      key: '倒退', terms: ['倒退'], members: [member('regress'), member('setback')],
+      bridges: [{ for: 'setback', form: 'set back', pos: 'v.', zh: '使倒退' }],
+    }
+    const [err] = synonymCoverageErrors([back], file({}), lib3)
+    expect(err).toContain('regress, setback')
+    expect(err).toContain('base words: set back')
   })
 })

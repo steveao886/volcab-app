@@ -81,6 +81,23 @@ they said 反义词也分清: the opposites' own differences, not just their nam
     from one side only.)
   - Examples: 朴素↔奢华, 减轻↔使恶化, 安抚↔激怒, 审慎↔轻率, 疏忽↔留心,
     犹豫不决↔坚决, 贬低↔颂扬, 简洁↔冗词、啰嗦.
+- **A person can veto a pairing** *(my call, from the review of this
+  revision)*: `src/data/synonymOpposites.json` lists `[termA, termB]`
+  exclusions, applied before ranking, so the next best must clear the bar on
+  its own. The rule resolves an antonym by headword whatever sense it was
+  listed in: elucidate lists *obscure* the verb, but the library's `obscure`
+  is 鲜为人知; *favorable* is listed against adverse in its 有利 sense, which
+  sent 好评 to 不利.
+  - `validate-synonym-notes --opposites` prints every pairing shown and
+    every vetoed one; the gate fails on a veto that matches no pairing.
+  - Every one of the 149 was read on 2026-10-23: 13 vetoed, then 3 more that
+    stepped up in their place for the same reason (好评/赞许 → 有害,
+    细微 → 炫耀). **136 pairings remain.**
+  - Requiring two distinct words on each side was measured instead and
+    rejected: 149 → 72, losing right pairs (朴素↔奢华, 隐居↔合群), the same
+    result as CLAUDE.md's rejected quorum for 发散.
+- **The 反面 list shows the opposite group's base words too**, since its
+  paragraph names them.
 - **Shown** as a 反面 section after 差别在哪: the opposite group's title, its
   members (headword, part of speech, carrying meaning), and its own paragraph
   as a 辨析 note when current.
