@@ -155,3 +155,46 @@ describe('base words (spec R2)', () => {
     expect(buildSynonymGroups(member)[0].bridges).toEqual([])
   })
 })
+
+describe('base words: sense guards (final review of revision 2)', () => {
+  it('brings none for a member that is in the group through a later meaning', () => {
+    // related forms describe a word by its first sense: blunt's bluntness is
+    // 直率, not anything to do with 减轻.
+    // relief brings no verb of its own here, so nothing else covers blunt's
+    // verb and only the later-meaning guard can stop bluntness.
+    const words = [
+      wr('blunt', [['adj.', '钝的'], ['v.', '减轻;削弱']], [['bluntness', 'n.', '直率;减轻锋芒']]),
+      wr('relief', [['n.', '减轻;缓解']], []),
+    ]
+    expect(buildSynonymGroups(words)[0].bridges).toEqual([])
+  })
+
+  it('brings none for a member whose own family form is already in the group', () => {
+    // timeliness already has timely beside it; reaching past it took untimely.
+    const words = [
+      wr('timeliness', [['n.', '适时;及时']], [['timely', 'adj.', '及时的;适时的'], ['untimely', 'adj.', '不合时宜的;适时的反面']]),
+      wr('timely', [['adj.', '适时的']], [['timeliness', 'n.', '适时']]),
+      w('opportune', [['adj.', '适时的;恰好的']]),
+    ]
+    expect(buildSynonymGroups(words).find((g) => g.key === '适时')?.bridges).toEqual([])
+  })
+
+  it('does not bring the same form twice', () => {
+    const words = [
+      wr('presume', [['v.', '假定']], [['presumption', 'n.', '假定;推测']]),
+      wr('presumptive', [['adj.', '假定的']], [['presumption', 'n.', '假定;推测']]),
+      w('supposition', [['n.', '假定']]),
+    ]
+    expect(buildSynonymGroups(words)[0].bridges.map((b) => b.form)).toEqual(['presumption'])
+  })
+
+  it('needs the base word to share a two-character run with the member\'s meaning', () => {
+    // grief's grievous is 严重的, a different sense from 悲痛; diminish keeps
+    // 减少 in common with diminishing's 逐渐减少的.
+    const words = [
+      wr('grief', [['n.', '悲痛;哀伤']], [['grievous', 'adj.', '严重的;剧烈的']]),
+      w('mournful', [['adj.', '悲痛的']]),
+    ]
+    expect(buildSynonymGroups(words)[0].bridges).toEqual([])
+  })
+})

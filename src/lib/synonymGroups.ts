@@ -102,7 +102,7 @@ export function buildSynonymGroups(words: Word[]): SynonymGroup[] {
       a.firstMeaning !== b.firstMeaning
         ? (a.firstMeaning ? -1 : 1)
         : (byId.get(a.id)?.headword ?? a.id).localeCompare(byId.get(b.id)?.headword ?? b.id))
-    return { key: terms.join('、'), terms, members, bridges: bridgesFor(members, byId, byHead) }
+    return { key: terms.join('、'), terms, members, bridges: bridgesFor(members, byId, byHead, family) }
   })
 }
 
@@ -114,11 +114,18 @@ export function buildSynonymGroups(words: Word[]): SynonymGroup[] {
  * has and whose form is not already a member. Lone members are taken in
  * member order, and a part of speech an earlier base word brought counts as
  * present. On data/words.json, 2026-10-23
- * (519 groups): 213 mix parts of speech and 115 bring a base word, 123 in
- * all, 40 of them library words. The rest leave the part-of-speech
+ * (519 groups): 213 mix parts of speech and 77 bring a base word, 78 in all,
+ * 31 of them library words. Before the guards below there were 123, and the
+ * final review read 10–15 of them as wrong-sense: 适时 took untimely, 简洁
+ * chastity, 宽容 charity, 轻蔑 dismissal. The rest leave the part-of-speech
  * difference to the paragraph.
  */
-function bridgesFor(members: SynonymMember[], byId: Map<string, Word>, byHead: Map<string, string>): SynonymBridge[] {
+function bridgesFor(
+  members: SynonymMember[],
+  byId: Map<string, Word>,
+  byHead: Map<string, string>,
+  family: Map<string, Set<string>>,
+): SynonymBridge[] {
   const posOf = (m: SynonymMember) => new Set(m.carrying.flatMap((i) => {
     const meaning = byId.get(m.id)?.meanings[i]
     return meaning === undefined ? [] : [meaning.pos]
@@ -126,6 +133,13 @@ function bridgesFor(members: SynonymMember[], byId: Map<string, Word>, byHead: M
   const heads = new Set(members.map((m) => byId.get(m.id)?.headword.trim().toLowerCase()))
   const out: SynonymBridge[] = []
   for (const m of members) {
+    // Related forms describe a word by its first sense, so a member in the
+    // group through a later one would bring a form of the wrong sense (blunt's
+    // bluntness in 减轻): the reason the usage and 反义 lines hide there too.
+    if (!m.firstMeaning) continue
+    // A member whose own family form already stands in the group has its
+    // counterpart: reaching past timely took untimely for timeliness.
+    if (members.some((n) => n !== m && family.get(m.id)?.has(n.id) === true)) continue
     const mine = posOf(m)
     const others = new Set(members.filter((n) => n !== m).flatMap((n) => [...posOf(n)]))
     // A part of speech a base word already brought counts as present: once
@@ -133,13 +147,35 @@ function bridgesFor(members: SynonymMember[], byId: Map<string, Word>, byHead: M
     // two lone members brings one base word, not one each.
     if ([...mine].some((p) => others.has(p) || out.some((b) => b.pos === p))) continue
     const forms = byId.get(m.id)?.relatedForms
+    const carryingZh = m.carrying.map((i) => byId.get(m.id)?.meanings[i]?.zh ?? '').join(';')
     const r = (Array.isArray(forms) ? forms : []).find((f) =>
-      typeof f?.form === 'string' && others.has(f.pos) && !heads.has(f.form.trim().toLowerCase()))
+      typeof f?.form === 'string' && typeof f.zh === 'string'
+      && others.has(f.pos)
+      && !heads.has(f.form.trim().toLowerCase())
+      && !out.some((b) => b.form.trim().toLowerCase() === f.form.trim().toLowerCase())
+      && sharesTwoCharacters(f.zh, carryingZh))
     if (r === undefined) continue
     const wordId = byHead.get(r.form.trim().toLowerCase())
     out.push({ for: m.id, form: r.form, pos: r.pos, zh: r.zh, ...(wordId === undefined ? {} : { wordId }) })
   }
   return out
+}
+
+/**
+ * Whether two Chinese glosses share a run of two CJK characters: the base
+ * word must still be about the member's meaning. It drops wrong-sense forms
+ * that pass every other guard — grief's grievous (严重的) under 悲痛, grand's
+ * magnificent under 巨大 — at the price of a few right ones whose gloss is
+ * worded differently (the final review counted about five). Failing closed:
+ * a missing base word leaves the paragraph to explain the part of speech; a
+ * wrong one is a false anchor the paragraph would be forced to name.
+ */
+function sharesTwoCharacters(a: string, b: string): boolean {
+  for (let i = 0; i + 1 < a.length; i++) {
+    const run = a.slice(i, i + 2)
+    if (/^[一-鿿]{2}$/.test(run) && b.includes(run)) return true
+  }
+  return false
 }
 
 /** Undirected `relatedForms` edges between library words, matched by headword. */
