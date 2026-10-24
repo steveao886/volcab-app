@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Word } from '../types'
 import type { SynonymGroup } from './synonymGroups'
-import { oppositeGroups } from './synonymOpposites'
+import { oppositeCandidates, oppositeGroups } from './synonymOpposites'
 
 const w = (id: string, antonyms: string[] = [], headword = id): Word => ({
   id, headword, phonetic: '', sourceNote: 'test', addedAt: '2026-10-23',
@@ -56,5 +56,34 @@ describe('oppositeGroups', () => {
     const words = [w('frugal', ['Lavish', 'stingy-ish']), w('thrifty', ['EXTRAVAGANT']), w('lavish'), w('extravagant')]
     const groups = [g('节俭', ['frugal', 'thrifty']), g('奢侈', ['lavish', 'extravagant'])]
     expect(oppositeGroups(groups, words).get('节俭')).toBe('奢侈')
+  })
+})
+
+describe('opposite exclusions (final review of revision 2)', () => {
+  const words = [
+    w('frugal', ['lavish', 'wasteful']), w('thrifty', ['extravagant']),
+    w('lavish'), w('extravagant'), w('wasteful'), w('spendthrift'),
+  ]
+  const groups = [
+    g('节俭', ['frugal', 'thrifty']),
+    g('奢侈', ['lavish', 'extravagant']),
+    g('浪费', ['wasteful', 'spendthrift']),
+  ]
+
+  it('skips an excluded pairing, and the next best must clear the bar on its own', () => {
+    expect(oppositeGroups(groups, words).get('节俭')).toBe('奢侈')
+    // 浪费 has one pair to 节俭, so it does not step up.
+    expect(oppositeGroups(groups, words, [['节俭', '奢侈']]).get('节俭')).toBeUndefined()
+  })
+
+  it('matches an exclusion by any term of either group, in that direction only', () => {
+    const merged = [{ ...groups[0], key: '俭省、节俭', terms: ['俭省', '节俭'] }, groups[1], groups[2]]
+    expect(oppositeGroups(merged, words, [['节俭', '奢侈']]).get('俭省、节俭')).toBeUndefined()
+    expect(oppositeGroups(merged, words, [['节俭', '奢侈']]).get('奢侈')).toBe('俭省、节俭')
+  })
+
+  it('lists every candidate pairing with the word pairs behind it', () => {
+    const c = oppositeCandidates(groups, words).find((x) => x.from === '节俭' && x.to === '奢侈')
+    expect(c?.pairs).toEqual(['extravagant|thrifty', 'frugal|lavish'])
   })
 })

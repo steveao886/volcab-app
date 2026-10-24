@@ -111,3 +111,12 @@
   line-height: var(--lh-tight);
   overflow-wrap: anywhere;
 }
+
+/* The list after a label (反义 words, a base word's Chinese) takes the rest of
+   the row and wraps inside it. As a plain item it dropped below its label
+   once wider than the row — lukewarm's 8 antonyms — leaving 反义 alone on a
+   line (final review, 2026-10-23). */
+.synonyms-member__list {
+  flex: 1 1 0;
+  min-width: 0;
+}

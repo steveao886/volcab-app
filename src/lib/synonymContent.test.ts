@@ -175,6 +175,25 @@ describe('opposites in the view (spec R3)', () => {
   })
 })
 
+describe("the opposite group's base words (final review of revision 2)", () => {
+  it('lists a base word under its member in the 反面 section', () => {
+    const words = byId(
+      w('verbosity', [['n.', '冗长;啰嗦']]),
+      w('wordiness', [['n.', '啰嗦']]),
+      w('brevity', [['n.', '简洁']]),
+      w('succinct', [['adj.', '简洁的']]),
+    )
+    const wordy: SynonymGroup = { key: '啰嗦', terms: ['啰嗦'], bridges: [], members: [member('verbosity'), member('wordiness')] }
+    const brief: SynonymGroup = {
+      key: '简洁', terms: ['简洁'], members: [member('brevity'), member('succinct')],
+      bridges: [{ for: 'brevity', form: 'brief', pos: 'adj.', zh: '简洁的' }],
+    }
+    const view = groupView(wordy, words, synNotes(), contrast(), wordNotes(), brief)
+    expect(view?.opposite?.members.find((m) => m.id === 'brevity')?.bridge).toEqual({ form: 'brief', pos: 'adj.', zh: '简洁的' })
+    expect(view?.opposite?.members.find((m) => m.id === 'succinct')?.bridge).toBeUndefined()
+  })
+})
+
 describe('currentNote', () => {
   it('matches the member set regardless of order, under any of the terms', () => {
     const notes = synNotes({ 反感: { members: ['aversion', 'averse', 'antipathy'], text: 't' } })

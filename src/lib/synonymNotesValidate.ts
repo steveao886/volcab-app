@@ -1,9 +1,10 @@
 import type { Word } from '../types'
 import { glossTerms } from './forget'
-import { isInflectionOf } from './headword'
+import { headwordPattern, isInflectionOf } from './headword'
 import { currentNote } from './synonymContent'
 import type { SynonymNotesFile } from './synonymContent'
 import type { SynonymGroup } from './synonymGroups'
+import { oppositeCandidates } from './synonymOpposites'
 
 /**
  * The write-side gate for src/data/synonymNotes.json (synonym-groups spec §4
@@ -99,7 +100,12 @@ export function synonymCoverageErrors(groups: SynonymGroup[], file: SynonymNotes
 /** One group's share of synonymCoverageErrors, without the orphan check: what content-staleness --batch reports per word. */
 export function groupCoverageErrors(g: SynonymGroup, file: SynonymNotesFile, wordsById: Map<string, Word>): string[] {
   const note = currentNote(g, file)
-  if (note === undefined) return [`${g.key}: no current paragraph (${g.members.map((m) => m.id).join(', ')})`]
+  if (note === undefined) {
+    // The base words too, so an author learns everything the paragraph owes
+    // on the first run, not the second.
+    const owed = g.bridges.length === 0 ? '' : `; base words: ${g.bridges.map((b) => b.form).join(', ')}`
+    return [`${g.key}: no current paragraph (${g.members.map((m) => m.id).join(', ')}${owed})`]
+  }
   const headOf = (id: string) => wordsById.get(id)?.headword
   const names = namer(note.text, [
     ...g.members.flatMap((m) => headOf(m.id) ?? []),
@@ -120,9 +126,40 @@ export function groupCoverageErrors(g: SynonymGroup, file: SynonymNotesFile, wor
 }
 
 /**
+ * src/data/synonymOpposites.json: `{ version: 1, exclude: [termA, termB][] }`.
+ * Each exclusion must still match a candidate pairing — a group carrying termA
+ * reaching a group carrying termB through at least one opposite pair — or it
+ * is stale: the library moved and the veto guards nothing. The same staleness
+ * rule validate-concepts applies to `excludeOpposites`.
+ */
+export function oppositeExcludeErrors(file: unknown, groups: SynonymGroup[], words: Word[]): string[] {
+  const exclude: unknown = (file as { exclude?: unknown } | null)?.exclude
+  if (typeof file !== 'object' || file === null || (file as { version?: unknown }).version !== 1 || !Array.isArray(exclude)) {
+    return ['synonymOpposites.json: must be { version: 1, exclude: [termA, termB][] }']
+  }
+  const errors: string[] = []
+  const byKey = new Map(groups.map((g) => [g.key, g]))
+  const candidates = oppositeCandidates(groups, words)
+  for (const pair of exclude) {
+    if (!Array.isArray(pair) || pair.length !== 2 || !pair.every((t) => typeof t === 'string')) {
+      errors.push(`synonymOpposites.json: ${JSON.stringify(pair)} is not [termA, termB]`)
+      continue
+    }
+    const [a, b] = pair as [string, string]
+    const live = candidates.some((c) => byKey.get(c.from)?.terms.includes(a) && byKey.get(c.to)?.terms.includes(b))
+    if (!live) errors.push(`synonymOpposites.json: ${a} → ${b} matches no pairing; remove it`)
+  }
+  return errors
+}
+
+/**
  * Whether `text` names a headword: as a word or an inflection, not a
- * substring (mire must not pass on "admire"); a multi-word headword as the
- * phrase. **A token that is exactly one of `heads` names that word alone**:
+ * substring (mire must not pass on "admire"). A headword with a space or a
+ * hyphen is a phrase, matched by the cloze's own phrase rule (headwordPattern:
+ * a hyphen or spaces between words, the first word inflected), so
+ * "far-fetched" names `far fetched`, "down to earth" names `down-to-earth`
+ * and "sets back" names `set back` — a literal substring made authors write
+ * "far fetched 是…" beside "(a far-fetched theory)" just to pass. **A token that is exactly one of `heads` names that word alone**:
  * isInflectionOf accepts some derivations in both directions (unease /
  * uneasy, diminishing / diminish), so without this a paragraph naming only
  * uneasy passed for unease — 22 of 519 groups hold such a pair (final review,
@@ -130,12 +167,12 @@ export function groupCoverageErrors(g: SynonymGroup, file: SynonymNotesFile, wor
  */
 function namer(text: string, heads: string[]): (headword: string) => boolean {
   const tokens = (text.match(/[A-Za-z]+(?:[-'][A-Za-z]+)*/g) ?? []).map((t) => t.toLowerCase())
-  const lower = text.toLowerCase()
-  const exact = new Set(heads.map((h) => h.trim().toLowerCase()).filter((h) => !h.includes(' ')))
+  const isPhrase = (h: string) => /[\s-]/.test(h)
+  const exact = new Set(heads.map((h) => h.trim().toLowerCase()).filter((h) => !isPhrase(h)))
   return (headword) => {
     const h = headword.trim().toLowerCase()
-    return h.includes(' ')
-      ? lower.includes(h)
+    return isPhrase(h)
+      ? headwordPattern(text, h.replace(/-/g, ' ')) !== null
       : tokens.some((t) => t === h || (!exact.has(t) && isInflectionOf(t, h)))
   }
 }

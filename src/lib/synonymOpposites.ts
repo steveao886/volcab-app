@@ -22,8 +22,51 @@ import type { SynonymGroup } from './synonymGroups'
  *
  * Returns group key → opposite group key. Not necessarily symmetric: a group's
  * best can have a better match elsewhere.
+ *
+ * **`exclude` vetoes a pairing a learner would find wrong**, as
+ * `Concept.excludeOpposites` does for 发散: `[termA, termB]` drops the link
+ * from the group carrying termA to the group carrying termB, before ranking,
+ * so the next best must clear the bar on its own. The rule cannot see that
+ * `obscure` listed by elucidate is the verb while the library's `obscure` is
+ * 鲜为人知; a person reading `validate-synonym-notes --opposites` can.
  */
-export function oppositeGroups(groups: SynonymGroup[], words: Word[]): Map<string, string> {
+export function oppositeGroups(
+  groups: SynonymGroup[],
+  words: Word[],
+  exclude: readonly (readonly [string, string])[] = [],
+): Map<string, string> {
+  const byKey = new Map(groups.map((g) => [g.key, g]))
+  const excluded = (from: string, to: string) => {
+    const a = byKey.get(from)?.terms ?? [], b = byKey.get(to)?.terms ?? []
+    return exclude.some(([x, y]) => a.includes(x) && b.includes(y))
+  }
+  const byFrom = new Map<string, OppositeCandidate[]>()
+  for (const c of oppositeCandidates(groups, words)) {
+    if (excluded(c.from, c.to)) continue
+    const list = byFrom.get(c.from)
+    if (list) list.push(c)
+    else byFrom.set(c.from, [c])
+  }
+  const out = new Map<string, string>()
+  for (const [from, list] of byFrom) {
+    const [best, second] = [...list].sort((a, b) => b.pairs.length - a.pairs.length)
+    if (best !== undefined && best.pairs.length >= 2 && (second === undefined || second.pairs.length < best.pairs.length)) {
+      out.set(from, best.to)
+    }
+  }
+  return out
+}
+
+/** One group reaching another through opposite pairs: `pairs` are the word pairs, `a|b` sorted, in sorted order. */
+export interface OppositeCandidate { from: string; to: string; pairs: string[] }
+
+/**
+ * Every group-to-group link with at least one opposite pair, before any
+ * threshold or exclusion: what oppositeGroups ranks, what
+ * `validate-synonym-notes --opposites` prints for reading, and what an
+ * exclusion must still match to not be stale.
+ */
+export function oppositeCandidates(groups: SynonymGroup[], words: Word[]): OppositeCandidate[] {
   // Symmetric: an antonym listed on either side joins the two words.
   const byHead = new Map(words.map((w) => [w.headword.trim().toLowerCase(), w.id]))
   const opposite = new Map<string, Set<string>>()
@@ -50,7 +93,7 @@ export function oppositeGroups(groups: SynonymGroup[], words: Word[]): Map<strin
     }
   })
 
-  const out = new Map<string, string>()
+  const out: OppositeCandidate[] = []
   groups.forEach((g, i) => {
     const pairs = new Map<number, Set<string>>()
     for (const m of g.members) {
@@ -64,11 +107,7 @@ export function oppositeGroups(groups: SynonymGroup[], words: Word[]): Map<strin
         }
       }
     }
-    const ranked = [...pairs.entries()].map(([j, s]) => [j, s.size] as const).sort((a, b) => b[1] - a[1])
-    const [best, second] = ranked
-    if (best !== undefined && best[1] >= 2 && (second === undefined || second[1] < best[1])) {
-      out.set(g.key, groups[best[0]].key)
-    }
+    for (const [j, set] of pairs) out.push({ from: g.key, to: groups[j].key, pairs: [...set].sort() })
   })
   return out
 }
