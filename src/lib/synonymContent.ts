@@ -27,6 +27,11 @@ export interface MemberView {
   usage: string[]
   /** The word note, in the pieces view and on first-meaning members only. */
   note?: string
+  /**
+   * The base word a lone member brings (spec R2), with the library word's
+   * collocations when the form is one; empty otherwise.
+   */
+  bridge?: { form: string; pos: string; zh: string; usage: string[] }
 }
 
 export type GroupView =
@@ -79,9 +84,16 @@ export function groupView(
 ): GroupView | null {
   const live = group.members.filter((m) => wordsById.has(m.id))
   if (live.length < 2) return null
+  const bridgeOf = new Map((Array.isArray(group.bridges) ? group.bridges : []).map((b) => [b.for, b]))
   const view = (m: SynonymMember, withNote: boolean): MemberView => {
     const w = wordsById.get(m.id) as Word
     const note = withNote && m.firstMeaning ? wordNote(wordNotes, m.id) : undefined
+    const b = bridgeOf.get(m.id)
+    const base = b?.wordId === undefined ? undefined : wordsById.get(b.wordId)
+    const bridge = b === undefined ? undefined : {
+      form: b.form, pos: b.pos, zh: b.zh,
+      usage: base !== undefined && Array.isArray(base.collocations) ? base.collocations : [],
+    }
     return {
       id: m.id,
       headword: w.headword,
@@ -91,6 +103,7 @@ export function groupView(
       }),
       usage: m.firstMeaning && Array.isArray(w.collocations) ? w.collocations : [],
       ...(note === undefined ? {} : { note }),
+      ...(bridge === undefined ? {} : { bridge }),
     }
   }
 

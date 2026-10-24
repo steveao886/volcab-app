@@ -55,3 +55,31 @@
 .synonyms-member .margin-note {
   margin-top: var(--sp-1);
 }
+
+/* The base word (同根), hung under its member on a 界栏 hairline, so it reads
+   as belonging to that word and not as another member. The usage line wraps
+   onto its own row inside it. */
+.synonyms-member__bridge {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--sp-2);
+  row-gap: 2px;
+  margin-top: var(--sp-1);
+  padding-inline-start: var(--sp-3);
+  border-inline-start: 1px solid var(--rule-strong);
+}
+
+.synonyms-member__tag {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.synonyms-member__form {
+  font-family: var(--font-word);
+  font-weight: 600;
+}
+
+.synonyms-member__bridge .synonyms-member__usage {
+  flex-basis: 100%;
+}

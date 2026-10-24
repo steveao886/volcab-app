@@ -160,6 +160,19 @@ function GroupBlock({ view }: { view: GroupView }) {
                 </span>
               ))}
               {m.usage.length > 0 && <span className="synonyms-member__usage" lang="en">{m.usage.join('、')}</span>}
+              {/* A lone part of speech brings its base word (spec R2), so the
+                  paragraph can compare like with like. */}
+              {m.bridge !== undefined && (
+                <span className="synonyms-member__bridge">
+                  <span className="synonyms-member__tag">同根</span>
+                  <span className="synonyms-member__form" lang="en">{m.bridge.form}</span>
+                  <span className="pos">{m.bridge.pos}</span>
+                  <span className="ledger__secondary">{m.bridge.zh}</span>
+                  {m.bridge.usage.length > 0 && (
+                    <span className="synonyms-member__usage" lang="en">{m.bridge.usage.join('、')}</span>
+                  )}
+                </span>
+              )}
               {m.note !== undefined && (
                 <div className="margin-note">
                   <p className="margin-note__label">要点</p>

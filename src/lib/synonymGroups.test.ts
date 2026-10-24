@@ -89,3 +89,58 @@ describe('buildSynonymGroups', () => {
     ])
   })
 })
+
+/** A fixture word with full related forms, for the base-word rule. */
+const wr = (id: string, meanings: [string, string][], forms: [string, string, string][]): Word => ({
+  ...w(id, meanings),
+  relatedForms: forms.map(([form, pos, zh]) => ({ form, pos, zh })),
+})
+
+describe('base words (spec R2)', () => {
+  it('brings the base word of a member alone in its part of speech', () => {
+    const words = [
+      wr('diminishing', [['adj.', '递减的;逐渐减少的']], [['diminish', 'v.', '减少;削弱'], ['diminution', 'n.', '减少']]),
+      w('dwindle', [['v.', '逐渐减少;日渐衰微']]),
+    ]
+    expect(buildSynonymGroups(words)[0].bridges).toEqual([{ for: 'diminishing', form: 'diminish', pos: 'v.', zh: '减少;削弱' }])
+  })
+
+  it('marks a base word that is itself a library word', () => {
+    const words = [
+      wr('diminishing', [['adj.', '逐渐减少的']], [['Diminish', 'v.', '减少;削弱']]),
+      w('dwindle', [['v.', '逐渐减少']]),
+      w('diminish', [['v.', '减少;缩小']]),
+    ]
+    expect(buildSynonymGroups(words).find((g) => g.key === '逐渐减少')?.bridges)
+      .toEqual([{ for: 'diminishing', form: 'Diminish', pos: 'v.', zh: '减少;削弱', wordId: 'diminish' }])
+  })
+
+  it('brings none when every part of speech is shared', () => {
+    const words = [w('alleviate', [['v.', '减轻']]), w('abate', [['v.', '减轻']])]
+    expect(buildSynonymGroups(words)[0].bridges).toEqual([])
+  })
+
+  it('counts every carrying meaning, so a member with a verb and a noun sense is not alone', () => {
+    // grouse carries 抱怨 as a verb and as a noun, gripe only as a noun. Read by
+    // first carrying meaning alone, both would look lone (v. against n.) and
+    // each would bring a base word.
+    const words = [
+      wr('grouse', [['v.', '抱怨'], ['n.', '抱怨;牢骚']], [['grouser', 'n.', '爱抱怨的人']]),
+      wr('gripe', [['n.', '抱怨']], [['griping', 'v.', '发牢骚']]),
+    ]
+    const g = buildSynonymGroups(words).find((x) => x.key === '抱怨')
+    expect(g?.members.find((m) => m.id === 'grouse')?.carrying).toEqual([0, 1])
+    expect(g?.bridges).toEqual([])
+  })
+
+  it('brings none when no related form matches, or the match is already a member', () => {
+    const none = [wr('austerity', [['n.', '严峻']], [['austerely', 'adv.', '严厉地']]), w('bleak', [['adj.', '严峻的']])]
+    expect(buildSynonymGroups(none)[0].bridges).toEqual([])
+    const member = [
+      wr('promulgation', [['n.', '颁布']], [['promulgate', 'v.', '颁布']]),
+      w('promulgate', [['v.', '颁布']]),
+      w('enact', [['v.', '颁布;制定']]),
+    ]
+    expect(buildSynonymGroups(member)[0].bridges).toEqual([])
+  })
+})
