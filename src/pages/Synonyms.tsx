@@ -170,6 +170,12 @@ function GroupBlock({ view }: { view: GroupView }) {
                 </span>
               ))}
               {m.usage.length > 0 && <span className="synonyms-member__usage" lang="en">{m.usage.join('、')}</span>}
+              {m.antonyms.length > 0 && (
+                <span className="synonyms-member__antonyms">
+                  <span className="synonyms-member__tag">反义</span>
+                  <span lang="en">{m.antonyms.join('、')}</span>
+                </span>
+              )}
               {/* A lone part of speech brings its base word (spec R2), so the
                   paragraph can compare like with like. */}
               {m.bridge !== undefined && (
@@ -181,12 +187,6 @@ function GroupBlock({ view }: { view: GroupView }) {
                   {m.bridge.usage.length > 0 && (
                     <span className="synonyms-member__usage" lang="en">{m.bridge.usage.join('、')}</span>
                   )}
-                </span>
-              )}
-              {m.antonyms.length > 0 && (
-                <span className="synonyms-member__antonyms">
-                  <span className="synonyms-member__tag">反义</span>
-                  <span lang="en">{m.antonyms.join('、')}</span>
                 </span>
               )}
               {m.note !== undefined && (
