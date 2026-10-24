@@ -60,7 +60,7 @@ export type GroupView =
  * rewritten. The write-side gate keeps the repo copy complete (spec R4).
  * Malformed entries are skipped.
  */
-export function currentNote(group: SynonymGroup, file: SynonymNotesFile): { members: string[]; text: string } | undefined {
+export function currentNote(group: SynonymGroup, file: SynonymNotesFile): { key: string; members: string[]; text: string } | undefined {
   const ids = new Set(group.members.map((m) => m.id))
   for (const term of group.terms) {
     const raw: unknown = file.notes?.[term]
@@ -68,7 +68,7 @@ export function currentNote(group: SynonymGroup, file: SynonymNotesFile): { memb
     const { members, text } = raw as { members?: unknown; text?: unknown }
     if (!Array.isArray(members) || !members.every((m) => typeof m === 'string') || typeof text !== 'string') continue
     if (members.length === ids.size && new Set(members).size === ids.size && members.every((m) => ids.has(m))) {
-      return { members, text }
+      return { key: term, members, text }
     }
   }
   return undefined

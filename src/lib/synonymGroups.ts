@@ -111,10 +111,12 @@ export function buildSynonymGroups(words: Word[]): SynonymGroup[] {
  * with any carrying meaning of another member — every carrying meaning, so a
  * member that holds the term as a verb and as a noun pairs with either. It
  * brings the first of its related forms whose part of speech another member
- * has and whose form is not already a member. On data/words.json, 2026-10-23
- * (519 groups): 213 mix parts of speech, 115 bring at least one base word
- * (159 in all, 46 of them library words), and in 83 every lone member brings
- * one. The rest leave the part-of-speech difference to the paragraph.
+ * has and whose form is not already a member. Lone members are taken in
+ * member order, and a part of speech an earlier base word brought counts as
+ * present. On data/words.json, 2026-10-23
+ * (519 groups): 213 mix parts of speech and 115 bring a base word, 123 in
+ * all, 40 of them library words. The rest leave the part-of-speech
+ * difference to the paragraph.
  */
 function bridgesFor(members: SynonymMember[], byId: Map<string, Word>, byHead: Map<string, string>): SynonymBridge[] {
   const posOf = (m: SynonymMember) => new Set(m.carrying.flatMap((i) => {
@@ -126,7 +128,10 @@ function bridgesFor(members: SynonymMember[], byId: Map<string, Word>, byHead: M
   for (const m of members) {
     const mine = posOf(m)
     const others = new Set(members.filter((n) => n !== m).flatMap((n) => [...posOf(n)]))
-    if ([...mine].some((p) => others.has(p))) continue
+    // A part of speech a base word already brought counts as present: once
+    // diminish (v.) stands beside dwindle, dwindle has its pair, and a group of
+    // two lone members brings one base word, not one each.
+    if ([...mine].some((p) => others.has(p) || out.some((b) => b.pos === p))) continue
     const forms = byId.get(m.id)?.relatedForms
     const r = (Array.isArray(forms) ? forms : []).find((f) =>
       typeof f?.form === 'string' && others.has(f.pos) && !heads.has(f.form.trim().toLowerCase()))

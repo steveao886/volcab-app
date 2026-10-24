@@ -105,6 +105,17 @@ describe('base words (spec R2)', () => {
     expect(buildSynonymGroups(words)[0].bridges).toEqual([{ for: 'diminishing', form: 'diminish', pos: 'v.', zh: '减少;削弱' }])
   })
 
+  it('brings one base word for a pair of two lone members, not one each', () => {
+    // diminishing (adj.) and dwindle (v.) are both alone in their part of
+    // speech. Once diminish (v.) stands beside dwindle, dwindle has its pair,
+    // so dwindling is not brought as well.
+    const words = [
+      wr('diminishing', [['adj.', '逐渐减少的']], [['diminish', 'v.', '减少;削弱']]),
+      wr('dwindle', [['v.', '逐渐减少']], [['dwindling', 'adj.', '日渐减少的']]),
+    ]
+    expect(buildSynonymGroups(words)[0].bridges.map((b) => b.form)).toEqual(['diminish'])
+  })
+
   it('marks a base word that is itself a library word', () => {
     const words = [
       wr('diminishing', [['adj.', '逐渐减少的']], [['Diminish', 'v.', '减少;削弱']]),
