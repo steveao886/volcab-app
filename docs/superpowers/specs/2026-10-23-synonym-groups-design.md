@@ -32,12 +32,18 @@ beside `dwindle`. The user: 要把原词带上.
 - **Its base word** is the first of its own `relatedForms` whose `pos` some
   other member has, and whose form is not already a member. At most one per
   lone member.
+- **Lone members are taken in member order, and a part of speech an earlier
+  base word brought counts as present.** In 逐渐减少 both words are lone, and
+  bringing one base word for each (diminish and dwindling) doubled the rows.
+  Once diminish stands beside dwindle, dwindle has its pair. *(My call.)*
+- **Measured** on `data/words.json` (519 groups): 213 mix parts of speech,
+  and 115 bring a base word, 123 in all, 40 of them library words.
 - **Shown** as a 同根 row under that member: the form, the related form's
   part of speech and `zh`. When the form is itself a library word, its usage
   line is shown as well. *(My call.)*
 - **The paragraph compares it too**: the gate (R4) requires a group's
-  paragraph to name each base word as well as each member. A paragraph that
-  does not name one is not current for that group.
+  paragraph to name each base word as well as each member. The runtime still
+  shows a paragraph that does not; the gate is what keeps them complete.
 - It comes from the lone word's own entry, so it can be any word; R1 already
   dropped the studied-only rule.
 

@@ -1,16 +1,20 @@
 import type { Word } from '../types'
 import { glossTerms } from './forget'
 import { isInflectionOf } from './headword'
+import { currentNote } from './synonymContent'
+import type { SynonymNotesFile } from './synonymContent'
+import type { SynonymGroup } from './synonymGroups'
 
 /**
- * The write-side gate for one src/data/synonymNotes.json entry
- * (synonym-groups spec §4), shared by scripts/validate-synonym-notes.ts and
- * its tests. Strict here, lenient at runtime: currentNote skips what this
- * would reject.
+ * The write-side gate for src/data/synonymNotes.json (synonym-groups spec §4
+ * and R4), shared by scripts/validate-synonym-notes.ts, content-staleness and
+ * their tests. Strict here, lenient at runtime: currentNote skips what this
+ * would reject, and a group whose paragraph no longer matches shows the
+ * pieces.
  *
- * It cannot know which words are studied — that lives in volcab-data — so
- * whether a paragraph still matches the group the page shows is
- * synonym-todo's question, not this gate's.
+ * synonymNoteErrors checks one entry on its own; synonymCoverageErrors checks
+ * the file against every group, which it can since groups span the whole
+ * library and depend on nothing but data/words.json (R1).
  */
 
 /**
@@ -54,19 +58,10 @@ export function synonymNoteErrors(key: string, entry: unknown, wordsById: Map<st
   const max = maxSynonymNote(members.length)
   if (text.length > max) errors.push(`${key}: text is ${text.length} chars (max ${max} for ${members.length} members)`)
 
-  const tokens = (text.match(/[A-Za-z]+(?:[-'][A-Za-z]+)*/g) ?? []).map((t) => t.toLowerCase())
-  const lower = text.toLowerCase()
-  // A token that is exactly one member's headword names that member alone.
-  // isInflectionOf accepts some derivations in both directions (unease /
-  // uneasy, entreat / entreaty), so without this a paragraph naming only
-  // uneasy passed for unease — 22 of 519 groups hold such a pair with every
-  // word counted studied (final review, 2026-10-23).
-  const memberHeads = new Set(
-    [...new Set(members)].flatMap((id) => {
-      const h = wordsById.get(id)?.headword.trim().toLowerCase()
-      return h === undefined || h.includes(' ') ? [] : [h]
-    }),
-  )
+  const names = namer(text, [...seen].flatMap((id) => {
+    const h = wordsById.get(id)?.headword
+    return h === undefined ? [] : [h]
+  }))
   for (const id of seen) {
     const w = wordsById.get(id)
     if (w === undefined) { errors.push(`${key}: ${id} is not in data/words.json`); continue }
@@ -75,13 +70,72 @@ export function synonymNoteErrors(key: string, entry: unknown, wordsById: Map<st
     if (!w.meanings.some((m) => glossTerms(m.zh).includes(key))) {
       errors.push(`${key}: ${id} carries no meaning with the gloss term ${key}`)
     }
-    // Named as a word or an inflection, not a substring: mire must not pass
-    // on "admire". A multi-word headword is matched as the phrase.
-    const h = w.headword.trim().toLowerCase()
-    const named = h.includes(' ')
-      ? lower.includes(h)
-      : tokens.some((t) => t === h || (!memberHeads.has(t) && isInflectionOf(t, h)))
-    if (!named) errors.push(`${key}: text never names ${w.headword}`)
+    if (!names(w.headword)) errors.push(`${key}: text never names ${w.headword}`)
   }
   return errors
+}
+
+/**
+ * Every group against the file: each group has a current paragraph, which
+ * names each of its base words (R2), and no paragraph is current for no group
+ * (orphaned by a library edit or a deletion). Adding a word that creates or
+ * changes a group therefore fails the gate until its paragraph is written —
+ * the user's 确保也加到这里.
+ */
+export function synonymCoverageErrors(groups: SynonymGroup[], file: SynonymNotesFile, wordsById: Map<string, Word>): string[] {
+  const errors: string[] = []
+  const usedKeys = new Set<string>()
+  for (const g of groups) {
+    const key = currentNote(g, file)?.key
+    if (key !== undefined) usedKeys.add(key)
+    errors.push(...groupCoverageErrors(g, file, wordsById))
+  }
+  for (const key of Object.keys(file.notes ?? {})) {
+    if (!usedKeys.has(key)) errors.push(`${key}: paragraph is current for no group`)
+  }
+  return errors
+}
+
+/** One group's share of synonymCoverageErrors, without the orphan check: what content-staleness --batch reports per word. */
+export function groupCoverageErrors(g: SynonymGroup, file: SynonymNotesFile, wordsById: Map<string, Word>): string[] {
+  const note = currentNote(g, file)
+  if (note === undefined) return [`${g.key}: no current paragraph (${g.members.map((m) => m.id).join(', ')})`]
+  const headOf = (id: string) => wordsById.get(id)?.headword
+  const names = namer(note.text, [
+    ...g.members.flatMap((m) => headOf(m.id) ?? []),
+    ...g.bridges.map((b) => b.form),
+  ])
+  const errors: string[] = []
+  // Members again, now that the base words are known: a base word's token
+  // (uneasy) must not count as naming its member (unease), and only this check
+  // knows which tokens are base words.
+  for (const m of g.members) {
+    const h = headOf(m.id)
+    if (h !== undefined && !names(h)) errors.push(`${g.key}: paragraph never names ${h}`)
+  }
+  for (const b of g.bridges) {
+    if (!names(b.form)) errors.push(`${g.key}: paragraph never names base word ${b.form} (for ${b.for})`)
+  }
+  return errors
+}
+
+/**
+ * Whether `text` names a headword: as a word or an inflection, not a
+ * substring (mire must not pass on "admire"); a multi-word headword as the
+ * phrase. **A token that is exactly one of `heads` names that word alone**:
+ * isInflectionOf accepts some derivations in both directions (unease /
+ * uneasy, diminishing / diminish), so without this a paragraph naming only
+ * uneasy passed for unease — 22 of 519 groups hold such a pair (final review,
+ * 2026-10-23) — and one naming diminishing would pass for its base word.
+ */
+function namer(text: string, heads: string[]): (headword: string) => boolean {
+  const tokens = (text.match(/[A-Za-z]+(?:[-'][A-Za-z]+)*/g) ?? []).map((t) => t.toLowerCase())
+  const lower = text.toLowerCase()
+  const exact = new Set(heads.map((h) => h.trim().toLowerCase()).filter((h) => !h.includes(' ')))
+  return (headword) => {
+    const h = headword.trim().toLowerCase()
+    return h.includes(' ')
+      ? lower.includes(h)
+      : tokens.some((t) => t === h || (!exact.has(t) && isInflectionOf(t, h)))
+  }
 }

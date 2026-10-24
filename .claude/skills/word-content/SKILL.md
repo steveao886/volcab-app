@@ -22,10 +22,11 @@ grows the question pools. Evidence for every rule: `docs/word-add-checklist.md`.
 | `src/data/sentenceChunks.json` | `(src, id, i)` | optional coverage, no floor | `npm run validate-sentence-chunks` |
 | `src/data/passages.json` | `{{id}}` markers | optional coverage — **but the word joins tier-1 distractor pools silently; diff and vet** | `npm run validate-passages` |
 | `src/data/concepts.json` | derived from `synonyms` | **nothing to author** — but the word joins existing 发散 answer sets silently; diff and vet | `npm run validate-concepts` |
+| `src/data/synonymNotes.json` | a gloss term of its 近义词 group | **required**: a paragraph for every group the word creates or changes, naming each member and base word (groups span the whole library) | `npm run validate-synonym-notes` |
 | `src/data/suggestions.json` | — | nothing — self-filters at runtime | `npm run validate-suggestions` |
 | `data/wordlist.json` | — | dead file, referenced by nothing. Do not touch | — |
 
-All these gates run in CI (`npm run validate` chains all nine;
+All these gates run in CI (`npm run validate` chains all ten;
 `.github/workflows/deploy.yml` runs it, plus `npm run lint`, on every push to
 `master`). Coverage lines are still printed text, not exit codes — read them
 yourself.
@@ -121,6 +122,17 @@ The passage's `exclude` array is where that judgment goes (step 3).
    author the two note files: contrast notes (Chinese, ≤160 chars, states
    what separates the two), word notes (Chinese, ≤80 chars, **never names
    another library headword**). Run both validators; coverage must read X/X.
+
+   **近义词 is on the same list.** A word sharing a gloss term with another
+   word creates a group or changes one, and every group needs a current
+   paragraph in `synonymNotes.json`: its members exactly, every member and
+   every 同根 base word named (spec R2/R4 in
+   `docs/superpowers/specs/2026-10-23-synonym-groups-design.md`). `--batch`
+   prints a `GAP 近义词` line per group owed; `npm run validate-synonym-notes`
+   names the same groups plus any paragraph the batch orphaned, and fails CI
+   until both are fixed. A changed group keeps its key: rewrite its entry
+   with the new member list rather than adding a second one. Author them as
+   the 近义词 row of "Who writes what" says.
 5. **回想 is required, and has two legs — either clears it.**
 
    **A sense group**, when the word has ≥2 same-POS confusable partners: one

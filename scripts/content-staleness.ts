@@ -3,6 +3,9 @@ import { buildContrastPairs } from '../src/lib/contrast.ts'
 import { contrastNoteKey } from '../src/lib/contrastNotes.ts'
 import { buildConceptIndex, conceptMembers } from '../src/lib/diverge.ts'
 import type { Concept } from '../src/lib/diverge.ts'
+import type { SynonymNotesFile } from '../src/lib/synonymContent.ts'
+import { buildSynonymGroups } from '../src/lib/synonymGroups.ts'
+import { groupCoverageErrors, synonymCoverageErrors } from '../src/lib/synonymNotesValidate.ts'
 
 /**
  * The staleness scan behind the periodic content refresh (see
@@ -61,6 +64,12 @@ if (process.argv.includes('--concepts')) {
 }
 
 const pairs = buildContrastPairs(words as never)
+// 近义词 (synonym-groups spec R4): groups span the whole library, so a new word
+// that creates or changes a group owes that group a paragraph, and the gate
+// in validate-synonym-notes blocks the commit until it is written.
+const synonymNotes = JSON.parse(readFileSync('src/data/synonymNotes.json', 'utf8')) as SynonymNotesFile
+const synonymGroups = buildSynonymGroups(words as never)
+const wordsById = new Map((words as never as { id: string }[]).map((w) => [w.id, w])) as never
 const posOf = new Map(words.map(w => [w.id, w.meanings[0]?.pos ?? '']))
 
 // --- --batch: what one batch of just-added words still owes -----------------
@@ -134,6 +143,14 @@ if (process.argv.includes('--batch')) {
     // failure the fail-closed rule exists to prevent.
     if ((w.antonyms?.length ?? 0) === 0) console.log('  note 反义: antonyms is empty — the word is unaskable there; fine if it has no opposite')
     else console.log(`  ok   反义 (${w.antonyms.length} opposite(s))`)
+
+    // 近义词 is required: every group the word is in needs a current paragraph
+    // that names its members and base words. A paragraph the batch orphaned
+    // shows up in validate-synonym-notes, which also runs in CI.
+    const mineGroups = synonymGroups.filter((g) => g.members.some((m) => m.id === id))
+    const synErrors = mineGroups.flatMap((g) => groupCoverageErrors(g, synonymNotes, wordsById))
+    if (synErrors.length > 0) { owed++; console.log(`  GAP  近义词: ${synErrors.join('; ')}`) }
+    else console.log(`  ok   近义词 (${mineGroups.length} group(s))`)
   }
 
   console.log(owed === 0
@@ -208,6 +225,7 @@ const gap = (label: string, items: string[], required: boolean) => {
 console.log(`library: ${words.length} words · ${pairs.length} pairs · ${senseGroups.length} sense groups · ${passages.length} passages\n`)
 gap('contrastNotes missing (required)', missingContrast, true)
 gap('wordNotes missing (required)', missingNotes, true)
+gap('近义词 paragraphs missing, orphaned or incomplete (required)', synonymCoverageErrors(synonymGroups, synonymNotes, wordsById), true)
 gap('sense-group anchors uncovered (pool growth)', uncoveredAnchors, false)
 gap('words with no 回想 question at all (pool growth)', noRecallQuestion, false)
 
