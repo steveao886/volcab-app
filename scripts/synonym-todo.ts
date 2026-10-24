@@ -4,10 +4,12 @@
  * (docs/superpowers/specs/2026-10-23-synonym-groups-design.md §4).
  *
  * Reads the live words.json and progress.json through the authenticated gh
- * CLI, the way check-live does, because which words are studied — and so
- * which groups exist and what each holds — lives only in volcab-data. The
+ * CLI, the way check-live does: the live words decide the groups, and the
+ * live progress (last-seen stamps, forget records) decides the order. The
  * order is upcoming(), the same rotation the page runs, so the first
- * paragraphs written are the first ones read. Never in CI.
+ * paragraphs written are the first ones read. Never in CI. For the bare list
+ * of what is missing, `npm run validate-synonym-notes` names every group
+ * without a current paragraph.
  *
  *   npm run synonym-todo                 the next 30
  *   npm run synonym-todo -- --limit 60
@@ -17,7 +19,7 @@ import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { currentNote } from '../src/lib/synonymContent.ts'
 import type { SynonymNotesFile } from '../src/lib/synonymContent.ts'
-import { buildSynonymGroups, studiedIds } from '../src/lib/synonymGroups.ts'
+import { buildSynonymGroups } from '../src/lib/synonymGroups.ts'
 import { upcoming } from '../src/lib/synonymVisit.ts'
 import type { Progress, WordsFile } from '../src/types.ts'
 
@@ -53,7 +55,7 @@ const words = (JSON.parse(live('words.json')) as WordsFile).words
 const progress = JSON.parse(live('progress.json')) as Progress
 const notes = JSON.parse(readFileSync('src/data/synonymNotes.json', 'utf8')) as SynonymNotesFile
 
-const groups = buildSynonymGroups(words, studiedIds(progress.words))
+const groups = buildSynonymGroups(words)
 const order = upcoming(groups, progress.synonymSeen, progress.words, groups.length)
 const missing = order.filter((g) => currentNote(g, notes) === undefined)
 

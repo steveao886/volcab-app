@@ -36,9 +36,11 @@ export type GroupView =
 /**
  * The paragraph written for exactly these members, under any of the group's
  * terms. **Set equality, not overlap**: a paragraph over other members could
- * name a word the list does not show (an unstudied one, a spoiler) or say
- * nothing about one it does, so a newly studied member sends the group back to
- * the pieces until the paragraph is rewritten. Malformed entries are skipped.
+ * name a word the list does not show or say nothing about one it does, so a
+ * group that gains or loses a word (a library edit, or a deletion the repo
+ * copy has not caught up with) falls back to the pieces until the paragraph is
+ * rewritten. The write-side gate keeps the repo copy complete (spec R4).
+ * Malformed entries are skipped.
  */
 export function currentNote(group: SynonymGroup, file: SynonymNotesFile): { members: string[]; text: string } | undefined {
   const ids = new Set(group.members.map((m) => m.id))

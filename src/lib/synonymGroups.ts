@@ -1,16 +1,16 @@
-import type { Progress, Word } from '../types'
+import type { Word } from '../types'
 import { glossTerms } from './forget'
 
 /**
- * The groups 近义词 shows: studied words that share a Chinese gloss term
- * (docs/superpowers/specs/2026-10-23-synonym-groups-design.md §2).
+ * The groups 近义词 shows: library words that share a Chinese gloss term
+ * (docs/superpowers/specs/2026-10-23-synonym-groups-design.md §2 and R1).
  *
- * Recomputed from `words` and `progress` on every visit; nothing about
- * membership is stored, so the set grows as the user studies. Measured on the
- * rules below against live progress on 2026-10-23 (996 of 1,411 words
- * studied): 436 shared terms with two studied members, 378 after the
- * single-family drop, 359 after merging identical sets, 324 after dropping
- * strict subsets.
+ * **Every library word, studied or not** (R1). Membership used to follow
+ * progress, so a group changed whenever one of its words was studied, and 12
+ * of 329 paragraphs went stale within hours of being written. Over the whole
+ * library a group changes only when the library does, which is also what lets
+ * the write-side gate require a paragraph for every group. 519 groups on the
+ * live library, 2026-10-23 (1,411 words).
  */
 
 /** One displayed word in a group. */
@@ -35,20 +35,14 @@ export interface SynonymGroup {
   members: SynonymMember[]
 }
 
-/** Words the user has met: a progress entry past `new`. */
-export function studiedIds(entries: Progress['words']): Set<string> {
-  return new Set(Object.entries(entries).filter(([, e]) => e.state !== 'new').map(([id]) => id))
-}
-
-export function buildSynonymGroups(words: Word[], studied: ReadonlySet<string>): SynonymGroup[] {
+export function buildSynonymGroups(words: Word[]): SynonymGroup[] {
   const byId = new Map(words.map((w) => [w.id, w]))
 
-  // 1. Term → studied ids, over every meaning: stripping 的 is what puts 不安的
+  // 1. Term → word ids, over every meaning: stripping 的 is what puts 不安的
   // (adj.) and 不安 (n.) under one term, and later meanings are how 减轻 finds
   // `blunt`.
   const byTerm = new Map<string, Set<string>>()
   for (const w of words) {
-    if (!studied.has(w.id)) continue
     for (const m of w.meanings) {
       for (const t of glossTerms(m.zh)) {
         let set = byTerm.get(t)
