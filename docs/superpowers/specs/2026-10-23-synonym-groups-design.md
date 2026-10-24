@@ -36,8 +36,22 @@ beside `dwindle`. The user: 要把原词带上.
   base word brought counts as present.** In 逐渐减少 both words are lone, and
   bringing one base word for each (diminish and dwindling) doubled the rows.
   Once diminish stands beside dwindle, dwindle has its pair. *(My call.)*
+- **Four guards, from the review of this revision** *(my call)*. "First
+  matching related form" alone brought 123 base words, and the review read
+  10–15 as wrong-sense (适时 took untimely, 简洁 chastity, 宽容 charity, 轻蔑
+  dismissal); since the gate makes a paragraph name its base words, those
+  would have been written into the content.
+  - A member in the group through a later meaning brings none: related forms
+    describe the first sense.
+  - A member whose own family form is already a member brings none: it has
+    its counterpart (timeliness beside timely).
+  - A form is brought at most once per group.
+  - The form's `zh` must share a run of two Chinese characters with the
+    member's carrying meaning. This drops grief's grievous (严重的) under 悲痛,
+    and costs about five right ones worded differently. It fails closed: a
+    missing base word leaves the part of speech to the paragraph.
 - **Measured** on `data/words.json` (519 groups): 213 mix parts of speech,
-  and 115 bring a base word, 123 in all, 40 of them library words.
+  and 77 bring a base word, 78 in all, 31 of them library words.
 - **Shown** as a 同根 row under that member: the form, the related form's
   part of speech and `zh`. When the form is itself a library word, its usage
   line is shown as well. *(My call.)*
