@@ -11,7 +11,7 @@ import type { ContrastNotesFile } from '../lib/contrastNotes'
 import { isEditableTarget } from '../lib/keys'
 import { groupView } from '../lib/synonymContent'
 import type { GroupView, SynonymNotesFile } from '../lib/synonymContent'
-import { buildSynonymGroups, studiedIds } from '../lib/synonymGroups'
+import { buildSynonymGroups } from '../lib/synonymGroups'
 import type { SynonymGroup } from '../lib/synonymGroups'
 import { pickVisit, resolveVisit } from '../lib/synonymVisit'
 import type { WordNotesFile } from '../lib/wordNotes'
@@ -33,9 +33,9 @@ import './Synonyms.css'
  */
 export function Synonyms() {
   const { words, progress, markSynonymsSeen } = useApp()
-  // On progress.words, not progress: a stamp changes only synonymSeen, and the
-  // groups depend only on which words are studied.
-  const groups = useMemo(() => buildSynonymGroups(words, studiedIds(progress.words)), [words, progress.words])
+  // On the word list alone (spec R1): a stamp, a review or a sync of progress
+  // never rebuilds the groups.
+  const groups = useMemo(() => buildSynonymGroups(words), [words])
   const [visit, setVisit] = useState(() => ({
     keys: pickVisit(groups, progress.synonymSeen, progress.words).map((g) => g.key),
     left: [] as string[],

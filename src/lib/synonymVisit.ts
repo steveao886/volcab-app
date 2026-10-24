@@ -6,15 +6,17 @@ import type { SynonymGroup } from './synonymGroups'
  * groups holding a word forgotten since they were last seen moved to the
  * front, at most BOOST_CAP of them.
  *
- * **Least recently seen, not random.** Drawing 5 at random from the 324 groups
- * of 2026-10-23, after the 65 visits it takes to see each once, leaves 36.3%
- * never seen while the luckiest group has been seen 4.8 times on average —
- * about 1/e unseen at any library size.
+ * **Least recently seen, not random.** Drawing 5 at random from 324 groups,
+ * after the 65 visits it takes to see each once, left 36.3% never seen while
+ * the luckiest group had been seen 4.8 times on average (simulated
+ * 2026-10-23) — about 1/e unseen at any library size, the 519 groups of the
+ * whole-library rule included.
  *
  * **The boost is capped** because at the live library's 5.85 lapses a day,
- * with 625 of 996 studied words in some group (1.67 groups each), a day's
- * forgetting boosts about 6.1 groups. Uncapped, that fills every visit and
- * the rotation never moves; at 2 of 5, three slots always go to it.
+ * with 672 of 1,004 studied words in some group (1.52 groups each, whole
+ * library, 2026-10-23), a day's forgetting boosts about 5.9 groups. Uncapped,
+ * that fills every visit and the rotation never moves; at 2 of 5, three slots
+ * always go to it.
  *
  * **Ties break by a stable hash, not an rng.** Only never-seen groups ever
  * tie (each group is stamped at its own moment), and at ship time that is all
