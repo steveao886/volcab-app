@@ -5,7 +5,7 @@ import { BOOST_CAP, VISIT_SIZE, groupLastSeen, pickVisit, resolveVisit, upcoming
 
 /** A group titled `key` with one term, whose members are `ids`. */
 const g = (key: string, ids: string[] = [`${key}-1`, `${key}-2`]): SynonymGroup => ({
-  key, terms: [key], members: ids.map((id) => ({ id, carrying: [0], firstMeaning: true })),
+  key, terms: [key], bridges: [], members: ids.map((id) => ({ id, carrying: [0], firstMeaning: true })),
 })
 
 /** Minute `n` of 2026-10-01, UTC, as the ISO string toISOString writes. */
@@ -135,7 +135,7 @@ describe('pickVisit', () => {
 
 describe('groupLastSeen', () => {
   it("reads a group's last-seen as the latest of its terms' stamps", () => {
-    const group: SynonymGroup = { key: '抱怨、牢骚', terms: ['抱怨', '牢骚'], members: [] }
+    const group: SynonymGroup = { key: '抱怨、牢骚', terms: ['抱怨', '牢骚'], bridges: [], members: [] }
     expect(groupLastSeen(group, { 抱怨: T(1), 牢骚: T(2) })).toBe(T(2))
     expect(groupLastSeen(group, {})).toBeUndefined()
     expect(groupLastSeen(group, undefined)).toBeUndefined()

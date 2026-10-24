@@ -26,6 +26,22 @@ export interface SynonymMember {
   firstMeaning: boolean
 }
 
+/**
+ * The base word a lone member brings (spec R2): one of its own related forms,
+ * in a part of speech another member has, so like is compared with like —
+ * `diminish` (v.) beside `dwindle` (v.) where the group holds `diminishing`
+ * (adj.).
+ */
+export interface SynonymBridge {
+  /** The lone member it is shown under. */
+  for: string
+  form: string
+  pos: string
+  zh: string
+  /** The library word whose headword is `form`, when there is one. */
+  wordId?: string
+}
+
 export interface SynonymGroup {
   /** `terms` joined with 、 — the title, and the identity a visit holds on to. */
   key: string
@@ -33,10 +49,13 @@ export interface SynonymGroup {
   terms: string[]
   /** First-meaning members first, then the rest, each by headword. */
   members: SynonymMember[]
+  /** At most one per lone member, in member order. */
+  bridges: SynonymBridge[]
 }
 
 export function buildSynonymGroups(words: Word[]): SynonymGroup[] {
   const byId = new Map(words.map((w) => [w.id, w]))
+  const byHead = new Map(words.map((w) => [w.headword.trim().toLowerCase(), w.id]))
 
   // 1. Term → word ids, over every meaning: stripping 的 is what puts 不安的
   // (adj.) and 不安 (n.) under one term, and later meanings are how 减轻 finds
@@ -83,8 +102,39 @@ export function buildSynonymGroups(words: Word[]): SynonymGroup[] {
       a.firstMeaning !== b.firstMeaning
         ? (a.firstMeaning ? -1 : 1)
         : (byId.get(a.id)?.headword ?? a.id).localeCompare(byId.get(b.id)?.headword ?? b.id))
-    return { key: terms.join('、'), terms, members }
+    return { key: terms.join('、'), terms, members, bridges: bridgesFor(members, byId, byHead) }
   })
+}
+
+/**
+ * A member is lone when none of its carrying meanings shares a part of speech
+ * with any carrying meaning of another member — every carrying meaning, so a
+ * member that holds the term as a verb and as a noun pairs with either. It
+ * brings the first of its related forms whose part of speech another member
+ * has and whose form is not already a member. On data/words.json, 2026-10-23
+ * (519 groups): 213 mix parts of speech, 115 bring at least one base word
+ * (159 in all, 46 of them library words), and in 83 every lone member brings
+ * one. The rest leave the part-of-speech difference to the paragraph.
+ */
+function bridgesFor(members: SynonymMember[], byId: Map<string, Word>, byHead: Map<string, string>): SynonymBridge[] {
+  const posOf = (m: SynonymMember) => new Set(m.carrying.flatMap((i) => {
+    const meaning = byId.get(m.id)?.meanings[i]
+    return meaning === undefined ? [] : [meaning.pos]
+  }))
+  const heads = new Set(members.map((m) => byId.get(m.id)?.headword.trim().toLowerCase()))
+  const out: SynonymBridge[] = []
+  for (const m of members) {
+    const mine = posOf(m)
+    const others = new Set(members.filter((n) => n !== m).flatMap((n) => [...posOf(n)]))
+    if ([...mine].some((p) => others.has(p))) continue
+    const forms = byId.get(m.id)?.relatedForms
+    const r = (Array.isArray(forms) ? forms : []).find((f) =>
+      typeof f?.form === 'string' && others.has(f.pos) && !heads.has(f.form.trim().toLowerCase()))
+    if (r === undefined) continue
+    const wordId = byHead.get(r.form.trim().toLowerCase())
+    out.push({ for: m.id, form: r.form, pos: r.pos, zh: r.zh, ...(wordId === undefined ? {} : { wordId }) })
+  }
+  return out
 }
 
 /** Undirected `relatedForms` edges between library words, matched by headword. */

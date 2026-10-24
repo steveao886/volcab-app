@@ -25,7 +25,7 @@ const dislike = byId(
   w('averse', [['adj.', '反感的,厌恶的']], ['averse to risk']),
 )
 const dislikeGroup: SynonymGroup = {
-  key: '厌恶、反感', terms: ['厌恶', '反感'],
+  key: '厌恶、反感', terms: ['厌恶', '反感'], bridges: [],
   members: [member('antipathy'), member('averse'), member('aversion')],
 }
 
@@ -52,7 +52,7 @@ describe('groupView', () => {
       w('blunt', [['adj.', '钝的'], ['v.', '使变钝;减轻']]),
     )
     const group: SynonymGroup = {
-      key: '减轻', terms: ['减轻'],
+      key: '减轻', terms: ['减轻'], bridges: [],
       members: [member('abate'), member('alleviate'), member('blunt', [1])],
     }
     const view = groupView(group, words, synNotes(), contrast({
@@ -72,7 +72,7 @@ describe('groupView', () => {
       w('alleviate', [['v.', '减轻']], ['alleviate pain', 'alleviate poverty']),
       w('blunt', [['adj.', '钝的'], ['v.', '减轻']], ['blunt instrument']),
     )
-    const group: SynonymGroup = { key: '减轻', terms: ['减轻'], members: [member('alleviate'), member('blunt', [1])] }
+    const group: SynonymGroup = { key: '减轻', terms: ['减轻'], bridges: [], members: [member('alleviate'), member('blunt', [1])] }
     const view = groupView(group, words, synNotes(), contrast(), wordNotes())
     expect(view?.members.map((m) => m.usage)).toEqual([['alleviate pain', 'alleviate poverty'], []])
   })
@@ -83,7 +83,7 @@ describe('groupView', () => {
       w('grumble', [['v.', '抱怨'], ['n.', '牢骚']]),
     )
     const group: SynonymGroup = {
-      key: '抱怨、牢骚', terms: ['抱怨', '牢骚'], members: [member('grouse', [0, 1]), member('grumble', [0, 1])],
+      key: '抱怨、牢骚', terms: ['抱怨', '牢骚'], bridges: [], members: [member('grouse', [0, 1]), member('grumble', [0, 1])],
     }
     const view = groupView(group, words, synNotes(), contrast(), wordNotes())
     expect(view?.members[0].meanings).toEqual([{ pos: 'v.', zh: '抱怨;发牢骚' }, { pos: 'n.', zh: '牢骚;怨言' }])
@@ -100,6 +100,37 @@ describe('groupView', () => {
     expect(groupView(dislikeGroup, two, synNotes(), contrast(), wordNotes())?.members.map((m) => m.id))
       .toEqual(['antipathy', 'aversion'])
     expect(groupView(dislikeGroup, byId(w('antipathy', [['n.', '反感']])), synNotes(), contrast(), wordNotes())).toBeNull()
+  })
+})
+
+describe('base words in the view (spec R2)', () => {
+  it('shows a lone member\x27s base word, with its usage when it is a library word', () => {
+    const words = byId(
+      w('diminishing', [['adj.', '逐渐减少的']], ['diminishing returns']),
+      w('dwindle', [['v.', '逐渐减少']]),
+      w('diminish', [['v.', '减少']], ['diminish the risk']),
+    )
+    const group: SynonymGroup = {
+      key: '逐渐减少', terms: ['逐渐减少'], members: [member('diminishing'), member('dwindle')],
+      bridges: [{ for: 'diminishing', form: 'diminish', pos: 'v.', zh: '减少;削弱', wordId: 'diminish' }],
+    }
+    const pieces = groupView(group, words, synNotes(), contrast(), wordNotes())
+    expect(pieces?.members[0].bridge).toEqual({ form: 'diminish', pos: 'v.', zh: '减少;削弱', usage: ['diminish the risk'] })
+    expect(pieces?.members[1].bridge).toBeUndefined()
+    const notes = synNotes({ 逐渐减少: { members: ['dwindle', 'diminishing'], text: '…' } })
+    const paragraph = groupView(group, words, notes, contrast(), wordNotes())
+    expect(paragraph?.kind).toBe('paragraph')
+    expect(paragraph?.members[1].bridge?.form).toBe('diminish')
+  })
+
+  it('gives a base word that is not a library word no usage line', () => {
+    const words = byId(w('austerity', [['n.', '严峻']]), w('bleak', [['adj.', '严峻的']]))
+    const group: SynonymGroup = {
+      key: '严峻', terms: ['严峻'], members: [member('austerity'), member('bleak')],
+      bridges: [{ for: 'austerity', form: 'austere', pos: 'adj.', zh: '严峻的' }],
+    }
+    expect(groupView(group, words, synNotes(), contrast(), wordNotes())?.members[0].bridge)
+      .toEqual({ form: 'austere', pos: 'adj.', zh: '严峻的', usage: [] })
   })
 })
 
