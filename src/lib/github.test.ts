@@ -22,6 +22,16 @@ describe('toBase64', () => {
   it('Chinese text and phonetics are encoded as UTF-8, not truncated by code point', () => {
     expect(toBase64('废除;废止 /ˈæbrəɡeɪt/')).toBe('5bqf6ZmkO+W6n+atoiAvy4jDpmJyyZnJoWXJqnQv')
   })
+  it('input spanning several chunks, with multi-byte characters split across chunk boundaries', () => {
+    // A 5-byte 废ab against a 2^15-byte chunk walks the boundaries through every offset, two in
+    // five of them inside 废's three bytes. The oracle is the old one-byte-at-a-time encoder: it
+    // has no chunks, so it cannot share a chunking bug, and the two pinned values above already
+    // cover its UTF-8 and base64 halves.
+    const s = `${'废ab'.repeat(30_000)}tail`
+    let bin = ''
+    for (const b of new TextEncoder().encode(s)) bin += String.fromCharCode(b)
+    expect(toBase64(s)).toBe(btoa(bin))
+  })
 })
 
 describe('GitHubClient', () => {
