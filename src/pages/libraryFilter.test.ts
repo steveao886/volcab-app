@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { emptyProgress } from '../types'
 import type { Progress, Word } from '../types'
-import { ALL_WORDS, distinctSourceNotes, filterToParams, filterWords, paramsToFilter, wordState } from './libraryFilter'
+import { ALL_WORDS, distinctSourceNotes, filterToParams, filterWords, paramsToFilter, settleQuery, wordState } from './libraryFilter'
 import type { LibraryFilterOptions } from './libraryFilter'
 
 function mkWord(overrides: Partial<Word> & { id: string }): Word {
@@ -280,5 +280,28 @@ describe('filterToParams / paramsToFilter', () => {
   it('an unknown status falls back to all rather than matching nothing — read side lenient', () => {
     expect(paramsToFilter(new URLSearchParams('status=bogus')).status).toBe('all')
     expect(paramsToFilter(new URLSearchParams('status=')).status).toBe('all')
+  })
+})
+
+describe('settleQuery', () => {
+  it('the last write arriving settles every write before it', () => {
+    expect(settleQuery(['c', 'co', 'con'], 'con')).toEqual({ written: [], external: false })
+  })
+
+  it('an intermediate write arriving is ours, and the later writes stay pending', () => {
+    // The commit that would have put "c" back into a box already reading "co"
+    expect(settleQuery(['c', 'co'], 'c')).toEqual({ written: ['co'], external: false })
+  })
+
+  it('a query nobody typed is external, and supersedes whatever was pending', () => {
+    // The tab bar's /library link while the page is open
+    expect(settleQuery(['c', 'co'], '')).toEqual({ written: [], external: true })
+    expect(settleQuery([], 'ab')).toEqual({ written: [], external: true })
+  })
+
+  it('a value written twice is matched at its latest write', () => {
+    // a, backspace, a: the arriving "a" must not leave "" and "a" pending,
+    // or a later external clear to "" would be mistaken for ours
+    expect(settleQuery(['a', '', 'a'], 'a')).toEqual({ written: [], external: false })
   })
 })

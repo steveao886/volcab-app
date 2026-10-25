@@ -139,3 +139,27 @@ export function distinctSourceNotes(words: Word[]): string[] {
     return a.localeCompare(b)
   })
 }
+
+/**
+ * The search box keeps its own text and writes it to `?q=`; this decides
+ * whether a `q` that just arrived from the URL is one of those writes or
+ * came from elsewhere (the tab bar's plain /library link) and must replace
+ * the box's text.
+ *
+ * The box used to show the URL's `q` directly, and lost keystrokes two ways,
+ * both reproduced in Chrome on 2026-10-25. HashRouter commits every location
+ * change inside `startTransition`, so after each keystroke React put the old
+ * value back into the box until the transition finished rendering the list;
+ * with the CPU throttled 4× that took over a second, and c, o, n pressed a
+ * second apart came out as "cn". And `filterToParams` trims, so a typed
+ * space came straight back out: "per se" could not be typed at all.
+ *
+ * `written` holds the trimmed queries written and not yet seen arriving,
+ * oldest first. Transitions can commit an intermediate write ("c" while the
+ * box already reads "co"), so arrival is matched anywhere in the queue, at
+ * its latest occurrence, and settles everything up to it.
+ */
+export function settleQuery(written: readonly string[], arrived: string): { written: string[]; external: boolean } {
+  const i = written.lastIndexOf(arrived)
+  return i === -1 ? { written: [], external: true } : { written: written.slice(i + 1), external: false }
+}
