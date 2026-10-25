@@ -63,7 +63,9 @@
         "malleable",
         "preeminent",
         "slippery-slope",
-        "world-renowned"
+        "world-renowned",
+        "acclaimed",
+        "esteemed"
       ]
     },
     {
@@ -99,7 +101,9 @@
         "obstinate",
         "prominence",
         "steadfast",
-        "tenacious"
+        "tenacious",
+        "exigency",
+        "repulsion"
       ]
     },
     {
@@ -136,7 +140,8 @@
         "obscene",
         "turmoil",
         "companionable",
-        "simpatico"
+        "simpatico",
+        "cruel"
       ]
     },
     {
@@ -233,7 +238,9 @@
         "conscientious",
         "malevolent",
         "painstaking",
-        "propriety"
+        "propriety",
+        "spiteful",
+        "venomous"
       ]
     },
     {
@@ -278,7 +285,8 @@
         "refractory",
         "sedulous",
         "spasmodic",
-        "uncompromising"
+        "uncompromising",
+        "flippant"
       ]
     },
     {
@@ -425,7 +433,8 @@
         "sagacious",
         "sapient",
         "vitiate",
-        "unyielding"
+        "unyielding",
+        "perceptive"
       ]
     },
     {
@@ -536,7 +545,8 @@
       "exclude": [
         "formidable",
         "ominous",
-        "prodigal"
+        "prodigal",
+        "inculpate"
       ]
     },
     {
@@ -754,7 +764,9 @@
         "oblivious",
         "philanthropic",
         "prodigal",
-        "sumptuous"
+        "sumptuous",
+        "lenient",
+        "merciful"
       ]
     },
     {
@@ -789,7 +801,10 @@
         "effortful",
         "grueling",
         "magnanimous",
-        "sloppy"
+        "sloppy",
+        "big-hearted",
+        "merciful",
+        "slipshod"
       ]
     },
     {
@@ -910,7 +925,8 @@
         "tenacious",
         "ulterior",
         "uncompromising",
-        "snag"
+        "snag",
+        "esteemed"
       ]
     },
     {
@@ -953,7 +969,9 @@
         "refractory",
         "sagacious",
         "tenacious",
-        "unobtrusive"
+        "unobtrusive",
+        "perturbation",
+        "perceptive"
       ]
     },
     {
@@ -1076,7 +1094,8 @@
         "refractory",
         "surreptitious",
         "tenacious",
-        "vehement"
+        "vehement",
+        "unbiased"
       ]
     },
     {
@@ -1184,7 +1203,8 @@
       ],
       "exclude": [
         "dictatorial",
-        "embroil"
+        "embroil",
+        "estimable"
       ]
     },
     {
@@ -1894,7 +1914,8 @@
         "remorseless",
         "resentful",
         "sedulous",
-        "uncompromising"
+        "uncompromising",
+        "lenient"
       ]
     },
     {
@@ -2218,7 +2239,9 @@
         "scheming",
         "sedulous",
         "uncontainable",
-        "underhand"
+        "underhand",
+        "perturbation",
+        "cruel"
       ]
     },
     {
@@ -2290,7 +2313,8 @@
         "opposed",
         "rash",
         "sedulous",
-        "temerity"
+        "temerity",
+        "careless"
       ]
     },
     {
@@ -2390,7 +2414,8 @@
         "litigious",
         "pugnacious",
         "quarrelsome",
-        "resentful"
+        "resentful",
+        "repeal"
       ]
     },
     {
@@ -2881,7 +2906,9 @@
         "aggrieved",
         "remorseless",
         "resentful",
-        "unremarkable"
+        "unremarkable",
+        "multiethnic",
+        "pluralistic"
       ]
     },
     {
@@ -2977,7 +3004,8 @@
         "直到造假犯认了罪，队里其他人才拿出证据佐证她的判断，队长却始终没正儿八经地道过歉。"
       ],
       "exclude": [
-        "remorseless"
+        "remorseless",
+        "cruel"
       ]
     },
     {
@@ -3088,7 +3116,8 @@
         "remorseless",
         "sedulous",
         "sickening",
-        "uncompromising"
+        "uncompromising",
+        "lasting"
       ]
     },
     {
@@ -3337,7 +3366,8 @@
         "inimical",
         "resentful",
         "outrage",
-        "appalling"
+        "appalling",
+        "acclaimed"
       ]
     },
     {
@@ -3377,7 +3407,8 @@
         "perpetuate",
         "repudiate",
         "resentful",
-        "sedulous"
+        "sedulous",
+        "jokey"
       ]
     },
     {
@@ -3492,7 +3523,8 @@
         "sedulous",
         "acrid",
         "companionable",
-        "simpatico"
+        "simpatico",
+        "keen"
       ]
     },
     {
@@ -3696,7 +3728,8 @@
         "母亲最终的反应里带着一种微妙的分寸——算不上原谅，只是一种刻意的、悄悄的软化。"
       ],
       "exclude": [
-        "agitation"
+        "agitation",
+        "perturbation"
       ]
     },
     {
@@ -3957,7 +3990,8 @@
       ],
       "exclude": [
         "vexation",
-        "renown"
+        "renown",
+        "ascendancy"
       ]
     },
     {
@@ -4029,7 +4063,8 @@
         "belligerent",
         "remorseless",
         "sedulous",
-        "verbosity"
+        "verbosity",
+        "perceptive"
       ]
     },
     {
@@ -4129,7 +4164,8 @@
       "exclude": [
         "sedulous",
         "remorseless",
-        "belligerent"
+        "belligerent",
+        "abash"
       ]
     },
     {
@@ -4199,7 +4235,9 @@
         "消息传到一位早已退休、颇有远见的船东耳中——他多年前就悄悄存了一笔钱，专门应对这类意外。",
         "他的捐款解决了修复费用，可下一次理事会上，大家还是为这份功劳该算谁的吵得不可开交。"
       ],
-      "exclude": []
+      "exclude": [
+        "incautious"
+      ]
     },
     {
       "id": "creek-bottle-walk",
@@ -4449,7 +4487,8 @@
       ],
       "exclude": [
         "indiscreet",
-        "insolent"
+        "insolent",
+        "insensate"
       ]
     },
     {
@@ -4489,7 +4528,9 @@
         "downbeat",
         "imprudent",
         "vigilant",
-        "appalling"
+        "appalling",
+        "perceptive",
+        "careless"
       ]
     },
     {
@@ -4583,7 +4624,8 @@
       ],
       "exclude": [
         "impairment",
-        "concurrence"
+        "concurrence",
+        "keen"
       ]
     },
     {
@@ -4718,7 +4760,8 @@
         "unmoved",
         "open-minded",
         "aggravate",
-        "irritate"
+        "irritate",
+        "careless"
       ]
     },
     {
@@ -4798,7 +4841,10 @@
         "repugnant",
         "sagacious",
         "trivial",
-        "unsavory"
+        "unsavory",
+        "multiethnic",
+        "pluralistic",
+        "perceptive"
       ]
     },
     {
@@ -4867,7 +4913,8 @@
       "exclude": [
         "affinity",
         "insouciant",
-        "voluptuous"
+        "voluptuous",
+        "unbiased"
       ]
     },
     {
@@ -4900,7 +4947,8 @@
         "imprudent",
         "magnanimous",
         "admonition",
-        "percolate"
+        "percolate",
+        "big-hearted"
       ]
     },
     {
@@ -4933,7 +4981,8 @@
       "exclude": [
         "irremediable",
         "erode",
-        "unguarded"
+        "unguarded",
+        "markedly"
       ]
     },
     {
@@ -5039,7 +5088,8 @@
       "exclude": [
         "incisive",
         "rickety",
-        "relentless"
+        "relentless",
+        "perceptive"
       ]
     },
     {
@@ -5106,7 +5156,8 @@
         "equitable",
         "impair",
         "undermine",
-        "demanding"
+        "demanding",
+        "unbiased"
       ]
     },
     {
@@ -5213,7 +5264,8 @@
         "mesmerizing",
         "perfunctory",
         "unresponsive",
-        "vexation"
+        "vexation",
+        "intriguing"
       ]
     }
   ]

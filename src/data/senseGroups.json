@@ -51,12 +51,10 @@
       "en": "The grand jury voted to indict the former executive on eleven counts of wire fraud.",
       "order": [
         "indict",
-        "incriminate"
-      ],
-      "why": "indict 是检方或大陪审团启动正式指控，宾语是人并带上罪名；incriminate 和 inculpate 说的是证据让人显得有罪，不是法律程序，其中 inculpate 更书面、日常几乎不用。",
-      "extra": [
+        "incriminate",
         "inculpate"
-      ]
+      ],
+      "why": "indict 是检方或大陪审团启动正式指控，宾语是人并带上罪名；incriminate 和 inculpate 说的是证据让人显得有罪，不是法律程序，其中 inculpate 更书面、日常几乎不用。"
     },
     {
       "zh": "他本想置身事外，在家族群里回了一句就被卷进了遗产纠纷。",
@@ -64,12 +62,10 @@
       "en": "One reply in the family group chat was enough to embroil him in the inheritance dispute.",
       "order": [
         "embroil",
-        "implicate"
-      ],
-      "why": "embroil 只是被卷进纠纷或麻烦，不含有罪的意思；implicate 指证据显示某人涉入了不法行为；inculpate 意思相近但属法律书面语，还带明确的归罪意味。",
-      "extra": [
+        "implicate",
         "inculpate"
-      ]
+      ],
+      "why": "embroil 只是被卷进纠纷或麻烦，不含有罪的意思；implicate 指证据显示某人涉入了不法行为；inculpate 意思相近但属法律书面语，还带明确的归罪意味。"
     },
     {
       "zh": "要不要每周回办公室五天，成了全员大会上最有争议的话题。",
@@ -476,12 +472,10 @@
       "en": "The study implicated poor sleep in the participants' declining memory.",
       "order": [
         "implicate",
-        "incriminate"
-      ],
-      "why": "implicate 的宾语既可以是人，也可以是原因或事物，指出它与某个后果有牵连；incriminate 和 inculpate 都必须指向有罪责的人，其中 inculpate 只出现在正式法律语境，日常几乎不用。",
-      "extra": [
+        "incriminate",
         "inculpate"
-      ]
+      ],
+      "why": "implicate 的宾语既可以是人，也可以是原因或事物，指出它与某个后果有牵连；incriminate 和 inculpate 都必须指向有罪责的人，其中 inculpate 只出现在正式法律语境，日常几乎不用。"
     },
     {
       "zh": "葬礼上，弟弟致辞追忆祖父，讲了许多家人没听过的往事。",
@@ -788,10 +782,10 @@
       "target": "变得更糟",
       "order": [
         "exacerbate",
-        "aggravate"
+        "aggravate",
+        "compound"
       ],
       "extra": [
-        "compound",
         "intensify"
       ],
       "en": "The new policy exacerbated a housing shortage that was already severe.",
@@ -1458,7 +1452,6 @@
         "prolong"
       ],
       "extra": [
-        "entrench",
         "keep alive"
       ],
       "en": "The subsidy perpetuates capacity that should have been retired.",
@@ -1921,14 +1914,14 @@
       "why": "credence 指相信并采纳的这个动作,常说 give credence to;credibility 是对象本身的可信程度,是属性;weight 指分量;stock 只在 put stock in 这一搭配里表示看重。"
     },
     {
-      "zh": "两句没有证据的指控被认定为诽谤的内容。",
-      "target": "诽谤的",
+      "zh": "两句没有证据的指控被法院认定损害名誉。",
+      "target": "损害名誉",
       "order": [
-        "defamatory"
+        "defamatory",
+        "libelous",
+        "calumnious"
       ],
       "extra": [
-        "libelous",
-        "calumnious",
         "actionable"
       ],
       "en": "Two unsupported claims were ruled defamatory.",
@@ -1938,11 +1931,11 @@
       "zh": "他三两下就把那团缠住的线解开了。",
       "target": "三两下",
       "order": [
-        "deft"
+        "deft",
+        "dexterous"
       ],
       "extra": [
         "nimble",
-        "dexterous",
         "practiced"
       ],
       "en": "A few deft movements and he had the tangle undone.",
@@ -2162,10 +2155,10 @@
       "zh": "这份材料整理得杂乱无章,前后顺序完全对不上。",
       "target": "杂乱无章",
       "order": [
-        "haphazard"
+        "haphazard",
+        "slapdash"
       ],
       "extra": [
-        "slapdash",
         "hit-or-miss"
       ],
       "en": "The file is haphazard: nothing follows anything else.",
@@ -2521,13 +2514,13 @@
       "why": "veer 指方向明显改变,可用于车辆也可用于话题或政策的转向;swerve 强调为避让而猛地一闪;lurch 侧重失去平衡的踉跄;career off 指失控地冲出去。"
     },
     {
-      "zh": "药效在两小时后开始减弱,疼痛又回来了。",
-      "target": "减弱",
+      "zh": "两小时一过，什么都压不住那阵疼痛了。",
+      "target": "压不住",
       "order": [
-        "subdue"
+        "subdue",
+        "quell"
       ],
       "extra": [
-        "quell",
         "damp down",
         "take the edge off"
       ],
@@ -2875,7 +2868,6 @@
         "facetious"
       ],
       "extra": [
-        "flippant",
         "glib",
         "ill-timed"
       ],
@@ -4420,10 +4412,10 @@
         "astute",
         "adroit"
       ],
+      "why": "astute 说的是判断力：看得准，能从形势里看出别人没看到的东西；adroit 说的是手法：把一件难办的事处理得漂亮利落，重点在做得好而不在看得准。adept 同样说的是做事的本事熟练，与看得准无关。",
       "extra": [
-        "perceptive"
-      ],
-      "why": "astute 说的是判断力：看得准，能从形势里看出别人没看到的东西；adroit 说的是手法：把一件难办的事处理得漂亮利落，重点在做得好而不在看得准。"
+        "adept"
+      ]
     },
     {
       "zh": "咖啡师手上利落得很，眼睛都没往下看就拉出一朵叶子。",
@@ -4697,17 +4689,17 @@
       "why": "obscene 主要指淫秽下流，触犯的是公序良俗的底线，也可引申指数额离谱到不体面；unsavory 是让人隐隐反感、疑心有猫腻，说的是名声与勾当见不得光，含蓄得多。"
     },
     {
-      "zh": "一走进纪念馆主厅，参观的人自己就安静肃穆下来。",
-      "target": "安静肃穆",
+      "zh": "一走进纪念馆主厅，参观的人便肃然起敬，安静下来。",
+      "target": "肃然起敬",
       "en": "Visitors turn reverent and quiet the moment they step into the memorial's main hall.",
       "order": [
         "reverent",
         "pious"
       ],
+      "why": "reverent 说的是流露出的敬意与肃穆，对象可以是纪念馆、逝者、一门手艺，不必与宗教有关；pious 专指笃信宗教、按教规生活，用来形容参观者就不对了。devout 和 pious 一样指笃信宗教，同样不合这里。",
       "extra": [
-        "solemn"
-      ],
-      "why": "reverent 说的是流露出的敬意与肃穆，对象可以是纪念馆、逝者、一门手艺，不必与宗教有关；pious 专指笃信宗教、按教规生活，用来形容参观者就不对了。"
+        "devout"
+      ]
     },
     {
       "zh": "打印机偏在截止前不听使唤，四十页报告卡在第一页。",
@@ -5232,10 +5224,10 @@
       "en": "Years of missed birthdays hardened into an estrangement between mother and daughter that neither of them ever undid.",
       "order": [
         "estrangement",
-        "alienation"
+        "alienation",
+        "detachment"
       ],
       "extra": [
-        "detachment",
         "aloofness"
       ],
       "why": "estrangement 说的是两个本来亲近的人断了往来，落点在这一对具体的关系上，主语常是母女、兄弟、夫妻；alienation 是个人融不进群体、与周遭格格不入的感受，对面不是某一个人，而是一群人或整个社会；detachment 指自己主动抽身、不再动感情，是单方面的姿态；aloofness 只是待人冷淡疏远的做派，未必有过亲近，也就谈不上断。"
