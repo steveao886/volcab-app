@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Chip } from '../components/Chip'
 import { ConfirmDialog } from '../components/ConfirmDialog'
@@ -11,7 +11,7 @@ import { SyncStatus } from '../components/SyncStatus'
 import { TextInput } from '../components/TextInput'
 import { useApp } from '../state/store'
 import type { Word, WordState } from '../types'
-import { ALL_WORDS, distinctSourceNotes, filterToParams, filterWords, paramsToFilter, wordState } from './libraryFilter'
+import { ALL_WORDS, distinctSourceNotes, filterToParams, filterWords, paramsToFilter, settleQuery, wordState } from './libraryFilter'
 import type { LibraryFilterOptions, StatusFilter } from './libraryFilter'
 import './Library.css'
 
@@ -22,8 +22,36 @@ const STATUS_CHIPS: { key: StatusFilter; label: string }[] = [
   { key: 'review', label: '已掌握' },
 ]
 
-/** List row: a navigation link outside manage mode; in manage mode, the whole row is a checkbox's <label>. */
-function LibraryRow({
+/**
+ * Rows render in batches: the first FIRST_BATCH, then NEXT_BATCH more each
+ * time a sentinel comes within 1500px of the viewport. Measured on the live
+ * library (1,411 words) on 2026-10-25, production build, CPU throttled 4×:
+ * opening this page took 2.3–3.1 s to go quiet. Layout of the 7,141-node list
+ * was 972 ms of that, and a second render of every row another 1.2 s, almost
+ * all of it in React Router's `createHashHref`, which runs
+ * `document.querySelector('base')` once per <Link> — a full-document scan
+ * per row, so rows × nodes.
+ */
+const FIRST_BATCH = 50
+const NEXT_BATCH = 100
+
+/**
+ * How many rows the latest library history entry had rendered, so coming
+ * back from a word's page restores the list long enough for the browser's
+ * scroll restoration to land where the user left. One record, not a map:
+ * every filter write is a replace with a fresh key, and only the latest can
+ * be returned to.
+ */
+let lastShown: { key: string; limit: number } | null = null
+
+/**
+ * List row: a navigation link outside manage mode; in manage mode, the whole
+ * row is a checkbox's <label>. Memoized, with `onToggle` taking the id so the
+ * parent can pass one stable callback: anything that re-renders the page (a
+ * sync tick, a selection, a filter that keeps the row) otherwise re-renders
+ * every row and runs the per-<Link> scan above again.
+ */
+const LibraryRow = memo(function LibraryRow({
   word,
   state,
   manageMode,
@@ -34,7 +62,7 @@ function LibraryRow({
   state: WordState
   manageMode: boolean
   selected: boolean
-  onToggle: () => void
+  onToggle: (id: string) => void
 }) {
   const meaning = word.meanings[0]
   const body = (
@@ -57,7 +85,7 @@ function LibraryRow({
             type="checkbox"
             className="check__box"
             checked={selected}
-            onChange={onToggle}
+            onChange={() => onToggle(word.id)}
             aria-label={`选中 ${word.headword}`}
           />
         </span>
@@ -71,7 +99,7 @@ function LibraryRow({
       {body}
     </Link>
   )
-}
+})
 
 function emptyStateCopy(
   hasAnyWords: boolean,
@@ -98,8 +126,28 @@ export function Library() {
   // reasoning as the ?mode= switches (see CLAUDE.md).
   const [searchParams, setSearchParams] = useSearchParams()
   const { query, status, sourceNote } = paramsToFilter(searchParams)
+
+  // The search box shows its own text, not the URL's `q` — see settleQuery
+  // for the two ways reading it back from the URL lost keystrokes. The list
+  // still filters on the URL's `q`, which trails the box by one transition;
+  // that lag is what keeps typing responsive while the list catches up.
+  const [draft, setDraft] = useState(query)
+  const written = useRef<string[]>([])
+  useEffect(() => {
+    const s = settleQuery(written.current, query)
+    written.current = s.written
+    if (s.external) setDraft(query)
+  }, [query])
+
+  // Every write takes its query from the box, never from the URL: the URL
+  // can still be a keystroke behind, and a chip tapped then would write the
+  // stale query back over what was typed.
   const setFilter = (next: Partial<LibraryFilterOptions>) => {
-    setSearchParams(filterToParams({ query, status, sourceNote, ...next }), { replace: true })
+    if (next.query !== undefined) {
+      setDraft(next.query)
+      written.current.push(next.query.trim())
+    }
+    setSearchParams(filterToParams({ query: draft, status, sourceNote, ...next }), { replace: true })
   }
   const setQuery = (q: string) => setFilter({ query: q })
   const setStatus = (s: StatusFilter) => setFilter({ status: s })
@@ -111,12 +159,12 @@ export function Library() {
   const [deleting, setDeleting] = useState(false)
 
   const selectAllRef = useRef<HTMLInputElement>(null)
-  const [overlayRoot, setOverlayRoot] = useState<HTMLElement | null>(null)
 
-  // #overlay-root is rendered by AppLayout; it's only guaranteed to already be in the real DOM once mounted for the first time.
-  useEffect(() => {
-    setOverlayRoot(document.getElementById('overlay-root'))
-  }, [])
+  // Read during render rather than set from a mount effect: the effect cost a
+  // second render of the whole list on every open (1.2 s throttled, see
+  // FIRST_BATCH), and the bulk bar only exists in manage mode, which a tap
+  // enters long after AppLayout has mounted #overlay-root.
+  const overlayRoot = manageMode ? document.getElementById('overlay-root') : null
 
   // Any field change on useApp()'s context value produces a new object
   // (background sync ticks count too) — filtering/sorting 476 words can't
@@ -164,14 +212,55 @@ export function Library() {
     setSelected(new Set())
   }
 
-  function toggleSelect(id: string) {
+  // Stable, so memoized rows skip re-rendering when another row is toggled
+  const toggleSelect = useCallback((id: string) => {
     setSelected(prev => {
       const next = new Set(prev)
       if (next.has(id)) next.delete(id)
       else next.add(id)
       return next
     })
+  }, [])
+
+  // A filter change starts the list over at the first batch, adjusted during
+  // render (the state-from-props pattern) so the old limit never paints
+  // against the new list. The initial limit is the one this history entry
+  // left behind, if it is the entry being returned to.
+  const location = useLocation()
+  const filterKey = `${query}\n${status}\n${sourceNote ?? ''}`
+  const [shown, setShown] = useState(() => ({
+    key: filterKey,
+    limit: lastShown !== null && lastShown.key === location.key ? lastShown.limit : FIRST_BATCH,
+  }))
+  let limit = shown.limit
+  if (shown.key !== filterKey) {
+    limit = FIRST_BATCH
+    setShown({ key: filterKey, limit })
   }
+  useEffect(() => {
+    lastShown = { key: location.key, limit }
+  }, [location.key, limit])
+
+  const visible = useMemo(() => filtered.slice(0, limit), [filtered, limit])
+  const hasMore = filtered.length > limit
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  // Re-created after each batch: observe() reports the current intersection
+  // straight away, so a sentinel still inside the margin (a tall screen, a
+  // fast fling) asks for the next batch without waiting for another scroll.
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!hasMore || el === null) return
+    const grow = () => setShown(s => ({ ...s, limit: s.limit + NEXT_BATCH }))
+    if (typeof IntersectionObserver === 'undefined') {
+      setShown(s => ({ ...s, limit: Infinity }))   // no observer, no batching: the whole list, as before
+      return
+    }
+    const io = new IntersectionObserver(entries => {
+      if (entries.some(e => e.isIntersecting)) grow()
+    }, { rootMargin: '0px 0px 1500px 0px' })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [hasMore, limit])
 
   function toggleSelectAll() {
     setSelected(allFilteredSelected ? new Set() : new Set(filtered.map(w => w.id)))
@@ -238,7 +327,7 @@ export function Library() {
           type="search"
           className="library-search__input"
           placeholder="搜索词头或释义…"
-          value={query}
+          value={draft}
           onChange={e => setQuery(e.target.value)}
           aria-label="搜索词库：按词头或释义匹配"
         />
@@ -296,18 +385,21 @@ export function Library() {
       {empty === null ? (
         // A long list of 476 entries: explicit list semantics, so screen readers can announce the item count and support list-mode navigation.
         // A ruled list on the page, not a card: a dictionary index has no box around it.
-        <div className="ledger library-list" role="list">
-          {filtered.map(w => (
-            <LibraryRow
-              key={w.id}
-              word={w}
-              state={wordState(w, progress)}
-              manageMode={manageMode}
-              selected={selected.has(w.id)}
-              onToggle={() => toggleSelect(w.id)}
-            />
-          ))}
-        </div>
+        <>
+          <div className="ledger library-list" role="list">
+            {visible.map(w => (
+              <LibraryRow
+                key={w.id}
+                word={w}
+                state={wordState(w, progress)}
+                manageMode={manageMode}
+                selected={selected.has(w.id)}
+                onToggle={toggleSelect}
+              />
+            ))}
+          </div>
+          {hasMore && <div ref={sentinelRef} aria-hidden="true" />}
+        </>
       ) : (
         <div className="empty-state">
           <p className="empty-state__title">{empty.title}</p>
