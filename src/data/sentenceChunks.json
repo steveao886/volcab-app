@@ -6936,12 +6936,12 @@
    "id": "countermand",
    "i": 0,
    "cuts": [
-    3,
+    2,
     8,
     11,
     14
    ],
-   "blank": 3,
+   "blank": 2,
    "answer": "countermanded"
   },
   {

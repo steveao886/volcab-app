@@ -3543,15 +3543,21 @@
       "meanings": [
         {
           "pos": "v.",
-          "en": "to have a long, complicated dispute or argument; also, to herd or manage with effort",
-          "zh": "激烈争论;争吵;(费力地)管理、驾驭",
-          "share": 60
+          "en": "to have a long, complicated dispute or argument",
+          "zh": "激烈争论;争吵",
+          "share": 50
         },
         {
           "pos": "n.",
           "en": "a long and complicated dispute",
           "zh": "激烈的争论;纠纷",
-          "share": 40
+          "share": 30
+        },
+        {
+          "pos": "v.",
+          "en": "to round up and control animals, or unruly people, with effort",
+          "zh": "(费力地)管理、驾驭",
+          "share": 20
         }
       ],
       "examples": [
@@ -4599,7 +4605,7 @@
         "In a moment of impetuous confidence, he hit 'reply all' and told the entire company what he really thought of the reorg.",
         "She made the impetuous decision to book a one-way flight to Lisbon the same night she quit her job.",
         "The impetuous swipe-right, no-second-thought approach to dating apps left him with three first dates in one exhausting week.",
-        "In an impetuous burst after the breakup, she got a tattoo of his nickname covered up within the month.",
+        "In an impetuous burst after the breakup, she had his nickname tattooed on her wrist, then spent the next month paying to cover it up.",
         "The impetuous investor dumped his savings into the meme coin the moment his coworker mentioned it at lunch."
       ],
       "synonyms": [
@@ -7795,10 +7801,10 @@
         }
       ],
       "examples": [
-        "The regional manager countermanded the CEO's hiring freeze the same afternoon, and nobody knew which memo to follow.",
+        "The CEO countermanded the regional manager's hiring freeze the same afternoon, and nobody knew which memo to follow.",
         "She countermanded her earlier order for the flowers when the venue changed the color scheme.",
         "The general's countermanded retreat order left half the unit confused about which way to move.",
-        "The assistant coach countermanded the starting lineup call the second the head coach turned toward the locker room.",
+        "The head coach countermanded his assistant's starting lineup the moment he walked back in from the locker room.",
         "Grandma quietly countermanded the no-dessert-before-dinner rule the moment the parents left for date night."
       ],
       "synonyms": [
@@ -11423,7 +11429,7 @@
         {
           "pos": "adj.",
           "en": "very plentiful; produced or given in large amounts",
-          "zh": "大量的;丰富的(区别于 suffuse‘弥漫;充满’)"
+          "zh": "大量的;丰富的"
         }
       ],
       "examples": [
@@ -15467,8 +15473,8 @@
       "meanings": [
         {
           "pos": "n.",
-          "en": "formal or official approval; praise",
-          "zh": "认可;赞许(正式的)"
+          "en": "approval or praise, especially from someone whose judgment matters; a formal word",
+          "zh": "认可;赞许(书面语)"
         }
       ],
       "examples": [
@@ -17117,8 +17123,15 @@
       "meanings": [
         {
           "pos": "adj.",
-          "en": "very steep; also, done with unwise haste or suddenness (distinct from the verb 'precipitate', which means to cause something to happen abruptly)",
-          "zh": "陡峭的;仓促的、鲁莽急促的(注意与动词 precipitate“促成,使骤然发生”相区分)"
+          "en": "very steep, or (of a fall or decline) sudden and dramatic",
+          "zh": "陡峭的;骤降的",
+          "share": 70
+        },
+        {
+          "pos": "adj.",
+          "en": "done suddenly and without careful thought",
+          "zh": "仓促的;贸然的",
+          "share": 30
         }
       ],
       "examples": [
@@ -18810,8 +18823,15 @@
       "meanings": [
         {
           "pos": "adj.",
-          "en": "(of a tumor) cancerous and likely to spread; also, evil or harmful in intent",
-          "zh": "(肿瘤)恶性的;(性质、意图)恶毒的,有害的"
+          "en": "(of a tumor or disease) cancerous and likely to spread",
+          "zh": "(肿瘤)恶性的",
+          "share": 50
+        },
+        {
+          "pos": "adj.",
+          "en": "wishing or causing harm; evil in intent",
+          "zh": "(性质、意图)恶毒的,有害的",
+          "share": 50
         }
       ],
       "examples": [
@@ -58496,9 +58516,9 @@
       ],
       "examples": [
         "Three days before the execution date, the governor granted clemency, and the prisoner's sentence was reduced to life without parole.",
-        "The captain begged the referee for clemency after the second yellow card, promising to stop arguing over every throw-in.",
-        "Mrs. Okafor, the strictest teacher in the school, showed unexpected clemency when a student handed in his essay a day late because of his grandmother's funeral.",
-        "The new manager showed no clemency toward lateness, docking pay for every minute beyond the start of the morning shift.",
+        "The judge showed clemency to the first-time shoplifter, suspending the sentence once the teenager had paid back every dollar.",
+        "Hundreds of letters asked the president to grant clemency to the nurse, who had already served twenty years on a drug charge.",
+        "The parole board showed no clemency, noting that in eleven years he had never once admitted what he had done.",
         "In the novel, the rebel leader pleaded for clemency on his knees, and the queen answered only by turning to look out of the window."
       ],
       "synonyms": [
