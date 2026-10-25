@@ -192,10 +192,20 @@ export function blobShaFromETag(etag: string | null): string | null {
  * For writing. **There's no matching fromBase64** — once getFile switched to raw it stopped
  * decoding anything, and leaving an unused decoder around would just make the next person
  * assume the read path still goes through base64.
+ *
+ * Bytes become a binary string a chunk at a time: appending one character per byte took a
+ * median 156 ms on the live words.json (1,411 words, 2.36M chars, 2026-10-24), on the main
+ * thread, on every word save and delete; chunked, the same input takes 21 ms, and the live
+ * progress.json (396K chars, every progress push) went from 17 ms to 3 ms. Both measured in
+ * Node 24, the same V8 as Chrome. The chunk stays well under the engines' argument-count
+ * limit for `apply`.
  */
+const CHUNK = 0x8000
 export function toBase64(s: string): string {
   const bytes = new TextEncoder().encode(s)
-  let bin = ''
-  for (const b of bytes) bin += String.fromCharCode(b)
-  return btoa(bin)
+  const parts: string[] = []
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    parts.push(String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK) as unknown as number[]))
+  }
+  return btoa(parts.join(''))
 }
