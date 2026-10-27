@@ -30735,7 +30735,10 @@
         "cryptic",
         "arcane",
         "unclear",
-        "oblique"
+        "oblique",
+        "conceal",
+        "shroud",
+        "blur"
       ],
       "antonyms": [
         "renowned",
@@ -46428,7 +46431,9 @@
         "historic",
         "groundbreaking",
         "watershed",
-        "pivotal"
+        "pivotal",
+        "milestone",
+        "turning point"
       ],
       "antonyms": [
         "minor",
@@ -59390,7 +59395,9 @@
       ],
       "synonyms": [
         "lower-ranking",
-        "lesser"
+        "lesser",
+        "underling",
+        "direct report"
       ],
       "antonyms": [
         "superior",
@@ -63573,7 +63580,8 @@
       ],
       "synonyms": [
         "ethical",
-        "virtuous"
+        "virtuous",
+        "lesson"
       ],
       "antonyms": [
         "immoral",
@@ -65940,7 +65948,9 @@
       "synonyms": [
         "impartial",
         "unbiased",
-        "dispassionate"
+        "dispassionate",
+        "goal",
+        "aim"
       ],
       "antonyms": [
         "subjective",
@@ -66572,7 +66582,8 @@
       ],
       "synonyms": [
         "outspoken",
-        "brusque"
+        "brusque",
+        "unsharpened"
       ],
       "antonyms": [
         "tactful",
@@ -66823,7 +66834,9 @@
       ],
       "synonyms": [
         "side job",
-        "side business"
+        "side business",
+        "bench",
+        "push aside"
       ],
       "antonyms": [],
       "collocations": [
@@ -69628,7 +69641,9 @@
       ],
       "synonyms": [
         "competition",
-        "tournament"
+        "tournament",
+        "challenge",
+        "call into question"
       ],
       "antonyms": [],
       "collocations": [
