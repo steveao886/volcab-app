@@ -638,10 +638,15 @@
     },
     {
       "id": "gullible",
-      "zh": "太好骗,心里少那道弯",
+      "zh": "心里没设防,容易着了人家的道",
       "anchors": [
         "naive",
-        "trusting"
+        "trusting",
+        "unsuspecting"
+      ],
+      "excludeOpposites": [
+        "devious",
+        "worldly"
       ]
     },
     {
@@ -790,9 +795,10 @@
     },
     {
       "id": "solitude",
-      "zh": "跟周围隔开、融不进去的那种状态",
+      "zh": "跟周围隔开的那种状态",
       "anchors": [
-        "isolation"
+        "isolation",
+        "seclusion"
       ],
       "excludeOpposites": [
         "congregation"
@@ -897,6 +903,221 @@
       "anchors": [
         "decay",
         "decline"
+      ]
+    },
+    {
+      "id": "insolent",
+      "zh": "不知分寸,说话做事越了界",
+      "anchors": [
+        "impertinent",
+        "insolent"
+      ]
+    },
+    {
+      "id": "anxious",
+      "zh": "心里悬着,怕要出什么事",
+      "anchors": [
+        "apprehensive",
+        "worried"
+      ]
+    },
+    {
+      "id": "careless",
+      "zh": "该上心的地方没上心",
+      "anchors": [
+        "slipshod"
+      ]
+    },
+    {
+      "id": "unsettle",
+      "zh": "把人搅得心神不宁",
+      "anchors": [
+        "disturb"
+      ]
+    },
+    {
+      "id": "infuriate",
+      "zh": "把人惹得火往上冒",
+      "anchors": [
+        "annoy",
+        "infuriate"
+      ]
+    },
+    {
+      "id": "considerable",
+      "zh": "不算小,大到让人注意得到",
+      "anchors": [
+        "considerable"
+      ]
+    },
+    {
+      "id": "cruelty",
+      "zh": "下手狠毒,毫无人性",
+      "anchors": [
+        "cruelty",
+        "barbarity"
+      ]
+    },
+    {
+      "id": "foremost",
+      "zh": "排在头一位,上面再没有了",
+      "anchors": [
+        "foremost"
+      ]
+    },
+    {
+      "id": "inclination",
+      "zh": "总爱往某一边偏",
+      "anchors": [
+        "inclination",
+        "tendency"
+      ]
+    },
+    {
+      "id": "negligible",
+      "zh": "小得几乎可以不算",
+      "anchors": [
+        "negligible",
+        "marginal"
+      ],
+      "excludeOpposites": [
+        "insurmountable",
+        "egregious",
+        "pressing"
+      ]
+    },
+    {
+      "id": "absurd",
+      "zh": "荒唐离谱,怎么都说不通",
+      "anchors": [
+        "absurd",
+        "ridiculous"
+      ]
+    },
+    {
+      "id": "portend",
+      "zh": "事情还没来,先露出了苗头",
+      "anchors": [
+        "portend",
+        "foreshadow",
+        "augur"
+      ]
+    },
+    {
+      "id": "reticent",
+      "zh": "不大开口,有什么都收着",
+      "anchors": [
+        "reserved"
+      ]
+    },
+    {
+      "id": "perilous",
+      "zh": "险得很,一不小心就出事",
+      "anchors": [
+        "hazardous",
+        "precarious"
+      ]
+    },
+    {
+      "id": "impassive",
+      "zh": "心里有什么,脸上都看不出来",
+      "anchors": [
+        "deadpan",
+        "stoic"
+      ],
+      "exclude": [
+        "uncomplaining"
+      ],
+      "excludeOpposites": [
+        "querulous",
+        "whiny"
+      ]
+    },
+    {
+      "id": "bolster",
+      "zh": "再添一把力,让它撑得更稳",
+      "anchors": [
+        "reinforce",
+        "strengthen"
+      ]
+    },
+    {
+      "id": "avaricious",
+      "zh": "一门心思想把东西弄到手",
+      "anchors": [
+        "avaricious",
+        "grasping"
+      ]
+    },
+    {
+      "id": "effrontery",
+      "zh": "那股不知天高地厚的放肆劲",
+      "anchors": [
+        "effrontery"
+      ]
+    },
+    {
+      "id": "receptive",
+      "zh": "别人的想法和提议听得进去",
+      "anchors": [
+        "open-minded",
+        "amenable"
+      ],
+      "exclude": [
+        "agreeable"
+      ],
+      "excludeOpposites": [
+        "disputatious",
+        "fractious"
+      ]
+    },
+    {
+      "id": "candor",
+      "zh": "有话直说,不绕弯子",
+      "anchors": [
+        "frankness",
+        "bluntness"
+      ],
+      "excludeOpposites": [
+        "artifice",
+        "deceit",
+        "deception",
+        "duplicity",
+        "guile",
+        "trickery"
+      ]
+    },
+    {
+      "id": "downplay",
+      "zh": "往轻里说,把大事说成小事",
+      "anchors": [
+        "understate",
+        "underplay"
+      ]
+    },
+    {
+      "id": "facetious",
+      "zh": "说话不正经,拿事开玩笑",
+      "anchors": [
+        "flippant",
+        "jokey"
+      ],
+      "excludeOpposites": [
+        "respectful"
+      ]
+    },
+    {
+      "id": "incompetent",
+      "zh": "没本事,事情交过去就办砸",
+      "anchors": [
+        "incompetent"
+      ]
+    },
+    {
+      "id": "renown",
+      "zh": "名声响,到哪儿都有人知道",
+      "anchors": [
+        "renown"
       ]
     }
   ]
