@@ -26,7 +26,8 @@
       ],
       "excludeOpposites": [
         "containable",
-        "lenient"
+        "lenient",
+        "manageable"
       ]
     },
     {
@@ -104,6 +105,10 @@
       ],
       "exclude": [
         "subside"
+      ],
+      "excludeOpposites": [
+        "emergence",
+        "worsen"
       ]
     },
     {
@@ -141,7 +146,8 @@
       ],
       "exclude": [
         "upbeat",
-        "irrepressible"
+        "irrepressible",
+        "delighted"
       ]
     },
     {
@@ -289,7 +295,8 @@
         "indifferent"
       ],
       "excludeOpposites": [
-        "reactive"
+        "reactive",
+        "volatile"
       ]
     },
     {
@@ -314,7 +321,8 @@
         "praise"
       ],
       "exclude": [
-        "praise"
+        "praise",
+        "applaud"
       ]
     },
     {
@@ -336,7 +344,8 @@
         "dogged",
         "reactive",
         "avid",
-        "keen"
+        "keen",
+        "expeditious"
       ]
     },
     {
@@ -466,7 +475,10 @@
       "negations": [
         "inimitable",
         "unparalleled",
-        "unprecedented"
+        "unprecedented",
+        "incomparable",
+        "unequaled",
+        "unrivaled"
       ]
     },
     {
@@ -626,6 +638,9 @@
       "anchors": [
         "dexterous",
         "skillful"
+      ],
+      "excludeOpposites": [
+        "artless"
       ]
     },
     {
@@ -726,6 +741,9 @@
       "zh": "落下了就再也去不掉",
       "anchors": [
         "permanent"
+      ],
+      "excludeOpposites": [
+        "salvageable"
       ]
     },
     {

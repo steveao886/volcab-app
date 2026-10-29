@@ -657,10 +657,10 @@
       "zh": "名单上漏掉她的名字纯属疏忽,没人是存心的。",
       "target": "疏忽",
       "order": [
-        "oversight"
+        "oversight",
+        "omission"
       ],
       "extra": [
-        "omission",
         "blunder",
         "lapse"
       ],
@@ -799,11 +799,8 @@
         "uncalled-for",
         "unwarranted"
       ],
-      "extra": [
-        "needless"
-      ],
       "en": "One gratuitous personal jab cost the whole debate its dignity.",
-      "why": "gratuitous 指毫无必要还带冒犯,常搭配 violence、insult;uncalled-for 是口语说法,只说不该说;needless 只讲多余,不含冒犯;unwarranted 强调缺乏正当理由,多用于指控或干预。"
+      "why": "gratuitous 指毫无必要还带冒犯,常搭配 violence、insult;uncalled-for 是口语说法,只说不该说;unwarranted 强调缺乏正当理由,多用于指控或干预。"
     },
     {
       "zh": "他把积压三年的不满一次性写进了正式申诉。",
@@ -1106,11 +1103,10 @@
       ],
       "extra": [
         "horrify",
-        "dismay",
         "sicken"
       ],
       "en": "The site photographs appalled everyone in the room.",
-      "why": "appall 指因某事之恶劣而深感震惊并反感,常用被动;horrify 强调恐惧感;dismay 是失望加沮丧,程度轻得多;sicken 侧重生理上的作呕反应。"
+      "why": "appall 指因某事之恶劣而深感震惊并反感,常用被动;horrify 强调恐惧感;sicken 侧重生理上的作呕反应。"
     },
     {
       "zh": "那个国家在他手里一步步变成了独裁统治。",
@@ -1421,10 +1417,10 @@
       "zh": "合同末尾那句不祥的补充,后来应验了。",
       "target": "不祥的",
       "order": [
-        "ominous"
+        "ominous",
+        "sinister"
       ],
       "extra": [
-        "sinister",
         "portentous"
       ],
       "en": "The ominous line at the end of the contract turned out to be right.",
@@ -1652,10 +1648,10 @@
       "zh": "这两起事故的成因非常类似,可以放在一起看。",
       "target": "类似",
       "order": [
-        "analogous"
+        "analogous",
+        "comparable"
       ],
       "extra": [
-        "comparable",
         "parallel",
         "akin"
       ],
@@ -1903,10 +1899,10 @@
       "zh": "评审对那份自评报告的采信度很低。",
       "target": "采信度",
       "order": [
-        "credence"
+        "credence",
+        "credibility"
       ],
       "extra": [
-        "credibility",
         "weight",
         "stock"
       ],
@@ -2057,12 +2053,12 @@
       "zh": "作伪证的代价比他想瞒住的那件事重得多。",
       "target": "作伪证",
       "order": [
-        "perjury"
+        "perjury",
+        "contempt"
       ],
       "extra": [
         "false testimony",
-        "lying under oath",
-        "contempt"
+        "lying under oath"
       ],
       "en": "The perjury cost him far more than the thing he was hiding.",
       "why": "perjury 特指宣誓后仍作虚假陈述这一罪名,是法律术语;false testimony 只描述证词不实,不含罪名;lying under oath 是它的白话说法;contempt 指藐视法庭,是另一回事。"
@@ -2186,10 +2182,10 @@
         "aggrieved"
       ],
       "extra": [
-        "irate"
+        "sullen"
       ],
       "en": "She stood up, indignant at what had just been said.",
-      "why": "indignant 指因遭遇不公而生的正当愤怒,自认理直;aggrieved 侧重觉得自己受了委屈,常用于正式申诉;irate 只讲怒气之盛,不含是非判断。"
+      "why": "indignant 指因遭遇不公而生的正当愤怒,自认理直;aggrieved 侧重觉得自己受了委屈,常用于正式申诉;sullen 是闷着生气、拉着脸不吭声,不会当场站起来。"
     },
     {
       "zh": "没有任何流程是万无一失的,双签也不例外。",
@@ -2377,10 +2373,10 @@
       "zh": "他在谈判桌上的本事,业内很少有人比得了。",
       "target": "本事",
       "order": [
-        "prowess"
+        "prowess",
+        "mastery"
       ],
       "extra": [
-        "mastery",
         "command",
         "chops"
       ],
@@ -2896,11 +2892,10 @@
       ],
       "extra": [
         "please",
-        "hearten",
         "give satisfaction"
       ],
       "en": "It gratified him to see students actually using the method.",
-      "why": "gratify 指愿望或期待得到满足而生的愉悦,较正式,常用被动 be gratified;please 最通用;hearten 强调让人重拾信心;give satisfaction 是描述性搭配。"
+      "why": "gratify 指愿望或期待得到满足而生的愉悦,较正式,常用被动 be gratified;please 最通用;give satisfaction 是描述性搭配。"
     },
     {
       "zh": "他天生爱热闹,一个人待不过半天。",
@@ -3091,12 +3086,11 @@
         "odyssey"
       ],
       "extra": [
-        "trek",
         "pilgrimage",
         "long haul"
       ],
       "en": "The trip from Guangzhou to Lhasa became the odyssey of his life.",
-      "why": "odyssey 指漫长曲折、充满波折并带来转变的旅程,典出荷马史诗;trek 强调艰苦跋涉;pilgrimage 特指朝圣或带信仰意味的行程;long haul 只说路远时间久。"
+      "why": "odyssey 指漫长曲折、充满波折并带来转变的旅程,典出荷马史诗;pilgrimage 特指朝圣或带信仰意味的行程;long haul 只说路远时间久。"
     },
     {
       "zh": "每台设备出厂前都要做一次彻底灭菌。",
@@ -3466,11 +3460,11 @@
       "target": "面无表情",
       "order": [
         "impassive",
-        "expressionless"
+        "expressionless",
+        "deadpan"
       ],
       "extra": [
-        "stone-faced",
-        "deadpan"
+        "stone-faced"
       ],
       "en": "He stayed impassive all the way through the verdict.",
       "why": "impassive 指不流露任何情绪,可能内心有波澜只是不显,正式;expressionless 只客观描述脸上没有表情;stone-faced 是形象的口语;deadpan 特指故意板着脸说笑话的那种表情。"
@@ -3720,11 +3714,11 @@
         "perturb"
       ],
       "extra": [
-        "rattle",
-        "throw off"
+        "throw off",
+        "irk"
       ],
       "en": "The midnight call perturbed her for the rest of the night.",
-      "why": "perturb 指打乱原本平静的心绪或系统状态,正式,物理上也指轨道摄动;rattle 是口语,指被吓得慌了手脚;throw off 侧重打乱节奏。"
+      "why": "perturb 指打乱原本平静的心绪或系统状态,正式,物理上也指轨道摄动;throw off 侧重打乱节奏;irk 是让人厌烦恼火,说的是烦,不是心里不安。"
     },
     {
       "zh": "账上那几笔异常挪动预示着后来的暴雷。",
@@ -4169,25 +4163,23 @@
       "en": "Mocking her accent in front of everyone was uncalled-for, and the silence that followed said so.",
       "order": [
         "uncalled-for",
-        "gratuitous"
-      ],
-      "why": "uncalled-for 专门评价一句话或一个举动失礼：没人招惹你却偏要说，是日常口语；gratuitous 更书面，强调本可不必却偏要，多用于影视里多余的暴力与情色；needless 只讲多余，不含冒犯。",
-      "extra": [
+        "gratuitous",
         "needless"
-      ]
+      ],
+      "why": "uncalled-for 专门评价一句话或一个举动失礼：没人招惹你却偏要说，是日常口语；gratuitous 更书面，强调本可不必却偏要，多用于影视里多余的暴力与情色；needless 只讲多余，不含冒犯。"
     },
     {
-      "zh": "只凭一个季度的数字就裁员，审计组认为这反应站不住脚。",
-      "target": "站不住脚",
+      "zh": "只凭一个季度的数字就裁员，审计组认为这反应毫无根据。",
+      "target": "毫无根据",
       "en": "The auditors called the layoffs an unwarranted response to a single bad quarter.",
       "order": [
         "unwarranted",
         "gratuitous"
       ],
       "extra": [
-        "unjustified"
+        "unpopular"
       ],
-      "why": "unwarranted 的争点是有没有事实支撑，说的是反应或结论站不住脚；gratuitous 的争点是必要性与冒犯性，强调本可不必却偏要，常带道德色彩。"
+      "why": "unwarranted 的争点是有没有事实支撑，说的是反应或结论站不住脚；gratuitous 的争点是必要性与冒犯性，强调本可不必却偏要，常带道德色彩；unpopular 只说不受欢迎，不判断有没有依据。"
     },
     {
       "zh": "他打心底排斥这类社交场合，一句话不说也看得出来。",
@@ -5213,10 +5205,7 @@
         "discontent",
         "disaffection"
       ],
-      "extra": [
-        "displeasure"
-      ],
-      "why": "dissatisfaction 是拿实际得到的东西去比原本该得到的，落差有具体出处——这里就是那四十分钟的队；discontent 是对自己所处境况的一股郁闷情绪，不必对着谁，也不必说得出哪一项不合格；disaffection 更窄，指对当权者收回拥护、不再买账，顾客对一家店谈不上拥护；displeasure 是一时的不悦，通常是有身份的人当场表露出来的。"
+      "why": "dissatisfaction 是拿实际得到的东西去比原本该得到的，落差有具体出处——这里就是那四十分钟的队；discontent 是对自己所处境况的一股郁闷情绪，不必对着谁，也不必说得出哪一项不合格；disaffection 更窄，指对当权者收回拥护、不再买账，顾客对一家店谈不上拥护。"
     },
     {
       "zh": "错过的生日一年年积起来，母女之间的隔阂再没消解过。",
@@ -5254,11 +5243,8 @@
         "infringe",
         "impinge"
       ],
-      "extra": [
-        "encroach"
-      ],
       "en": "Renting the apartment out on a short-term rental site plainly contravenes the lease she signed last year.",
-      "why": "contravene 的宾语就是规则本身,合同、条例、政策都行,说的是把白纸黑字定下的东西做反了;infringe 偏向侵犯版权、商标或某项权利,拿来接一份租约就走了味;impinge 必须接 on,讲的是挤占别人的时间和空间,跟条文不发生关系;encroach 同样只能接 on,而且是一点点蚕食地界。"
+      "why": "contravene 的宾语就是规则本身,合同、条例、政策都行,说的是把白纸黑字定下的东西做反了;infringe 偏向侵犯版权、商标或某项权利,拿来接一份租约就走了味;impinge 必须接 on,讲的是挤占别人的时间和空间,跟条文不发生关系。"
     },
     {
       "zh": "跨时区的消息整天弹个不停,一点点挤占了原本完整的午休。",
@@ -5927,9 +5913,7 @@
       "en": "When his colleague mentioned her father's death, he coldly asked only when the report would be ready, which felt callous.",
       "order": [
         "callous",
-        "insensitive"
-      ],
-      "extra": [
+        "insensitive",
         "clumsy"
       ],
       "why": "关键在于有没有同情心：明知对方悲痛却毫不动容，用 callous；insensitive 是没顾及对方的感受，可能出于粗心，冷酷的程度不及 callous，排第二；clumsy 是笨拙，说的是不灵巧、不得体，不是冷漠，明显更差。"
@@ -6040,9 +6024,7 @@
       "en": "The chef's artful plating turned a simple roast chicken into something from a magazine cover.",
       "order": [
         "artful",
-        "crafty"
-      ],
-      "extra": [
+        "crafty",
         "clumsy"
       ],
       "why": "关键在于褒贬：artful 在这里是技巧高明、有创意，不含欺骗，最配摆盘；crafty 靠耍小聪明、暗中欺骗得到好处，会让人起疑，用在摆盘上带贬义，所以排第二；clumsy 是笨拙，与场景相反。"
