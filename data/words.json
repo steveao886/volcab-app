@@ -2628,7 +2628,7 @@
       "meanings": [
         {
           "pos": "adj.",
-          "en": "(of a theory, position, or argument) not able to be maintained or defended against objection",
+          "en": "(of an argument or position) unable to be defended against objection; (of a situation) unable to go on",
           "zh": "站不住脚的;难以维持的"
         }
       ],
@@ -7027,7 +7027,7 @@
       ],
       "examples": [
         "My four-year-old's artless honesty — 'your soup tastes like the sink' — is more brutal than any performance review.",
-        "The startup's pitch deck was refreshingly artless: no jargon, just a screenshot of their revenue graph.",
+        "The chapel ceiling had been spoiled by an artless repainting in the 1970s, flat blue slapped over the original gold stars.",
         "His artless attempt at flirting, a straight-up 'I like you, want to get dinner,' somehow worked better than any line.",
         "The birthday card's artless scrawl — 'you are old but I still like you' — got taped straight to the fridge.",
         "Her artless retelling of the accident, stumbling over details out of order, somehow made the jury trust her more."
@@ -9560,13 +9560,13 @@
       "meanings": [
         {
           "pos": "v.",
-          "en": "to praise highly in speech or writing, especially someone who has died",
-          "zh": "(尤指在葬礼上)颂扬;称颂;赞美"
+          "en": "to praise highly in a formal speech or tribute, especially at a funeral or a farewell",
+          "zh": "(尤指在葬礼或送别时)颂扬;称颂;赞美"
         }
       ],
       "examples": [
         "At the retirement party, three coworkers took turns eulogizing a manager none of them had actually enjoyed working for.",
-        "Tech journalists rushed to eulogize the founder's 'visionary genius' within hours of the IPO, conveniently forgetting the two startups that failed before it.",
+        "When the village doctor died at ninety, the mayor eulogized her from the clinic steps, counting the babies she had delivered over forty winters.",
         "Her brother eulogized their grandfather with stories nobody in the family had heard before, and the whole room was in tears by the end.",
         "At the shutdown all-hands, the founder eulogized the failed startup for twenty minutes, thanking a product almost nobody had actually used.",
         "Coworkers gathered at the dive bar to eulogize her decade at the agency, exaggerating every deadline she'd supposedly saved single-handedly."
@@ -10475,7 +10475,7 @@
       "examples": [
         "The toddler grew fractious around hour three of the flight, and so did everyone within five rows.",
         "The fractious city council spent the whole meeting arguing over parking instead of the actual budget.",
-        "The fractious homeowners' association spent the entire meeting arguing about fence height instead of voting on the actual budget.",
+        "Keeping the fractious band together through a forty-city tour took a manager, a therapist and separate tour buses.",
         "The dog got fractious after the third round of fireworks, pacing and whining until we finally moved him to the basement.",
         "Negotiations between the fractious union locals nearly collapsed twice before the two sides finally agreed on a single contract proposal."
       ],
@@ -15931,14 +15931,14 @@
       "meanings": [
         {
           "pos": "n.",
-          "en": "an attempt to make a false appearance seem true; a false show",
-          "zh": "假装;伪装",
+          "en": "an attempt to make a false appearance seem true; a false show, or a false reason given to hide the real one",
+          "zh": "假装;伪装;借口",
           "share": 60
         },
         {
           "pos": "n.",
           "en": "a claim, especially a false or unjustified one, to some quality or accomplishment",
-          "zh": "(尤指虚假的)借口;自称",
+          "zh": "(尤指不实的)自称",
           "share": 40
         }
       ],
@@ -23475,14 +23475,14 @@
         {
           "pos": "adj.",
           "en": "done before someone else can act, in order to stop them or reduce the damage",
-          "zh": "先发制人的,预防性的"
+          "zh": "先发制人的;抢先的"
         }
       ],
       "examples": [
         "The company issued a preemptive apology on Friday evening, hours before the newspaper published its investigation.",
         "A preemptive email to the landlord about the slow leak saved him from being billed for the whole ceiling.",
         "The startup's preemptive hiring of three rival engineers cost a fortune and gutted the competitor's roadmap.",
-        "She takes a preemptive painkiller before long flights, having learned what cabin pressure does to her jaw.",
+        "The couple made a preemptive offer on the flat the night before the open viewing, hoping to shut out every other buyer.",
         "Regulators called the merger a preemptive move to buy a threat before it could grow into one."
       ],
       "synonyms": [
@@ -25496,7 +25496,7 @@
         {
           "pos": "n.",
           "en": "the quality of seeming reasonable or believable, whether or not it is actually true",
-          "zh": "貌似合理，可信度（似真而未必真）"
+          "zh": "貌似合理,可信度(似真而未必真)"
         }
       ],
       "examples": [
@@ -26459,8 +26459,8 @@
       "meanings": [
         {
           "pos": "adj.",
-          "en": "easily annoyed or made angry, especially as a standing trait of temperament",
-          "zh": "易怒的，动辄发火的（指脾气秉性，一点小事就上火）"
+          "en": "easily annoyed or made angry, whether in a passing mood or by temperament",
+          "zh": "易怒的;动辄发火的"
         }
       ],
       "examples": [
@@ -27816,13 +27816,13 @@
         {
           "pos": "adj.",
           "en": "boring because it never changes and offers no variety",
-          "zh": "单调乏味的，千篇一律的",
+          "zh": "单调乏味的,千篇一律的",
           "share": 70
         },
         {
           "pos": "adj.",
           "en": "spoken or sounded in one unchanging pitch, so that it is tiring to listen to",
-          "zh": "（声音）单调无起伏的",
+          "zh": "(声音)单调无起伏的",
           "share": 30
         }
       ],
@@ -27966,13 +27966,13 @@
         {
           "pos": "v.",
           "en": "to break a law or an agreement, especially one protecting someone's creative work",
-          "zh": "侵犯（版权、专利）；违反（法规）",
+          "zh": "侵犯(版权、专利);违反(法规)",
           "share": 60
         },
         {
           "pos": "v.",
-          "en": "to gradually limit or intrude on someone's rights, freedom, or privacy",
-          "zh": "侵害，侵扰（权利、自由）",
+          "en": "to limit or intrude on someone's rights, freedom, or privacy",
+          "zh": "侵害,侵扰(权利、自由)",
           "share": 40
         }
       ],
@@ -34295,9 +34295,9 @@
         }
       ],
       "examples": [
-        "The new owner was ruthless with costs, closing two warehouses and cancelling the pensions review before his first month ended.",
-        "Chinese e-commerce is ruthless in December: a seller who misses the shipping window loses the ranking slot for the whole quarter.",
-        "Be ruthless when packing for a week in Tokyo — every extra jumper costs you space you will want for books.",
+        "The new owner was ruthless with the old staff, closing two warehouses without notice and cancelling the pensions review before his first month ended.",
+        "The ruthless landlord raised the rent the same week his tenant went into hospital, knowing she had nowhere else to go.",
+        "The supermarket chain was ruthless: it opened a branch right across from the family bakery and sold bread at a loss until the bakery shut.",
         "Her editor was ruthless with the opening chapter, cutting forty pages of backstory and telling her to start at the funeral.",
         "The product team was ruthless about scope, stripping every feature under two percent usage so the launch finally shipped on schedule."
       ],
@@ -62392,8 +62392,8 @@
       "meanings": [
         {
           "pos": "adj.",
-          "en": "different from what is normal or expected in a way that feels strange or wrong",
-          "zh": "反常的;不自然的;怪异的",
+          "en": "different from what is normal or expected in a way that feels strange or wrong; of a death, not from natural causes",
+          "zh": "反常的;不自然的;怪异的;(死亡)非正常的",
           "share": 60
         },
         {
@@ -70570,7 +70570,7 @@
         {
           "pos": "adv.",
           "en": "in a way that can just be noticed or sensed",
-          "zh": "可察觉地;明显地"
+          "zh": "可察觉地;刚能觉出地"
         }
       ],
       "examples": [
