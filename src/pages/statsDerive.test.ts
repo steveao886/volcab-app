@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { emptyProgress, emptyStat } from '../types'
 import type { Progress, Word } from '../types'
 import {
-  accuracySeries, agoLabel, cumulativeTotals, dailySeries, dueForecast, forecastLabel,
-  masteryBreakdown, maturitySplit, modeAccuracy, modeOverview, orderByRecency, recallProduction, recommendMode,
+  accuracySeries, agoLabel, cumulativeTotals, dailySeries, divergeTotal, dueForecast, forecastLabel,
+  masteryBreakdown, maturitySplit, modeOverview, modeTrend, orderByRecency, recallProduction, recommendMode,
   retentionStats, shortDate, usageCoverage, windowSummary,
 } from './statsDerive'
 import type { DayPoint } from './statsDerive'
@@ -185,34 +185,104 @@ describe('recallProduction', () => {
   })
 })
 
-describe('modeAccuracy', () => {
+describe('modeTrend', () => {
   const stat = (quizModes: NonNullable<Progress['dailyStats'][string]['quizModes']>) =>
     ({ reviewed: 0, newLearned: 0, correct: 0, quizTaken: 1, quizModes })
+  const T = '2026-07-25'
 
   it('sums each mode across days and never blends them together', () => {
     const p = prog({
       '2026-07-24': stat({ recall: { asked: 10, correct: 4 }, contrast: { asked: 10, correct: 9 } }),
       '2026-07-25': stat({ recall: { asked: 10, correct: 6 } }),
     })
-    const rows = modeAccuracy(p)
+    const rows = modeTrend(p, T, 30)
     expect(rows.map(r => r.mode)).toEqual(['recall', 'contrast'])   // most-asked first
-    expect(rows[0]).toMatchObject({ label: '回想', asked: 20, correct: 10, rate: 0.5 })
-    expect(rows[1]).toMatchObject({ label: '辨析', asked: 10, correct: 9, rate: 0.9 })
+    expect(rows[0]).toMatchObject({ label: '回想', recent: { asked: 20, correct: 10 } })
+    expect(rows[1]).toMatchObject({ label: '辨析', recent: { asked: 10, correct: 9 } })
+  })
+
+  it('splits at the window: its first day is recent, the day before is earlier, and nothing counts twice', () => {
+    const p = prog({
+      '2026-07-22': stat({ recall: { asked: 7, correct: 7 } }),   // window of 3 from 07-25 starts 07-23
+      '2026-07-23': stat({ recall: { asked: 5, correct: 1 } }),
+    })
+    expect(modeTrend(p, T, 3)[0]).toMatchObject({
+      recent: { asked: 5, correct: 1 }, earlier: { asked: 7, correct: 7 },
+    })
+  })
+
+  it('a slip past noise is down: 71% on 1410 against 55% on 300, the live 回想 of 2026-10-29', () => {
+    const p = prog({
+      '2026-06-01': stat({ recall: { asked: 1410, correct: 1000 } }),
+      '2026-07-25': stat({ recall: { asked: 300, correct: 166 } }),
+    })
+    expect(modeTrend(p, T, 30)[0].change).toBe('down')
+  })
+
+  it('one question is noise: 90% on 60 against 80% on 10 is no change', () => {
+    const p = prog({
+      '2026-06-01': stat({ audio: { asked: 60, correct: 54 } }),
+      '2026-07-25': stat({ audio: { asked: 10, correct: 8 } }),
+    })
+    expect(modeTrend(p, T, 30)[0].change).toBeNull()
+  })
+
+  it('a rise past noise is up', () => {
+    const p = prog({
+      '2026-06-01': stat({ contrast: { asked: 100, correct: 50 } }),
+      '2026-07-25': stat({ contrast: { asked: 50, correct: 45 } }),
+    })
+    expect(modeTrend(p, T, 30)[0].change).toBe('up')
+  })
+
+  it('no change is claimed while either window is under the floor, however far apart', () => {
+    const p = prog({
+      '2026-06-01': stat({ compose: { asked: 30, correct: 30 } }),
+      '2026-07-25': stat({ compose: { asked: 9, correct: 0 } }),
+    })
+    expect(modeTrend(p, T, 30)[0].change).toBeNull()
+  })
+
+  it('identical perfect windows are no change rather than a division by zero', () => {
+    const p = prog({
+      '2026-06-01': stat({ sprint: { asked: 20, correct: 20 } }),
+      '2026-07-25': stat({ sprint: { asked: 20, correct: 20 } }),
+    })
+    expect(modeTrend(p, T, 30)[0].change).toBeNull()
+  })
+
+  it('leaves 发散 out — its tally is answers produced out of the set, not an accuracy', () => {
+    const p = prog({ '2026-07-25': stat({ diverge: { asked: 229, correct: 52 }, recall: { asked: 10, correct: 7 } }) })
+    expect(modeTrend(p, T, 30).map(r => r.mode)).toEqual(['recall'])
   })
 
   it('omits a mode never played — no data is a different claim from no success', () => {
-    const rows = modeAccuracy(prog({ '2026-07-25': stat({ recall: { asked: 4, correct: 2 } }) }))
+    const rows = modeTrend(prog({ '2026-07-25': stat({ recall: { asked: 4, correct: 2 } }) }), T, 30)
     expect(rows.map(r => r.mode)).toEqual(['recall'])
   })
 
   it('days recorded before the field existed contribute nothing, and are not back-filled into mixed', () => {
     const p = prog({ '2026-07-24': { reviewed: 8, newLearned: 0, correct: 7, quizTaken: 3 } })
-    expect(modeAccuracy(p)).toEqual([])
+    expect(modeTrend(p, T, 30)).toEqual([])
   })
 
   it('an unknown mode key from a newer build is skipped, not rendered as a blank row', () => {
     const p = prog({ '2026-07-25': stat({ recall: { asked: 5, correct: 5 }, telepathy: { asked: 9, correct: 9 } }) })
-    expect(modeAccuracy(p).map(r => r.mode)).toEqual(['recall'])
+    expect(modeTrend(p, T, 30).map(r => r.mode)).toEqual(['recall'])
+  })
+})
+
+describe('divergeTotal', () => {
+  it('sums answers produced and the answers the questions held, across days', () => {
+    const p = prog({
+      '2026-07-24': { ...emptyStat(), quizModes: { diverge: { asked: 20, correct: 5 } } },
+      '2026-07-25': { ...emptyStat(), quizModes: { diverge: { asked: 10, correct: 1 }, recall: { asked: 9, correct: 9 } } },
+    })
+    expect(divergeTotal(p)).toEqual({ produced: 6, answers: 30 })
+  })
+
+  it('is zero, not undefined, when 发散 was never played', () => {
+    expect(divergeTotal(emptyProgress())).toEqual({ produced: 0, answers: 0 })
   })
 })
 
@@ -244,10 +314,12 @@ describe('usageCoverage', () => {
     examples: ['a', 'b'], synonyms: [], antonyms: [], collocations: [], relatedForms: [],
     sourceNote: 't', addedAt: '2026-07-01', ...(usageScore === undefined ? {} : { usageScore }),
   })
-  const withStates = (spec: Record<string, 'new' | 'learning' | 'review'>): Progress => {
+  /** Each id's state, held past the 21-day line unless an interval is given. */
+  const withStates = (spec: Record<string, 'new' | 'learning' | 'review' | ['review', number]>): Progress => {
     const p = emptyProgress()
-    for (const [id, state] of Object.entries(spec)) {
-      p.words[id] = { state, ease: 2.5, intervalDays: 5, due: '2026-08-01', stepIndex: 0, reps: 1, lapses: 0, lastReviewedAt: '2026-07-20T00:00:00Z' }
+    for (const [id, s] of Object.entries(spec)) {
+      const [state, intervalDays] = Array.isArray(s) ? s : [s, 30]
+      p.words[id] = { state, ease: 2.5, intervalDays, due: '2026-08-01', stepIndex: 0, reps: 1, lapses: 0, lastReviewedAt: '2026-07-20T00:00:00Z' }
     }
     return p
   }
@@ -258,28 +330,30 @@ describe('usageCoverage', () => {
     expect(c.bands.map(b => [b.label, b.total])).toEqual([['最常用', 2], ['常见', 2], ['少见', 2]])
   })
 
-  it('"mastered" = state is review, the same definition as reviewProgress', () => {
-    const words = [uw('a', 9), uw('b', 9), uw('c', 9)]
-    const c = usageCoverage(words, withStates({ a: 'review', b: 'learning', c: 'new' }))
-    expect(c.bands[0]).toMatchObject({ mastered: 1, total: 3 })
+  it('"held" = in review past the 21-day line, as maturitySplit counts it — not merely started', () => {
+    // Every word reaches review the day it is learned; counting that read
+    // 100% on the live library's 302 most common words on 2026-10-29.
+    const words = [uw('a', 9), uw('b', 9), uw('c', 9), uw('d', 9), uw('e', 9)]
+    const c = usageCoverage(words, withStates({ a: ['review', 21], b: ['review', 20], c: 'learning', d: 'new' }))
+    expect(c.bands[0]).toMatchObject({ held: 1, total: 5 })
   })
 
   it('the headline takes the most-common-words band', () => {
     const words = [uw('a', 8), uw('b', 8), uw('c', 2)]
     const c = usageCoverage(words, withStates({ a: 'review', c: 'review' }))
-    expect(c.headline).toEqual({ mastered: 1, total: 2, ratio: 0.5 })
+    expect(c.headline).toEqual({ held: 1, total: 2, ratio: 0.5 })
   })
 
-  it('words missing a usageScore go into no band — otherwise the denominator would inflate out of nowhere and dilute the mastery rate', () => {
+  it('words missing a usageScore go into no band — otherwise the denominator would inflate out of nowhere and dilute the rate', () => {
     const words = [uw('scored', 9), uw('unscored')]
     const c = usageCoverage(words, withStates({ scored: 'review', unscored: 'review' }))
     expect(c.bands.reduce((s, b) => s + b.total, 0)).toBe(1)
-    expect(c.headline).toEqual({ mastered: 1, total: 1, ratio: 1 })
+    expect(c.headline).toEqual({ held: 1, total: 1, ratio: 1 })
   })
 
   it('ratio is recorded as 0, not NaN, when a band has no words at all', () => {
     const c = usageCoverage([uw('a', 3)], emptyProgress())
-    expect(c.headline).toEqual({ mastered: 0, total: 0, ratio: 0 })
+    expect(c.headline).toEqual({ held: 0, total: 0, ratio: 0 })
   })
 
   it('an empty library doesn\'t blow up', () => {
@@ -353,22 +427,58 @@ describe('modeOverview', () => {
 })
 
 describe('recommendMode', () => {
-  it('picks the lowest printable accuracy', () => {
-    const rows = modeOverview(progWithModes({
-      '2026-08-01': { mixed: { asked: 20, correct: 18 }, audio: { asked: 20, correct: 12 } },
-    }))
-    expect(recommendMode(rows)).toBe('audio')
+  const T = '2026-08-01'
+  const trend = (days: Parameters<typeof progWithModes>[0]) => modeTrend(progWithModes(days), T, 30)
+
+  it('picks the mode that slipped against its own earlier record', () => {
+    const rows = trend({
+      '2026-06-01': { recall: { asked: 1410, correct: 1000 }, contrast: { asked: 260, correct: 179 } },
+      '2026-08-01': { recall: { asked: 300, correct: 166 }, contrast: { asked: 20, correct: 14 } },
+    })
+    expect(recommendMode(rows)).toBe('recall')
   })
 
-  it('needs evidence: null when no mode clears the floor', () => {
-    const rows = modeOverview(progWithModes({ '2026-08-01': { audio: { asked: 5, correct: 0 } } }))
+  it('a mode that is low but steady is not recommended — that is its difficulty, not a slip', () => {
+    // The bug this replaced: "lowest accuracy" pinned the badge to 组句,
+    // which asks for a whole sentence and ran 17% on 36 questions.
+    const rows = trend({
+      '2026-06-01': { compose: { asked: 30, correct: 5 }, mixed: { asked: 50, correct: 45 } },
+      '2026-08-01': { compose: { asked: 30, correct: 5 }, mixed: { asked: 50, correct: 45 } },
+    })
     expect(recommendMode(rows)).toBeNull()
   })
 
+  it('never 发散, however far its share falls', () => {
+    const rows = trend({
+      '2026-06-01': { diverge: { asked: 169, correct: 47 } },
+      '2026-08-01': { diverge: { asked: 60, correct: 0 } },
+    })
+    expect(recommendMode(rows)).toBeNull()
+  })
+
+  it('needs evidence: null when the recent window is under the floor', () => {
+    const rows = trend({
+      '2026-06-01': { audio: { asked: 60, correct: 60 } },
+      '2026-08-01': { audio: { asked: 5, correct: 0 } },
+    })
+    expect(recommendMode(rows)).toBeNull()
+  })
+
+  it('between two slips, the larger drop wins', () => {
+    const rows = trend({
+      '2026-06-01': { recall: { asked: 200, correct: 180 }, contrast: { asked: 200, correct: 180 } },
+      '2026-08-01': { recall: { asked: 100, correct: 70 }, contrast: { asked: 100, correct: 50 } },
+    })
+    expect(recommendMode(rows)).toBe('contrast')
+  })
+
   it('ties keep the earlier fixed-order mode so the badge cannot flicker', () => {
-    const rows = modeOverview(progWithModes({
-      '2026-08-01': { recall: { asked: 10, correct: 6 }, audio: { asked: 10, correct: 6 } },
-    }))
+    // audio is the more-asked, so it is met first; the tie still goes to recall.
+    const rows = trend({
+      '2026-06-01': { audio: { asked: 200, correct: 180 }, recall: { asked: 100, correct: 90 } },
+      '2026-08-01': { audio: { asked: 100, correct: 50 }, recall: { asked: 100, correct: 50 } },
+    })
+    expect(rows[0].mode).toBe('audio')
     expect(recommendMode(rows)).toBe('recall')
   })
 })

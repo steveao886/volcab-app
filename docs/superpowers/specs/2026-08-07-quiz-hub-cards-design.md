@@ -38,6 +38,16 @@ accuracy among modes that clear the floor; if none qualify there is no
 badge. A recommendation invented from no data would just be a random red
 tag. Ties keep the earlier fixed-order mode so the badge cannot flicker.
 
+*Revised 2026-10-29: the badge now marks the mode that slipped furthest
+against its own earlier record* (`modeTrend`: the last 30 days against
+everything before, a change only past a two-proportion z of 2). "Lowest"
+stopped meaning "weakest" once modes of different difficulty joined: 组句
+ran 17% on 36 questions and would have held the badge permanently, or 回想
+at 68% with 组句 excluded. 发散 is out of both, since its tally is answers
+produced out of the set, not an accuracy. The recommended card prints its
+slip (`71% → 55%`) in place of the lifetime rate. The user chose this
+reading over removing the badge.
+
 **Navigation: hub → session is a push, not a replace.** The old
 chip-to-chip switching used `replace: true` so back wouldn't walk through
 modes; that concern is gone because sessions no longer switch modes

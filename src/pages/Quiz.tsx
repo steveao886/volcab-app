@@ -18,8 +18,8 @@ import type { ChunkAnnotation } from '../lib/sentenceChunk'
 import type { Concept } from '../lib/diverge'
 import { useApp } from '../state/store'
 import type { Progress, Word } from '../types'
-import { agoLabel, modeOverview, orderByRecency, recommendMode } from './statsDerive'
-import type { ModeOverviewRow } from './statsDerive'
+import { agoLabel, MODE_TREND_DAYS, modeOverview, modeTrend, orderByRecency, rateOf, recommendMode } from './statsDerive'
+import type { ModeOverviewRow, ModeTrend } from './statsDerive'
 import { QuizQuestionView } from './QuizQuestion'
 import { MissedWords, ResultScore } from './QuizResult'
 import { ComposeSession } from './QuizCompose'
@@ -358,19 +358,33 @@ export function Quiz() {
   return isMode(raw) ? <QuizSessionPage mode={raw} /> : <QuizHub />
 }
 
-/** Card line: sprint chases a personal best, the rest show accuracy once it clears the floor. */
-function statLabel(key: QuizMetricKey, row: ModeOverviewRow | undefined, progress: Progress): string {
+/**
+ * Card line: sprint chases a personal best, the rest show accuracy once it
+ * clears the floor. 发散's share is labelled 说出, since it is not an
+ * accuracy (statsDerive's NOT_ACCURACY). The recommended card shows the
+ * slip that earned the badge, earlier → last 30 days, so the badge carries
+ * its own evidence.
+ */
+function statLabel(
+  key: QuizMetricKey, row: ModeOverviewRow | undefined, progress: Progress, slip: ModeTrend | undefined,
+): string {
   if (key === 'sprint' && progress.bestSprint !== undefined) return `最高 ${progress.bestSprint.score} 题`
+  if (slip !== undefined) {
+    const earlier = rateOf(slip.earlier), recent = rateOf(slip.recent)
+    if (earlier !== null && recent !== null) return `${Math.round(earlier * 100)}% → ${Math.round(recent * 100)}%`
+  }
   if (row === undefined || row.asked === 0) return '—'
   if (row.rate === null) return `练过 ${row.asked} 题`
-  return `${Math.round(row.rate * 100)}%`
+  return `${key === 'diverge' ? '说出 ' : ''}${Math.round(row.rate * 100)}%`
 }
 
 function QuizHub() {
   const { progress } = useApp()
   const today = todayStr(new Date())
   const rows = useMemo(() => modeOverview(progress), [progress])
-  const rec = useMemo(() => recommendMode(rows), [rows])
+  const trend = useMemo(() => modeTrend(progress, today, MODE_TREND_DAYS), [progress, today])
+  const rec = useMemo(() => recommendMode(trend), [trend])
+  const slip = trend.find(t => t.mode === rec)
   const byKey = useMemo(() => new Map(rows.map(r => [r.mode, r])), [rows])
   const ordered = useMemo(() => orderByRecency(MODES, rows), [rows])
 
@@ -404,7 +418,7 @@ function QuizHub() {
                 </span>
                 <span className="quiz-mode__meta">
                   <span className={`num quiz-mode__stat${isRec ? ' quiz-mode__stat--low' : ''}`}>
-                    {statLabel(m.key, row, progress)}
+                    {statLabel(m.key, row, progress, isRec ? slip : undefined)}
                   </span>
                   <span className="quiz-mode__ago">{agoLabel(row?.lastPlayed ?? null, today)}</span>
                 </span>

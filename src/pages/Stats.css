@@ -288,44 +288,55 @@
    here and went with the card — see Stats.tsx. .stats-note stays: it is the
    shared footnote class, used by four other sections. */
 
-/* Per-mode accuracy rows. Grid rather than flex so the label column, the
-   bar, and the two numbers line up across rows regardless of label width —
-   at 375px a ragged right edge on the percentages is the thing that reads
-   as broken. Single series, so --chart-1. */
+/* Per-mode accuracy rows: label | recent rate, arrow, count | earlier rate,
+   count. One grid for the whole list, each row a subgrid of it, so every
+   column — the window names in the head row included — is sized across all
+   rows at once: at 375px a ragged edge on the percentages is the thing that
+   reads as broken. The rates are right-aligned under their window's name;
+   the auto columns take the wider of 近 30 天 and 题量不足. */
 .stats-modes {
   display: grid;
-  gap: var(--sp-3);
+  grid-template-columns: auto auto 1em 1fr auto 1fr;
+  column-gap: var(--sp-2);
+  row-gap: var(--sp-3);
 }
 
 .stats-mode {
   display: grid;
-  grid-template-columns: 3em 1fr auto auto;
-  align-items: center;
-  gap: var(--sp-2);
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: baseline;
 }
 
-.stats-mode__bar {
-  height: 6px;
-  border-radius: var(--r-xs);
-  background: var(--surface-sunken);
-  overflow: hidden;
+.stats-mode__cell {
+  display: contents;
 }
 
-.stats-mode__fill {
-  display: block;
-  height: 100%;
-  background: var(--chart-1);
-}
-
-/* Fixed width so the percentages form a column; 题量不足 is wider than any
-   percentage, and that is the width the column is cut to. */
-.stats-mode__rate {
-  min-width: 4.5em;
+.stats-mode__window {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
   text-align: right;
+}
+
+.stats-mode__window--recent {
+  grid-column: 2;
+}
+
+.stats-mode__window--earlier {
+  grid-column: 5;
+}
+
+.stats-mode__rate {
+  text-align: right;
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+
+.stats-mode__change {
+  font-size: var(--fs-sm);
 }
 
 .stats-mode__count {
-  min-width: 4em;
-  text-align: right;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
 }
