@@ -6,6 +6,7 @@ import { ProgressMarks } from '../components/ProgressMarks'
 import { pushRecent } from '../lib/passage'
 import { preparePronunciation } from '../lib/pronounce'
 import { contrastPairKey, generateAudioQuiz, generateContrastQuiz, generateQuiz } from '../lib/quiz'
+import { generateLookalikeQuiz, lookalikeMissIds } from '../lib/lookalike'
 import { todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
 import type { QuizMetricKey, QuizQuestion } from '../lib/quiz'
@@ -32,7 +33,7 @@ import './Quiz.css'
 const QUESTION_COUNT = 10
 
 /**
- * The nine practice surfaces. `?mode=` drives which one renders,
+ * The ten practice surfaces. `?mode=` drives which one renders,
  * consistent with `/review?mode=lapses`; `/quiz` with no (or an unknown)
  * mode renders the hub.
  *
@@ -44,7 +45,7 @@ const QUESTION_COUNT = 10
  *
  * **This array is the tie-break order, not the render order.** The hub
  * sorts by recency (orderByRecency), so the biggest, first target is
- * whatever was played last rather than 综合 by name — at nine modes the
+ * whatever was played last rather than 综合 by name — at ten modes the
  * one you came back for beats the one that was the default at four. The
  * order here still decides which of several modes played on the same day
  * leads, and it must stay append-only for that reason.
@@ -59,6 +60,7 @@ const MODES = [
   { key: 'antonym', label: '反义', desc: '给一个词，选出它的反义词' },
   { key: 'compose', label: '组句', desc: '拼出整句，并补上空缺的词' },
   { key: 'diverge', label: '发散', desc: '给一个中文概念，把一族词全写出来' },
+  { key: 'lookalike', label: '形近', desc: '长得像的词，分清各自的意思' },
 ] as const
 
 type QuizMode = (typeof MODES)[number]['key']
@@ -112,7 +114,7 @@ const loadSentences = () => import('../data/recallSentences.json').then(m => (m.
 // download a mode it does not use.
 const loadAnnotations = () => import('../data/sentenceChunks.json').then(m => (m.default as { chunks: ChunkAnnotation[] }).chunks)
 // 发散's authored concepts, split out for the same reason as the four above:
-// seven of the nine modes never touch this file. 回想 reads it for 顺着这串练
+// eight of the ten modes never touch this file. 回想 reads it for 顺着这串练
 // and never waits on it — see the recall branch below.
 const loadConcepts = () => import('../data/concepts.json').then(m => (m.default as { concepts: Concept[] }).concepts)
 /** One stable empty list, so 回想's chain memo does not recompute every render while concepts load. */
@@ -143,6 +145,9 @@ const EMPTY_HINT: Record<Exclude<QuizMode, 'sprint' | 'passage' | 'recall' | 'co
   // library-internal opposite. Say that plainly rather than leaving the
   // impression the mode is broken.
   antonym: '你学过的词里还凑不出一对反义词。反义题两边都得是库里的词 —— 只有词条的「反义词」里写着另一个词条时才成对。再学一阵子，或给已有词条补上反义词，题就会多起来。',
+  // Same rule as 辨析: both words learned. 61 pairs qualified on the live
+  // library the day the mode shipped, so this mostly greets a new account.
+  lookalike: '你学过的词里还凑不出长得像的一对。形近题只考两个都学过的词 —— 拿没见过的词问「哪个是哪个」没有意义。再学一阵子，这里的题会自己多起来。',
 }
 
 /**
@@ -182,6 +187,13 @@ function QuizSession({
         storage.get<string[]>('recentContrast') ?? [],
       )
     }
+    // Recency by prompt word, stored locally like recentContrast.
+    if (mode === 'lookalike') {
+      return generateLookalikeQuiz(
+        words, progress, today, QUESTION_COUNT, Math.random,
+        storage.get<string[]>('recentLookalike') ?? [],
+      )
+    }
     if (mode === 'audio') return generateAudioQuiz(words, progress, today, QUESTION_COUNT)
     // The one type, rather than the whole rotation. Same generator and the
     // same difficulty weighting as 综合 — the mode is a filter on the type
@@ -218,7 +230,7 @@ function QuizSession({
   const total = questions.length
   const done = index >= total && total > 0
 
-  const handleAnswered = useCallback((correct: boolean, q: QuizQuestion) => {
+  const handleAnswered = useCallback((correct: boolean, chosen: string, q: QuizQuestion) => {
     // Answered means seen: the pair joins the recency list whichever way it
     // went, so tomorrow's round reaches for pairs this one never showed.
     if (q.contrastId !== undefined) {
@@ -226,6 +238,14 @@ function QuizSession({
         storage.get<string[]>('recentContrast') ?? [],
         contrastPairKey(q.wordId, q.contrastId),
       ))
+    }
+    if (q.type === 'lookalike') {
+      storage.set('recentLookalike', pushRecent(storage.get<string[]>('recentLookalike') ?? [], q.wordId))
+      if (correct) { setScore(s => s + 1); return }
+      // Both words only when the partner's meaning was the pick — see lookalikeMissIds.
+      const ids = lookalikeMissIds(q, chosen)
+      setWrongIds(prev => [...new Set([...prev, ...ids])])
+      return
     }
     if (correct) { setScore(s => s + 1); return }
     // A missed contrast question marks **both** words wrong. Picking the
@@ -318,7 +338,7 @@ function QuizSession({
       <QuizQuestionView
         key={index}
         question={q}
-        onAnswered={correct => handleAnswered(correct, q)}
+        onAnswered={(correct, chosen) => handleAnswered(correct, chosen, q)}
         onNext={handleNext}
         nextLabel={isLast ? '查看成绩' : '下一题'}
       />

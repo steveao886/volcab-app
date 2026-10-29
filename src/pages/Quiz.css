@@ -388,6 +388,29 @@
   margin-top: var(--sp-2);
 }
 
+/* --- 形近 ------------------------------------------------------------------------ */
+
+/* The letters where two look-alike words part ways, on the reveal card. A
+   reader's 着重号 under exactly what to look at, so it is the cinnabar mark —
+   dots, a shape, so grayscale keeps it. */
+.lookalike-diff {
+  -webkit-text-emphasis: filled dot var(--accent); /* mark: 着重号 under the letters that differ */
+  text-emphasis: filled dot var(--accent); /* mark: 着重号 under the letters that differ */
+  -webkit-text-emphasis-position: under right;
+  text-emphasis-position: under right;
+}
+
+/* Which look-alike a trap option belonged to, on its own line inside the
+   option's tag (under 你的选择 when it was the pick). Ink, not a status
+   color: it is neither right nor wrong, only whose meaning that was — so it
+   restates the color `.btn--incorrect .quiz-option__tag` would otherwise
+   hand down to it in cinnabar. */
+.quiz-option__tag .quiz-option__owner {
+  display: block;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
 /* --- Sprint mode --------------------------------------------------------------- */
 
 /* The countdown bar is pinned above the question: seconds, progress, and current score all on one row. */

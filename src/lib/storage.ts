@@ -34,6 +34,7 @@ const KEYS = {
   recallDebt: 'volcab.recallDebt',
   recentCompose: 'volcab.recentCompose', // Chinese prompts of recently answered 组句 questions, windowed the same way
   recentContrast: 'volcab.recentContrast', // Pair keys (id|id, sorted) of recently answered 辨析 questions — the surface the repetition audit found going stale first
+  recentLookalike: 'volcab.recentLookalike', // Prompt word ids of recently answered 形近 questions — by prompt, so the other side of a pair comes up next time
 
   // The day (YYYY-MM-DD) each practice drill was last completed, so it
   // isn't offered twice over. Same call as recentPassages: a second device

@@ -12,7 +12,7 @@ import type { Meaning, Progress, Word } from '../types'
 export type QuizType =
   | 'word2meaning' | 'meaning2word' | 'spelling'
   | 'clozeExample' | 'clozeCollocation' | 'synonymHint' | 'antonymPick'
-  | 'contrast' | 'audio2meaning' | 'audio2spelling'
+  | 'contrast' | 'audio2meaning' | 'audio2spelling' | 'lookalike'
 
 /**
  * Every practice surface that has ever recorded into `DailyStat.quizModes`.
@@ -31,7 +31,7 @@ export type QuizType =
  * section conditionally, so it costs one line here and nothing on screen.
  */
 export const QUIZ_METRIC_KEYS = [
-  'mixed', 'recall', 'contrast', 'audio', 'sprint', 'passage', 'guess', 'antonym', 'compose', 'diverge',
+  'mixed', 'recall', 'contrast', 'audio', 'sprint', 'passage', 'guess', 'antonym', 'compose', 'diverge', 'lookalike',
 ] as const
 export type QuizMetricKey = (typeof QUIZ_METRIC_KEYS)[number]
 
@@ -39,12 +39,13 @@ export type QuizMetricKey = (typeof QUIZ_METRIC_KEYS)[number]
 export const QUIZ_METRIC_LABELS: Record<QuizMetricKey, string> = {
   mixed: '综合', recall: '回想', contrast: '辨析', audio: '听音',
   sprint: '极速', passage: '短文', guess: '猜词', antonym: '反义', compose: '组句', diverge: '发散',
+  lookalike: '形近',
 }
 
 /**
  * The rotating question types for "mixed" mode.
  *
- * **The newer contrast / audio2* are deliberately excluded here** — they each have their
+ * **The newer contrast / audio2* / lookalike are deliberately excluded here** — they each have their
  * own generator function and their own mode entry point. Mixing them into the mixed mode
  * would change the path users walk through every single day (and audio questions are a dead
  * end in a muted environment). This constant now serves double duty as generateQuiz's
@@ -111,6 +112,14 @@ export interface QuizQuestion {
    * altogether unless the prompt's meanings agree on one.
    */
   promptPos?: string
+  /**
+   * Carried only by lookalike questions: the prompt's look-alike partners whose
+   * meaning sits among the options, closest first, each with the option label it
+   * owns. The reveal names the owner on each of those options and lays the words
+   * out side by side; a pick of one of them marks both words missed (see
+   * `lookalikeMissIds`).
+   */
+  lookalikes?: { id: string; label: string }[]
 }
 
 /**
@@ -141,7 +150,8 @@ export function pickMeaning(w: Word, rng: () => number): Meaning {
   return ms[ms.length - 1] // Floating-point-error fallback: when rng returns something extremely close to 1, none of the buckets might trigger
 }
 
-const meaningLabel = (m: Meaning) => `${m.pos} ${m.zh}`
+/** How a meaning reads as an option. Exported for lookalike.ts, whose options are meanings too. */
+export const meaningLabel = (m: Meaning) => `${m.pos} ${m.zh}`
 
 /** What clozeExample puts where the headword was. Exported for the one renderer that draws it as a gap (components/Blanked.tsx). */
 export const BLANK = '___'
