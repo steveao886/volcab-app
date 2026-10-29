@@ -3,6 +3,7 @@ import { buildContrastPairs } from '../src/lib/contrast.ts'
 import { contrastNoteKey } from '../src/lib/contrastNotes.ts'
 import { buildConceptIndex, conceptMembers } from '../src/lib/diverge.ts'
 import type { Concept } from '../src/lib/diverge.ts'
+import { buildLookalikePairs } from '../src/lib/lookalike.ts'
 import type { SynonymNotesFile } from '../src/lib/synonymContent.ts'
 import { buildSynonymGroups } from '../src/lib/synonymGroups.ts'
 import { groupCoverageErrors, synonymCoverageErrors } from '../src/lib/synonymNotesValidate.ts'
@@ -26,7 +27,8 @@ import { groupCoverageErrors, synonymCoverageErrors } from '../src/lib/synonymNo
 
 const words = JSON.parse(readFileSync('data/words.json', 'utf8')).words as {
   id: string
-  meanings: { pos: string }[]
+  headword: string
+  meanings: { pos: string; zh: string }[]
   examples: string[]
   antonyms: string[]
 }[]
@@ -99,6 +101,23 @@ if (process.argv.includes('--batch')) {
     else renderings.set(r.id, new Set([r.i]))
   }
   const inAnyGroup = new Set(senseGroups.flatMap(g => g.order))
+  // The read-only lines below exist so this report names every quiz mode a
+  // word reaches, not only the ones with a file to top up: a mode left off
+  // the report is a mode the add flow forgets. 综合, 极速 and 听音 read the
+  // entry alone and validate-words already gates it, so they get no line.
+  const lookalikes = buildLookalikePairs(words as never)
+  const conceptsOf = new Map<string, string[]>()
+  for (const c of concepts) {
+    for (const m of conceptMembers(c, conceptIndex, allIds)) conceptsOf.set(m, [...(conceptsOf.get(m) ?? []), c.id])
+  }
+  const chunksOf = new Map<string, number>()
+  for (const c of sentenceChunks) chunksOf.set(c.id, (chunksOf.get(c.id) ?? 0) + 1)
+  const passagesOf = new Map<string, number>()
+  for (const p of passages) {
+    const ids = new Set<string>()
+    for (const s of p.en) for (const m of s.matchAll(/\{\{([^{}|]+)/g)) ids.add(m[1].trim())
+    for (const x of ids) passagesOf.set(x, (passagesOf.get(x) ?? 0) + 1)
+  }
 
   let owed = 0
   for (const id of ids) {
@@ -151,6 +170,29 @@ if (process.argv.includes('--batch')) {
     const synErrors = mineGroups.flatMap((g) => groupCoverageErrors(g, synonymNotes, wordsById))
     if (synErrors.length > 0) { owed++; console.log(`  GAP  近义词: ${synErrors.join('; ')}`) }
     else console.log(`  ok   近义词 (${mineGroups.length} group(s))`)
+
+    // 形近 never blocks — pairs are computed from spelling and nothing is
+    // authored — but every pair is a line to read. The gloss rule keeps out
+    // meanings that share a term; it cannot see two glosses saying one thing
+    // in different characters (友善 / 友好), and then the trap is a second right
+    // answer. Fix the gloss, or join the two as synonyms so they move to 辨析.
+    // A pair that merely looks less alike than expected costs nothing.
+    const alike = lookalikes.filter(pp => pp.a === id || pp.b === id).map(pp => (pp.a === id ? pp.b : pp.a))
+    if (alike.length === 0) console.log('  note 形近: no look-alike')
+    for (const other of alike) {
+      const o = byId.get(other)
+      console.log(`  read 形近: ${w.headword} / ${o?.headword ?? other} — ${w.meanings[0]?.zh ?? ''} | ${o?.meanings[0]?.zh ?? ''}`)
+    }
+
+    // 发散 never blocks either; the --concepts diff in step 3 is where its
+    // membership gets read. Named here so the report covers the mode.
+    const inConcepts = conceptsOf.get(id) ?? []
+    console.log(inConcepts.length === 0 ? '  note 发散: in no concept' : `  note 发散: in ${inConcepts.join(', ')}`)
+
+    // Optional coverage, never owed: printed so a word reaching neither mode is
+    // a known choice rather than an oversight.
+    console.log(`  note 组句: ${chunksOf.get(id) ?? 0} annotated sentence(s), optional`)
+    console.log(`  note 短文: marked in ${passagesOf.get(id) ?? 0} passage(s), optional`)
   }
 
   console.log(owed === 0
@@ -261,6 +303,14 @@ console.log(`
 const conceptReach = new Set(concepts.flatMap(c => conceptMembers(c, conceptIndex, allIds)))
 console.log(`
 发散: ${concepts.length} concepts reaching ${conceptReach.size}/${words.length} words — membership is derived, so a new word joins with nothing authored; diff --concepts across the batch and read every new line`)
+
+// 形近 is printed for the same reason as 发散: pairs are computed from
+// spelling, so nothing can be missing — reach is the surface a new word can
+// land on, and `--batch` lists each word's pairs for reading.
+const lookalikeReach = buildLookalikePairs(words as never)
+const lookalikeWords = new Set(lookalikeReach.flatMap(p => [p.a, p.b]))
+console.log(`
+形近: ${lookalikeReach.length} look-alike pairs over ${lookalikeWords.size}/${words.length} words — computed from spelling, nothing to author; --batch prints a word's pairs to read`)
 
 // Passage coverage is printed, never a STALE trigger. Covering every word
 // three times over needs roughly 200 passages, so a coverage line here would
