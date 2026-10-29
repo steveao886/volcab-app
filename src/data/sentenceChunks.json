@@ -9484,13 +9484,12 @@
    "id": "ruthless",
    "i": 1,
    "cuts": [
-    2,
-    4,
+    3,
     6,
-    13,
-    17
+    9,
+    14
    ],
-   "blank": 3,
+   "blank": 1,
    "answer": "ruthless"
   },
   {
