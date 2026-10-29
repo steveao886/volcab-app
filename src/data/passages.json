@@ -141,7 +141,8 @@
         "turmoil",
         "companionable",
         "simpatico",
-        "cruel"
+        "cruel",
+        "rancor"
       ]
     },
     {
@@ -286,7 +287,8 @@
         "sedulous",
         "spasmodic",
         "uncompromising",
-        "flippant"
+        "flippant",
+        "volatile"
       ]
     },
     {
@@ -323,7 +325,8 @@
         "conciliate",
         "placate",
         "reprimand",
-        "slacken"
+        "slacken",
+        "contested"
       ]
     },
     {
@@ -360,7 +363,8 @@
         "prodigal",
         "profuse",
         "rudimentary",
-        "topple"
+        "topple",
+        "needless"
       ]
     },
     {
@@ -395,7 +399,8 @@
         "ignominious",
         "inimical",
         "petulant",
-        "ungovernable"
+        "ungovernable",
+        "sinister"
       ]
     },
     {
@@ -512,7 +517,8 @@
         "discontent",
         "forbidding",
         "inundate",
-        "revolting"
+        "revolting",
+        "rancor"
       ]
     },
     {
@@ -546,7 +552,8 @@
         "formidable",
         "ominous",
         "prodigal",
-        "inculpate"
+        "inculpate",
+        "threatening"
       ]
     },
     {
@@ -691,7 +698,9 @@
         "erratic",
         "precarious",
         "reconcile",
-        "slacken"
+        "slacken",
+        "ebb",
+        "decline"
       ]
     },
     {
@@ -1410,7 +1419,8 @@
         "percolate",
         "reproach",
         "uncompromising",
-        "unfavorable"
+        "unfavorable",
+        "applaud"
       ]
     },
     {
@@ -1754,7 +1764,8 @@
         "quarrelsome",
         "inimical",
         "remorseless",
-        "implore"
+        "implore",
+        "torpid"
       ]
     },
     {
@@ -1915,7 +1926,8 @@
         "resentful",
         "sedulous",
         "uncompromising",
-        "lenient"
+        "lenient",
+        "displeasure"
       ]
     },
     {
@@ -1982,7 +1994,8 @@
         "frankness",
         "impair",
         "sympathetic",
-        "revolting"
+        "revolting",
+        "irate"
       ]
     },
     {
@@ -2096,7 +2109,8 @@
         "retrograde",
         "sedulous",
         "uncompromising",
-        "understated"
+        "understated",
+        "rattled"
       ]
     },
     {
@@ -2277,7 +2291,9 @@
         "cheeky",
         "disputatious",
         "impromptu",
-        "sedulous"
+        "sedulous",
+        "unequaled",
+        "unrivaled"
       ]
     },
     {
@@ -2477,7 +2493,9 @@
         "sedulous",
         "sycophant",
         "uncompromising",
-        "unnatural"
+        "unnatural",
+        "wearisome",
+        "rattle"
       ]
     },
     {
@@ -2536,7 +2554,8 @@
         "resentful",
         "sedulous",
         "uncompromising",
-        "unpersuasive"
+        "unpersuasive",
+        "nominally"
       ]
     },
     {
@@ -2693,7 +2712,8 @@
         "recalcitrant",
         "refractory",
         "sedulous",
-        "uncompromising"
+        "uncompromising",
+        "applaud"
       ]
     },
     {
@@ -2942,7 +2962,8 @@
         "abhorrent",
         "odious",
         "remorseless",
-        "sloppy"
+        "sloppy",
+        "wearisome"
       ]
     },
     {
@@ -3821,7 +3842,9 @@
         "欧文终于当面质问主管的那场碰头会瞬间火药味十足，两个平时天天一起吃午饭的同事，突然谁也不看谁一眼。",
         "普丽娅却锲而不舍，非要把那个下拉菜单的漏洞彻底修好，工单被莫名其妙关掉四次，她就重新提交四次。"
       ],
-      "exclude": []
+      "exclude": [
+        "displeasure"
+      ]
     },
     {
       "id": "old-boatyard-restoration",
@@ -3895,7 +3918,8 @@
         "humdrum",
         "mundane",
         "retrograde",
-        "regressive"
+        "regressive",
+        "delighted"
       ]
     },
     {
@@ -3991,7 +4015,9 @@
       "exclude": [
         "vexation",
         "renown",
-        "ascendancy"
+        "ascendancy",
+        "precipitancy",
+        "displeasure"
       ]
     },
     {
@@ -4236,7 +4262,8 @@
         "他的捐款解决了修复费用，可下一次理事会上，大家还是为这份功劳该算谁的吵得不可开交。"
       ],
       "exclude": [
-        "incautious"
+        "incautious",
+        "delighted"
       ]
     },
     {
@@ -4352,7 +4379,8 @@
         "dismal",
         "domineering",
         "ludicrous",
-        "overbearing"
+        "overbearing",
+        "dismay"
       ]
     },
     {
@@ -4423,7 +4451,8 @@
         "emergent",
         "fledgling",
         "observant",
-        "overthrow"
+        "overthrow",
+        "absorbing"
       ]
     },
     {
@@ -4625,7 +4654,8 @@
       "exclude": [
         "impairment",
         "concurrence",
-        "keen"
+        "keen",
+        "mastery"
       ]
     },
     {
@@ -4799,7 +4829,10 @@
         "negligent",
         "negligible",
         "renowned",
-        "upbeat"
+        "upbeat",
+        "decline",
+        "ebb",
+        "delighted"
       ]
     },
     {
@@ -4880,7 +4913,9 @@
         "censure",
         "impair",
         "sympathetic",
-        "reproach"
+        "reproach",
+        "unsubstantiated",
+        "rancor"
       ]
     },
     {
@@ -4948,7 +4983,9 @@
         "magnanimous",
         "admonition",
         "percolate",
-        "big-hearted"
+        "big-hearted",
+        "unequaled",
+        "unrivaled"
       ]
     },
     {
@@ -4982,7 +5019,8 @@
         "irremediable",
         "erode",
         "unguarded",
-        "markedly"
+        "markedly",
+        "substantially"
       ]
     },
     {
@@ -5265,7 +5303,8 @@
         "perfunctory",
         "unresponsive",
         "vexation",
-        "intriguing"
+        "intriguing",
+        "displeasure"
       ]
     }
   ]
