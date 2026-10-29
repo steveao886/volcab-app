@@ -321,6 +321,66 @@ export function buildQuestion(
 }
 
 /**
+ * The 近义 question a 回想 miss opens — 顺着这串练.
+ *
+ * A miss in 回想 is most often not a word forgotten but a word never reached:
+ * the learner translates 削弱判断力, lands on `weaken`, and stops there,
+ * because weaken is right and nothing pushes past it. `impair` has a 35-day
+ * interval in /review and a gloss that literally reads 削弱 — recognised on
+ * sight, never produced. What is missing is the path from the plain word to
+ * its neighbours, and the 近义 axis is that path laid out: one concept, every
+ * learned word around it, typed. See
+ * docs/superpowers/specs/2026-10-28-recall-chain-design.md.
+ *
+ * **Only the 近义 axis.** 反面 and 否定前缀 lead away from the word just
+ * missed; the chain is the words beside it.
+ *
+ * **At least one answer must be off the screen the miss was on.** `onScreen`
+ * is every headword the 回想 card showed — its options and its answer — and a
+ * set made entirely of them is copying, not retrieval. Fail closed.
+ *
+ * When the word sits in more than one concept, the smallest set wins, ties by
+ * concept id: the detour lands in the middle of a round, and the shorter one
+ * gets the round back sooner.
+ */
+export function chainFor(
+  wordId: string,
+  concepts: readonly Concept[],
+  index: ConceptIndex,
+  progress: Progress,
+  onScreen: readonly string[],
+): DivergeQuestion | null {
+  const shown = new Set(onScreen.map(norm))
+  let best: DivergeQuestion | null = null
+  for (const c of concepts) {
+    const q = buildQuestion(c, 'synonym', index, progress)
+    if (q === null || !q.answers.some(a => a.wordId === wordId)) continue
+    if (q.answers.every(a => shown.has(a.form))) continue
+    if (
+      best === null
+      || q.answers.length < best.answers.length
+      || (q.answers.length === best.answers.length && q.conceptId < best.conceptId)
+    ) best = q
+  }
+  return best
+}
+
+/**
+ * Which of a chain's produced answers count as produced.
+ *
+ * Anything the 回想 card had on screen is left out: the word just missed was
+ * printed on the reveal seconds earlier, and so were the options beside it.
+ * Typing one back is short-term recall, which the scheduled review refuses to
+ * credit for the same reason (`grade` clears `missedAt` only on a review-phase
+ * card). The rest is 发散's own rule — reward only, related forms skipped.
+ */
+export function chainCredit(q: DivergeQuestion, produced: readonly string[], onScreen: readonly string[]): string[] {
+  const got = new Set(produced)
+  const shown = new Set(onScreen.map(norm))
+  return q.answers.filter(a => got.has(a.form) && !a.derived && !shown.has(a.form)).map(a => a.wordId)
+}
+
+/**
  * Negation prefixes, longest first so `dis`/`non` are not shadowed.
  *
  * This list only ever *compares* two spellings against each other. It never
