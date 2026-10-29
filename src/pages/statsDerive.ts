@@ -3,7 +3,7 @@ import type { QuizMetricKey } from '../lib/quiz'
 import { MATURE_INTERVAL_DAYS } from '../lib/queue'
 import { RECALL_STEADY_STREAK } from '../lib/senseGroup'
 import { addDays } from '../lib/srs'
-import type { Progress, Word } from '../types'
+import type { Progress, ProgressEntry, Word } from '../types'
 
 export interface DayPoint { date: string; reviewed: number; newLearned: number; correct: number }
 export interface AccuracyPoint { date: string; accuracy: number | null }
@@ -180,6 +180,10 @@ export function masteryBreakdown(words: Word[], progress: Progress): Mastery {
 
 export interface Maturity { mature: number; young: number; studied: number }
 
+/** Held long-term: past the app's own "known" line. The one definition maturitySplit and usageCoverage share. */
+const isHeld = (e: ProgressEntry | undefined): boolean =>
+  e?.state === 'review' && e.intervalDays >= MATURE_INTERVAL_DAYS
+
 /**
  * Studied words split at MATURE_INTERVAL_DAYS, the app's own "known" line
  * (queue.ts; Anki's young/mature boundary). 已掌握 above only says a word
@@ -196,7 +200,7 @@ export function maturitySplit(words: Word[], progress: Progress): Maturity {
     const e = progress.words[w.id]
     if (e === undefined || e.state === 'new') continue
     m.studied++
-    if (e.state === 'review' && e.intervalDays >= MATURE_INTERVAL_DAYS) m.mature++
+    if (isHeld(e)) m.mature++
     else m.young++
   }
   return m
@@ -227,19 +231,19 @@ export function recallProduction(words: Word[], progress: Progress): RecallProdu
   return r
 }
 
-export interface CoverageBand { label: string; range: string; mastered: number; total: number }
+export interface CoverageBand { label: string; range: string; held: number; total: number }
 export interface UsageCoverage {
   bands: CoverageBand[]
-  /** The headline number: mastery status of the most-common-words band. ratio is recorded as 0 when total is 0. */
-  headline: { mastered: number; total: number; ratio: number }
+  /** The headline number: how much of the most-common-words band is held. ratio is recorded as 0 when total is 0. */
+  headline: { held: number; total: number; ratio: number }
 }
 
 /**
- * Bands are split by usageScore. The cutoffs are set based on the
- * **actual library distribution** (77 words for 7–10 / 260 words for 5–6 /
- * 139 words for 1–4), not an arbitrary even split: only 9 words in the
- * whole library score above 8, so giving that its own band would make
- * "mastered 3 out of 9" pure noise.
+ * Bands are split by usageScore. The cutoffs were set on the **actual
+ * library distribution** (77 / 260 / 139 words when they were chosen), not
+ * an arbitrary even split: only 7 words score above 8, so giving that its
+ * own band would make "held 3 out of 7" pure noise. On 2026-10-29 the bands
+ * held 302 / 899 / 348 of 1,549 words.
  */
 const BANDS = [
   { label: '最常用', range: '7–10', min: 7, max: 10 },
@@ -248,47 +252,53 @@ const BANDS = [
 ] as const
 
 /**
- * Mastery rate banded by usage score.
+ * How much of each usage band is held, at the 21-day line.
  *
  * The stats page originally just counted totals (how many reviewed, how
  * many mastered), but **totals can lie**: the sense of achievement from
  * finishing 300 words scoring a 3 is hollow. What actually matters is "how
  * far along are you on the most commonly used words".
  *
- * "Mastered" follows the same definition as reviewProgress and
- * masteryBreakdown: state === 'review'. All three must stay consistent,
- * otherwise the same page would show two contradictory "mastered counts".
+ * **Held, not state === 'review'.** This counted the review state until
+ * 2026-10-29, and a word reaches it the day it is learned (see
+ * maturitySplit), so the band measured what had been started: that day all
+ * 302 of the most common words were in review and the headline read 100%.
+ * At the 21-day line the three bands read 77% / 48% / 30%. It shares isHeld
+ * with maturitySplit, so the page has one meaning of 记牢 throughout.
  *
  * Words missing a usageScore go into no band at all — unscored doesn't
  * equal any particular band, and forcing it in would inflate the
- * denominator out of nowhere, diluting the mastery rate.
+ * denominator out of nowhere, diluting the rate.
  */
 export function usageCoverage(words: Word[], progress: Progress): UsageCoverage {
   const bands: CoverageBand[] = BANDS.map(b => {
-    let mastered = 0, total = 0
+    let held = 0, total = 0
     for (const w of words) {
       const s = w.usageScore
       if (s === undefined || s < b.min || s > b.max) continue
       total++
-      if (progress.words[w.id]?.state === 'review') mastered++
+      if (isHeld(progress.words[w.id])) held++
     }
-    return { label: b.label, range: b.range, mastered, total }
+    return { label: b.label, range: b.range, held, total }
   })
   const top = bands[0]
   return {
     bands,
-    headline: { mastered: top.mastered, total: top.total, ratio: top.total === 0 ? 0 : top.mastered / top.total },
+    headline: { held: top.held, total: top.total, ratio: top.total === 0 ? 0 : top.held / top.total },
   }
 }
 
-export interface ModeAccuracy {
-  mode: QuizMetricKey
-  label: string
-  asked: number
-  correct: number
-  /** 0–1. Only meaningful once `asked` clears MODE_ACCURACY_MIN. */
-  rate: number
-}
+export interface Tally { asked: number; correct: number }
+
+/**
+ * Modes whose tally is not right against wrong. 发散 records the answers
+ * produced out of the answers the question had (recordDiverge in store.tsx),
+ * so its figure is a share of a set — 52 of 229 on 2026-10-29, which printed
+ * as "23%" in a column beside 极速's 95% and read as a failing mode. Its set
+ * also grows as the library is learned (DivergeStat), so this month's share
+ * cannot be held against last month's either.
+ */
+const NOT_ACCURACY: ReadonlySet<QuizMetricKey> = new Set<QuizMetricKey>(['diverge'])
 
 /**
  * How few questions a mode may have before its accuracy is worth printing.
@@ -301,42 +311,110 @@ export interface ModeAccuracy {
  */
 export const MODE_ACCURACY_MIN = 10
 
+/** A tally's rate, or null below MODE_ACCURACY_MIN. */
+export function rateOf(t: Tally): number | null {
+  return t.asked >= MODE_ACCURACY_MIN ? t.correct / t.asked : null
+}
+
+/** The recent window both the stats page and the 推荐 badge read. */
+export const MODE_TREND_DAYS = 30
+
 /**
- * Per-mode accuracy over all recorded history, most-asked first.
+ * How far apart two windows' rates must be, in standard errors, before the
+ * page calls it a change: a two-proportion z-test, 2 being roughly the usual
+ * 95% line. A fixed gap in points cannot do this job, because what one
+ * question is worth depends on how many were asked. On the live library on
+ * 2026-10-29, 回想 going 71% (1000/1410) → 55% (166/300) is z −5.3, and
+ * 听音 going 90% (54/60) → 80% (8/10) is z −0.9 — one question. On those
+ * ten questions, 7 right is still noise (−1.8) and 6 is not (−2.5).
+ */
+export const TREND_Z = 2
+
+export type ModeChange = 'up' | 'down' | null
+
+function changeBetween(earlier: Tally, recent: Tally): ModeChange {
+  if (rateOf(earlier) === null || rateOf(recent) === null) return null
+  const pooled = (earlier.correct + recent.correct) / (earlier.asked + recent.asked)
+  const se = Math.sqrt(pooled * (1 - pooled) * (1 / earlier.asked + 1 / recent.asked))
+  // Both windows all right or all wrong: the rates are identical.
+  if (se === 0) return null
+  const z = (recent.correct / recent.asked - earlier.correct / earlier.asked) / se
+  return z >= TREND_Z ? 'up' : z <= -TREND_Z ? 'down' : null
+}
+
+export interface ModeTrend {
+  mode: QuizMetricKey
+  label: string
+  /** The last `days` days, today included. */
+  recent: Tally
+  /** Every recorded day before that. */
+  earlier: Tally
+  /** Set only when both windows clear MODE_ACCURACY_MIN and the gap clears TREND_Z. */
+  change: ModeChange
+}
+
+/**
+ * Per-mode accuracy, the recent window against everything before it,
+ * most-asked first.
  *
- * Deliberately not one blended figure across the seven surfaces: they test
- * different things at different difficulties, so an aggregate moves more
- * when you change which mode you play than when your recall changes. Modes
- * never played are omitted entirely rather than shown at 0% — no data is
- * not the same claim as no success.
+ * **Two windows, because the question is whether a mode is getting better.**
+ * This was one lifetime figure until 2026-10-29, which cannot move once a
+ * history is long: 回想 read 68% while its October ran at 55%, against 70%
+ * and 71% in August and September. "Everything before" rather than lifetime,
+ * so the recent questions are not counted on both sides.
+ *
+ * Deliberately not one blended figure across the modes: they test different
+ * things at different difficulties, so an aggregate moves more when you
+ * change which mode you play than when your recall changes. Modes never
+ * played are omitted rather than shown at 0% — no data is not the same
+ * claim as no success. NOT_ACCURACY modes are left out; see divergeTotal.
  *
  * Days recorded before `quizModes` existed contribute nothing; they are not
  * back-filled into `mixed`, because at that time 回想 didn't exist and the
  * other five were already in use, so any attribution would be invented.
  */
-export function modeAccuracy(progress: Progress): ModeAccuracy[] {
-  const tally = new Map<QuizMetricKey, { asked: number; correct: number }>()
-  for (const day of Object.values(progress.dailyStats)) {
+export function modeTrend(progress: Progress, today: string, days: number): ModeTrend[] {
+  const from = addDays(today, -(days - 1))
+  const tally = new Map<QuizMetricKey, { recent: Tally; earlier: Tally }>()
+  for (const [date, day] of Object.entries(progress.dailyStats)) {
     for (const [mode, v] of Object.entries(day.quizModes ?? {})) {
       if (!(QUIZ_METRIC_KEYS as readonly string[]).includes(mode)) continue
       const key = mode as QuizMetricKey
-      const prev = tally.get(key) ?? { asked: 0, correct: 0 }
-      tally.set(key, { asked: prev.asked + v.asked, correct: prev.correct + v.correct })
+      if (NOT_ACCURACY.has(key)) continue
+      const t = tally.get(key) ?? { recent: { asked: 0, correct: 0 }, earlier: { asked: 0, correct: 0 } }
+      const side = date >= from ? t.recent : t.earlier
+      side.asked += v.asked
+      side.correct += v.correct
+      tally.set(key, t)
     }
   }
   return [...tally.entries()]
-    .filter(([, v]) => v.asked > 0)
-    .map(([mode, v]): ModeAccuracy => ({
+    .filter(([, t]) => t.recent.asked + t.earlier.asked > 0)
+    .map(([mode, t]): ModeTrend => ({
       mode,
       label: QUIZ_METRIC_LABELS[mode],
-      asked: v.asked,
-      correct: v.correct,
-      rate: v.correct / v.asked,
+      recent: t.recent,
+      earlier: t.earlier,
+      change: changeBetween(t.earlier, t.recent),
     }))
     // Most-practised first, then by the fixed mode order so the list can't
     // reshuffle between two renders on a tie.
-    .sort((a, b) => b.asked - a.asked
+    .sort((a, b) => (b.recent.asked + b.earlier.asked) - (a.recent.asked + a.earlier.asked)
       || QUIZ_METRIC_KEYS.indexOf(a.mode) - QUIZ_METRIC_KEYS.indexOf(b.mode))
+}
+
+export interface DivergeTotal { produced: number; answers: number }
+
+/** 发散 over all recorded history: answers produced, out of the answers its questions held. See NOT_ACCURACY. */
+export function divergeTotal(progress: Progress): DivergeTotal {
+  const t: DivergeTotal = { produced: 0, answers: 0 }
+  for (const day of Object.values(progress.dailyStats)) {
+    const v = day.quizModes?.diverge
+    if (v === undefined) continue
+    t.produced += v.correct
+    t.answers += v.asked
+  }
+  return t
 }
 
 export interface ModeOverviewRow {
@@ -351,10 +429,11 @@ export interface ModeOverviewRow {
 }
 
 /**
- * One row per mode, all seven, fixed key order. Unlike modeAccuracy —
+ * One row per metric key, lifetime, fixed key order. Unlike modeTrend —
  * which serves a stats list where an unplayed mode is noise — the quiz
  * hub renders every mode as a card, and "never played" is a state the
- * card must show, not a reason to vanish.
+ * card must show, not a reason to vanish. 发散 is included with its
+ * produced/answers share in `rate`; the hub labels it as such.
  */
 export function modeOverview(progress: Progress): ModeOverviewRow[] {
   const tally = new Map<QuizMetricKey, { asked: number; correct: number; last: string }>()
@@ -384,18 +463,32 @@ export function modeOverview(progress: Progress): ModeOverviewRow[] {
 }
 
 /**
- * The mode most worth practising: lowest printable accuracy. Null when no
- * mode clears MODE_ACCURACY_MIN — a recommendation with no evidence
- * behind it would just be a random badge. Strict less-than keeps the
- * earlier fixed-order mode on a tie, so the badge cannot flicker between
- * renders.
+ * The mode most worth practising: the one that slipped furthest, measured
+ * against its own earlier record. Null when no mode has slipped past
+ * TREND_Z — a recommendation with no evidence behind it would just be a
+ * random badge.
+ *
+ * **Against itself, not against the other modes.** It picked the lowest
+ * accuracy until 2026-10-29, and the modes sit at different difficulties by
+ * design: 组句 asks for a whole sentence and ran 17% on 36 questions, so the
+ * badge would have stayed on it, or on 回想 with 组句 excluded, whatever the
+ * user did. The user chose this reading that day. A mode compared with its
+ * own history has its difficulty cancel out.
+ *
+ * Ties keep the earlier fixed-order mode, so the badge cannot flicker
+ * between renders.
  */
-export function recommendMode(rows: ModeOverviewRow[]): QuizMetricKey | null {
+export function recommendMode(rows: ModeTrend[]): QuizMetricKey | null {
   let bestMode: QuizMetricKey | null = null
-  let bestRate = Infinity
+  let bestDrop = 0
   for (const r of rows) {
-    if (r.rate === null) continue
-    if (r.rate < bestRate) { bestMode = r.mode; bestRate = r.rate }
+    if (r.change !== 'down') continue
+    const drop = r.earlier.correct / r.earlier.asked - r.recent.correct / r.recent.asked
+    if (bestMode === null || drop > bestDrop
+      || (drop === bestDrop && QUIZ_METRIC_KEYS.indexOf(r.mode) < QUIZ_METRIC_KEYS.indexOf(bestMode))) {
+      bestMode = r.mode
+      bestDrop = drop
+    }
   }
   return bestMode
 }

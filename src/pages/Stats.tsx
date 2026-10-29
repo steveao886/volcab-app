@@ -8,10 +8,11 @@ import { todayStr } from '../lib/srs'
 import { useApp } from '../state/store'
 import { ReviewBars } from './statsCharts'
 import {
-  cumulativeTotals, dailySeries, dueForecast, forecastLabel, masteryBreakdown, maturitySplit,
-  MODE_ACCURACY_MIN, modeAccuracy, recallProduction, retentionStats, shortDate, usageCoverage,
-  windowSummary,
+  cumulativeTotals, dailySeries, divergeTotal, dueForecast, forecastLabel, masteryBreakdown,
+  maturitySplit, MODE_TREND_DAYS, modeTrend, rateOf, recallProduction, retentionStats, shortDate,
+  usageCoverage, windowSummary,
 } from './statsDerive'
+import type { ModeChange, Tally } from './statsDerive'
 import { computeStreak, longestStreak } from './todayStats'
 import './Stats.css'
 
@@ -20,17 +21,40 @@ const FORECAST_DAYS = 7
 
 const pct = (ratio: number) => Math.round(ratio * 100)
 
+const CHANGE_MARK: Record<'up' | 'down', string> = { up: '↑', down: '↓' }
+
+/**
+ * One window of a mode's row: the rate and its count, 题量不足 under the
+ * floor, a dash when unplayed. Every slot renders even when empty — the
+ * cell is `display: contents` inside the list's grid, so a missing span
+ * would slide the next window into the wrong column.
+ */
+function ModeCell({ t, change }: { t: Tally; change?: ModeChange }) {
+  const rate = rateOf(t)
+  return (
+    <span className="stats-mode__cell">
+      <span className={`stats-mode__rate ${rate === null ? 'faint' : 'num'}`}>
+        {t.asked === 0 ? '—' : rate === null ? '题量不足' : `${pct(rate)}%`}
+      </span>
+      {change !== undefined && (
+        <span className="stats-mode__change">{change === null ? '' : CHANGE_MARK[change]}</span>
+      )}
+      <span className="num faint stats-mode__count">{t.asked > 0 ? `${t.correct}/${t.asked}` : ''}</span>
+    </span>
+  )
+}
+
 /**
  * Reviews over the last 30 days, retention, streak, upcoming review load,
  * library mastery, how much is held long-term, 回想 production,
- * high-frequency coverage, per-mode accuracy, cumulative totals.
+ * high-frequency coverage, per-mode accuracy recent against earlier,
+ * cumulative totals.
  *
- * Every metric is derived purely from progress.dailyStats and each word's
- * state — no review log is stored, per v1.1 spec §5.1: progress.json goes
- * through the GitHub Contents API's 1 MB read limit, and a full log would
- * hit that ceiling in roughly 9 months, at which point new devices
- * couldn't sign in. So this can chart "volume" and "rate" trends, but not
- * word-level history or time-of-day analysis.
+ * Every metric is derived from progress.dailyStats and each word's state.
+ * v1.1 spec §5.1 ruled out a full review log over progress.json's size, so
+ * this charts "volume" and "rate" trends rather than word-level history.
+ * The forget log (ProgressEntry.forgot, since 2026-10-22) is the first
+ * per-word history, one record per lapse; nothing here reads it yet.
  *
  * **Every chart is annotated with the numbers it is drawn from.** The page
  * used to be shapes only — an unlabelled bar chart, an unlabelled line, and
@@ -61,7 +85,8 @@ export function Stats() {
       coverage: usageCoverage(words, progress),
       forecast: dueForecast(words, progress, today, FORECAST_DAYS),
       totals: cumulativeTotals(progress),
-      modes: modeAccuracy(progress),
+      modes: modeTrend(progress, today, MODE_TREND_DAYS),
+      diverge: divergeTotal(progress),
       // Only a complete absence of dailyStats counts as a "never studied"
       // new user — that gets the full-page empty state instead of a
       // bunch of empty charts.
@@ -70,7 +95,7 @@ export function Stats() {
   }, [words, progress, today])
   const {
     days, summary, retention, streak, best, mastery, maturity, production,
-    totals, modes, coverage, forecast, hasHistory,
+    totals, modes, diverge, coverage, forecast, hasHistory,
   } = derived
 
   if (!hasHistory) {
@@ -326,17 +351,19 @@ export function Stats() {
           section above counts the total, and totals can lie — the sense of
           achievement from finishing 300 words scoring a 3 is hollow. This
           section answers "how far along are you on the most commonly used
-          words"; see statsDerive.usageCoverage for the banding logic. */}
+          words", at the same 21-day line as 记牢程度: it counted 已掌握
+          until 2026-10-29 and read 100%, because every one of those words
+          had been started. See statsDerive.usageCoverage. */}
       <section className="section">
-        <h2 className="section-head">高频词掌握率</h2>
+        <h2 className="section-head">高频词记牢程度</h2>
         <div className="stats-lead">
           <div className="readout">
             <p className="readout__value">{pct(coverage.headline.ratio)}%</p>
-            <p className="readout__label">高频词已掌握</p>
+            <p className="readout__label">高频词已记牢</p>
           </div>
           <p className="stats-lead__note">
-            遇见概率 7 分以上的 <span className="num">{coverage.headline.total}</span> 个词里，已掌握{' '}
-            <span className="num">{coverage.headline.mastered}</span> 个
+            遇见概率 7 分以上的 <span className="num">{coverage.headline.total}</span> 个词里，记牢了{' '}
+            <span className="num">{coverage.headline.held}</span> 个
           </p>
         </div>
         <ul className="stats-rows">
@@ -349,18 +376,19 @@ export function Stats() {
               <span className="stats-row__track">
                 <span
                   className="stats-row__fill"
-                  style={{ width: `${b.total === 0 ? 0 : (b.mastered / b.total) * 100}%` }}
+                  style={{ width: `${b.total === 0 ? 0 : (b.held / b.total) * 100}%` }}
                 />
               </span>
               <span className="stats-row__count">
-                <span className="num">{b.total === 0 ? 0 : pct(b.mastered / b.total)}%</span>
+                <span className="num">{b.total === 0 ? 0 : pct(b.held / b.total)}%</span>
                 <span className="num faint stats-row__sub">
-                  {b.mastered}/{b.total}
+                  {b.held}/{b.total}
                 </span>
               </span>
             </li>
           ))}
         </ul>
+        <p className="faint stats-note">记牢：间隔已过 {MATURE_INTERVAL_DAYS} 天，和上面的“记牢程度”同一条线。</p>
       </section>
 
       {/* The 还没记牢的词 card stood here, listing the five worst words with
@@ -376,34 +404,49 @@ export function Stats() {
           drill queue, the Today row and tuning. It just no longer has a
           page that names it. */}
 
-      {/* Per-mode, never blended: the seven surfaces test different things
-          at different difficulties, so one combined figure moves more when
-          you switch modes than when your recall changes. Absent entirely
-          until a mode has been played — no data is a different claim from
-          no success. */}
-      {modes.length > 0 && (
+      {/* Per-mode, never blended: the modes test different things at
+          different difficulties, so one combined figure moves more when you
+          switch modes than when your recall changes. Each row is the last
+          30 days beside everything earlier, because "am I getting better at
+          回想" is the question the tally was stored to answer, and one
+          lifetime figure cannot move once the history is long. The bars
+          went with that: a bar per window drew the same comparison the two
+          numbers already state. Absent entirely until a mode has been
+          played — no data is a different claim from no success. */}
+      {(modes.length > 0 || diverge.answers > 0) && (
         <section className="section">
           <h2 className="section-head">各模式正确率</h2>
-          <ul className="stats-modes">
-            {modes.map(m => (
-              <li key={m.mode} className="stats-mode">
-                <span className="stats-mode__label">{m.label}</span>
-                <span className="stats-mode__bar" aria-hidden="true">
-                  <span
-                    className="stats-mode__fill"
-                    style={{ width: m.asked >= MODE_ACCURACY_MIN ? `${m.rate * 100}%` : '0%' }}
-                  />
-                </span>
-                {/* Under the floor the percentage is suppressed rather than
-                    the row: one miss out of five swings it 20 points, which
-                    reads as a skill change and isn't one. */}
-                <span className="num stats-mode__rate">
-                  {m.asked >= MODE_ACCURACY_MIN ? `${Math.round(m.rate * 100)}%` : '题量不足'}
-                </span>
-                <span className="muted num stats-mode__count">{m.correct}/{m.asked}</span>
+          {modes.length > 0 && (
+            <ul className="stats-modes">
+              <li className="stats-mode stats-mode--head" aria-hidden="true">
+                <span className="stats-mode__window stats-mode__window--recent">近 {MODE_TREND_DAYS} 天</span>
+                <span className="stats-mode__window stats-mode__window--earlier">更早</span>
               </li>
-            ))}
-          </ul>
+              {modes.map(m => (
+                <li key={m.mode} className="stats-mode">
+                  <span className="stats-mode__label">{m.label}</span>
+                  {/* Under the floor the percentage is suppressed rather
+                      than the row: one miss out of five swings it 20 points,
+                      which reads as a skill change and isn't one. */}
+                  <ModeCell t={m.recent} change={m.change} />
+                  <ModeCell t={m.earlier} />
+                </li>
+              ))}
+            </ul>
+          )}
+          {modes.some(m => m.change !== null) && (
+            <p className="faint stats-note">↑↓ 表示近 {MODE_TREND_DAYS} 天比更早明显变好或变差，差距大过题量多少带来的随机起伏。</p>
+          )}
+          {/* 发散 keeps a line of its own rather than a row: its tally is a
+              share of each question's answers, not right against wrong (see
+              statsDerive's NOT_ACCURACY), and as a row it read as a mode
+              failing at 23%. */}
+          {diverge.answers > 0 && (
+            <p className="faint stats-note">
+              发散不算正确率：累计说出 <span className="num">{diverge.produced}</span> 个词，占各题答案{' '}
+              <span className="num">{diverge.answers}</span> 个的 <span className="num">{pct(diverge.produced / diverge.answers)}%</span>。
+            </p>
+          )}
           {/* 猜词 counts a clue-assisted solve as correct — that is the
               mode's own definition (see its spec: solved with clues still
               counts as retrieved) and keeping it makes the column
@@ -425,9 +468,12 @@ export function Stats() {
             <p className="readout__value">{totals.totalReviewed}</p>
             <p className="readout__label">总复习次数</p>
           </div>
+          {/* 已掌握词数 stood here, counting the review state — every word
+              ever started (1,064 on 2026-10-29). Held is the count that
+              says how many are known. */}
           <div className="readout">
-            <p className="readout__value">{mastery.review}</p>
-            <p className="readout__label">已掌握词数</p>
+            <p className="readout__value">{maturity.mature}</p>
+            <p className="readout__label">记牢词数</p>
           </div>
           <div className="readout">
             <p className="readout__value">{totals.avgNewPerActiveDay.toFixed(1)}</p>
