@@ -112,8 +112,11 @@ const loadSentences = () => import('../data/recallSentences.json').then(m => (m.
 // download a mode it does not use.
 const loadAnnotations = () => import('../data/sentenceChunks.json').then(m => (m.default as { chunks: ChunkAnnotation[] }).chunks)
 // 发散's authored concepts, split out for the same reason as the four above:
-// eight of the nine modes never touch this file.
+// seven of the nine modes never touch this file. 回想 reads it for 顺着这串练
+// and never waits on it — see the recall branch below.
 const loadConcepts = () => import('../data/concepts.json').then(m => (m.default as { concepts: Concept[] }).concepts)
+/** One stable empty list, so 回想's chain memo does not recompute every render while concepts load. */
+const NO_CONCEPTS: Concept[] = []
 
 function ContentGate({ label, failed, retry }: { label: string; failed: boolean; retry: () => void }) {
   return (
@@ -436,7 +439,7 @@ function QuizSessionPage({ mode }: { mode: QuizMode }) {
   const groups = useLazyContent(mode === 'recall' || mode === 'compose', loadGroups)
   const sentences = useLazyContent(mode === 'recall' || mode === 'compose', loadSentences)
   const annotations = useLazyContent(mode === 'compose', loadAnnotations)
-  const concepts = useLazyContent(mode === 'diverge', loadConcepts)
+  const concepts = useLazyContent(mode === 'diverge' || mode === 'recall', loadConcepts)
 
   const restart = useCallback(() => setSession(s => s + 1), [])
 
@@ -462,6 +465,10 @@ function QuizSessionPage({ mode }: { mode: QuizMode }) {
             words={words}
             groups={groups.data}
             sentences={sentences.data}
+            // Not gated like the two above: without concepts the round still
+            // works, it just offers no 顺着这串练. A question drawn before the
+            // file lands simply gets the button once it does.
+            concepts={concepts.data ?? NO_CONCEPTS}
             focus={focus}
             onFocus={setFocus}
             count={count}
