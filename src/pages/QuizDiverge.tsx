@@ -74,7 +74,7 @@ function instructionFor(q: DivergeQuestion): string {
 }
 
 /** How one produced answer landed. `hinted` is kept apart from `typo`: they are different findings. */
-interface Landed { form: string; typo: boolean; hinted: boolean }
+export interface Landed { form: string; typo: boolean; hinted: boolean }
 
 const maskTo = (form: string, open: number): string =>
   form.slice(0, open) + '•'.repeat(Math.max(form.length - open, 0))
@@ -107,7 +107,12 @@ interface QuestionViewProps {
   nextLabel: string
 }
 
-function DivergeQuestionView({ question, index, grown, sound, onSettle, onNext, nextLabel }: QuestionViewProps) {
+/**
+ * One question, writing nothing itself — the caller owns what a settle means.
+ * Exported for 回想's 顺着这串练, which plays the same question mid-round and
+ * credits it differently (see chainCredit).
+ */
+export function DivergeQuestionView({ question, index, grown, sound, onSettle, onNext, nextLabel }: QuestionViewProps) {
   const [value, setValue] = useState('')
   const [landed, setLanded] = useState<Landed[]>([])
   const [hintTier, setHintTier] = useState(0)

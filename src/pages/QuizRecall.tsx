@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { ExampleSentence } from '../components/ExampleSentence'
 import { ProgressMarks } from '../components/ProgressMarks'
+import { buildConceptIndex, chainCredit, chainFor } from '../lib/diverge'
+import type { Concept, DivergeQuestion } from '../lib/diverge'
 import { optionIndexFromKey } from '../lib/keys'
 import { pushRecent, recentWindow } from '../lib/passage'
 import { usableSentences } from '../lib/recallSentence'
@@ -15,6 +17,7 @@ import { storage } from '../lib/storage'
 import { useApp } from '../state/store'
 import type { Word } from '../types'
 import { todayStr } from '../lib/srs'
+import { DivergeQuestionView } from './QuizDiverge'
 import { MissedWords, ResultScore } from './QuizResult'
 
 /**
@@ -86,10 +89,14 @@ interface RecallQuestionViewProps {
   /** Fires when 巩固 is pressed. Absent during the re-drill itself — a question already being re-drilled has nothing left to queue. */
   onReinforce?: (q: RecallQuestion) => void
   reinforced: boolean
+  /** Fires when 顺着这串练 is pressed. Absent when the answer belongs to no 发散 concept, and outside a 回想 round. */
+  onChain?: () => void
+  /** That concept was already walked this round. */
+  chained?: boolean
 }
 
 export function RecallQuestionView({
-  question, onAnswered, onNext, nextLabel, onReinforce, reinforced,
+  question, onAnswered, onNext, nextLabel, onReinforce, reinforced, onChain, chained = false,
 }: RecallQuestionViewProps) {
   const { progress, rateRecall } = useApp()
   const soundEnabled = isSoundEnabled(progress.settings)
@@ -412,7 +419,20 @@ export function RecallQuestionView({
             {!correct && onReinforce !== undefined ? (
               <Button disabled={reinforced} onClick={() => onReinforce(question)}>
                 <span className="ruled-row__label">{reinforced ? '已排进巩固' : '巩固'}</span>
-                <span className="ruled-row__sub">本轮结束后再想一遍</span>
+                {/* 8 characters, not 9: beside 顺着这串练 the column is 114px at
+                    375, and 本轮结束后再想一遍 wrapped its last character. */}
+                <span className="ruled-row__sub">本轮结束再想一遍</span>
+              </Button>
+            ) : null}
+            {/* The other remedy, and a different one: 巩固 asks this question
+                again, this walks the words beside the answer. A miss here is
+                most often a word never reached — 削弱 stops at weaken — and
+                asking again does not build the path past it. See
+                docs/superpowers/specs/2026-10-28-recall-chain-design.md. */}
+            {!correct && onChain !== undefined ? (
+              <Button disabled={chained} onClick={onChain}>
+                <span className="ruled-row__label">{chained ? '这串练过了' : '顺着这串练'}</span>
+                <span className="ruled-row__sub">{chained ? '本轮只练一次' : '写出意思相近的词'}</span>
               </Button>
             ) : null}
             <Button
@@ -515,6 +535,7 @@ export function RecallSession({
   words,
   groups,
   sentences,
+  concepts,
   focus,
   onFocus,
   count,
@@ -524,13 +545,15 @@ export function RecallSession({
   words: Word[]
   groups: SenseGroup[]
   sentences: RecallSentence[]
+  /** 发散's concepts, for 顺着这串练. Empty when they failed to load — the button just never appears. */
+  concepts: Concept[]
   focus: RecallFocus
   onFocus: (f: RecallFocus) => void
   count: number
   onCount: (n: number) => void
   onRestart: () => void
 }) {
-  const { progress, recordQuiz, recordRecall, rateRecall, consolidateWord } = useApp()
+  const { progress, recordQuiz, recordRecall, recordPractice, rateRecall, consolidateWord } = useApp()
   // Pinned once, alongside the question set: difficultyWeight's recent-miss
   // window reads it, and a session must not change meaning midway because
   // the clock rolled past midnight.
@@ -569,6 +592,10 @@ export function RecallSession({
    */
   const [encore, setEncore] = useState<RecallQuestion[]>([])
   const [encoreIndex, setEncoreIndex] = useState(0)
+  /** The 发散 question being walked in place of the card, with the headwords that card had on screen. */
+  const [chain, setChain] = useState<{ question: DivergeQuestion; onScreen: string[] } | null>(null)
+  /** Concepts walked this round — once each, so two misses in one cluster do not ask it twice. */
+  const [chained, setChained] = useState<Set<string>>(new Set())
   const recordedRef = useRef(false)
   const nextGuardRef = useRef(false)
 
@@ -576,6 +603,18 @@ export function RecallSession({
   const scoredDone = index >= total && total > 0
   const inEncore = scoredDone && encoreIndex < encore.length
   const done = scoredDone && !inEncore
+  const current: RecallQuestion | undefined = inEncore ? encore[encoreIndex] : questions[index]
+
+  const conceptIndex = useMemo(() => buildConceptIndex(words), [words])
+  // Computed per question rather than per render of the reveal: it walks
+  // every concept, and nothing the reveal changes can move the answer except
+  // progress, which is in the dependency list.
+  const currentChain = useMemo(() => {
+    if (current === undefined) return null
+    const onScreen = [...current.options, ...current.answer]
+    const question = chainFor(current.orderIds[0], concepts, conceptIndex, progress, onScreen)
+    return question === null ? null : { question, onScreen }
+  }, [current, concepts, conceptIndex, progress])
 
   const handleAnswered = useCallback((correct: boolean, ids: string[], miss: Miss | null, q: RecallQuestion) => {
     // Seen means answered, not generated: quitting a session halfway must
@@ -639,6 +678,28 @@ export function RecallSession({
   useEffect(() => {
     nextGuardRef.current = false
   }, [index, encoreIndex])
+
+  const openChain = useCallback(() => {
+    if (currentChain === null) return
+    setChained(prev => new Set(prev).add(currentChain.question.conceptId))
+    setChain(currentChain)
+  }, [currentChain])
+
+  // 发散's writes, with two differences. What the 回想 card printed earns
+  // nothing (chainCredit). And neither recordDiverge nor the 发散 recency
+  // list is touched: the first is a 发散 round's record and this is not a
+  // round; leaving the second alone keeps the question free to come back in
+  // the next 发散 round, which is the spaced re-test this detour lacks.
+  const settleChain = useCallback((produced: string[]) => {
+    if (chain === null) return
+    recordRecall(chainCredit(chain.question, produced, chain.onScreen).map(id => ({ id, correct: true })))
+  }, [chain, recordRecall])
+
+  const leaveChain = useCallback((conceded: string[]) => {
+    for (const id of conceded) recordPractice(id, false)
+    setChain(null)
+    handleNext()
+  }, [recordPractice, handleNext])
 
   // Settlement fires when the **scored** round ends, not when the re-drill
   // does: the re-drill is practice appended after the fact, and holding the
@@ -717,14 +778,14 @@ export function RecallSession({
     )
   }
 
-  const q = inEncore ? encore[encoreIndex] : questions[index]
+  const q = current ?? questions[0]
   const isLast = inEncore
     ? encoreIndex === encore.length - 1
     : index === total - 1 && encore.length === 0
 
   return (
     <>
-      {index === 0 && !inEncore ? <RecallOptions focus={focus} onFocus={onFocus} count={count} onCount={onCount} /> : null}
+      {index === 0 && !inEncore && chain === null ? <RecallOptions focus={focus} onFocus={onFocus} count={count} onCount={onCount} /> : null}
       <div className="quiz-progress">
         <ProgressMarks
           done={inEncore ? encoreIndex : index}
@@ -744,15 +805,36 @@ export function RecallSession({
       {/* On the page, not in a card, like every choice question since round
           1: the sentence is the prompt and nothing else on the screen can be
           mistaken for it. */}
-      <RecallQuestionView
-        key={inEncore ? `encore-${encoreIndex}` : index}
-        question={q}
-        onAnswered={(correct, ids, miss) => handleAnswered(correct, ids, miss, q)}
-        onNext={handleNext}
-        nextLabel={isLast ? '查看成绩' : '下一题'}
-        onReinforce={inEncore ? undefined : reinforce}
-        reinforced={reinforced.has(q.prompt)}
-      />
+      {chain !== null ? (
+        /* In place of the card, not below it: the reveal already runs past a
+           375px screen, and a typed set under it would put the input off the
+           bottom. Finishing moves the round on, as 下一题 would have. */
+        <>
+          <p className="quiz-q__label">顺着这串练 —— 刚才那个词也在里面</p>
+          <DivergeQuestionView
+            key={`chain-${chain.question.conceptId}`}
+            question={chain.question}
+            index={conceptIndex}
+            grown={0}
+            sound={isSoundEnabled(progress.settings)}
+            onSettle={landed => settleChain(landed.map(l => l.form))}
+            onNext={leaveChain}
+            nextLabel={isLast ? '查看成绩' : '下一题'}
+          />
+        </>
+      ) : (
+        <RecallQuestionView
+          key={inEncore ? `encore-${encoreIndex}` : index}
+          question={q}
+          onAnswered={(correct, ids, miss) => handleAnswered(correct, ids, miss, q)}
+          onNext={handleNext}
+          nextLabel={isLast ? '查看成绩' : '下一题'}
+          onReinforce={inEncore ? undefined : reinforce}
+          reinforced={reinforced.has(q.prompt)}
+          onChain={currentChain === null ? undefined : openChain}
+          chained={currentChain !== null && chained.has(currentChain.question.conceptId)}
+        />
+      )}
     </>
   )
 }
