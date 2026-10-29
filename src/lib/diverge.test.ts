@@ -7,6 +7,8 @@ import {
   hintOpen,
   generateDivergeSession,
   divergeKey,
+  chainFor,
+  chainCredit,
   DIVERGE_AXES,
 } from './diverge'
 import type { Concept, DivergeAxis } from './diverge'
@@ -477,5 +479,50 @@ describe('hintOpen', () => {
 
   it('clamps a tier above the ladder to the last rung', () => {
     expect(hintOpen('obstinate', 9, 'synonym')).toBe(3)
+  })
+})
+
+describe('chainFor', () => {
+  const UNYIELDING: Concept = { id: 'unyielding', zh: '不让步', anchors: ['unyielding'] }
+
+  it('opens the 近义 question of a concept the missed word belongs to', () => {
+    const q = chainFor('obdurate', [CONCEPT], INDEX, progressOf(ALL), ['obdurate'])
+    expect(q?.conceptId).toBe('stubborn')
+    expect(q?.axis).toBe('synonym')
+  })
+
+  it('never opens a concept the word only answers on another axis', () => {
+    // compliant is an opposite of 固执, not a member: the chain is the words
+    // beside the miss, not the words across from it.
+    expect(chainFor('compliant', [CONCEPT], INDEX, progressOf(ALL), [])).toBeNull()
+  })
+
+  it('takes the smallest set when the word sits in two concepts', () => {
+    // obstinate is in both: 固执 has five members, 不让步 four.
+    const q = chainFor('obstinate', [CONCEPT, UNYIELDING], INDEX, progressOf(ALL), [])
+    expect(q?.conceptId).toBe('unyielding')
+  })
+
+  it('breaks a size tie by concept id, so the same miss opens the same chain', () => {
+    const twin: Concept = { ...UNYIELDING, id: 'a-twin' }
+    expect(chainFor('obstinate', [UNYIELDING, twin], INDEX, progressOf(ALL), [])?.conceptId).toBe('a-twin')
+  })
+
+  it('refuses a set the 回想 card already printed in full', () => {
+    const onScreen = ['Obstinate', 'intractable', 'intransigent', 'implacable']
+    expect(chainFor('obstinate', [UNYIELDING], INDEX, progressOf(ALL), onScreen)).toBeNull()
+  })
+})
+
+describe('chainCredit', () => {
+  const q = buildQuestion(CONCEPT, 'synonym', INDEX, progressOf(ALL))!
+
+  it('credits what was produced and was not on the 回想 card', () => {
+    expect(chainCredit(q, ['obstinate', 'obdurate', 'intractable'], ['Obstinate', 'docile']))
+      .toEqual(['intractable', 'obdurate'])
+  })
+
+  it('credits nothing that was not produced', () => {
+    expect(chainCredit(q, [], [])).toEqual([])
   })
 })
