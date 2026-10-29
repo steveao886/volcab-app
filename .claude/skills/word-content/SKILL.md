@@ -1,6 +1,6 @@
 ---
 name: word-content
-description: Use when adding words to the volcab library, or when topping up authored study content (contrast notes, word notes, sense groups, passages) — covers the full sync checklist a new word obligates and the periodic content-refresh procedure. Trigger phrases; 加词, 添加单词, 补题, refresh content, top up notes, monthly refresh.
+description: Use when adding words to the volcab library, or when topping up authored study content (contrast notes, word notes, sense groups, passages) — covers the full sync checklist a new word obligates across every quiz mode it reaches, and the periodic content-refresh procedure. Trigger phrases; 加词, 添加单词, 补题, refresh content, top up notes, monthly refresh.
 ---
 
 # Word & content maintenance
@@ -24,6 +24,7 @@ grows the question pools. Evidence for every rule: `docs/word-add-checklist.md`.
 | `src/data/concepts.json` | derived from `synonyms` | **nothing to author** — but the word joins existing 发散 answer sets silently; diff and vet | `npm run validate-concepts` |
 | `src/data/synonymNotes.json` | a gloss term of its 近义词 group | **required**: a paragraph for every group the word creates or changes, naming each member and base word (groups span the whole library) | `npm run validate-synonym-notes` |
 | `src/data/suggestions.json` | — | nothing — self-filters at runtime | `npm run validate-suggestions` |
+| 形近 pairs (`src/lib/lookalike.ts`, no file) | computed from headword spelling + glosses | **nothing to author** — but the word can pair with a look-alike silently; `--batch` prints each pair as a `read` line | — |
 | `data/wordlist.json` | — | dead file, referenced by nothing. Do not touch | — |
 
 All these gates run in CI (`npm run validate` chains all ten;
@@ -46,6 +47,31 @@ passage's tier-1 distractors are the shared-synonym neighbours of its blanks
 there it is worse than a stray 发散 answer: offered as a *wrong* option, a
 word that also fits the blank marks the learner wrong for a right answer.
 The passage's `exclude` array is where that judgment goes (step 3).
+
+## Every quiz mode a new word reaches
+
+The ten 测试 modes, plus the pages outside 测试 a word reaches. A word is
+not done until each row is answered; `--batch` (step 4)
+prints one line per row that can owe or needs reading, so its report *is*
+this table for the batch.
+
+| Mode | How the word gets in | What the add flow does | `--batch` line |
+|---|---|---|---|
+| 综合, 极速 | the entry itself (examples, collocations, synonyms, glosses) | entry rules + `validate-words`; the locate pre-check keeps cloze askable | — |
+| 听音 | the headword, read aloud | nothing; `validate-words` refuses a heteronym without per-sense `phonetic` (checklist §4.7) | — |
+| 回想 | a sense group, or five renderings | **required** — step 5 | `回想` GAP |
+| 辨析 | contrast pairs from shared synonyms | **required** contrast notes + 要点 for every new pair — step 4 | `contrastNotes`, `wordNotes` GAP |
+| 反义 | the entry's `antonyms` | write real opposites; never invent one to clear the line | `反义` note |
+| 发散 | concepts listing the synonyms the word carries | **read** the membership diff — step 3 | `发散` note |
+| 短文 | `{{id}}` markers, plus derived distractor pools | optional coverage; **read** the pool diff — step 3 | `短文` note |
+| 组句 | chunk annotations on its sentences | optional coverage | `组句` note |
+| 形近 | computed from spelling (`lookalike.ts`) | **read** every pair — step 4 | `形近` read |
+| 近义词 page | groups sharing a gloss term | **required** paragraph per group — step 4 | `近义词` GAP |
+| 复习, 练习, 拆开缠在一起的词 | the schedule and the forget log | nothing | — |
+
+A new mode joins this table and `--batch` in the commit that ships it —
+形近 did (2026-10-29). A mode the report leaves out is a mode the add flow
+forgets.
 
 ## Adding words
 
@@ -133,6 +159,20 @@ The passage's `exclude` array is where that judgment goes (step 3).
    until both are fixed. A changed group keeps its key: rewrite its entry
    with the new member list rather than adding a second one. Author them as
    the 近义词 row of "Who writes what" says.
+
+   **Read every `read 形近` line.** Each is a look-alike pair the batch
+   created, printed with both glosses: `allude / elude — 间接提及;暗指 |
+   躲避;逃避`. The quiz offers the partner's gloss as a trap, and the pair rule
+   already refuses two glosses sharing a term — so ask only whether the two
+   glosses *say the same thing in different characters* (友善 / 友好). If they
+   do, the trap is a second right answer: fix the gloss that is too wide, or,
+   when the words really are near-synonyms, join them (one side lists the
+   other's headword), which moves the pair to 辨析 and brings its contrast
+   note and 要点 onto this same list. A pair that looks less alike than
+   expected costs nothing — leave it. The lines never block. A synonym cut
+   in step 3 can *create* a pair between two old words (only near-synonyms
+   were keeping it out), so pass the ids of any word you cut a synonym from
+   to `--batch` as well.
 5. **回想 is required, and has two legs — either clears it.**
 
    **A sense group**, when the word has ≥2 same-POS confusable partners: one
@@ -200,6 +240,7 @@ markers, while the Chinese register and an answer key have none.
 | Passages | Sonnet drafts, one setting **assigned** per group; orchestrator reads all and every distractor pool | given a list of suggested settings, six agents converged on it — 4 night markets, 3 glacier surveys in 29. Mark ~4 new words beside ~6 the learner has learned (live `progress.json`), or the passage sits behind the one-third unlearned gate. Say `en`/`zh` are **arrays** of sentences — unsaid, all six wrote paragraphs |
 | 近义词 paragraphs (`synonymNotes.json`) | Opus drafts (`model: "opus"`), ~30 groups an agent, from a rules file that quotes the last round's reworded sentences back; orchestrator reads every paragraph against each member's carrying sense | Sonnet went over the probation line on the first batch (2026-10-23, 30 groups): 10 of 30 reworded, 22 of 93 clauses, 2 of 15 from one agent and 8 of 15 from the other — usage claims stronger than the examples (`notwithstanding` 多见于法律公文 with no legal example among five), wrong nuances (`officiate` as a wedding's 司仪, who is not the officiant), a collocation that misleads out of its sentence (*discourage students from camping*), translationese (被价值感填满). The other 296 went to ten Opus agents with those sentences quoted back: 9 reworded (3.0%), 10 of 983 clauses. Four of the nine pointed at the 例句 or 定义, which the page never shows — the brief must say so; three were evidence phrases that read wrong alone (*degraded women*). The drafters also flagged notes their own examples contradict (`rapturous` 几乎专配 applause; `antipathy`'s two notes), which is worth asking for by name. Revision 2 (2026-10-23, whole-library groups with 同根 base words): 350 paragraphs to twelve Opus agents, 15 reworded (4.3%). Nine of the fifteen were two clumsy base-word sentence shapes (和形容词比用 apathetic; 它的名词 X 和 Y 同为名词) — give the brief the shape to use: 它的形容词 X…;同为形容词的 Y… The rest were overclaims (clemency granted by 裁判、老师; benevolent 常带居高临下). 75 flags on notes their examples contradict |
 | Concept membership and passage-pool diffs (step 3) | orchestrator | lines of pure judgment, each against one prompt or one sentence |
+| 形近 `read` lines (step 4) | orchestrator | two glosses side by side; a handful per batch (128 pairs over 1,549 words, 2026-10-29) |
 | Validators, tests, build, live merge | orchestrator, by script | mechanical — no model work to move |
 
 **The split is on probation, and the edit rate decides it.** CLAUDE.md's
@@ -322,9 +363,9 @@ npx tsx scripts/content-staleness.ts
 ```
 
 It reports, in priority order: contrastNotes coverage gaps, wordNotes
-coverage gaps, sense-group anchors not yet covered, words with no 回想
-question at all, then 组句, 发散 and passage lines that are printed and never
-hold the verdict. Exit code 0 with `FRESH` means nothing is owed — stop
+coverage gaps, 近义词 paragraphs, sense-group anchors not yet covered, words
+with no 回想 question at all, then 组句, 发散, 形近 and passage lines that are
+printed and never hold the verdict. Exit code 0 with `FRESH` means nothing is owed — stop
 there, do not invent work.
 
 Since 2026-09-21 the 回想 line is **backlog only**: a new word's 回想 hole is

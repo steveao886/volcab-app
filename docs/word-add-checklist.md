@@ -206,6 +206,29 @@ staleness scan read **79** words with no 回想 question at all, out of 931.
 `src/`** (verified by grep). It is 67 words behind the library and that is
 fine.
 
+### 1.8 形近 look-alike pairs — **no file, nothing to author; read the pairs**
+
+Added 2026-10-29 with the 形近 quiz mode
+(`docs/superpowers/specs/2026-10-29-lookalike-quiz-design.md`).
+
+- **Key shape**: none. `buildLookalikePairs` in `src/lib/lookalike.ts`
+  computes every pair at runtime from headword spelling (one edit, or two
+  framed by a shared opening and ending) minus six exclusions, among them
+  that the two words' glosses share no term.
+- **On a new word**: nothing to author. Over 1,549 words, 128 pairs reach
+  211 words (2026-10-29), so a new word lands in one about one time in
+  seven. A pair depends only on its two words, so every pair a batch
+  creates involves a batch word — or a word whose synonyms the batch edited,
+  since a near-synonym link is one of the exclusions.
+- **What nothing catches**: two glosses that say the same thing in
+  different characters (友善 / 友好). The quiz offers the partner's gloss as a
+  trap, so that pair makes a second right answer. `content-staleness.ts
+  --batch` prints each pair as a `read 形近` line with both glosses; the fix
+  is the gloss, or joining the two as synonyms, which moves them to 辨析.
+- **What the app does when it goes wrong**: marks a right answer wrong, and
+  demotes the word through `recordQuiz`. Loud to the learner, invisible to
+  every gate.
+
 ---
 
 ## 2. Computed at runtime vs authored ahead of time
@@ -216,9 +239,10 @@ fine.
 |---|---|
 | Confusable pair graph (contrast mode, passage distractors) | `src/lib/contrast.ts:53` |
 | Shared-synonym exclusion set | `src/lib/quiz.ts:144` |
-| All six mixed quiz types (cloze from `examples`, hints from `synonyms`) | `src/lib/quiz.ts:264` |
+| All mixed quiz types — seven since `antonymPick` (cloze from `examples`, hints from `synonyms`) | `src/lib/quiz.ts:264` |
 | Audio quiz (TTS reads `headword`) | `src/lib/quiz.ts:465` |
-| 猜词 prompt + pos / collocation / etymology / example / initial clues | `src/lib/guess.ts:118-151` |
+| ~~猜词 prompt + clues~~ — mode retired 2026-08-17, `guess.ts` deleted | — |
+| 形近 look-alike pairs (2026-10-29; see §1.8) | `buildLookalikePairs`, `src/lib/lookalike.ts` |
 | Review-queue position for a new word (sorted by `usageScore` desc) | `src/lib/queue.ts:14` |
 | Passage distractor pools | `src/lib/passage.ts:224` |
 | Suggestion-pool filtering | `src/lib/suggestion.ts:72` |
