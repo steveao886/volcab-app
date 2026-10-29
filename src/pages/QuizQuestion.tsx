@@ -9,6 +9,7 @@ import { TextInput } from '../components/TextInput'
 import { optionIndexFromKey } from '../lib/keys'
 import type { QuizQuestion, QuizType } from '../lib/quiz'
 import { contrastNoteKey } from '../lib/contrastNotes'
+import { diffMarks } from '../lib/lookalike'
 import type { ContrastNotesFile } from '../lib/contrastNotes'
 import { isSoundEnabled, playQuizResult } from '../lib/sound'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
@@ -28,6 +29,9 @@ const TYPE_LABEL: Record<QuizType, string> = {
   contrast: '两个近义词，哪个更贴合这句话？',
   audio2meaning: '听发音，选出正确的释义',
   audio2spelling: '听发音，拼写这个单词',
+  // Says to read the spelling, not that a twin is among the options: the
+  // skill is reading carefully, and naming the trap would hand it over.
+  lookalike: '看清拼写，选出它的意思',
 }
 
 /** Question types whose prompt is audio rather than text. */
@@ -43,8 +47,12 @@ const HINT_KIND_LABEL: Record<'synonym' | 'antonym', string> = {
 
 interface QuizQuestionViewProps {
   question: QuizQuestion
-  /** Fires once, the first time the user locks in an answer (for grading); not responsible for advancing */
-  onAnswered: (correct: boolean) => void
+  /**
+   * Fires once, the first time the user locks in an answer (for grading); not responsible for advancing.
+   * `chosen` is the option picked (the typed text for spelling): a 形近 miss marks a second word
+   * only when the pick was that word's meaning.
+   */
+  onAnswered: (correct: boolean, chosen: string) => void
   /** Fires when "Next question / View results" is clicked; the parent component advances the question index */
   onNext: () => void
   nextLabel: string
@@ -197,6 +205,66 @@ function AntonymCard(
   )
 }
 
+/**
+ * Reveal card for a 形近 question: the word asked, then each look-alike whose
+ * meaning was an option, with the letters where they part ways marked.
+ *
+ * ContrastCard's stacked shape for ContrastCard's reason (375px), but its own
+ * side: what tells look-alikes apart is the spelling and the sound, so each
+ * side leads with the marked headword and its phonetic, and drops the
+ * collocation chips, which say how a word is used — 辨析's question, not this
+ * one. No authored note row, for AntonymCard's reason: two glosses that share
+ * no term (lookalike.ts guarantees it) are their own explanation.
+ *
+ * The asked word is marked against its closest partner, each partner against
+ * the asked word.
+ */
+function LookalikeCard({ promptId, partnerIds }: { promptId: string; partnerIds: string[] }) {
+  const { words } = useApp()
+  const asked = words.find(w => w.id === promptId)
+  const partners = partnerIds
+    .map(id => words.find(w => w.id === id))
+    .filter((w): w is Word => w !== undefined)
+  if (asked === undefined || partners.length === 0) return null
+
+  return (
+    <div className="quiz-contrast">
+      <p className="quiz-q__label">长得像，意思不同</p>
+      <LookalikeSide word={asked} against={partners[0].headword} isAnswer />
+      {partners.map(p => (
+        <LookalikeSide key={p.id} word={p} against={asked.headword} isAnswer={false} />
+      ))}
+    </div>
+  )
+}
+
+function LookalikeSide({ word, against, isAnswer }: { word: Word; against: string; isAnswer: boolean }) {
+  const m = word.meanings[0]
+  // Compared lowercased, rendered as authored: same length either way.
+  const [marks] = diffMarks(word.headword.toLowerCase(), against.toLowerCase())
+  return (
+    <div className={isAnswer ? 'quiz-contrast__side quiz-contrast__side--answer' : 'quiz-contrast__side'}>
+      <p className="quiz-contrast__head">
+        <span className="word" lang="en">
+          {word.headword.split('').map((ch, i) => (
+            marks[i] ? <span key={i} className="lookalike-diff">{ch}</span> : ch
+          ))}
+        </span>
+        {word.phonetic !== '' && <span className="ipa" lang="en">{word.phonetic}</span>}
+        {isAnswer && <span className="quiz-option__tag">本题答案</span>}
+      </p>
+      {m !== undefined && (
+        <p>
+          <span className="pos">{m.pos}</span> {m.zh}
+        </p>
+      )}
+      {word.examples[0] !== undefined && (
+        <p className="quiz-contrast__example" lang="en">{word.examples[0]}</p>
+      )}
+    </div>
+  )
+}
+
 function ContrastSide({ word, isAnswer }: { word: Word; isAnswer: boolean }) {
   const m = word.meanings[0]
   return (
@@ -288,15 +356,35 @@ function AnswerFeedback({ correct, onNext, nextLabel, children, detail }: Answer
   )
 }
 
+/** 形近: "elude 的意思" under a trap option once answered. */
+function OwnerLine({ owner }: { owner: string | undefined }) {
+  if (owner === undefined) return null
+  return (
+    <span className="quiz-option__owner">
+      <span lang="en">{owner}</span> 的意思
+    </span>
+  )
+}
+
 function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestionViewProps) {
-  const { progress } = useApp()
+  const { progress, words } = useApp()
   const soundEnabled = isSoundEnabled(progress.settings)
   const [chosen, setChosen] = useState<string | null>(null)
   // Guards against consecutive clicks within the same render frame (e.g. an accidental double-click) grading twice before state has landed
   const answeredRef = useRef(false)
   const locked = chosen !== null
-  // Question types whose options are Chinese meanings: word2meaning / audio2meaning. Everything else uses English headwords.
-  const optionLang = question.type === 'word2meaning' || question.type === 'audio2meaning' ? undefined : 'en'
+  // Question types whose options are Chinese meanings: word2meaning / audio2meaning / lookalike. Everything else uses English headwords.
+  const optionLang =
+    question.type === 'word2meaning' || question.type === 'audio2meaning' || question.type === 'lookalike'
+      ? undefined
+      : 'en'
+  // 形近: which look-alike word each trap option belongs to, named on the
+  // option once answered. A wrong pick then reads as "that was elude's",
+  // which is the whole lesson, right where the eye already is.
+  const ownerOf = (opt: string): string | undefined => {
+    const id = question.lookalikes?.find(t => t.label === opt)?.id
+    return id === undefined ? undefined : words.find(w => w.id === id)?.headword
+  }
   // contrast's prompt is likewise a cloze example sentence, rendered identically to clozeExample.
   const isCloze =
     question.type === 'clozeExample' || question.type === 'clozeCollocation' || question.type === 'contrast'
@@ -306,11 +394,12 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
   // "the one headword on the whole screen".
   const promptLang =
     question.type === 'word2meaning' || isCloze
-    || question.type === 'synonymHint' || question.type === 'antonymPick'
+    || question.type === 'synonymHint' || question.type === 'antonymPick' || question.type === 'lookalike'
       ? 'en'
       : undefined
-  // The two types whose prompt *is* a lone headword, and so get the serif.
-  const isHeadwordPrompt = question.type === 'word2meaning' || question.type === 'antonymPick'
+  // The types whose prompt *is* a lone headword, and so get the serif.
+  const isHeadwordPrompt =
+    question.type === 'word2meaning' || question.type === 'antonymPick' || question.type === 'lookalike'
 
   const handleChoose = useCallback(
     (opt: string) => {
@@ -320,7 +409,7 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
       // Played synchronously within the click's call stack — iOS requires the AudioContext unlock to happen inside a user gesture.
       playQuizResult(correct, soundEnabled)
       setChosen(opt)
-      onAnswered(correct)
+      onAnswered(correct, opt)
     },
     [question.answer, soundEnabled, onAnswered],
   )
@@ -404,8 +493,18 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
               {locked && opt === question.answer ? (
                 <span className="quiz-option__tag">正确答案</span>
               ) : null}
+              {/* A picked trap stacks its owner under 你的选择 in one tag:
+                  two tags side by side squeezed a 375px definition onto
+                  three lines. */}
               {locked && opt === chosen && opt !== question.answer ? (
-                <span className="quiz-option__tag">你的选择</span>
+                <span className="quiz-option__tag">
+                  你的选择
+                  <OwnerLine owner={ownerOf(opt)} />
+                </span>
+              ) : locked && ownerOf(opt) !== undefined ? (
+                <span className="quiz-option__tag">
+                  <OwnerLine owner={ownerOf(opt)} />
+                </span>
               ) : null}
             </Button>
           )
@@ -426,6 +525,8 @@ function ChoiceQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuestio
                 answerId={question.antonymId}
                 answerText={question.answer}
               />
+            ) : question.type === 'lookalike' ? (
+              <LookalikeCard promptId={question.wordId} partnerIds={(question.lookalikes ?? []).map(t => t.id)} />
             ) : null
           }
         />
@@ -466,7 +567,7 @@ function SpellingQuestion({ question, onAnswered, onNext, nextLabel }: QuizQuest
     playQuizResult(isCorrect, soundEnabled)
     setCorrect(isCorrect)
     setSubmitted(true)
-    onAnswered(isCorrect)
+    onAnswered(isCorrect, v)
   }
 
   return (
