@@ -65,7 +65,8 @@
         "slippery-slope",
         "world-renowned",
         "acclaimed",
-        "esteemed"
+        "esteemed",
+        "world-famous"
       ]
     },
     {
@@ -103,7 +104,8 @@
         "steadfast",
         "tenacious",
         "exigency",
-        "repulsion"
+        "repulsion",
+        "unflinching"
       ]
     },
     {
@@ -288,7 +290,8 @@
         "spasmodic",
         "uncompromising",
         "flippant",
-        "volatile"
+        "volatile",
+        "pronounced"
       ]
     },
     {
@@ -326,7 +329,8 @@
         "placate",
         "reprimand",
         "slacken",
-        "contested"
+        "contested",
+        "impudent"
       ]
     },
     {
@@ -623,7 +627,8 @@
         "entreat",
         "extemporaneous",
         "prodigal",
-        "sumptuous"
+        "sumptuous",
+        "buoyant"
       ]
     },
     {
@@ -656,7 +661,9 @@
         "disaffect",
         "extenuation",
         "incite",
-        "vex"
+        "vex",
+        "unsettled",
+        "baseless"
       ]
     },
     {
@@ -813,7 +820,9 @@
         "sloppy",
         "big-hearted",
         "merciful",
-        "slipshod"
+        "slipshod",
+        "vanquish",
+        "punishing"
       ]
     },
     {
@@ -1378,7 +1387,8 @@
         "intercede",
         "manifold",
         "multifarious",
-        "slanderous"
+        "slanderous",
+        "questionable"
       ]
     },
     {
@@ -1420,7 +1430,8 @@
         "reproach",
         "uncompromising",
         "unfavorable",
-        "applaud"
+        "applaud",
+        "unflinching"
       ]
     },
     {
@@ -1822,7 +1833,8 @@
         "litigious",
         "quarrelsome",
         "inimical",
-        "remorseless"
+        "remorseless",
+        "dismayed"
       ]
     },
     {
@@ -2110,7 +2122,8 @@
         "sedulous",
         "uncompromising",
         "understated",
-        "rattled"
+        "rattled",
+        "unsettled"
       ]
     },
     {
@@ -2255,7 +2268,8 @@
         "uncontainable",
         "underhand",
         "perturbation",
-        "cruel"
+        "cruel",
+        "wasteful"
       ]
     },
     {
@@ -2495,7 +2509,8 @@
         "uncompromising",
         "unnatural",
         "wearisome",
-        "rattle"
+        "rattle",
+        "punishing"
       ]
     },
     {
@@ -2555,7 +2570,9 @@
         "sedulous",
         "uncompromising",
         "unpersuasive",
-        "nominally"
+        "nominally",
+        "questionable",
+        "unflinching"
       ]
     },
     {
@@ -2853,7 +2870,8 @@
         "recalcitrant",
         "refractory",
         "sedulous",
-        "uncompromising"
+        "uncompromising",
+        "punishing"
       ]
     },
     {
@@ -3138,7 +3156,9 @@
         "sedulous",
         "sickening",
         "uncompromising",
-        "lasting"
+        "lasting",
+        "hostility",
+        "malice"
       ]
     },
     {
@@ -3240,7 +3260,8 @@
         "remorseless",
         "resentful",
         "sedulous",
-        "uncompromising"
+        "uncompromising",
+        "impudent"
       ]
     },
     {
@@ -3388,7 +3409,8 @@
         "resentful",
         "outrage",
         "appalling",
-        "acclaimed"
+        "acclaimed",
+        "changeable"
       ]
     },
     {
@@ -3621,7 +3643,8 @@
         "prominent",
         "degradation",
         "sedulous",
-        "acrid"
+        "acrid",
+        "unsettled"
       ]
     },
     {
@@ -3718,7 +3741,8 @@
       "exclude": [
         "aficionado",
         "conscientious",
-        "painstaking"
+        "painstaking",
+        "collusion"
       ]
     },
     {
@@ -3783,7 +3807,8 @@
       "exclude": [
         "open-minded",
         "profligacy",
-        "rash"
+        "rash",
+        "carefree"
       ]
     },
     {
@@ -3881,7 +3906,8 @@
         "unsavory",
         "onerous",
         "meticulous",
-        "preside"
+        "preside",
+        "punishing"
       ]
     },
     {
@@ -3951,7 +3977,9 @@
       ],
       "exclude": [
         "contrived",
-        "unpersuasive"
+        "unpersuasive",
+        "redolent",
+        "symptomatic"
       ]
     },
     {
@@ -4342,7 +4370,8 @@
         "onerous",
         "strenuous",
         "trivial",
-        "unreactive"
+        "unreactive",
+        "punishing"
       ]
     },
     {
@@ -4588,7 +4617,8 @@
         "第二天早上他们把那一排标桩走了一遍,量出的结果比任何地图所显示的都糟。"
       ],
       "exclude": [
-        "emerging"
+        "emerging",
+        "unsettled"
       ]
     },
     {
@@ -4655,7 +4685,8 @@
         "impairment",
         "concurrence",
         "keen",
-        "mastery"
+        "mastery",
+        "wasteful"
       ]
     },
     {
@@ -4690,7 +4721,8 @@
         "uncontainable",
         "remorseless",
         "penchant",
-        "assuage"
+        "assuage",
+        "dismaying"
       ]
     },
     {
@@ -4832,7 +4864,8 @@
         "upbeat",
         "decline",
         "ebb",
-        "delighted"
+        "delighted",
+        "stifle"
       ]
     },
     {
@@ -4915,7 +4948,8 @@
         "sympathetic",
         "reproach",
         "unsubstantiated",
-        "rancor"
+        "rancor",
+        "unfounded"
       ]
     },
     {
@@ -5020,7 +5054,8 @@
         "erode",
         "unguarded",
         "markedly",
-        "substantially"
+        "substantially",
+        "attractiveness"
       ]
     },
     {
@@ -5157,7 +5192,8 @@
       ],
       "exclude": [
         "appalling",
-        "sheer"
+        "sheer",
+        "vanquish"
       ]
     },
     {
@@ -5195,7 +5231,9 @@
         "impair",
         "undermine",
         "demanding",
-        "unbiased"
+        "unbiased",
+        "punishing",
+        "pioneering"
       ]
     },
     {
@@ -5268,7 +5306,8 @@
         "loathsome",
         "repugnant",
         "sickening",
-        "infinitesimal"
+        "infinitesimal",
+        "nominal"
       ]
     },
     {
@@ -5304,7 +5343,8 @@
         "unresponsive",
         "vexation",
         "intriguing",
-        "displeasure"
+        "displeasure",
+        "inflate"
       ]
     }
   ]

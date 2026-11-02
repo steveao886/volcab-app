@@ -710,13 +710,13 @@
       "why": "allude 是不点名地提到某个双方心知的事,中性;hint 是给出线索让对方猜;insinuate 带恶意,暗示的是不好的事;imply 指话语本身含有言外之意,主语常是话而非人。"
     },
     {
-      "zh": "两人之间的敌意深到连开会都要分开坐。",
-      "target": "敌意",
+      "zh": "两人之间的积怨深到连开会都要分开坐。",
+      "target": "积怨",
       "order": [
-        "animosity"
+        "animosity",
+        "hostility"
       ],
       "extra": [
-        "hostility",
         "enmity"
       ],
       "en": "The animosity between them ran deep enough that meetings had to seat them apart.",
@@ -767,12 +767,11 @@
       "zh": "那份数据来源靠不住,他没敢写进报告。",
       "target": "靠不住",
       "order": [
-        "dubious"
+        "dubious",
+        "questionable"
       ],
       "extra": [
-        "questionable",
-        "suspect",
-        "doubtful"
+        "suspect"
       ],
       "en": "The data came from a dubious source, so he kept it out of the report.",
       "why": "dubious 既可说事物可疑,也可说人心存疑虑,是这组里最常用的;questionable 侧重经不起推敲,常带道德意味;suspect 更重,近乎认定有问题;doubtful 多指人不确信,不用来形容来源本身。"
@@ -1485,11 +1484,11 @@
       "zh": "那场小规模罢工是后来全国停摆的先兆。",
       "target": "先兆",
       "order": [
-        "precursor"
+        "precursor",
+        "harbinger",
+        "forerunner"
       ],
       "extra": [
-        "harbinger",
-        "forerunner",
         "prelude"
       ],
       "en": "That small walkout was the precursor to a national shutdown.",
@@ -1531,7 +1530,6 @@
       ],
       "extra": [
         "thin end of the wedge",
-        "downward spiral",
         "point of no return"
       ],
       "en": "Grant this one exception and you are on a slippery slope.",
@@ -1691,10 +1689,8 @@
       "target": "艰苦",
       "order": [
         "arduous",
+        "punishing",
         "laborious"
-      ],
-      "extra": [
-        "punishing"
       ],
       "en": "That stretch is steep and long, the most arduous part of the route.",
       "why": "arduous 指需要持续投入大量体力或心力,正式;laborious 侧重繁琐费工、进展缓慢,累在耗时而非强度;punishing 突出对身体的摧残。"
@@ -1928,10 +1924,10 @@
       "target": "三两下",
       "order": [
         "deft",
-        "dexterous"
+        "dexterous",
+        "nimble"
       ],
       "extra": [
-        "nimble",
         "practiced"
       ],
       "en": "A few deft movements and he had the tangle undone.",
@@ -1986,9 +1982,6 @@
         "egregious",
         "blatant",
         "flagrant"
-      ],
-      "extra": [
-        "glaring"
       ],
       "en": "It was an egregious breach, and the regulator pulled the licence outright.",
       "why": "egregious 指恶劣到出格、令人吃惊的程度,评价最重;flagrant 强调明目张胆、毫不掩饰;blatant 侧重公然到不加遮掩;glaring 多形容显眼的错误或遗漏,不含道德谴责。"
@@ -2247,10 +2240,10 @@
       "zh": "新人刚进来时性格是可塑的,半年后就定型了。",
       "target": "可塑的",
       "order": [
-        "malleable"
+        "malleable",
+        "impressionable"
       ],
       "extra": [
-        "impressionable",
         "pliable",
         "formative"
       ],
@@ -2401,10 +2394,10 @@
       "zh": "那家小馆子是这座城市小吃的典型代表。",
       "target": "典型代表",
       "order": [
-        "quintessential"
+        "quintessential",
+        "archetypal"
       ],
       "extra": [
-        "archetypal",
         "classic",
         "the definitive"
       ],
@@ -2586,7 +2579,6 @@
         "anesthesia"
       ],
       "extra": [
-        "sedation",
         "numbing",
         "being put under"
       ],
@@ -2763,11 +2755,11 @@
       "zh": "他们租下的是一栋年久失修的老楼,窗框都朽了。",
       "target": "年久失修",
       "order": [
-        "dilapidated"
+        "dilapidated",
+        "decrepit",
+        "ramshackle"
       ],
       "extra": [
-        "ramshackle",
-        "decrepit",
         "run-down"
       ],
       "en": "They took a dilapidated building with window frames already rotting.",
@@ -2823,7 +2815,6 @@
       ],
       "extra": [
         "shed light on",
-        "expound",
         "make plain"
       ],
       "en": "One diagram elucidated the whole mechanism.",
@@ -4415,12 +4406,10 @@
       "en": "The barista's deft hands poured a perfect rosetta without her even looking down.",
       "order": [
         "deft",
+        "nimble",
         "adroit"
       ],
-      "extra": [
-        "nimble"
-      ],
-      "why": "deft 形容动作本身干净利落、快而准，多用于手上的活；adroit 更常形容处理局面的灵巧——把一场难开的会办得漂亮，重点在应对而不在手速。"
+      "why": "deft 形容动作本身干净利落、快而准，多用于手上的活；adroit 更常形容处理局面的灵巧——把一场难开的会办得漂亮，重点在应对而不在手速。nimble 是手指轻快灵活,放在这里说得通,但没有 deft 那份准。"
     },
     {
       "zh": "那个酒保待人热络，只见过一次就记住了你点什么。",

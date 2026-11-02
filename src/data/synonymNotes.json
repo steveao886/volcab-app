@@ -54,9 +54,10 @@
         "disdain",
         "dismissive",
         "dismissively",
+        "scorn",
         "scornful"
       ],
-      "text": "形容词三个:contemptuous 是摆在明面上的鄙视,带着情绪(contemptuous of the pay offer);scornful 和它很近,常落在冷笑、一瞥上,嗤之以鼻(a scornful laugh);dismissive 是不当回事,一句话一个手势就打发掉,未必动气(a dismissive shrug)。名词两个:contempt 是 contemptuous 对应的名词,认定对方一文不值,情绪重(cold contempt);disdain 是自觉高人一等的不屑,冷而傲(with open disdain)。dismissively 是 dismissive 的副词,修饰打发人的动作(waved dismissively)。"
+      "text": "名词三个:contempt 是认定对方一文不值,情绪重(cold contempt);disdain 是自觉高人一等的不屑,冷而傲(with open disdain);scorn 是公开的嗤笑和讥讽,常说倒给对方(pour scorn on the plan)。形容词三个:contemptuous 是 contempt 的形容词,鄙视摆在明面上,带着情绪(contemptuous of the pay offer);scornful 和它很近,常落在冷笑、一瞥上,嗤之以鼻(a scornful laugh);dismissive 是不当回事,一句话一个手势就打发掉,未必动气(a dismissive shrug)。dismissively 是 dismissive 的副词,修饰打发人的动作(waved dismissively)。"
     },
     "敷衍了事": {
       "members": [
@@ -119,9 +120,10 @@
     "冷落": {
       "members": [
         "rebuff",
+        "snub",
         "slight"
       ],
-      "text": "两个都是及物动词。rebuff 是别人递来了提议、请求或示好,你生硬地回绝(rebuff an offer);slight 不一定要对方先开口,无视、漏掉、言语上轻慢,都会让人觉得自己没被当回事,宾语是人(felt slighted)。"
+      "text": "都是及物动词。rebuff 是别人递来提议、请求或示好,你生硬地回绝(rebuff an offer);snub 是故意不理、当面怠慢,招呼不回、邀请不接,让人难堪(snub the reporters);slight 不一定要对方先开口,无视、漏掉、言语上轻慢,都会让人觉得自己没被当回事,宾语是人(felt slighted)。"
     },
     "奸诈": {
       "members": [
@@ -150,9 +152,10 @@
       "members": [
         "discourage",
         "quell",
+        "stifle",
         "subdue"
       ],
-      "text": "都是及物动词。discourage 是劝阻,靠加难度、摆态度让人觉得不值得做,主语常是措施(discourage driving);quell 是平息,把骚乱或恐慌、恶心这类强烈感受压下去(quell the panic);subdue 是压住、降下来,对象可以是人和动物,也可以是情绪、光线(subdue her excitement),不是劝人打消念头。"
+      "text": "都是及物动词。discourage 是劝阻,靠加难度、摆态度让人觉得不值得做,主语可以是人,也可以是收费这类措施(discourage driving);quell 是平息,把骚乱或恐慌、恶心这类强烈的东西压下去,压完就没了(quell the panic);stifle 是扼杀,捂住不让想法、讨论长起来或说出口(stifle debate);subdue 是制服、压低,对象可以是人和动物,也可以是情绪、光线(subdue her excitement)。"
     },
     "合群": {
       "members": [
@@ -383,9 +386,10 @@
     "坚定不移": {
       "members": [
         "steadfast",
+        "unflinching",
         "unwavering"
       ],
-      "text": "都是形容词。steadfast 带着忠诚、尽本分的意味,多说人守着一个人或一个决定不走,风浪里也不变(remain steadfast);unwavering 只说不动摇这个状态,本身不带道义色彩,除了支持、信念,还能说目光、语气始终不变(an unwavering stare)。"
+      "text": "都是形容词。steadfast 带着忠诚、尽本分的意味,多说人守着一个人或一个决定不走,风浪里也不变(remain steadfast);unwavering 只说不动摇这个状态,不带道义色彩,除了支持、信念,还能说目光、语气始终不变(an unwavering stare);unflinching 重在不躲,面对可怕、难堪的事不退缩,也常夸作品直面痛处、不加粉饰(an unflinching account)。"
     },
     "警惕": {
       "members": [
@@ -441,9 +445,10 @@
       "members": [
         "clumsy",
         "ineptitude",
-        "artless"
+        "artless",
+        "uncoordinated"
       ],
-      "text": "clumsy、artless 和 inept 都是形容词。clumsy 在这里说手脚不灵,磕磕绊绊,碰翻、摔坏东西(a clumsy puppy);inept 是该会的事做不好,无能,带着批评(an inept attempt);artless 在这里说手法生疏、不精巧,近乎粗糙,不过它更常指天真率直、不做作。ineptitude 是 inept 的名词,指这种无能本身(sheer ineptitude)。"
+      "text": "形容词四个:clumsy 在这里说手脚不灵,磕磕绊绊,碰翻、摔坏东西(a clumsy puppy);uncoordinated 在这里说手脚配合不上,动作发僵(uncoordinated steps),它更常用的意思是各方缺乏协调;inept 是该会的事做不好,带着批评(an inept attempt);artless 在这里说手法生疏,近乎粗糙(an artless repainting),它更常指天真率直、不做作。ineptitude 是 inept 的名词,指这种无能(sheer ineptitude)。"
     },
     "过时": {
       "members": [
@@ -704,9 +709,10 @@
       "members": [
         "erratic",
         "precarious",
-        "volatile"
+        "volatile",
+        "unsettled"
       ],
-      "text": "都是形容词,「不稳定」分两种。erratic 和 volatile 讲波动:erratic 说忽好忽坏、没有规律,开车、作息、收入都能说(erratic driving);volatile 说会骤然大起大落,难预料也难控制,多配价格、市场、局势(volatile oil prices)。precarious 讲危险:说不牢靠、随时可能倒,可以是摇摇欲坠的梯子,也可以是钱、签证这类处境(a precarious position)。"
+      "text": "都是形容词,「不稳定」分两种。erratic、volatile、unsettled 讲变:erratic 说忽好忽坏、没有规律(erratic driving);volatile 说会骤然大起大落,难预料,多配价格、市场、局势(volatile oil prices);unsettled 这里说天气、局面变来变去、定不下来(unsettled weather),它更常用的意思是心神不宁。precarious 讲危险:不牢靠、随时可能倒,梯子、财务、签证都能说(a precarious position)。"
     },
     "违反": {
       "members": [
@@ -741,18 +747,20 @@
       "members": [
         "extravagant",
         "prodigal",
+        "wasteful",
         "wastefulness",
         "dissipate",
         "lavish"
       ],
-      "text": "extravagant、prodigal、wasteful 都是形容词,批评乱花。extravagant 是花得超出必要和财力(an extravagant party);prodigal 是大手大脚、不计后果,带败家意味,语气更重(prodigal spending);wasteful 不在花得多,在花了不见成效,不限于钱;wastefulness 是 wasteful 的名词。动词两个:dissipate 这里是把钱财、精力白白耗光(dissipate an inheritance),更常指烟雾消散;lavish 是把钱、夸奖、关注大把给人(lavish praise on),未必贬义。"
+      "text": "形容词三个,都批评乱花。extravagant 是花得超出必要和财力(an extravagant party);prodigal 是大手大脚、不计后果,带败家意味,语气更重(prodigal spending);wasteful 不在花得多,在白白丢掉,不限于钱,时间、材料都算(wasteful habits)。wastefulness 是 wasteful 的名词(the wastefulness of it all)。动词两个:dissipate 这里是把钱财、精力白白耗光(dissipate an inheritance),更常指烟雾消散;lavish 是把钱、夸奖、关注大把给人(lavish praise on),未必贬义,它更常作形容词,说奢华丰盛。"
     },
     "易受影响": {
       "members": [
+        "impressionable",
         "malleable",
         "susceptible"
       ],
-      "text": "都是形容词。malleable 说人可塑,整个人、整套习惯容易被环境或别人改造,常说新人、小孩,未必是坏事(a malleable mind);susceptible 是挡不住某样具体的东西,多接 to 点明是什么,病、奉承、广告都行,受的多是坏影响(susceptible to flattery)。"
+      "text": "都是形容词。impressionable 说人年纪轻、阅历浅,看到听到什么都容易学去、被带着走(impressionable children);malleable 说人可塑,整个人、整套习惯容易被环境或别人改造,常说新人、小孩,未必是坏事(a malleable mind);susceptible 是挡不住某样具体的东西,多接 to 点明是什么,病、奉承、广告都行,受的多是坏影响(susceptible to flattery)。"
     },
     "断然拒绝": {
       "members": [
@@ -847,9 +855,10 @@
     "杂乱无章": {
       "members": [
         "disorganized",
-        "haphazard"
+        "haphazard",
+        "uncoordinated"
       ],
-      "text": "都是形容词。disorganized 说没条理、没系统,活动、讲演、桌面都能形容,说人是做事没章法(brilliant but disorganized);haphazard 多修饰做法、安排,说全凭随手、碰运气,结果常常有一处没一处(a haphazard approach)。"
+      "text": "都是形容词。disorganized 说没条理、没系统,活动、讲演、桌面都能形容,说人是做事没章法(brilliant but disorganized);haphazard 多修饰做法、安排,说全凭随手、碰运气,结果常常有一处没一处(a haphazard approach);uncoordinated 说几方各干各的、事先没商量好,乱在配合上(an uncoordinated response),它也常指人动作笨拙。"
     },
     "朴实": {
       "members": [
@@ -915,9 +924,10 @@
     "言过其实": {
       "members": [
         "overstate",
+        "overstated",
         "extravagant"
       ],
-      "text": "overstated 和 extravagant 都是形容词:overstated 说说法、风险、数字被夸大,可轻可重(the risk is overstated);extravagant 是离谱到没法信,多说说法、许诺(extravagant claims)。overstate 是动词,常说 cannot be overstated,即怎么强调都不过分。"
+      "text": "overstate 是动词,把事情说得比实际更大、更好或更糟(overstate the risk),常说 cannot be overstated,即怎么强调都不过分。它的形容词 overstated 说说法、风险、担忧被夸大,可轻可重(fears were overstated);同为形容词的 extravagant 这里说说法、许诺离谱到没法信(extravagant claims),它更常用的意思是奢侈、挥霍。"
     },
     "好争辩": {
       "members": [
@@ -1105,13 +1115,14 @@
     },
     "放肆": {
       "members": [
-        "presumptuous",
-        "insolent",
-        "insolence",
+        "effrontery",
         "impertinence",
-        "effrontery"
+        "impudent",
+        "insolence",
+        "insolent",
+        "presumptuous"
       ],
-      "text": "presumptuous、insolent 是形容词,其余是名词。presumptuous 是越了分寸,把没人答应的事当理所当然,未必有恶意(presumptuous to assume);insolent 是轻蔑、不把人放在眼里,多见于表情、语气(an insolent shrug),名词 insolence 指这种傲慢顶撞(an act of insolence);impertinence 轻些,是小辈对长辈、上司没大没小(forgive his impertinence);effrontery 是厚着脸皮做出格的事,口气是「真好意思」(have the effrontery to)。"
+      "text": "形容词三个:presumptuous 是越了分寸,把没人答应的事当理所当然,未必有恶意(presumptuous to assume);insolent 是轻蔑、不把人放在眼里,多见于表情、语气(an insolent shrug);impudent 是放肆又不害臊,多是晚辈、下级冲撞长辈、上级(an impudent boy)。名词三个:insolence 是 insolent 的名词,指这种傲慢顶撞(an act of insolence);impertinence 轻些,是小辈对长辈、上司没大没小、多嘴(forgive his impertinence);effrontery 是厚着脸皮做出格的事,口气是「真好意思」(have the effrontery to)。"
     },
     "至高无上": {
       "members": [
@@ -1154,9 +1165,10 @@
         "rattled",
         "unease",
         "uneasy",
+        "unsettled",
         "troubled"
       ],
-      "text": "形容词五个:anxious 用得最广,对结果没定的事放心不下;apprehensive 朝向快要发生的某件事,带着点怕(apprehensive about the review);uneasy 是隐约觉得哪里不对,心里不踏实(an uneasy feeling);troubled 在这里说心被一件事压着,常写在脸上(a troubled frown);rattled 偏口语,是被突发的事打乱阵脚,心慌手乱(look rattled)。名词五个:apprehension 是 apprehensive 的名词,对将来之事的忐忑;unease 是 uneasy 的名词,隐隐觉得不对劲(a flicker of unease);disquiet 和 unease 很近,更书面,可指一群人共有的忧虑(voice disquiet);perturbation 最书面,是被意外的事搅得心神不定,多从神色上看出来(without visible perturbation);discomfort 是眼下的尴尬局促,可以挂在一个人脸上,也可以弥漫一屋子,不朝向将来。"
+      "text": "形容词六个:anxious 最宽,对结果没定的事放心不下(anxious parents);apprehensive 朝向快要发生的某件事,带着点怕(apprehensive about the review);uneasy 是隐约觉得哪里不对(an uneasy feeling);unsettled 是心定不下来,多因一个消息或变故(feel unsettled);troubled 在这里说心被一件事压着,常写在脸上(a troubled frown);rattled 偏口语,是被突发的事打乱阵脚(look rattled)。名词五个:apprehension 是 apprehensive 的名词(wait in apprehension);unease 是 uneasy 的名词(a flicker of unease);disquiet 和 unease 很近,更书面,可指一群人共有的忧虑(voice disquiet);perturbation 最书面,是被意外搅得心神不定,多从神色上看出来(without visible perturbation);discomfort 是眼下的尴尬局促,不朝向将来(the discomfort in the room)。"
     },
     "悦耳": {
       "members": [
@@ -1187,11 +1199,12 @@
     },
     "渴望": {
       "members": [
+        "covet",
         "keen",
         "yearn",
         "anxious"
       ],
-      "text": "keen 和 anxious 都是形容词:keen 是热心、跃跃欲试,常接 to do 或 on(keen to prove herself);anxious 在这里是急着想做成一件眼前的事,常接 to do,带一点紧张(anxious to announce)。yearn 是动词,心里长久地惦着一样得不到的东西,常是离开了的或还没过上的日子,带着怅惘,多接 for(yearn for the quiet)。"
+      "text": "keen 和 anxious 是形容词:keen 是热心、跃跃欲试,常接 to do 或 on(keen to prove herself);anxious 在这里是急着想做成眼前一件事,带点紧张(anxious to announce),它更常用的意思是焦虑。covet 和 yearn 是动词:yearn 是心里长久惦着得不到的东西,带着怅惘,多接 for(yearn for the quiet);covet 是眼馋想要,多是别人手里的东西(covet his brother's guitar)。"
     },
     "不冷不热": {
       "members": [
@@ -1246,12 +1259,13 @@
         "careless",
         "carelessly",
         "inattentive",
+        "neglectful",
         "negligence",
         "negligent",
         "oversight",
         "neglect"
       ],
-      "text": "形容词三个:careless 是日常粗心,不上心而出错、弄坏东西,一次手滑也算,老毛病也算(a careless mistake),carelessly 是它的副词(carelessly left);inattentive 只说没在听、没在看,如学生、司机(inattentive students);negligent 是本有照管之责却没尽到,造成损害,多用于追责、诉讼(found negligent)。名词三个:negligence 是 negligent 的名词(gross negligence);oversight 是一次无心的漏看、漏做,说的是事,不太追究人(due to an oversight);neglect 是长期无人照管,房屋失修、动物受苦(years of neglect),作动词 neglect to do 是该做的事没做。"
+      "text": "形容词四个:careless 是日常粗心,不上心而出错、弄坏东西(a careless mistake),carelessly 是它的副词(carelessly left);inattentive 只说没在听、没在看(inattentive students);neglectful 是对该照料的人或物长期不管(a neglectful parent);negligent 是本有照管之责却没尽到,造成损害,多用于追责、诉讼(found negligent)。名词三个:negligence 是 negligent 的名词(gross negligence);oversight 是一次无心的漏看、漏做,不太追究人(due to an oversight);neglect 是长期无人照管,房屋失修、动物受苦(years of neglect),作动词 neglect to do 是该做的事没做(neglect to mention)。"
     },
     "可耻": {
       "members": [
@@ -1292,9 +1306,10 @@
         "petulant",
         "testy",
         "fractious",
-        "volatile"
+        "volatile",
+        "volatility"
       ],
-      "text": "都是形容词。irritable 最宽,一点小事就上火,可以是脾气本来如此,也可以是熬夜、缺觉弄出来的一阵子(become irritable);testy 重在不耐烦,会开超时、电话里干等、没喝上咖啡,说话就冲(a testy tone);petulant 是孩子气地赌气,叹气、耸肩、摔东西给人看,多为小事,说的却常是大人(a petulant sigh);fractious 在这里说烦躁闹人、不消停,常说累了或受了惊的小孩、动物(a fractious child);volatile 在这里重在难料,前一刻还说笑,下一刻就翻脸(a volatile temper)。"
+      "text": "形容词五个:irritable 最宽,一点小事就上火,可以是天生脾气,也可以是缺觉弄出来的一阵子(become irritable);testy 重在不耐烦,会开超时、没喝上咖啡,说话就冲(a testy tone);petulant 是孩子气地赌气,叹气、耸肩、摔东西给人看,多为小事,说的却常是大人(a petulant sigh);fractious 在这里说烦躁闹人、不消停,常说累了或受了惊的小孩、动物(a fractious child);volatile 在这里重在难料,前一刻还说笑,转眼就翻脸(a volatile temper)。volatility 是 volatile 的名词(emotional volatility);两个词更常用来说行情、局势的波动。"
     },
     "平静": {
       "members": [
@@ -1518,9 +1533,10 @@
         "adroit",
         "deft",
         "dexterity",
-        "dexterous"
+        "dexterous",
+        "nimble"
       ],
-      "text": "adroit、deft、dexterous 是形容词,手上的活和待人处事都能说。deft 重在快和利落,几下就收拾干净(a few deft stitches);dexterous 重在手巧,多说手指、外科医生、扒手的手上功夫(dexterous fingers);adroit 重在机灵、有办法,多说应付难缠的场面和人(adroit handling)。dexterity 是 dexterous 的名词,指这份灵巧,最常说手(manual dexterity),也说嘴上应变快(verbal dexterity)。"
+      "text": "形容词四个。deft 重在快和利落,几下就收拾干净(a few deft stitches);dexterous 重在手巧,多说手指、外科医生、扒手的手上功夫(dexterous fingers);adroit 重在机灵、有办法,多说应付难缠的场面和人(adroit handling);nimble 重在轻快,身子转得快,山羊、边锋都能说,也说团队反应快(a nimble goat)。dexterity 是 dexterous 的名词,指这份灵巧,最常说手(manual dexterity),也说嘴上应变快(verbal dexterity)。"
     },
     "平息": {
       "members": [
@@ -1633,11 +1649,12 @@
     },
     "可信度": {
       "members": [
+        "believability",
         "credence",
         "credibility",
         "plausibility"
       ],
-      "text": "都是名词。credence 站在听的人这边,说一个说法有没有被当真、被采信,多用 give credence to 或 lend credence to;credibility 说人或消息来源本身靠不靠得住、值不值得信,攒得慢、丢得快(lose credibility);plausibility 站在说法本身,说它听起来合不合理、像不像真的,真不真另说(surface plausibility)。"
+      "text": "都是名词。believability 偏感受,说故事、表演、证词让人信不信得进去(strain the film's believability);plausibility 偏推理,说一个说法、假设听起来合不合理,真不真另说(surface plausibility);credibility 说人或消息来源本身靠不靠得住,攒得慢、丢得快(lose credibility);credence 站在听的人这边,说一个说法有没有被当真、被采信(give credence to her claims)。"
     },
     "不张扬": {
       "members": [
@@ -1741,10 +1758,11 @@
     },
     "满不在乎": {
       "members": [
-        "nonchalant",
-        "insouciant"
+        "insouciance",
+        "insouciant",
+        "nonchalant"
       ],
-      "text": "都是形容词,都是该着急的时候一副轻松样。nonchalant 更常见,常是装出来的淡定,心里未必不在乎(affect a nonchalant air);insouciant 偏书面,多是真不往心里去,常轻松得让旁人替他着急(an insouciant shrug)。"
+      "text": "形容词两个,都是该着急的时候一副轻松样。nonchalant 更常见,常是装出来的淡定,心里未必不在乎(affect a nonchalant air);insouciant 偏书面,多是真不往心里去,常轻松得让旁人替他着急(an insouciant shrug)。insouciance 是 insouciant 的名词,指这种无忧无虑、不当回事的劲头(with such insouciance)。"
     },
     "诽谤": {
       "members": [
@@ -1817,9 +1835,10 @@
     "重大": {
       "members": [
         "momentous",
-        "monumental"
+        "monumental",
+        "substantial"
       ],
-      "text": "都是形容词。momentous 看后果,说一件事会改变往后的走向,当时看上去可能很平常,多修饰决定、时刻、消息(a momentous decision);monumental 看分量和规模,大得惊人,任务、成就、费用都能说,也能说错误犯得极大(a monumental blunder)。"
+      "text": "都是形容词。momentous 看后果,说一件事会改变往后的走向,当时看上去可能很平常,多修饰决定、时刻(a momentous decision);monumental 看分量和规模,大得惊人,任务、成就都能说,也能说错误犯得极大(a monumental blunder);substantial 最平实,说数量、规模或分量可观(a substantial raise)。"
     },
     "隐居": {
       "members": [
@@ -1875,10 +1894,11 @@
         "insignificance",
         "marginal",
         "negligible",
+        "nominal",
         "trivial",
         "petty"
       ],
-      "text": "insignificance 是名词,指小到不值一提(fade into insignificance);它的形容词 insignificant 最通用,小或不重要,不值得注意。同为形容词的五个:inconsequential 重在没有实际后果(an inconsequential typo);marginal 说量或效果很小,几乎看不出(a marginal improvement);negligible 小到可以忽略,常说风险、副作用、差别(negligible side effects);trivial 看分量,事情琐碎、不值得当真(a trivial matter);petty 在这里说事小、钱少,常配盗窃、投诉(petty theft),它更常指人小气爱计较。"
+      "text": "insignificance 是名词,指小到不值一提(fade into insignificance);它的形容词 insignificant 最通用,不值得注意。同为形容词的六个:inconsequential 重在没有实际后果(an inconsequential typo);marginal 说量或效果很小,几乎看不出(a marginal improvement);negligible 小到可以忽略,常说风险、副作用、差别(negligible side effects);nominal 说费用、价钱象征性地收一点,远低于实际价值(a nominal fee);trivial 看分量,事情琐碎、不值得当真(a trivial matter);petty 在这里说事小、钱少,常配盗窃、投诉(petty theft),它更常指人小气爱计较。"
     },
     "冗长": {
       "members": [
@@ -1985,11 +2005,12 @@
     },
     "明目张胆": {
       "members": [
+        "barefaced",
         "blatant",
-        "flagrant",
-        "barefaced"
+        "flagrancy",
+        "flagrant"
       ],
-      "text": "都是形容词,都说坏事做得毫不遮掩。blatant 最宽,只要明摆着、一眼看得穿就能用,不一定牵涉违规(a blatant attempt);flagrant 多说违反规则、规定,犯规、违约、滥用摆在明面上,谁也没法装没看见(a flagrant breach);barefaced 重在做的人脸不红心不跳,最常搭谎话,也能说抄袭、插队这类厚着脸皮干的事(a barefaced lie)。"
+      "text": "形容词三个,都说坏事做得毫不遮掩。blatant 最宽,只要明摆着、一眼看得穿就能用,不一定牵涉违规(a blatant attempt);flagrant 多说违反规则、规定,犯规、违约、滥用摆在明面上,谁也没法装没看见(a flagrant breach);barefaced 重在做的人脸不红心不跳,最常搭谎话(a barefaced lie)。flagrancy 是 flagrant 的名词,指这种明目张胆的程度(the flagrancy of the violations)。"
     },
     "禁欲": {
       "members": [
@@ -2051,9 +2072,10 @@
       "members": [
         "considerable",
         "sizeable",
+        "substantial",
         "substantially"
       ],
-      "text": "sizeable 和 considerable 都是形容词,都说数量不小,金额两个都能修饰。sizeable 多说看得见、数得出的体量,人群、藏书、少数派(a sizeable crowd);considerable 还能说程度,大到值得当回事,所以也修饰努力、耽搁这类抽象名词(a considerable delay)。substantially 是副词,说幅度可观,常修饰涨、降、不同(risen substantially)。"
+      "text": "形容词三个,金额都能修饰:sizeable 多说看得见、数得出的体量,人群、藏书、少数派(a sizeable crowd);considerable 还能说程度,大到值得当回事,也修饰努力、耽搁这类抽象名词(a considerable delay);substantial 说量大,还带分量足、实打实的意思,常修饰差距、加薪(a substantial raise)。substantially 是副词,说幅度可观,常修饰涨、降、不同(risen substantially)。"
     },
     "使卷入": {
       "members": [
@@ -2108,9 +2130,10 @@
         "turmoil",
         "upheaval",
         "volatile",
+        "volatility",
         "convulsion"
       ],
-      "text": "troubled 和 volatile 是形容词:troubled 多放在名词前,说公司、地区、人被问题缠住(a troubled airline);volatile 说局面、行情随时会骤变,难以掌控(volatile oil prices)。其余三个是名词。turmoil 不可数,说乱的状态,局面或心里一团糟(in emotional turmoil);upheaval 说变,原有秩序被掀翻,换城市、行业洗牌都算,可突然,也可拖上几年(political upheaval);convulsion 说社会、政治或市场的一阵剧烈震荡,来得猛而突然(a political convulsion)。"
+      "text": "troubled 和 volatile 是形容词:troubled 多放在名词前,说公司、地区、人被问题缠住(a troubled airline);volatile 说局面、行情随时会骤变(volatile oil prices)。其余四个是名词。volatility 是 volatile 的名词,指价格、局势忽涨忽落的波动(price volatility);turmoil 说乱的状态,局面或心里一团糟(in emotional turmoil);upheaval 说变,原有秩序被掀翻,可突然,也可拖上几年(a massive upheaval);convulsion 说社会、政治或市场的一阵剧烈震荡,来得猛而突然(a political convulsion)。"
     },
     "先发制人": {
       "members": [
@@ -2224,10 +2247,11 @@
     "战胜": {
       "members": [
         "overpower",
+        "prevail",
         "surmount",
-        "prevail"
+        "vanquish"
       ],
-      "text": "overpower 和 surmount 是及物动词,差在宾语:overpower 的宾语是人或动物,靠力气大当场把对方制住,多是扭打、抓捕的场面(overpower an attacker);surmount 的宾语是困难、障碍、落后的比分,靠努力一关关翻过去(surmount an obstacle)。prevail 不及物,说较量之后最终获胜,对手用 over 引出(prevail over),官司、比赛都能说。"
+      "text": "overpower、surmount、vanquish 是及物动词,差在宾语:overpower 的宾语是人或动物,靠力气大当场把对方制住(overpower a guard);surmount 的宾语是困难、障碍、落后的比分,靠努力一关关翻过去(surmount an obstacle);vanquish 偏书面,说把敌人、对手彻底打垮,也说除掉恐惧、疾病这类顽固的东西(vanquish the invaders)。prevail 不及物,说较量之后最终获胜,对手用 over 引出(prevail over)。"
     },
     "谨慎": {
       "members": [
@@ -2250,12 +2274,13 @@
     },
     "令人沮丧": {
       "members": [
+        "demoralizing",
         "discouraging",
         "disheartening",
-        "demoralizing",
+        "dismaying",
         "gloomy"
       ],
-      "text": "前三个是 -ing 形容词,说某事让人泄气,由轻到重:discouraging 最轻,结果、消息不理想,叫人不想再试(discouraging results),人自己泄气说 discouraged;disheartening 是心里一凉的失望,常用 It is disheartening to see…;demoralizing 最重,把斗志打垮,常说失利打击队伍士气(a demoralizing defeat)。gloomy 不同,说阴沉悲观,人闷闷不乐、前景没指望都能说(a gloomy forecast)。"
+      "text": "前四个是 -ing 形容词,说某事让人泄气。前三个由轻到重:discouraging 最轻,结果、消息不理想,叫人不想再试(discouraging results);disheartening 是心里一凉的失望,常用 It is disheartening to see…;demoralizing 最重,把斗志打垮,常说失利打击队伍士气(a demoralizing defeat)。dismaying 多一层意外,事情比预想的糟,让人一惊(dismaying test results)。gloomy 不同,说阴沉悲观,人闷闷不乐、前景没指望都能说(a gloomy forecast)。"
     },
     "炫耀": {
       "members": [
@@ -2352,15 +2377,6 @@
       ],
       "text": "insular 和 provincial 都是形容词:insular 病在封闭,长年只跟小圈子来往,外面的声音进不来;provincial 病在土气,眼界窄得像没离开过小地方,说人 provincial 本身就带着看不起。insularity 是 insular 的名词,指这种封闭造成的狭隘(cultural insularity)。"
     },
-    "丰富": {
-      "members": [
-        "copious",
-        "plentiful",
-        "profuse",
-        "profusion"
-      ],
-      "text": "copious、plentiful、profuse 是形容词,都说量大。copious 说数量足、堆得多,笔记、细节、雨水都行(copious notes);plentiful 说供应充足、够大家分,多作表语,说鱼、工作、车位(fish is plentiful);profuse 多说从人身上源源不断冒出来的,汗、血,或一连串道谢、道歉(profuse apologies)。profusion 是同根名词,指东西多而且样式杂,常用 a profusion of(a profusion of flowers)。"
-    },
     "残暴": {
       "members": [
         "barbarity",
@@ -2420,9 +2436,10 @@
       "members": [
         "delineate",
         "elucidate",
-        "articulate"
+        "articulate",
+        "illuminate"
       ],
-      "text": "都是及物动词。delineate 和 elucidate 偏书面:delineate 是把内容一条条精确划清(delineate responsibilities);elucidate 是把让人费解的东西讲明白,常接 why、what、how(elucidate a point);articulate 是给心里模糊的想法、感受找到词说出来(struggle to articulate it),更常作形容词,指口齿清楚。"
+      "text": "都是及物动词。delineate 和 elucidate 偏书面:delineate 是把内容一条条精确划清(delineate responsibilities);elucidate 是把让人费解的东西讲明白(elucidate a point);illuminate 是让一个问题豁然开朗,主语常是书、纪录片、一次谈话(illuminate the issue),本义是照亮;articulate 是给心里模糊的想法、感受找到词说出来(struggle to articulate it),更常作形容词,指口齿清楚。"
     },
     "躲避": {
       "members": [
@@ -2433,18 +2450,20 @@
     },
     "显眼": {
       "members": [
-        "prominent",
         "conspicuous",
-        "conspicuously"
+        "conspicuously",
+        "glaring",
+        "prominent"
       ],
-      "text": "prominent 是形容词,这里说位置或特征突出,摆在醒目处或凸出来,一眼就看到(a prominent scar),多是中性的描述;conspicuous 也是形容词,说在周围一片里扎眼、藏不住,说人常是觉得自己扎眼、不自在,该在却没在也能说(conspicuous absence);conspicuously 是它的副词,修饰动作或状态(conspicuously absent, conspicuously placed)。"
+      "text": "形容词三个:conspicuous 说在周围一片里扎眼、藏不住,说人常是觉得自己扎眼、不自在,该在却没在也能说(conspicuous absence);glaring 是明显得没法视而不见,多说错误、漏洞这类坏事(a glaring omission);prominent 这里说位置或特征突出,摆在醒目处或凸出来,多是中性描述(a prominent scar),它更常用的意思是著名、重要。conspicuously 是 conspicuous 的副词(conspicuously absent)。"
     },
     "阻止": {
       "members": [
+        "deter",
         "discourage",
         "foil"
       ],
-      "text": "都是动词,拦的时候不一样。discourage 是事前劝退,靠收费、设障碍或表示反对,让人不想去做,做不做还在对方,常说 discourage someone from doing,也可直接带活动(discourage driving);foil 是事到临头让计划或罪行落空,结果是没成(foil a plot)。"
+      "text": "都是动词,拦的时候不一样。deter 是靠威慑,让人怕后果而不敢做(deter burglars);discourage 是事前劝退,靠收费、设障碍或表示反对,让人不想去做,做不做还在对方(discourage driving);foil 是事到临头让计划或罪行落空,结果是没成(foil a plot)。"
     },
     "暗示": {
       "members": [
@@ -2475,9 +2494,10 @@
       "members": [
         "adroit",
         "astute",
-        "shrewd"
+        "shrewd",
+        "nimble"
       ],
-      "text": "都是形容词,都是夸人,但夸的地方不同。adroit 是手上或处事灵巧,颠锅、带球过人、应付难开口的场面都算,重在做得漂亮(adroit handling);astute 是眼光准,常抢在别人前头看出毛病和门道(astute observation);shrewd 也看得透,但更落在为自己打算上,看懂了局面就拿来谋利,常说生意人和举动,有时带点精于算计的味道(a shrewd move)。"
+      "text": "都是形容词,都是夸人,但夸的地方不同。adroit 是手上或处事灵巧,颠锅、带球过人、应付难开口的场面都算,重在做得漂亮(adroit handling);astute 是眼光准,常抢在别人前头看出毛病和门道(an astute question);shrewd 也看得透,但更落在为自己打算上,看懂了局面就拿来谋利,常说生意人和举动,有时带点精于算计的味道(a shrewd move);nimble 在这里说脑子转得快,局面一变立刻跟上(a nimble answer),它更常用的意思是身手敏捷。"
     },
     "苛求": {
       "members": [
@@ -2514,9 +2534,10 @@
       "members": [
         "barefaced",
         "effrontery",
-        "impudence"
+        "impudence",
+        "impudent"
       ],
-      "text": "barefaced 是形容词,多放在名词前,修饰坏事本身,说做得明目张胆,连遮掩都懒得遮(a barefaced lie);effrontery 和 impudence 是名词,说人脸皮厚,都常用 have the … to do。effrontery 落在竟敢做出某件出格的事,口气是「他还真好意思」;impudence 重在放肆无礼,多是没资格的人冒犯对方(the impudence of it)。"
+      "text": "barefaced 和 impudent 是形容词:barefaced 修饰坏事本身,做得明目张胆,懒得遮掩(a barefaced lie);impudent 说人或言行放肆无礼(an impudent boy)。effrontery 和 impudence 是名词,常用 have the … to do:effrontery 落在竟敢出格,口气是「真好意思」(sheer effrontery);impudence 是 impudent 的名词,多是没资格的人冒犯对方(the impudence of it)。"
     },
     "恭敬": {
       "members": [
@@ -2587,9 +2608,10 @@
     "不正当": {
       "members": [
         "devious",
+        "questionable",
         "underhand"
       ],
-      "text": "都是贬义。devious 是形容词,能说人,也能说计划,重在心眼多、会绕着规矩耍花招,带点狡黠的聪明(a devious scheme);underhand 多作形容词,修饰做法和手段,重在背着人、见不得光,不让人察觉(underhand tactics),也能作副词放在动词后面,说靠这种手段得到了什么。"
+      "text": "都是贬义形容词。devious 能说人,也能说计划,重在心眼多、会绕着规矩耍花招,带点狡黠的聪明(a devious scheme);underhand 修饰做法和手段,重在背着人、见不得光(underhand tactics),也能作副词放在动词后;questionable 语气最轻,只说做法在道义上站不住、让人起疑,未必坐实(questionable dealings)。"
     },
     "显著": {
       "members": [
@@ -2599,9 +2621,10 @@
         "markedly",
         "noticeably",
         "prominence",
-        "prominently"
+        "prominently",
+        "pronounced"
       ],
-      "text": "appreciably、noticeably、markedly、considerably 是副词,常修饰比较级和变化:appreciably 门槛最低,量得出就算,常见于否定(not appreciably faster);noticeably 是一眼看得出(noticeably cooler);markedly 和它很近,多说对比鲜明(markedly different);considerably 是差得多(considerably better)。marked 是 markedly 的形容词形式,修饰变化、差别(a marked improvement)。prominently 也是副词,说位置显眼,多修饰摆放(prominently displayed);prominence 是同根名词,指重要或出名(rise to prominence)。"
+      "text": "副词五个。appreciably、noticeably、markedly、considerably 常修饰比较级和变化:appreciably 门槛最低,量得出就算,常见于否定(not appreciably faster);noticeably 是一眼看得出(noticeably cooler);markedly 和它很近,多说对比鲜明(markedly different);considerably 是差得多(considerably better)。prominently 不说程度,说位置显眼(prominently displayed)。形容词两个:marked 是 markedly 的形容词(a marked improvement);pronounced 还常说跛行、口音、气味这类特征很重(a pronounced limp)。prominence 是名词,指重要、出名或显眼(rise to prominence)。"
     },
     "令人困惑": {
       "members": [
@@ -2644,10 +2667,11 @@
     },
     "散布": {
       "members": [
+        "dispersal",
         "intersperse",
         "disperse"
       ],
-      "text": "都是动词,但「散布」不是一回事。intersperse 是人有意把一类东西隔一段插一个,穿插在另一类中间,讲座里插短片、训练里插冲刺,带宾语(intersperse something with);disperse 这里说粉末、气体这类物质自己化开,均匀分布到液体或空气里,多不带宾语(disperse into the air)。"
+      "text": "两个动词,「散布」不是一回事。intersperse 是人有意把一类东西隔一段插一个,穿插在另一类中间(intersperse a lecture with clips);disperse 这里说粉末、气体这类物质自己化开,均匀分布到液体或空气里(disperse into the air),它更常用的意思是驱散人群。dispersal 是 disperse 的名词,多说种子、人群、烟雾向四处散开(seed dispersal)。"
     },
     "怨恨": {
       "members": [
@@ -2785,10 +2809,12 @@
     "预兆": {
       "members": [
         "foreboding",
+        "harbinger",
         "portend",
-        "presage"
+        "presage",
+        "forerunner"
       ],
-      "text": "foreboding 和 presage 的名词义要分开:foreboding 是人心里的不祥预感(a sense of foreboding);presage 是外在的征兆,作名词时重音在前(a presage of rough weather)。portend 和 presage 作动词几乎可互换,主语都是征兆本身,预示的多是坏事(portend trouble, presage doom)。"
+      "text": "名词先分人心和外物:foreboding 是人心里的不祥预感(a sense of foreboding);harbinger 是外在的征兆,预示的可好可坏(a harbinger of spring);presage 作名词是外在的征兆,多指凶兆,重音在前(a presage of rough weather);forerunner 在这里指某事要来的迹象(the forerunner of a long drought),常用义是前身。动词两个:portend 和 presage 几乎可互换,主语都是征兆本身,预示的多是坏事(portend trouble, presage doom)。"
     },
     "站不住脚": {
       "members": [
@@ -2911,11 +2937,12 @@
     },
     "仁慈": {
       "members": [
+        "benevolence",
         "benevolent",
         "clemency",
         "merciful"
       ],
-      "text": "benevolent 和 merciful 是形容词:benevolent 说人心善、乐于施惠,好意是主动给出去的,不牵涉罚不罚(a benevolent streak);merciful 是有权罚、能伤人的一方手下留情(a merciful judge)。clemency 是名词,和 merciful 同是开恩,但多指掌权者减刑或赦免,语气郑重(grant clemency)。"
+      "text": "形容词两个:benevolent 说人心善、乐于施惠,好意是主动给出去的,不牵涉罚不罚(a benevolent streak);merciful 是有权罚、能伤人的一方手下留情(a merciful judge)。名词两个:benevolence 是 benevolent 的名词,指这份善心和善举(the benevolence of strangers);clemency 和 merciful 同是开恩,但多指掌权者减刑或赦免,语气郑重(grant clemency)。"
     },
     "坦诚": {
       "members": [
@@ -2944,10 +2971,11 @@
     },
     "普遍存在": {
       "members": [
+        "ubiquitous",
         "endemic",
         "prevail"
       ],
-      "text": "endemic 是形容词,说问题、弊病在一个行业或群体里到处都是,而且根除不掉,带批评口气,常接 in 或 to(endemic corruption);prevail 是不及物动词,主语多是情绪、风气、看法,说它在某时某地最普遍、成了主调(a mood of panic prevailed),本身不分好坏。"
+      "text": "ubiquitous 和 endemic 是形容词:ubiquitous 说具体的东西随处可见,多到让人习以为常(ubiquitous plastic bags);endemic 说问题、弊病在一个行业或群体里到处都是,而且根除不掉,带批评口气(endemic corruption)。prevail 是不及物动词,主语多是情绪、风气、看法,说它在某时某地最普遍、成了主调(a mood of panic prevailed)。"
     },
     "根深蒂固": {
       "members": [
@@ -3034,9 +3062,10 @@
     "过分强调": {
       "members": [
         "belabor",
+        "overemphasize",
         "overplay"
       ],
-      "text": "都是及物动词。belabor 是一件事翻来覆去讲个没完,毛病在啰嗦,常说 I won't belabor the point;overplay 是把分量说重、把优势用过头,毛病在过度,常落得过犹不及(overplay the risks, overplay your hand)。"
+      "text": "都是及物动词。belabor 是一件事翻来覆去讲个没完,毛病在啰嗦,常说 I won't belabor the point(belabor the point);overemphasize 最直白,只说把一样东西看得太重,超过它该有的分量(overemphasize test scores);overplay 是把分量说重、把优势用过头,常落得过犹不及(overplay the risks, overplay your hand)。"
     },
     "穿插": {
       "members": [
@@ -3191,9 +3220,10 @@
         "flippant",
         "impertinence",
         "impertinent",
+        "impudent",
         "ungracious"
       ],
-      "text": "impertinent、flippant、ungracious 都是形容词。impertinent 是对长辈、上司说了不该说的话,失的是分寸(an impertinent question);flippant 是拿严肃的事开玩笑,不当回事(a flippant remark);ungracious 落在回应别人上:收礼、落败、受人帮忙时不领情(an ungracious loser)。impertinence 是 impertinent 的名词,指这种放肆,常说 have the impertinence to。"
+      "text": "形容词四个。impertinent 是对长辈、上司说了不该说的话,失的是分寸(an impertinent question);impudent 比它更大胆,放肆还不害臊(an impudent boy);flippant 是拿严肃的事开玩笑,不当回事(a flippant remark);ungracious 落在回应别人上:收礼、落败、受人帮忙时不领情、失风度(an ungracious loser)。impertinence 是 impertinent 的名词,指这种放肆(the impertinence of correcting her)。"
     },
     "坚决": {
       "members": [
@@ -3330,6 +3360,7 @@
     "沮丧": {
       "members": [
         "dismay",
+        "dismayed",
         "dispirited",
         "downcast"
       ],
@@ -3541,13 +3572,6 @@
       ],
       "text": "direct、blunt、forthright 都是形容词:direct 最中性,只说有话直说、不绕弯;blunt 直得不留情面,不顾对方感受,可能伤人(a blunt reply);forthright 偏褒义,敢把不中听的看法坦率摆出来,不等于粗鲁(refreshingly forthright)。directness 是 direct 的名词,指这种不绕弯的作风,常带欣赏(refreshing directness)。"
     },
-    "使人产生错觉": {
-      "members": [
-        "deceptive",
-        "delusive"
-      ],
-      "text": "都是形容词,说事物给人的印象靠不住。deceptive 常用,湖面、照片、题目措辞都能说,也可指商家有意误导(deceptive advertising);delusive 偏书面,多说让人放心或抱有指望、最后落空的东西,如希望、安全感(a delusive sense of security),不用来说人不诚实。"
-    },
     "不称职": {
       "members": [
         "incompetent",
@@ -3560,9 +3584,10 @@
         "agitated",
         "agitation",
         "rattled",
-        "unease"
+        "unease",
+        "unsettled"
       ],
-      "text": "名词两个:unease 是隐隐觉得哪里不对的担心,多半只在心里(a flicker of unease);agitation 重得多,是焦躁到坐立不安,抖腿、踱步,旁人看得出来(the passenger's agitation)。形容词两个:agitated 是 agitation 的形容词,说人明显失去平静,常因担心或生气(grew agitated);rattled 是被突然的变故或压力打乱了阵脚,慌了神,接着容易出错(looked rattled)。"
+      "text": "名词两个:unease 是隐隐觉得哪里不对的担心,多半只在心里(a flicker of unease);agitation 重得多,是焦躁到坐立不安,抖腿、踱步,旁人看得出来(the passenger's agitation)。形容词三个:agitated 是 agitation 的形容词,说人明显失去平静,常因担心或生气(grew agitated);rattled 是被突然的变故或压力打乱了阵脚,慌了神,接着容易出错(looked rattled);unsettled 最轻,是心里不踏实、定不下来(felt unsettled all evening)。"
     },
     "期待": {
       "members": [
@@ -3772,10 +3797,13 @@
     },
     "夸大": {
       "members": [
+        "inflate",
+        "overplay",
         "overstate",
-        "overplay"
+        "overstated",
+        "overstatement"
       ],
-      "text": "都是及物动词。overstate 只在言辞上:把事情说得比实际更大、更好或更严重,毛病在失真(overstate the risks);cannot be overstated 反过来说某事再怎么强调都不为过。overplay 是把某事的重要性渲染过头,或把手里的优势用过了头,常有过犹不及、反而吃亏的意思(overplay your hand)。"
+      "text": "动词三个:overstate 是嘴上把事情说大、说重,毛病在失真(overstate the risks),cannot be overstated 反过来说怎么强调都不为过;inflate 是把价格、数字人为抬高(inflate the figures);overplay 是把重要性渲染过头,或把手里的优势用过了头,常有过犹不及之意(overplay your hand)。overstated 是 overstate 的形容词,说说法、担忧被夸大(fears were overstated);overstatement 是名词,指言过其实的说法(a gross overstatement)。"
     },
     "劝阻": {
       "members": [
@@ -3807,10 +3835,11 @@
     },
     "怠慢": {
       "members": [
+        "snub",
         "inattentive",
         "slight"
       ],
-      "text": "inattentive 是形容词,这里说对人照顾不周、礼数不到,多形容主人、店员、医护这类本该招呼人的人(an inattentive host),重在疏忽;slight 是及物动词,宾语是人,指冷落、轻视某人,重在让对方觉得没被当回事,常说 feel slighted(觉得受了冷落)。"
+      "text": "snub 和 slight 是及物动词,宾语是人:snub 是故意不理、当面冷落,让人难堪,也可作名词(a deliberate snub);slight 是轻视、怠慢,重在让对方觉得没被当回事(felt slighted)。inattentive 是形容词,这里说对人照顾不周、礼数不到,多形容主人、店员这类本该招呼人的人,重在疏忽而非故意(an inattentive host),它更常用的意思是不专心。"
     },
     "监禁": {
       "members": [
@@ -3885,9 +3914,10 @@
     "浓烈": {
       "members": [
         "overpowering",
+        "pungent",
         "boldness"
       ],
-      "text": "overpowering 是形容词,说气味、味道或情绪浓烈得压得人受不了(an overpowering smell, an overpowering urge),多带不适;boldness 是名词,这里只说颜色、线条醒目鲜明(the boldness of the design),是视觉上的浓烈,不含难受的意思。"
+      "text": "形容词两个:overpowering 说气味、味道或情绪浓烈得压得人受不了(an overpowering smell),多带不适;pungent 说气味、味道冲而刺激,刺鼻、辣口(pungent garlic),未必难受。boldness 是名词,这里说颜色、线条醒目鲜明(the boldness of the design),是视觉上的浓烈,它更常用的意思是大胆。"
     },
     "哀悼": {
       "members": [
@@ -3931,9 +3961,10 @@
         "flourishing",
         "prosper",
         "prosperity",
-        "prosperous"
+        "prosperous",
+        "buoyant"
       ],
-      "text": "prosperous 和 flourishing 都是形容词:prosperous 看的是钱,成功而富裕,多修饰城镇、生意、人家(a prosperous town);flourishing 看的是势头,发展得健康兴旺,不只说钱,花园、合唱团、事业都能用(a flourishing garden)。prosper 是动词,说人或生意兴旺发达、日子过得好(the business prospered);prosperity 是不可数名词,指富裕兴旺的状态(economic prosperity)。"
+      "text": "形容词三个:prosperous 看的是钱,成功而富裕,多修饰城镇、生意、人家(a prosperous town);flourishing 看的是势头,发展得健康兴旺,不只说钱,花园、合唱团、事业都能用(a flourishing garden);buoyant 这里说市场、经济行情好、买卖活跃(a buoyant job market),它更常用的意思是心情轻快。prosper 是动词,说人或生意兴旺发达(the business prospered);prosperity 是不可数名词,指富裕兴旺的状态(economic prosperity)。"
     },
     "屈从": {
       "members": [
@@ -3953,11 +3984,13 @@
       "members": [
         "appreciably",
         "conspicuously",
+        "glaring",
         "marked",
         "markedly",
-        "noticeably"
+        "noticeably",
+        "pronounced"
       ],
-      "text": "副词四个,前三个说程度。noticeably 最常用,变化大到一看就觉出来,常修饰比较级(noticeably cooler);markedly 差别更鲜明(markedly different);appreciably 偏书面,大到能察觉、量得出,否定句里也常见(not appreciably faster)。conspicuously 不说程度,说扎眼、引人注目,常配 absent、alone(conspicuously absent)。marked 是形容词,markedly 就从它来,说差别、变化明显到谁都看得出(a marked improvement)。"
+      "text": "形容词三个:marked 说差别、变化明显到谁都看得出(a marked improvement);pronounced 也说明显,还常说一眼一耳就觉出的特征,跛、口吃、气味(a pronounced limp);glaring 说坏事明显得没法装看不见,多配错误、漏洞(a glaring omission)。副词四个,前三个说程度:noticeably 最常用,常修饰比较级(noticeably cooler);markedly 是 marked 的副词,差别更鲜明(markedly different);appreciably 偏书面,大到能察觉、量得出,否定句里常见(not appreciably faster)。conspicuously 不说程度,说扎眼、引人注目(conspicuously absent)。"
     },
     "偏狭": {
       "members": [
@@ -4249,10 +4282,11 @@
     "敏锐": {
       "members": [
         "incisive",
+        "penetrating",
         "perceptive",
         "keen"
       ],
-      "text": "都是形容词。perceptive 重在看出别人没察觉的东西,尤其是人的情绪、背后的原因(a perceptive nurse);incisive 重在想得透、说得准,一句话直指要害,多修饰提问、评语、分析(incisive notes);keen 在这里说感官或头脑灵敏,多配视力、嗅觉(a keen sense of smell),这个词更常见的意思是热衷。"
+      "text": "都是形容词。perceptive 重在看出别人没察觉的东西,尤其是人的情绪、背后的原因(a perceptive nurse);penetrating 重在看得深,一下看穿事情的核心(a penetrating question);incisive 重在想得透、说得准,一句话直指要害,多修饰提问、评语、分析(incisive notes);keen 在这里说感官或头脑灵敏,多配视力、嗅觉(a keen sense of smell),这个词更常见的意思是热衷。"
     },
     "称颂": {
       "members": [
@@ -4271,9 +4305,10 @@
     "恶意": {
       "members": [
         "malevolent",
+        "malice",
         "spiteful"
       ],
-      "text": "都是形容词。malevolent 是存心要人倒霉,恶意深,不一定有前因(malevolent gossip);spiteful 是记恨报复,多为一点过节、委屈就要让对方难受,透着小气(a spiteful text)。"
+      "text": "malice 是名词,指想伤人、让人难受的那份恶意(out of pure malice);它的形容词 malicious 用得最广,说存心害人的言行(a malicious lie)。同为形容词的 malevolent 是存心要人倒霉,恶意深,不一定有前因(malevolent gossip);spiteful 是记恨报复,多为一点过节、委屈就要让对方难受,透着小气(a spiteful text)。"
     },
     "文集": {
       "members": [
@@ -4509,10 +4544,11 @@
     },
     "不确定": {
       "members": [
+        "doubtful",
         "equivocal",
         "uncertainty"
       ],
-      "text": "equivocal 是形容词,说回答、结果、表情能读成两样,说不清,有时是故意含糊(an equivocal reply);同为形容词的 uncertain 说拿不准、没定论,人和事都能用,不涉及两可。uncertainty 是 uncertain 的名词形式,指不确定的状态,多说前景、病情、政策(uncertainty over the future)。"
+      "text": "形容词两个:doubtful 说事情不太可能、靠不住(it is doubtful whether);equivocal 说回答、结果、表情能读成两样,有时是故意含糊(an equivocal reply);同为形容词的 uncertain 说拿不准、没定论,人和事都能用,不涉及两可。uncertainty 是 uncertain 的名词,指不确定的状态,多说前景、病情、政策(uncertainty over the future)。"
     },
     "欣喜": {
       "members": [
@@ -4602,16 +4638,18 @@
     "隐藏": {
       "members": [
         "conceal",
+        "concealment",
         "ulterior"
       ],
-      "text": "conceal 是动词,把东西藏到看不见、找不着的地方(conceal the cash)。它的形容词 concealed 说实物藏着、不外露(a concealed camera);同为形容词的 ulterior 只说藏在明面说辞背后的用意,常配 motive、purpose 一类词(an ulterior motive)。"
+      "text": "conceal 是动词,把东西藏到看不见、找不着的地方(conceal the cash)。它的形容词 concealed 说实物藏着、不外露(a concealed camera);同为形容词的 ulterior 只说藏在明面说辞背后的用意,常配 motive、purpose(an ulterior motive)。concealment 是 conceal 的名词,指藏匿或隐瞒这件事(concealment of losses)。"
     },
     "善意": {
       "members": [
+        "benevolence",
         "benevolent",
         "goodwill"
       ],
-      "text": "benevolent 是形容词,说人心地仁厚、乐于帮人施惠(a benevolent uncle)。它的名词 benevolence 指这种仁慈的品性和善行,偏书面;同为名词的 goodwill 说人与人、双方之间的友好善意,常靠一个举动赢来(a gesture of goodwill)。"
+      "text": "benevolent 是形容词,说人心地仁厚、乐于帮人施惠(a benevolent uncle)。名词两个:benevolence 是 benevolent 的名词,指一个人仁慈的品性和施予的善行,偏书面(the benevolence of strangers);goodwill 说的是人与人、双方之间的友好善意,常靠一个举动赢来,也能慢慢攒下(a gesture of goodwill)。"
     },
     "轻浮": {
       "members": [
@@ -4623,9 +4661,10 @@
     "吸引力": {
       "members": [
         "affinity",
-        "appeal"
+        "appeal",
+        "attractiveness"
       ],
-      "text": "都是名词,方向相反。affinity 站在人这边,说一个人天生对某人某物有亲近感、合得来,常接 for 或 with(an affinity for reptiles);appeal 站在东西这边,说它本身招人喜欢、让人想参与的地方(a wide appeal)。"
+      "text": "都是名词。affinity 站在人这边,说一个人天生对某人某物感到亲近,常接 for 或 with(an affinity for reptiles);appeal 和 attractiveness 站在东西这边:appeal 说它本身招人喜欢、让人想参与的地方(a wide appeal);attractiveness 更像一项能比高低的属性,多说地方、条件够不够诱人(the attractiveness of the offer)。"
     },
     "不必要": {
       "members": [
@@ -4739,10 +4778,11 @@
     },
     "兴高采烈": {
       "members": [
+        "buoyant",
         "exuberant",
         "glee"
       ],
-      "text": "glee 和 exuberance 都是名词:glee 是乐不可支,冲着某件事一下子乐出声,常带得意或捣蛋得逞的味道(shrieked with glee);exuberance 是精力和兴致满得往外冒,不一定为了什么事,更像一个人的劲头。exuberant 是 exuberance 的形容词,说人热闹、闹腾、收不住(an exuberant toast)。"
+      "text": "glee 是名词,是乐不可支,冲着某件事一下子乐出声,常带得意或捣蛋得逞的味道(shrieked with glee)。它的形容词 gleeful 也带这份得意;同为形容词的 buoyant 是心情轻快乐观,碰上挫折也沉不下去(in a buoyant mood);exuberant 是精力和兴致满得往外冒,热闹、闹腾、收不住(an exuberant toast)。"
     },
     "不合常规": {
       "members": [
@@ -4978,6 +5018,379 @@
         "rattled"
       ],
       "text": "都是形容词,常可互换。flustered 偏手忙脚乱,一忙一窘就乱了阵脚,上错菜、念错稿,带几分难堪(flustered by the rush);rattled 偏受了惊吓、心里发虚,被突然的变故打乱方寸,偏口语,也能一连几天缓不过来(rattled by the sudden drop)。"
+    },
+    "乐观": {
+      "members": [
+        "buoyant",
+        "sanguine"
+      ],
+      "text": "都是形容词,都是事情不顺时仍往好处想。buoyant 说的是情绪:心情轻快,提得起劲,挫折压不下去(in a buoyant mood);sanguine 说的是判断:对前景有把握,相信结局会好,常接 about,旁人看来有时乐观得没道理(sanguine about the prospects)。"
+    },
+    "典型": {
+      "members": [
+        "archetypal",
+        "prototypical",
+        "quintessence",
+        "quintessential"
+      ],
+      "text": "形容词三个:archetypal 是某类人物、故事的原型,一眼认得出的那一路(the archetypal villain);prototypical 偏学术,是一类事物的标准样本,最先想到的那个(the prototypical bird);quintessential 是最纯粹、最到位的一例,口语也常用(the quintessential Monday)。quintessence 是 quintessential 的名词,指某种品质最纯粹的体现(the quintessence of leadership)。"
+    },
+    "先驱": {
+      "members": [
+        "forerunner",
+        "pioneering",
+        "precursor"
+      ],
+      "text": "pioneering 是形容词,说首开先河,走在前头(pioneering work)。它的名词 pioneer 是开路的人,主动开创(a pioneer of heart surgery);同为名词的 forerunner 只是时间上在前,是后来之物的早期形态(the forerunner of today's laptops);precursor 与它相近,常接 to,也常指先兆(a precursor to jazz)。"
+    },
+    "前身": {
+      "members": [
+        "forerunner",
+        "precursor",
+        "predecessor"
+      ],
+      "text": "都是名词,都指排在前头、后来被别的东西接上的那一个。forerunner 是后来某物的早期雏形,常接 of(the forerunner of today's laptops);precursor 相近,常接 to(a precursor to the flagship tool);predecessor 在这里说被新一代取代的旧款、旧物,新旧是同一样东西(faster than its predecessor),它更常用的意思是前任。"
+    },
+    "先兆": {
+      "members": [
+        "harbinger",
+        "precursor",
+        "forerunner"
+      ],
+      "text": "都是名词,都是某事到来之前先露出的迹象。harbinger 最典型,书面而略带文采,预示的可好可坏(a harbinger of spring);precursor 常接 to,先兆和后事往往是同一过程的前后两段,如喉咙痛之于感冒(a precursor to a cold);forerunner 在这里也指先兆(the forerunner of a long drought),它更常用的意思是前身。"
+    },
+    "反复无常": {
+      "members": [
+        "caprice",
+        "capricious",
+        "changeable"
+      ],
+      "text": "形容词两个:capricious 是说变就变,没有道理可讲,带着任性,多说人、制度或天气(a capricious approval process);changeable 只说常变、靠不住,不问缘由,天气、心情、立场都能用(changeable weather)。caprice 是 capricious 的名词,指没来由的一时兴起(on a caprice),也说天气变幻莫测(the caprices of the monsoon)。"
+    },
+    "节俭": {
+      "members": [
+        "provident",
+        "thrifty"
+      ],
+      "text": "都是形容词。thrifty 说日常花钱精打细算,能省则省,不浪费(a thrifty shopper);provident 偏书面,重在为将来打算,未雨绸缪,省下钱是为了备着,提早做好安排也算,不一定跟钱有关(a provident habit)。"
+    },
+    "可疑": {
+      "members": [
+        "dubious",
+        "questionable"
+      ],
+      "text": "都是形容词。dubious 说东西靠不住,真假好坏都没把握,数字、评价、手艺都能用(a dubious repair job),它还能说人自己半信半疑;questionable 在这里偏道德,说做法可能不正当,经不起追问(a questionable practice)。"
+    },
+    "刺鼻": {
+      "members": [
+        "acrid",
+        "pungent"
+      ],
+      "text": "都是形容词,既说气味冲,也说话语尖。acrid 是焦、苦、呛,闻着难受,如烟和烧焦的东西(acrid smoke),说话 acrid 是刻薄带怨气(an acrid comment);pungent 是浓烈冲鼻,未必难闻,蒜、辣椒都算(pungent garlic),说文字 pungent 是犀利有锋芒,带点机巧(pungent one-liners)。"
+    },
+    "使充气": {
+      "members": [
+        "aerate",
+        "inflate"
+      ],
+      "text": "都是动词,都是往东西里充气,目的不同。aerate 是让空气渗进土壤、水或液体里,为了透气、增氧或起泡,东西本身不鼓起来(aerate the soil);inflate 在这里是往气囊、轮胎里打气,让它胀起来(inflate the raft),它更常用的意思是抬高、虚报数字。"
+    },
+    "敌意": {
+      "members": [
+        "animosity",
+        "hostility",
+        "malice"
+      ],
+      "text": "都是名词。hostility 最宽,是摆在明面上的不友好和对立,对人对主张都行(open hostility);animosity 是双方之间结下的积怨,常接 between,往往一拖多年(animosity between the neighbors);malice 是存心要伤人、害人的恶意,重在动机,法律上也说蓄意(out of pure malice)。"
+    },
+    "严厉": {
+      "members": [
+        "stringent",
+        "exacting"
+      ],
+      "text": "都是形容词,都是要求严。stringent 说规定、条件、检查本身严格,执行起来不留余地(stringent rules);exacting 在这里说人难伺候,标准高,样样挑剔,很难让他满意(an exacting editor),它也常用来说标准、任务要求苛刻。"
+    },
+    "使复兴": {
+      "members": [
+        "revitalize",
+        "resuscitate"
+      ],
+      "text": "都是及物动词。revitalize 是给衰落、冷清的地方或行业重新注入活力,多说街区、经济、学校,口气积极(revitalize the riverfront);resuscitate 原指心肺复苏、把人救活,这里借来说把快不行的品牌、计划、经济救回来,言下之意它已经奄奄一息(resuscitate a brand)。"
+    },
+    "装腔作势": {
+      "members": [
+        "affectation",
+        "affected",
+        "phony"
+      ],
+      "text": "affectation 是名词,指为了给人看而装出来的做派、口音、腔调(pure affectation);它的形容词 affected 说神态、口音、文风不自然,一看就是端出来的(an affected accent)。同为形容词的 phony 更口语也更宽,说人或东西是假的、不真诚,假笑、假古董、假慈善都能说,不一定是摆架子(a phony smile)。"
+    },
+    "吸引": {
+      "members": [
+        "beguile",
+        "tempt"
+      ],
+      "text": "都是及物动词。beguile 是用魅力、花言巧语把人迷住,让人看不清真相,常暗含受骗(beguile investors);tempt 是勾起人想要、想做的念头,想的多是不该做或不明智的事,诱惑可以来自人,也可以来自一样东西(tempted to skip the gym)。"
+    },
+    "大量": {
+      "members": [
+        "copious",
+        "plentiful",
+        "profuse",
+        "profusion",
+        "substantial"
+      ],
+      "text": "形容词四个。copious 说产出或用掉的量大,多配笔记、细节、用料、雨水(copious notes);plentiful 说供应多到够分、不缺,常作表语(fish is plentiful);profuse 多说道歉、感谢、汗、血这类一下子涌出很多,常带点过头(profuse apologies);substantial 说数量、规模可观,分量足,常配差距、款项、人群(a substantial raise)。profusion 是 profuse 的名词,指又多又杂的一大片,常用 a profusion of(a profusion of fruit stalls)。"
+    },
+    "使枯竭": {
+      "members": [
+        "deplete",
+        "impoverish"
+      ],
+      "text": "都是及物动词。deplete 说把储量、存货、体力一点点用掉,剩下没多少,宾语是资源本身(deplete the reservoir);impoverish 说让人、地方变穷,也说让土地、设施失去原有的底子,重在变穷变弱这个后果(impoverish the soil)。"
+    },
+    "摇摇欲坠": {
+      "members": [
+        "ramshackle",
+        "rickety"
+      ],
+      "text": "都是形容词。ramshackle 说房子、棚子、车整体破败,像是东拼西凑搭起来的,哪儿都歪(a ramshackle shed);rickety 说一个结构不结实,一用力就晃、随时会散架,多说楼梯、椅子、桥这类要承重的东西(a rickety bridge)。"
+    },
+    "年久失修": {
+      "members": [
+        "decrepit",
+        "dilapidated"
+      ],
+      "text": "都是形容词,都说房子、东西又老又破。dilapidated 重在没人打理、年久失修,常说房子、店面、设施(a dilapidated townhouse);decrepit 重在老旧用坏,楼房、机器都能说(a decrepit warehouse),它另有一义,说人老得体弱、行动不便。"
+    },
+    "毫无根据": {
+      "members": [
+        "unfounded",
+        "unwarranted"
+      ],
+      "text": "都是形容词。unfounded 说没有事实依据,多修饰传言、指控、担心,常说 prove unfounded(fears proved unfounded);unwarranted 说没有正当理由、不该有,多评判做法、反应、假设(an unwarranted search)。前者问有没有证据,后者问该不该。"
+    },
+    "突出": {
+      "members": [
+        "pronounced",
+        "prominent"
+      ],
+      "text": "都是形容词。pronounced 说特征本身很重、很明显,看得见、听得出、闻得到都算(a pronounced limp);prominent 这里说位置或形状突出,摆在显眼处或凸出来(a prominent scar),它更常用的意思是著名、重要。前者看程度,后者看位置。"
+    },
+    "压制": {
+      "members": [
+        "quash",
+        "stifle",
+        "repress"
+      ],
+      "text": "都是及物动词,压法不同。quash 是一举彻底压灭,对象多是谣言、叛乱、希望(quash the rumor);stifle 是捂住不让长,想法、讨论还没成气候就被闷死(stifle new ideas);repress 这里说当局用武力或权力镇压抗议、异见或某个群体,是持续地压着(repress the protests),它更常用的意思是压抑情绪。"
+    },
+    "占": {
+      "members": [
+        "account-for",
+        "comprise"
+      ],
+      "text": "都是动词。account for 这里说占多少比例或数量,后面接百分比、几成(account for 70% of sales),它更常用的意思是解释、是…的原因;comprise 这里说部分构成整体的多少,主语是部分(women comprise half the class),它更常用的意思是由…组成,主语是整体。"
+    },
+    "骗人": {
+      "members": [
+        "bogus",
+        "deceptive",
+        "delusive"
+      ],
+      "text": "都是形容词。bogus 是假的、冒充的,东西本身是伪造的,口语味重(bogus tickets);deceptive 是看上去和实际不一样,让人看走眼,不一定有人存心骗(appearances can be deceptive);delusive 较书面,多说给人虚假的希望、安全感或平静,让人信了不该信的(a delusive sense of safety)。"
+    },
+    "名义上": {
+      "members": [
+        "nominally",
+        "ostensibly",
+        "nominal"
+      ],
+      "text": "副词两个:nominally 是名义上、账面上如此,实际不然,只说名实不符,不暗示谁在撒谎(nominally retired);ostensibly 是表面上给出的理由,真实动机多半另有所在,带着怀疑(ostensibly for his health)。nominal 是 nominally 的形容词,这里说有名无实(the nominal head of the firm)。"
+    },
+    "每况愈下": {
+      "members": [
+        "deteriorate",
+        "downward-spiral"
+      ],
+      "text": "deteriorate 是动词,说健康、关系、天气一步步变坏,不带宾语(relations deteriorate)。它的名词 deterioration 泛指变坏的过程;同为名词的 downward spiral 是恶性循环,一个问题引出下一个,越滑越快、难以刹住(a downward spiral of debt)。"
+    },
+    "严酷": {
+      "members": [
+        "brutal",
+        "punishing",
+        "brutality",
+        "cruel"
+      ],
+      "text": "形容词三个:brutal 是严酷到难以忍受,天气、工时、批评都能说(brutal hours),它也常指残暴;punishing 重在把人累垮、耗干,多说日程、训练、爬坡(a punishing schedule);cruel 这里说命运、天气带来沉重打击(a cruel winter),它更常用的意思是残忍。brutality 是 brutal 的名词,这里说事物本身的严酷(the brutality of the final climb),它更常指暴行。"
+    },
+    "乏味": {
+      "members": [
+        "dreary",
+        "tedious",
+        "tedium"
+      ],
+      "text": "形容词两个:dreary 是灰暗沉闷,天气、房间、日子都能说,让人提不起精神(a dreary afternoon);tedious 是又长又重复,做着累、听着烦,多说工作、过程、讲话(tedious work)。tedium 是 tedious 的名词,指一成不变、没完没了的单调(break the tedium)。"
+    },
+    "骇然": {
+      "members": [
+        "appalled",
+        "consternation"
+      ],
+      "text": "appalled 是形容词,看到恶劣、不像话的事而震惊反感,带着谴责(appalled by the conditions);consternation 是名词,突来的坏消息让人又惊又慌、不知如何是好,重在乱了方寸(to the consternation of the parents)。"
+    },
+    "充满活力": {
+      "members": [
+        "spirited",
+        "vital"
+      ],
+      "text": "spirited 说人、动物,或一场争论、比赛、演出劲头足、敢拼(a spirited fight);vital 这里说人生气勃勃、精力旺盛,书面且少见(a vital energy),它更常用的意思是至关重要。"
+    },
+    "举世闻名": {
+      "members": [
+        "world-famous",
+        "world-renowned"
+      ],
+      "text": "world-famous 只说名气大、各国都有人知道,人、店、奶酪都能用,说法通俗(a world-famous cheese);world-renowned 出名之外还带敬重,多说某一行里成就卓著的人或机构,更正式(a world-renowned surgeon)。"
+    },
+    "刺眼": {
+      "members": [
+        "dazzling",
+        "glaring"
+      ],
+      "text": "dazzling 这里说亮得晃眼、睁不开,雪地、反光都算,不一定是坏事(dazzling white snow),它更常用的意思是绚丽出色;glaring 说光又强又硬,照得人难受,常说灯泡、正午的太阳(the glaring midday sun),它更常用的意思是错误等明显。"
+    },
+    "无处不在": {
+      "members": [
+        "omnipresent",
+        "pervasive",
+        "ubiquitous"
+      ],
+      "text": "三个都是形容词。ubiquitous 最常用,说东西多到随处可见,多说具体物件,手机、塑料袋、外卖电动车(ubiquitous plastic bags);omnipresent 字面是同时在各处,常说摄像头、广告、某人的声音无时不在(omnipresent cameras);pervasive 说渗进每个角落,多说气味、情绪、腐败、霉菌这类抓不住的东西,多是坏事(pervasive corruption)。"
+    },
+    "无限期": {
+      "members": [
+        "indefinite",
+        "indefinitely",
+        "open-ended"
+      ],
+      "text": "形容词两个:indefinite 说期限没定、何时结束没宣布,多修饰停课、休假、罢工(an indefinite strike);open-ended 说没设上限、没有终点(an open-ended lease),也常说问题没有唯一答案,用得更宽。indefinitely 是副词,说无限期地,常配暂停、推迟(suspended indefinitely)。"
+    },
+    "被忽视": {
+      "members": [
+        "disregarded",
+        "neglected",
+        "overlooked",
+        "unnoticed"
+      ],
+      "text": "四个都是形容词,差在怎么被忽视。unnoticed 只说没被看见,不怪谁,常跟在 go、pass 后面(went unnoticed);overlooked 说漏看了,或该得的关注和认可没得到(an overlooked novel);disregarded 说明知道却不当回事,多说警告、投诉、说明(disregarded warnings);neglected 说该照料的没人照料,于是荒了、破了、瘦了,多说园子、房子、孩子、动物(a neglected orchard)。"
+    },
+    "令人煎熬": {
+      "members": [
+        "agonizing",
+        "excruciating"
+      ],
+      "text": "两个都是形容词。agonizing 说身心痛苦,或等待、抉择叫人备受煎熬(an agonizing decision);excruciating 这里说场面拖沓或尴尬到让人坐不住(an excruciating silence),它更常用的意思是剧痛。"
+    },
+    "不相上下": {
+      "members": [
+        "comparable",
+        "on-a-par"
+      ],
+      "text": "comparable 说大小、质量、种类差不多,够资格放在一起比,常配 to 或 in(comparable in size);on a par 说水平、地位齐平,重在「不比它差」,常接 with(on a par with the big carriers)。"
+    },
+    "培养": {
+      "members": [
+        "cultivate",
+        "foster"
+      ],
+      "text": "cultivate 说自己花工夫慢慢经营,对象多是人脉、习惯、形象(cultivate contacts);foster 说营造条件让某种感情、风气长起来,主语多是计划、环境、做法(foster confidence)。"
+    },
+    "革新": {
+      "members": [
+        "innovative",
+        "progressive"
+      ],
+      "text": "innovative 说办法、设计、产品是新的,跟以往不同,着眼技术和做法(an innovative design);progressive 说人或政策主张改革、思想开明,着眼社会立场(a progressive mayor),它另有「渐进的」意思。"
+    },
+    "预防性": {
+      "members": [
+        "precautionary",
+        "preventive"
+      ],
+      "text": "precautionary 说以防万一,坏事未必会来,先做一步保险,常配 measure、step(a precautionary measure);preventive 说专门用来挡住疾病、故障等,多是固定的做法,常见于医疗和维修(preventive maintenance)。"
+    },
+    "构成": {
+      "members": [
+        "constitute",
+        "comprise"
+      ],
+      "text": "constitute 说若干部分合起来组成整体,主语是部分,常说占多少(constitute half the households);comprise 这里也让部分作主语(women comprise half the class),有人认为这种用法不规范,它更常用的意思是整体包括部分。"
+    },
+    "假": {
+      "members": [
+        "bogus",
+        "phony",
+        "sham"
+      ],
+      "text": "三个都是形容词。bogus 说为了骗人而伪造,多是票、链接、发票这类东西(a bogus invoice);phony 口语,除了假货,还能说笑容、口音这类装出来的不真诚(a phony smile);sham 说徒有其表的假,婚姻、选举、折扣只剩个空架子(a sham marriage),它也作名词。"
+    },
+    "和解": {
+      "members": [
+        "rapprochement",
+        "reconciliation"
+      ],
+      "text": "rapprochement 偏书面,说敌对之后关系慢慢回暖,多说国与国或积怨的双方(a cautious rapprochement);reconciliation 说争吵、冲突结束,重归于好,家人朋友到整个社会都能用,更常见(reach a reconciliation)。"
+    },
+    "易变": {
+      "members": [
+        "changeable",
+        "volatile"
+      ],
+      "text": "changeable 说常常变、没准,天气、心情、态度都能用(changeable weather);volatile 变得更急更猛,大起大落、难以控制,多说价格、局势、收入(volatile oil prices)。"
+    },
+    "表明": {
+      "members": [
+        "indicative",
+        "symptomatic"
+      ],
+      "text": "indicative 中性,说是某事的迹象,常接 of(indicative of an infection);symptomatic 也接 of,但指向更深的问题,多是坏事(symptomatic of a deeper problem),它另有「有症状的」意思。"
+    },
+    "惊愕": {
+      "members": [
+        "consternation",
+        "dismay",
+        "dismayed"
+      ],
+      "text": "名词两个:consternation 说突来的事让人又惊又慌、乱了方寸(widespread consternation);dismay 说得知坏消息时心一沉,失望多于慌乱,常说 to sb's dismay(to his dismay)。dismayed 是 dismay 的形容词,说人惊愕沮丧(dismayed by the bill)。"
+    },
+    "多变": {
+      "members": [
+        "changeable",
+        "unsettled"
+      ],
+      "text": "changeable 说常常变、没准,天气、心情、态度都能用(a changeable sky);unsettled 这里说天气、局势不稳定,时晴时雨(unsettled weather),它更常用的意思是心神不宁。"
+    },
+    "令人怀疑": {
+      "members": [
+        "doubtful",
+        "questionable"
+      ],
+      "text": "doubtful 说事情不太可能成真或发生,常用 it is doubtful 起句(it is doubtful whether);questionable 这里说准确性、价值或前景值得怀疑(a questionable conclusion),它更常用的意思是可疑、不正当。"
+    },
+    "无忧无虑": {
+      "members": [
+        "carefree",
+        "insouciance"
+      ],
+      "text": "carefree 是形容词,说没有烦恼和负担,轻松自在,是褒义(a carefree summer);同为形容词的 insouciant 说该操心时也不当回事,有洒脱也有没心没肺。insouciance 是 insouciant 的名词(with cheerful insouciance)。"
+    },
+    "断言": {
+      "members": [
+        "affirm",
+        "assert"
+      ],
+      "text": "都是动词。affirm 是郑重、公开地申明某事属实,偏正式表态或确认(affirm that it is true);assert 是自信地断言,常常拿不出证据,对方未必认,偏一口咬定(assert his innocence)。"
     }
   }
 }
