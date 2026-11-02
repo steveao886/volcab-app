@@ -25,21 +25,19 @@ const filler = ['carol', 'delta', 'india', 'juliet', 'kilo', 'lima', 'mike', 'os
   .map(id => word(id, 5))
 
 describe('orderFreshWords', () => {
-  it('takes new words by encounter likelihood, high to low', () => {
-    const pool = [word('alpha', 5), word('bravo', 9), word('carol', 7)]
-    expect(ids(orderFreshWords(pool, spread(pool), 5, 3))).toEqual(['bravo', 'carol', 'alpha'])
+  it('ignores usageScore — the newest captures score highest, so it served them first', () => {
+    // Same ids, scores swapped end to end: an order that still read the
+    // score could not give one answer for both.
+    const a = [word('alpha', 9), word('bravo', 5), word('carol', 1), word('delta')]
+    const b = [word('alpha'), word('bravo', 1), word('carol', 5), word('delta', 9)]
+    expect(ids(orderFreshWords(a, spread(a), 5, 4))).toEqual(ids(orderFreshWords(b, spread(b), 5, 4)))
   })
 
-  it('sorts unscored words last — unscored does not mean high-frequency', () => {
-    const pool = [word('alpha'), word('bravo', 1)]
-    expect(ids(orderFreshWords(pool, spread(pool), 5, 2))).toEqual(['bravo', 'alpha'])
-  })
-
-  it('breaks ties by hash, so the result does not depend on word-list order', () => {
+  it('orders by hash, so the result does not depend on word-list order', () => {
     const pool = [word('alpha', 5), word('bravo', 5), word('carol', 5), word('delta', 5)]
     const reversed = [...pool].reverse()
     // The two inputs differ, so an ordering that still leaned on array
-    // position — the tiebreak this replaced — could not produce one answer.
+    // position — capture order — could not produce one answer.
     expect(ids(orderFreshWords(pool, spread(pool), 5, 4)))
       .toEqual(ids(orderFreshWords(reversed, spread(reversed), 5, 4)))
   })
@@ -80,10 +78,22 @@ describe('orderFreshWords', () => {
     expect(Math.abs(out.indexOf('carol') - out.indexOf('delta'))).toBeGreaterThan(3)
   })
 
-  it('separates the same word family — resent / resentment share a stem and nothing else', () => {
-    const pool = [word('resent', 9), word('resentment', 9), ...filler]
-    const out = ids(orderFreshWords(pool, spread(pool), 3, pool.length))
-    expect(Math.abs(out.indexOf('resent') - out.indexOf('resentment'))).toBeGreaterThan(3)
+  it('keeps a word family off the whole day, not just off the last few picks', () => {
+    // delight and delighted hash 2nd and 7th among these twelve, five apart:
+    // gap 2 alone lets both into a day of eight. The family rule holds the
+    // second back for as long as anything else fits.
+    const pool = [word('delight', 9), word('delighted', 9), ...filler]
+    const day = ids(orderFreshWords(pool, spread(pool), 2, 8))
+    expect(day.filter(id => id.startsWith('delight'))).toHaveLength(1)
+  })
+
+  it('counts a related form as family even when the stems part', () => {
+    // vain / vanity share two letters, far short of a stem; only the
+    // relatedForms link joins them. They hash 3rd and 2nd here, so the gap
+    // pass alone would put vain three slots after vanity, inside the day.
+    const pool = [word('vain', 9, { relatedForms: [{ form: 'vanity', pos: 'n.', zh: 'x' }] }), word('vanity', 9), ...filler]
+    const day = ids(orderFreshWords(pool, spread(pool), 2, 8))
+    expect(day.filter(id => id.startsWith('va'))).toHaveLength(1)
   })
 
   it('does not call two words a family on a short or lopsided prefix', () => {
@@ -116,12 +126,12 @@ describe('orderFreshWords', () => {
     expect(orderFreshWords(pool, spread(pool), 5, 99)).toHaveLength(2)
   })
 
-  it('a zero gap turns the spacing off and leaves plain score order', () => {
+  it('a zero gap turns the spacing off and leaves plain hash order', () => {
+    // alpha and bravo are related by capture position; with the spacing off
+    // the order cannot depend on which index map is passed.
     const pool = [word('alpha', 9), word('bravo', 9), ...filler]
-    const out = ids(orderFreshWords(pool, asCaptured(pool), 0, 2))
-    expect(out).toHaveLength(2)
-    expect(out).toContain('alpha')
-    expect(out).toContain('bravo')
+    expect(ids(orderFreshWords(pool, asCaptured(pool), 0, pool.length)))
+      .toEqual(ids(orderFreshWords(pool, spread(pool), 0, pool.length)))
   })
 
   it('handles an empty pool and a single word', () => {
@@ -140,6 +150,24 @@ describe('orderFreshWords', () => {
     ]
     const out = ids(orderFreshWords(pool, spread(pool), 3, pool.length))
     expect(Math.abs(out.indexOf('alpha') - out.indexOf('bravo'))).toBeGreaterThan(3)
+  })
+
+  describe('the longer lookback over a word family', () => {
+    it('defers a family member started inside the family window', () => {
+      const pool = [word('resentment', 9), ...filler.slice(0, 4)]
+      expect(ids(orderFreshWords(pool, spread(pool), 5, 4, [], [word('resent', 9)]))).not.toContain('resentment')
+    })
+
+    it('reads a related form from the started side', () => {
+      const started = word('deride', 9, { relatedForms: [{ form: 'derision', pos: 'n.', zh: 'x' }] })
+      const pool = [word('derision', 9), ...filler.slice(0, 4)]
+      expect(ids(orderFreshWords(pool, spread(pool), 5, 4, [], [started]))).not.toContain('derision')
+    })
+
+    it('does not hold back a synonym — the family window is for families only', () => {
+      const pool = [word('alpha', 9, { synonyms: ['bravo'] }), ...filler.slice(0, 3)]
+      expect(ids(orderFreshWords(pool, spread(pool), 5, 4, [], [word('bravo', 9)]))).toContain('alpha')
+    })
   })
 
   describe('lookback over recently started words', () => {
@@ -196,6 +224,6 @@ describe('orderFreshWords', () => {
     // Words and progress can disagree about what exists (see CLAUDE.md); a
     // missing index must not throw or drop the word.
     const pool = [word('alpha', 5), word('bravo', 9)]
-    expect(ids(orderFreshWords(pool, new Map(), 5, 2))).toEqual(['bravo', 'alpha'])
+    expect(ids(orderFreshWords(pool, new Map(), 5, 2)).sort()).toEqual(['alpha', 'bravo'])
   })
 })

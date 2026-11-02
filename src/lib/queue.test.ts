@@ -121,12 +121,13 @@ describe('buildQueue — prioritized by encounter probability', () => {
     return x
   }
 
-  it('new words are taken by encounter probability from high to low, regardless of their position in the word list', () => {
-    const ws = [word('rare', 2), word('common', 9), word('mid', 5)]
-    expect(buildQueue(ws, p(2), '2026-07-24').fresh).toEqual(['common', 'mid'])
+  it('new words are not taken by encounter probability — the newest captures score highest, so that served them first', () => {
+    const a = [word('rare', 2), word('common', 9), word('mid', 5)]
+    const b = [word('rare', 9), word('common', 2), word('mid', 5)]
+    expect(buildQueue(a, p(2), '2026-07-24').fresh).toEqual(buildQueue(b, p(2), '2026-07-24').fresh)
   })
 
-  it('ties are broken by a hash of the id, not by word-list position — that position is capture order, i.e. a synonym walk', () => {
+  it('the order is a hash of the id, not word-list position — that position is capture order, i.e. a synonym walk', () => {
     const ws = [word('alpha', 5), word('bravo', 5), word('carol', 5)]
     const reversed = [...ws].reverse()
     expect(buildQueue(ws, p(3), '2026-07-24').fresh)
@@ -163,9 +164,27 @@ describe('buildQueue — prioritized by encounter probability', () => {
     })
   })
 
-  it('words missing usageScore sort last — unscored does not mean high-frequency, it should not jump the queue', () => {
-    const ws = [word('unscored'), word('low', 1)]
-    expect(buildQueue(ws, p(2), '2026-07-24').fresh).toEqual(['low', 'unscored'])
+  describe('family lookback', () => {
+    // resentment would be today's one new word (india hashes after it); resent is its stem.
+    const ws = [word('resentment', 5), word('india', 5)]
+    const started = (startedOn: string): Progress => {
+      const x = p(1)
+      x.words['resent'] = {
+        state: 'review', ease: 2.5, intervalDays: 1, due: '2026-07-30', stepIndex: 0, reps: 3, lapses: 0,
+        lastReviewedAt: '2026-07-21T00:00:00Z', startedOn,
+      }
+      return x
+    }
+    const withResent = [word('resent', 5), ...ws]
+
+    it('keeps a word family apart for FAMILY_LOOKBACK_DAYS, well past the three-day window', () => {
+      expect(buildQueue(withResent, started('2026-07-14'), '2026-07-24').fresh).toEqual(['india'])
+      expect(buildQueue(withResent, started('2026-07-10'), '2026-07-24').fresh).toEqual(['india'])
+    })
+
+    it('lets it through once the family member was started fifteen days ago', () => {
+      expect(buildQueue(withResent, started('2026-07-09'), '2026-07-24').fresh).toEqual(['resentment'])
+    })
   })
 
   it('when review words tie on state and due date, sort by encounter probability, not alphabetically', () => {
