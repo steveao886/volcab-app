@@ -121,14 +121,17 @@ export const SESSION_SPACING_GAP = 5
  * `blocked` marks an item that is related to something placed **before
  * this run** — a word started yesterday, which no position inside today's
  * ordering can clear. It is passed over on the same terms as a related
- * neighbour, and fails open the same way.
+ * neighbour, and fails open the same way. It is also handed the picks made
+ * so far, for a rule that must reach further back than `gap` — the
+ * new-word queue keeps a word family off the whole day, not just off the
+ * last `gap` slots (see `orderFreshWords`).
  */
 export function spaceApart<T>(
   sorted: readonly T[],
   related: (a: T, b: T) => boolean,
   gap: number,
   limit: number = sorted.length,
-  blocked: (item: T) => boolean = () => false,
+  blocked: (item: T, placed: readonly T[]) => boolean = () => false,
 ): T[] {
   const take = Math.min(Math.max(limit, 0), sorted.length)
   if (gap <= 0) return sorted.slice(0, take)
@@ -139,7 +142,7 @@ export function spaceApart<T>(
     let pick = 0
     const ceiling = Math.min(LOOKAHEAD, rest.length)
     for (let i = 0; i < ceiling; i++) {
-      if (!blocked(rest[i]) && !recent.some(w => related(w, rest[i]))) { pick = i; break }
+      if (!blocked(rest[i], out) && !recent.some(w => related(w, rest[i]))) { pick = i; break }
     }
     out.push(rest.splice(pick, 1)[0])
   }

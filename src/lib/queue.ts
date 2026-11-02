@@ -1,4 +1,4 @@
-import { LOOKBACK_DAYS, MAX_SPACING_GAP, orderFreshWords } from './freshOrder'
+import { FAMILY_LOOKBACK_DAYS, LOOKBACK_DAYS, MAX_SPACING_GAP, orderFreshWords } from './freshOrder'
 import { declaredLinks, isRelated, SESSION_SPACING_GAP, spaceApart } from './related'
 import { addDays, INITIAL_EASE, todayStr } from './srs'
 import type { Progress, Word } from '../types'
@@ -60,18 +60,15 @@ export function buildQueue(words: Word[], progress: Progress, today: string): Da
 
   const learnedToday = progress.dailyStats[today]?.newLearned ?? 0
   const budget = Math.max(0, progress.settings.newPerDay - learnedToday)
-  // New words are taken in descending order of encounter likelihood, not word-list array
-  // order. Only newPerDay words get learned each day, so which ones get picked directly
-  // decides the return on that investment — whether formidable (8 points) or criticality
-  // (2 points) gets learned first shouldn't be decided by which entered the word list
-  // first.
-  //
-  // Ties used to fall back to the word list's own order, defended here as "no gratuitous
-  // shuffling". That order carries something worse than nothing: it is capture order, and
-  // words are captured by tapping synonyms, so the queue served whole synonym families in
-  // one sitting — 11 of 12 simulated days over the library's last 60 words held a related
-  // pair. orderFreshWords replaces the tiebreak and spaces related words apart; see
-  // docs/superpowers/specs/2026-09-03-new-word-spacing-design.md.
+  // New words are taken in a stable shuffle (a hash of the id), not by encounter
+  // likelihood and not in word-list order. Likelihood came first until 2026-11-02, and
+  // since the newest captures score highest it served each capture batch ahead of the
+  // backlog — the user read it as "in the order I added them". Word-list order is worse
+  // still: it is capture order, and words are captured by tapping synonyms, so the queue
+  // served whole synonym families in one sitting — 11 of 12 simulated days over the
+  // library's last 60 words held a related pair. orderFreshWords spaces related words
+  // apart; see docs/superpowers/specs/2026-09-03-new-word-spacing-design.md and
+  // 2026-11-02-new-word-shuffle-design.md.
   //
   // The gap is one day's intake, so it keeps its meaning when newPerDay changes: two
   // related words can't share a window of newPerDay slots if more than that many words
@@ -82,16 +79,21 @@ export function buildQueue(words: Word[], progress: Progress, today: string): Da
   // in the LOOKBACK_DAYS before it go in as well — tomorrow's ordering
   // could not see today's, and a session resumed halfway could not see its
   // own first half. A cutoff string compares correctly against YYYY-MM-DD.
+  // A word's own family (same stem, or a related form) is held back for
+  // the longer FAMILY_LOOKBACK_DAYS window.
   const since = addDays(today, -LOOKBACK_DAYS)
+  const familySince = addDays(today, -FAMILY_LOOKBACK_DAYS)
+  const startedSince = (cutoff: string) => words.filter(w => {
+    const s = progress.words[w.id]?.startedOn
+    return s !== undefined && s >= cutoff
+  })
   const fresh = orderFreshWords(
     words.filter(w => !progress.words[w.id] || progress.words[w.id].state === 'new'),
     new Map(words.map((w, i) => [w.id, i])),
     Math.min(progress.settings.newPerDay, MAX_SPACING_GAP),
     budget,
-    words.filter(w => {
-      const s = progress.words[w.id]?.startedOn
-      return s !== undefined && s >= since
-    }),
+    startedSince(since),
+    startedSince(familySince),
   ).map(w => w.id)
 
   return { due, fresh }

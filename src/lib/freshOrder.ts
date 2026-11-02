@@ -1,9 +1,6 @@
 import { confusableIndex } from './contrast'
-import { declaredLinks, isRelated, spaceApart } from './related'
+import { declaredLinks, isRelated, sharesStem, spaceApart } from './related'
 import type { Word } from '../types'
-
-/** Encounter likelihood, defaulting to 0 — the same rule and the same reasoning as `score` in queue.ts. */
-const score = (w: Word): number => w.usageScore ?? 0
 
 /**
  * How far apart two words must sit in `words.json` to count as separately
@@ -56,8 +53,35 @@ export const MAX_SPACING_GAP = 10
 export const LOOKBACK_DAYS = 3
 
 /**
- * FNV-1a over the word id, used as the tiebreak between words of equal
- * usageScore.
+ * How many days before today a started word keeps its own **word family**
+ * out of the new-word queue: a shared stem, or a `relatedForms` link —
+ * `volatile` / `volatility`, `tempting` / `tempt`, `delight` / `delighted`.
+ *
+ * `LOOKBACK_DAYS` holds every relative back three days and was tuned on
+ * synonyms; a family member released on the fourth day still reads as the
+ * same word met twice in one week, and the user reported exactly that
+ * (2026-11-02: `empowering` five days after `empower`, `delighted` after
+ * `delight`, `bureaucrat` after `bureaucratic`). Replayed over the live
+ * library from 2026-11-03 (1766 words, 654 unlearned, newPerDay 12, 46
+ * days), counting family pairs started within 14 days of each other:
+ *
+ * | family lookback | pairs ≤ 14 days apart | words deferred | median / worst delay |
+ * |---|---|---|---|
+ * | 3 (before) | 47 | — | — |
+ * | 7 | 15 at 8 days, 16 more by 14 | 51 | 2 / 8 days |
+ * | **14** | **0** | **56** | **3 / 16 days** |
+ * | 21 | 0 | 55 | 4 / 22 days |
+ *
+ * 21 buys nothing inside two weeks and costs a longer worst delay; past it
+ * the pool cannot satisfy the rule and the fail-open branch starts landing
+ * pairs (at 30, on the pre-batch library, pairs reappeared 11 and 13 days
+ * apart). Synonyms and confusable pairs keep the 3-day window — the user
+ * asked for families, and those were measured separately.
+ */
+export const FAMILY_LOOKBACK_DAYS = 14
+
+/**
+ * FNV-1a over the word id: the queue's order.
  *
  * **A hash, not a random number, and deliberately no injected `rng`.** The
  * CLAUDE.md rule about injecting `rng` exists to make randomness testable;
@@ -65,7 +89,9 @@ export const LOOKBACK_DAYS = 3
  * render of the Today page and again when Review mounts, so a re-rolled
  * order would hand you a different five words for backing out of the review
  * page and re-entering it, and would change the word shown as next up. Two
- * devices would also disagree about what today's new words are.
+ * devices would also disagree about what today's new words are. A hash is
+ * a shuffle that holds still: a word added today lands at a random place in
+ * the queue and stays there.
  */
 function hash(id: string): number {
   let h = 2166136261 >>> 0
@@ -79,11 +105,18 @@ function hash(id: string): number {
 /**
  * Today's new words, ordered so that related ones don't arrive together.
  *
- * `usageScore` still decides who gets learned — only `newPerDay` words are
- * learned each day and that budget should buy the words most likely to be
- * encountered. What changed is the tiebreak and a spacing pass over it.
+ * **The order is the hash alone.** It used to be `usageScore`, high to low,
+ * on the reasoning that a day's budget should buy the words most likely to
+ * be met. In practice that served the newest capture batch first: the user
+ * captures the words they are reading now and the drafts score them high,
+ * so on 2026-11-02 the last 114 words added (scored 6–9) were being started
+ * ahead of a backlog that mostly scores 4–5, and the user reported the
+ * queue as "in the order I added them". Replayed as in
+ * `FAMILY_LOOKBACK_DAYS`, the first week's 84 new words held 41 from the
+ * latest 114 under the score order and 24 under the hash, against a 17%
+ * share of the pool.
  *
- * The old tiebreak was the word's position in `words.json`, which is
+ * The tiebreak before the hash was the word's position in `words.json`, which is
  * capture order, which is a synonym walk — so the queue reproduced the
  * clusters exactly. Simulated over the library's last 60 words at
  * newPerDay 5, **11 of 12 days held at least one related pair**
@@ -107,6 +140,10 @@ function hash(id: string): number {
  * `profligate`, `abysmal` / `dreadful`). With the lookback and the
  * confusable pairs below: 0, 0 and 0, and one pair three days apart. See
  * docs/superpowers/specs/2026-10-01-new-word-day-spacing-design.md.
+ *
+ * `recentFamily` is the words started in the `FAMILY_LOOKBACK_DAYS`
+ * window, the longer one that holds back a word's own family — see
+ * `sameFamily` below.
  */
 export function orderFreshWords(
   pool: readonly Word[],
@@ -114,14 +151,23 @@ export function orderFreshWords(
   gap: number,
   limit: number,
   recent: readonly Word[] = [],
+  recentFamily: readonly Word[] = [],
 ): Word[] {
-  const sorted = [...pool].sort((a, b) => score(b) - score(a) || hash(a.id) - hash(b.id))
+  const sorted = [...pool].sort((a, b) => hash(a.id) - hash(b.id) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
 
   // A word cannot be both waiting and started; if words and progress
   // disagree, the pool wins — a word blocked by itself (it shares its own
   // stem) would be deferred for nothing.
   const inPool = new Set(pool.map(w => w.id))
   const started = recent.filter(w => !inPool.has(w.id))
+  const startedFamily = recentFamily.filter(w => !inPool.has(w.id))
+
+  // A word family is held off the whole day, not just off the last `gap`
+  // picks, and off the `FAMILY_LOOKBACK_DAYS` before it: `placed` below is
+  // everything picked so far in this run.
+  const forms = familyLinks([...pool, ...startedFamily])
+  const sameFamily = (a: Word, b: Word): boolean =>
+    sharesStem(a.id, b.id) || forms.get(a.id)?.has(b.id) === true
 
   const everyone = [...pool, ...started]
   const links = declaredLinks(everyone)
@@ -147,7 +193,25 @@ export function orderFreshWords(
     if (ia !== undefined && ib !== undefined && Math.abs(ia - ib) <= CAPTURE_WINDOW) return true
     return near(a, b)
   }
-  const blocked = (w: Word): boolean => started.some(s => near(s, w))
+  const blocked = (w: Word, placed: readonly Word[]): boolean =>
+    started.some(s => near(s, w)) ||
+    startedFamily.some(s => sameFamily(s, w)) ||
+    placed.some(p => sameFamily(p, w))
 
   return spaceApart(sorted, related, gap, limit, blocked)
+}
+
+/** `relatedForms` links within the pool, read from either side — `declaredLinks` without the synonyms and antonyms. */
+function familyLinks(pool: readonly Word[]): Map<string, Set<string>> {
+  const links = new Map<string, Set<string>>(pool.map(w => [w.id, new Set<string>()]))
+  for (const w of pool) {
+    for (const r of w.relatedForms) {
+      const id = r.form.toLowerCase()
+      const target = links.get(id)
+      if (id === w.id || target === undefined) continue
+      links.get(w.id)!.add(id)
+      target.add(w.id)
+    }
+  }
+  return links
 }
