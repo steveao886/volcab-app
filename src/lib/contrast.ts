@@ -152,3 +152,37 @@ export function buildContrastPairs(words: Word[]): ContrastPair[] {
     // reproducible.
     .sort((x, y) => y.score - x.score || x.a.localeCompare(y.a) || x.b.localeCompare(y.b))
 }
+
+/**
+ * The 近义词 row a card shows: the entry's own `synonyms`, then every library
+ * word that lists this one's headword and is not already on that list.
+ *
+ * A direct link is written on one side only, and the pair graph above reads it
+ * as symmetric — `direct` is set from either side. The card used to show the
+ * entry's own list alone, so half of a pair the quiz treats as confusable was
+ * invisible from one end: unsubstantiated's card never named `unproven`,
+ * which lists it. Over the repo copy on 2026-11-04, 1033 of 2389 in-library
+ * synonym pointers were one-way and 736 of 1766 cards missed at least one word
+ * that listed them.
+ *
+ * **The fix is here and not in the data.** Writing the headword back onto the
+ * other side looks equivalent and is not: a synonym string joins every word
+ * that lists it, so `unproven` written onto unsubstantiated would also pair it
+ * with `untested`, which carries the same string in a different sense
+ * (未经测试, against 拿不出证据). Reading the pointer backwards adds nothing to
+ * the graph that was not already there.
+ *
+ * Matches with the same `norm` as the pair graph, so the card and 辨析 agree
+ * on what counts as a listing. Incoming partners are alphabetical: library
+ * order is capture order and would reshuffle the row whenever a word is
+ * re-added.
+ */
+export function cardSynonyms(word: Word, words: readonly Word[]): string[] {
+  const head = norm(word.headword)
+  const seen = new Set([head, ...word.synonyms.map(norm)])
+  const incoming = words
+    .filter(w => w.id !== word.id && !seen.has(norm(w.headword)) && w.synonyms.some(s => norm(s) === head))
+    .map(w => w.headword)
+    .sort((a, b) => a.localeCompare(b))
+  return [...word.synonyms, ...incoming]
+}

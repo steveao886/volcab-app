@@ -1,10 +1,13 @@
+import { useMemo } from 'react'
 import { CaptureChips } from '../components/CaptureChips'
 import { ExampleSentence } from '../components/ExampleSentence'
 import { SenseSpeakButton } from '../components/SenseSpeakButton'
 import wordNotesFile from '../data/wordNotes.json'
+import { cardSynonyms } from '../lib/contrast'
 import { senseVoices } from '../lib/sensePronounce'
 import { wordNote } from '../lib/wordNotes'
 import type { WordNotesFile } from '../lib/wordNotes'
+import { useApp } from '../state/store'
 import type { Word } from '../types'
 
 /**
@@ -31,6 +34,9 @@ export function ReviewCardBack({ word }: { word: Word }) {
   // All null except on a heteronym whose divergent sense has a respelling —
   // see lib/sensePronounce.ts.
   const voices = senseVoices(word)
+  // Own list plus the words that list this one — see cardSynonyms.
+  const { words } = useApp()
+  const synonyms = useMemo(() => cardSynonyms(word, words), [word, words])
 
   return (
     <div className="review-back">
@@ -132,7 +138,7 @@ export function ReviewCardBack({ word }: { word: Word }) {
         </div>
       )}
 
-      {word.synonyms.length > 0 && <TagRow label="近义词" items={word.synonyms} />}
+      {synonyms.length > 0 && <TagRow label="近义词" items={synonyms} />}
       {word.antonyms.length > 0 && <TagRow label="反义词" items={word.antonyms} />}
       {word.collocations.length > 0 && <TagRow label="搭配" items={word.collocations} />}
 
