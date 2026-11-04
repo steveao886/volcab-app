@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildContrastPairs } from './contrast'
+import { buildContrastPairs, cardSynonyms } from './contrast'
 import type { Word } from '../types'
 
 /**
@@ -150,5 +150,51 @@ describe('buildContrastPairs at realistic scale', () => {
       }
     }
     expect(new Set(pairs.map(p => `${p.a}|${p.b}`))).toEqual(naive)
+  })
+})
+
+/**
+ * The card's 近义词 row. A direct link is written on one side only — 1033 of
+ * the library's 2389 in-library synonym pointers were one-way on 2026-11-04 —
+ * and the pair graph treats it as symmetric, so the card has to as well.
+ */
+describe('cardSynonyms', () => {
+  it('appends the library words that list this headword, after the entry\'s own list', () => {
+    // The reported case: unproven lists unsubstantiated, unsubstantiated does not list it back.
+    const target = w('unsubstantiated', ['unfounded', 'groundless'])
+    const lib = [target, w('unproven', ['unverified', 'unsubstantiated']), w('unfounded', ['unsubstantiated'])]
+    expect(cardSynonyms(target, lib)).toEqual(['unfounded', 'groundless', 'unproven'])
+  })
+
+  it('a shared synonym string is not a listing: only a pointer at this headword counts', () => {
+    // untested lists the string "unproven"; that joins it to other listers, not to unproven's card.
+    const target = w('unsubstantiated', [])
+    const lib = [target, w('untested', ['unproven']), w('unproven', [])]
+    expect(cardSynonyms(target, lib)).toEqual([])
+  })
+
+  it('matches the headword the way the pair graph does, ignoring case and whitespace', () => {
+    const target = w('mediate', [])
+    const lib = [target, w('intercede', [' Mediate '])]
+    expect(cardSynonyms(target, lib)).toEqual(['intercede'])
+  })
+
+  it('a partner the entry already lists is not shown twice, whatever its case', () => {
+    const target = w('mediate', ['Intercede'])
+    const lib = [target, w('intercede', ['mediate'])]
+    expect(cardSynonyms(target, lib)).toEqual(['Intercede'])
+  })
+
+  it('a self-listing entry does not put itself on its own card', () => {
+    const target = w('alpha', ['alpha'])
+    expect(cardSynonyms(target, [target])).toEqual(['alpha'])
+  })
+
+  it('incoming partners are alphabetical, so library order does not move them', () => {
+    const target = w('alluring', [])
+    const a = w('tantalizing', ['alluring']), b = w('irresistible', ['alluring']), c = w('tempting', ['alluring'])
+    const expected = ['irresistible', 'tantalizing', 'tempting']
+    expect(cardSynonyms(target, [target, a, b, c])).toEqual(expected)
+    expect(cardSynonyms(target, [c, b, target, a])).toEqual(expected)
   })
 })

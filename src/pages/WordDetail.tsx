@@ -11,6 +11,7 @@ import { SenseSpeakButton } from '../components/SenseSpeakButton'
 import { StateDot } from '../components/StateDot'
 import { SyncStatus } from '../components/SyncStatus'
 import wordNotesFile from '../data/wordNotes.json'
+import { cardSynonyms } from '../lib/contrast'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
 import { RECALL_STEADY_STREAK } from '../lib/senseGroup'
 import { senseVoices } from '../lib/sensePronounce'
@@ -70,6 +71,8 @@ export function WordDetail() {
   useEffect(() => {
     if (word !== undefined) preparePronunciation(word.headword)
   }, [word])
+  // Own list plus the words that list this one — see cardSynonyms.
+  const synonyms = useMemo(() => (word ? cardSynonyms(word, words) : []), [word, words])
 
   async function handleSave(updated: Word) {
     setSaving(true)
@@ -224,10 +227,10 @@ export function WordDetail() {
             </section>
           )}
 
-          {word.synonyms.length > 0 && (
+          {synonyms.length > 0 && (
             <section className="section">
               <h2 className="section-head">近义词</h2>
-              <CaptureChips className="worddetail-chiprow" items={word.synonyms.map(s => ({ word: s }))} />
+              <CaptureChips className="worddetail-chiprow" items={synonyms.map(s => ({ word: s }))} />
             </section>
           )}
           {word.antonyms.length > 0 && (
