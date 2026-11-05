@@ -265,6 +265,32 @@ describe('mergeProgress: optional dailyStat counters', () => {
     expect('reviewPhase' in m.dailyStats['2026-07-25']).toBe(false)
   })
 
+  it('carriedOver: the smaller stamp wins — a device left open across days can only overcount', () => {
+    const m = mergeProgress(withDay(day({ carriedOver: 3 })), withDay(day({ carriedOver: 5 })))
+    expect(m.dailyStats['2026-07-25'].carriedOver).toBe(3)
+    const r = mergeProgress(withDay(day({ carriedOver: 5 })), withDay(day({ carriedOver: 3 })))
+    expect(r.dailyStats['2026-07-25'].carriedOver).toBe(3)
+  })
+
+  it('carriedOver: one side missing it keeps the other side\'s stamp, including 0', () => {
+    expect(mergeProgress(withDay(day({ carriedOver: 3 })), withDay(day())).dailyStats['2026-07-25'].carriedOver).toBe(3)
+    expect(mergeProgress(withDay(day()), withDay(day({ carriedOver: 0 }))).dailyStats['2026-07-25'].carriedOver).toBe(0)
+  })
+
+  it('carriedOver: absent on both stays absent — absent means "count live", which 0 would not', () => {
+    const m = mergeProgress(withDay(day({ reviewed: 4 })), withDay(day({ reviewed: 2 })))
+    expect('carriedOver' in m.dailyStats['2026-07-25']).toBe(false)
+  })
+
+  it('carriedOver: a malformed side is ignored rather than winning the minimum', () => {
+    for (const bad of [-1, 1.5, NaN, 'x']) {
+      const m = mergeProgress(withDay(day({ carriedOver: bad as number })), withDay(day({ carriedOver: 4 })))
+      expect(m.dailyStats['2026-07-25'].carriedOver).toBe(4)
+    }
+    const both = mergeProgress(withDay(day({ carriedOver: -2 })), withDay(day({ carriedOver: 'x' as unknown as number })))
+    expect('carriedOver' in both.dailyStats['2026-07-25']).toBe(false)
+  })
+
   it('quizModes survives the merge — an unlisted field is dropped the first time two devices sync', () => {
     const m = mergeProgress(
       withDay(day({ quizModes: { recall: { asked: 10, correct: 6 } } })),

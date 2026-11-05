@@ -75,6 +75,26 @@ function maxOptional(
 }
 
 /**
+ * The day's carried-over stamp: the **smaller** one wins, not the larger.
+ *
+ * Every other DailyStat field is a counter and takes the max. This one is a
+ * snapshot, and its errors run one way: the app pulls only at boot and on a
+ * push conflict, so a device left open across days lacks the other's
+ * reviews, still sees those words as overdue, and can only overcount. The
+ * smaller stamp is the closer one, and it is the one the device that started
+ * the day is already using, so its quota does not move under it.
+ *
+ * Lenient like the read in buildQueue: a side that is not a non-negative
+ * integer is no stamp, so junk can never win the minimum. Absent on both
+ * stays absent — absent means "count live", which a written 0 would not.
+ */
+function minCarriedOver(a: DailyStat, b: DailyStat): Partial<DailyStat> {
+  const ok = (v: unknown): v is number => Number.isInteger(v) && (v as number) >= 0
+  const vals = [a.carriedOver, b.carriedOver].filter(ok)
+  return vals.length === 0 ? {} : { carriedOver: Math.min(...vals) }
+}
+
+/**
  * Per-mode tallies, merged key by key with the higher count winning on each
  * side of each mode — the same "higher wins" rule the flat counters use,
  * applied one level down.
@@ -349,6 +369,7 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
       ...maxOptional('reviewPhase', a, b),
       ...maxOptional('reviewPhaseCorrect', a, b),
       ...mergeQuizModes(a, b),
+      ...minCarriedOver(a, b),
     }
   }
 

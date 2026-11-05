@@ -110,13 +110,22 @@ function ReviewSession() {
   // once here so that finishing a session doesn't blank the cards out from
   // under the "done" screen.
   const [alreadyDone] = useState(() => doneToday(mode, today))
+  // The due-mode queue, built once: the session queue below and the
+  // carried-over count grade() freezes for the day both come from this one
+  // call, so the number stamped is the one this session's new words were
+  // cut by. Consolidation has no new words and grades through
+  // recordConsolidation, which never stamps.
+  const [mountQueue] = useState(() => (consolidateMode ? null : buildQueue(words, progress, today)))
   const [queue, setQueue] = useState<SessionQueue>(() => {
-    if (consolidateMode) {
+    if (mountQueue === null) {
       return buildSessionQueue(alreadyDone ? [] : buildConsolidateQueue(words, progress, new Date(), today), [])
     }
-    const q = buildQueue(words, progress, today)
-    return buildSessionQueue(q.due, q.fresh)
+    return buildSessionQueue(mountQueue.due, mountQueue.fresh)
   })
+  const session = useMemo(
+    () => (mountQueue === null ? undefined : { day: today, carriedOver: mountQueue.carriedOver }),
+    [mountQueue, today],
+  )
   const [manualFlip, setManualFlip] = useState<{ id: string; value: boolean } | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -259,9 +268,9 @@ function ReviewSession() {
       // practice multiply a word's interval several times over and push
       // the hardest words furthest into the future. See recordConsolidation.
       if (consolidateMode) recordConsolidation(curId, g)
-      else grade(curId, g)
+      else grade(curId, g, session)
     },
-    [curId, curEntry, flipped, grade, recordConsolidation, consolidateMode, soundEnabled],
+    [curId, curEntry, flipped, grade, recordConsolidation, consolidateMode, soundEnabled, session],
   )
 
   // Dismisses the confirm showing: the queue moves on and nothing is

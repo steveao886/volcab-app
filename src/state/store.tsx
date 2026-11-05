@@ -66,10 +66,18 @@ export interface AppState {
   syncError: string | null
 }
 
+/** A 复习 session as grade() needs it: the day it was built on, and the carried-over count buildQueue used then. */
+export interface ReviewSession { day: string; carriedOver: number }
+
 export interface AppActions {
   login(token: string): Promise<void>
   logout(): void
-  grade(wordId: string, g: Grade): void
+  /**
+   * A scheduled review grade. `session` is the 复习 session it belongs to:
+   * its first grade on the session's own day freezes the day's carried-over
+   * count (DailyStat.carriedOver). Omitted, nothing is stamped.
+   */
+  grade(wordId: string, g: Grade, session?: ReviewSession): void
   /** Stubborn-word drill, graded one card at a time: practice only, so a miss stamps missedAt and nothing else moves */
   /** Same-day consolidation pass over today's new words. Practice: a miss stamps missedAt and nothing the scheduler owns moves. */
   recordConsolidation(wordId: string, g: Grade): void
@@ -756,12 +764,18 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
   const settlesMiss = (prev: ProgressEntry | undefined, g: Grade): boolean =>
     prev?.state === 'review' && (g === 'good' || g === 'easy')
 
-  const grade = useCallback((wordId: string, g: Grade) => {
+  const grade = useCallback((wordId: string, g: Grade, session?: ReviewSession) => {
     const now = new Date()
     const day = todayStr(now)
     const cur = stateRef.current.progress
     const prev = cur.words[wordId]
     const stat = { ...(cur.dailyStats[day] ?? emptyStat()) }
+    // Freeze the day's carried-over count with the first grade of a session
+    // built today (DailyStat.carriedOver). `=== undefined`, not falsy: 0 is a
+    // stamp. And only on the session's own day: a session left open past
+    // midnight would otherwise stamp every card still waiting in it as
+    // carried into a day the user then finishes them in.
+    if (stat.carriedOver === undefined && session?.day === day) stat.carriedOver = session.carriedOver
     stat.reviewed += 1
     // No record, or still sitting at new, both count as one new word learned today — consistent with how buildQueue determines new words
     if (!prev || prev.state === 'new') stat.newLearned += 1
