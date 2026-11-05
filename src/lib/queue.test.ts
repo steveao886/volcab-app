@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest'
 import {
   buildConsolidateQueue, buildQueue,
   CONSOLIDATE_DELAY_HOURS, CONSOLIDATE_MAX_INTERVAL_DAYS, LAPSE_SESSION_SIZE,
-  MATURE_INTERVAL_DAYS, rankStrugglingWords, strugglingPracticePool,
+  carriedOverCount, MATURE_INTERVAL_DAYS, newQuota, rankStrugglingWords, strugglingPracticePool,
 } from './queue'
 import { INITIAL_EASE } from './srs'
-import { emptyProgress } from '../types'
+import { emptyProgress, emptyStat } from '../types'
 import type { Progress, ProgressEntry, Word } from '../types'
 
 const word = (id: string, usageScore?: number): Word => ({
@@ -30,10 +30,15 @@ describe('buildQueue', () => {
     expect(q.due).toEqual(['bravo', 'alpha'])
   })
   it('new word count = newPerDay minus today\'s already-learned count', () => {
-    const q = buildQueue(words, prog(), '2026-07-24')
+    // prog()'s alpha is overdue, which since 2026-11-04 would also cut the
+    // quota by one; this test is about newLearned, so the day is stamped as
+    // carrying nothing over (see 'carried-over reviews' below).
+    const p1 = prog()
+    p1.dailyStats['2026-07-24'] = { reviewed: 0, newLearned: 0, correct: 0, quizTaken: 0, carriedOver: 0 }
+    const q = buildQueue(words, p1, '2026-07-24')
     expect(q.fresh).toHaveLength(2)
     const p2 = prog()
-    p2.dailyStats['2026-07-24'] = { reviewed: 0, newLearned: 1, correct: 0, quizTaken: 0 }
+    p2.dailyStats['2026-07-24'] = { reviewed: 0, newLearned: 1, correct: 0, quizTaken: 0, carriedOver: 0 }
     expect(buildQueue(words, p2, '2026-07-24').fresh).toHaveLength(1)
   })
   it('empty once the new-word quota is used up', () => {
@@ -464,5 +469,81 @@ describe('strugglingPracticePool: the drill queue before the daily narrowing', (
     const p = emptyProgress()
     p.words['a'] = { state: 'review', ease: INITIAL_EASE, intervalDays: 20, due: '2026-08-13', stepIndex: 0, reps: 4, lapses: 0, lastReviewedAt: '2026-07-01T00:00:00Z', missedAt: '2026-07-16' }
     expect(strugglingPracticePool([word('a')], p, TODAY)).toEqual([])
+  })
+})
+
+/**
+ * Reviews carried over from earlier days take the new words' places, one for
+ * one — see docs/superpowers/specs/2026-11-04-carried-over-reviews-design.md.
+ */
+describe('carried-over reviews', () => {
+  const T = '2026-07-24'
+  const entry = (state: ProgressEntry['state'], due: string): ProgressEntry =>
+    ({ state, ease: 2.5, intervalDays: state === 'review' ? 5 : 0, due, stepIndex: 0, reps: 1, lapses: 0, lastReviewedAt: '2026-07-01T00:00:00Z' })
+  /** n review words due yesterday, then `fresh` unstarted words. */
+  const library = (overdue: number, fresh = 5) => {
+    const ws = [...Array(overdue + fresh).keys()].map(i => word(`w${String(i).padStart(2, '0')}`))
+    const p = emptyProgress()
+    p.settings.newPerDay = 3
+    for (const w of ws.slice(0, overdue)) p.words[w.id] = entry('review', '2026-07-23')
+    return { ws, p }
+  }
+
+  it('the quota loses one new word per carried-over review, and never goes below zero', () => {
+    expect(newQuota(12, 0)).toBe(12)
+    expect(newQuota(12, 5)).toBe(7)
+    expect(newQuota(12, 12)).toBe(0)
+    expect(newQuota(12, 68)).toBe(0)
+    expect(newQuota(3, 5)).toBe(0)
+  })
+
+  it('counts started words due before today, review and learning alike', () => {
+    const p = emptyProgress()
+    p.words['alpha'] = entry('review', '2026-07-23')
+    p.words['bravo'] = entry('learning', '2026-07-22')
+    expect(carriedOverCount(words, p, T)).toBe(2)
+  })
+
+  it('does not count a word due today, an unstarted entry, or an entry whose word is gone', () => {
+    const p = emptyProgress()
+    p.words['alpha'] = entry('review', T)
+    p.words['bravo'] = { ...entry('review', '2026-07-01'), state: 'new' }
+    p.words['deleted'] = entry('review', '2026-07-01')
+    expect(carriedOverCount(words, p, T)).toBe(0)
+  })
+
+  it('buildQueue takes the live count off the new words when nothing is stored', () => {
+    const { ws, p } = library(1)
+    const q = buildQueue(ws, p, T)
+    expect(q.carriedOver).toBe(1)
+    expect(q.fresh).toHaveLength(2)
+  })
+
+  it('a stored count beats a lower live one — re-entering 复习 after clearing the overdue cards keeps the quota', () => {
+    const { ws, p } = library(0)
+    p.dailyStats[T] = { ...emptyStat(), carriedOver: 2 }
+    const q = buildQueue(ws, p, T)
+    expect(q.carriedOver).toBe(2)
+    expect(q.fresh).toHaveLength(1)
+  })
+
+  it('a stored zero beats a live count: it is a real stamp, not a missing one', () => {
+    const { ws, p } = library(3)
+    p.dailyStats[T] = { ...emptyStat(), carriedOver: 0 }
+    expect(buildQueue(ws, p, T).fresh).toHaveLength(3)
+  })
+
+  it('a malformed stored count falls back to the live count', () => {
+    for (const bad of [-1, 1.5, NaN, '2']) {
+      const { ws, p } = library(1)
+      p.dailyStats[T] = { ...emptyStat(), carriedOver: bad as number }
+      expect(buildQueue(ws, p, T).carriedOver).toBe(1)
+    }
+  })
+
+  it('new words learned today come off the reduced quota', () => {
+    const { ws, p } = library(1)
+    p.dailyStats[T] = { ...emptyStat(), newLearned: 1, carriedOver: 1 }
+    expect(buildQueue(ws, p, T).fresh).toHaveLength(1)
   })
 })

@@ -1,9 +1,50 @@
 import { FAMILY_LOOKBACK_DAYS, LOOKBACK_DAYS, MAX_SPACING_GAP, orderFreshWords } from './freshOrder'
 import { declaredLinks, isRelated, SESSION_SPACING_GAP, spaceApart } from './related'
 import { addDays, INITIAL_EASE, todayStr } from './srs'
-import type { Progress, Word } from '../types'
+import type { DailyStat, Progress, Word } from '../types'
 
-export interface DailyQueue { due: string[]; fresh: string[] }
+export interface DailyQueue {
+  due: string[]
+  fresh: string[]
+  /** The carried-over count the new-word budget was cut by: the stored stamp, or the live count when there is none. */
+  carriedOver: number
+}
+
+/**
+ * Reviews carried into `today` from earlier days: started library words due
+ * before today. The same set buildQueue's due list draws from, with the
+ * comparison strict — a word due today is today's work, not a carry-over —
+ * and a progress entry whose word was deleted counted nowhere.
+ */
+export function carriedOverCount(words: Word[], progress: Progress, today: string): number {
+  let n = 0
+  for (const w of words) {
+    const e = progress.words[w.id]
+    if (e && e.state !== 'new' && e.due < today) n++
+  }
+  return n
+}
+
+/**
+ * The day's stamp, if it is one. Lenient on the read side: anything but a
+ * non-negative integer — another device's junk, a hand edit — is no stamp,
+ * and the caller counts live instead.
+ */
+export function storedCarriedOver(stat: DailyStat | undefined): number | undefined {
+  const v = stat?.carriedOver
+  return Number.isInteger(v) && (v as number) >= 0 ? v : undefined
+}
+
+/**
+ * The user's rule (2026-11-04): each review carried over takes a new word's
+ * place, and a day carrying more than the quota is review only. Measured the
+ * day it was asked for, steady-state reviews (61.6/day) plus 12 new words
+ * (~36 cards) were the whole of what the user does (~95–100/day), so a
+ * missed day had nowhere to go but on top of the next one.
+ */
+export function newQuota(newPerDay: number, carriedOver: number): number {
+  return Math.max(0, newPerDay - carriedOver)
+}
 
 /**
  * Likelihood of encountering the word, defaulting to 0.
@@ -58,8 +99,14 @@ export function buildQueue(words: Word[], progress: Progress, today: string): Da
     ...spaceBlock(sortedDue.filter(id => !isLearning(id))),
   ]
 
-  const learnedToday = progress.dailyStats[today]?.newLearned ?? 0
-  const budget = Math.max(0, progress.settings.newPerDay - learnedToday)
+  // The quota first loses one word per review carried over from earlier days
+  // (newQuota), then what has been learned today. The carried-over count is
+  // the day's stamp when there is one: counting live would hand the quota
+  // back as soon as the overdue cards at the head of the session are done.
+  const stat = progress.dailyStats[today]
+  const learnedToday = stat?.newLearned ?? 0
+  const carriedOver = storedCarriedOver(stat) ?? carriedOverCount(words, progress, today)
+  const budget = Math.max(0, newQuota(progress.settings.newPerDay, carriedOver) - learnedToday)
   // New words are taken in a stable shuffle (a hash of the id), not by encounter
   // likelihood and not in word-list order. Likelihood came first until 2026-11-02, and
   // since the newest captures score highest it served each capture batch ahead of the
@@ -70,7 +117,8 @@ export function buildQueue(words: Word[], progress: Progress, today: string): Da
   // apart; see docs/superpowers/specs/2026-09-03-new-word-spacing-design.md and
   // 2026-11-02-new-word-shuffle-design.md.
   //
-  // The gap is one day's intake, so it keeps its meaning when newPerDay changes: two
+  // The gap is one day's intake — newPerDay, not today's carried-over quota,
+  // which only says how many to take — so it keeps its meaning when newPerDay changes: two
   // related words can't share a window of newPerDay slots if more than that many words
   // separate them. Capped because too large a gap makes the constraint unsatisfiable and
   // lands worse than a small one (see MAX_SPACING_GAP).
@@ -96,7 +144,7 @@ export function buildQueue(words: Word[], progress: Progress, today: string): Da
     startedSince(familySince),
   ).map(w => w.id)
 
-  return { due, fresh }
+  return { due, fresh, carriedOver }
 }
 
 /**

@@ -360,6 +360,24 @@ export interface DailyStat {
    * that isn't gets silently dropped the first time two devices sync.
    */
   quizModes?: Record<string, { asked: number; correct: number }>
+  /**
+   * How many reviews were carried into this day from earlier ones, frozen
+   * when the day's first review session was built. Each one takes a new
+   * word's place (`newQuota` in lib/queue.ts).
+   *
+   * **Frozen because a live count does nothing**: a session serves the
+   * overdue cards before the new words, so by the time it reaches them the
+   * live count is zero and the full quota is back. Written only by `grade`,
+   * with the session's first grade on the session's own day, so a session
+   * that runs past midnight does not stamp the next day.
+   *
+   * Optional like every added field. Absent means "count live", which before
+   * the day's first review grade is the same number. mergeProgress keeps the
+   * smaller value: a device left open across days lacks the other's reviews
+   * and can only overcount. See
+   * docs/superpowers/specs/2026-11-04-carried-over-reviews-design.md.
+   */
+  carriedOver?: number
 }
 
 /**
