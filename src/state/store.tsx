@@ -7,6 +7,7 @@ import { GitHubClient } from '../lib/github'
 import { mergeProgress } from '../lib/merge'
 import type { QuizMetricKey } from '../lib/quiz'
 import { relatedDueGuard } from '../lib/related'
+import type { GradeSession } from '../lib/queue'
 import { demoteWord, gradeWord, todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
 import { applyConfusion, applyTangleResults, isReadable, tangleMembers } from '../lib/tangle'
@@ -64,10 +65,16 @@ export interface AppState {
    * the login page's notice area when we fall back there.
    */
   syncError: string | null
+  /**
+   * The local day this device last confirmed its progress against the
+   * remote: a login or boot read (a 304 included) or a successful push.
+   * In memory only — a fresh process always reads at boot, and a process
+   * resumed from an earlier day must keep the earlier day, since nothing
+   * pulls on resume. Read by 复习 at mount (gradeSession): only a session
+   * built after today's pull may stamp the day's carried-over count.
+   */
+  progressPulledOn: string | null
 }
-
-/** A 复习 session as grade() needs it: the day it was built on, and the carried-over count buildQueue used then. */
-export interface ReviewSession { day: string; carriedOver: number }
 
 export interface AppActions {
   login(token: string): Promise<void>
@@ -77,7 +84,7 @@ export interface AppActions {
    * its first grade on the session's own day freezes the day's carried-over
    * count (DailyStat.carriedOver). Omitted, nothing is stamped.
    */
-  grade(wordId: string, g: Grade, session?: ReviewSession): void
+  grade(wordId: string, g: Grade, session?: GradeSession): void
   /** Stubborn-word drill, graded one card at a time: practice only, so a miss stamps missedAt and nothing else moves */
   /** Same-day consolidation pass over today's new words. Practice: a miss stamps missedAt and nothing the scheduler owns moves. */
   recordConsolidation(wordId: string, g: Grade): void
@@ -165,6 +172,7 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
     syncStatus: navigator.onLine ? 'synced' : 'offline',
     loginError: null,
     syncError: null,
+    progressPulledOn: null,
   }))
 
   // Pushes happen inside async callbacks and must read "right now" state, so state is also mirrored on a ref
@@ -258,7 +266,7 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
     // to go on the login page — leaving it would just say one thing in each
     // of two areas alongside the real reason (loginError) here, reading as
     // if two separate things went wrong.
-    update({ phase: 'login', loginError, owner: null, syncError: null })
+    update({ phase: 'login', loginError, owner: null, syncError: null, progressPulledOn: null })
   }, [clearTimer, update])
 
   /**
@@ -299,6 +307,9 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
           cacheProgress(next)
           update({ progress: next })
         }
+        // A landed push means the remote held nothing this device lacks: it
+        // was at our sha, or the conflict path merged it in. That is a pull.
+        update({ progressPulledOn: todayStr(new Date()) })
         markSettled()
         if (!rerunRef.current || !storage.get<boolean>('dirty')) return
       }
@@ -447,6 +458,8 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
       update({
         phase: 'ready', owner: 'demo', words, progress, staging: [],
         loginError: null, syncError: null, syncStatus: 'synced',
+        // No remote to be behind: demo progress is current by definition.
+        progressPulledOn: todayStr(new Date()),
       })
     }
   }, [clearTimer, update])
@@ -536,6 +549,7 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
       // back on the next grade regardless.
       update({
         phase: 'ready', owner, words, progress, staging, loginError: null,
+        progressPulledOn: todayStr(new Date()),
         syncError: carry.discardedOwner
           ? ownerSwitched(carry.discardedOwner)
           : storageFullRef.current ? STORAGE_FULL : null,
@@ -584,6 +598,7 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
     // clears out whatever sync failure existed before logout.
     update({
       phase: 'login', owner: null, words: [], progress: emptyProgress(), staging: [], loginError: null,
+      progressPulledOn: null,
       syncError: droppedOps > 0 || droppedProgress || droppedStaging > 0
         ? logoutDiscarded(droppedOps, droppedProgress, droppedStaging)
         : null,
@@ -695,6 +710,10 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
       const persisted = cacheProgress(progress)
       update({
         phase: 'ready', owner, words, progress, staging, loginError: null,
+        // The progress read answered (a 304 included), so this copy is
+        // current. Going ready from the cache above is not a pull: a 复习
+        // opened in that window must not stamp the day (gradeSession).
+        progressPulledOn: todayStr(new Date()),
         ...(persisted ? {} : { syncError: STORAGE_FULL }),
       })
 
@@ -764,7 +783,7 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
   const settlesMiss = (prev: ProgressEntry | undefined, g: Grade): boolean =>
     prev?.state === 'review' && (g === 'good' || g === 'easy')
 
-  const grade = useCallback((wordId: string, g: Grade, session?: ReviewSession) => {
+  const grade = useCallback((wordId: string, g: Grade, session?: GradeSession) => {
     const now = new Date()
     const day = todayStr(now)
     const cur = stateRef.current.progress

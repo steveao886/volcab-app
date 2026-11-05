@@ -956,6 +956,55 @@ describe('grade: the carried-over stamp', () => {
   })
 })
 
+// The day this device last confirmed its progress against the remote. Only a
+// 复习 session built after that day's pull may stamp carriedOver: a device
+// resumed from an earlier day overcounts, and with no other stamp that day
+// to merge against, its count would stand all day.
+describe('progressPulledOn', () => {
+  it('a boot that reads progress marks today', async () => {
+    await bootAsAlice()
+    expect(app().progressPulledOn).toBe(today)
+  })
+
+  it('ready from the cache with the network still out is not a pull', async () => {
+    storage.set('token', 'tok-alice'); storage.set('owner', 'alice')
+    storage.set('progress', emptyProgress()); storage.set('progressSha', 'p-remote')
+    storage.set('wordsSha', 'w-remote')
+    remote.files['words.json'] = { content: wordsFile(['alpha']), sha: 'w-remote' }
+    remote.files['progress.json'] = { content: JSON.stringify(emptyProgress()), sha: 'p-remote' }
+    let open: () => void = () => {}
+    const gate = new Promise<void>(r => { open = r })
+    const realGet = remote.client.getFile
+    const realCond = remote.client.getFileIfChanged
+    remote.client.getFile = async path => { const r = realGet(path); await gate; return r }
+    remote.client.getFileIfChanged = async (path, sha) => { const r = realCond(path, sha); await gate; return r }
+
+    await mount(createMemoryWordsCache([word('alpha')]))
+    expect(app().phase).toBe('ready')
+    expect(app().progressPulledOn).toBeNull()
+
+    await act(async () => { open() })
+    await flush()
+    expect(app().progressPulledOn).toBe(today)
+  })
+
+  it('a successful push marks today, after a boot whose progress read failed', async () => {
+    storage.set('token', 'tok-alice'); storage.set('owner', 'alice')
+    storage.set('progress', emptyProgress()); storage.set('progressSha', 'p-remote')
+    storage.set('wordsSha', 'w-remote')
+    remote.files['words.json'] = { content: wordsFile(['alpha']), sha: 'w-remote' }
+    remote.getThrows['progress.json'] = new Error('读取 progress.json 失败 (HTTP 500)')
+    await mount(createMemoryWordsCache([word('alpha')]))
+    expect(app().phase).toBe('ready')
+    expect(app().progressPulledOn).toBeNull()
+
+    await step(() => { app().grade('alpha', 'good') })
+    await step(() => { void app().syncNow() })
+    expect(remote.putsTo('progress.json')).toHaveLength(1)
+    expect(app().progressPulledOn).toBe(today)
+  })
+})
+
 describe('logout', () => {
   it('with unsynced data: reports what got discarded item by item, through syncError rather than loginError', async () => {
     await bootAsAlice()

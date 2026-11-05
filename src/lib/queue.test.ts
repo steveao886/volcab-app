@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   buildConsolidateQueue, buildQueue,
   CONSOLIDATE_DELAY_HOURS, CONSOLIDATE_MAX_INTERVAL_DAYS, LAPSE_SESSION_SIZE,
-  carriedOverCount, MATURE_INTERVAL_DAYS, newQuota, rankStrugglingWords, strugglingPracticePool,
+  carriedOverCount, gradeSession, MATURE_INTERVAL_DAYS, newQuota, rankStrugglingWords, strugglingPracticePool,
 } from './queue'
 import { INITIAL_EASE } from './srs'
 import { emptyProgress, emptyStat } from '../types'
@@ -545,5 +545,24 @@ describe('carried-over reviews', () => {
     const { ws, p } = library(1)
     p.dailyStats[T] = { ...emptyStat(), newLearned: 1, carriedOver: 1 }
     expect(buildQueue(ws, p, T).fresh).toHaveLength(1)
+  })
+})
+
+/**
+ * Only a session built on progress pulled that same day may stamp. A device
+ * resumed from yesterday still sees yesterday's reviews done elsewhere as
+ * overdue; with no other stamp that day to merge against, its overcount
+ * would stand all day (final review of the carried-over change, 2026-11-04).
+ */
+describe('gradeSession', () => {
+  const T = '2026-07-24'
+  it('a session built after today\'s pull carries its count to grade', () => {
+    expect(gradeSession(5, T, T)).toEqual({ day: T, carriedOver: 5 })
+  })
+  it('a session built on progress last pulled on an earlier day stamps nothing', () => {
+    expect(gradeSession(5, T, '2026-07-23')).toBeUndefined()
+  })
+  it('a session built before the device has pulled at all stamps nothing', () => {
+    expect(gradeSession(5, T, null)).toBeUndefined()
   })
 })

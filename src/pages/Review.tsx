@@ -13,7 +13,7 @@ import { learnedIds } from '../lib/diverge'
 import { forgetOptions, hintRungs, isLapse, needsHintLadder } from '../lib/forget'
 import type { ForgetInput } from '../lib/forget'
 import { isEditableTarget } from '../lib/keys'
-import { buildConsolidateQueue, buildQueue, CONSOLIDATE_DELAY_HOURS } from '../lib/queue'
+import { buildConsolidateQueue, buildQueue, CONSOLIDATE_DELAY_HOURS, gradeSession } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { storage } from '../lib/storage'
 import { relatedDueGuard } from '../lib/related'
@@ -89,7 +89,7 @@ export function Review() {
 }
 
 function ReviewSession() {
-  const { words, progress, grade, recordConsolidation, recordForget, deleteWords } = useApp()
+  const { words, progress, progressPulledOn, grade, recordConsolidation, recordForget, deleteWords } = useApp()
   const [today] = useState(() => todayStr(new Date()))
   // ?mode= swaps which batch the session is built from — lapses (words you
   // keep forgetting) or consolidate (today's new words, a few hours on).
@@ -122,10 +122,11 @@ function ReviewSession() {
     }
     return buildSessionQueue(mountQueue.due, mountQueue.fresh)
   })
-  const session = useMemo(
-    () => (mountQueue === null ? undefined : { day: today, carriedOver: mountQueue.carriedOver }),
-    [mountQueue, today],
-  )
+  // Whether this session may stamp is decided at mount, with the queue: a
+  // pull landing mid-session does not make a queue built before it current
+  // (see gradeSession).
+  const [session] = useState(() =>
+    mountQueue === null ? undefined : gradeSession(mountQueue.carriedOver, today, progressPulledOn))
   const [manualFlip, setManualFlip] = useState<{ id: string; value: boolean } | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)

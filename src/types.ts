@@ -371,10 +371,13 @@ export interface DailyStat {
    * with the session's first grade on the session's own day, so a session
    * that runs past midnight does not stamp the next day.
    *
+   * Only a session built after this device's pull that day stamps
+   * (gradeSession): a copy from an earlier day overcounts, and a lone stamp
+   * has nothing to be merged against.
+   *
    * Optional like every added field. Absent means "count live", which before
    * the day's first review grade is the same number. mergeProgress keeps the
-   * smaller value: a device left open across days lacks the other's reviews
-   * and can only overcount. See
+   * smaller value. See
    * docs/superpowers/specs/2026-11-04-carried-over-reviews-design.md.
    */
   carriedOver?: number
