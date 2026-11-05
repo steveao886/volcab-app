@@ -1,6 +1,6 @@
 import {
   buildConsolidateQueue, buildQueue,
-  CONSOLIDATE_DELAY_HOURS, CONSOLIDATE_MAX_INTERVAL_DAYS, strugglingPracticePool,
+  CONSOLIDATE_DELAY_HOURS, CONSOLIDATE_MAX_INTERVAL_DAYS, newQuota, strugglingPracticePool,
 } from '../lib/queue'
 import { todayStr } from '../lib/srs'
 import { dueTangles, TANGLE_DAILY_CAP } from '../lib/tangle'
@@ -76,6 +76,30 @@ export function untangleShare(due: number, sessions: number): { today: number; b
 }
 
 /**
+ * The 学习新词 row's hint.
+ *
+ * **A quota cut by carried-over reviews says why.** Each review carried in
+ * from an earlier day takes a new word's place (newQuota), so a day after a
+ * missed one can have no new words at all, and the row would be a bare tick:
+ * the 顽固词 counter read as broken for the same silence until 2026-09-22.
+ * Only a cut the backlog made is explained — a quota the user set to 0 is
+ * not blamed on it.
+ *
+ * `已学 N` stays: fresh.length only says what's left, and after the session a
+ * "done" with no number would erase the morning's work.
+ */
+export function freshHint(carriedOver: number, newPerDay: number, newLearned: number): string | undefined {
+  const parts: string[] = []
+  const cut = newPerDay - newQuota(newPerDay, carriedOver)
+  if (cut > 0) {
+    parts.push(`前几天剩 ${carriedOver} 张复习`)
+    parts.push(newQuota(newPerDay, carriedOver) === 0 ? '今天不学新词' : `新词少学 ${cut} 个`)
+  }
+  if (newLearned > 0) parts.push(`已学 ${newLearned}`)
+  return parts.length > 0 ? parts.join('，') : undefined
+}
+
+/**
  * The Today page's day plan. Every state is derived from the same queue
  * functions the review page runs — if a row and the page it links to ever
  * printed different numbers, one of them would be lying — plus the local
@@ -97,9 +121,7 @@ export function buildDayPlan(
   items.push({
     key: 'fresh', label: '学习新词', count: q.fresh.length,
     state: q.fresh.length === 0 ? 'done' : 'todo', to: '/review',
-    // fresh.length only says what's left; after the session, "done" with no
-    // number would erase the morning's work — newLearned supplies it.
-    hint: (stat?.newLearned ?? 0) > 0 ? `已学 ${stat.newLearned}` : undefined,
+    hint: freshHint(q.carriedOver, progress.settings.newPerDay, stat?.newLearned ?? 0),
   })
 
   if (marks.consolidatedOn === today) {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bumpUntangleSessions, buildDayPlan, nextAction, untangleSessionsToday, untangleShare } from './todayPlan'
+import { bumpUntangleSessions, buildDayPlan, freshHint, nextAction, untangleSessionsToday, untangleShare } from './todayPlan'
 import type { LocalMarks, PlanItem } from './todayPlan'
 import { emptyProgress, emptyStat } from '../types'
 import type { Progress, ProgressEntry, TangleStat, Word } from '../types'
@@ -362,5 +362,44 @@ describe('nextAction', () => {
     expect(nextAction([row('due', 'done', 0), row('fresh', 'done', 0),
       row('consolidate', 'pending'), row('quiz', 'todo')]).kind)
       .toBe('complete')
+  })
+})
+
+/**
+ * A quota cut by carried-over reviews must say why, or a review-only day's
+ * 学习新词 row is a tick with no reason — the 顽固词 counter read as broken
+ * for exactly that until 2026-09-22.
+ */
+describe('freshHint', () => {
+  it('nothing carried over keeps the old hint: none, or what was learned', () => {
+    expect(freshHint(0, 12, 0)).toBeUndefined()
+    expect(freshHint(0, 12, 3)).toBe('已学 3')
+  })
+
+  it('more carried over than the quota: a review-only day, and it says so', () => {
+    expect(freshHint(68, 12, 0)).toBe('前几天剩 68 张复习，今天不学新词')
+    expect(freshHint(12, 12, 0)).toBe('前几天剩 12 张复习，今天不学新词')
+  })
+
+  it('fewer carried over than the quota: how many new words it took', () => {
+    expect(freshHint(5, 12, 0)).toBe('前几天剩 5 张复习，新词少学 5 个')
+  })
+
+  it('with words already learned, both parts', () => {
+    expect(freshHint(5, 12, 3)).toBe('前几天剩 5 张复习，新词少学 5 个，已学 3')
+  })
+
+  it('a quota the setting zeroed is not blamed on the backlog', () => {
+    expect(freshHint(5, 0, 0)).toBeUndefined()
+    expect(freshHint(5, 0, 2)).toBe('已学 2')
+  })
+
+  it('buildDayPlan puts it on the fresh row', () => {
+    const words = [word('a'), word('b'), word('c')]
+    const p = emptyProgress()
+    p.settings.newPerDay = 2
+    p.words.a = entry({ due: '2026-08-06' })   // due yesterday: carried over
+    const row = find(buildDayPlan(words, p, NOW, TODAY, NO_MARKS), 'fresh')
+    expect(row).toMatchObject({ state: 'todo', count: 1, hint: '前几天剩 1 张复习，新词少学 1 个' })
   })
 })
