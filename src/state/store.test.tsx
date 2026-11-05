@@ -900,6 +900,62 @@ describe('handling push failures: 401 logs out, 403 does not', () => {
 
 // === 7. Discard notice on logout ================================================
 
+// === Carried-over stamp ========================================================
+// The day's carried-over count is frozen by the first grade of a 复习 session
+// on that session's own day — docs/superpowers/specs/2026-11-04-carried-over-reviews-design.md.
+
+describe('grade: the carried-over stamp', () => {
+  const stamp = () => app().progress.dailyStats[today]?.carriedOver
+
+  it('the first grade of a session stamps the count the session was built with', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'good', { day: today, carriedOver: 7 }) })
+    expect(stamp()).toBe(7)
+  })
+
+  it('a later grade leaves the stamp alone, whatever count it carries', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'good', { day: today, carriedOver: 7 }) })
+    await step(() => { app().grade('beta', 'good', { day: today, carriedOver: 2 }) })
+    expect(stamp()).toBe(7)
+  })
+
+  it('a stamp of 0 is a stamp: a later session carrying 5 does not replace it', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'good', { day: today, carriedOver: 0 }) })
+    await step(() => { app().grade('beta', 'good', { day: today, carriedOver: 5 }) })
+    expect(stamp()).toBe(0)
+  })
+
+  it('a session built on another day stamps nothing — one that runs past midnight must not cost the next day its new words', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'good', { day: '2000-01-01', carriedOver: 30 }) })
+    expect(app().progress.dailyStats[today]?.reviewed).toBe(1)
+    expect(stamp()).toBeUndefined()
+  })
+
+  it('a grade with no session stamps nothing', async () => {
+    await bootAsAlice()
+    await step(() => { app().grade('alpha', 'good') })
+    expect(stamp()).toBeUndefined()
+  })
+
+  it('practice and quizzes never stamp: they cannot move a due date before today', async () => {
+    // practiceGrade skips a word with no progress entry, so alpha is started
+    // and overdue — the case where a wrongly stamping writer would write 1.
+    const progress = emptyProgress()
+    progress.words['alpha'] = {
+      state: 'review', ease: 2.5, intervalDays: 3, due: '2000-01-01', stepIndex: 0,
+      reps: 2, lapses: 0, lastReviewedAt: '2000-01-01T00:00:00Z',
+    }
+    await bootAsAlice({ progress })
+    await step(() => { app().recordConsolidation('alpha', 'good') })   // the public face of practiceGrade
+    await step(() => { app().recordQuiz(1, 1, [], 'mixed') })
+    expect(app().progress.dailyStats[today]).toMatchObject({ reviewed: 1, quizTaken: 1 })
+    expect(stamp()).toBeUndefined()
+  })
+})
+
 describe('logout', () => {
   it('with unsynced data: reports what got discarded item by item, through syncError rather than loginError', async () => {
     await bootAsAlice()
