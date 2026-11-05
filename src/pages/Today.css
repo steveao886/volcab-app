@@ -103,8 +103,8 @@
 
 /* Grows but never shrinks below its own width: the hint beside it is what
    wraps. With plain `flex: 1` the 学习新词 hint for a carried-over day
-   (前几天剩 68 张复习，新词少学 11 个，已学 12) squeezed the label into one
-   character a line at 375px. */
+   (前几天剩 11 张复习，新词少学 11 个，已学 1 at newPerDay 12) squeezed the
+   label into one character a line at 375px. */
 .today-plan__name {
   flex: 1 0 auto;
   font-weight: 600;

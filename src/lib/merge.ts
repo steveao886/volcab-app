@@ -78,11 +78,14 @@ function maxOptional(
  * The day's carried-over stamp: the **smaller** one wins, not the larger.
  *
  * Every other DailyStat field is a counter and takes the max. This one is a
- * snapshot, and its errors run one way: the app pulls only at boot and on a
- * push conflict, so a device left open across days lacks the other's
- * reviews, still sees those words as overdue, and can only overcount. The
- * smaller stamp is the closer one, and it is the one the device that started
- * the day is already using, so its quota does not move under it.
+ * snapshot, and its errors run one way. Only a session built after that
+ * day's pull stamps (gradeSession), so two stamps for one day differ only
+ * when one copy missed the other's grades from earlier that day — it still
+ * sees those words as overdue and overcounts. The smaller stamp is the closer
+ * one, and the one the device that started the day is already using, so its
+ * quota does not move under it. A safety net: keeping a copy from an earlier
+ * day from stamping at all is gradeSession's job, since a lone stamp has
+ * nothing to be merged against.
  *
  * Lenient like the read in buildQueue: a side that is not a non-negative
  * integer is no stamp, so junk can never win the minimum. Absent on both

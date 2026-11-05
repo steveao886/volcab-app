@@ -89,7 +89,9 @@ and passes the count along with its grades. `grade` writes it into
 
 1. the entry has no `carriedOver` yet, and
 2. `day`, the date `grade` stamps by the clock, equals the session's own
-   `today`.
+   `today`, and
+3. the session was built after this device's first pull of that day
+   (`gradeSession`; the page decides at mount).
 
 It rides on a grade that is being written anyway, so there is no extra write
 and no push just for opening the app.
@@ -103,6 +105,23 @@ finished day. With it, those grades stamp nothing. The next morning's session
 counts what is actually left, and the cards finished at 00:05 are no longer
 overdue. (This was the first draft's mistake: it stamped on the day's first
 write of any kind.)
+
+**Condition 3 is for a device whose copy is from an earlier day.** The app
+pulls at boot and on a push, not on resume. A phone resumed in the morning
+still sees last night's laptop reviews as overdue, and so does a 复习 opened
+while boot is still serving the cache. The first draft of this section said
+merging to the smaller value would correct such a stamp. It cannot when no
+other device stamps that day, which is the ordinary case of switching
+devices overnight; the final review of the implementation found it. The
+result would have been a review-only day whose hint blamed a backlog that was
+already cleared. So the store keeps `progressPulledOn`, the local day of
+this device's last login read, boot read (a 304 included) or successful
+push. It is in memory only, because a resumed process must keep its old day.
+A session stamps only if `progressPulledOn` was today when it mounted. A
+session that may not stamp still cuts its own new words by the count it was
+built with. The day stays on the live count until a session built after the
+pull stamps. That errs toward more new words, never fewer. Offline all day
+means no stamp all day, and the live-count behaviour; accepted.
 
 **Practice and quizzes never stamp,** and do not need to. They never move a
 `due` date to before today: `demoteWord` never sets `due` earlier than
@@ -118,14 +137,14 @@ has no field. This build then counts live and stamps at its own first
 session. That undercounts by whatever the older build already cleared, and
 errs toward more new words, which is the old behaviour.
 
-**Merge: the smaller value wins.** The app pulls only at boot and when a push
-hits a conflict. `flushProgress` returns early with nothing pending, and
-`visibilitychange` does not pull. So the Android PWA or a Windows tab can sit
-open across days. A stale copy lacks reviews done on the other device and
-still sees those words as overdue, so its count can only come out too high,
-never too low. The smaller of two stamps is the one closer to the truth. It
-is also the one from the device that started the day, so that device's
-quota does not move under it. One side absent keeps the other side's value;
+**Merge: the smaller value wins.** With condition 3, two stamps for one day
+come from two devices that each pulled that day before building their
+sessions. They differ only when one built its session on a copy missing the
+other's grades from earlier that day. That copy still sees those words as
+overdue, so it overcounts, and the smaller stamp is the closer one. It is
+also the one from the device that started the day, so that device's quota
+does not move under it. The merge is a safety net here; condition 3 is what
+keeps a stale count out. One side absent keeps the other side's value;
 absent on both stays absent. `mergeProgress` rebuilds each `DailyStat` from
 named fields and drops anything it does not list (see the comment there), so
 `carriedOver` must be listed, through a `minOptional` beside `maxOptional`.
@@ -171,8 +190,10 @@ Also out of scope:
   days). It touches the scheduler and needs its own spec.
 - the 设置 advice (`recommendNewPerDay`). It models a steady state; a backlog
   day is not one.
-- pulling from the server on resume or on a day change. Merging to the
-  smaller value makes it unnecessary for this feature.
+- pulling from the server on resume or on a day change. Condition 3 keeps a
+  stale count from being stamped without it, at the cost of an unstamped day
+  when a device never pulls. A pull on resume would also fix stale due cards
+  being served again, which predates this feature and is its own change.
 
 ## Anti-goals: this is broken even if the tests pass
 
@@ -182,6 +203,8 @@ Also out of scope:
   on re-entering 复习, without `newPerDay` changing. The one exception is the
   mixed-build day above.
 - A session finished after midnight costs the next day its new words.
+- A device resumed from an earlier day stamps a count that includes reviews
+  another device already did.
 - Opening the app on a new day causes a `progress.json` push on its own.
 - Any field of any word's progress entry is written by this change.
 

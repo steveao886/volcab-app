@@ -46,6 +46,26 @@ export function newQuota(newPerDay: number, carriedOver: number): number {
   return Math.max(0, newPerDay - carriedOver)
 }
 
+/** A 复习 session as grade() needs it: the day it was built on, and the carried-over count it was built with. */
+export interface GradeSession { day: string; carriedOver: number }
+
+/**
+ * What a 复习 session hands grade() to stamp, or nothing.
+ *
+ * **Only a session built on progress pulled that same day stamps.** The app
+ * pulls at boot and on a push, not on resume, so a phone resumed in the
+ * morning still sees last night's laptop reviews as overdue. When no other
+ * device stamps that day, merging to the smaller value has nothing to
+ * correct against, and the overcount would stand all day as a review-only
+ * day with a hint blaming a backlog already cleared (final review of the
+ * carried-over change, 2026-11-04). The same goes for 开始复习 tapped while
+ * boot is still serving the cache. A session that does not stamp leaves the
+ * day on the live count until one built after the pull does.
+ */
+export function gradeSession(carriedOver: number, today: string, pulledOn: string | null): GradeSession | undefined {
+  return pulledOn === today ? { day: today, carriedOver } : undefined
+}
+
 /**
  * Likelihood of encountering the word, defaulting to 0.
  *
