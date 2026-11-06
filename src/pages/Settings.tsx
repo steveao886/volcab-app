@@ -9,6 +9,7 @@ import { checkForUpdate, isUpdateReady } from '../lib/appUpdate'
 import type { UpdateStatus } from '../lib/appUpdate'
 import { isSoundEnabled } from '../lib/sound'
 import { clampIntervalModifier, MAX_INTERVAL_MODIFIER, MIN_INTERVAL_MODIFIER, todayStr } from '../lib/srs'
+import { reviewCap } from '../lib/queue'
 import { loadInputs, recommendIntervalModifier, recommendNewPerDay, retentionWindowDays } from '../lib/tuning'
 import { dailySeries, retentionStats } from './statsDerive'
 import { storage } from '../lib/storage'
@@ -42,6 +43,19 @@ function clampNewPerDay(raw: string, fallback: number): number {
   const n = Number.parseInt(raw, 10)
   if (!Number.isFinite(n)) return fallback
   return Math.min(NEW_PER_DAY_MAX, Math.max(NEW_PER_DAY_MIN, n))
+}
+
+// At least 1: a cap of 0 is a day with no reviews at all, which nothing in
+// the review-cap spec asks for. The ceiling only keeps a typo from reading
+// as "uncapped".
+const REVIEW_CAP_MIN = 1
+const REVIEW_CAP_MAX = 999
+
+/** Same shape as clampNewPerDay: unparseable input keeps the current cap. */
+function clampReviewCap(raw: string, fallback: number): number {
+  const n = Number.parseInt(raw, 10)
+  if (!Number.isFinite(n)) return fallback
+  return Math.min(REVIEW_CAP_MAX, Math.max(REVIEW_CAP_MIN, n))
 }
 
 /**
@@ -136,6 +150,15 @@ export function Settings() {
     setNewPerDayInput(String(progress.settings.newPerDay))
   }, [progress.settings.newPerDay])
 
+  const currentReviewCap = reviewCap(progress.settings)
+  const [reviewCapInput, setReviewCapInput] = useState(String(currentReviewCap))
+  const reviewCapRef = useRef<HTMLInputElement>(null)
+  // Same focus guard as newPerDay above, for the same reason.
+  useEffect(() => {
+    if (document.activeElement === reviewCapRef.current) return
+    setReviewCapInput(String(currentReviewCap))
+  }, [currentReviewCap])
+
   // Same focus guard as newPerDay above, for the same reason.
   useEffect(() => {
     if (document.activeElement === modifierRef.current) return
@@ -208,6 +231,14 @@ export function Settings() {
       updateSettings({ ...progress.settings, newPerDay: clamped })
     }
   }, [newPerDayInput, progress.settings, updateSettings])
+
+  const commitReviewCap = useCallback(() => {
+    const clamped = clampReviewCap(reviewCapInput, currentReviewCap)
+    setReviewCapInput(String(clamped))
+    if (clamped !== currentReviewCap) {
+      updateSettings({ ...progress.settings, reviewCap: clamped })
+    }
+  }, [reviewCapInput, currentReviewCap, progress.settings, updateSettings])
 
   // Export runs as one synchronous block (no await breakpoints); the real
   // risk is a double-click triggering two save dialogs, so a ref lock is
@@ -308,6 +339,35 @@ export function Settings() {
             <span className="num">{newPerDayAdvice.to}</span>。
           </Advice>
         )}
+      </section>
+
+      {/* The daily review cap (2026-11-05 spec): the other half of how much a
+          day holds, so it sits beside the new-word count. Same input as
+          每日新词数, focus guard and all. */}
+      <section className="section">
+        <Field
+          label="每日复习上限"
+          labelClassName="section-head"
+          htmlFor="settings-review-cap"
+          hint={`每天最多复习的词数，到量就收工，剩下的留到明天，${REVIEW_CAP_MIN}–${REVIEW_CAP_MAX} 之间`}
+        >
+          <TextInput
+            id="settings-review-cap"
+            ref={reviewCapRef}
+            className="num"
+            type="number"
+            inputMode="numeric"
+            min={REVIEW_CAP_MIN}
+            max={REVIEW_CAP_MAX}
+            step={1}
+            value={reviewCapInput}
+            onChange={(e) => setReviewCapInput(e.target.value)}
+            onBlur={commitReviewCap}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') e.currentTarget.blur()
+            }}
+          />
+        </Field>
       </section>
 
       {/* Sits right after the new-word count because both decide how much
