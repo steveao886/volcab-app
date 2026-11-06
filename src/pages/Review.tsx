@@ -13,7 +13,7 @@ import { learnedIds } from '../lib/diverge'
 import { forgetOptions, hintRungs, isLapse, needsHintLadder } from '../lib/forget'
 import type { ForgetInput } from '../lib/forget'
 import { isEditableTarget } from '../lib/keys'
-import { buildConsolidateQueue, buildQueue, CONSOLIDATE_DELAY_HOURS, gradeSession } from '../lib/queue'
+import { buildConsolidateQueue, buildQueue, CONSOLIDATE_DELAY_HOURS, gradeSession, reviewCap } from '../lib/queue'
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { storage } from '../lib/storage'
 import { relatedDueGuard } from '../lib/related'
@@ -537,13 +537,18 @@ function ReviewSession() {
     // having been seen.
     const confusedToday =
       mode === 'due' ? todaysConfusedPairs(progress, today, new Set(words.map((w) => w.id))) : []
+    // Words the daily review cap kept out of today. Read from the mount-time
+    // queue, not a fresh buildQueue: grade() counts each word it takes out of
+    // the review block, so spent + remaining stays constant all day and the
+    // number at mount is still the number now (2026-11-05 review-cap spec).
+    const heldBack = mountQueue?.heldBack ?? 0
     return (
       <Page title={title} back="/">
         <div className="review-done">
           <p className="review-done__label">
             {consolidateMode
               ? empty ? (clearedForToday ? '今天已巩固' : '暂无需要巩固的词') : '巩固完成'
-              : empty ? '暂无待复习' : '复习完成'}
+              : heldBack > 0 ? '今天的复习到量了' : empty ? '暂无待复习' : '复习完成'}
           </p>
           <p className="review-done__count">
             今天已复习 <span className="num">{reviewedToday}</span> 个词
@@ -555,7 +560,9 @@ function ReviewSession() {
                   ? '今天的新词已经复盘过一遍了，明天它们会正常到期。'
                   : `今天学的新词要过 ${CONSOLIDATE_DELAY_HOURS} 小时才值得再看一遍，先去做点别的。`
                 : '刚学的词隔几小时再想起来一次，才是真正记住的那一次。'
-              : empty
+              : heldBack > 0
+                ? <>每天最多复习 <span className="num">{reviewCap(progress.settings)}</span> 个词，还有 <span className="num">{heldBack}</span> 个留到明天。多的时间可以去做别的练习。</>
+                : empty
                 ? '暂时没有到期或新词需要复习。'
                 : '今日复习已全部完成，休息一下吧。'}
           </p>

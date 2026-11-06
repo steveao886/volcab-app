@@ -222,7 +222,8 @@ export function Stats() {
           what already happened; this one answers "what does the coming week
           cost me", which is the question that can still change a decision.
           The counts come from the same due rule as buildQueue, so today's
-          row always matches the Today page's "due today". */}
+          row matches the Today page's 复习到期 count plus the words the daily
+          review cap left for tomorrow (see dueForecast). */}
       <section className="section">
         <h2 className="section-head">未来 {FORECAST_DAYS} 天待复习</h2>
         <div className="stats-lead">

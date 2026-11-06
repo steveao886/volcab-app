@@ -116,10 +116,16 @@ export interface DueForecast {
  * that answers "what does the next week cost me", which is the question
  * that actually changes what you do today.
  *
- * "Due" matches buildQueue exactly — `state !== 'new' && due <= today` for
- * the first bucket. If the two ever drift, the Today page and this card
- * would print different numbers for the same day, and one of them would be
- * lying.
+ * "Due" matches buildQueue's due rule exactly — `state !== 'new' && due <=
+ * today` for the first bucket. If the two ever drift, the Today page and
+ * this card would print different numbers for the same day, and one of them
+ * would be lying.
+ *
+ * **The first bucket is everything owed, before the daily review cap.** Since
+ * 2026-11-05 buildQueue serves at most `reviewCap` review words a day, so the
+ * number that matches this bucket is 今日's 复习到期 count plus the words its
+ * hint says wait for tomorrow. Moving those into 明天 here would turn the
+ * forecast into a payoff projection, which the 11-04 spec turned down.
  */
 export function dueForecast(words: Word[], progress: Progress, today: string, span: number): DueForecast {
   const dates = Array.from({ length: span }, (_, i) => addDays(today, i))
