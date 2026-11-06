@@ -55,6 +55,64 @@
   color: var(--text-muted);
 }
 
+/* --- Verb forms -----------------------------------------------------------------
+   A .ledger of label/value rows. The value is a word, not a figure: the
+   headword face with ordinary numerals. Restated on the compound selector,
+   because a page class ties .ledger__value on specificity and wins only by
+   load order. Phrases show no forms, so a value is one word and the
+   ledger's 60% holds it at 375px. */
+
+.ledger__value.worddetail-form {
+  font-family: var(--font-word);
+  font-variant-numeric: normal;
+}
+
+/* Collapsed by default: the section head is the <summary>, a tap target, so
+   it gets the tap height the other heads don't need. The triangle is the
+   one .disclosure draws (components.css), without .disclosure's box — a
+   section on the paper is a ruled head, not a card. The UA's own marker is
+   suppressed both ways, as there. */
+.worddetail-forms__summary {
+  min-height: var(--tap);
+  list-style: none;
+  cursor: pointer;
+}
+
+.worddetail-forms__summary::-webkit-details-marker {
+  display: none;
+}
+
+.worddetail-forms__summary::before {
+  content: '';
+  flex: none;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 5px 0 5px 7px;
+  border-color: transparent transparent transparent var(--text-faint);
+  transition: transform var(--dur-2) var(--ease);
+}
+
+.worddetail-forms[open] > .worddetail-forms__summary::before {
+  transform: rotate(90deg);
+}
+
+/* Inside <details> the head and the ledger are no longer .section's grid
+   children, so the gap the grid would put between them is restated. */
+.worddetail-forms > .ledger {
+  margin-top: var(--sp-3);
+}
+
+/* The letters to look at twice: an irregular form whole, a doubled pair, a
+   single consonant a learner would have doubled. Dots, a shape, so grayscale
+   keeps them, and the section head's aside says the same thing in words. */
+.worddetail-form__mark {
+  -webkit-text-emphasis: filled dot var(--accent); /* mark: 着重号 under the letters to look at twice */
+  text-emphasis: filled dot var(--accent); /* mark: 着重号 under the letters to look at twice */
+  -webkit-text-emphasis-position: under right;
+  text-emphasis-position: under right;
+}
+
 /* --- Examples ----------------------------------------------------------------
    No rule down the left, as on the review card: the cinnabar 波浪线 under the
    headword (.example-hit) is what marks these as this word's examples. */

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { CaptureChips } from '../components/CaptureChips'
@@ -10,11 +10,14 @@ import { Page } from '../components/Page'
 import { SenseSpeakButton } from '../components/SenseSpeakButton'
 import { StateDot } from '../components/StateDot'
 import { SyncStatus } from '../components/SyncStatus'
+import verbFormsFile from '../data/verbForms.json'
 import wordNotesFile from '../data/wordNotes.json'
 import { cardSynonyms } from '../lib/contrast'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
 import { RECALL_STEADY_STREAK } from '../lib/senseGroup'
 import { senseVoices } from '../lib/sensePronounce'
+import { piecesText, verbForms } from '../lib/verbForms'
+import type { Piece, VerbForms, VerbFormsFile } from '../lib/verbForms'
 import { wordNote } from '../lib/wordNotes'
 import type { WordNotesFile } from '../lib/wordNotes'
 import { useApp } from '../state/store'
@@ -37,6 +40,43 @@ const RECALL_RATINGS: [level: RecallRating['level'], label: string][] = [
   ['none', '默认'],
   ['hard', '要多考'],
 ]
+
+/**
+ * What the 动词变形 head says about the forms under it. 规则变化 is an answer
+ * too, not filler: a learner who has only met `overhaul` in its base form
+ * cannot tell regular from special, and a blank would not tell them.
+ * British spelling doubles a final l whatever the stress (quarrelled), so a
+ * single l says whose spelling this is.
+ */
+function verbFormsLabel(forms: VerbForms) {
+  const c = <span lang="en">{forms.consonant}</span>
+  switch (forms.kind) {
+    case 'irregular':
+      return '不规则'
+    case 'double':
+      return <>双写 {c}</>
+    case 'single':
+      return forms.consonant === 'l' ? <>{c} 不双写（美式）</> : <>{c} 不双写</>
+    default:
+      return '规则变化'
+  }
+}
+
+/**
+ * Past and past participle only: the present participle and third person
+ * were dropped on the user's first look, since a doubled consonant already
+ * shows in the past form. The two share a row when they are the same word,
+ * as they are for 351 of the 353 verbs that show forms (oversee and
+ * overthrow are the exceptions), so a regular verb is one row.
+ */
+function verbFormRows(forms: VerbForms): [label: string, form: Piece[]][] {
+  return piecesText(forms.past) === piecesText(forms.pastParticiple)
+    ? [['过去式、过去分词', forms.past]]
+    : [
+        ['过去式', forms.past],
+        ['过去分词', forms.pastParticiple],
+      ]
+}
 
 /** Task 19 implementation: full entry + pronunciation + learning stats + edit form + delete. */
 export function WordDetail() {
@@ -121,6 +161,9 @@ export function WordDetail() {
 
   const entry = progress.words[word.id]
   const note = wordNote(wordNotesFile as WordNotesFile, word.id)
+  // Null for a word with no verb sense, and for a verb whose forms need a
+  // judgment verbForms.json does not hold yet — fail closed, see lib/verbForms.ts.
+  const forms = verbForms(word, verbFormsFile as VerbFormsFile)
   const state = wordState(word, progress)
   // All null on every word but a heteronym, and all null on a heteronym whose
   // divergent sense has no respelling yet — see lib/sensePronounce.ts.
@@ -213,6 +256,51 @@ export function WordDetail() {
               </div>
             )}
           </section>
+
+          {/* Once per word, not per sense: the library has no verb whose
+              forms change with its sense. Right after the senses, as a
+              dictionary prints them.
+
+              Collapsed by default, at the user's request: the forms are
+              looked up when wanted, not read on every visit. The head stays
+              a ruled section head and is itself the toggle, and its aside
+              (规则变化 / 不规则 / 双写 r) shows while closed, so whether a
+              word is worth opening is answered without opening it. Open,
+              the 着重号 sits under exactly the letters to look at twice;
+              the aside says why in words, so the dots are never the only
+              carrier.
+
+              Keyed by word: this page stays mounted from one word to the
+              next, and an uncontrolled <details> would carry its open state
+              across, so a word opened once would open the next one too. */}
+          {forms !== null && (
+            <section className="section">
+              <details className="worddetail-forms" key={word.id}>
+                <summary className="section-head worddetail-forms__summary">
+                  动词变形
+                  <span className="section-head__aside">{verbFormsLabel(forms)}</span>
+                </summary>
+                <dl className="ledger">
+                  {verbFormRows(forms).map(([label, pieces]) => (
+                    <div className="ledger__row" key={label}>
+                      <dt className="ledger__label">{label}</dt>
+                      <dd className="ledger__value worddetail-form" lang="en">
+                        {pieces.map((p, i) =>
+                          p.mark ? (
+                            <span className="worddetail-form__mark" key={i}>
+                              {p.text}
+                            </span>
+                          ) : (
+                            <Fragment key={i}>{p.text}</Fragment>
+                          ),
+                        )}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </details>
+            </section>
+          )}
 
           {word.examples.length > 0 && (
             <section className="section">
