@@ -349,7 +349,7 @@ export function Settings() {
           label="每日复习上限"
           labelClassName="section-head"
           htmlFor="settings-review-cap"
-          hint={`每天最多复习的词数，到量就收工，剩下的留到明天，${REVIEW_CAP_MIN}–${REVIEW_CAP_MAX} 之间`}
+          hint={`到量就收工，剩下的留到明天，${REVIEW_CAP_MIN}–${REVIEW_CAP_MAX} 之间`}
         >
           <TextInput
             id="settings-review-cap"
