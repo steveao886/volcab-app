@@ -96,7 +96,13 @@ export function Today() {
       )}
 
       {hero.kind === 'complete' ? (
-        <p className="today-go__meta">复习和巩固都清完了。想加练的话，下面的快速测试随时可以来一轮。</p>
+        <p className="today-go__meta">
+          {/* The daily review cap ends the day with words still due; saying
+              they are cleared would be false (nextAction, heldBack). */}
+          {hero.heldBack !== undefined
+            ? <>今天的复习到量了，还有 <span className="num">{hero.heldBack}</span> 个留到明天。想加练的话，下面的快速测试随时可以来一轮。</>
+            : '复习和巩固都清完了。想加练的话，下面的快速测试随时可以来一轮。'}
+        </p>
       ) : (
         <div className="today-go">
           <p className="today-go__meta">{hero.meta}</p>
