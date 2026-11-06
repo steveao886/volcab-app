@@ -265,6 +265,20 @@ describe('mergeProgress: optional dailyStat counters', () => {
     expect('reviewPhase' in m.dailyStats['2026-07-25']).toBe(false)
   })
 
+  it('reviewWords: the larger count wins, and one side\'s value stands when the other lacks it', () => {
+    // Unlisted, the daily review cap's counter would vanish on the first
+    // sync and the day would fall back to reviewPhase.
+    expect(mergeProgress(withDay(day({ reviewWords: 3 })), withDay(day({ reviewWords: 8 })))
+      .dailyStats['2026-07-25'].reviewWords).toBe(8)
+    expect(mergeProgress(withDay(day({ reviewWords: 6 })), withDay(day()))
+      .dailyStats['2026-07-25'].reviewWords).toBe(6)
+  })
+
+  it('reviewWords: absent on both sides stays absent', () => {
+    const m = mergeProgress(withDay(day({ reviewed: 4 })), withDay(day({ reviewed: 2 })))
+    expect('reviewWords' in m.dailyStats['2026-07-25']).toBe(false)
+  })
+
   it('carriedOver: the smaller stamp wins — a device left open across days can only overcount', () => {
     const m = mergeProgress(withDay(day({ carriedOver: 3 })), withDay(day({ carriedOver: 5 })))
     expect(m.dailyStats['2026-07-25'].carriedOver).toBe(3)

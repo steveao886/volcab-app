@@ -66,7 +66,7 @@ function mergeRating(a: RecallRating | undefined, b: RecallRating | undefined): 
  * data doesn't support, and one the retention chart would then draw.
  */
 function maxOptional(
-  key: 'reviewPhase' | 'reviewPhaseCorrect',
+  key: 'reviewPhase' | 'reviewPhaseCorrect' | 'reviewWords',
   a: DailyStat,
   b: DailyStat,
 ): Partial<DailyStat> {
@@ -371,6 +371,7 @@ export function mergeProgress(local: Progress, remote: Progress): Progress {
       // first time two devices sync.
       ...maxOptional('reviewPhase', a, b),
       ...maxOptional('reviewPhaseCorrect', a, b),
+      ...maxOptional('reviewWords', a, b),
       ...mergeQuizModes(a, b),
       ...minCarriedOver(a, b),
     }

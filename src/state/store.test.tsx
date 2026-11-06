@@ -956,6 +956,59 @@ describe('grade: the carried-over stamp', () => {
   })
 })
 
+// === Review words spent today =================================================
+// The daily review cap's counter: one per word grade() takes out of the review
+// block — docs/superpowers/specs/2026-11-05-daily-review-cap-design.md.
+
+describe('grade: review words spent today', () => {
+  const spent = () => app().progress.dailyStats[today]?.reviewWords
+  const overdue = (state: 'review' | 'learning') => ({
+    state, ease: 2.5, intervalDays: state === 'review' ? 3 : 0, due: '2000-01-01', stepIndex: 0,
+    reps: 2, lapses: 0, lastReviewedAt: '2000-01-01T00:00:00Z',
+  })
+  const boot = async (stat?: Progress['dailyStats'][string]) => {
+    const progress = emptyProgress()
+    progress.words['alpha'] = overdue('review')
+    progress.words['beta'] = overdue('review')
+    progress.words['gamma'] = overdue('learning')
+    if (stat) progress.dailyStats[today] = stat
+    await bootAsAlice({ words: ['alpha', 'beta', 'gamma'], progress })
+  }
+
+  it('a review-phase grade counts one word', async () => {
+    await boot()
+    await step(() => { app().grade('alpha', 'good') })
+    expect(spent()).toBe(1)
+  })
+
+  it('困难 then 重来 on the same word counts it once — the confirm look is still a review-phase card', async () => {
+    await boot()
+    await step(() => { app().grade('alpha', 'hard') })
+    await step(() => { app().grade('alpha', 'again') })
+    expect(spent()).toBe(1)
+    expect(app().progress.dailyStats[today]?.reviewPhase).toBe(2)
+  })
+
+  it('a learning-phase grade counts nothing', async () => {
+    await boot()
+    await step(() => { app().grade('gamma', 'good') })
+    expect(spent()).toBeUndefined()
+  })
+
+  it('starts from reviewPhase on a day an older build already graded', async () => {
+    await boot({ reviewed: 9, newLearned: 0, correct: 7, quizTaken: 0, reviewPhase: 9, reviewPhaseCorrect: 7 })
+    await step(() => { app().grade('alpha', 'good') })
+    expect(spent()).toBe(10)
+  })
+
+  it('consolidation and quizzes leave it alone', async () => {
+    await boot()
+    await step(() => { app().recordConsolidation('alpha', 'good') })
+    await step(() => { app().recordQuiz(1, 1, [], 'mixed') })
+    expect(spent()).toBeUndefined()
+  })
+})
+
 // The day this device last confirmed its progress against the remote. Only a
 // 复习 session built after that day's pull may stamp carriedOver: a device
 // resumed from an earlier day overcounts, and with no other stamp that day
