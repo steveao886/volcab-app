@@ -23,11 +23,12 @@ grows the question pools. Evidence for every rule: `docs/word-add-checklist.md`.
 | `src/data/passages.json` | `{{id}}` markers | optional coverage — **but the word joins tier-1 distractor pools silently; diff and vet** | `npm run validate-passages` |
 | `src/data/concepts.json` | derived from `synonyms` | **nothing to author** — but the word joins existing 发散 answer sets silently; diff and vet | `npm run validate-concepts` |
 | `src/data/synonymNotes.json` | a gloss term of its 近义词 group | **required**: a paragraph for every group the word creates or changes, naming each member and base word (groups span the whole library) | `npm run validate-synonym-notes` |
+| `src/data/verbForms.json` | word id | **required** for a new single-word verb the spelling rules cannot settle: an irregular verb, even behind a prefix (`past` + `pastParticiple`), or two or more syllables ending consonant–vowel–consonant (`double`: stressed last syllable doubles, `concurred`; else not, `pondered`; plus `looksDoubled: true` when a learner would double it anyway, `fidgeted`). American spelling. The gate names the missing field; everything else needs nothing | `npm run validate-verb-forms` |
 | `src/data/suggestions.json` | — | nothing — self-filters at runtime | `npm run validate-suggestions` |
 | 形近 pairs (`src/lib/lookalike.ts`, no file) | computed from headword spelling + glosses | **nothing to author** — but the word can pair with a look-alike silently; `--batch` prints each pair as a `read` line | — |
 | `data/wordlist.json` | — | dead file, referenced by nothing. Do not touch | — |
 
-All these gates run in CI (`npm run validate` chains all ten;
+All these gates run in CI (`npm run validate` chains all eleven;
 `.github/workflows/deploy.yml` runs it, plus `npm run lint`, on every push to
 `master`). Coverage lines are still printed text, not exit codes — read them
 yourself.
