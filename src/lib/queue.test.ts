@@ -649,12 +649,24 @@ describe('daily review cap', () => {
     }
   })
 
-  it('the cut is the head of the order the uncapped queue uses', () => {
-    const capped = lib(2, 6), uncapped = lib(2, 6)
-    capped.p.settings.reviewCap = 4
-    uncapped.p.settings.reviewCap = 999
-    expect(buildQueue(capped.ws, capped.p, T).due)
-      .toEqual(buildQueue(uncapped.ws, uncapped.p, T).due.slice(0, 6))
+  it('the cut is taken after spacing: a relative spaced past the cap waits instead of being served', () => {
+    // resent and resentment share a stem and tie on usageScore, so the sort
+    // puts them side by side; spacing (SESSION_SPACING_GAP 5) pushes
+    // resentment past position 4. Cut first and spacing could not move it
+    // out of a 4-word head, so it would be served beside resent.
+    const ws: Word[] = ([['resent', 9], ['resentment', 9], ['carol', 8], ['delta', 7], ['echo', 6], ['foxtrot', 5], ['golf', 4]] as const)
+      .map(([id, s]) => word(id, s))
+    const build = (cap: number) => {
+      const p = emptyProgress()
+      p.settings.newPerDay = 0
+      p.settings.reviewCap = cap
+      for (const w of ws) p.words[w.id] = entry('review', T)
+      return buildQueue(ws, p, T)
+    }
+    const capped = build(4)
+    expect(capped.due).toEqual(build(999).due.slice(0, 4))
+    expect(capped.due).not.toContain('resentment')
+    expect(capped.heldBack).toBe(3)
   })
 
   /** Grade the first `k` served words "good" and count them, as grade() would. */

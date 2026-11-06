@@ -120,7 +120,15 @@ difference back.
 `mergeProgress` rebuilds each `DailyStat` from named fields, so the field
 must be listed there. An older build drops it on merge. The read then falls
 back to `reviewPhase`, which overcounts only by the 困难-then-重来 words
-above, so the error is toward fewer reviews, by a word or two.
+above, so the error is toward fewer reviews, by a word or two. When that
+overcount tips spent plus remaining over the cap, it also zeroes the day's
+new words, but only within a few words of the cap. *(Corrected after the
+final review.)* The other mixed-build case errs the opposite way. A newer
+device that already holds the field keeps it on merge, because the older
+build's side lacks it and `maxOptional` takes the side that has it. So that
+device never counts the older device's later grades that day, and it serves
+more reviews. That is the old behaviour, and it ends when both devices are
+updated.
 
 **Across devices.** Used one after the other with a pull in between, the
 second device adds to the first one's count, and the count is exact. Two

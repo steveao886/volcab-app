@@ -395,7 +395,11 @@ export interface DailyStat {
    * Written only by `grade`, and only for a card that was in the review
    * phase and due by that day. Optional like every added field; absent
    * falls back to `reviewPhase`, which overcounts by the 困难-then-重来 words
-   * alone. mergeProgress keeps the larger value. See
+   * (reviewWordsSpent says what that costs). mergeProgress keeps the larger
+   * value, which has a gap while builds are mixed: a newer device already
+   * holding the field keeps it when the older build's side lacks it, so the
+   * older device's later grades that day are not counted — an error toward
+   * more reviews, the old behaviour. See
    * docs/superpowers/specs/2026-11-05-daily-review-cap-design.md.
    */
   reviewWords?: number
