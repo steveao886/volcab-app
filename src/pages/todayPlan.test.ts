@@ -59,6 +59,36 @@ describe('buildDayPlan', () => {
     expect(find(buildDayPlan(words, p, NOW, TODAY, NO_MARKS), 'due')).toMatchObject({ state: 'done', count: 0 })
   })
 
+  /** Five review words, the first `spent` already graded today (due later), the rest due today; a cap of 3. */
+  const cappedDay = (spent = 0) => {
+    const words = ['a', 'b', 'c', 'd', 'e', 'f', 'g'].map(word)
+    const p = emptyProgress()
+    words.slice(0, 5).forEach((w, i) => { p.words[w.id] = entry({ due: i < spent ? '2026-09-01' : TODAY }) })
+    p.settings.newPerDay = 2
+    p.settings.reviewCap = 3
+    if (spent > 0) p.dailyStats[TODAY] = { ...emptyStat(), reviewWords: spent }
+    return buildDayPlan(words, p, NOW, TODAY, NO_MARKS)
+  }
+
+  it('due row: capped count, and a hint naming the cap and what waits', () => {
+    expect(find(cappedDay(), 'due')).toMatchObject({ count: 3, state: 'todo', hint: '每天最多 3 个，另 2 个留到明天', heldBack: 2 })
+  })
+
+  it('due row: done with the hint still on it once the cap is spent', () => {
+    expect(find(cappedDay(3), 'due')).toMatchObject({ count: 0, state: 'done', hint: '每天最多 3 个，另 2 个留到明天', heldBack: 2 })
+  })
+
+  it('due row: no hint and no heldBack when nothing waits', () => {
+    const p: Progress = { ...emptyProgress(), words: { a: entry({ due: TODAY }) } }
+    const row = find(buildDayPlan([word('a')], p, NOW, TODAY, NO_MARKS), 'due')
+    expect(row?.hint).toBeUndefined()
+    expect(row?.heldBack).toBeUndefined()
+  })
+
+  it('fresh row: a day the cap holds words back blames the cap, not the backlog', () => {
+    expect(find(cappedDay(), 'fresh')).toMatchObject({ count: 0, state: 'done', hint: '复习超出每天上限，今天不学新词' })
+  })
+
   it('fresh row: counts budgeted new words and hints at what was already learned', () => {
     const words = [word('a'), word('b'), word('c')]
     const p = emptyProgress()
@@ -306,6 +336,11 @@ describe('nextAction', () => {
   const row = (key: PlanItem['key'], state: PlanItem['state'], count?: number): PlanItem =>
     ({ key, label: 'x', state, count, to: '/x' })
 
+  it('complete carries what the cap held back, and nothing when it held back none', () => {
+    expect(nextAction([{ ...row('due', 'done', 0), heldBack: 2 }])).toEqual({ kind: 'complete', heldBack: 2 })
+    expect(nextAction([row('due', 'done', 0)])).toEqual({ kind: 'complete' })
+  })
+
   it('review first: combines due and fresh counts', () => {
     const hero = nextAction([row('due', 'todo', 3), row('fresh', 'todo', 2), row('quiz', 'todo')])
     expect(hero).toMatchObject({ kind: 'review', count: 5, to: '/review' })
@@ -387,6 +422,13 @@ describe('freshHint', () => {
 
   it('with words already learned, both parts', () => {
     expect(freshHint(5, 12, 3)).toBe('前几天剩 5 张复习，新词少学 5 个，已学 3')
+  })
+
+  it('words held back: a review-only day, blamed on the cap', () => {
+    expect(freshHint(0, 12, 0, 2)).toBe('复习超出每天上限，今天不学新词')
+    expect(freshHint(5, 12, 0, 2)).toBe('复习超出每天上限，今天不学新词')
+    expect(freshHint(0, 12, 3, 2)).toBe('复习超出每天上限，今天不学新词，已学 3')
+    expect(freshHint(0, 0, 0, 2)).toBeUndefined()
   })
 
   it('a quota the setting zeroed is not blamed on the backlog', () => {

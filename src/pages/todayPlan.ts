@@ -1,6 +1,6 @@
 import {
   buildConsolidateQueue, buildQueue,
-  CONSOLIDATE_DELAY_HOURS, CONSOLIDATE_MAX_INTERVAL_DAYS, newQuota, strugglingPracticePool,
+  CONSOLIDATE_DELAY_HOURS, CONSOLIDATE_MAX_INTERVAL_DAYS, newQuota, reviewCap, strugglingPracticePool,
 } from '../lib/queue'
 import { todayStr } from '../lib/srs'
 import { dueTangles, TANGLE_DAILY_CAP } from '../lib/tangle'
@@ -17,6 +17,12 @@ export interface PlanItem {
   label: string
   /** Remaining count. Absent on rows where a number would be noise (快速测试). */
   count?: number
+  /**
+   * 复习到期 only, and only when the daily review cap kept words out of today
+   * (DailyQueue.heldBack). nextAction reads it so the hero's 今日完成 does not
+   * say the reviews are cleared while words still wait for tomorrow.
+   */
+  heldBack?: number
   state: PlanState
   to: string
   hint?: string
@@ -76,6 +82,16 @@ export function untangleShare(due: number, sessions: number): { today: number; b
 }
 
 /**
+ * The 复习到期 row's hint on a day the review cap binds: the cap, and how many
+ * words wait for tomorrow. A done row with words still due says why — the
+ * same silence that made the 顽固词 count read as broken until 2026-09-22.
+ * See docs/superpowers/specs/2026-11-05-daily-review-cap-design.md.
+ */
+export function dueHint(heldBack: number, cap: number): string | undefined {
+  return heldBack > 0 ? `每天最多 ${cap} 个，另 ${heldBack} 个留到明天` : undefined
+}
+
+/**
  * The 学习新词 row's hint.
  *
  * **A quota cut by carried-over reviews says why.** Each review carried in
@@ -87,11 +103,18 @@ export function untangleShare(due: number, sessions: number): { today: number; b
  *
  * `已学 N` stays: fresh.length only says what's left, and after the session a
  * "done" with no number would erase the morning's work.
+ *
+ * **A day the review cap holds words back names the cap instead.** buildQueue
+ * zeroes the new words on such a day whatever was carried over, so the
+ * carried-over sentence would understate the cut (前几天剩 5 张，新词少学 5 个
+ * on a day that learns none).
  */
-export function freshHint(carriedOver: number, newPerDay: number, newLearned: number): string | undefined {
+export function freshHint(carriedOver: number, newPerDay: number, newLearned: number, heldBack = 0): string | undefined {
   const parts: string[] = []
   const cut = newPerDay - newQuota(newPerDay, carriedOver)
-  if (cut > 0) {
+  if (heldBack > 0 && newPerDay > 0) {
+    parts.push('复习超出每天上限，今天不学新词')
+  } else if (cut > 0) {
     parts.push(`前几天剩 ${carriedOver} 张复习`)
     parts.push(newQuota(newPerDay, carriedOver) === 0 ? '今天不学新词' : `新词少学 ${cut} 个`)
   }
@@ -114,14 +137,20 @@ export function buildDayPlan(
   const stat = progress.dailyStats[today]
   const items: PlanItem[] = []
 
+  // The count is what the daily review cap leaves for today, and the hint
+  // says what it kept back — before the cap is reached as well as after, so
+  // the tick at the end is never a bare one over words still due.
   items.push({
     key: 'due', label: '复习到期', count: q.due.length,
     state: q.due.length === 0 ? 'done' : 'todo', to: '/review',
+    ...(q.heldBack > 0
+      ? { hint: dueHint(q.heldBack, reviewCap(progress.settings)), heldBack: q.heldBack }
+      : {}),
   })
   items.push({
     key: 'fresh', label: '学习新词', count: q.fresh.length,
     state: q.fresh.length === 0 ? 'done' : 'todo', to: '/review',
-    hint: freshHint(q.carriedOver, progress.settings.newPerDay, stat?.newLearned ?? 0),
+    hint: freshHint(q.carriedOver, progress.settings.newPerDay, stat?.newLearned ?? 0, q.heldBack),
   })
 
   if (marks.consolidatedOn === today) {
@@ -234,7 +263,10 @@ function hasConsolidationComing(words: Word[], progress: Progress, now: Date, to
 }
 
 export type HeroAction =
-  | { kind: 'complete' }
+  // heldBack: what the daily review cap left for tomorrow, present only when
+  // it left something, so the complete line never says the reviews are cleared
+  // over words still due.
+  | { kind: 'complete'; heldBack?: number }
   | { kind: 'review' | 'consolidate' | 'untangle'; count: number; unit: string; meta: string; to: string; label: string }
   // No count, for the reason the plan row has no count: the stubborn pool is
   // a stock. The hero's number slot says how much is left to do today, and
@@ -285,5 +317,6 @@ export function nextAction(plan: PlanItem[]): HeroAction {
       meta: '从最不牢的开始，练到不想练为止', to: STRUGGLING_WALK, label: '专攻顽固词',
     }
   }
-  return { kind: 'complete' }
+  const heldBack = due?.heldBack ?? 0
+  return heldBack > 0 ? { kind: 'complete', heldBack } : { kind: 'complete' }
 }
