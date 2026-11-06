@@ -1,8 +1,10 @@
 # Verb forms on the entry page
 
 Asked for on 2026-11-06, from the `overhaul` entry page: when a word has a verb
-sense, show how it inflects (past, past participle, present participle, third
-person singular), so the learner knows how the word changes before using it.
+sense, show how it inflects, so the learner knows how the word changes before
+using it. The request named four forms (past, past participle, present
+participle, third person singular). The user cut it to two after seeing the
+first build; see "Revised on first look" below.
 
 ## Why, in the user's words
 
@@ -15,15 +17,31 @@ answers nothing**. The page has to say both things:
 1. **where a verb is special**, and mark the exact letters. The user chose
    three kinds: irregular forms, a doubled final consonant, and a consonant
    that looks as if it should double but does not;
-2. **where it is not**, by showing the forms and saying 规则变化, so
-   `overhauled / overhauling / overhauls` settles the question instead of
-   leaving it open.
+2. **where it is not**, by saying 规则变化 and showing `overhauled`, so the
+   question is settled instead of left open.
 
 Not flagged as special, by the user's choice: y → ied (`ratify → ratified`,
 7 verbs), e-dropping before -ing, `decree → decreeing`. They are still
-spelled correctly in the rows; they just carry no mark.
+spelled correctly; they just carry no mark.
+
+### Revised on first look
+
+The first build showed all four forms, phrases included, always open. On
+seeing it at 375px the user made three cuts, all adopted:
+
+- *"现在分词和第三人称单数有必要么"*: **past and past participle only.**
+  A doubled consonant already shows in `concurred`. The -ing and -s
+  spellings are rules the learner already knows (e-dropping, y → i).
+- *"kick the can 都有，那个那么容易，而且还是词组"*: **single words
+  only.** A phrase or hyphenated compound inflects on an everyday verb the
+  learner already knows (kicked the can, fell through, rubber-stamped).
+- *"collapse by default，只有我有需要的时候才会看"*: **collapsed by
+  default.** The forms are looked up when wanted, not read on every visit.
 
 ## Measured on the live library (2026-11-06, 1,766 words; `check-live` clean)
+
+Measured over every verb before the scope was cut. The counts that apply
+after the cut follow in "What shows".
 
 - **364 words have a verb sense** (`meanings[].pos` starting `v.`): 354 single
   words, 10 multi-word headwords, and 1 of the single words is hyphenated
@@ -39,8 +57,6 @@ spelled correctly in the rows; they just carry no mark.
   that doubles against its stress) and 26 do not. Of those 26, 4 tempt a
   doubled spelling (`fidget`, `covet`, `dispirit`, `quarrel`). Nobody writes
   `ponderred`, so the other 22 are plain.
-- **So 25 verbs carry a mark** (9 irregular, 12 doubling, 4 tempting
-  singles) and **339 show plain forms under 规则变化**.
 - **The IPA is not a usable source of stress.** A first pass that read final
   stress from `phonetic` got 5 of the 37 single-word verbs ending
   consonant–vowel–consonant wrong. It doubled `hearten` and `dishearten`,
@@ -50,14 +66,25 @@ spelled correctly in the rows; they just carry no mark.
   (11 of 965 inflected occurrences) came from four of those five words.
   `deadpan`'s examples never inflect it, so nothing caught that one.
 
+### What shows, after the cut (as `validate-verb-forms` counts it)
+
+- **353 single-word verbs show forms**; the 11 phrases and compounds show
+  none.
+- **19 carry a mark**: 4 irregular, 11 doubling (the 7 above plus `snag`,
+  `plot`, `trek`, `snub`), 4 tempting singles. **334 say 规则变化.**
+- Past and past participle are the same word on 351 of the 353, so they
+  share one row. The exceptions are `oversee` and `overthrow`.
+
 ## Decisions
 
 ### Rules for spelling, a bundled file for judgment
 
-`src/lib/verbForms.ts` spells every form from deterministic spelling rules:
--s/-es/-ies, -d/-ed/-ied, -ing with e-dropping (but not after ee/ye/oe),
-ie → ying, and doubling for a **one-syllable** word ending
-consonant–vowel–consonant (not w/x/y; `qu` counts as one consonant).
+`src/lib/verbForms.ts` spells the forms from deterministic spelling rules:
+-d/-ed/-ied, -ing with e-dropping (but not after ee/ye/oe), ie → ying, and
+doubling for a **one-syllable** word ending consonant–vowel–consonant (not
+w/x/y; `qu` counts as one consonant). The -ing form is never shown. It is
+spelled only so the gate can check a doubling decision against examples
+that use it.
 
 Anything those rules cannot decide from spelling is **judgment, and lives in
 `src/data/verbForms.json`**, keyed by word id:
@@ -71,7 +98,7 @@ Anything those rules cannot decide from spelling is **judgment, and lives in
 } }
 ```
 
-A word needs judgment when the word that inflects is:
+A word needs judgment when it is:
 
 - **an irregular verb, or one of them behind a prefix** (`over`, `up`, `with`,
   `be`, `re`, `un`, …). The entry must give `past` and `pastParticiple`.
@@ -84,10 +111,12 @@ A word needs judgment when the word that inflects is:
   entry must give `double`, plus `looksDoubled: true` on a single consonant a
   learner would expect doubled.
 - **ending vowel + c** (`panic → panicked`) or **consonant–vowel–s/z**
-  (`quiz → quizzes`). The entry must give `past`, `pastParticiple` and
-  `presentParticiple`, and an s/z ending `thirdPerson` too, since
-  `quizzes` doubles there as well. There are none in the library today. The rule exists
-  so the first one fails closed instead of shipping `panicing`.
+  (`quiz → quizzed`). The entry must give `past`, `pastParticiple` and
+  `presentParticiple`. There are none in the library today. The rule
+  exists so the first one fails closed instead of shipping `paniced`.
+
+That is **38 entries** today: 4 irregular, the 33 doubling decisions, and
+`reprove`.
 
 **At runtime, a word that needs judgment and has no usable entry shows no
 forms at all** (fail closed). A word added in the app before the next
@@ -102,9 +131,8 @@ Rejected alternatives:
   without reading each word.
 - **A new synced field on `Word`.** The forms would need a bulk write to the
   live `volcab-data` copy, a field on the edit form, and an optional-field
-  migration story, all for 43 entries of editorial judgment (9 irregular,
-  33 doubling decisions, `reprove`). Bundled
-  content keyed by id is the `wordNotes.json` precedent for exactly this.
+  migration story, all for 38 entries of editorial judgment. Bundled content
+  keyed by id is the `wordNotes.json` precedent for exactly this.
 - **Reusing `relatedForms`.** That field is 同根词: derived words with a
   Chinese gloss. It feeds 发散's 换词性 answers (`diverge.ts`) and the
   new-word spacing (`freshOrder.ts`), and each entry renders as a capture
@@ -118,13 +146,6 @@ Rejected alternatives:
   the validator below uses `splitByHeadword` to check the generator against
   the examples.
 
-### Which word inflects in a multi-word headword
-
-For a phrase (space-separated), it is the **first** word: `fell through`,
-`stemmed from`, `bit the bullet`. This is the same rule `headword.ts` already
-relies on. For a hyphenated compound, it is the **last** segment:
-`rubber-stamped`. Judgment checks run on that word alone.
-
 ### Display
 
 - **One section per word**, not per sense. All 116 words with two or more
@@ -133,41 +154,48 @@ relies on. For a hyphenated compound, it is the **last** segment:
   `v.`, including the 36 words whose verb sense is secondary. The head reads
   **动词变形** so that on a noun-first word it says whose forms these are.
 - **Placed directly after the meanings block (and its 要点), before 例句.**
-  This follows dictionary convention: forms belong with the senses, and the
-  examples below then show them in use. *Builder's call; easy to move.*
-- **A `.ledger` of label/value rows**, in the user's order: 过去式, 过去分词,
-  现在分词, 第三人称单数. When past and past participle are the same word,
-  as they are for 359 of the 364 verbs, they share one row labelled
-  过去式、过去分词, so a regular verb takes three rows.
+  Forms belong with the senses, as in a dictionary.
+- **Collapsed by default: a `<details>` whose `<summary>` is the ruled
+  section head**, with the rotating triangle `.disclosure` draws. It has no
+  `.disclosure` box, because a page section is a ruled head, not a card.
+  Closed, it takes one line. **The kind stays visible while closed**, so
+  whether a word is worth opening is answered without opening it. Each word
+  starts closed: the `<details>` is keyed by word id, because the page
+  stays mounted from word to word and an uncontrolled `<details>` carried
+  its open state across. That was observed in the browser and is fixed by
+  the key.
+- **Open, a `.ledger` row or two.** 过去式、过去分词 as one row when they
+  are the same word, otherwise 过去式 and 过去分词.
 - **The head's `__aside` names the kind**: 规则变化 / 不规则 / 双写 r /
   t 不双写. A final `l` that stays single reads `l 不双写（美式）`, because
   British spelling doubles it (`quarrelled`). The forms follow the
   library's American spelling, matching `phonetic`.
 - **The 着重号 marks exactly what to look at**, as on the 形近 reveal card.
-  On an irregular form it marks the whole inflected word, wherever the form
-  differs from what the rules would spell. On a doubled form it marks the
-  doubled pair (`concu·rr·ed`). On a tempting single it marks the single
-  consonant (`fidge·t·ed`). Third person singular is never marked. The
-  meaning never rests on colour alone: the aside states the kind in words.
+  On an irregular form it marks the whole word, wherever the form differs
+  from what the rules would spell. On a doubled form it marks the doubled
+  pair (`concu·rr·ed`). On a tempting single it marks the single consonant
+  (`fidge·t·ed`). The meaning never rests on colour alone: the aside states
+  the kind in words.
 
 ### Gate: `npm run validate-verb-forms`
 
 Added to `npm run validate`, so it runs in CI. It fails on any of these:
 
-1. an entry whose id is not in `data/words.json`, or is not a verb (it can
-   never render). This is the `validate-word-notes` precedent;
-2. a malformed entry: forms must be lowercase letters, `double` and
+1. an entry whose id is not in `data/words.json`, is not a verb, or is a
+   phrase or compound. Such an entry can never render (the
+   `validate-word-notes` precedent);
+2. a malformed entry: forms must be one lowercase word, `double` and
    `looksDoubled` must be booleans, and `looksDoubled` is allowed only
    beside `double: false`;
-3. a verb that needs judgment and has no sufficient entry;
+3. a single-word verb that needs judgment and has no sufficient entry;
 4. an entry on a verb that needs no judgment, where the entry changes no
    form either. That entry is noise, and it would hide a later rule fix;
 5. **any -ed or -ing occurrence of the headword in the word's own examples,
-   located by `splitByHeadword`, that is not one of the generated forms.**
-   This check would have caught four of the five IPA errors above. It
-   catches a wrong `double` on any word whose examples use an -ed or -ing
-   form (292 of the 364 verbs, 811 occurrences, as the gate counts them),
-   and only on those: `deadpan` shows the limit.
+   located by `splitByHeadword`, that is not a form the rules and the entry
+   produce.** This check would have caught four of the five IPA errors
+   above. It catches a wrong `double` on any word whose examples use an -ed
+   or -ing form (284 of the 353 verbs, 793 occurrences, as the gate counts
+   them), and only on those: `deadpan` shows the limit.
 
 It prints the count of each kind, so a content round sees what it added.
 
@@ -180,10 +208,13 @@ It prints the count of each kind, so a content round sees what it added.
   Fail-closed is the contract. Showing nothing is a degradation; a guess is
   a bug.
 - **Invalid if `overhaul` renders nothing.** The user's own example: a
-  regular verb must show its forms and 规则变化.
+  regular single-word verb must say 规则变化 on its closed head and show
+  `overhauled` when opened.
 
 ## Out of scope
 
+- Present participle and third person on the page; phrases and compounds.
+  Both were cut by the user (above).
 - Noun plurals, comparatives, and forms on the review card or in quizzes.
   This is the entry page only.
 - Changing how `headword.ts` finds an inflected headword in examples. The
@@ -194,6 +225,7 @@ It prints the count of each kind, so a content round sees what it added.
 ## Content workflow
 
 The word-content skill's file map gains a row: `src/data/verbForms.json`,
-keyed by word id, **required** for a new verb that needs judgment, gated by
-`validate-verb-forms`. Its failure message names the field the entry is
-missing, so whoever adds the word does not have to rediscover the rules.
+keyed by word id, **required** for a new single-word verb that needs
+judgment, gated by `validate-verb-forms`. Its failure message names the
+field the entry is missing, so whoever adds the word does not have to
+rediscover the rules.

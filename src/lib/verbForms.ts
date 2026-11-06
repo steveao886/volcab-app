@@ -1,7 +1,14 @@
 /**
- * A verb's four forms for the entry page: past, past participle, present
- * participle, third person singular — and which letters in them are worth a
- * learner's second look. See docs/superpowers/specs/2026-11-06-verb-forms-design.md.
+ * A verb's past forms for the entry page, and which letters in them are
+ * worth a learner's second look. See
+ * docs/superpowers/specs/2026-11-06-verb-forms-design.md.
+ *
+ * **Past and past participle only, single words only** — the user's call on
+ * seeing the first build. The present participle and third person add
+ * nothing the past form does not already show: a doubled consonant shows in
+ * `concurred`, and e-dropping and y → i are rules the learner already knows.
+ * A phrase or a hyphenated compound inflects on an everyday verb the learner
+ * already knows (kicked the can, fell through, rubber-stamped).
  *
  * **Rules spell; src/data/verbForms.json decides.** Everything spelling alone
  * settles is computed here. What it cannot settle is judgment, and judgment
@@ -24,8 +31,8 @@
 export interface VerbFormsEntry {
   past?: string
   pastParticiple?: string
+  /** Only where the rules cannot spell it (panicking); never shown, but the gate checks it against the examples. */
   presentParticiple?: string
-  thirdPerson?: string
   /** Whether a word ending consonant–vowel–consonant doubles that consonant before -ed and -ing. */
   double?: boolean
   /**
@@ -41,10 +48,10 @@ export interface VerbFormsFile {
   verbs: Record<string, VerbFormsEntry>
 }
 
-export type Field = 'past' | 'pastParticiple' | 'presentParticiple' | 'thirdPerson' | 'double'
+export type Field = 'past' | 'pastParticiple' | 'presentParticiple' | 'double'
 
 /**
- * - `irregular`: some form is not what the rules spell (oversaw, held, cast);
+ * - `irregular`: a past form is not what the rules spell (oversaw, upheld);
  * - `double`: the final consonant doubles (concurred, snagged);
  * - `single`: it stays single where a learner would double it (fidgeted);
  * - `regular`: nothing to look twice at (overhauled).
@@ -63,8 +70,8 @@ export interface VerbForms {
   consonant?: string
   past: Piece[]
   pastParticiple: Piece[]
-  presentParticiple: Piece[]
-  thirdPerson: Piece[]
+  /** Not shown on the page. Kept so the gate can check a doubling decision against examples that only use -ing. */
+  presentParticiple: string
 }
 
 /**
@@ -97,8 +104,8 @@ const IRREGULAR_BASES = new Set([
 /**
  * Prefixes an irregular verb keeps its forms behind: oversee, uphold,
  * withstand, misunderstand (mis + under + stand). Stripped recursively.
- * Deliberately generous — `belie` and `relay` match too, and their entries
- * simply write the regular forms out. Over-flagging costs one entry;
+ * Deliberately generous — `reprove` matches as re+prove, and its entry
+ * simply writes the regular forms out. Over-flagging costs one entry;
  * under-flagging prints `overseed`.
  */
 const PREFIXES = ['back', 'be', 'by', 'down', 'fore', 'for', 'in', 'mis', 'off', 'out', 'over', 're', 'un', 'under', 'up', 'with']
@@ -121,7 +128,7 @@ const syllables = (w: string) => (normal(w).match(/[aeiouy]+/g) ?? []).length
  * order. Empty means the rules spell every form.
  *
  * - an irregular verb (or one behind a prefix): `past`, `pastParticiple`;
- * - ending vowel + c (panicked) or consonant–vowel–s/z (quizzes): every form
+ * - ending vowel + c (panicked) or consonant–vowel–s/z (quizzed): every form
  *   the c or the doubled s/z reaches;
  * - two or more syllables ending consonant–vowel–consonant: `double` — the
  *   stress call. One syllable needs none: it always doubles (snagged).
@@ -138,21 +145,16 @@ export function requiredFields(word: string): Field[] {
     need.add('past')
     need.add('pastParticiple')
     need.add('presentParticiple')
-    if (/[sz]$/.test(w)) need.add('thirdPerson')
   } else if (cvc && syllables(w) > 1) {
     need.add('double')
   }
-  const order: Field[] = ['past', 'pastParticiple', 'presentParticiple', 'thirdPerson', 'double']
+  const order: Field[] = ['past', 'pastParticiple', 'presentParticiple', 'double']
   return order.filter(f => need.has(f))
 }
 
 /** The rules' spelling of each form, given whether the final consonant doubles. */
-export function ruleForms(w: string, double: boolean) {
+function ruleForms(w: string, double: boolean) {
   const last = w.slice(-1)
-  const thirdPerson = /(s|x|z|ch|sh)$/.test(w) ? `${w}es`
-    : /[^aeiou]y$/.test(w) ? `${w.slice(0, -1)}ies`
-    : /[^aeiou]o$/.test(w) ? `${w}es`
-    : `${w}s`
   const past = /e$/.test(w) ? `${w}d`
     : /[^aeiou]y$/.test(w) ? `${w.slice(0, -1)}ied`
     : double ? `${w}${last}ed`
@@ -161,43 +163,29 @@ export function ruleForms(w: string, double: boolean) {
     : /e$/.test(w) && !/(ee|ye|oe)$/.test(w) ? `${w.slice(0, -1)}ing`
     : double ? `${w}${last}ing`
     : `${w}ing`
-  return { past, pastParticiple: past, presentParticiple, thirdPerson }
-}
-
-/**
- * Splits a headword into the one word that inflects and what stays fixed
- * around it: the first word of a phrase (fell through, stemmed from — the
- * rule headword.ts's phrase matcher already relies on), the last segment of
- * a hyphenated compound (rubber-stamped). Null for anything else.
- */
-export function inflectingWord(headword: string): { before: string; word: string; after: string } | null {
-  const h = headword.trim().toLowerCase()
-  const parts = h.split(/\s+/)
-  if (parts.length > 1) {
-    return /^[a-z]+$/.test(parts[0]) ? { before: '', word: parts[0], after: ` ${parts.slice(1).join(' ')}` } : null
-  }
-  const m = /^((?:[a-z]+-)*)([a-z]+)$/.exec(h)
-  return m === null ? null : { before: m[1], word: m[2], after: '' }
+  return { past, pastParticiple: past, presentParticiple }
 }
 
 const isForm = (v: unknown): v is string => typeof v === 'string' && /^[a-z]+$/.test(v)
 
 export const piecesText = (pieces: Piece[]) => pieces.map(p => p.text).join('')
 
+/** Whether a headword gets forms at all: one plain word, no phrase, no hyphenated compound. */
+export const isSingleWord = (headword: string) => /^[a-z]+$/.test(headword.trim().toLowerCase())
+
 /**
- * The word's forms, or null when it has no verb sense, its headword has no
- * single inflecting word, or it needs judgment its entry does not supply.
- * Lenient like every read of bundled content: a malformed field is treated
- * as absent, which for a required field means failing closed, never throwing.
+ * The word's forms, or null when it has no verb sense, is not a single word,
+ * or needs judgment its entry does not supply. Lenient like every read of
+ * bundled content: a malformed field is treated as absent, which for a
+ * required field means failing closed, never throwing.
  */
 export function verbForms(
   word: { id: string; headword: string; meanings: readonly { pos: string }[] },
   file: VerbFormsFile,
 ): VerbForms | null {
   if (!word.meanings.some(m => /^v\./.test(m.pos.trim()))) return null
-  const split = inflectingWord(word.headword)
-  if (split === null) return null
-  const { before, word: w, after } = split
+  if (!isSingleWord(word.headword)) return null
+  const w = word.headword.trim().toLowerCase()
 
   const raw: unknown = file.verbs[word.id]
   const entry = (typeof raw === 'object' && raw !== null ? raw : {}) as Record<string, unknown>
@@ -213,36 +201,30 @@ export function verbForms(
 
   let irregular = false
   let doubled = false
-  const build = (f: 'past' | 'pastParticiple' | 'presentParticiple' | 'thirdPerson'): Piece[] => {
+  const build = (f: 'past' | 'pastParticiple'): Piece[] => {
     const own = entry[f]
     const text = isForm(own) ? own : rule[f]
-    const pieces: Piece[] = []
-    const push = (t: string, mark: boolean) => {
-      if (t !== '') pieces.push({ text: t, mark })
-    }
-    push(before, false)
     if (text !== rule[f]) {
       irregular = true
-      push(text, true)
-    } else if (f !== 'thirdPerson' && (double || single) && text.startsWith(w) && text.length > w.length) {
+      return [{ text, mark: true }]
+    }
+    if ((double || single) && text.startsWith(w) && text.length > w.length) {
       // The doubled pair, or the single consonant a learner would have doubled.
       const end = double ? w.length + 1 : w.length
       if (double) doubled = true
-      push(text.slice(0, w.length - 1), false)
-      push(text.slice(w.length - 1, end), true)
-      push(text.slice(end), false)
-    } else {
-      push(text, false)
+      return [
+        { text: text.slice(0, w.length - 1), mark: false },
+        { text: text.slice(w.length - 1, end), mark: true },
+        { text: text.slice(end), mark: false },
+      ].filter(p => p.text !== '')
     }
-    push(after, false)
-    return pieces
+    return [{ text, mark: false }]
   }
 
   const past = build('past')
   const pastParticiple = build('pastParticiple')
-  const presentParticiple = build('presentParticiple')
-  const thirdPerson = build('thirdPerson')
+  const presentParticiple = isForm(entry.presentParticiple) ? entry.presentParticiple : rule.presentParticiple
   const kind: VerbFormKind = irregular ? 'irregular' : doubled ? 'double' : single ? 'single' : 'regular'
   const consonant = kind === 'double' || kind === 'single' ? w.slice(-1) : undefined
-  return { kind, ...(consonant !== undefined && { consonant }), past, pastParticiple, presentParticiple, thirdPerson }
+  return { kind, ...(consonant !== undefined && { consonant }), past, pastParticiple, presentParticiple }
 }
