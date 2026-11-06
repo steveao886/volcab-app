@@ -370,8 +370,8 @@ export function Settings() {
         </Field>
       </section>
 
-      {/* Sits right after the new-word count because both decide how much
-          work tomorrow holds. The hint carries the target number, because
+      {/* Sits after the new-word count and the review cap because all three
+          decide how much work tomorrow holds. The hint carries the target number, because
           "1.3" means nothing without knowing what you are aiming at — the
           stats page prints the retention this is meant to move. */}
       <section className="section">

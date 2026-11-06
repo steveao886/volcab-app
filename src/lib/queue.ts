@@ -31,8 +31,11 @@ export function reviewCap(settings: Progress['settings']): number {
  * How much of the cap today has spent: the words grade() has taken out of the
  * review block (DailyStat.reviewWords). A day graded only by an older build
  * has no such count and falls back to `reviewPhase`, which counts cards and
- * so overcounts by the 困难-then-重来 words alone — an error toward fewer
- * reviews, by a word or two. Malformed counts are skipped the same way.
+ * so overcounts by that day's 困难-then-重来 words. That serves as many fewer
+ * review words, and when it tips spent + remaining over the cap it also
+ * zeroes the day's new words — a backlog-day outcome on a day that is not
+ * one, within a few words of the cap. Malformed counts are skipped the same
+ * way. The mixed-build merge errs the other way: see DailyStat.reviewWords.
  */
 export function reviewWordsSpent(stat: DailyStat | undefined): number {
   const ok = (v: unknown): v is number => Number.isInteger(v) && (v as number) >= 0
