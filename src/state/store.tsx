@@ -7,6 +7,7 @@ import { GitHubClient } from '../lib/github'
 import { mergeProgress } from '../lib/merge'
 import type { QuizMetricKey } from '../lib/quiz'
 import { relatedDueGuard } from '../lib/related'
+import { reviewWordsSpent } from '../lib/queue'
 import type { GradeSession } from '../lib/queue'
 import { demoteWord, gradeWord, todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
@@ -806,6 +807,15 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
     // the word back to learning, and that card was still a review when it
     // was shown.
     if (prev?.state === 'review') {
+      // The daily review cap's counter (DailyStat.reviewWords): one per word
+      // this grade takes out of the review block. `prev.due <= day` is what
+      // keeps it per word rather than per card — 困难 already moved `due` past
+      // today, and 重来 on its confirm look is a second review-phase card for
+      // the same word. Started from reviewWordsSpent, not 0, so a day an
+      // older build began (reviewPhase only) keeps what it already spent —
+      // and read before reviewPhase moves below, or that fallback counts
+      // this very card.
+      if (prev.due <= day) stat.reviewWords = reviewWordsSpent(stat) + 1
       // Written as a pair, so "the field is absent" always means "this day
       // predates the measurement" and never "the only review that day was a
       // miss". mergeProgress leans on that: it omits a counter only when
