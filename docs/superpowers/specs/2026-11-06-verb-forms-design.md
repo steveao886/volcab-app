@@ -75,16 +75,18 @@ A word needs judgment when the word that inflects is:
 
 - **an irregular verb, or one of them behind a prefix** (`over`, `up`, `with`,
   `be`, `re`, `un`, …). The entry must give `past` and `pastParticiple`.
-  Prefix detection deliberately over-flags: `belie` and `relay` look like
-  `be+lie` and `re+lay`, and their entry simply writes the regular forms out.
-  A prefixed irregular verb that also ends consonant–vowel–consonant
-  (`forget`) gives `double` as well.
+  Prefix detection deliberately over-flags. In the library today that is
+  `reprove`, read as re+prove because `prove` has `proven`; outside it,
+  `belie` and `relay` would be flagged the same way. Their entries simply
+  write the regular forms out. A prefixed irregular verb that also ends
+  consonant–vowel–consonant (`forget`) gives `double` as well.
 - **longer than one syllable and ending consonant–vowel–consonant**. The
   entry must give `double`, plus `looksDoubled: true` on a single consonant a
   learner would expect doubled.
 - **ending vowel + c** (`panic → panicked`) or **consonant–vowel–s/z**
   (`quiz → quizzes`). The entry must give `past`, `pastParticiple` and
-  `presentParticiple`. There are none in the library today. The rule exists
+  `presentParticiple`, and an s/z ending `thirdPerson` too, since
+  `quizzes` doubles there as well. There are none in the library today. The rule exists
   so the first one fails closed instead of shipping `panicing`.
 
 **At runtime, a word that needs judgment and has no usable entry shows no
@@ -100,7 +102,8 @@ Rejected alternatives:
   without reading each word.
 - **A new synced field on `Word`.** The forms would need a bulk write to the
   live `volcab-data` copy, a field on the edit form, and an optional-field
-  migration story, all for 42 entries of editorial judgment. Bundled
+  migration story, all for 43 entries of editorial judgment (9 irregular,
+  33 doubling decisions, `reprove`). Bundled
   content keyed by id is the `wordNotes.json` precedent for exactly this.
 - **Reusing `relatedForms`.** That field is 同根词: derived words with a
   Chinese gloss. It feeds 发散's 换词性 answers (`diverge.ts`) and the
@@ -163,8 +166,8 @@ Added to `npm run validate`, so it runs in CI. It fails on any of these:
    located by `splitByHeadword`, that is not one of the generated forms.**
    This check would have caught four of the five IPA errors above. It
    catches a wrong `double` on any word whose examples use an -ed or -ing
-   form (291 of the 364 verbs do), and only on those: `deadpan` shows the
-   limit.
+   form (292 of the 364 verbs, 811 occurrences, as the gate counts them),
+   and only on those: `deadpan` shows the limit.
 
 It prints the count of each kind, so a content round sees what it added.
 
