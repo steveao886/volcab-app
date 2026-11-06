@@ -71,11 +71,11 @@ describe('buildDayPlan', () => {
   }
 
   it('due row: capped count, and a hint naming the cap and what waits', () => {
-    expect(find(cappedDay(), 'due')).toMatchObject({ count: 3, state: 'todo', hint: '每天最多 3 个，另 2 个留到明天', heldBack: 2 })
+    expect(find(cappedDay(), 'due')).toMatchObject({ count: 3, state: 'todo', hint: '上限 3，另 2 个留到明天', heldBack: 2 })
   })
 
   it('due row: done with the hint still on it once the cap is spent', () => {
-    expect(find(cappedDay(3), 'due')).toMatchObject({ count: 0, state: 'done', hint: '每天最多 3 个，另 2 个留到明天', heldBack: 2 })
+    expect(find(cappedDay(3), 'due')).toMatchObject({ count: 0, state: 'done', hint: '上限 3，另 2 个留到明天', heldBack: 2 })
   })
 
   it('due row: no hint and no heldBack when nothing waits', () => {

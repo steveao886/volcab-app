@@ -550,8 +550,12 @@ function ReviewSession() {
               ? empty ? (clearedForToday ? '今天已巩固' : '暂无需要巩固的词') : '巩固完成'
               : heldBack > 0 ? '今天的复习到量了' : empty ? '暂无待复习' : '复习完成'}
           </p>
+          {/* Cards, not words: `reviewed` counts every grade, relearning steps
+              and 困难's confirm look included. It said 个词 until 2026-11-05,
+              and beside the review cap's 每天最多复习 88 个词 it read as the cap
+              broken — 100 against 88 on an ordinary capped day. */}
           <p className="review-done__count">
-            今天已复习 <span className="num">{reviewedToday}</span> 个词
+            今天已复习 <span className="num">{reviewedToday}</span> 张卡
           </p>
           <p className="muted">
             {consolidateMode

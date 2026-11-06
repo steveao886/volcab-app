@@ -88,7 +88,7 @@ export function untangleShare(due: number, sessions: number): { today: number; b
  * See docs/superpowers/specs/2026-11-05-daily-review-cap-design.md.
  */
 export function dueHint(heldBack: number, cap: number): string | undefined {
-  return heldBack > 0 ? `每天最多 ${cap} 个，另 ${heldBack} 个留到明天` : undefined
+  return heldBack > 0 ? `上限 ${cap}，另 ${heldBack} 个留到明天` : undefined
 }
 
 /**
