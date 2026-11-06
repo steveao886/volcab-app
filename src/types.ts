@@ -381,6 +381,24 @@ export interface DailyStat {
    * docs/superpowers/specs/2026-11-04-carried-over-reviews-design.md.
    */
   carriedOver?: number
+  /**
+   * Review-phase words taken out of this day's due list by a scheduled
+   * review: what the daily review cap has spent (`reviewWordsSpent` in
+   * lib/queue.ts).
+   *
+   * **Not `reviewPhase`, which counts cards.** 困难 brings a word back once to
+   * confirm, still in the review phase, and 重来 on that look grades it a
+   * second time — two review-phase cards for one word. As the cap's counter
+   * that word would take two slots, and the cap could start binding partway
+   * through a day, taking its new words away mid-session.
+   *
+   * Written only by `grade`, and only for a card that was in the review
+   * phase and due by that day. Optional like every added field; absent
+   * falls back to `reviewPhase`, which overcounts by the 困难-then-重来 words
+   * alone. mergeProgress keeps the larger value. See
+   * docs/superpowers/specs/2026-11-05-daily-review-cap-design.md.
+   */
+  reviewWords?: number
 }
 
 /**
@@ -473,7 +491,13 @@ export interface Progress {
    * exactly the behaviour from before the setting existed, so a device on
    * an older build pushing settings without it changes nothing.
    */
-  settings: { newPerDay: number; soundEnabled?: boolean; intervalModifier?: number; updatedAt?: string }
+  /**
+   * reviewCap is the most review-phase words a day's 复习 serves; the rest
+   * stay due for later (`reviewCap` in lib/queue.ts). Optional for the same
+   * reason as intervalModifier: absent means the default of 88, the number
+   * the user asked for (docs/superpowers/specs/2026-11-05-daily-review-cap-design.md).
+   */
+  settings: { newPerDay: number; soundEnabled?: boolean; intervalModifier?: number; reviewCap?: number; updatedAt?: string }
   words: Record<string, ProgressEntry>
   dailyStats: Record<string, DailyStat>
   /**

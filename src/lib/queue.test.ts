@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest'
 import {
   buildConsolidateQueue, buildQueue,
   CONSOLIDATE_DELAY_HOURS, CONSOLIDATE_MAX_INTERVAL_DAYS, LAPSE_SESSION_SIZE,
-  carriedOverCount, gradeSession, MATURE_INTERVAL_DAYS, newQuota, rankStrugglingWords, strugglingPracticePool,
+  carriedOverCount, gradeSession, MATURE_INTERVAL_DAYS, newQuota, rankStrugglingWords, reviewCap, reviewWordsSpent, strugglingPracticePool,
 } from './queue'
-import { INITIAL_EASE } from './srs'
+import { gradeWord, INITIAL_EASE } from './srs'
 import { emptyProgress, emptyStat } from '../types'
 import type { Progress, ProgressEntry, Word } from '../types'
 
@@ -564,5 +564,123 @@ describe('gradeSession', () => {
   })
   it('a session built before the device has pulled at all stamps nothing', () => {
     expect(gradeSession(5, T, null)).toBeUndefined()
+  })
+})
+
+/**
+ * At most `reviewCap` review-phase words a day; the rest stay due, and a day
+ * that holds any back learns no new words. See
+ * docs/superpowers/specs/2026-11-05-daily-review-cap-design.md.
+ */
+describe('daily review cap', () => {
+  const T = '2026-07-24'
+  const NOW = new Date(2026, 6, 24, 9, 0, 0)
+  const entry = (state: ProgressEntry['state'], due: string): ProgressEntry =>
+    ({ state, ease: 2.5, intervalDays: state === 'review' ? 5 : 0, due, stepIndex: 0, reps: 1, lapses: 0, lastReviewedAt: '2026-07-01T00:00:00Z' })
+  /** `learning` learning words and `review` review words due today, `overdue` review words due yesterday, then `fresh` unstarted words. */
+  const lib = (learning: number, review: number, fresh = 5, overdue = 0) => {
+    const ids = (prefix: string, n: number) => [...Array(n).keys()].map(i => `${prefix}${String(i).padStart(2, '0')}`)
+    const learningIds = ids('l', learning), reviewIds = ids('r', review), overdueIds = ids('o', overdue)
+    const ws = [...learningIds, ...reviewIds, ...overdueIds, ...ids('f', fresh)].map(id => word(id))
+    const p = emptyProgress()
+    p.settings.newPerDay = 3
+    for (const id of learningIds) p.words[id] = entry('learning', T)
+    for (const id of reviewIds) p.words[id] = entry('review', T)
+    for (const id of overdueIds) p.words[id] = entry('review', '2026-07-23')
+    return { ws, p, learningIds }
+  }
+
+  it('serves the learning block whole and cuts the review block to the cap', () => {
+    const { ws, p, learningIds } = lib(2, 6)
+    p.settings.reviewCap = 4
+    const q = buildQueue(ws, p, T)
+    expect(q.due).toHaveLength(6)
+    expect([...q.due.slice(0, 2)].sort()).toEqual(learningIds)
+    expect(q.heldBack).toBe(2)
+  })
+
+  it('spent is reviewWords, else reviewPhase, else nothing', () => {
+    expect(reviewWordsSpent({ ...emptyStat(), reviewWords: 3, reviewPhase: 5 })).toBe(3)
+    expect(reviewWordsSpent({ ...emptyStat(), reviewPhase: 5 })).toBe(5)
+    expect(reviewWordsSpent({ ...emptyStat() })).toBe(0)
+    expect(reviewWordsSpent(undefined)).toBe(0)
+    for (const bad of [-1, 1.5, NaN, '2']) {
+      expect(reviewWordsSpent({ ...emptyStat(), reviewWords: bad as number, reviewPhase: 5 })).toBe(5)
+    }
+  })
+
+  it('spent at or past the cap: no review words, the learning block still served', () => {
+    for (const spent of [4, 9]) {
+      const { ws, p, learningIds } = lib(2, 6)
+      p.settings.reviewCap = 4
+      p.dailyStats[T] = { ...emptyStat(), reviewWords: spent }
+      const q = buildQueue(ws, p, T)
+      expect([...q.due].sort()).toEqual(learningIds)
+      expect(q.heldBack).toBe(6)
+    }
+  })
+
+  it('anything held back empties the fresh list, whatever was carried over', () => {
+    // 5 carried over alone would leave 7 of 12 new words; the cap (default 88)
+    // holds 2 of the 90 review words back, so the day learns none.
+    const { ws, p } = lib(0, 85, 20, 5)
+    p.settings.newPerDay = 12
+    const q = buildQueue(ws, p, T)
+    expect(q.carriedOver).toBe(5)
+    expect(q.due).toHaveLength(88)
+    expect(q.heldBack).toBe(2)
+    expect(q.fresh).toEqual([])
+  })
+
+  it('a cap at or above the review block changes nothing', () => {
+    const { ws, p } = lib(0, 6)
+    p.settings.reviewCap = 6
+    const q = buildQueue(ws, p, T)
+    expect(q.due).toHaveLength(6)
+    expect(q.heldBack).toBe(0)
+    expect(q.fresh).toHaveLength(3)
+  })
+
+  it('reviewCap absent or malformed reads as 88', () => {
+    expect(reviewCap({ newPerDay: 3 })).toBe(88)
+    expect(reviewCap({ newPerDay: 3, reviewCap: 20 })).toBe(20)
+    for (const bad of [0, -5, 1.5, NaN, '20']) {
+      expect(reviewCap({ newPerDay: 3, reviewCap: bad as number })).toBe(88)
+    }
+  })
+
+  it('the cut is the head of the order the uncapped queue uses', () => {
+    const capped = lib(2, 6), uncapped = lib(2, 6)
+    capped.p.settings.reviewCap = 4
+    uncapped.p.settings.reviewCap = 999
+    expect(buildQueue(capped.ws, capped.p, T).due)
+      .toEqual(buildQueue(uncapped.ws, uncapped.p, T).due.slice(0, 6))
+  })
+
+  /** Grade the first `k` served words "good" and count them, as grade() would. */
+  const gradeFirst = (p: Progress, served: string[], k: number) => {
+    for (const id of served.slice(0, k)) p.words[id] = gradeWord(p.words[id], 'good', NOW, () => 0.5)
+    p.dailyStats[T] = { ...emptyStat(), reviewWords: k }
+  }
+
+  it('re-entry on a capped day: graded plus served stays the cap, and no new words come back', () => {
+    const { ws, p } = lib(0, 6)
+    p.settings.reviewCap = 4
+    const before = buildQueue(ws, p, T)
+    expect([before.due.length, before.heldBack, before.fresh.length]).toEqual([4, 2, 0])
+    gradeFirst(p, before.due, 2)
+    const after = buildQueue(ws, p, T)
+    expect([after.due.length, after.heldBack, after.fresh.length]).toEqual([2, 2, 0])
+    expect(after.due).toEqual(before.due.slice(2))
+  })
+
+  it('re-entry on an uncapped day: the new words stay', () => {
+    const { ws, p } = lib(0, 4)
+    p.settings.reviewCap = 4
+    const before = buildQueue(ws, p, T)
+    expect([before.due.length, before.heldBack, before.fresh.length]).toEqual([4, 0, 3])
+    gradeFirst(p, before.due, 2)
+    const after = buildQueue(ws, p, T)
+    expect([after.due.length, after.heldBack, after.fresh.length]).toEqual([2, 0, 3])
   })
 })

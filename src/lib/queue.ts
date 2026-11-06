@@ -8,6 +8,37 @@ export interface DailyQueue {
   fresh: string[]
   /** The carried-over count the new-word budget was cut by: the stored stamp, or the live count when there is none. */
   carriedOver: number
+  /** Review-phase words due today that the daily cap kept out of `due`. They stay due, and come first tomorrow. */
+  heldBack: number
+}
+
+/**
+ * The most review-phase words a day's 复习 serves, as the user put it
+ * (2026-11-05): 最多 88 个, and 到 88 就收工. Measured that day, a missed day
+ * or two stacked the already-scheduled reviews alone to 124 by the third
+ * day and 290 within a week, with the carried-over rule keeping new words
+ * off them but nothing bounding them.
+ */
+export const DEFAULT_REVIEW_CAP = 88
+
+/** The day's cap. Lenient on the read side: anything but a positive integer — another device's junk, a hand edit — is the default, so a stray 0 can never empty the review block. */
+export function reviewCap(settings: Progress['settings']): number {
+  const v = settings.reviewCap
+  return Number.isInteger(v) && (v as number) > 0 ? (v as number) : DEFAULT_REVIEW_CAP
+}
+
+/**
+ * How much of the cap today has spent: the words grade() has taken out of the
+ * review block (DailyStat.reviewWords). A day graded only by an older build
+ * has no such count and falls back to `reviewPhase`, which counts cards and
+ * so overcounts by the 困难-then-重来 words alone — an error toward fewer
+ * reviews, by a word or two. Malformed counts are skipped the same way.
+ */
+export function reviewWordsSpent(stat: DailyStat | undefined): number {
+  const ok = (v: unknown): v is number => Number.isInteger(v) && (v as number) >= 0
+  if (ok(stat?.reviewWords)) return stat.reviewWords
+  if (ok(stat?.reviewPhase)) return stat.reviewPhase
+  return 0
 }
 
 /**
@@ -114,19 +145,37 @@ export function buildQueue(words: Word[], progress: Progress, today: string): Da
   const spaceBlock = (ids: string[]) =>
     spaceApart(ids, (a, b) => isRelated(a, b, links), SESSION_SPACING_GAP)
   const isLearning = (id: string) => progress.words[id].state === 'learning'
-  const due = [
-    ...spaceBlock(sortedDue.filter(isLearning)),
-    ...spaceBlock(sortedDue.filter(id => !isLearning(id))),
-  ]
+  const review = spaceBlock(sortedDue.filter(id => !isLearning(id)))
+
+  // The daily cap (DEFAULT_REVIEW_CAP) cuts the review block only. The
+  // learning block is words partway through their steps — one that lapsed
+  // earlier today was counted on its review-phase card already, and holding
+  // it back would strand it between steps. The cut comes after spacing, so
+  // what is served is the head of the order the session would have used
+  // anyway. Recomputing on every visit is safe because grade() moves each
+  // word it counts out of the review block: spent + what is left stays
+  // constant all day, and re-entering 复习 resumes the same 88.
+  const stat = progress.dailyStats[today]
+  const reviewBudget = Math.max(0, reviewCap(progress.settings) - reviewWordsSpent(stat))
+  const due = [...spaceBlock(sortedDue.filter(isLearning)), ...review.slice(0, reviewBudget)]
+  const heldBack = Math.max(0, review.length - reviewBudget)
 
   // The quota first loses one word per review carried over from earlier days
   // (newQuota), then what has been learned today. The carried-over count is
   // the day's stamp when there is one: counting live would hand the quota
   // back as soon as the overdue cards at the head of the session are done.
-  const stat = progress.dailyStats[today]
+  //
+  // **A day the cap holds anything back learns no new words.** The
+  // carried-over count alone does not make that so: it counts `due < today`
+  // while the review block takes `due <= today`, so 5 carried over plus 85
+  // due today is 90 review words, 2 held back, and still 7 of 12 new words
+  // after the 88. The user was told a backlog day has none, and their own
+  // rule is that a day which cannot finish its reviews takes none on.
   const learnedToday = stat?.newLearned ?? 0
   const carriedOver = storedCarriedOver(stat) ?? carriedOverCount(words, progress, today)
-  const budget = Math.max(0, newQuota(progress.settings.newPerDay, carriedOver) - learnedToday)
+  const budget = heldBack > 0
+    ? 0
+    : Math.max(0, newQuota(progress.settings.newPerDay, carriedOver) - learnedToday)
   // New words are taken in a stable shuffle (a hash of the id), not by encounter
   // likelihood and not in word-list order. Likelihood came first until 2026-11-02, and
   // since the newest captures score highest it served each capture batch ahead of the
@@ -164,7 +213,7 @@ export function buildQueue(words: Word[], progress: Progress, today: string): Da
     startedSince(familySince),
   ).map(w => w.id)
 
-  return { due, fresh, carriedOver }
+  return { due, fresh, carriedOver, heldBack }
 }
 
 /**
