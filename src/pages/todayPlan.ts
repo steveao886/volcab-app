@@ -86,9 +86,19 @@ export function untangleShare(due: number, sessions: number): { today: number; b
  * words wait for tomorrow. A done row with words still due says why — the
  * same silence that made the 顽固词 count read as broken until 2026-09-22.
  * See docs/superpowers/specs/2026-11-05-daily-review-cap-design.md.
+ *
+ * **The learning-phase words are named, because the count includes them and
+ * the cap does not.** buildQueue serves the learning block whole, on top of
+ * the cap (a word left between its steps must be able to finish them, and
+ * one that lapsed was counted already, on its review-phase card). On
+ * 2026-11-07 that put 89 beside 上限 88, which the user reported as a broken
+ * cap: 108 review words due, 88 served, and one word (`adverse`) whose
+ * relearning card was still waiting after a 重来 the day before.
  */
-export function dueHint(heldBack: number, cap: number): string | undefined {
-  return heldBack > 0 ? `上限 ${cap}，另 ${heldBack} 个留到明天` : undefined
+export function dueHint(heldBack: number, cap: number, learning = 0): string | undefined {
+  if (heldBack <= 0) return undefined
+  const extra = learning > 0 ? `（不含 ${learning} 个没学完的）` : ''
+  return `上限 ${cap}${extra}，另 ${heldBack} 个留到明天`
 }
 
 /**
@@ -140,11 +150,12 @@ export function buildDayPlan(
   // The count is what the daily review cap leaves for today, and the hint
   // says what it kept back — before the cap is reached as well as after, so
   // the tick at the end is never a bare one over words still due.
+  const learning = q.due.filter(id => progress.words[id]?.state === 'learning').length
   items.push({
     key: 'due', label: '复习到期', count: q.due.length,
     state: q.due.length === 0 ? 'done' : 'todo', to: '/review',
     ...(q.heldBack > 0
-      ? { hint: dueHint(q.heldBack, reviewCap(progress.settings)), heldBack: q.heldBack }
+      ? { hint: dueHint(q.heldBack, reviewCap(progress.settings), learning), heldBack: q.heldBack }
       : {}),
   })
   items.push({

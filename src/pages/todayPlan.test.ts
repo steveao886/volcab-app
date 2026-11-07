@@ -78,6 +78,17 @@ describe('buildDayPlan', () => {
     expect(find(cappedDay(3), 'due')).toMatchObject({ count: 0, state: 'done', hint: '上限 3，另 2 个留到明天', heldBack: 2 })
   })
 
+  it('due row: the hint names the learning-phase words the cap does not count', () => {
+    const words = ['a', 'b', 'c', 'd', 'e', 'l'].map(word)
+    const p = emptyProgress()
+    words.slice(0, 5).forEach(w => { p.words[w.id] = entry({ due: TODAY }) })
+    p.words.l = entry({ state: 'learning', due: '2026-08-06', intervalDays: 0 })
+    p.settings.newPerDay = 2
+    p.settings.reviewCap = 3
+    expect(find(buildDayPlan(words, p, NOW, TODAY, NO_MARKS), 'due'))
+      .toMatchObject({ count: 4, hint: '上限 3（不含 1 个没学完的），另 2 个留到明天', heldBack: 2 })
+  })
+
   it('due row: no hint and no heldBack when nothing waits', () => {
     const p: Progress = { ...emptyProgress(), words: { a: entry({ due: TODAY }) } }
     const row = find(buildDayPlan([word('a')], p, NOW, TODAY, NO_MARKS), 'due')
