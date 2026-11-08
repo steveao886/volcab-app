@@ -906,30 +906,26 @@ describe('full-library regression — antonymPick', FULL_LIBRARY, () => {
       }
     }
     /**
-     * The only directions the rules allow that the library cannot fill,
-     * and the reason is visible in one number: `prep.` carries **5**
-     * antonym strings library-wide, three of which belong to this very
-     * word and are therefore its opposites, not its distractors. Two
-     * candidates cannot fill three slots.
+     * Empty since 2026-11-08. Until then `in the wake of` failed all three of
+     * its directions, for a reason visible in one number: `prep.` carried
+     * **5** antonym strings library-wide, three of them this word's own
+     * opposites, and two candidates cannot fill three slots. `in compliance
+     * with` and `in accordance with` brought 4 more (9 now), and the pool
+     * fills.
      *
-     * Named rather than subtracted from the count. A fourth line appearing
-     * here means some *other* pool ran dry, which is worth a look — the
-     * skip itself is correct behaviour (see "skipped, not downgraded"
+     * A line appearing here means some pool ran dry, which is worth a look
+     * — the skip itself is correct behaviour (see "skipped, not downgraded"
      * above), but it should never happen silently.
      */
-    expect(failed).toEqual([
-      'in the wake of → in the run-up to',
-      'in the wake of → ahead of',
-      'in the wake of → in anticipation of',
-    ])
-    // Re-measured 2026-11-02 over 1766 words (was 4024 / 2108 / 1451 at 1662).
+    expect(failed).toEqual([])
+    // Re-measured 2026-11-08 over 1825 words (was 4270 / 2186 / 1545 at 1766).
     // These track the library's own shape, so a word batch moves them; what
     // must not move without explanation is the `failed` list above.
-    expect(directions).toHaveLength(4270)
-    // 2186 answer with a word the library has no entry for; the other 2084 are
-    // the library-internal pairs, 2160 directions less the 76 the shape rule takes.
-    expect(directions.filter(d => d.external)).toHaveLength(2186)
-    expect(new Set(directions.map(d => d.from.id)).size).toBe(1545)
+    expect(directions).toHaveLength(4384)
+    // 2216 answer with a word the library has no entry for; the other 2168 are
+    // the library-internal pairs, 2250 directions less the 82 the shape rule takes.
+    expect(directions.filter(d => d.external)).toHaveLength(2216)
+    expect(new Set(directions.map(d => d.from.id)).size).toBe(1594)
   })
 
   /**

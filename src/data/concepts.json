@@ -820,7 +820,8 @@
         "unwarranted"
       ],
       "exclude": [
-        "baseless"
+        "baseless",
+        "unjustifiable"
       ]
     },
     {

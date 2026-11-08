@@ -37,6 +37,7 @@
     "reprove": { "past": "reproved", "pastParticiple": "reproved" },
     "slacken": { "double": false },
     "slander": { "double": false },
+    "swell": { "past": "swelled", "pastParticiple": "swollen" },
     "uphold": { "past": "upheld", "pastParticiple": "upheld" },
     "worsen": { "double": false }
   }

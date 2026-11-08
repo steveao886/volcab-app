@@ -1139,10 +1139,10 @@
       "target": "好斗",
       "order": [
         "belligerent",
+        "combative",
         "pugnacious"
       ],
       "extra": [
-        "combative",
         "aggressive"
       ],
       "en": "Two drinks in, he turned belligerent and picked a fight with everyone.",
@@ -1152,15 +1152,15 @@
       "zh": "合同里专门留了一条应对意外情况的条款。",
       "target": "意外情况",
       "order": [
-        "contingency"
+        "contingency",
+        "eventuality"
       ],
       "extra": [
-        "eventuality",
         "unforeseen event",
         "fallback"
       ],
       "en": "The contract sets aside one clause for a contingency nobody expects.",
-      "why": "contingency 指可能发生也可能不发生、需要预先安排的情况,常搭配 plan、fund;eventuality 更强调终将出现的某种结果;unforeseen event 只说没预料到;fallback 是备用方案本身,不是那件事。"
+      "why": "contingency 指可能发生也可能不发生、需要预先安排的情况,常搭配 plan、fund;eventuality 也指可能出现的情况,多说 every eventuality,不作 clause、plan 的定语;unforeseen event 只说没预料到;fallback 是备用方案本身,不是那件事。"
     },
     {
       "zh": "他没有正式头衔,却是这个团队事实上的负责人。",
@@ -1295,7 +1295,6 @@
         "daunting"
       ],
       "extra": [
-        "redoubtable",
         "imposing"
       ],
       "en": "They are a formidable side that has not lost in two years.",
@@ -2161,7 +2160,6 @@
       ],
       "extra": [
         "deadlock",
-        "stalemate",
         "standoff"
       ],
       "en": "Talks reached an impasse in the third round with neither side moving.",
@@ -2478,10 +2476,10 @@
       "zh": "那套说法在新数据面前已经站不住脚。",
       "target": "站不住脚",
       "order": [
-        "untenable"
+        "untenable",
+        "indefensible"
       ],
       "extra": [
-        "indefensible",
         "unsustainable",
         "no longer holds"
       ],
@@ -2645,10 +2643,10 @@
       "zh": "计划到现在还没有明确形状,只是一堆想法。",
       "target": "没有明确形状",
       "order": [
-        "amorphous"
+        "amorphous",
+        "shapeless"
       ],
       "extra": [
-        "shapeless",
         "inchoate",
         "free-floating"
       ],
@@ -2838,9 +2836,7 @@
       "zh": "他学识渊博,却从不用来压人。",
       "target": "学识渊博",
       "order": [
-        "erudite"
-      ],
-      "extra": [
+        "erudite",
         "learned",
         "well-read",
         "scholarly"
@@ -2934,10 +2930,10 @@
       "zh": "法庭以有伤风化的罪名对那场演出提起了指控。",
       "target": "有伤风化",
       "order": [
-        "indecency"
+        "indecency",
+        "obscenity"
       ],
       "extra": [
-        "obscenity",
         "lewdness",
         "impropriety"
       ],
@@ -3230,7 +3226,6 @@
         "pursuant"
       ],
       "extra": [
-        "in accordance with",
         "under the terms of",
         "as provided by"
       ],
@@ -3591,10 +3586,10 @@
       "target": "可委托的",
       "order": [
         "delegable",
-        "assignable"
+        "assignable",
+        "transferable"
       ],
       "extra": [
-        "transferable",
         "able to be deputed"
       ],
       "en": "The authority is delegable: you may name someone to act for you.",
@@ -4281,8 +4276,8 @@
         "acquiescence"
       ],
       "extra": [
-        "assent",
-        "compliance"
+        "compliance",
+        "approval"
       ],
       "why": "acquiescence 是不出声的接受：不再争辩、勉强认了，重点在『没有反对』而不是积极赞成，常搭 tacit acquiescence。"
     },
@@ -4482,12 +4477,10 @@
       "order": [
         "intercede",
         "mediate",
-        "conciliate"
-      ],
-      "why": "intercede 是替第三方向有权的人开口求情，说话的人自己不在争端里；mediate 是在争执的两方之间居中调停，不替任何一方说话，组长这里却明明站在实习生一边；conciliate 是安抚对立的双方、把关系修好，做的人通常就站在冲突中间；arbitrate 是作为中立的第三方拍板裁决。",
-      "extra": [
+        "conciliate",
         "arbitrate"
-      ]
+      ],
+      "why": "intercede 是替第三方向有权的人开口求情，说话的人自己不在争端里；mediate 是在争执的两方之间居中调停，不替任何一方说话，组长这里却明明站在实习生一边；conciliate 是安抚对立的双方、把关系修好，做的人通常就站在冲突中间；arbitrate 是作为中立的第三方拍板裁决。"
     },
     {
       "zh": "这份文档把谁批什么划得清清楚楚，工单再没在半路卡住。",
