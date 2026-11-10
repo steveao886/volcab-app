@@ -111,7 +111,7 @@ export function WordDetail() {
   useEffect(() => {
     if (word !== undefined) preparePronunciation(word.headword)
   }, [word])
-  // Own list plus the words that list this one — see cardSynonyms.
+  // Own list, the words that list this one, then partners sharing a synonym and a gloss — see cardSynonyms.
   const synonyms = useMemo(() => (word ? cardSynonyms(word, words) : []), [word, words])
 
   async function handleSave(updated: Word) {

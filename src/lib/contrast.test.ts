@@ -190,6 +190,54 @@ describe('cardSynonyms', () => {
     expect(cardSynonyms(target, [target])).toEqual(['alpha'])
   })
 
+  // The reported case (2026-11-09): applaud and acclaim both list `laud` and both
+  // gloss 称赞, so 辨析 pairs them, but neither lists the other.
+  const g = (id: string, synonyms: string[], zh: string, pos = 'v.'): Word => ({
+    ...w(id, synonyms, pos),
+    meanings: [{ pos, en: `def of ${id}`, zh }],
+  })
+
+  it('appends partners joined through a shared synonym that share a gloss term, after the incoming ones', () => {
+    const target = g('applaud', ['laud', 'commend'], '称赞;赞赏;为…叫好')
+    const lib = [
+      target,
+      g('acclaim', ['praise', 'laud'], '称赞;为…喝彩'),
+      g('praise', ['applaud'], '称赞;表扬'),
+    ]
+    expect(cardSynonyms(target, lib)).toEqual(['laud', 'commend', 'praise', 'acclaim'])
+  })
+
+  it('a shared synonym without a shared gloss term stays off the card: that is a homograph', () => {
+    // promulgate (enact a law) and metastasize (cancer spreading) share `disseminate`.
+    const target = g('promulgate', ['disseminate'], '颁布;公布')
+    const lib = [target, g('metastasize', ['disseminate'], '转移;扩散')]
+    expect(cardSynonyms(target, lib)).toEqual(['disseminate'])
+  })
+
+  it('a shared gloss under a different part of speech does not count', () => {
+    const target = g('alpha', ['shared'], '称赞', 'v.')
+    const lib = [target, g('bravo', ['shared'], '称赞', 'n.')]
+    expect(cardSynonyms(target, lib)).toEqual(['shared'])
+  })
+
+  it('a shared gloss with no shared synonym does not count: the pair graph does not join them', () => {
+    const target = g('alpha', ['one'], '称赞')
+    const lib = [target, g('bravo', ['two'], '称赞')]
+    expect(cardSynonyms(target, lib)).toEqual(['one'])
+  })
+
+  it('matches glosses the way the 近义词 groups do: qualifiers cut, a trailing 的 ignored', () => {
+    const target = g('bogus', ['fake'], '假的;伪造的', 'adj.')
+    const lib = [target, g('phony', ['fake'], '假(货币等);虚假的', 'adj.')]
+    expect(cardSynonyms(target, lib)).toEqual(['fake', 'phony'])
+  })
+
+  it('a partner already shown as listed or listing is not repeated as a sideways one', () => {
+    const target = g('applaud', ['laud', 'acclaim'], '称赞')
+    const lib = [target, g('acclaim', ['laud'], '称赞'), g('praise', ['applaud', 'laud'], '称赞')]
+    expect(cardSynonyms(target, lib)).toEqual(['laud', 'acclaim', 'praise'])
+  })
+
   it('incoming partners are alphabetical, so library order does not move them', () => {
     const target = w('alluring', [])
     const a = w('tantalizing', ['alluring']), b = w('irresistible', ['alluring']), c = w('tempting', ['alluring'])

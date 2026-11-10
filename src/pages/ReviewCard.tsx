@@ -34,7 +34,7 @@ export function ReviewCardBack({ word }: { word: Word }) {
   // All null except on a heteronym whose divergent sense has a respelling —
   // see lib/sensePronounce.ts.
   const voices = senseVoices(word)
-  // Own list plus the words that list this one — see cardSynonyms.
+  // Own list, the words that list this one, then partners sharing a synonym and a gloss — see cardSynonyms.
   const { words } = useApp()
   const synonyms = useMemo(() => cardSynonyms(word, words), [word, words])
 

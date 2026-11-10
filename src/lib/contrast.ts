@@ -1,4 +1,5 @@
 import type { Word } from '../types'
+import { glossTerms } from './forget'
 
 /**
  * Confusable-word pairings.
@@ -155,7 +156,9 @@ export function buildContrastPairs(words: Word[]): ContrastPair[] {
 
 /**
  * The 近义词 row a card shows: the entry's own `synonyms`, then every library
- * word that lists this one's headword and is not already on that list.
+ * word that lists this one's headword and is not already on that list, then
+ * the library words joined to it through a shared synonym that also share a
+ * gloss (below).
  *
  * A direct link is written on one side only, and the pair graph above reads it
  * as symmetric — `direct` is set from either side. The card used to show the
@@ -172,17 +175,68 @@ export function buildContrastPairs(words: Word[]): ContrastPair[] {
  * (未经测试, against 拿不出证据). Reading the pointer backwards adds nothing to
  * the graph that was not already there.
  *
+ * **Then the partners joined through a shared synonym that also share a
+ * gloss.** applaud and acclaim both list `laud`, so 辨析 has always paired
+ * them, and both read 称赞 as verbs — yet neither names the other, and
+ * acclaim was missing from applaud's card (a user report, 2026-11-09). Over
+ * the live library that day (1825 words), 1169 of 2972 pairs were joined
+ * only through a shared string, and 223 of them also shared a whole gloss
+ * term under one part of speech — exculpate/exonerate, impertinent/impudent,
+ * extemporaneous/impromptu — hidden from both of 330 cards. check-links
+ * cannot see them: it looks for pairs the graph does not join, and these it
+ * does. Writing each link into the data means reading every pair now and
+ * every batch's pairs after; the graph already holds the link, so the card
+ * reads it.
+ *
+ * **The gloss is what keeps a homograph off the card.** A shared string alone
+ * is how `promulgate` met `metastasize` (via `disseminate`), and 1169 such
+ * pairs is too many to show unread. Requiring a whole shared gloss term
+ * under the same part of speech — check-links.ts's candidate test — cuts the
+ * two-sense joins, because a homograph's two listers describe different
+ * things in Chinese too.
+ *
  * Matches with the same `norm` as the pair graph, so the card and 辨析 agree
- * on what counts as a listing. Incoming partners are alphabetical: library
+ * on what counts as a listing. Each derived group is alphabetical: library
  * order is capture order and would reshuffle the row whenever a word is
  * re-added.
  */
 export function cardSynonyms(word: Word, words: readonly Word[]): string[] {
   const head = norm(word.headword)
   const seen = new Set([head, ...word.synonyms.map(norm)])
-  const incoming = words
-    .filter(w => w.id !== word.id && !seen.has(norm(w.headword)) && w.synonyms.some(s => norm(s) === head))
-    .map(w => w.headword)
-    .sort((a, b) => a.localeCompare(b))
-  return [...word.synonyms, ...incoming]
+  const alpha = (list: Word[]) => list.map(w => w.headword).sort((a, b) => a.localeCompare(b))
+
+  const incoming = words.filter(
+    w => w.id !== word.id && !seen.has(norm(w.headword)) && w.synonyms.some(s => norm(s) === head),
+  )
+  for (const w of incoming) seen.add(norm(w.headword))
+
+  const strings = new Set(word.synonyms.map(norm).filter(s => s !== ''))
+  const terms = posGlossTerms(word)
+  const sideways = words.filter(
+    w =>
+      w.id !== word.id &&
+      !seen.has(norm(w.headword)) &&
+      w.synonyms.some(s => strings.has(norm(s))) &&
+      [...posGlossTerms(w)].some(t => terms.has(t)),
+  )
+  return [...word.synonyms, ...alpha(incoming), ...alpha(sideways)]
+}
+
+/**
+ * `pos\tterm` for every all-CJK gloss term, keyed by part of speech so a noun
+ * gloss and a verb gloss that happen to read alike never meet. Terms come
+ * from forget.ts's glossTerms, so 炫耀的 and 炫耀 match; a term carrying Latin
+ * is a usage note (区别于 congenial…), not a gloss. **No length floor**: a
+ * two-character floor after the 的 is cut drops bogus/phony (假的 → 假) and
+ * nothing else — without it the rule finds exactly check-links.ts's 223
+ * pairs, measured 2026-11-09.
+ */
+function posGlossTerms(w: Word): Set<string> {
+  const out = new Set<string>()
+  for (const m of w.meanings) {
+    for (const t of glossTerms(m.zh)) {
+      if (/^[一-鿿…]+$/.test(t)) out.add(`${m.pos}\t${t}`)
+    }
+  }
+  return out
 }
