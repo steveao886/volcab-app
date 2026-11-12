@@ -390,6 +390,17 @@ describe('buildConsolidateQueue', () => {
     expect(buildConsolidateQueue([word('mature')], p, now, TODAY)).toEqual([])
   })
 
+  it('a word 想不出 halved to one day on a turned review card is not a word learned today', () => {
+    const p = emptyProgress()
+    const reviewedAt = at(CONSOLIDATE_DELAY_HOURS + 1)
+    const turned = { ...entry({ lastReviewedAt: reviewedAt }), demotedOn: TODAY, recall: { reps: 2, correct: 0, streak: 0, lastAt: reviewedAt } }
+    p.words['turned'] = turned
+    // The same word demoted by a quiz today and answered in 回想 at another
+    // moment is a new word that was missed, and still belongs here.
+    p.words['quizzed'] = { ...turned, recall: { ...turned.recall, lastAt: at(1) } }
+    expect(buildConsolidateQueue([word('turned'), word('quizzed')], p, now, TODAY)).toEqual(['quizzed'])
+  })
+
   it('words last seen on an earlier day are not part of today learning', () => {
     const p = emptyProgress()
     p.words['yesterday'] = entry({ lastReviewedAt: new Date(2026, 6, 23, 20, 0).toISOString() })

@@ -134,6 +134,11 @@ export interface ProgressEntry {
   /**
    * The last day a quiz miss halved this word's interval. `YYYY-MM-DD`.
    *
+   * Since 2026-11-11 also stamped by 想不出 on a turned review card
+   * (`gradeUnproduced` in lib/srs.ts), which shares the one-a-day cap in
+   * both directions: it does not halve a word a quiz already halved today,
+   * and a quiz does not halve a word it stamped.
+   *
    * Exists to cap a ratchet. Demotion fires on a wrong answer and nothing
    * fires on a right one, and quizzes have no daily limit — so without a
    * per-day guard, playing enough of them could only ever push intervals
@@ -299,7 +304,7 @@ export interface RecallRating {
  * mergeProgress treats them differently — see mergeRecall.
  */
 export interface RecallStat {
-  /** Times this word has been the answer to a 回想 question. */
+  /** Times this word has been the answer to a 回想 question, or to a review card shown Chinese-first because it owed one (lib/recallDebt.ts). */
   reps: number
   /** How many of those were right first try. */
   correct: number
@@ -328,7 +333,9 @@ export interface DailyStat {
    * reviews was 97.8%. Tuning intervals off the first number would move
    * them the wrong way.
    *
-   * Written only by grade(). The practice drills are deliberately excluded:
+   * Written only by grade() — not by gradeUnproduced, whose card showed the
+   * meaning first and so tested no recognition (2026-11-11 recall-debt
+   * spec). The practice drills are deliberately excluded:
    * they re-test the words you already struggle with, so folding them in
    * would drag the measurement down for reasons that have nothing to do
    * with how well the schedule is working.
@@ -367,8 +374,8 @@ export interface DailyStat {
    *
    * **Frozen because a live count does nothing**: a session serves the
    * overdue cards before the new words, so by the time it reaches them the
-   * live count is zero and the full quota is back. Written only by `grade`,
-   * with the session's first grade on the session's own day, so a session
+   * live count is zero and the full quota is back. Written only by `grade`
+   * and `gradeUnproduced`, with the session's first grade on the session's own day, so a session
    * that runs past midnight does not stamp the next day.
    *
    * Only a session built after this device's pull that day stamps
@@ -392,8 +399,8 @@ export interface DailyStat {
    * that word would take two slots, and the cap could start binding partway
    * through a day, taking its new words away mid-session.
    *
-   * Written only by `grade`, and only for a card that was in the review
-   * phase and due by that day. Optional like every added field; absent
+   * Written only by `grade` and `gradeUnproduced`, and only for a card that
+   * was in the review phase and due by that day. Optional like every added field; absent
    * falls back to `reviewPhase`, which overcounts by the 困难-then-重来 words
    * (reviewWordsSpent says what that costs). mergeProgress keeps the larger
    * value, which has a gap while builds are mixed: a newer device already

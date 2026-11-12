@@ -117,6 +117,46 @@
   color: var(--text);
 }
 
+/* --- The turned front ------------------------------------------------------
+   A word that owes 回想 is shown Chinese-first (lib/recallDebt.ts). The mask
+   takes the headword's place and face so the flip replaces it in position;
+   the glosses sit under it. A long phrase's mask may break anywhere — it is
+   dots, and clipping it off the card at 375px is the worse outcome. */
+
+.review-turned {
+  display: grid;
+  gap: var(--sp-5);
+  justify-items: center;
+  text-align: center;
+  min-width: 0;
+}
+
+.review-turned__mask {
+  overflow-wrap: anywhere;
+}
+
+.review-turned__glosses {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.review-turned__gloss {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+/* 想不出 is three characters where every other grade is two. On equal
+   columns the label measured 76px against 77.75px of room at 375px and wraps
+   at 360px, the common Android width, so its column is wider. Two classes,
+   to win over components.css whatever the bundle order. */
+.review-actions .ruled-row--turned {
+  grid-auto-flow: row;
+  grid-template-columns: minmax(0, 1.35fr) repeat(3, minmax(0, 1fr));
+}
+
 /* --- Flipped-side content --------------------------------------------------------------
    Separated from the front by a hairline rather than another card layer, echoing the "dictionary page" typographic language. */
 

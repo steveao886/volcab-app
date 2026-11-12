@@ -14,7 +14,7 @@ import { createMemoryWordsCache } from '../lib/wordsCache'
 import type { WordsCache } from '../lib/wordsCache'
 import { todayStr } from '../lib/srs'
 import { emptyProgress } from '../types'
-import type { Progress, StagingItem, Word } from '../types'
+import type { Progress, ProgressEntry, StagingItem, Word } from '../types'
 
 /**
  * **Sync orchestration** tests for store.tsx.
@@ -1006,6 +1006,110 @@ describe('grade: review words spent today', () => {
     await step(() => { app().recordConsolidation('alpha', 'good') })
     await step(() => { app().recordQuiz(1, 1, [], 'mixed') })
     expect(spent()).toBeUndefined()
+  })
+})
+
+// A card 复习 showed Chinese-first because the word owes 回想 —
+// docs/superpowers/specs/2026-11-11-recall-debt-design.md. Two outcomes, and
+// both have to leave the cap's counter and the retention pair consistent.
+
+describe('the turned review card', () => {
+  const owing = () => ({
+    state: 'review' as const, ease: 2.3, intervalDays: 30, due: '2000-01-01', stepIndex: 0,
+    reps: 4, lapses: 1, lastReviewedAt: '2000-01-01T00:00:00Z',
+    recall: { reps: 2, correct: 1, streak: 0, lastAt: '2000-01-01T00:00:00Z' },
+  })
+  const boot = async (over: Partial<ProgressEntry> = {}) => {
+    const progress = emptyProgress()
+    progress.words['alpha'] = { ...owing(), ...over }
+    await bootAsAlice({ words: ['alpha'], progress })
+  }
+  const alpha = () => app().progress.words['alpha']
+  const stat = () => app().progress.dailyStats[today]
+
+  it('想不出 halves the interval, schedules from today, and is not a lapse', async () => {
+    await boot()
+    await step(() => { app().gradeUnproduced('alpha') })
+    expect(alpha().intervalDays).toBe(15)
+    expect(alpha().due > today).toBe(true)
+    expect(alpha().state).toBe('review')
+    expect(alpha().ease).toBe(2.3)
+    expect(alpha().lapses).toBe(1)
+    expect(alpha().demotedOn).toBe(today)
+  })
+
+  it('想不出 records one 回想 miss and stamps missedAt', async () => {
+    await boot()
+    await step(() => { app().gradeUnproduced('alpha') })
+    expect(alpha().recall).toMatchObject({ reps: 3, correct: 1, streak: 0 })
+    expect(alpha().recall?.lastAt).not.toBe('2000-01-01T00:00:00Z')
+    expect(alpha().missedAt).toBe(today)
+  })
+
+  it('想不出 spends a review word and a card, and stays out of the retention pair', async () => {
+    await boot()
+    await step(() => { app().gradeUnproduced('alpha') })
+    expect(stat()?.reviewed).toBe(1)
+    expect(stat()?.correct).toBe(0)
+    expect(stat()?.reviewWords).toBe(1)
+    expect(stat()?.reviewPhase).toBeUndefined()
+    expect(stat()?.reviewPhaseCorrect).toBeUndefined()
+  })
+
+  it('想不出 adds to the words already spent today, and only for a card that was due', async () => {
+    const progress = emptyProgress()
+    progress.words['alpha'] = owing()
+    progress.words['beta'] = owing()
+    progress.words['gamma'] = { ...owing(), due: '2999-01-01' }
+    await bootAsAlice({ words: ['alpha', 'beta', 'gamma'], progress })
+    await step(() => { app().grade('alpha', 'good') })
+    await step(() => { app().gradeUnproduced('beta') })
+    expect(stat()?.reviewWords).toBe(2)
+    await step(() => { app().gradeUnproduced('gamma') })
+    expect(stat()?.reviewWords).toBe(2)
+    expect(stat()?.reviewed).toBe(3)
+  })
+
+  it('想不出 leaves a stamp that is already there, and stamps nothing for another day\'s session', async () => {
+    const progress = emptyProgress()
+    progress.words['alpha'] = owing()
+    progress.words['beta'] = owing()
+    await bootAsAlice({ words: ['alpha', 'beta'], progress })
+    await step(() => { app().gradeUnproduced('alpha', { day: '2000-01-01', carriedOver: 9 }) })
+    expect(stat()?.carriedOver).toBeUndefined()
+    await step(() => { app().grade('beta', 'good', { day: today, carriedOver: 2 }) })
+    await step(() => { app().gradeUnproduced('beta', { day: today, carriedOver: 7 }) })
+    expect(stat()?.carriedOver).toBe(2)
+  })
+
+  it('想不出 stamps the carried-over count like any first grade of a session', async () => {
+    await boot()
+    await step(() => { app().gradeUnproduced('alpha', { day: today, carriedOver: 4 }) })
+    expect(stat()?.carriedOver).toBe(4)
+  })
+
+  it('想不出 leaves a word outside the review phase untouched', async () => {
+    await boot({ state: 'learning', intervalDays: 0 })
+    const before = alpha()
+    await step(() => { app().gradeUnproduced('alpha') })
+    expect(alpha()).toBe(before)
+    expect(stat()).toBeUndefined()
+  })
+
+  it('a produced card is the ordinary grade plus one 回想 right answer', async () => {
+    await boot()
+    await step(() => { app().grade('alpha', 'good', undefined, { produced: true }) })
+    expect(alpha().intervalDays).toBeGreaterThan(30)
+    expect(alpha().recall).toMatchObject({ reps: 3, correct: 2, streak: 1 })
+    expect(stat()?.reviewPhase).toBe(1)
+    expect(stat()?.reviewPhaseCorrect).toBe(1)
+    expect(stat()?.reviewWords).toBe(1)
+  })
+
+  it('an ordinary grade never touches the 回想 record', async () => {
+    await boot()
+    await step(() => { app().grade('alpha', 'good') })
+    expect(alpha().recall).toEqual(owing().recall)
   })
 })
 

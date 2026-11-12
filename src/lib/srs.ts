@@ -290,3 +290,50 @@ export function demoteWord(prev: ProgressEntry, today: string): ProgressEntry {
     demotedOn: today,
   }
 }
+
+/**
+ * 想不出 on a card the scheduled review showed Chinese-first: the word was
+ * due, its 回想 debt was due, and the user could not produce it.
+ *
+ * `demoteWord`'s contract, restated for a card that is due. `demoteWord`
+ * itself cannot be used: it takes a minimum against the existing `due`, which
+ * on a due card is today or earlier, so the card would stay due and come
+ * straight back. Here the review happened, so `due` is counted from today.
+ *
+ * **Not a lapse.** The card showed the meaning first, so nothing on it can
+ * establish that the word is not recognised, and `ease` — the difficulty
+ * estimate, the definition of a struggling word and the main term in
+ * difficultyWeight — stays calibrated on recognition grades alone. Same list
+ * `demoteWord` leaves untouched, minus `reps` and `lastReviewedAt`: this is a
+ * card that was shown and graded, and the timestamp is what lets the write
+ * win mergeProgress.
+ *
+ * **One halving a day, shared with the quiz demotion** (`demotedOn`). A word
+ * missed in a quiz this morning has already paid; this afternoon's card
+ * reschedules it at the interval it has. And a card halved here is not halved
+ * again by a quiz miss tonight.
+ *
+ * The 71fba29 hazard does not arise: the interval was served in full, and the
+ * next grade multiplies the halved one.
+ *
+ * Returns `prev` itself outside the review phase, like `demoteWord`.
+ * See docs/superpowers/specs/2026-11-11-recall-debt-design.md.
+ */
+export function gradeUnproduced(prev: ProgressEntry, now: Date): ProgressEntry {
+  if (prev.state !== 'review') return prev
+  const today = todayStr(now)
+  const next = prev.demotedOn === today
+    ? Math.max(1, prev.intervalDays)
+    : Math.max(1, Math.floor(prev.intervalDays / 2))
+  const from = addDays(today, next)
+  return {
+    ...prev,
+    reps: prev.reps + 1,
+    intervalDays: next,
+    // A card that is not due is not this function's to grade, but if one
+    // arrives the date still only moves toward now.
+    due: prev.due > today && prev.due < from ? prev.due : from,
+    demotedOn: today,
+    lastReviewedAt: now.toISOString(),
+  }
+}

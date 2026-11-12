@@ -308,6 +308,15 @@ export function buildConsolidateQueue(words: Word[], progress: Progress, now: Da
       const e = progress.words[w.id]
       if (!e || e.state === 'new') return false
       if (e.intervalDays > CONSOLIDATE_MAX_INTERVAL_DAYS) return false
+      // 想不出 on a turned review card (store.tsx's gradeUnproduced) can halve
+      // a short interval to one day and stamps today, which is this filter's
+      // whole description of "learned today". It is neither a new word nor a
+      // lapse, and putting it here would add a 今日 row for a change whose one
+      // constraint was to add none. That write stamps the 回想 record and the
+      // review with the same instant, and nothing else leaves a review-phase
+      // word on a one-day interval with the two equal. If a merge separates
+      // them the word shows up here once: a drill too many, not a data fault.
+      if (e.state === 'review' && e.demotedOn === today && e.recall?.lastAt === e.lastReviewedAt) return false
       const last = new Date(e.lastReviewedAt)
       if (todayStr(last) !== today) return false
       return last.getTime() <= readyBefore

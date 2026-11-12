@@ -47,6 +47,14 @@
   margin-top: var(--sp-1);
 }
 
+/* Why this 回想 question leads the round: its word is owed (lib/recallDebt.ts).
+   A margin note under the prompt, a step smaller so it is not read as part
+   of the sentence above it. */
+.quiz-q__owed {
+  margin-top: var(--sp-1);
+  font-size: var(--fs-sm);
+}
+
 /* Options are ruled rows, not boxes: a hairline under each, the way a
    printed exercise lists its choices. The row is still a full-width button
    at least 56px tall, so the hit area is what it was. */

@@ -6,6 +6,7 @@ import { ProgressMarks } from '../components/ProgressMarks'
 import { buildConceptIndex, chainCredit, chainFor } from '../lib/diverge'
 import type { Concept, DivergeQuestion } from '../lib/diverge'
 import { optionIndexFromKey } from '../lib/keys'
+import { owedRecallWords } from '../lib/recallDebt'
 import { pushRecent, recentWindow } from '../lib/passage'
 import { usableSentences } from '../lib/recallSentence'
 import type { RecallSentence } from '../lib/recallSentence'
@@ -259,6 +260,9 @@ export function RecallQuestionView({
               : '三个都沾边 —— 按贴切程度排序，最贴切的先点'}
       </p>
       <p className="quiz-q__prompt">{prompt}</p>
+      {/* 还没过关, not 上次没过: a word stays owed until three right in a
+          row, so the last answer may well have been right. */}
+      {question.owed === true && <p className="muted quiz-q__owed">回想里还没过关</p>}
 
       {stage === 'commit' ? (
         /* The ruled row 复习 grades on: two equal columns, so neither answer
@@ -576,7 +580,10 @@ export function RecallSession({
     const recent = storage.get<string[]>('recentRecall') ?? []
     const seen = new Set(recent.slice(0, recentWindow(poolSize)))
     const debt = new Set(storage.get<string[]>('recallDebt') ?? [])
-    return generateRecallSession(groups, byId, progress, today, seen, debt, count, Math.random, sentences, focus)
+    // Derived from the 回想 record at the moment the round is dealt, with the
+    // same pinned `today`, so a round cannot change its mind midway.
+    const owed = owedRecallWords(progress, today)
+    return generateRecallSession(groups, byId, progress, today, seen, debt, count, Math.random, sentences, focus, owed)
   })
   const [index, setIndex] = useState(0)
   const [score, setScore] = useState(0)

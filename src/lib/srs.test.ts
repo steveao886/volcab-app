@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addDays, clampIntervalModifier, demoteWord, gradeWord, MAX_INTERVAL_DAYS, MAX_INTERVAL_MODIFIER, previewIntervals, todayStr } from './srs'
+import { addDays, clampIntervalModifier, demoteWord, gradeUnproduced, gradeWord, MAX_INTERVAL_DAYS, MAX_INTERVAL_MODIFIER, previewIntervals, todayStr } from './srs'
 import type { ProgressEntry } from '../types'
 
 const now = new Date(2026, 6, 24, 10, 0, 0) // 2026-07-24 local time
@@ -271,6 +271,66 @@ describe('demoteWord: a quiz miss halves the interval, and only ever toward now'
     const demoted = demoteWord(entry(), TODAY)
     const reviewed = gradeWord(demoted, 'good', new Date('2026-08-24T12:00:00'), () => 0.5)
     expect(reviewed.intervalDays).toBeGreaterThan(demoted.intervalDays)
+  })
+})
+
+describe('gradeUnproduced: 想不出 on a turned card halves the interval and is not a lapse', () => {
+  const NOW = new Date('2026-11-11T12:00:00')
+  const TODAY = '2026-11-11'
+  const entry = (over: Partial<ProgressEntry> = {}): ProgressEntry => ({
+    state: 'review', ease: 2.5, intervalDays: 30, due: TODAY,
+    stepIndex: 0, reps: 6, lapses: 1, lastReviewedAt: '2026-10-12T00:00:00Z', ...over,
+  })
+
+  it('halves the interval and schedules from today, so a due card leaves the queue', () => {
+    const out = gradeUnproduced(entry(), NOW)
+    expect(out.intervalDays).toBe(15)
+    expect(out.due).toBe('2026-11-26')
+  })
+
+  it('an overdue card is scheduled from today too — demoteWord would have left it due', () => {
+    const overdue = entry({ due: '2026-11-01' })
+    expect(demoteWord(overdue, TODAY).due).toBe('2026-11-01')
+    expect(gradeUnproduced(overdue, NOW).due).toBe('2026-11-26')
+  })
+
+  it('leaves ease, lapses and state alone, and stamps what a graded card stamps', () => {
+    const before = entry()
+    const after = gradeUnproduced(before, NOW)
+    expect(after.ease).toBe(before.ease)
+    expect(after.lapses).toBe(before.lapses)
+    expect(after.state).toBe('review')
+    expect(after.reps).toBe(before.reps + 1)
+    expect(after.lastReviewedAt).toBe(NOW.toISOString())
+    expect(after.demotedOn).toBe(TODAY)
+  })
+
+  it('floors at one day', () => {
+    expect(gradeUnproduced(entry({ intervalDays: 1 }), NOW).intervalDays).toBe(1)
+    expect(gradeUnproduced(entry({ intervalDays: 1 }), NOW).due).toBe('2026-11-12')
+  })
+
+  it('does not halve twice in a day: a quiz miss this morning has already paid', () => {
+    const demoted = demoteWord(entry(), TODAY)
+    expect(demoted.intervalDays).toBe(15)
+    const out = gradeUnproduced(demoted, NOW)
+    expect(out.intervalDays).toBe(15)
+    expect(out.due).toBe('2026-11-26')
+  })
+
+  it('and a quiz miss the same evening does not halve it again', () => {
+    const out = gradeUnproduced(entry(), NOW)
+    expect(demoteWord(out, TODAY)).toBe(out)
+  })
+
+  it('learning-phase words are left alone', () => {
+    const learning = entry({ state: 'learning', intervalDays: 0 })
+    expect(gradeUnproduced(learning, NOW)).toBe(learning)
+  })
+
+  it('a card that was not due only ever moves toward now', () => {
+    expect(gradeUnproduced(entry({ due: '2026-11-13' }), NOW).due).toBe('2026-11-13')
+    expect(gradeUnproduced(entry({ due: '2027-01-30' }), NOW).due).toBe('2026-11-26')
   })
 })
 

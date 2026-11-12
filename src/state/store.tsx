@@ -9,7 +9,7 @@ import type { QuizMetricKey } from '../lib/quiz'
 import { relatedDueGuard } from '../lib/related'
 import { reviewWordsSpent } from '../lib/queue'
 import type { GradeSession } from '../lib/queue'
-import { demoteWord, gradeWord, todayStr } from '../lib/srs'
+import { demoteWord, gradeUnproduced as unproducedEntry, gradeWord, todayStr } from '../lib/srs'
 import { storage } from '../lib/storage'
 import { applyConfusion, applyTangleResults, isReadable, tangleMembers } from '../lib/tangle'
 import { wordsCache } from '../lib/wordsCache'
@@ -85,7 +85,14 @@ export interface AppActions {
    * its first grade on the session's own day freezes the day's carried-over
    * count (DailyStat.carriedOver). Omitted, nothing is stamped.
    */
-  grade(wordId: string, g: Grade, session?: GradeSession): void
+  grade(wordId: string, g: Grade, session?: GradeSession, opts?: { produced?: boolean }): void
+  /**
+   * 想不出 on a card 复习 showed Chinese-first (lib/recallDebt.ts): the
+   * interval is halved and one 回想 miss recorded. Not a lapse — see
+   * gradeUnproduced in srs.ts. `grade` with `produced: true` is the other
+   * outcome of the same card: the ordinary grade plus one 回想 right answer.
+   */
+  gradeUnproduced(wordId: string, session?: GradeSession): void
   /** Stubborn-word drill, graded one card at a time: practice only, so a miss stamps missedAt and nothing else moves */
   /** Same-day consolidation pass over today's new words. Practice: a miss stamps missedAt and nothing the scheduler owns moves. */
   recordConsolidation(wordId: string, g: Grade): void
@@ -784,7 +791,22 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
   const settlesMiss = (prev: ProgressEntry | undefined, g: Grade): boolean =>
     prev?.state === 'review' && (g === 'good' || g === 'easy')
 
-  const grade = useCallback((wordId: string, g: Grade, session?: GradeSession) => {
+  /**
+   * One 回想 answer added to an entry's production record. The single place
+   * the four fields move, shared by recordRecall and the turned review card
+   * so a card and a 回想 question cannot count an answer differently.
+   */
+  const withRecall = (e: ProgressEntry, correct: boolean, at: string): ProgressEntry => ({
+    ...e,
+    recall: {
+      reps: (e.recall?.reps ?? 0) + 1,
+      correct: (e.recall?.correct ?? 0) + (correct ? 1 : 0),
+      streak: correct ? (e.recall?.streak ?? 0) + 1 : 0,
+      lastAt: at,
+    },
+  })
+
+  const grade = useCallback((wordId: string, g: Grade, session?: GradeSession, opts: { produced?: boolean } = {}) => {
     const now = new Date()
     const day = todayStr(now)
     const cur = stateRef.current.progress
@@ -826,10 +848,14 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
     // The last argument spaces this word off any due date one of its
     // synonyms or same-stem relatives already holds — forward only, see
     // nudgePastRelatives in srs.ts.
-    const graded = gradeWord(
+    const scheduled = gradeWord(
       prev, g, now, undefined, cur.settings.intervalModifier,
       relatedDueGuard(wordId, stateRef.current.words, cur.words),
     )
+    // A turned card the user produced: the grade above is the ordinary one,
+    // and the production record gets its right answer in the same commit —
+    // two commits would hand 复习's read-back effect a half-written entry.
+    const graded = opts.produced === true ? withRecall(scheduled, true, now.toISOString()) : scheduled
     commitProgress({
       ...cur,
       words: {
@@ -838,6 +864,45 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
         // grade was computed from would commit the old schedule and throw
         // the review away.
         [wordId]: settlesMiss(prev, g) ? clearMissed(graded) : graded,
+      },
+      dailyStats: { ...cur.dailyStats, [day]: stat },
+    })
+    schedulePush()
+  }, [commitProgress, schedulePush])
+
+  /**
+   * 想不出 on a turned card. The schedule half is srs.ts's gradeUnproduced;
+   * this adds the miss stamp, the 回想 miss and the day's counters.
+   *
+   * **Counted in `reviewed` and `reviewWords`, not in `reviewPhase`.** It is
+   * a card shown and graded, and it takes a word out of the review block, so
+   * the cap's "spent plus remaining is constant" needs it counted exactly as
+   * grade() counts one. But `reviewPhase` / `reviewPhaseCorrect` measure
+   * whether the schedule holds for recognition, and a card that showed the
+   * meaning first did not test that — counting it either way would move the
+   * retention figure on evidence it does not have.
+   *
+   * `missedAt` is stamped as a 回想 miss stamps it, and nothing here clears
+   * one: settlesMiss is for 记得 and 太简单.
+   *
+   * A word that is not in the review phase is skipped whole. The page only
+   * turns review-phase cards, so this is the entry that changed under it.
+   */
+  const gradeUnproduced = useCallback((wordId: string, session?: GradeSession) => {
+    const now = new Date()
+    const day = todayStr(now)
+    const cur = stateRef.current.progress
+    const prev = cur.words[wordId]
+    if (!prev || prev.state !== 'review') return
+    const stat = { ...(cur.dailyStats[day] ?? emptyStat()) }
+    if (stat.carriedOver === undefined && session?.day === day) stat.carriedOver = session.carriedOver
+    stat.reviewed += 1
+    if (prev.due <= day) stat.reviewWords = reviewWordsSpent(stat) + 1
+    commitProgress({
+      ...cur,
+      words: {
+        ...cur.words,
+        [wordId]: { ...withRecall(unproducedEntry(prev, now), false, now.toISOString()), missedAt: day },
       },
       dailyStats: { ...cur.dailyStats, [day]: stat },
     })
@@ -1100,16 +1165,7 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
       // A word deleted on another device mid-session: skip rather than
       // resurrect an entry for it, the same call practiceGrade makes.
       if (e === undefined) continue
-      const prev = e.recall
-      next[id] = {
-        ...e,
-        recall: {
-          reps: (prev?.reps ?? 0) + 1,
-          correct: (prev?.correct ?? 0) + (correct ? 1 : 0),
-          streak: correct ? (prev?.streak ?? 0) + 1 : 0,
-          lastAt: at,
-        },
-      }
+      next[id] = withRecall(e, correct, at)
     }
     commitProgress({ ...cur, words: next })
     void flushProgress()
@@ -1179,8 +1235,9 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
 
   /**
    * The 巩固 button on 回想's results page: the user declaring "count this
-   * miss as a real forget". Due today, lapses incremented, lastReviewedAt
-   * stamped — nothing else.
+   * miss as a real forget". missedAt, lapses incremented, lastReviewedAt
+   * stamped — nothing else. It does not move `due`: that stopped with
+   * 71fba29, and the interval was already halved by recordQuiz.
    *
    * Not practiceGrade, deliberately: practiceGrade counts a `reviewed` card
    * in dailyStats because in the drills you actually looked at a card and
@@ -1189,12 +1246,12 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
    *
    * Not a forced entry into 还没记牢 either: that list is defined by the
    * scheduler's own signals (ease, interval), and faking them from a button
-   * would corrupt the definition the stats card and drill queue share. The
-   * word enters today's review queue; if the failure was real, the review
-   * grade moves ease through the front door.
+   * would corrupt the definition the stats card and drill queue share. If
+   * the failure was real, the word's next scheduled review moves ease
+   * through the front door.
    *
-   * Idempotent per settlement in effect (due is already today after
-   * recordQuiz), except lapses — so a double-tap would double-count. The
+   * Idempotent per settlement except lapses — a double-tap would
+   * double-count. The
    * page disables the button after one press; this guard is for the id
    * that vanished mid-session (deleted on another device), same as
    * practiceGrade's.
@@ -1457,11 +1514,11 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
 
   const value = useMemo<AppContextValue>(() => ({
     ...state,
-    login, logout, grade, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, recordForget, recordTangle, markSynonymsSeen, saveWord, deleteWords, addStaging,
+    login, logout, grade, gradeUnproduced, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, recordForget, recordTangle, markSynonymsSeen, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll,
     ...(import.meta.env.DEV ? { enterDemoMode } : {}),
   }), [
-    state, login, logout, grade, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, recordForget, recordTangle, markSynonymsSeen, saveWord, deleteWords, addStaging,
+    state, login, logout, grade, gradeUnproduced, recordConsolidation, recordPractice, dismissSuggestion, recordQuiz, recordRecall, recordDiverge, rateRecall, consolidateWord, recordSprint, recordGuess, recordForget, recordTangle, markSynonymsSeen, saveWord, deleteWords, addStaging,
     updateSettings, syncNow, exportAll, enterDemoMode,
   ])
 

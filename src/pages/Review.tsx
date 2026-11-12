@@ -17,7 +17,8 @@ import { buildConsolidateQueue, buildQueue, CONSOLIDATE_DELAY_HOURS, gradeSessio
 import { isSoundEnabled, playGrade, playSessionDone } from '../lib/sound'
 import { storage } from '../lib/storage'
 import { relatedDueGuard } from '../lib/related'
-import { diffDays, previewIntervals, todayStr } from '../lib/srs'
+import { maskGloss, maskHeadword, reviewsReversed } from '../lib/recallDebt'
+import { diffDays, gradeUnproduced as unproducedEntry, previewIntervals, todayStr } from '../lib/srs'
 import { todaysConfusedPairs } from '../lib/tangle'
 import { preparePronunciation, pronounce } from '../lib/pronounce'
 import { ForgetAsk } from './ForgetAsk'
@@ -89,7 +90,7 @@ export function Review() {
 }
 
 function ReviewSession() {
-  const { words, progress, progressPulledOn, grade, recordConsolidation, recordForget, deleteWords } = useApp()
+  const { words, progress, progressPulledOn, grade, gradeUnproduced, recordConsolidation, recordForget, deleteWords } = useApp()
   const [today] = useState(() => todayStr(new Date()))
   // ?mode= swaps which batch the session is built from — lapses (words you
   // keep forgetting) or consolidate (today's new words, a few hours on).
@@ -143,7 +144,9 @@ function ReviewSession() {
   // a question about `prev` (gradeWord has already sent the word to learning
   // by the time the effect reads it back — see isLapse), and the forget
   // record keeps two of its fields, which the grade overwrites.
-  const pendingRef = useRef<{ id: string; grade: Grade; prev?: ProgressEntry } | undefined>(undefined)
+  // No grade at all for 想不出 on a turned card: it is not one of the four,
+  // and advance() must read it as "nothing to recycle on".
+  const pendingRef = useRef<{ id: string; grade?: Grade; prev?: ProgressEntry } | undefined>(undefined)
   // A lapse in the scheduled review, holding the card while 怎么忘的？ is up.
   // `entry` is the committed result the progress effect read back, kept for
   // the advance() it skipped; `prev` is the entry before the grade.
@@ -185,6 +188,25 @@ function ReviewSession() {
   // deleted from another device while the question is up is dropped from the
   // queue, and the question goes with it rather than hanging over the next card.
   const asking = forgetAsk !== null && forgetAsk.id === curId ? forgetAsk : null
+  // A word that owes 回想 is shown Chinese-first (lib/recallDebt.ts, and the
+  // 2026-11-11 recall-debt spec for why it is this card and not an added one).
+  // Decided once per showing and held: the test reads `due`, which the grade
+  // moves, so a live reading turns the card back in the render between the
+  // commit and the queue's advance and swaps the grade row under the pointer.
+  // Keyed like HintLadder, on the showing rather than the word. The confirm
+  // look 困难 buys is never turned — its grade has landed.
+  const showing = `${curId ?? ''}:${queue.seen}`
+  const turnRef = useRef<{ showing: string; value: boolean } | undefined>(undefined)
+  if (turnRef.current?.showing !== showing) {
+    turnRef.current = { showing, value: mode === 'due' && !confirmShowing && reviewsReversed(curEntry, today) }
+  }
+  const turned = turnRef.current.value
+  // The front stays as it was dealt, but 想不出 exists only for a review-phase
+  // entry: the store declines anything else and commits nothing, so the
+  // read-back effect would never fire and the button would be dead. A pull
+  // that lands a lapse from another device mid-card hands the row back to the
+  // ordinary four.
+  const unproducible = turned && curEntry?.state === 'review'
 
   // Built once per library, not per lapse: the 想成了别的 list reads the pair
   // graph, and words does not move when a card is graded.
@@ -219,6 +241,13 @@ function ReviewSession() {
     // The guard is rebuilt whenever the schedule changes, so the label can
     // never promise a date the write would nudge off.
     [mode, curId, curEntry, words, progress.words, progress.settings.intervalModifier],
+  )
+
+  // What 想不出 would do, from the function that does it. Same reason the
+  // four grades run the real scheduler for their labels.
+  const unproducedDays = useMemo(
+    () => (unproducible && curEntry !== undefined ? diffDays(today, unproducedEntry(curEntry, new Date()).due) : null),
+    [unproducible, curEntry, today],
   )
 
   // Warm the recording as soon as the card is on screen, so the speak tap
@@ -269,10 +298,30 @@ function ReviewSession() {
       // practice multiply a word's interval several times over and push
       // the hardest words furthest into the future. See recordConsolidation.
       if (consolidateMode) recordConsolidation(curId, g)
-      else grade(curId, g, session)
+      // A turned card graded at all was produced: 想不出 has its own handler.
+      else grade(curId, g, session, unproducible ? { produced: true } : undefined)
     },
-    [curId, curEntry, flipped, grade, recordConsolidation, consolidateMode, soundEnabled, session],
+    [curId, curEntry, flipped, grade, recordConsolidation, consolidateMode, soundEnabled, session, unproducible],
   )
+
+  // 想不出 on a turned card. The same pending-then-read-back path as a
+  // grade, with no grade on it: the committed entry is still `review` with a
+  // future `due`, so advance() takes the card out of the session, and isLapse
+  // is never asked — this is not one, and 怎么忘的？ has nothing to ask about.
+  const handleUnproduced = useCallback(() => {
+    if (pendingRef.current !== undefined) return
+    if (curId === undefined || !flipped || !unproducible) return
+    if (heldRef.current?.id === curId) return
+    playGrade('again', soundEnabled)
+    pendingRef.current = { id: curId, prev: curEntry }
+    pendingTimeoutRef.current = setTimeout(() => {
+      if (pendingRef.current?.id === curId) {
+        console.error(`[Review] No new progress arrived within ${PENDING_STUCK_TIMEOUT_MS}ms of 想不出 on "${curId}". Force-releasing pendingRef.`)
+        pendingRef.current = undefined
+      }
+    }, PENDING_STUCK_TIMEOUT_MS)
+    gradeUnproduced(curId, session)
+  }, [curId, curEntry, flipped, unproducible, gradeUnproduced, soundEnabled, session])
 
   // Dismisses the confirm showing: the queue moves on and nothing is
   // written — no grade, no daily stat, which is the whole point of the
@@ -335,7 +384,7 @@ function ReviewSession() {
     // scheduled review only — a drill writes no schedule and has no lapse to
     // ask about — and read from `prev`, so the relearning showings that
     // follow, already `learning` going in, never ask a second time.
-    if (mode === 'due' && pending.prev !== undefined && isLapse(pending.prev, pending.grade)) {
+    if (mode === 'due' && pending.prev !== undefined && pending.grade !== undefined && isLapse(pending.prev, pending.grade)) {
       heldRef.current = { id: pendingId, recorded: false }
       setForgetAsk({ id: pendingId, entry, prev: pending.prev })
       return
@@ -502,6 +551,12 @@ function ReviewSession() {
         else if (e.key === '3') { e.preventDefault(); handleConfirmKnown() }
         return
       }
+      // A turned card has no 重来: 1 is 想不出, printed on its button.
+      if (unproducible && e.key === '1') {
+        e.preventDefault()
+        handleUnproduced()
+        return
+      }
       const g = GRADE_KEYS[e.key]
       if (g) {
         e.preventDefault()
@@ -510,7 +565,7 @@ function ReviewSession() {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [curId, flipped, toggleFlip, handleGrade, confirmShowing, handleConfirmKnown])
+  }, [curId, flipped, toggleFlip, handleGrade, confirmShowing, handleConfirmKnown, unproducible, handleUnproduced])
 
   const reviewedToday = progress.dailyStats[today]?.reviewed ?? 0
   // The extra-practice pool can be non-empty while today's drill queue is
@@ -632,6 +687,15 @@ function ReviewSession() {
         </p>
       )}
 
+      {/* Why this card looks different, said before it is graded — the same
+          placement rule as the two notes above. It names the consequence of
+          the one button that is new. */}
+      {turned && (
+        <p className="faint review-drill-note">
+          这个词在回想里还没过关，这一张先看中文想英文。想不出不算忘记，间隔减半，一天最多减一次。
+        </p>
+      )}
+
       {/* Above the card, not below it. It was a sticky bar under the card,
           and with a long back the user still reported scrolling to grade —
           and the bar sat overlaying the tail of the card's own content. Up
@@ -672,13 +736,25 @@ function ReviewSession() {
               </Button>
             </div>
           ) : (
-            <div className="ruled-row">
-              <Button variant="grade-again" className="ruled-row__miss" onClick={() => handleGrade('again')}>
-                <span className="ruled-row__label">
-                  重来<span className="key">1</span>
-                </span>
-                {previews !== null && <span className="num ruled-row__sub">{previews.again}</span>}
-              </Button>
+            <div className={unproducible ? 'ruled-row ruled-row--turned' : 'ruled-row'}>
+              {/* A turned card showed the meaning first, so nothing on it can
+                  say the word was not recognised: 重来 gives way to 想不出,
+                  on the same key. */}
+              {unproducible ? (
+                <Button variant="grade-again" className="ruled-row__miss" onClick={handleUnproduced}>
+                  <span className="ruled-row__label">
+                    想不出<span className="key">1</span>
+                  </span>
+                  {unproducedDays !== null && <span className="num ruled-row__sub">{unproducedDays} 天</span>}
+                </Button>
+              ) : (
+                <Button variant="grade-again" className="ruled-row__miss" onClick={() => handleGrade('again')}>
+                  <span className="ruled-row__label">
+                    重来<span className="key">1</span>
+                  </span>
+                  {previews !== null && <span className="num ruled-row__sub">{previews.again}</span>}
+                </Button>
+              )}
               <Button variant="grade-hard" onClick={() => handleGrade('hard')}>
                 <span className="ruled-row__label">
                   困难<span className="key">2</span>
@@ -700,7 +776,7 @@ function ReviewSession() {
             </div>
           )
         ) : (
-          <p className="muted review-hint">点击卡片或按空格键翻面</p>
+          <p className="muted review-hint">{turned ? '先想出英文，再点击卡片或按空格键核对' : '点击卡片或按空格键翻面'}</p>
         )}
       </div>
 
@@ -711,7 +787,8 @@ function ReviewSession() {
         role="button"
         tabIndex={0}
         aria-expanded={flipped}
-        aria-label={flipped ? `收起 ${curWord.headword} 的释义` : `翻面查看 ${curWord.headword} 的释义`}
+        // A turned front must not read the answer out.
+        aria-label={flipped ? `收起 ${curWord.headword} 的释义` : turned ? '翻面核对英文' : `翻面查看 ${curWord.headword} 的释义`}
         onKeyDown={handleCardKeyDown}
       >
         {isNewCard && (
@@ -719,6 +796,25 @@ function ReviewSession() {
             新词
           </Badge>
         )}
+        {turned && !flipped ? (
+          // The turned front: the mask sits where the headword will be, the
+          // glosses under it. Every meaning's Chinese, because one gloss
+          // alone fits several words; no speak button, which would say it,
+          // and no English left in a gloss, which sometimes is it (maskGloss).
+          <div className="review-turned">
+            <p className="word word--xl review-turned__mask" lang="en" aria-label={`${curWord.headword.charAt(0)} 开头`}>
+              {maskHeadword(curWord.headword)}
+            </p>
+            <ul className="review-turned__glosses">
+              {curWord.meanings.map((m, i) => (
+                <li className="review-turned__gloss" key={`${m.pos}-${i}`}>
+                  <span className="pos">{m.pos}</span>
+                  <span>{maskGloss(m.zh)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
         <div className="review-card__head">
           <p className="word word--xl" lang="en">
             {curWord.headword}
@@ -735,6 +831,7 @@ function ReviewSession() {
             <Icon name="speak" />
           </button>
         </div>
+        )}
         {/* Keyed by the showing, not the word: a recycled card shares its id
             with the showing before it, and must open with the ladder closed. */}
         {ladderRungs.length > 0 && (

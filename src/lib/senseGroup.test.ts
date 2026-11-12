@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   buildOrderQuestion, buildRecallQuestion, eligibleGroups, generateRecallSession,
-  inRecallFocus, isRankable, orderCorrect, parseRecallCount, RECALL_COUNTS, wrongIdsFor,
+  inRecallFocus, isRankable, orderCorrect, owedLimit, parseRecallCount, RECALL_COUNTS, wrongIdsFor,
 } from './senseGroup'
 import type { RecallQuestion, SenseGroup } from './senseGroup'
 import { emptyProgress } from '../types'
@@ -325,6 +325,86 @@ describe('generateRecallSession', () => {
   it('alternates the two kinds when groups qualify for both', () => {
     const qs = generateRecallSession(groups, words, all, TODAY, new Set(), new Set(), 3, seqRng([0.3, 0.6, 0.1, 0.8, 0.4]))
     expect(qs.map(q => q.kind)).toEqual(['recall', 'order', 'recall'])
+  })
+})
+
+describe('generateRecallSession: owed words open the round', () => {
+  const g1a: SenseGroup = { zh: '烧焦的爆米花味弥漫了整个办公室', target: '弥漫', order: ['pervade', 'permeate', 'suffuse'], why: 'w1' }
+  const g1b: SenseGroup = { zh: '恐惧在人群里迅速蔓延开来', order: ['pervade', 'saturate', 'drench'], why: 'w1b' }
+  const g2: SenseGroup = { zh: '他终于向孩子的哭闹妥协了', order: ['capitulate', 'succumb', 'acquiesce'], why: 'w2' }
+  const g3: SenseGroup = { zh: '市中心的拥堵已经积重难返', order: ['intractable', 'refractory', 'obstinate'], why: 'w3' }
+  const groups = [g1a, g1b, g2, g3]
+  const lib = [
+    ...LIB,
+    mkWord('capitulate'), mkWord('succumb'), mkWord('acquiesce'),
+    mkWord('intractable', 'adj.'), mkWord('refractory', 'adj.'), mkWord('obstinate', 'adj.'),
+    mkWord('stubborn', 'adj.'),
+  ]
+  const words = wordsMap(lib)
+  const all = learned(lib.map(w => w.id))
+  const rng = () => seqRng([0.3, 0.7, 0.1, 0.9, 0.5, 0.2, 0.8])
+  const run = (owed: string[], count = 6, seen = new Set<string>(), debt = new Set<string>(), r = rng()) =>
+    generateRecallSession(groups, words, all, TODAY, seen, debt, count, r, [], 'all', owed)
+
+  it('opens in the order given, after the 巩固 prompts, and flags exactly those picks', () => {
+    const qs = run(['intractable', 'capitulate'], 6, new Set(), new Set([g1a.zh]))
+    expect(qs[0].prompt).toBe(g1a.zh)
+    expect(qs.slice(1, 3).map(q => q.orderIds[0])).toEqual(['intractable', 'capitulate'])
+    expect(qs.map(q => q.owed === true)).toEqual(qs.map((_, i) => i === 1 || i === 2))
+  })
+
+  it('takes at most half the round even when more words are owed', () => {
+    expect(owedLimit(4)).toBe(2)
+    const qs = run(['pervade', 'capitulate', 'intractable'], 4)
+    expect(qs.filter(q => q.owed).length).toBe(2)
+    expect(qs.slice(0, 2).map(q => q.orderIds[0])).toEqual(['pervade', 'capitulate'])
+    // The third owed word is still a fine ordinary draw, just not a flagged one.
+    expect(qs.find(q => q.orderIds[0] === 'intractable')?.owed).toBeUndefined()
+  })
+
+  it('an owed word takes a prompt the recency record has not shown', () => {
+    expect(run(['pervade'], 6, new Set([g1a.zh]))[0].prompt).toBe(g1b.zh)
+    expect(run(['pervade'], 6, new Set([g1b.zh]))[0].prompt).toBe(g1a.zh)
+    // Every prompt seen: still asked, degraded rather than dropped.
+    const qs = run(['pervade'], 6, new Set([g1a.zh, g1b.zh]))
+    expect(qs[0].orderIds[0]).toBe('pervade')
+    expect(qs[0].owed).toBe(true)
+  })
+
+  it('skips an owed word with no candidate and still fills the round', () => {
+    const qs = run(['stubborn', 'capitulate'], 4)
+    expect(qs).toHaveLength(4)
+    expect(qs[0].orderIds[0]).toBe('capitulate')
+    expect(qs.filter(q => q.owed).length).toBe(1)
+  })
+
+  it('a word whose pick is already a 巩固 prompt takes no second slot', () => {
+    const qs = run(['capitulate'], 6, new Set(), new Set([g2.zh]))
+    expect(qs[0].prompt).toBe(g2.zh)
+    expect(qs[0].owed).toBeUndefined()
+    expect(qs.filter(q => q.orderIds[0] === 'capitulate')).toHaveLength(1)
+  })
+
+  it('an owed slot is always 唤词, at every position: 排序 would print the word', () => {
+    const qs = run(['pervade', 'capitulate', 'intractable'], 6)
+    const owedQs = qs.filter(q => q.owed)
+    expect(owedQs).toHaveLength(3)
+    expect(owedQs.every(q => q.kind === 'recall')).toBe(true)
+    // The alternation is still alive for the rest of the round.
+    expect(run([], 6).some(q => q.kind === 'order')).toBe(true)
+  })
+
+  it('a focused round takes only what is owed inside the focus', () => {
+    const fresh = wordsMap(lib.map(w => (w.id === 'capitulate' ? { ...w, addedAt: TODAY } : { ...w, addedAt: '2020-01-01' })))
+    const qs = generateRecallSession(groups, fresh, all, TODAY, new Set(), new Set(), 6, rng(), [], 'fresh', ['intractable', 'capitulate'])
+    expect(qs.filter(q => q.owed).map(q => q.orderIds[0])).toEqual(['capitulate'])
+  })
+
+  it('with nobody owed the round is what it was before the parameter existed', () => {
+    const before = generateRecallSession(groups, words, all, TODAY, new Set(), new Set(), 4, rng())
+    const empty = run([], 4)
+    expect(empty).toEqual(before)
+    expect(empty.some(q => q.owed !== undefined)).toBe(false)
   })
 })
 

@@ -164,6 +164,12 @@ export interface RecallQuestion {
   options: string[]
   /** 唤词: the correct headword. 排序: headwords in key order. */
   answer: string[]
+  /**
+   * Opened the round because the answer word owes 回想 (see `owedRecallWords`).
+   * Set by `generateRecallSession` after the builder runs, so the page can say
+   * why this question leads; absent everywhere else.
+   */
+  owed?: boolean
 }
 
 const isLearned = (id: string, progress: Progress): boolean => {
@@ -533,6 +539,9 @@ export function parseRecallCount(raw: unknown): number {
   return RECALL_COUNTS.find(c => c === n) ?? RECALL_COUNTS[0]
 }
 
+/** How many owed words may open a round of `count` questions: half. */
+export const owedLimit = (count: number): number => Math.floor(count / 2)
+
 /**
  * One session's worth of questions, alternating 唤词 / 排序 where the group
  * qualifies for both.
@@ -543,7 +552,7 @@ export function parseRecallCount(raw: unknown): number {
  * draws with, so "trouble comes up more often" means one thing across the
  * app and no group is ever excluded outright.
  *
- * Three buckets, in order:
+ * Four buckets, in order:
  *
  * 1. **`debt`** — groups the user pressed 巩固 on. This is the only
  *    mechanism that practises the *direction* they failed in: pulling the
@@ -551,8 +560,17 @@ export function parseRecallCount(raw: unknown): number {
  *    on the front and meanings on the back — English→Chinese, the opposite
  *    of what was just missed. A zh→en failure has to come back as a zh→en
  *    question or it has not been reinforced at all.
- * 2. **unseen** — prompts the recency record has never shown.
- * 3. **`seen`** — demoted, never excluded, so an exhausted pool degrades to
+ * 2. **`owed`** — one question per word whose 回想 debt is due, in the order
+ *    given (most overdue first), at most `owedLimit(count)` of them. The
+ *    scheduled review passes these words on recognition, so the production
+ *    miss only returns here. **Half the round, not all of it**: 194 words
+ *    were due on 2026-11-11, and a round made only of them is the fixed list
+ *    the stubborn-word drill became (spec 2026-11-11-recall-debt-design).
+ *    Each owed word takes an unseen prompt when it has one. The caller
+ *    passes the ids in: the debt rule lives in recallDebt.ts, which imports
+ *    this file.
+ * 3. **unseen** — prompts the recency record has never shown.
+ * 4. **`seen`** — demoted, never excluded, so an exhausted pool degrades to
  *    today's behaviour instead of an empty quiz.
  */
 export function generateRecallSession(
@@ -566,6 +584,7 @@ export function generateRecallSession(
   rng: () => number,
   sentences: RecallSentence[] = [],
   focus: RecallFocus = 'all',
+  owed: readonly string[] = [],
 ): RecallQuestion[] {
   // The two sources are drawn from one pool rather than one after the other.
   // Measured 2026-08-16: 147 learned words have no sense group at all, so
@@ -625,7 +644,28 @@ export function generateRecallSession(
     const focused = inRecallFocus(focus, c.ids[0], words, progress, today)
     return (focused ? 1 : 3) + (seen.has(c.key) ? 1 : 0)
   }
-  const ordered = [0, 1, 2, 3, 4].flatMap(r => drawn.filter(c => rank(c) === r))
+  const rank0 = drawn.filter(c => rank(c) === 0)
+  // One pick per owed word, from the weighted order so the choice stays a
+  // draw: unseen first, else whatever the word has. A pick already in rank 0
+  // is the 巩固 prompt for that word and needs no second slot.
+  const owedPicks: RecallCandidate[] = []
+  const limit = owedLimit(count)
+  for (const id of owed) {
+    if (owedPicks.length >= limit) break
+    // A focused round is a slice the user asked for; what is owed outside it
+    // waits for a round that is not.
+    if (!inRecallFocus(focus, id, words, progress, today)) continue
+    const mine = drawn.filter(c => c.ids[0] === id)
+    const pick = mine.find(c => !seen.has(c.key)) ?? mine[0]
+    if (pick === undefined || debt.has(pick.key)) continue
+    owedPicks.push(pick)
+  }
+  const placed = new Set(owedPicks)
+  const ordered = [
+    ...rank0,
+    ...owedPicks,
+    ...[1, 2, 3, 4].flatMap(r => drawn.filter(c => rank(c) === r && !placed.has(c))),
+  ]
 
   const fillerPool = [...words.values()].filter(w => {
     const e = progress.words[w.id]
@@ -650,7 +690,10 @@ export function generateRecallSession(
     // carry the preferred one (a pair can't be ordered, a member is unlearned
     // so ranking is off the table, a sparse library can't fill four options)
     // rather than dropping the group.
-    const rankable = isRankable(g, progress)
+    // An owed slot is never 排序: that kind prints the word among the things
+    // to rank, and a right ordering would settle a production debt with the
+    // answer on screen.
+    const rankable = isRankable(g, progress) && !placed.has(c)
     return rankable && out.length % 2 === 1
       ? buildOrderQuestion(g, words, rng) ?? buildRecallQuestion(g, words, fillerPool, rng)
       : buildRecallQuestion(g, words, fillerPool, rng)
@@ -676,6 +719,7 @@ export function generateRecallSession(
       const q = build(c)
       if (q === null) continue
       if (pass === 0 && asked.has(q.orderIds[0])) continue
+      if (placed.has(c)) q.owed = true
       used.add(c.key)
       asked.add(q.orderIds[0])
       out.push(q)
