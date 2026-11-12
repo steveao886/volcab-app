@@ -40,13 +40,17 @@ The working path is `node ~/repos/antigravity-run.js "<prompt>"` (setup notes in
 headlessly; volcab is already a registered project. `--wait-file <path>` for
 file handoff, `--quiet <sec>` for Q&A.
 
-**`--model` is a tier, not a model id** — only `flash_lite | flash | pro`, and
-the server picks inside it. **Pass no `--model`.** Measured 2026-09-14 on
-Antigravity 2.13.0: `flash` → `gemini-3.8-flash-tiered`, `pro` →
-`gemini-3.1-pro-low`, i.e. `pro` is two generations behind *and* pinned to Low
-thinking. A specific model or a high thinking level can only be picked by hand
-in the IDE. The runner prints `running on <slug>`; `--require-model <substring>`
-exits 3 rather than letting a job be served by a weaker model.
+**Models: pass no `--model` for ordinary jobs (= `standard`), or `--model
+writing` for writing jobs.** `~/repos/antigravity-run.js` is only a shim; the
+real runner is the shared `~/repos/antigravity-runner`, and which concrete model
+each alias maps to lives only in its `models.json` — don't copy model ids into
+this file (`node ~/repos/antigravity-run.js --models` shows the current mapping).
+When the runner switches models, the first call from this repo prints what
+changed and lists any lines here that still name the old model. The old tiers
+`flash` / `pro` are auto-mapped to `standard` with a warning; a pinned model
+that doesn't show up in the conversation record exits 3 rather than letting a
+job be served by a different model. (Superseded note: before 2026-11-09
+`--model` only took tiers and `pro` meant the stale `gemini-3.1-pro-low`.)
 
 ## Language policy
 
