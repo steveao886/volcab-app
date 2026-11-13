@@ -956,6 +956,42 @@ describe('grade: the carried-over stamp', () => {
   })
 })
 
+// === The interval ceiling ======================================================
+// settings.maxIntervalDays reaches gradeWord through grade() and nowhere else,
+// so a store that forgot to pass it would schedule every word at the default
+// while 设置 showed the user's number. docs/superpowers/specs/2026-11-12-interval-ceiling-design.md.
+
+describe('grade: the interval ceiling comes from settings', () => {
+  // 20 days at ease 2.5 computes 50, so fuzz (47.5 to 52.5) cannot bring the
+  // result under either ceiling and the test needs no injected rng.
+  const long = () => ({
+    state: 'review' as const, ease: 2.5, intervalDays: 20, due: '2000-01-01', stepIndex: 0,
+    reps: 4, lapses: 0, lastReviewedAt: '2000-01-01T00:00:00Z',
+  })
+  const boot = async (maxIntervalDays?: number) => {
+    const progress = emptyProgress()
+    progress.words['alpha'] = long()
+    // updatedAt is what makes boot take the remote settings: without it both
+    // sides read as "never touched" and mergeProgress keeps the local default.
+    if (maxIntervalDays !== undefined) {
+      progress.settings = { ...progress.settings, maxIntervalDays, updatedAt: '2026-11-12T00:00:00.000Z' }
+    }
+    await bootAsAlice({ words: ['alpha'], progress })
+  }
+
+  it('an unset setting clips at the default of 21 days', async () => {
+    await boot()
+    await step(() => { app().grade('alpha', 'good') })
+    expect(app().progress.words['alpha'].intervalDays).toBe(21)
+  })
+
+  it('a setting of 40 clips at 40', async () => {
+    await boot(40)
+    await step(() => { app().grade('alpha', 'good') })
+    expect(app().progress.words['alpha'].intervalDays).toBe(40)
+  })
+})
+
 // === Review words spent today =================================================
 // The daily review cap's counter: one per word grade() takes out of the review
 // block — docs/superpowers/specs/2026-11-05-daily-review-cap-design.md.

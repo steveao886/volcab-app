@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addDays, clampIntervalModifier, demoteWord, gradeUnproduced, gradeWord, MAX_INTERVAL_DAYS, MAX_INTERVAL_MODIFIER, previewIntervals, todayStr } from './srs'
+import { addDays, clampIntervalModifier, clampMaxInterval, demoteWord, gradeUnproduced, gradeWord, MAX_INTERVAL_CEILING_DAYS, MAX_INTERVAL_DAYS, MAX_INTERVAL_MODIFIER, previewIntervals, todayStr } from './srs'
 import type { ProgressEntry } from '../types'
 
 const now = new Date(2026, 6, 24, 10, 0, 0) // 2026-07-24 local time
@@ -185,6 +185,43 @@ describe('intervalModifier', () => {
     expect(clampIntervalModifier(99)).toBe(3)
     expect(clampIntervalModifier(0)).toBe(0.5)
     expect(clampIntervalModifier(1.3)).toBe(1.3)
+  })
+})
+
+describe('the ceiling as a setting (settings.maxIntervalDays)', () => {
+  it('unset or unreadable means the measured default, so a device on an older build changes nothing', () => {
+    expect(clampMaxInterval(undefined)).toBe(MAX_INTERVAL_DAYS)
+    expect(clampMaxInterval(Number.NaN)).toBe(MAX_INTERVAL_DAYS)
+    expect(clampMaxInterval('45' as unknown as number)).toBe(MAX_INTERVAL_DAYS)
+  })
+
+  it('never goes under 21: that is the 记牢 line, and below it no word could ever cross', () => {
+    expect(clampMaxInterval(5)).toBe(MAX_INTERVAL_DAYS)
+    expect(clampMaxInterval(20.6)).toBe(MAX_INTERVAL_DAYS)
+  })
+
+  it('tops out at the old 100 and keeps whole days', () => {
+    expect(clampMaxInterval(500)).toBe(MAX_INTERVAL_CEILING_DAYS)
+    expect(clampMaxInterval(45)).toBe(45)
+    expect(clampMaxInterval(30.4)).toBe(30)
+  })
+
+  it('a grade clips to the ceiling it is given, and to 21 when given none', () => {
+    // 20 x 2.5 = 50
+    const e = reviewEntry({ intervalDays: 20 })
+    expect(gradeWord(e, 'good', now, noFuzz, 1, undefined, 45).intervalDays).toBe(45)
+    expect(gradeWord(e, 'good', now, noFuzz, 1, undefined, 100).intervalDays).toBe(50)
+    expect(gradeWord(e, 'good', now, noFuzz, 1).intervalDays).toBe(MAX_INTERVAL_DAYS)
+  })
+
+  it('a ceiling under the floor is read as the floor, not obeyed', () => {
+    expect(gradeWord(reviewEntry({ intervalDays: 14 }), 'good', now, noFuzz, 1, undefined, 10).intervalDays).toBe(MAX_INTERVAL_DAYS)
+  })
+
+  it('the preview on the button uses the same ceiling as the grade', () => {
+    const e = reviewEntry({ intervalDays: 20 })
+    expect(previewIntervals(e, now, 1, undefined, 45).good).toBe('45 天')
+    expect(previewIntervals(e, now, 1).good).toBe(`${MAX_INTERVAL_DAYS} 天`)
   })
 })
 

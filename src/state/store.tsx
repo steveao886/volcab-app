@@ -851,6 +851,7 @@ export function AppProvider({ children, wordsCache: cache = wordsCache }: { chil
     const scheduled = gradeWord(
       prev, g, now, undefined, cur.settings.intervalModifier,
       relatedDueGuard(wordId, stateRef.current.words, cur.words),
+      cur.settings.maxIntervalDays,
     )
     // A turned card the user produced: the grade above is the ordinary one,
     // and the production record gets its right answer in the same commit —

@@ -508,7 +508,14 @@ export interface Progress {
    * reason as intervalModifier: absent means the default of 88, the number
    * the user asked for (docs/superpowers/specs/2026-11-05-daily-review-cap-design.md).
    */
-  settings: { newPerDay: number; soundEnabled?: boolean; intervalModifier?: number; reviewCap?: number; updatedAt?: string }
+  /**
+   * maxIntervalDays is the longest interval a grade may write, 21 to 100
+   * (clampMaxInterval in lib/srs.ts). Optional for the same reason as
+   * intervalModifier: absent means MAX_INTERVAL_DAYS, the measured 21, so a
+   * device on an older build pushing settings without it changes nothing
+   * (docs/superpowers/specs/2026-11-12-interval-ceiling-design.md).
+   */
+  settings: { newPerDay: number; soundEnabled?: boolean; intervalModifier?: number; reviewCap?: number; maxIntervalDays?: number; updatedAt?: string }
   words: Record<string, ProgressEntry>
   dailyStats: Record<string, DailyStat>
   /**

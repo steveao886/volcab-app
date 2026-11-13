@@ -8,7 +8,7 @@ import { TextInput } from '../components/TextInput'
 import { checkForUpdate, isUpdateReady } from '../lib/appUpdate'
 import type { UpdateStatus } from '../lib/appUpdate'
 import { isSoundEnabled } from '../lib/sound'
-import { clampIntervalModifier, MAX_INTERVAL_MODIFIER, MIN_INTERVAL_MODIFIER, todayStr } from '../lib/srs'
+import { clampIntervalModifier, clampMaxInterval, MAX_INTERVAL_CEILING_DAYS, MAX_INTERVAL_DAYS, MAX_INTERVAL_MODIFIER, MIN_INTERVAL_MODIFIER, todayStr } from '../lib/srs'
 import { reviewCap } from '../lib/queue'
 import { loadInputs, recommendIntervalModifier, recommendNewPerDay, retentionWindowDays } from '../lib/tuning'
 import { dailySeries, retentionStats } from './statsDerive'
@@ -56,6 +56,13 @@ function clampReviewCap(raw: string, fallback: number): number {
   const n = Number.parseInt(raw, 10)
   if (!Number.isFinite(n)) return fallback
   return Math.min(REVIEW_CAP_MAX, Math.max(REVIEW_CAP_MIN, n))
+}
+
+/** Same shape as clampReviewCap. The range is clampMaxInterval's, so the box can never hold a number the scheduler would read differently. */
+function parseMaxInterval(raw: string, fallback: number): number {
+  const n = Number.parseInt(raw, 10)
+  if (!Number.isFinite(n)) return fallback
+  return clampMaxInterval(n)
 }
 
 /**
@@ -159,6 +166,15 @@ export function Settings() {
     setReviewCapInput(String(currentReviewCap))
   }, [currentReviewCap])
 
+  const currentMaxInterval = clampMaxInterval(progress.settings.maxIntervalDays)
+  const [maxIntervalInput, setMaxIntervalInput] = useState(String(currentMaxInterval))
+  const maxIntervalRef = useRef<HTMLInputElement>(null)
+  // Same focus guard as newPerDay above, for the same reason.
+  useEffect(() => {
+    if (document.activeElement === maxIntervalRef.current) return
+    setMaxIntervalInput(String(currentMaxInterval))
+  }, [currentMaxInterval])
+
   // Same focus guard as newPerDay above, for the same reason.
   useEffect(() => {
     if (document.activeElement === modifierRef.current) return
@@ -239,6 +255,14 @@ export function Settings() {
       updateSettings({ ...progress.settings, reviewCap: clamped })
     }
   }, [reviewCapInput, currentReviewCap, progress.settings, updateSettings])
+
+  const commitMaxInterval = useCallback(() => {
+    const clamped = parseMaxInterval(maxIntervalInput, currentMaxInterval)
+    setMaxIntervalInput(String(clamped))
+    if (clamped !== currentMaxInterval) {
+      updateSettings({ ...progress.settings, maxIntervalDays: clamped })
+    }
+  }, [maxIntervalInput, currentMaxInterval, progress.settings, updateSettings])
 
   // Export runs as one synchronous block (no await breakpoints); the real
   // risk is a double-click triggering two save dialogs, so a ref lock is
@@ -363,6 +387,38 @@ export function Settings() {
             value={reviewCapInput}
             onChange={(e) => setReviewCapInput(e.target.value)}
             onBlur={commitReviewCap}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') e.currentTarget.blur()
+            }}
+          />
+        </Field>
+      </section>
+
+      {/* The interval ceiling (2026-11-12 spec). After the review cap because
+          the two are one decision: a lower ceiling means more reviews a day,
+          and the cap is what has to carry them. The hint prints the measured
+          curve, since "21" means nothing without what a longer gap costs;
+          those four figures are that spec's fitted curve, so re-fit before
+          editing them. */}
+      <section className="section">
+        <Field
+          label="最长间隔"
+          labelClassName="section-head"
+          htmlFor="settings-max-interval"
+          hint={`一个词两次复习之间最多隔多少天，${MAX_INTERVAL_DAYS}–${MAX_INTERVAL_CEILING_DAYS} 之间。按 2026 年 11 月量的数据，隔 21 天还记得九成，30 天八成，40 天七成，55 天只剩一半。调大从下次复习起生效，调小不会把已经排出去的词拉回来。`}
+        >
+          <TextInput
+            id="settings-max-interval"
+            ref={maxIntervalRef}
+            className="num"
+            type="number"
+            inputMode="numeric"
+            min={MAX_INTERVAL_DAYS}
+            max={MAX_INTERVAL_CEILING_DAYS}
+            step={1}
+            value={maxIntervalInput}
+            onChange={(e) => setMaxIntervalInput(e.target.value)}
+            onBlur={commitMaxInterval}
             onKeyDown={(e) => {
               if (e.key === 'Enter') e.currentTarget.blur()
             }}

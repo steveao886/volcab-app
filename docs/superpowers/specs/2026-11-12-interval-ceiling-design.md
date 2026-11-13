@@ -58,8 +58,11 @@ Two things in it decide the design.
   (n=131). At 31–60 days it is 72.5% (n=149) against 63.8% (n=141). Forcing
   b to 0.15 costs 3 log-likelihood units and 0.3 costs 18.
 
-So the curve is close to one curve for every word: about 90% at 18 days, 85%
-at 24, 80% at 29, 70% at 45, 50% at 63. What matters is how long the gap is,
+So the curve is close to one curve for every word. With the ease and grade
+terms left out, which is the form the back-test below supports, it reads 90%
+at 20 days, 85% at 27, 80% at 32, 70% at 41, 50% at 56. (A word at the
+library's typical ease of 2.3 sits a little lower: 90% at 18, 85% at 24, 80%
+at 29.) What matters is how long the gap is,
 not how fast the schedule got there. The first reading of the data, "growth
 is too fast at long intervals", was the same fact seen through a ratio.
 
@@ -173,6 +176,30 @@ an unset setting means, and this user's is now set.
 At a 21-day ceiling 88 reviews a day carry about 1,340 words; the library is
 1,825. 120 is what 1,825 words need at steady state (65.7 × 1.825).
 
+### 4. The ceiling is a setting, 21 to 100 (added the same day)
+
+The first draft kept it a constant, on the reasoning that it is a measured
+number. The user asked for it in 设置 beside the review cap, to be able to
+move it without a deploy: `settings.maxIntervalDays`, optional, read through
+`clampMaxInterval`.
+
+- **Unset means 21.** A device on an older build pushes settings without the
+  field, and that has to change nothing.
+- **21 is the floor as well as the default.** It is `MATURE_INTERVAL_DAYS`;
+  under it no word could reach 记牢 and every word below `INITIAL_EASE` would
+  stay in the 顽固词 pool.
+- **100 is the top**, the value the constant held before.
+- **Moving it is forward-looking in both directions.** Raised, a word takes
+  the longer interval at its next review. Lowered, words already scheduled
+  past it keep their dates; `scripts/pull-back-intervals.ts` reads the
+  setting and is the tool for that.
+- The exact-landing property of decision 1 holds up to a ceiling of 29
+  (`(c + 1) × 0.95` rounds to at least `c`). Above that a word at the ceiling
+  can come back a few days under it, as it did at 100, which is harmless
+  that far above the 记牢 line.
+- 设置's hint prints the curve (21 天九成, 30 天八成, 40 天七成, 55 天一半)
+  so the number is not chosen blind. Those figures are this spec's fit.
+
 ## Simulated: the next 120 days
 
 From the live state of 2026-11-12, 20 new words a day, the carried-over and
@@ -223,8 +250,6 @@ exist at gaps of 19 to 23 days:
   advice still assumes an exponential curve and may suggest a larger
   modifier once retention passes 90%; following it is harmless here
   (1 → 5 → 21 instead of 1 → 4 → 14 → 21) and it is not rewritten now.
-- A setting for the ceiling. It is one constant, and the conditions above say
-  when to move it.
 
 ## Anti-goals: this is broken even if the tests pass
 

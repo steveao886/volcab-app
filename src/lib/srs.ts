@@ -13,8 +13,8 @@ export const INITIAL_EASE = 2.5
  * remembered at 4-7 days, 92.2% at 8-14, 88.1% at 15-30, 68.9% at 31-60
  * (n=315), 43.1% past 60 (n=51). A fitted curve puts almost no weight on
  * the gap a word last survived (exponent 0.024), so how long the gap is
- * matters and how the schedule got there does not: 90% at about 18 days,
- * 85% at 24, 80% at 29. Simulated at steady state, per 1,000 words, the
+ * matters and how the schedule got there does not: 90% at about 20 days,
+ * 85% at 27, 80% at 32, 70% at 41, half at 56. Simulated at steady state, per 1,000 words, the
  * ceiling at 21 costs 65.7 reviews and 19.5 minutes a day against 54.5 and
  * 17.5 at 100, and what can be recalled at a random moment goes from 79.9%
  * to 94.2%. Below 21 the cost keeps rising and the gain stops, because
@@ -43,6 +43,29 @@ export const INITIAL_EASE = 2.5
  * scripts/pull-back-intervals.ts.
  */
 export const MAX_INTERVAL_DAYS = 21
+/** The longest ceiling 设置's 最长间隔 accepts: what the constant itself was until 2026-11-12. */
+export const MAX_INTERVAL_CEILING_DAYS = 100
+
+/**
+ * The ceiling a grade uses, from settings.maxIntervalDays.
+ *
+ * MAX_INTERVAL_DAYS is both the default and the floor. The default because
+ * it is the measured number, and an unset setting (every device on an older
+ * build) must mean exactly that. The floor because it is also
+ * MATURE_INTERVAL_DAYS: under it no word could ever reach 记牢, and every
+ * word below INITIAL_EASE would sit in the 顽固词 pool for good.
+ *
+ * Clamped, never rejected, like clampIntervalModifier: it comes off a
+ * synced settings blob and the read side does not throw.
+ *
+ * **Raising it is forward-looking and lowering it is too.** A word already
+ * scheduled past a lowered ceiling keeps its date until it next comes up;
+ * scripts/pull-back-intervals.ts reads this setting and rewrites those.
+ */
+export function clampMaxInterval(v: number | undefined): number {
+  if (typeof v !== 'number' || !Number.isFinite(v)) return MAX_INTERVAL_DAYS
+  return Math.min(MAX_INTERVAL_CEILING_DAYS, Math.max(MAX_INTERVAL_DAYS, Math.round(v)))
+}
 const GRADUATE_DAYS = 1
 const EASY_GRADUATE_DAYS = 4
 
@@ -65,10 +88,10 @@ const freshEntry = (now: Date): ProgressEntry => ({
 })
 
 // ±5% random fuzz; no fuzzing within 3 days
-function fuzz(days: number, rng: () => number): number {
-  if (days < 3) return Math.min(days, MAX_INTERVAL_DAYS)
+function fuzz(days: number, rng: () => number, ceiling: number): number {
+  if (days < 3) return Math.min(days, ceiling)
   const factor = 1 + (rng() * 2 - 1) * 0.05
-  return Math.min(MAX_INTERVAL_DAYS, Math.max(1, Math.round(days * factor)))
+  return Math.min(ceiling, Math.max(1, Math.round(days * factor)))
 }
 
 /**
@@ -142,12 +165,15 @@ export function clampIntervalModifier(v: number | undefined): number {
  *
  * Note that it compounds, up to a point. At 1.3 the effective multiplier
  * per review goes from 2.5 to 3.25, so the interval runs away far faster
- * than the 30% the number looks like — but MAX_INTERVAL_DAYS clips it
- * before the compounding gets far. Starting from one day, 1.3 already
- * reaches the ceiling on the fourth review (107, clipped to 100) against
- * plain 2.5's 50, so the widest gap the modifier can actually open is
- * roughly 2x, not the 3.7x the raw arithmetic gives. Small numbers here
- * still move fast; they just stop sooner than they used to.
+ * than the 30% the number looks like — but the ceiling clips it before the
+ * compounding gets far. Starting from one day at the 21-day ceiling, 1.3
+ * reaches it on the third review (33, clipped to 21) and plain 2.5 on the
+ * fourth, so all the modifier decides is how many steps a word takes to
+ * get there. It does not move retention; the gap does (see
+ * MAX_INTERVAL_DAYS).
+ *
+ * @param maxInterval settings.maxIntervalDays, clamped by clampMaxInterval.
+ * Last in the list so every older call keeps meaning the default.
  */
 export function gradeWord(
   prev: ProgressEntry | undefined,
@@ -156,7 +182,9 @@ export function gradeWord(
   rng: () => number = Math.random,
   intervalModifier = 1,
   dueTaken?: (due: string) => boolean,
+  maxInterval?: number,
 ): ProgressEntry {
+  const ceiling = clampMaxInterval(maxInterval)
   const e = prev && prev.state !== 'new' ? { ...prev } : freshEntry(now)
   e.reps += 1
   e.lastReviewedAt = now.toISOString()
@@ -165,9 +193,9 @@ export function gradeWord(
   if (e.state === 'learning') {
     if (grade === 'again') { e.stepIndex = 0; e.due = today }
     else if (grade === 'hard') { e.due = today }
-    else if (grade === 'easy') graduate(e, EASY_GRADUATE_DAYS, today, rng, dueTaken)
+    else if (grade === 'easy') graduate(e, EASY_GRADUATE_DAYS, today, rng, ceiling, dueTaken)
     else if (e.stepIndex + 1 < LEARNING_STEPS) { e.stepIndex += 1; e.due = today }
-    else graduate(e, GRADUATE_DAYS, today, rng, dueTaken)
+    else graduate(e, GRADUATE_DAYS, today, rng, ceiling, dueTaken)
     return e
   }
 
@@ -194,7 +222,7 @@ export function gradeWord(
   // The modifier lands here, before the "must grow by at least a day" floor
   // and the fuzz, so a modifier below 1 can still shorten an interval while
   // never letting one stand still.
-  e.intervalDays = fuzz(Math.max(e.intervalDays + 1, Math.round(next * clampIntervalModifier(intervalModifier))), rng)
+  e.intervalDays = fuzz(Math.max(e.intervalDays + 1, Math.round(next * clampIntervalModifier(intervalModifier))), rng, ceiling)
   e.due = nudgePastRelatives(addDays(today, e.intervalDays), e.intervalDays, dueTaken)
   return e
 }
@@ -204,11 +232,12 @@ function graduate(
   days: number,
   today: string,
   rng: () => number,
+  ceiling: number,
   dueTaken?: (due: string) => boolean,
 ) {
   e.state = 'review'
   e.stepIndex = 0
-  e.intervalDays = fuzz(days, rng)
+  e.intervalDays = fuzz(days, rng, ceiling)
   e.due = nudgePastRelatives(addDays(today, e.intervalDays), e.intervalDays, dueTaken)
 }
 
@@ -235,7 +264,7 @@ export function diffDays(from: string, to: string): number {
  * within the session by queue position, not by clock (see
  * LEARNING_STEPS), so a minutes figure would be an invention.
  *
- * Labels stay in days all the way to MAX_INTERVAL_DAYS — converting to
+ * Labels stay in days all the way to the ceiling — converting to
  * 月/年 would round away exactly the magnitude this exists to show.
  */
 export function previewIntervals(
@@ -243,12 +272,13 @@ export function previewIntervals(
   now: Date,
   intervalModifier = 1,
   dueTaken?: (due: string) => boolean,
+  maxInterval?: number,
 ): Record<Grade, string> {
   const today = todayStr(now)
   const out = {} as Record<Grade, string>
   for (const g of ['again', 'hard', 'good', 'easy'] as const) {
     // gradeWord copies before mutating, so prev itself is never touched.
-    const next = gradeWord(prev, g, now, () => 0.5, intervalModifier, dueTaken)
+    const next = gradeWord(prev, g, now, () => 0.5, intervalModifier, dueTaken, maxInterval)
     out[g] = next.due <= today ? '稍后' : `${diffDays(today, next.due)} 天`
   }
   return out

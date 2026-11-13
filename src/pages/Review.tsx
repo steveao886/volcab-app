@@ -236,11 +236,12 @@ function ReviewSession() {
         ? previewIntervals(
             curEntry, new Date(), progress.settings.intervalModifier,
             relatedDueGuard(curId, words, progress.words),
+            progress.settings.maxIntervalDays,
           )
         : null,
     // The guard is rebuilt whenever the schedule changes, so the label can
     // never promise a date the write would nudge off.
-    [mode, curId, curEntry, words, progress.words, progress.settings.intervalModifier],
+    [mode, curId, curEntry, words, progress.words, progress.settings.intervalModifier, progress.settings.maxIntervalDays],
   )
 
   // What 想不出 would do, from the function that does it. Same reason the

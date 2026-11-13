@@ -1,6 +1,7 @@
 /**
  * One-time: bring the review intervals written under the 100-day ceiling
- * back under MAX_INTERVAL_DAYS, on the live progress.json.
+ * back under the ceiling (settings.maxIntervalDays, 21 when unset), on the
+ * live progress.json. Also the tool for after 最长间隔 is lowered in 设置.
  *
  *   npx tsx scripts/pull-back-intervals.ts                      dry run
  *   npx tsx scripts/pull-back-intervals.ts --review-cap 120     dry run, also shows the settings change
@@ -25,7 +26,7 @@
  */
 import { execFileSync } from 'node:child_process'
 import { mkdirSync, unlinkSync, writeFileSync } from 'node:fs'
-import { addDays, MAX_INTERVAL_DAYS, todayStr } from '../src/lib/srs'
+import { addDays, clampMaxInterval, MAX_INTERVAL_DAYS, todayStr } from '../src/lib/srs'
 import { serializeProgress } from '../src/state/sync'
 import type { Progress, ProgressEntry } from '../src/types'
 
@@ -137,12 +138,15 @@ function main(): void {
 
   const now = new Date()
   const today = todayStr(now)
-  const result = pullBackIntervals(live.words, today, perDay)
+  // The ceiling is the user's setting (设置's 最长间隔), not the constant:
+  // pulling back to 21 under a setting of 45 would shorten what they chose.
+  const ceiling = clampMaxInterval(live.settings.maxIntervalDays)
+  const result = pullBackIntervals(live.words, today, perDay, ceiling)
 
   const review = Object.values(live.words).filter(e => e.state === 'review').length
-  console.log(`today ${today}, ceiling ${MAX_INTERVAL_DAYS} days, ${perDay} late words a day`)
+  console.log(`today ${today}, ceiling ${ceiling} days, ${perDay} late words a day`)
   console.log(`review-phase words: ${review}`)
-  console.log(`over the ceiling:   ${result.pulled}  (${result.late} of them last reviewed ${MAX_INTERVAL_DAYS} days ago or more)`)
+  console.log(`over the ceiling:   ${result.pulled}  (${result.late} of them last reviewed ${ceiling} days ago or more)`)
   const before = dueHistogram(live.words, today, 30)
   const after = dueHistogram(result.words, today, 30)
   console.log('\nreview-phase words due, next 30 days (day 0 = today and overdue)')
@@ -170,7 +174,7 @@ function main(): void {
   mkdirSync('scripts/out', { recursive: true })   // gitignored scratch; absent in a fresh clone
   const tmp = 'scripts/out/.put-progress.json'
   const parts = [
-    result.pulled > 0 ? `pull ${result.pulled} review intervals back under the ${MAX_INTERVAL_DAYS}-day ceiling` : '',
+    result.pulled > 0 ? `pull ${result.pulled} review intervals back under the ${ceiling}-day ceiling` : '',
     settingsChanged ? `reviewCap ${capBefore ?? 88} -> ${cap}` : '',
   ].filter(Boolean)
   writeFileSync(tmp, JSON.stringify({
