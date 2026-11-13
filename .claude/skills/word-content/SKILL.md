@@ -8,6 +8,8 @@ description: Use when adding words to the volcab library, or when topping up aut
 Two jobs, one procedure. **Adding a word** creates holes in the authored
 content files; the **periodic refresh** finds and fills the same holes plus
 grows the question pools. Evidence for every rule: `docs/word-add-checklist.md`.
+The content rules this procedure has to obey are in `.claude/rules/content.md`;
+read it before drafting if it has not loaded.
 
 ## The map (memorize this table)
 
@@ -244,8 +246,8 @@ markers, while the Chinese register and an answer key have none.
 | 形近 `read` lines (step 4) | orchestrator | two glosses side by side; a handful per batch (128 pairs over 1,549 words, 2026-10-29) |
 | Validators, tests, build, live merge | orchestrator, by script | mechanical — no model work to move |
 
-**The split is on probation, and the edit rate decides it.** CLAUDE.md's
-"do the Chinese yourself" was measured on Gemini; Sonnet drafting Chinese
+**The split is on probation, and the edit rate decides it.** The "do the
+Chinese yourself" rule in `.claude/rules/content.md` was measured on Gemini; Sonnet drafting Chinese
 for review is untested. While reviewing, count per category how many
 drafted items you changed in wording (punctuation-only fixes don't count)
 and put the counts in the commit message, e.g. `Sonnet drafts: renderings

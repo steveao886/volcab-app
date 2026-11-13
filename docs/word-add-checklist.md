@@ -436,7 +436,7 @@ Steps marked **[BATCH]** should be done once for the whole batch, not per word.
 4. `npm run validate-words` → expect `OK: N entries passed validation`.
 5. `npm test` → the two full-library regression tests now cover the new
    examples. **Do not loosen `src/lib/headword.ts` if one fails** — rewrite the
-   sentence instead (see "Content rules" in `CLAUDE.md`).
+   sentence instead (see `.claude/rules/content.md`).
 
 ### Phase C — top up the authored content
 
@@ -578,7 +578,7 @@ different masters, and the checklist has to write **both**.
   in the repo copy, undetected for months, because "两边分叉但没人发现 ——
   这份只喂开发模式的演示数据和一条全库回归测试，分叉不报错."
 - Runtime code must stay tolerant of an id that isn't there
-  (`CLAUDE.md:49`) — this is why `pickDistractors`
+  (`CLAUDE.md`, "Bundled content is not synced data") — this is why `pickDistractors`
   (`src/lib/passage.ts:245-246`), `generateContrastQuiz`
   (`src/lib/quiz.ts:451`) and `wordNote` (`src/lib/wordNotes.ts:38-43`) all
   skip rather than throw.
