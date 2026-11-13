@@ -234,6 +234,7 @@ Keyboard shortcuts must be printed on the control they trigger. An undocumented 
 - `noUnusedLocals` is on: an unused import fails the build, including a type-only one.
 - Chinese full-width punctuation inside a PowerShell here-string is fine, but double quotes in a commit message body will break `git commit -m @'...'@`.
 - **`Volcab.enex` is a personal note file and this repo is public.** It is gitignored and has never been tracked. Never `git add` it.
+- **A commit id that does not resolve is probably from before 2026-11-13.** Six commits carried a personal email address in this public repo, so the 197 commits from 2026-09-12 on were rewritten that day (same trees, dates and messages; only the identity changed) and force-pushed. The ids cited in tracked files were updated; 11 commit messages on master still cite the old ones. Match by date and subject. Commit only under the GitHub noreply address: `git config user.email` must not print a real mailbox.
 
 ### Browser and UI debugging
 

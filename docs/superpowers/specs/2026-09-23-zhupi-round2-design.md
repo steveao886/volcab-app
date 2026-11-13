@@ -1,6 +1,6 @@
 # 朱批 redesign, round 2: every remaining screen
 
-Round 1 (`2026-09-23-zhupi-redesign-design.md`, live since commit `3e2fa85`)
+Round 1 (`2026-09-23-zhupi-redesign-design.md`, live since commit `764477e`)
 built the system — tokens, bundled fonts, the page shell — and redrew 今日,
 复习 and the shared multiple-choice question. Every other screen picked up the
 new colors and type on its old layout, so today the app is two apps: a ruled

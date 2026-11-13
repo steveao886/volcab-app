@@ -34,7 +34,7 @@ Same-day works. The next two days do not: `affable` / `amiable`,
 ### What it is not
 
 - **The synonym cuts.** Comparing declared links among the unlearned words
-  under `ee323d5^`'s synonyms against today's: no link between two unlearned
+  under `8c58028^`'s synonyms against today's: no link between two unlearned
   words was lost.
 - **The gap.** Gaps of 8, 10, 12 and 16 give identical results. The gap
   acts inside one day's ordering, and at `newPerDay` 8 a gap of 8 already

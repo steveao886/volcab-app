@@ -252,9 +252,9 @@ and put the counts in the commit message, e.g. `Sonnet drafts: renderings
 40, reworded 6; notes 22, reworded 3`. **A category reworded at more than
 1 in 4 goes back to the orchestrator** — edit this table, with the numbers.
 
-First batch, 2026-10-01 (30 words, `2e3d3e7`): entry zh 3 of 45, contrast
+First batch, 2026-10-01 (30 words, `849221b`): entry zh 3 of 45, contrast
 notes 4 of 62, 要点 3 of 30, renderings 4 of 150 — 3–10%, every category
-far under the line. The next two (43 + 43 words, `ad632d3`, `bc2addf`)
+far under the line. The next two (43 + 43 words, `07da176`, `815191b`)
 held it: entry zh 3 of 120, notes 3 of 142, 要点 1 of 72, renderings 13
 of 430 — under 4% everywhere. What was reworded: translationese in renderings, a
 collocation parked behind the wrong sense in notes, one false usage claim
