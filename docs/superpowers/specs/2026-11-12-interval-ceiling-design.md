@@ -129,7 +129,7 @@ That is true and stays.
 
 The constant is forward-looking. Entries written before it keep their `due`
 until they next come up, and on 2026-11-12 that is 851 words past 21 days,
-465 of them last reviewed more than 21 days ago. `scripts/pull-back-intervals.ts`
+448 of them last reviewed 21 days ago or more (the script's own dry run). `scripts/pull-back-intervals.ts`
 rewrites them on the live `progress.json`:
 
 ```
@@ -153,7 +153,7 @@ late, sorted by old due then id, k = 0, 1, 2…:
 - **Late words start tomorrow, not today.** A word made due today after the
   day's session would be carried over tomorrow, and each carried-over review
   takes a new word's place (`newQuota`).
-- **33 a day** spreads the 465 over about two weeks. Simulated, one flood and
+- **33 a day** spreads the 448 over about two weeks. Simulated, one flood and
   33 a day lose the same number of words (1,167 and 1,178 lapses in 120
   days), so the spread is for the user's days, not for memory: no day opens
   with 120 of the oldest cards.
