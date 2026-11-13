@@ -1097,9 +1097,12 @@ describe('the turned review card', () => {
   })
 
   it('a produced card is the ordinary grade plus one 回想 right answer', async () => {
-    await boot()
+    // Six days, not owing()'s thirty: thirty is past the 21-day ceiling, so
+    // an ordinary 记得 would clip it down to 21 and "grew" could not be told
+    // from "halved". From six, the grade gives 14 and 想不出 would give 3.
+    await boot({ intervalDays: 6 })
     await step(() => { app().grade('alpha', 'good', undefined, { produced: true }) })
-    expect(alpha().intervalDays).toBeGreaterThan(30)
+    expect(alpha().intervalDays).toBeGreaterThan(6)
     expect(alpha().recall).toMatchObject({ reps: 3, correct: 2, streak: 1 })
     expect(stat()?.reviewPhase).toBe(1)
     expect(stat()?.reviewPhaseCorrect).toBe(1)

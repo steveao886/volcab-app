@@ -5,8 +5,11 @@ import type { ProgressEntry } from '../types'
 const now = new Date(2026, 6, 24, 10, 0, 0) // 2026-07-24 local time
 const noFuzz = () => 0.5 // fuzz factor = 1.0
 
+// Four days, not ten: at ease 2.5 a ten-day entry graded 记得 computes 25,
+// which the 21-day ceiling clips, and these tests are about the arithmetic
+// under the ceiling. From four it is 5 / 10 / 14 for 困难 / 记得 / 太简单.
 const reviewEntry = (over: Partial<ProgressEntry> = {}): ProgressEntry => ({
-  state: 'review', ease: 2.5, intervalDays: 10, due: '2026-07-24',
+  state: 'review', ease: 2.5, intervalDays: 4, due: '2026-07-24',
   stepIndex: 0, reps: 3, lapses: 0, lastReviewedAt: '2026-07-14T00:00:00Z', ...over,
 })
 
@@ -63,18 +66,18 @@ describe('new-word learning phase', () => {
 describe('review phase', () => {
   it('good → interval × ease', () => {
     const e = gradeWord(reviewEntry(), 'good', now, noFuzz)
-    expect(e.intervalDays).toBe(25)
-    expect(e.due).toBe(addDays('2026-07-24', 25))
+    expect(e.intervalDays).toBe(10)
+    expect(e.due).toBe(addDays('2026-07-24', 10))
   })
   it('hard → interval ×1.2, ease −0.15', () => {
     const e = gradeWord(reviewEntry(), 'hard', now, noFuzz)
-    expect(e.intervalDays).toBe(12)
+    expect(e.intervalDays).toBe(5) // 4 x 1.2 = 4.8
     expect(e.ease).toBeCloseTo(2.35)
   })
   it('easy → interval × ease×1.3, ease +0.15', () => {
     const e = gradeWord(reviewEntry(), 'easy', now, noFuzz)
     expect(e.ease).toBeCloseTo(2.65)
-    expect(e.intervalDays).toBe(Math.round(10 * 2.65 * 1.3))
+    expect(e.intervalDays).toBe(Math.round(4 * 2.65 * 1.3))
   })
   it('again → lapse+1, ease −0.2, back to the learning phase due today', () => {
     const e = gradeWord(reviewEntry(), 'again', now, noFuzz)
@@ -90,6 +93,30 @@ describe('review phase', () => {
   it('interval caps at MAX_INTERVAL_DAYS', () => {
     const e = gradeWord(reviewEntry({ intervalDays: 300, ease: 2.5 }), 'good', now, noFuzz)
     expect(e.intervalDays).toBe(MAX_INTERVAL_DAYS)
+  })
+  it('the ceiling is three weeks', () => {
+    // Retention by real gap on the live history: 88.1% at 15-30 days, 68.9%
+    // at 31-60, 43.1% past 60. See
+    // docs/superpowers/specs/2026-11-12-interval-ceiling-design.md before
+    // moving this number; it says what measurement would justify it.
+    expect(MAX_INTERVAL_DAYS).toBe(21)
+  })
+  it('a word at the ceiling lands on exactly the ceiling, whatever the grade, the modifier and the fuzz', () => {
+    // MATURE_INTERVAL_DAYS (queue.ts) is the same 21, so a word that came
+    // back at 20 would stop counting as 记牢 and re-enter the 顽固词 pool on
+    // a grade that was a pass. The smallest modifier at the bottom of the
+    // fuzz range is the case that binds: max(21 + 1, ...) = 22, and
+    // 22 x 0.95 = 20.9 still rounds to 21. At the old ceiling of 100 the
+    // same case gave 96.
+    const rngs = [() => 0, () => 0.5, () => 0.999999]
+    for (const grade of ['hard', 'good', 'easy'] as const) {
+      for (const modifier of [0.5, 1, 1.5, 3]) {
+        for (const rng of rngs) {
+          const e = gradeWord(reviewEntry({ intervalDays: MAX_INTERVAL_DAYS, ease: 1.3 }), grade, now, rng, modifier)
+          expect(e.intervalDays).toBe(MAX_INTERVAL_DAYS)
+        }
+      }
+    }
   })
   it('interval advances by at least 1 day', () => {
     const e = gradeWord(reviewEntry({ intervalDays: 1, ease: 1.3 }), 'hard', now, noFuzz)
@@ -112,19 +139,19 @@ describe('intervalModifier', () => {
     expect(stretched).toBe(Math.round(plain * 1.3))
   })
 
-  it('compounds across reviews — three at 1.3 is more than a flat 30% longer', () => {
-    // Three reviews, not the five this used to run. Starting from one day
-    // was the old way of staying clear of MAX_INTERVAL_DAYS, because the
-    // ratio collapses back to 1 once both sides are pinned to the ceiling.
-    // At a 100-day ceiling that trap arrives on the fourth review — the
-    // stretched side computes 107 and gets clipped — so the window where
-    // compounding is observable at all is now three: 20 vs 33.
+  it('compounds across reviews — two at 1.5 is more than a flat 50% longer', () => {
+    // Two reviews from one day. The ratio collapses back to 1 once both
+    // sides are pinned to the ceiling, and at 21 days that happens fast: a
+    // third review at 1.5 computes 56. So the window where compounding can
+    // be seen at all is two reviews, 8 days against 15. (It was three at
+    // 1.3 under the 100-day ceiling, 20 against 33.)
     let plain = reviewEntry({ intervalDays: 1 }), stretched = reviewEntry({ intervalDays: 1 })
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       plain = gradeWord(plain, 'good', now, noFuzz)
-      stretched = gradeWord(stretched, 'good', now, noFuzz, 1.3)
+      stretched = gradeWord(stretched, 'good', now, noFuzz, 1.5)
     }
-    expect(plain.intervalDays).toBeLessThan(MAX_INTERVAL_DAYS)
+    expect(plain.intervalDays).toBe(8)
+    expect(stretched.intervalDays).toBe(15)
     expect(stretched.intervalDays).toBeLessThan(MAX_INTERVAL_DAYS)
     expect(stretched.intervalDays / plain.intervalDays).toBeGreaterThan(1.5)
   })
@@ -166,7 +193,7 @@ describe('previewIntervals', () => {
   const NOW = new Date(2026, 7, 7, 9, 0, 0)
 
   const reviewEntry = (over: Partial<ProgressEntry> = {}): ProgressEntry => ({
-    state: 'review', ease: 2.5, intervalDays: 10, due: '2026-08-07', stepIndex: 0,
+    state: 'review', ease: 2.5, intervalDays: 4, due: '2026-08-07', stepIndex: 0,
     reps: 5, lapses: 0, lastReviewedAt: '2026-08-01T08:00:00.000Z', ...over,
   })
 
@@ -181,17 +208,17 @@ describe('previewIntervals', () => {
     expect(previewIntervals(e, NOW).good).toBe('1 天')
   })
 
-  it('review card at interval 10, ease 2.5: hand-computed SM-2 results', () => {
-    // hard: 10×1.2=12 → 12 天; good: 10×2.5=25 → 25 天;
-    // easy: ease→2.65, 10×2.65×1.3=34.45 → round 34 → 34 天; again relearns today.
+  it('review card at interval 4, ease 2.5: hand-computed SM-2 results', () => {
+    // hard: 4×1.2=4.8 → 5 天; good: 4×2.5=10 → 10 天;
+    // easy: ease→2.65, 4×2.65×1.3=13.78 → round 14 → 14 天; again relearns today.
     expect(previewIntervals(reviewEntry(), NOW)).toEqual({
-      again: '稍后', hard: '12 天', good: '25 天', easy: '34 天',
+      again: '稍后', hard: '5 天', good: '10 天', easy: '14 天',
     })
   })
 
   it('applies the interval modifier the same way the real grade does', () => {
-    // good: round(25 × 1.3) = 33 → 33 天
-    expect(previewIntervals(reviewEntry(), NOW, 1.3).good).toBe('33 天')
+    // good: round(10 × 1.3) = 13 → 13 天
+    expect(previewIntervals(reviewEntry(), NOW, 1.3).good).toBe('13 天')
   })
 
   it('caps at MAX_INTERVAL_DAYS', () => {
@@ -340,33 +367,33 @@ describe('nudging off a related word\'s due date', () => {
 
   it('leaves the date alone when no related word is scheduled there', () => {
     const e = gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken())
-    expect(e.due).toBe('2026-08-18') // 10 × 2.5 = 25 days
+    expect(e.due).toBe('2026-08-03') // 4 × 2.5 = 10 days
   })
 
   it('pushes one day forward when a related word already holds the date', () => {
-    const e = gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken('2026-08-18'))
-    expect(e.due).toBe('2026-08-19')
+    const e = gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken('2026-08-03'))
+    expect(e.due).toBe('2026-08-04')
   })
 
   it('pushes a second day when the first is taken too, and stops there', () => {
-    const e = gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken('2026-08-18', '2026-08-19'))
-    expect(e.due).toBe('2026-08-20')
+    const e = gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken('2026-08-03', '2026-08-04'))
+    expect(e.due).toBe('2026-08-05')
   })
 
   it('fails open when everything in reach is taken — the schedule outranks the spacing', () => {
-    const dates = ['2026-08-18', '2026-08-19', '2026-08-20']
-    expect(gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken(...dates)).due).toBe('2026-08-18')
+    const dates = ['2026-08-03', '2026-08-04', '2026-08-05']
+    expect(gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken(...dates)).due).toBe('2026-08-03')
   })
 
   it('never moves intervalDays with the date — that is what would compound', () => {
     const clean = gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken())
-    const nudged = gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken('2026-08-18', '2026-08-19'))
+    const nudged = gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken('2026-08-03', '2026-08-04'))
     expect(nudged.intervalDays).toBe(clean.intervalDays)
   })
 
   it('only ever pushes forward, never pulls back — the 71fba29 direction stays closed', () => {
-    const e = gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken('2026-08-18'))
-    expect(e.due > '2026-08-18').toBe(true)
+    const e = gradeWord(reviewEntry(), 'good', now, noFuzz, 1, taken('2026-08-03'))
+    expect(e.due > '2026-08-03').toBe(true)
   })
 
   it('leaves intervals under three days alone, the same floor fuzz uses', () => {
@@ -401,8 +428,8 @@ describe('nudging off a related word\'s due date', () => {
 
   it('the grade preview shows the nudged date, so the label cannot promise a date the write will not produce', () => {
     const plain = previewIntervals(reviewEntry(), now)
-    const nudged = previewIntervals(reviewEntry(), now, 1, taken('2026-08-18'))
-    expect(plain.good).toBe('25 天')
-    expect(nudged.good).toBe('26 天')
+    const nudged = previewIntervals(reviewEntry(), now, 1, taken('2026-08-03'))
+    expect(plain.good).toBe('10 天')
+    expect(nudged.good).toBe('11 天')
   })
 })

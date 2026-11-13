@@ -7,30 +7,42 @@ export const INITIAL_EASE = 2.5
 /**
  * Ceiling on a review interval.
  *
- * Was 365, which in practice meant no ceiling at all — the schedule reached
- * it on its own and words sat a year out. Measured on the live library when
- * this changed: 301 words in the review phase, median interval 12 days, but
- * 19 at 90 days or more and 9 past 180, topping out at the old cap exactly.
+ * **21 since 2026-11-12, and this time the number is measured.** The review
+ * history rebuilt from the data repo's 3,011 progress commits, 5,647 due
+ * review-phase grades, by the real gap since the previous review: 95.5%
+ * remembered at 4-7 days, 92.2% at 8-14, 88.1% at 15-30, 68.9% at 31-60
+ * (n=315), 43.1% past 60 (n=51). A fitted curve puts almost no weight on
+ * the gap a word last survived (exponent 0.024), so how long the gap is
+ * matters and how the schedule got there does not: 90% at about 18 days,
+ * 85% at 24, 80% at 29. Simulated at steady state, per 1,000 words, the
+ * ceiling at 21 costs 65.7 reviews and 19.5 minutes a day against 54.5 and
+ * 17.5 at 100, and what can be recalled at a random moment goes from 79.9%
+ * to 94.2%. Below 21 the cost keeps rising and the gain stops, because
+ * 4.3% of misses do not depend on the gap at all.
  *
- * The argument for a year was that quizzes already catch a forgotten word:
- * questionPool (lib/quiz.ts) filters on `state !== 'new'` and ignores `due`
- * entirely, so a word 119 days out is still drawn every day, and answering
- * it wrong pulls `due` back to today. Simulated against the real library
- * with the app's own weightedShuffle — 310-word pool, 10 questions a
- * session, 8.1 sessions a day — a 119-day word surfaces about every 4 days,
- * and the ones carried furthest surface *more* often, since a low ease and
- * a lapse both raise their draw weight.
+ * **Do not move it without re-measuring.** The spec lists what would show
+ * it is too low (retention at 19-23 day gaps at 93% or more over 300
+ * reviews) and what would show one ceiling is the wrong shape:
+ * docs/superpowers/specs/2026-11-12-interval-ceiling-design.md.
  *
- * That safety net is real but conditional: it holds only while the quizzes
- * keep happening, and quiz volume over a single week ranged from 1 session
- * to 17. A cap costs a few more reviews a day and does not depend on a
- * habit holding. 100 rather than 90 or 120 is the round number the user
- * asked for; nothing in the algorithm turns on the exact value.
+ * It is also MATURE_INTERVAL_DAYS (queue.ts), and that is relied on: a
+ * word at the ceiling lands on exactly 21 for every passing grade, since
+ * max(21 + 1, ...) is at least 22 and 22 x 0.95 still rounds to 21. Fuzz
+ * that could return 20 would take a word out of 记牢 on a pass.
+ *
+ * History. It was 365, which meant no ceiling: the schedule reached it and
+ * words sat a year out. Then 100, a round number the user asked for, on the
+ * argument that quizzes catch a forgotten word in between (questionPool
+ * ignores `due`). That net held only while quizzes were played, 8.1
+ * sessions a day when it was simulated; from October 2026 they ran at 0 to
+ * 6 sessions a week.
  *
  * **Forward-looking only.** Entries already scheduled past this keep their
  * `due` date until they next come up, at which point fuzz() clamps them.
+ * The entries written under the 100-day ceiling were rewritten once, by
+ * scripts/pull-back-intervals.ts.
  */
-export const MAX_INTERVAL_DAYS = 100
+export const MAX_INTERVAL_DAYS = 21
 const GRADUATE_DAYS = 1
 const EASY_GRADUATE_DAYS = 4
 

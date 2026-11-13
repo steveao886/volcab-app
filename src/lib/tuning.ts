@@ -39,7 +39,8 @@ export const MIN_RETENTION_SAMPLE = 150
  * indefensible off a few hundred reviews. It also compounds: at 1.3 the
  * per-review multiplier goes from 2.5 to 3.25, and the interval pulls away
  * from a plain schedule every review until MAX_INTERVAL_DAYS clips it — at
- * the current ceiling that is the fourth one. Moving 30% at a time and
+ * the 21-day ceiling that is the third one (1, 3, 10, then 33 clipped).
+ * Moving 30% at a time and
  * re-measuring gets to the same place without betting the schedule on a
  * noisy estimate.
  */
