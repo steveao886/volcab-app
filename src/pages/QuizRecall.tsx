@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { ExampleSentence } from '../components/ExampleSentence'
@@ -8,6 +8,8 @@ import type { Concept, DivergeQuestion } from '../lib/diverge'
 import { optionIndexFromKey } from '../lib/keys'
 import { owedRecallWords } from '../lib/recallDebt'
 import { pushRecent, recentWindow } from '../lib/passage'
+import { optionGlosses, recallNeighbours } from '../lib/recallNeighbours'
+import type { WordGloss } from '../lib/recallNeighbours'
 import { usableSentences } from '../lib/recallSentence'
 import type { RecallSentence } from '../lib/recallSentence'
 import { RECALL_COUNTS, RECALL_RECENT_LIMIT, eligibleGroups, generateRecallSession, orderCorrect, wrongIdsFor } from '../lib/senseGroup'
@@ -94,10 +96,39 @@ interface RecallQuestionViewProps {
   onChain?: () => void
   /** That concept was already walked this round. */
   chained?: boolean
+  /**
+   * Each option's senses, keyed by the option as printed. Once revealed, an
+   * option present here expands to them on a tap or its number key. Absent
+   * outside a 回想 round (`/untangle`), where the options stay inert.
+   */
+  glosses?: Map<string, WordGloss>
+  /** 相近的词, listed after a miss on a sentence-sourced question. */
+  neighbours?: WordGloss[]
+}
+
+/**
+ * A word's senses, opened beneath its row on the reveal. The focus sense
+ * carries its English definition: that line is what told placate (to make
+ * someone less angry) from subside (to become less intense), and what showed
+ * goodwill's 善意 under a rendering that said 好感.
+ */
+function GlossLines({ gloss }: { gloss: WordGloss }) {
+  return (
+    <ul className="recall-gloss">
+      {gloss.lines.map((l, k) => (
+        <li key={k} className={k === gloss.focus ? 'recall-gloss__line recall-gloss__line--focus' : 'recall-gloss__line'}>
+          <span className="recall-gloss__pos" lang="en">{l.pos}</span>
+          <span>{l.zh}</span>
+          {l.en !== undefined && <span className="recall-gloss__en" lang="en">{l.en}</span>}
+        </li>
+      ))}
+    </ul>
+  )
 }
 
 export function RecallQuestionView({
   question, onAnswered, onNext, nextLabel, onReinforce, reinforced, onChain, chained = false,
+  glosses, neighbours,
 }: RecallQuestionViewProps) {
   const { progress, rateRecall } = useApp()
   const soundEnabled = isSoundEnabled(progress.settings)
@@ -124,6 +155,13 @@ export function RecallQuestionView({
     rated === 'easy' || rated === 'hard' ? rated : (correct ? 'easy' : 'hard')
   /** 唤词: the one option picked. 排序: the tap sequence so far. */
   const [picked, setPicked] = useState<string[]>([])
+  /**
+   * The one row whose senses are open on the reveal: an option as printed,
+   * or `near:<id>` for a 相近的词 row. One at a time, so the reveal never
+   * grows by more than one entry and 下一题 stays near the thumb.
+   */
+  const [open, setOpen] = useState<string | null>(null)
+  const toggle = useCallback((key: string) => setOpen(prev => (prev === key ? null : key)), [])
   const answeredRef = useRef(false)
   /**
    * Whether the English definition was read before answering. A ref, not
@@ -154,6 +192,9 @@ export function RecallQuestionView({
     playQuizResult(isCorrect, soundEnabled)
     setCorrect(isCorrect)
     setMiss(kind)
+    // A miss opens the answer's senses: it is the word to read now. Nothing
+    // opens on a right answer, which the reveal only confirms.
+    if (!isCorrect && question.kind === 'recall') setOpen(question.answer[0])
     setStage('revealed')
     onAnswered(isCorrect, isCorrect ? [] : wrongIdsFor(question, pick), kind)
   }, [question, soundEnabled, onAnswered])
@@ -223,6 +264,24 @@ export function RecallQuestionView({
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [stage, question, chooseRecall, tapOrder, notMine])
+
+  // Once revealed, the same printed numbers open an option's senses. Enter
+  // still belongs to 下一题: this moves no focus, so the keypress after the
+  // keydown lands where it always did (the hazard in .claude/rules/ui.md).
+  const expandable = question.kind === 'recall' && glosses !== undefined
+  useEffect(() => {
+    if (stage !== 'revealed' || !expandable) return
+    function onKeyDown(e: KeyboardEvent) {
+      const i = optionIndexFromKey(e, question.options.length)
+      if (i < 0) return
+      const opt = question.options[i]
+      if (!glosses?.has(opt)) return
+      e.preventDefault()
+      toggle(opt)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [stage, expandable, question, glosses, toggle])
 
   const revealed = stage === 'revealed'
 
@@ -300,12 +359,18 @@ export function RecallQuestionView({
       ) : (
         <>
           <div
-            className={question.kind === 'order' ? 'quiz-options quiz-options--order' : 'quiz-options'}
+            className={
+              question.kind === 'order' ? 'quiz-options quiz-options--order'
+                : revealed && expandable ? 'quiz-options quiz-options--glossed'
+                  : 'quiz-options'
+            }
             role="group"
             aria-label="选项"
           >
             {question.options.map((opt, i) => {
               const orderPos = picked.indexOf(opt)
+              const gloss = revealed && expandable ? glosses?.get(opt) : undefined
+              const isOpen = gloss !== undefined && open === opt
               let variant: 'secondary' | 'correct' | 'incorrect' = 'secondary'
               if (revealed && question.kind === 'recall') {
                 if (opt === question.answer[0]) variant = 'correct'
@@ -316,16 +381,21 @@ export function RecallQuestionView({
                 else variant = 'incorrect'
               }
               return (
+                <Fragment key={opt}>
                 <Button
-                  key={opt}
                   type="button"
                   variant={variant}
                   wrap
                   block
-                  disabled={revealed}
+                  disabled={revealed && gloss === undefined}
                   lang="en"
                   aria-pressed={question.kind === 'order' ? orderPos !== -1 : undefined}
-                  onClick={() => (question.kind === 'recall' ? chooseRecall(opt) : tapOrder(opt))}
+                  aria-expanded={gloss !== undefined ? isOpen : undefined}
+                  onClick={() => (
+                    gloss !== undefined ? toggle(opt)
+                      : question.kind === 'recall' ? chooseRecall(opt)
+                        : tapOrder(opt)
+                  )}
                 >
                   <span>
                     <span className="quiz-option__key">{i + 1}</span>
@@ -336,11 +406,15 @@ export function RecallQuestionView({
                   {question.kind === 'order' && orderPos !== -1 && !revealed ? (
                     <span className="quiz-option__tag recall-stamp">{'①②③④'[orderPos]}</span>
                   ) : null}
-                  {revealed && question.kind === 'recall' && opt === question.answer[0] ? (
-                    <span className="quiz-option__tag">正确答案</span>
-                  ) : null}
-                  {revealed && question.kind === 'recall' && opt === picked[0] && opt !== question.answer[0] ? (
-                    <span className="quiz-option__tag">你的选择</span>
+                  {revealed && question.kind === 'recall' ? (
+                    /* The verdict tag, then 释义/收起: a word saying the row
+                       opens, since nothing else about a ruled row does. */
+                    <span className="quiz-option__side">
+                      {opt === question.answer[0] ? <span className="quiz-option__tag">正确答案</span>
+                        : opt === picked[0] ? <span className="quiz-option__tag">你的选择</span>
+                          : null}
+                      {gloss !== undefined ? <span className="quiz-option__more">{isOpen ? '收起' : '释义'}</span> : null}
+                    </span>
                   ) : null}
                   {revealed && question.kind === 'order' ? (
                     <span className="quiz-option__tag">
@@ -348,6 +422,8 @@ export function RecallQuestionView({
                     </span>
                   ) : null}
                 </Button>
+                {isOpen && gloss !== undefined ? <GlossLines gloss={gloss} /> : null}
+                </Fragment>
               )
             })}
           </div>
@@ -400,6 +476,34 @@ export function RecallQuestionView({
             <p className="recall-en" lang="en">
               <ExampleSentence sentence={question.en} headword={question.answer[0]} />
             </p>
+          )}
+          {/* 相近的词: the words a learner reaches for from this Chinese, after
+              a miss on a sentence question — whose reveal otherwise named
+              nothing but the answer (the subside report, 2026-11-13). A
+              sense-group question has its 辨析 and its members as options. */}
+          {!correct && question.why === undefined && neighbours !== undefined && neighbours.length > 0 && (
+            <section className="section recall-near">
+              <h3 className="section-head">相近的词</h3>
+              <ul className="ledger">
+                {neighbours.map(n => {
+                  const key = `near:${n.id}`
+                  const isOpen = open === key
+                  const f = n.lines[n.focus]
+                  return (
+                    <li key={n.id}>
+                      <button type="button" className="ledger__row recall-near__row" aria-expanded={isOpen} onClick={() => toggle(key)}>
+                        <span className="ledger__main">
+                          <span className="ledger__word" lang="en">{n.headword}</span>
+                          {!isOpen && f !== undefined ? <span className="ledger__secondary">{f.pos} {f.zh}</span> : null}
+                        </span>
+                        <span className="quiz-option__more">{isOpen ? '收起' : '释义'}</span>
+                      </button>
+                      {isOpen ? <GlossLines gloss={n} /> : null}
+                    </li>
+                  )
+                })}
+              </ul>
+            </section>
           )}
           {/* The why is what stops the reveal being a bare assertion: it
               names the dimension that decides (object, register,
@@ -726,6 +830,21 @@ export function RecallSession({
 
   const wordsById = useMemo(() => new Map(words.map(w => [w.id, w])), [words])
 
+  // What the reveal can open: the four options' senses, and 相近的词 on a
+  // sentence question. Per question, because both walk the whole library.
+  const reveal = useMemo(() => {
+    if (current === undefined || current.kind !== 'recall') return null
+    const answer = wordsById.get(current.orderIds[0])
+    if (answer === undefined) return null
+    const sense = current.sense ?? 0
+    return {
+      glosses: optionGlosses(answer, sense, current.options, words),
+      neighbours: current.why === undefined
+        ? recallNeighbours(answer, sense, current.target, current.options, words)
+        : [],
+    }
+  }, [current, wordsById, words])
+
   if (total === 0) {
     return (
       <div className="quiz-empty">
@@ -840,6 +959,8 @@ export function RecallSession({
           reinforced={reinforced.has(q.prompt)}
           onChain={currentChain === null ? undefined : openChain}
           chained={currentChain !== null && chained.has(currentChain.question.conceptId)}
+          glosses={reveal?.glosses}
+          neighbours={reveal?.neighbours}
         />
       )}
     </>

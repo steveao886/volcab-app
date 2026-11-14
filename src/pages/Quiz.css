@@ -721,6 +721,96 @@
   text-decoration-skip-ink: none;
 }
 
+/* Revealed options that open their senses (the goodwill report, 2026-11-14).
+   They stay buttons instead of going disabled, so the 45% fade a disabled
+   row wore is restated on the key and the word alone — muted ink measured
+   #474e55 at 375px and read nearly as dark as the answer — and 释义 stays
+   legible. The tinted grade hovers give way to the ledger's quiet one;
+   :not(:disabled) is restated so these out-rank
+   .btn--correct:hover:not(:disabled) on specificity, not on load order. */
+.quiz-options.quiz-options--glossed > .btn--secondary .quiz-option__key,
+.quiz-options.quiz-options--glossed > .btn--secondary .quiz-option__text,
+.quiz-options.quiz-options--glossed > .btn--incorrect .quiz-option__key,
+.quiz-options.quiz-options--glossed > .btn--incorrect .quiz-option__text {
+  opacity: 0.45;
+}
+
+.quiz-options.quiz-options--glossed > .btn:hover:not(:disabled) {
+  background: var(--surface-sunken);
+}
+
+.quiz-options.quiz-options--glossed > .btn--correct:hover:not(:disabled) {
+  color: var(--success);
+}
+
+.quiz-options.quiz-options--glossed > .btn--incorrect:hover:not(:disabled),
+.quiz-options.quiz-options--glossed > .btn--secondary:hover:not(:disabled) {
+  color: var(--text-muted);
+}
+
+/* The verdict tag over 释义/收起, right-aligned in the row. */
+.quiz-option__side {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  flex: none;
+}
+
+.quiz-option__more {
+  font-family: var(--font-ui);
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  color: var(--text-faint);
+}
+
+/* A word's senses, opened under its row. Indented past the option number
+   so they read as the row's, ruled off below like the row itself. */
+.recall-gloss {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: var(--sp-2) var(--sp-2) var(--sp-3) calc(1.2em + var(--sp-3) + var(--sp-2));
+  list-style: none;
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  color: var(--text-muted);
+}
+
+.recall-near .recall-gloss {
+  padding-inline-start: 0;
+}
+
+.recall-gloss__line--focus {
+  color: var(--text);
+}
+
+.recall-gloss__pos {
+  margin-inline-end: var(--sp-2);
+  font-style: italic;
+}
+
+.recall-gloss__en {
+  display: block;
+  margin-top: 2px;
+  line-height: var(--lh-latin);
+  color: var(--text-muted);
+}
+
+.recall-near {
+  margin-top: var(--sp-5);
+}
+
+/* One line per word where it fits: six two-line rows pushed 下一题 a full
+   screen below the answer at 375px. The gloss wraps under the headword
+   when it is too long to sit beside it. */
+.recall-near__row .ledger__main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--sp-3);
+}
+
 /* The "none of these" escape. Deliberately NOT styled like a fifth option:
    auto width, centred, with a gap above, so a thumb travelling down the
    four full-width answers never lands on it by momentum. */

@@ -25,12 +25,24 @@ import { glossTerms } from './forget'
  *
  * See docs/superpowers/specs/2026-11-13-recall-reveal-neighbours-design.md.
  */
-export interface Neighbour {
-  id: string
-  headword: string
+export interface GlossLine {
   pos: string
   zh: string
-  en: string
+  /** The English definition, on the focus sense only. */
+  en?: string
+}
+
+/**
+ * A word as the reveal lists it: every sense, one of them in focus. Closed,
+ * a row shows the focus sense's Chinese; open, it shows every line. The
+ * goodwill report (2026-11-14) is why every sense is carried: the user had
+ * never met the sense the rendering used.
+ */
+export interface WordGloss {
+  id: string
+  headword: string
+  focus: number
+  lines: GlossLine[]
 }
 
 /** p90 is 5 over the library; a longer list pushes 下一题 down a 375px screen. */
@@ -39,13 +51,53 @@ export const NEIGHBOUR_CAP = 6
 const norm = (s: string) => s.trim().toLowerCase()
 const isCjk = (t: string) => /^[一-鿿…]+$/.test(t)
 
+/** The word's first sense of this part of speech, else its first. */
+export function focusSense(word: Word, pos: string): number {
+  const at = word.meanings.findIndex(m => m.pos === pos)
+  return at === -1 ? 0 : at
+}
+
+export function wordGloss(word: Word, focus: number): WordGloss {
+  const f = word.meanings[focus] === undefined ? 0 : focus
+  return {
+    id: word.id,
+    headword: word.headword,
+    focus: f,
+    lines: word.meanings.map((m, k) => (k === f ? { pos: m.pos, zh: m.zh, en: m.en } : { pos: m.pos, zh: m.zh })),
+  }
+}
+
+/**
+ * The reveal's four options, each keyed by the string printed on it. The
+ * answer focuses on the sense the rendering is about; any other option on
+ * its sense of the answer's part of speech, which is the sense a learner
+ * weighed it under. An option not in the library is omitted and its row
+ * does not expand — read side lenient.
+ */
+export function optionGlosses(
+  answer: Word,
+  sense: number,
+  options: readonly string[],
+  words: readonly Word[],
+): Map<string, WordGloss> {
+  const byHead = new Map(words.map(w => [norm(w.headword), w]))
+  const pos = (answer.meanings[sense] ?? answer.meanings[0])?.pos ?? ''
+  const out = new Map<string, WordGloss>()
+  for (const opt of options) {
+    const w = byHead.get(norm(opt))
+    if (w === undefined) continue
+    out.set(opt, wordGloss(w, w.id === answer.id ? sense : focusSense(w, pos)))
+  }
+  return out
+}
+
 export function recallNeighbours(
   answer: Word,
   sense: number,
   target: string | undefined,
   onScreen: readonly string[],
   words: readonly Word[],
-): Neighbour[] {
+): WordGloss[] {
   const rendered = answer.meanings[sense] ?? answer.meanings[0]
   if (rendered === undefined) return []
   const pos = rendered.pos
@@ -71,8 +123,5 @@ export function recallNeighbours(
     for (const w of glossed) take(w)
   }
 
-  return picked.slice(0, NEIGHBOUR_CAP).map(w => {
-    const m = w.meanings.find(x => x.pos === pos) ?? w.meanings[0]
-    return { id: w.id, headword: w.headword, pos: m?.pos ?? '', zh: m?.zh ?? '', en: m?.en ?? '' }
-  })
+  return picked.slice(0, NEIGHBOUR_CAP).map(w => wordGloss(w, focusSense(w, pos)))
 }

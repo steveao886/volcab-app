@@ -101,12 +101,53 @@ quell (7 before the cap).
 **Each entry:** the headword, the Chinese gloss of its matching sense (same
 part of speech as the answer's rendered sense, else `meanings[0]`), and that
 sense's English definition beneath. The English is what shows the
-difference.
+difference. (Superseded by the amendment below: the English moves into the
+expanded row.)
 
 **Code:** the selection is a pure function in `src/lib/` with a colocated
 test, covering the order, the exclusions, the cap, the part-of-speech
 restriction, and that a gloss term absent from the target adds nothing. The
 page renders the list.
+
+## Amendment, 2026-11-14: tap any word on the reveal to read its meaning
+
+A third report, mid-build, on a correct answer: 房东……赢得了我们的好感,
+answer `goodwill`. "我没想到有好感的意思": the user wanted to read the
+word's entry from the reveal. goodwill's entry is 善意;好意;友好 (80%) and
+商誉;营业信誉 (20%), and 好感 is in neither as written, so reading the senses
+is the whole fix. B's English-definition line and this request are the same
+surface, and they were built as one.
+
+Three ways were laid out. The user picked A.
+- **A (picked): inline expand.** After the reveal, each of the four options
+  and each 相近的词 row toggles a list of that word's senses beneath itself.
+  It never leaves the question.
+- B, a bottom sheet with the whole entry. It carries the most, but it covers
+  the question, and the component would be new.
+- C, the answer's senses printed and nothing else. Distractors like tyranny
+  could not be looked up.
+
+**Behaviour:**
+- **Who expands.** On a revealed `recall` question, the four options do,
+  whether the question is sentence-sourced or from a sense group. 排序 is
+  unchanged.
+- **One open at a time.** Tapping an open row closes it. A miss opens the
+  answer's row, since that is the word to read; a correct answer opens
+  nothing.
+- **What it shows.** Every sense of the word, each as part of speech plus
+  Chinese. The focus sense also carries its English definition. For the
+  answer, the focus sense is the rendered sense. For any other word, it is
+  its first sense of the answer's part of speech, else `meanings[0]`.
+- **相近的词 rows** show the headword plus the focus sense's Chinese when
+  closed, and every sense with the focus English when open: the same list
+  the options open.
+- **Keys.** Once revealed, 1–4 toggle the matching option. That is the
+  number already printed on it, so nothing new needs printing. Toggling
+  moves no focus: Enter stays with 下一题, and the keydown-plus-focus hazard
+  in `.claude/rules/ui.md` cannot arise.
+- **No write to progress** from opening or closing.
+- `RecallQuestionView` takes the glosses as optional props. `/untangle`
+  passes none and is unchanged.
 
 ## Left to the builder
 

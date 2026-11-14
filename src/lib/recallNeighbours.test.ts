@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { NEIGHBOUR_CAP, recallNeighbours } from './recallNeighbours'
+import { NEIGHBOUR_CAP, optionGlosses, recallNeighbours } from './recallNeighbours'
 import type { Meaning, Word } from '../types'
 
 const w = (id: string, meanings: Array<[string, string]>, synonyms: string[] = []): Word => ({
@@ -55,18 +55,55 @@ describe('recallNeighbours', () => {
     expect(recallNeighbours(subside, 0, '渐渐平息', [], [...library, ...many])).toHaveLength(NEIGHBOUR_CAP)
   })
 
-  it("takes the neighbour's meaning matching the answer's part of speech", () => {
+  it("focuses the neighbour's sense matching the answer's part of speech, with every sense listed", () => {
     const [ebbN] = recallNeighbours(subside, 0, '消退', ['abate'], library)
-    expect(ebbN).toEqual({ id: 'ebb', headword: 'ebb', pos: 'v.', zh: '衰退;减退', en: 'ebb v. def' })
+    expect(ebbN).toEqual({
+      id: 'ebb', headword: 'ebb', focus: 1,
+      lines: [{ pos: 'n.', zh: '退潮' }, { pos: 'v.', zh: '衰退;减退', en: 'ebb v. def' }],
+    })
   })
 
   it('falls back to the first meaning when no part of speech matches', () => {
     const fade = w('fade', [['adj.', '褪色的']])
     const answer = { ...subside, synonyms: ['fade'] }
-    expect(recallNeighbours(answer, 0, '消退', [], [answer, fade])[0]).toMatchObject({ id: 'fade', pos: 'adj.', zh: '褪色的' })
+    expect(recallNeighbours(answer, 0, '消退', [], [answer, fade])[0]).toMatchObject({ id: 'fade', focus: 0 })
   })
 
   it('runs the synonym path only when the target is undefined', () => {
     expect(ids(recallNeighbours(subside, 0, undefined, [], library))).toEqual(['abate', 'ebb'])
+  })
+})
+
+// The goodwill report, 2026-11-14: the four options on the reveal open
+// their entries, and the answer's focus is the sense the rendering is about.
+describe('optionGlosses', () => {
+  const goodwill = w('goodwill', [['n.', '善意;好意;友好'], ['n.', '商誉;营业信誉']])
+  const tyranny = w('tyranny', [['n.', '暴政;专横']])
+  const mime = w('mime', [['v.', '模仿;做哑剧'], ['n.', '哑剧']])
+  const words = [goodwill, tyranny, mime]
+
+  it('keys each option to its gloss, the answer focused on the rendered sense', () => {
+    const got = optionGlosses(goodwill, 1, ['tyranny', 'goodwill', 'mime'], words)
+    expect(got.get('goodwill')).toEqual({
+      id: 'goodwill', headword: 'goodwill', focus: 1,
+      lines: [{ pos: 'n.', zh: '善意;好意;友好' }, { pos: 'n.', zh: '商誉;营业信誉', en: 'goodwill n. def' }],
+    })
+    expect(got.get('tyranny')?.focus).toBe(0)
+  })
+
+  it("focuses a distractor on its sense of the answer's part of speech", () => {
+    expect(optionGlosses(goodwill, 0, ['mime'], words).get('mime')?.focus).toBe(1)
+  })
+
+  it('omits an option not in the library, so it does not expand', () => {
+    expect(optionGlosses(goodwill, 0, ['goodwill', 'ghost'], words).has('ghost')).toBe(false)
+  })
+
+  it('matches an option case-insensitively but keys it as printed', () => {
+    expect(optionGlosses(goodwill, 0, ['Goodwill'], words).get('Goodwill')?.id).toBe('goodwill')
+  })
+
+  it('falls back to sense 0 for the answer when the sense index dangles', () => {
+    expect(optionGlosses(goodwill, 7, ['goodwill'], words).get('goodwill')?.focus).toBe(0)
   })
 })
