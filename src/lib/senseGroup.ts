@@ -157,10 +157,11 @@ export interface RecallQuestion {
    */
   why?: string
   /**
-   * The answer's sense the rendering is about, an index into its `meanings`.
-   * Set on sentence-sourced questions only, so the reveal's 相近的词 keys on
-   * the same gloss the hint reads (`recallNeighbours`). A dangling index is
-   * left as authored; readers fall back to sense 0, as `hintFor` does.
+   * The answer's sense the prompt is about, an index into its `meanings`.
+   * Set on 唤词 questions from both sources, so the reveal opens the same
+   * sense the hint reads, and 相近的词 keys on its gloss (`recallNeighbours`).
+   * A dangling index is left as authored; readers fall back to sense 0, as
+   * `hintFor` does.
    */
   sense?: number
   /** Every group member's word id, in answer-key order (best first). */
@@ -360,6 +361,7 @@ export function buildRecallQuestion(
     target: usableTarget(g),
     en: g.en,
     hint: hintFor((members as Word[])[0], g.sense),
+    sense: g.sense ?? 0,
     why: g.why,
     orderIds: [...g.order],
     memberHeadwords: headwords,

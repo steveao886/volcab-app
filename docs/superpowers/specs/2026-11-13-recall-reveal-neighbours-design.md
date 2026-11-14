@@ -149,6 +149,25 @@ Three ways were laid out. The user picked A.
 - `RecallQuestionView` takes the glosses as optional props. `/untangle`
   passes none and is unchanged.
 
+## Amendment, 2026-11-14: senses, after the branch review
+
+A fresh review found that the "which words" rule broke this spec's own
+first anti-goal. Two rules changed:
+
+- **On a rendering of a later sense, a card synonym must share a gloss term
+  with that sense.** A synonym list in practice describes the first sense.
+  callous asked as 老茧 listed insensitive, and beguile asked as 消磨时间
+  listed deceive.
+- **Every row opens on the sense that earned its place.** For a gloss-path
+  word, that is the sense whose term is in the target; belittle [贬低]
+  showed degrade under 退化. For a synonym, it is the sense sharing a term
+  with the rendered sense, else the first of the answer's part of speech.
+  Sense-group questions carry `sense` too, so the answer opens on the sense
+  the hint read.
+
+Re-measured over the 7,435 renderings: **1,666 get no row** (1,154
+before), the median is 2, and p90 is 4.
+
 ## Left to the builder
 
 - The row's markup, from `components.css` (a `.ledger` is the likely fit),

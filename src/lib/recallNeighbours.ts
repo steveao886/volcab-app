@@ -20,8 +20,9 @@ import { glossTerms } from './forget'
  * words sharing a gloss term of the rendered sense **that appears in the
  * marked target**: the Chinese the learner read is what led them to the word
  * they produced, so the key is the term on screen, not every term the sense
- * has. Measured over the 7,435 renderings on 2026-11-13: 1,154 get no row,
- * the median is 2, p90 5, and the gloss path adds a word on 494.
+ * has. Measured over the 7,435 renderings on 2026-11-14, after a review
+ * kept first-sense synonyms off second-sense renderings: 1,666 get no row
+ * (1,154 before), the median is 2, p90 4.
  *
  * See docs/superpowers/specs/2026-11-13-recall-reveal-neighbours-design.md.
  */
@@ -45,7 +46,7 @@ export interface WordGloss {
   lines: GlossLine[]
 }
 
-/** p90 is 5 over the library; a longer list pushes 下一题 down a 375px screen. */
+/** p90 is 4 over the library; a longer list pushes 下一题 down a 375px screen. */
 export const NEIGHBOUR_CAP = 6
 
 const norm = (s: string) => s.trim().toLowerCase()
@@ -98,30 +99,49 @@ export function recallNeighbours(
   onScreen: readonly string[],
   words: readonly Word[],
 ): WordGloss[] {
+  const secondary = sense > 0 && answer.meanings[sense] !== undefined
   const rendered = answer.meanings[sense] ?? answer.meanings[0]
   if (rendered === undefined) return []
   const pos = rendered.pos
+  const renderedTerms = glossTerms(rendered.zh).filter(isCjk)
+  /** The word's first sense of this POS sharing one of `terms`, else -1. */
+  const sharing = (w: Word, terms: readonly string[]) =>
+    w.meanings.findIndex(m => m.pos === pos && glossTerms(m.zh).some(t => terms.includes(t)))
   const byHead = new Map(words.map(w => [norm(w.headword), w]))
   const shut = new Set([norm(answer.headword), ...onScreen.map(norm)])
-  const picked: Word[] = []
-  const take = (w: Word | undefined) => {
+  const picked: WordGloss[] = []
+  const take = (w: Word | undefined, focus: number) => {
     if (w === undefined || w.id === answer.id || shut.has(norm(w.headword))) return
     shut.add(norm(w.headword))
-    picked.push(w)
+    picked.push(wordGloss(w, focus))
   }
 
-  for (const h of cardSynonyms(answer, words)) take(byHead.get(norm(h)))
+  // A synonym list hangs off the word, and in practice off its first sense.
+  // On a rendering of a later sense it must share a gloss term with that
+  // sense, or it is a neighbour of a meaning the sentence is not about:
+  // callous asked as 老茧 listed insensitive (review, 2026-11-14). Either
+  // way the row opens on the sense that matched, when one did.
+  for (const h of cardSynonyms(answer, words)) {
+    const w = byHead.get(norm(h))
+    if (w === undefined) continue
+    const k = sharing(w, renderedTerms)
+    if (secondary && k === -1) continue
+    take(w, k === -1 ? focusSense(w, pos) : k)
+  }
 
-  // A one-character term (退, 沉) would match almost any target.
+  // A one-character term (退, 沉) would match almost any target. The row
+  // focuses the sense that matched: degrade came in through 贬低 and was
+  // shown under 退化 until the review caught it.
   const onTarget = target === undefined
     ? []
-    : glossTerms(rendered.zh).filter(t => t.length >= 2 && isCjk(t) && target.includes(t))
+    : renderedTerms.filter(t => t.length >= 2 && target.includes(t))
   if (onTarget.length > 0) {
     const glossed = words
-      .filter(w => w.meanings.some(m => m.pos === pos && glossTerms(m.zh).some(t => onTarget.includes(t))))
-      .sort((a, b) => a.headword.localeCompare(b.headword))
-    for (const w of glossed) take(w)
+      .map(w => ({ w, k: sharing(w, onTarget) }))
+      .filter(x => x.k !== -1)
+      .sort((a, b) => a.w.headword.localeCompare(b.w.headword))
+    for (const { w, k } of glossed) take(w, k)
   }
 
-  return picked.slice(0, NEIGHBOUR_CAP).map(w => wordGloss(w, focusSense(w, pos)))
+  return picked.slice(0, NEIGHBOUR_CAP)
 }

@@ -69,6 +69,26 @@ describe('recallNeighbours', () => {
     expect(recallNeighbours(answer, 0, '消退', [], [answer, fade])[0]).toMatchObject({ id: 'fade', focus: 0 })
   })
 
+  // Review, 2026-11-14: belittle [贬低] listed degrade under 退化, its first
+  // verb sense, though 贬低 is what brought it in.
+  it('focuses a gloss neighbour on the sense whose term matched the target', () => {
+    const belittle = w('belittle', [['v.', '贬低;轻视']])
+    const degrade = w('degrade', [['v.', '退化;降低质量'], ['v.', '贬低;使丢脸']])
+    const [n] = recallNeighbours(belittle, 0, '贬低', [], [belittle, degrade])
+    expect(n).toMatchObject({ id: 'degrade', focus: 1 })
+  })
+
+  // Review, 2026-11-14: callous asked as 老茧 (its second sense) listed
+  // insensitive, a synonym of its first.
+  it('drops a card synonym sharing no gloss term with a secondary rendered sense', () => {
+    const callous = w('callous', [['adj.', '冷酷无情的'], ['adj.', '(皮肤)硬结的;起老茧的']], ['insensitive', 'hardened'])
+    const insensitive = w('insensitive', [['adj.', '冷酷无情的;麻木不仁的']])
+    const hardened = w('hardened', [['adj.', '变硬的;硬结的']])
+    const lib = [callous, insensitive, hardened]
+    expect(ids(recallNeighbours(callous, 1, '老茧', [], lib))).toEqual(['hardened'])
+    expect(ids(recallNeighbours(callous, 0, '冷酷', [], lib))).toEqual(['insensitive', 'hardened'])
+  })
+
   it('runs the synonym path only when the target is undefined', () => {
     expect(ids(recallNeighbours(subside, 0, undefined, [], library))).toEqual(['abate', 'ebb'])
   })

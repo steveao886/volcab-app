@@ -722,16 +722,16 @@
 }
 
 /* Revealed options that open their senses (the goodwill report, 2026-11-14).
-   They stay buttons instead of going disabled, so the 45% fade a disabled
-   row wore is restated on the key and the word alone — muted ink measured
+   They stay buttons instead of going disabled, so the 45% fade an unpicked
+   row wore is restated on its key and word alone — muted ink measured
    #474e55 at 375px and read nearly as dark as the answer — and 释义 stays
-   legible. The tinted grade hovers give way to the ledger's quiet one;
+   legible. A wrong pick is not faded: its 叉 and strike are marks, and
+   .btn--incorrect:disabled kept them at full strength (components.css).
+   The tinted grade hovers give way to the ledger's quiet one;
    :not(:disabled) is restated so these out-rank
    .btn--correct:hover:not(:disabled) on specificity, not on load order. */
-.quiz-options.quiz-options--glossed > .btn--secondary .quiz-option__key,
-.quiz-options.quiz-options--glossed > .btn--secondary .quiz-option__text,
-.quiz-options.quiz-options--glossed > .btn--incorrect .quiz-option__key,
-.quiz-options.quiz-options--glossed > .btn--incorrect .quiz-option__text {
+.quiz-options.quiz-options--glossed > .btn--secondary:not(:disabled) .quiz-option__key,
+.quiz-options.quiz-options--glossed > .btn--secondary:not(:disabled) .quiz-option__text {
   opacity: 0.45;
 }
 
@@ -743,8 +743,7 @@
   color: var(--success);
 }
 
-.quiz-options.quiz-options--glossed > .btn--incorrect:hover:not(:disabled),
-.quiz-options.quiz-options--glossed > .btn--secondary:hover:not(:disabled) {
+.quiz-options.quiz-options--glossed > .btn--incorrect:hover:not(:disabled) {
   color: var(--text-muted);
 }
 

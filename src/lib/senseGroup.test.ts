@@ -169,6 +169,10 @@ describe('the English hint', () => {
     expect(build({ ...g, sense: 1 })!.hint).toBe('to die of an illness or injury')
   })
 
+  it('carries the named sense onto the question, so the reveal opens the sense the hint read', () => {
+    expect(build({ ...g, sense: 1 })!.sense).toBe(1)
+  })
+
   it('defaults to sense 0 — the highest share is the scenario a group is usually about', () => {
     expect(build(g)!.hint).toBe('to stop resisting pressure or temptation')
   })

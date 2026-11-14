@@ -406,9 +406,12 @@ export function RecallQuestionView({
                   {question.kind === 'order' && orderPos !== -1 && !revealed ? (
                     <span className="quiz-option__tag recall-stamp">{'①②③④'[orderPos]}</span>
                   ) : null}
-                  {revealed && question.kind === 'recall' ? (
+                  {revealed && question.kind === 'recall'
+                    && (gloss !== undefined || opt === question.answer[0] || opt === picked[0]) ? (
                     /* The verdict tag, then 释义/收起: a word saying the row
-                       opens, since nothing else about a ruled row does. */
+                       opens, since nothing else about a ruled row does.
+                       Rendered only with something in it: an empty flex
+                       item still cost /untangle's options a gap. */
                     <span className="quiz-option__side">
                       {opt === question.answer[0] ? <span className="quiz-option__tag">正确答案</span>
                         : opt === picked[0] ? <span className="quiz-option__tag">你的选择</span>
