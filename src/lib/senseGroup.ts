@@ -156,6 +156,13 @@ export interface RecallQuestion {
    * gloss to fill the field would be padding rather than an explanation.
    */
   why?: string
+  /**
+   * The answer's sense the rendering is about, an index into its `meanings`.
+   * Set on sentence-sourced questions only, so the reveal's 相近的词 keys on
+   * the same gloss the hint reads (`recallNeighbours`). A dangling index is
+   * left as authored; readers fall back to sense 0, as `hintFor` does.
+   */
+  sense?: number
   /** Every group member's word id, in answer-key order (best first). */
   orderIds: string[]
   /** Members' headwords, parallel to orderIds — what wrongIdsFor maps a tapped option back through. */

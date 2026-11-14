@@ -176,6 +176,11 @@ describe('sense drives the English hint', () => {
     expect(ask()?.hint).toBe('sharp and bitter in smell or taste')
   })
 
+  it('carries the sense onto the question, for the reveal to read the same gloss', () => {
+    expect(ask(1)?.sense).toBe(1)
+    expect(ask()?.sense).toBe(0)
+  })
+
   it('falls back to sense 0 rather than dropping the hint when the index dangles', () => {
     // The gate rejects this on write; if one ever reaches the app, a
     // slightly-off hint beats a question that renders without one.

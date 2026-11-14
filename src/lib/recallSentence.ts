@@ -169,6 +169,7 @@ export function buildSentenceQuestion(
     // beside the rendering would give it somewhere to drift to.
     en,
     hint: hintFor(w, s.sense),
+    sense: s.sense ?? 0,
     // No `why`: a retrieval question has no ranking to explain, and
     // restating the gloss here would be the padding the content rules keep
     // out of the authored files.
